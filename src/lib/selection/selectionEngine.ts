@@ -1,6 +1,7 @@
 import { engineMatches } from '../engine/matchEngine'
 import { levelFilterRank, type LadderLevel } from '../levels'
 import { evalConditionExpr } from './conditions'
+import type { DisplayNode } from './visibility'
 import {
   type ComponentNode,
   type InstallSequenceModel,
@@ -148,6 +149,7 @@ function selectableDescendants(
     if (n.attrs.displayIfNot && evalConditionExpr(n.attrs.displayIfNot, selected)) return
 
     if (isComponentNode(n)) {
+      if (n.attrs.noDisplay) return
       out.push(n)
       return
     }
@@ -162,6 +164,55 @@ function selectableDescendants(
 
   walk(node)
   return out
+}
+
+/** Visible/display leaves to select when checking a display container. */
+export function collectDisplaySelectable(
+  display: DisplayNode,
+  game: SelectedGame,
+): ComponentNode[] {
+  if (display.collapsedComponent) {
+    return eligibleComponents([display.collapsedComponent], game)
+  }
+
+  const { node } = display
+  if (isComponentNode(node)) {
+    return eligibleComponents([node], game)
+  }
+
+  if (node.kind === 'alternatives') {
+    return defaultComponentsUnderAlternatives(node, game)
+  }
+
+  return display.children.flatMap((child) => collectDisplaySelectable(child, game))
+}
+
+/** Components to clear when unchecking a display container (all alts under alternatives). */
+function collectDisplayClearTargets(
+  display: DisplayNode,
+  game: SelectedGame,
+): ComponentNode[] {
+  if (display.collapsedComponent) {
+    return eligibleComponents([display.collapsedComponent], game)
+  }
+
+  const { node } = display
+  if (isComponentNode(node)) {
+    return eligibleComponents([node], game)
+  }
+
+  if (node.kind === 'alternatives') {
+    return eligibleComponents(allComponentDescendants(node), game)
+  }
+
+  return display.children.flatMap((child) => collectDisplayClearTargets(child, game))
+}
+
+function clearableDescendants(node: TreeNode, game: SelectedGame): ComponentNode[] {
+  return eligibleComponents(
+    allComponentDescendants(node).filter((c) => !c.attrs.noDisplay),
+    game,
+  )
 }
 
 export function applyAlwaysIf(
@@ -404,7 +455,48 @@ export function toggleNode(
       applyCoreOnSelect(model, next, game, node)
     }
   } else {
-    clearComponents(next, allComponentDescendants(node))
+    clearComponents(next, clearableDescendants(node, game))
+  }
+
+  applyAlwaysIf(model, next, game)
+  return next
+}
+
+export function toggleDisplayNode(
+  model: InstallSequenceModel,
+  selected: SelectionSet,
+  game: SelectedGame,
+  display: DisplayNode,
+  wantSelected: boolean,
+): SelectionSet {
+  const next = new Set(selected)
+  const { node, collapsedComponent } = display
+
+  if (collapsedComponent) {
+    return toggleComponent(model, next, game, collapsedComponent, wantSelected)
+  }
+
+  if (isComponentNode(node)) {
+    return toggleComponent(model, next, game, node, wantSelected)
+  }
+
+  if (wantSelected) {
+    if (node.kind === 'alternatives') {
+      clearComponents(next, eligibleComponents(allComponentDescendants(node), game))
+      const defaults = defaultComponentsUnderAlternatives(node, game)
+      selectComponents(next, defaults)
+      if (defaults[0]) applyAlternativesExclusion(model, next, defaults[0])
+      applyCoreOnSelect(model, next, game, node)
+    } else {
+      const toSelect = collectDisplaySelectable(display, game)
+      selectComponents(next, toSelect)
+      for (const c of toSelect) {
+        applyAlternativesExclusion(model, next, c)
+      }
+      applyCoreOnSelect(model, next, game, node)
+    }
+  } else {
+    clearComponents(next, collectDisplayClearTargets(display, game))
   }
 
   applyAlwaysIf(model, next, game)
@@ -435,8 +527,9 @@ function toggleComponent(
 
 /**
  * Alternatives-aware container completeness:
- * - regular / non-alt subtrees: every eligible component must be selected
+ * - regular / non-alt subtrees: every eligible visible component must be selected
  * - each nested <alternatives>: satisfied when at least one eligible component is selected
+ * - noDisplay components are ignored (companions follow via alwaysIf)
  */
 function containerSelectionParts(
   node: TreeNode,
@@ -444,7 +537,7 @@ function containerSelectionParts(
   game: SelectedGame,
 ): { anySelected: boolean; fullySatisfied: boolean } {
   if (isComponentNode(node)) {
-    if (!engineMatches(node.effectiveEngine, game)) {
+    if (!engineMatches(node.effectiveEngine, game) || node.attrs.noDisplay) {
       return { anySelected: false, fullySatisfied: true }
     }
     const on = selected.has(node.componentId)
@@ -466,6 +559,7 @@ function containerSelectionParts(
     if (!engineMatches(child.effectiveEngine, game)) continue
 
     if (isComponentNode(child)) {
+      if (child.attrs.noDisplay) continue
       hasEligible = true
       const on = selected.has(child.componentId)
       if (on) anySelected = true
@@ -483,10 +577,68 @@ function containerSelectionParts(
       continue
     }
 
-    const descendants = eligibleComponents(allComponentDescendants(child), game)
-    if (descendants.length === 0) continue
+    const descendants = eligibleComponents(
+      allComponentDescendants(child).filter((c) => !c.attrs.noDisplay),
+      game,
+    )
+    if (descendants.length === 0) {
+      // May still have nested alternatives-only content
+      const part = containerSelectionParts(child, selected, game)
+      if (!part.fullySatisfied || part.anySelected) {
+        hasEligible = true
+        if (part.anySelected) anySelected = true
+        if (!part.fullySatisfied) fullySatisfied = false
+      }
+      continue
+    }
     hasEligible = true
     const part = containerSelectionParts(child, selected, game)
+    if (part.anySelected) anySelected = true
+    if (!part.fullySatisfied) fullySatisfied = false
+  }
+
+  if (!hasEligible) return { anySelected: false, fullySatisfied: true }
+  return { anySelected, fullySatisfied }
+}
+
+function displaySelectionParts(
+  display: DisplayNode,
+  selected: ReadonlySet<string>,
+  game: SelectedGame,
+): { anySelected: boolean; fullySatisfied: boolean } {
+  if (display.collapsedComponent) {
+    if (!engineMatches(display.collapsedComponent.effectiveEngine, game)) {
+      return { anySelected: false, fullySatisfied: true }
+    }
+    const on = selected.has(display.collapsedComponent.componentId)
+    return { anySelected: on, fullySatisfied: on }
+  }
+
+  const { node } = display
+  if (isComponentNode(node)) {
+    if (!engineMatches(node.effectiveEngine, game)) {
+      return { anySelected: false, fullySatisfied: true }
+    }
+    const on = selected.has(node.componentId)
+    return { anySelected: on, fullySatisfied: on }
+  }
+
+  if (node.kind === 'alternatives') {
+    const comps = eligibleComponents(allComponentDescendants(node), game)
+    if (comps.length === 0) return { anySelected: false, fullySatisfied: true }
+    const anySelected = comps.some((c) => selected.has(c.componentId))
+    return { anySelected, fullySatisfied: anySelected }
+  }
+
+  let anySelected = false
+  let fullySatisfied = true
+  let hasEligible = false
+
+  for (const child of display.children) {
+    const part = displaySelectionParts(child, selected, game)
+    // Vacuous / ineligible subtree (nothing to select)
+    if (!part.anySelected && part.fullySatisfied) continue
+    hasEligible = true
     if (part.anySelected) anySelected = true
     if (!part.fullySatisfied) fullySatisfied = false
   }
@@ -508,10 +660,25 @@ export function nodeSelectionState(
     return selected.has(node.componentId) ? 'checked' : 'unchecked'
   }
 
-  const relevant = eligibleComponents(allComponentDescendants(node), game)
-  if (relevant.length === 0) return 'unchecked'
-
   const { anySelected, fullySatisfied } = containerSelectionParts(node, selected, game)
+  if (!anySelected) return 'unchecked'
+  if (fullySatisfied) return 'checked'
+  return 'indeterminate'
+}
+
+export function displaySelectionState(
+  display: DisplayNode,
+  selected: ReadonlySet<string>,
+  game: SelectedGame,
+): 'checked' | 'unchecked' | 'indeterminate' {
+  if (display.collapsedComponent) {
+    return selected.has(display.collapsedComponent.componentId) ? 'checked' : 'unchecked'
+  }
+  if (isComponentNode(display.node)) {
+    return selected.has(display.node.componentId) ? 'checked' : 'unchecked'
+  }
+
+  const { anySelected, fullySatisfied } = displaySelectionParts(display, selected, game)
   if (!anySelected) return 'unchecked'
   if (fullySatisfied) return 'checked'
   return 'indeterminate'

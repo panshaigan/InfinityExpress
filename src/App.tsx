@@ -8,14 +8,12 @@ import {
   STATION_ORDER,
   type SelectedGame,
   type StationId,
-  type ComponentNode,
-  type TreeNode,
 } from './lib/xml/schema'
 import {
   applyLadderLevelSelection,
   createInitialSelection,
   setDifficultySelection,
-  toggleNode,
+  toggleDisplayNode,
 } from './lib/selection/selectionEngine'
 import type { LadderLevel } from './lib/levels'
 import {
@@ -206,13 +204,9 @@ export default function App() {
     }
   }
 
-  function onToggle(
-    node: TreeNode,
-    collapsedComponent: ComponentNode | undefined,
-    wantSelected: boolean,
-  ) {
+  function onToggle(display: DisplayNode, wantSelected: boolean) {
     if (!game) return
-    setSelectedIds((prev) => toggleNode(model, prev, game, node, collapsedComponent, wantSelected))
+    setSelectedIds((prev) => toggleDisplayNode(model, prev, game, display, wantSelected))
   }
 
   return (

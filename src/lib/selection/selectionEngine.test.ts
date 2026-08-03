@@ -3,11 +3,17 @@ import { parseInstallSequence } from '../xml/parseInstallSequence'
 import {
   applyLadderLevelSelection,
   createInitialSelection,
+  displaySelectionState,
   nodeSelectionState,
   setDifficultySelection,
+  toggleDisplayNode,
   toggleNode,
 } from '../selection/selectionEngine'
 import { buildDisplayTree } from '../selection/visibility'
+import {
+  createDefaultFilterCriteria,
+  filterDisplayTree,
+} from '../selection/filterDisplayTree'
 import { buildInstallOrderLines } from '../export/installOrder'
 
 const SAMPLE = `<?xml version="1.0"?>
@@ -18,6 +24,7 @@ const SAMPLE = `<?xml version="1.0"?>
       <component id="demo:core" label="Core" core="1" />
       <component id="demo:extra" label="Extra" />
       <component id="demo:auto" label="Auto" alwaysIf="demo:core" noDisplay="1" />
+      <component id="demo:orphan_hidden" label="Orphan hidden" noDisplay="1" />
     </mod>
     <mod id="InfinityUI" label="InfinityUI" engine="bg,eet,iwd">
       <component id="infinity_ui:0" label="Core" core="1" />
@@ -164,6 +171,56 @@ describe('parse + selection', () => {
     expect(selected.has('infinity_ui:2')).toBe(false)
     expect(selected.has('infinity_ui:5')).toBe(false)
     expect(nodeSelectionState(mod, selected, 'bg1')).toBe('unchecked')
+  })
+
+  it('parent select-all skips plain noDisplay without alwaysIf', () => {
+    let selected = createInitialSelection(model, 'bg1')
+    const base = model.stations.find((s) => s.stationId === 'base')!
+    const mod = base.children.find((c) => c.attrs.label === 'Demo Mod')!
+    selected = toggleNode(model, selected, 'bg1', mod, undefined, true)
+    expect(selected.has('demo:core')).toBe(true)
+    expect(selected.has('demo:extra')).toBe(true)
+    expect(selected.has('demo:auto')).toBe(true) // alwaysIf companion
+    expect(selected.has('demo:orphan_hidden')).toBe(false)
+  })
+
+  it('display parent check only selects filter-visible children', () => {
+    const FILTERED = `<?xml version="1.0"?>
+<installSequence>
+  <base label="Base" engine="bg1">
+    <mod id="FilterMod" label="Filter Mod">
+      <component id="vis:a" label="Visible A" level="fixes" />
+      <component id="vis:b" label="Visible B" level="quality" />
+      <component id="hid:c" label="Hidden C" noDisplay="1" />
+    </mod>
+  </base>
+</installSequence>`
+    const { model: fm } = parseInstallSequence(FILTERED)
+    const base = fm.stations.find((s) => s.stationId === 'base')!
+    const built = buildDisplayTree(base.children, {
+      game: 'bg1',
+      selectedIds: new Set(),
+    })
+    const criteria = {
+      ...createDefaultFilterCriteria(),
+      maxLevel: 'fixes',
+      requiredMode: 'show' as const,
+    }
+    const filtered = filterDisplayTree(built, criteria, { model: fm, modsByCodename: new Map() })
+    const modDisplay = filtered.find((d) => d.node.attrs.label === 'Filter Mod')!
+    expect(modDisplay.children.map((c) => c.node.attrs.id)).toEqual(['vis:a'])
+    // quality leaf filtered out; noDisplay never in tree
+
+    let selected = createInitialSelection(fm, 'bg1')
+    selected = toggleDisplayNode(fm, selected, 'bg1', modDisplay, true)
+    expect(selected.has('vis:a')).toBe(true)
+    expect(selected.has('vis:b')).toBe(false)
+    expect(selected.has('hid:c')).toBe(false)
+    expect(displaySelectionState(modDisplay, selected, 'bg1')).toBe('checked')
+
+    // Unfiltered tree would still show vis:b unselected → indeterminate on full display
+    const fullDisplay = built.find((d) => d.node.attrs.label === 'Filter Mod')!
+    expect(displaySelectionState(fullDisplay, selected, 'bg1')).toBe('indeterminate')
   })
 
   it('collapses single visible child group', () => {

@@ -689,6 +689,7 @@
 				</banters>
 				<tweaks>
 					<component id="cd_tweaks_disable_romances" label="Disable Romances" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" />
 				</tweaks>
 			</npc>
 			<items>
@@ -1140,13 +1141,13 @@
 	</content>
 
 	<kits engine="bg,eet,iwd">
-		<add level="quality" noBranches="1">
+		<add label="New kits" level="quality" noBranches="1">
 			<component id="A7-CHAOSSORCERER-MAIN" label="The Chaos Sorcerer: A Wild Magic Kit for Sorcerers" modId="A7-ChaosSorcerer" />
 			<component id="ArtisansKitpack:20000" label="Eldritch Knight (Fighter / Mage Kit)" modId="The-Artisan-s-Kitpack" />
 			<component id="Morpheus562sKitpackShieldBreaker" label="Shield Breaker Fighter Kit" modId="morpheus562s-kitpack" />
 			<component id="ArtisansKitpack:9001" label="Warhorn Shaman Kit" modId="The-Artisan-s-Kitpack" />
 		</add>
-		<update level="quality">
+		<update label="Overhaul flawed kits" level="quality">
 			<component id="ArtisansKitpack:2012" label="Beast Master Overhaul" modId="The-Artisan-s-Kitpack" />
 			<component id="ArtisansKitpack:7008" label="Shadowdancer Overhaul" modId="The-Artisan-s-Kitpack" />
 			<component id="ArtisansKitpack:5100" label="Shapeshifter Overhaul" modId="The-Artisan-s-Kitpack" />
@@ -1289,13 +1290,11 @@
 	</spells>
 
 	<npcClassAdjustements desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
-		<group label="Make Xan a...">
-			<alternatives>
-				<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" />
-				<component id="xan:3" label="Sorcerer" modId="Xan_for_BGII" />
-			</alternatives>
-			<component id="ArtisansKitpack_npc:20002" label="Specialize Xan's class to Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000,(xan:1|xan:3)" />
-		</group>
+		<alternatives label="Make Xan a...">
+			<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" />
+			<component id="xan:3" label="Sorcerer" modId="Xan_for_BGII" />
+		</alternatives>
+		<component id="ArtisansKitpack_npc:20002" label="Specialize Xan's class to Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />
 		<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" />
 		<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" label="Make Clara a Bard" modId="A7-NoEENPCs" />
 		<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" label="Make Hexxat a Fighter/Assassin" modId="A7-NoEENPCs" />
@@ -1313,31 +1312,31 @@
 	</npcClassAdjustements>
 
 	<combat level="difficulty">
-		<tweaks>
-			<alternatives label="Remove backstabbing limits to make thiefs useful" modId="ZS_CanIStabYou-Mod">
-				<component id="ZS_CanIStabYou:99" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd"/>
-				<component id="ZS_CanIStabYou:106" label="Keep Reasonable backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd" level="blendWell" />
-			</alternatives>
-			<mod id="ZS_CanIStabYou-Mod" label="ZS_CanIStabYou" engine="bg,eet">
-				<component id="ZS_CanIStabYou:102" label="Humanoid ToB bosses can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-				<component id="ZS_CanIStabYou:103" label="Yaga-Shura can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-				<component id="ZS_CanIStabYou:113" label="Abazigal can be backstabbed (human form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-				<component id="ZS_CanIStabYou:114" label="Abazigal can be backstabbed (dragon form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-				<component id="ZS_CanIStabYou:100" label="Beholders can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd"/>
-				<component id="ZS_CanIStabYou:104" label="Minotaurs can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd"/>
-				<component id="ZS_CanIStabYou:201" label="All spectral creatures are immune to backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
-				<component id="ZS_CanIStabYou:205" label="All golems are immune to backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
-				<component id="ZS_CanIStabYou:300" label="Every creature marked as able to see through invisibility is automatically immune to backstabs (version 2.6+)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
-				<component id="ZS_CanIStabYou:302" label="Dragons cannot see through invisibility, except Abazigal" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
-				<component id="ZS_CanIStabYou:308" label="Sendai cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-				<component id="ZS_CanIStabYou:309" label="Balthazar cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-				<component id="ZS_CanIStabYou:310" label="Yaga-Shura cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-				<component id="ZS_CanIStabYou:311" label="Amelyssan cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-			</mod>
-			<component id="ForgottenArmament-CritImmunity2" label="Allow Difficult Enemies to Remain Immune to Critical Hits" modId="forgotten-armament" />
+		<alternatives label="Remove backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod">
+			<component id="ZS_CanIStabYou:99" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd"/>
+			<component id="ZS_CanIStabYou:106" label="Keep reasonable backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" default="1" engine="bg,eet,iwd" level="blendWell" />
+		</alternatives>
+		<mod id="ZS_CanIStabYou-Mod" label="ZS_CanIStabYou" engine="bg,eet">
+			<component id="ZS_CanIStabYou:102" label="Humanoid ToB bosses can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:103" label="Yaga-Shura can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:113" label="Abazigal can be backstabbed (human form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:114" label="Abazigal can be backstabbed (dragon form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:100" label="Beholders can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd"/>
+			<component id="ZS_CanIStabYou:104" label="Minotaurs can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd"/>
+			<component id="ZS_CanIStabYou:201" label="All spectral creatures are immune to backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:205" label="All golems are immune to backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:300" label="Every creature marked as able to see through invisibility is automatically immune to backstabs (version 2.6+)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:302" label="Dragons cannot see through invisibility, except Abazigal" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:308" label="Sendai cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:309" label="Balthazar cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:310" label="Yaga-Shura cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:311" label="Amelyssan cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+		</mod>
+		<component id="ForgottenArmament-CritImmunity2" label="Allow Difficult Enemies to Remain Immune to Critical Hits" modId="forgotten-armament" />
+		<tweaks label="Creature tweaks" noBranches="1">
 			<component id="HouseTweaks:20" label="Faster Troll Unconsciousness" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg,iwd,eet" />
 			<component id="METweaks:3150" label="Give Belhifet more reasonable immunities" level="vanillaPlus" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
-			<mod id="ZSTweaks" engine="bg,eet" noBranches="1">
+			<mod id="ZSTweaks" engine="bg,eet">
 				<component id="ZSTweaks:3030" label="Make celestial summons more powerful or balanced" level="blendWell" engine="bg2,eet" />
 				<component id="ZSTweaks:3050" label="Make the Balor's vorpal attack not guaranteed to succeed but affected by a saving throw" level="blendWell" engine="bg2,eet" />
 				<component id="ZSTweaks:3070" label="Make lions and other cat creatures not slow as molasses" level="fixes" />
@@ -1347,7 +1346,7 @@
 				<component id="ZSTweaks:3140" label="Make ogre / oni mages regenerating fiends, as per PnP" level="difficulty" engine="bg,iwd,eet" />
 			</mod>
 		</tweaks>
-		<ai>
+		<ai label="AI Enhancements / SwordCoastStratagems (SCS)">
 			<component id="METweaks:2400" label="Make enemies change their attack targets more quickly" level="difficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
 			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="iwd">
 				<component id="stratagems:6020" label="Smarter general AI and better calls for help" />
@@ -1432,7 +1431,7 @@
 	</combat>
 
 	<sounds level="vanillaPlus">
-		<group label="Additional voicesets available for the player">
+		<group label="Additional voicesets available for the player character">
 			<component id="ZG-VOICE-BG" label="Baldur's Gate Voice Pack" modId="Baldurs-Gate-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" />
 			<component id="ZG-VOICE-BG2" label="Baldur's Gate 2 Voice Pack" modId="Baldurs-Gate-II-Voice-Pack-for-EE-2.6" engine="bg1,iwd" />
 			<component id="ZG-VOICE-IWD" label="Icewind Dale Voice Pack" modId="Icewind-Dale-Voice-Pack-For-EE-2.6" engine="bg,eet" />
@@ -1441,8 +1440,8 @@
 		</group>
 		<component id="HouseTweaks:24" label="NPC Soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" />
 		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" label="High Quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" />
-		<component id="vveBG:0" label="Adds AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
-		<component id="vveSOD:0" label="Adds AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
+		<component id="vveBG:0" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
+		<component id="vveSOD:0" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
 		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet">
 			<alternatives label="Choose the way how she should be recasted">
 				<component id="jaheirarecast:0" label="Use new SoD Character Sounds" default="1" />
@@ -1472,7 +1471,7 @@
 	</sounds>
 
 	<portraits engine="bg,eet">
-		<group label="Original non-playable NPCs">
+		<group label="Original non-joinable NPCs">
 			<mod id="Portraits-Portraits-Everywhere" label="Portraits Portraits Everywhere (PPE)">
 				<component id="PPE:0" label="Portraits Portraits Everywhere (PPE)" engine="bg,eet,iwd" />
 				<component id="PPE:100" label="Category portraits - Sequenced" engine="bg,eet,iwd" alwaysIf="PPE:0" noDisplay="1" />
@@ -1489,10 +1488,10 @@
 			<component id="JasteysSolaufeinRescue-Give_Ust_Natha_Solaufein_Portrait" label="Give original Solaufein the Mod's Portrait" modId="Solaufeins_Rescue_NPC"  alwaysIf="JasteysSolaufeinRescue-Main" noDisplay="1" />
 			<component id="EET_Tweaks:1050" label="Add Portraits to Cameo NPCs from BG1" modId="EET_Tweaks" engine="bg2,eet" />
 		</group>
-		<group label="Original Playable NPCs">
+		<group label="Original joinable NPCs">
 			<component id="HPSPP-PartyNPCs" label="HPS: Add new portraits to original party NPCs" />
 			<component id="L#-VIC-REV-POR-4" label="Viconia - Alternative portrait" desc="BG1 with drow skin and hair" modId="viconia-revamped"/>
-			<mod id="EET_Tweaks" label="Choose consistent appearance">
+			<mod id="EET_Tweaks" label="Choose consistent appearance for returning NPCs">
 				<alternatives label="Edwin">
 					<component id="EET_Tweaks:1000" label="BG1" />
 					<component id="EET_Tweaks:1001" label="BG2" />
@@ -1520,39 +1519,39 @@
 			<component id="SisterVigilantes_Angelo-Portrait_cassinus_free_fr" label="Angelo - Alternative portrait" modId="Angelo" displayIf="SisterVigilantes_Angelo-main" engine="bg2,eet" />
 			<component id="candlekeep_revisited:3" label="Candlekeep Revisited - New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" displayIf="candlekeep_revisited:0" engine="bg1,eet" />
 			<mod id="HPS-Portraits-Project-1.0" label="Add new portraits" engine="bg,eet">
-				<component id="HPSPP-ModNpcsACQ" label="Add new portraits to NPCs from mod: Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and other stories" />
-				<component id="HPSPP-ModNpcsAdalonsBlood" label="Add new portraits to NPCs from mod: Adalon's Blood" />
-				<component id="HPSPP-ModNpcsAerieWings" label="Add new portraits to NPCs from mod: Aerie Wings" />
-				<component id="HPSPP-ModNpcsAerieBG1" label="Add new portraits to NPCs from mod: Aerie in Baldur's Gate: Enhanced Edition" />
-				<component id="HPSPP-ModNpcsAjantisBG2" label="Add new portraits to NPCs from mod: jastey's Sir Ajantis NPC for BGII modification" />
-				<component id="HPSPP-ModNpcsARestorationP" label="Add new portraits to NPCs from mod: Almateria's Restoration Project" />
-				<component id="HPSPP-ModNpcsAscension" label="Add new portraits to NPCs from mod: Ascension" />
-				<component id="HPSPP-ModNpcsAssassinations" label="Add new portraits to NPCs from mod: Assassinations MOD for Baldur's Gate II" />
-				<component id="HPSPP-ModNpcsBST" label="Add new portraits to NPCs from mod: Balduran's Seatower" />
-				<component id="HPSPP-ModNpcsBG1NPC" label="Add new portraits to NPCs from mod: The BG1NPC Project" />
-				<component id="HPSPP-ModNpcsBG1UB" label="Add new portraits to NPCs from mod: BG1 Unfinished Business" />
-				<component id="HPSPP-ModNpcsBGQE" label="Add new portraits to NPCs from mod: Baldur's Gate Mini Quests and Encounters Modification" />
-				<component id="HPSPP-ModNpcsGodCall" label="Add new portraits to NPCs from mod: Call Of The Lost Goddess" />
-				<component id="HPSPP-ModNpcsCandlekeepRevisited" label="Add new portraits to NPCs from mod: Candlekeep Revisited" />
-				<component id="HPSPP-ModNpcsCrucible" label="Add new portraits to NPCs from mod: Crucible" />
-				<component id="HPSPP-ModNpcsDarkTidings" label="Add new portraits to NPCs from mod: Dark Tidings" />
-				<component id="HPSPP-ModNpcsEilistraeesSong" label="Add new portraits to NPCs from mod: Eilistraee's Song" />
-				<component id="HPSPP-ModNpcsEndlessBG1" label="Add new portraits to NPCs from mod: Endless BG1 Mod" />
-				<component id="HPSPP-ModNpcsEEEE" label="Add new portraits to NPCs from mod: Extra Enhanced Expanded Encounters!" />
-				<component id="HPSPP-ModNpcsHiddenAdventures" label="Add new portraits to NPCs from mod: Hidden Adventures" />
-				<component id="HPSPP-ModNpcsImoen4Ever" label="Add new portraits to NPCs from mod: Imoen 4 Ever" />
-				<component id="HPSPP-ModNpcsJA-AdvPack" label="Add new portraits to NPCs from mod: Jarl's Adventure Pack" />
-				<component id="HPSPP-ModNpcsLoretakers" label="Add new portraits to NPCs from mod: Loretakers" />
-				<component id="HPSPP-ModNpcsSoDRtD" label="Add new portraits to NPCs from mod: Road to Discovery for SoD" />
-				<component id="HPSPP-ModNpcsREBG1" label="Add new portraits to NPCs from mod: Baldur's Gate Romantic Encounters Modification (BG1RE)" />
-				<component id="HPSPP-ModNpcsSotSC" label="Add new portraits to NPCs from mod: Shades of the Sword Coast" />
-				<component id="HPSPP-ModNpcsSharteelNPC" label="Add new portraits to NPCs from mod: Shar-Teel NPC" />
-				<component id="HPSPP-ModNpcsSkipChateauIrenicus" label="Add new portraits to NPCs from mod: Skip Chateau Irenicus" />
-				<component id="HPSPP-ModNpcsTangledOakIsle" label="Add new portraits to NPCs from mod: Athkatlan Grounds: The Tangled Oak Isle" />
-				<component id="HPSPP-ModNpcsTheCalling" label="Add new portraits to NPCs from mod: The Calling" />
-				<component id="HPSPP-ModNpcsTheVanishingOfSkieSilvershield" label="Add new portraits to NPCs from mod: The Vanishing of Skie Silvershield" />
+				<component id="HPSPP-ModNpcsACQ" label="Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and other stories" />
+				<component id="HPSPP-ModNpcsAdalonsBlood" label="Adalon's Blood" />
+				<component id="HPSPP-ModNpcsAerieWings" label="Aerie Wings" />
+				<component id="HPSPP-ModNpcsAerieBG1" label="Aerie in Baldur's Gate: Enhanced Edition" />
+				<component id="HPSPP-ModNpcsAjantisBG2" label="jastey's Sir Ajantis NPC for BGII modification" />
+				<component id="HPSPP-ModNpcsARestorationP" label="Almateria's Restoration Project" />
+				<component id="HPSPP-ModNpcsAscension" label="Ascension" />
+				<component id="HPSPP-ModNpcsAssassinations" label="Assassinations MOD for Baldur's Gate II" />
+				<component id="HPSPP-ModNpcsBST" label="Balduran's Seatower" />
+				<component id="HPSPP-ModNpcsBG1NPC" label="The BG1NPC Project" />
+				<component id="HPSPP-ModNpcsBG1UB" label="BG1 Unfinished Business" />
+				<component id="HPSPP-ModNpcsBGQE" label="Baldur's Gate Mini Quests and Encounters Modification" />
+				<component id="HPSPP-ModNpcsGodCall" label="Call Of The Lost Goddess" />
+				<component id="HPSPP-ModNpcsCandlekeepRevisited" label="Candlekeep Revisited" />
+				<component id="HPSPP-ModNpcsCrucible" label="Crucible" />
+				<component id="HPSPP-ModNpcsDarkTidings" label="Dark Tidings" />
+				<component id="HPSPP-ModNpcsEilistraeesSong" label="Eilistraee's Song" />
+				<component id="HPSPP-ModNpcsEndlessBG1" label="Endless BG1 Mod" />
+				<component id="HPSPP-ModNpcsEEEE" label="Extra Enhanced Expanded Encounters!" />
+				<component id="HPSPP-ModNpcsHiddenAdventures" label="Hidden Adventures" />
+				<component id="HPSPP-ModNpcsImoen4Ever" label="Imoen 4 Ever" />
+				<component id="HPSPP-ModNpcsJA-AdvPack" label="Jarl's Adventure Pack" />
+				<component id="HPSPP-ModNpcsLoretakers" label="Loretakers" />
+				<component id="HPSPP-ModNpcsSoDRtD" label="Road to Discovery for SoD" />
+				<component id="HPSPP-ModNpcsREBG1" label="Baldur's Gate Romantic Encounters Modification (BG1RE)" />
+				<component id="HPSPP-ModNpcsSotSC" label="Shades of the Sword Coast" />
+				<component id="HPSPP-ModNpcsSharteelNPC" label="Shar-Teel NPC" />
+				<component id="HPSPP-ModNpcsSkipChateauIrenicus" label="Skip Chateau Irenicus" />
+				<component id="HPSPP-ModNpcsTangledOakIsle" label="Athkatlan Grounds: The Tangled Oak Isle" />
+				<component id="HPSPP-ModNpcsTheCalling" label="The Calling" />
+				<component id="HPSPP-ModNpcsTheVanishingOfSkieSilvershield" label="The Vanishing of Skie Silvershield" />
 			</mod>
-			<alternatives>
+			<alternatives label="Choose the way to handle mods with existing portraits">
 				<mod id="HPS-Portraits-Project-1.0" label="Add new portraits and replace original">
 					<component id="HPSPP-ModNpcsBG2UB_opt1" label="Add portraits for all NPCs including replacing the original mod NPCs portraits" />
 					<component id="HPSPP-ModNpcsSolaufeinRescue_opt1" label="Add portraits for all NPCs including replacing Solaufein's portraits" />
@@ -1598,8 +1597,8 @@
 	<gfx engine="bg,iwd,eet" level="vanillaPlus">
 		<component id="cd_tweaks_weapon_animation_tweaks" label="Weapon Animation Tweaks" modId="Tweaks-Anthology" />
 		<component id="cd_tweaks_icon_improvements" label="Icon Improvements" desc="Uses a combination of BG, IWD, and BG2 icons to better differentiate armor when it is on the ground" modId="Tweaks-Anthology" />
-		<component id="cd_tweaks_unique_icons" label="Give the special items unique icons if they are not already unique" modId="Tweaks-Anthology" />
-		<component id="BG1_IPM_MainComponent" label="Give the quest items unique icons" modId="bg1_icons_pack_mod" engine="bg1,eet"/>
+		<component id="cd_tweaks_unique_icons" label="Unique icons for special items" modId="Tweaks-Anthology" />
+		<component id="BG1_IPM_MainComponent" label="Unique icons for the BG1 quest items" modId="bg1_icons_pack_mod" engine="bg1,eet"/>
 		<component id="ee_cosmetic_enhancements:0" label="BG Cosmetic Enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="bg,eet" />
 		<component id="ee_cosmetic_enhancements:1" label="IWD Cosmetic Enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="iwd,eet" />
 		<component id="cd_iwd_description_icons" label="Description Icons for IWD Items" modId="iwd_description_icons" engine="iwd" stability="beta" />
@@ -1607,7 +1606,6 @@
 			<component id="remastered_spell_icons:0" label="Core Component" core="1" />
 			<component id="remastered_spell_icons:1" label="Use IWD:EE Colors" desc="Green icons for summoning spells" />
 		</mod>
-		<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" />
 		<component id="cd_tweaks_static_pst_npc_portraits_status" label="Static Character Portraits" desc="With health and status changes visualization" engine="pst" modId="Tweaks-Anthology" />
 		<component id="A7_MISCTWEAKS_UPSCALED_PORTRAITS_PSTEE" label="Argent's Miscellaneous Tweaks - High-resolution character portraits" modId="A7-MiscTweaks" engine="pst" />
 	</gfx>
@@ -1756,61 +1754,57 @@
 		</tweaks>
 	</kits>
 
-	<randomisation>
-		<group label="Enemies" engine="bg,eet">
-			<alternatives>
-				<mod id="BGSpawn" label="BG1 Spawn System" engine="bg1,eet">
-					<component id="BGSpawn-Main" label="BGSpawn system based on levels and party members" core="1" />
-					<alternatives label="How often to chefo for respawn?">
-						<component id="BGSpawn-RespawnTime8Hours" label="8 hours (standard pnp rules)" default="1" />
-						<component id="BGSpawn-RespawnTime1Day" label="1 day" />
-					</alternatives>
-					<alternatives label="How sure a respawn should be?">
-						<component id="BGSpawn-SpawnProbability-100" label="100%" default="1" />
-						<component id="BGSpawn-SpawnProbability-75" label="75%" />
-						<component id="BGSpawn-SpawnProbability-50" label="50%" />
-						<component id="BGSpawn-SpawnProbability-25" label="25%" />
-					</alternatives>
-					<component id="BGSpawn-VampiricWolfLord" label="New Vampiric Wolf Lord" />
-					<component id="BGSpawn-RandomEncounters" label="Random encounters between areas" />
-				</mod>
-				<mod id="bg_enemy_randomizer" label="BG1/BG2 Enemy Randomiser" engine="bg,eet">
-					<component id="gaEnemyRando:1" label="Spawn Point Randomizer" engine="bg1"/>
-					<component id="gaEnemyRando:2" label="Spawn Point Randomizer" engine="bg2"/>
-					<component id="gaEnemyRando:3" label="Spawn Point Randomizer" engine="eet" />
-					<component id="gaEnemyRando:6" label="Rest Encounter Randomizer" engine="bg1"/>
-					<component id="gaEnemyRando:7" label="Rest Encounter Randomizer" engine="bg2"/>
-					<component id="gaEnemyRando:11" label="Rest Encounter Randomizer" engine="eet" />
-					<component id="gaEnemyRando:15" label="Set Creature Randomizer" engine="bg1"/>
-					<component id="gaEnemyRando:18" label="Set Creature Randomizer" engine="bg2"/>
-					<component id="gaEnemyRando:25" label="Set Creature Randomizer" engine="eet" />
-				</mod>
-			</alternatives>
-		</group>
-		<group label="Items">
-			<mod id="randomiser" engine="bg,eet">
-				<component id="randomiser:500" label="Randomly replace the WIS tome normally found in TotSC with one of the 6 available types" engine="bg1,eet"/>
-				<component id="randomiser:520" label="Kangaxx further sealed away" engine="bg2,eet" />
-				<component id="randomiser:530" label="Randomise scrolls" />
-				<component id="randomiser:540" label="Randomise the heads of the Flail of Ages" engine="bg2,eet" />
-				<component id="randomiser:560" label="More Spell Shield scrolls" engine="bg2,eet" />
-				<component id="randomiser:570" label="Randomise the appearance of cursed items" engine="bg1,eet" />
-				<alternatives>
-					<component id="randomiser:1100" label="Mode 1: Randomise at starting new game." desc="Less items can be randomized. If you leave the initial area before the termination sound (rat or squirell), some items will be lost" />
-					<component id="randomiser:1300" label="Mode 2: Randomise at mod installation." desc="More items can be randomized. If the randomized weapon are better, they are auto equipped by the enemies." />
+	<randomisation engine="bg,eet" level="difficulty">
+		<alternatives label="Enemies" unfolded="1">
+			<mod id="BGSpawn" label="BG1 Spawn System" engine="bg1,eet">
+				<component id="BGSpawn-Main" label="BGSpawn system based on levels and party members" core="1" />
+				<alternatives label="How often to check for respawn?">
+					<component id="BGSpawn-RespawnTime8Hours" label="8 hours (standard pnp rules)" default="1" />
+					<component id="BGSpawn-RespawnTime1Day" label="1 day" />
 				</alternatives>
-				<component id="randomiser:5005" label="Beholders have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:5015" label="Demi-liches have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:5025" label="Dragons have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:5035" label="Elementals have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:5045" label="Fiends have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:5055" label="Golems have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:5065" label="Master Brains have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:5075" label="Slimes have no items equipped" engine="bg1,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:5085" label="Trolls have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:10300" label="Prevent Watcher's Keep statues from disappearing" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" engine="bg2,eet" />
+				<alternatives label="How sure a respawn should be?">
+					<component id="BGSpawn-SpawnProbability-100" label="100%" default="1" />
+					<component id="BGSpawn-SpawnProbability-75" label="75%" />
+					<component id="BGSpawn-SpawnProbability-50" label="50%" />
+					<component id="BGSpawn-SpawnProbability-25" label="25%" />
+				</alternatives>
+				<component id="BGSpawn-VampiricWolfLord" label="New Vampiric Wolf Lord" />
+				<component id="BGSpawn-RandomEncounters" label="Random encounters between areas" />
 			</mod>
-		</group>
+			<mod id="bg_enemy_randomizer" label="BG1/BG2 Enemy Randomiser" engine="bg,eet">
+				<component id="gaEnemyRando:1" label="Spawn Point Randomizer" engine="bg1"/>
+				<component id="gaEnemyRando:2" label="Spawn Point Randomizer" engine="bg2"/>
+				<component id="gaEnemyRando:3" label="Spawn Point Randomizer" engine="eet" />
+				<component id="gaEnemyRando:6" label="Rest Encounter Randomizer" engine="bg1"/>
+				<component id="gaEnemyRando:7" label="Rest Encounter Randomizer" engine="bg2"/>
+				<component id="gaEnemyRando:11" label="Rest Encounter Randomizer" engine="eet" />
+				<component id="gaEnemyRando:15" label="Set Creature Randomizer" engine="bg1"/>
+				<component id="gaEnemyRando:18" label="Set Creature Randomizer" engine="bg2"/>
+				<component id="gaEnemyRando:25" label="Set Creature Randomizer" engine="eet" />
+			</mod>
+		</alternatives>
+		<mod id="randomiser" label="Items" engine="bg,eet" unfolded="1">
+			<component id="randomiser:500" label="Randomly replace the WIS tome normally found in TotSC with one of the 6 available types" engine="bg1,eet"/>
+			<component id="randomiser:520" label="Kangaxx further sealed away" engine="bg2,eet" />
+			<component id="randomiser:530" label="Randomise scrolls" />
+			<component id="randomiser:540" label="Randomise the heads of the Flail of Ages" engine="bg2,eet" />
+			<component id="randomiser:560" label="More Spell Shield scrolls" engine="bg2,eet" />
+			<component id="randomiser:570" label="Randomise the appearance of cursed items" engine="bg1,eet" />
+			<alternatives label="Randomisation mode">
+				<component id="randomiser:1100" label="Mode 1: Randomise at starting new game." desc="Less items can be randomized. If you leave the initial area before the termination sound (rat or squirell), some items will be lost" />
+				<component id="randomiser:1300" label="Mode 2: Randomise at mod installation." desc="More items can be randomized. If the randomized weapon are better, they are auto equipped by the enemies." />
+			</alternatives>
+			<component id="randomiser:5005" label="Beholders have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5015" label="Demi-liches have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5025" label="Dragons have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5035" label="Elementals have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5045" label="Fiends have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5055" label="Golems have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5065" label="Master Brains have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5075" label="Slimes have no items equipped" engine="bg1,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5085" label="Trolls have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:10300" label="Prevent Watcher's Keep statues from disappearing" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" engine="bg2,eet" />
+		</mod>
 	</randomisation>
 
 	<!-- 
@@ -1826,17 +1820,15 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 	<adjustements>
 		<group label="Experience limits">
 			<component id="cd_tweaks_remove_xp_cap" label="Remove total experience cap" modId="Tweaks-Anthology" />
-			<mod id="EET_Tweaks">
-				<alternatives label="Limit BG1 part XP">
-					<component id="EET_Tweaks:2011" label="161,000 (default)" modId="EET_Tweaks" />
-					<component id="EET_Tweaks:2012" label="500,000 (default for SoD)" modId="EET_Tweaks" />
-				</alternatives>
-				<component id="EET_Tweaks:2022" label="Limit SoD part XP to default 500,000" modId="EET_Tweaks" />
-				<alternatives label="Limit BG2 part XP">
-					<component id="EET_Tweaks:2031" label="2,950,000 (default)" modId="EET_Tweaks" />
-					<component id="EET_Tweaks:2032" label="8,000,000 (default for ToB)" modId="EET_Tweaks" />
-				</alternatives>
-			</mod>
+			<alternatives label="Limit XP in BG1" engine="eet">
+				<component id="EET_Tweaks:2011" label="161,000 (default)" modId="EET_Tweaks"/>
+				<component id="EET_Tweaks:2012" label="500,000 (default for SoD)" modId="EET_Tweaks" />
+			</alternatives>
+			<component id="EET_Tweaks:2022" label="Limit XP in SoD to default 500,000" modId="EET_Tweaks" engine="eet" />
+			<alternatives label="Limit XP in BG2" engine="bg2,eet">
+				<component id="EET_Tweaks:2031" label="2,950,000 (default)" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2032" label="8,000,000 (default for ToB)" modId="EET_Tweaks" />
+			</alternatives>
 		</group>	
 		<group label="Adjust received XP">
 			<alternatives label="XP for Traps, Spells, Lockpicking">

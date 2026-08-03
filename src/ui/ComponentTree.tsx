@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type MouseEvent } from 'react'
-import type { ComponentNode, TreeNode } from '../lib/xml/schema'
+import type { TreeNode } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
-import { nodeSelectionState } from '../lib/selection/selectionEngine'
+import { displaySelectionState } from '../lib/selection/selectionEngine'
 import type { SelectedGame } from '../lib/xml/schema'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import { stabilityBadgeLabel } from '../lib/selection/filterDisplayTree'
@@ -12,11 +12,7 @@ interface Props {
   game: SelectedGame
   focusedKey: string | null
   onFocus: (key: string) => void
-  onToggle: (
-    node: TreeNode,
-    collapsedComponent: ComponentNode | undefined,
-    wantSelected: boolean,
-  ) => void
+  onToggle: (display: DisplayNode, wantSelected: boolean) => void
 }
 
 const DEFAULT_FOLDED_TAGS = new Set(['mod', 'group', 'alternatives'])
@@ -56,7 +52,7 @@ function CheckboxRow({
   onToggleExpand: (key: string) => void
 }) {
   const { node, collapsedComponent, children } = display
-  const state = nodeSelectionState(node, selectedIds, game, collapsedComponent)
+  const state = displaySelectionState(display, selectedIds, game)
   const inputRef = useRef<HTMLInputElement>(null)
   const foldable = children.length > 0
   const expanded = foldable && expandedKeys.has(node.key)
@@ -114,7 +110,7 @@ function CheckboxRow({
             aria-label={label}
             onChange={(e) => {
               onFocus(node.key)
-              onToggle(node, collapsedComponent, e.target.checked)
+              onToggle(display, e.target.checked)
             }}
             onClick={(e) => e.stopPropagation()}
           />
