@@ -471,6 +471,34 @@ body {
   font-style: italic;
 }
 
+.detail-relations {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.detail-relation-list {
+  line-height: 1.45;
+}
+
+.detail-relation-link {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  cursor: pointer;
+  text-align: left;
+}
+
+.detail-relation-link:hover {
+  color: var(--ink);
+}
+
 .btn {
   background: var(--accent);
   color: #fff;

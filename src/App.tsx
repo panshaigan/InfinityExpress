@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import installSequenceXml from './data/InstallSequence.xml?raw'
 import { parseInstallSequence } from './lib/xml/parseInstallSequence'
 import {
@@ -16,6 +16,7 @@ import {
   displayTreeHasVisible,
   type DisplayNode,
 } from './lib/selection/visibility'
+import { buildRelationIndex } from './lib/selection/relations'
 import { downloadInstallOrder } from './lib/export/installOrder'
 import { StationNav } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
@@ -34,12 +35,28 @@ function findDisplayNode(nodes: DisplayNode[], key: string): DisplayNode | null 
   return null
 }
 
+function findDisplayByComponentId(
+  nodes: DisplayNode[],
+  componentId: string,
+): DisplayNode | null {
+  for (const n of nodes) {
+    if (n.collapsedComponent?.componentId === componentId) return n
+    if (n.node.kind === 'component' && n.node.componentId === componentId) return n
+    const found = findDisplayByComponentId(n.children, componentId)
+    if (found) return found
+  }
+  return null
+}
+
 export default function App() {
   const { model, warnings } = parsed
+  const relationIndex = useMemo(() => buildRelationIndex(model), [model])
   const [game, setGame] = useState<SelectedGame | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const [activeStation, setActiveStation] = useState<'engine' | StationId>('engine')
   const [focusedKey, setFocusedKey] = useState<string | null>(null)
+  const [focusedComponentId, setFocusedComponentId] = useState<string | null>(null)
+  const [pendingFocusId, setPendingFocusId] = useState<string | null>(null)
 
   const visibleStations = useMemo(() => {
     if (!game) return [] as StationId[]
@@ -63,28 +80,70 @@ export default function App() {
     return block?.roots.find((r) => r.attrs.desc)?.attrs.desc
   }, [activeStation, model.stations])
 
+  useEffect(() => {
+    if (!pendingFocusId) return
+    const found = findDisplayByComponentId(displayNodes, pendingFocusId)
+    if (found) {
+      setFocusedKey(found.node.key)
+      setFocusedComponentId(null)
+    }
+    setPendingFocusId(null)
+  }, [displayNodes, pendingFocusId])
+
   const focusedDisplay = useMemo(() => {
-    if (!focusedKey) return null
-    return findDisplayNode(displayNodes, focusedKey)
-  }, [displayNodes, focusedKey])
+    if (focusedKey) {
+      const fromTree = findDisplayNode(displayNodes, focusedKey)
+      if (fromTree) return fromTree
+    }
+    if (focusedComponentId) {
+      const component = model.componentsById.get(focusedComponentId)
+      if (component) {
+        return { node: component, children: [] } satisfies DisplayNode
+      }
+    }
+    return null
+  }, [displayNodes, focusedKey, focusedComponentId, model.componentsById])
 
   const showDetail = activeStation !== 'engine' && !!game
+
+  function clearFocus() {
+    setFocusedKey(null)
+    setFocusedComponentId(null)
+    setPendingFocusId(null)
+  }
 
   function chooseGame(next: SelectedGame) {
     setGame(next)
     setSelectedIds(createInitialSelection(model, next))
     setActiveStation('base')
-    setFocusedKey(null)
+    clearFocus()
   }
 
   function selectEngine() {
     setActiveStation('engine')
-    setFocusedKey(null)
+    clearFocus()
   }
 
   function selectStation(id: StationId) {
     setActiveStation(id)
+    clearFocus()
+  }
+
+  function onFocus(key: string) {
+    setFocusedKey(key)
+    setFocusedComponentId(null)
+    setPendingFocusId(null)
+  }
+
+  function onNavigateToComponent(componentId: string) {
+    const station = relationIndex.stationByComponentId.get(componentId)
+    if (!station) return
     setFocusedKey(null)
+    setFocusedComponentId(componentId)
+    setPendingFocusId(componentId)
+    if (activeStation !== station) {
+      setActiveStation(station)
+    }
   }
 
   function onToggle(
@@ -176,7 +235,7 @@ export default function App() {
                   selectedIds={selectedIds}
                   game={game}
                   focusedKey={focusedKey}
-                  onFocus={setFocusedKey}
+                  onFocus={onFocus}
                   onToggle={onToggle}
                 />
                 {warnings.length > 0 && (
@@ -197,7 +256,11 @@ export default function App() {
         {showDetail && (
           <aside className="detail-pane" aria-label="Component details">
             <div className="detail-pane-scroll">
-              <ComponentDetail display={focusedDisplay} model={model} />
+              <ComponentDetail
+                display={focusedDisplay}
+                model={model}
+                onNavigateToComponent={onNavigateToComponent}
+              />
             </div>
           </aside>
         )}

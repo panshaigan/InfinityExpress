@@ -182,7 +182,22 @@ Station list-pane heading uses `STATION_LABELS`. Under it, the first station roo
 
 ### Detail panel
 
-Clicking a tree row focuses it (highlight distinct from checkbox selection). The right detail panel shows label, badges, full `desc`, and metadata (Codename, linkable URL, Release, Version from `mods.csv` when resolvable; author, tags, component id). Descriptions are **not** inlined under tree rows.
+Clicking a tree row focuses it (highlight distinct from checkbox selection). The right detail panel shows label, badges, full `desc`, and metadata (Codename, linkable URL, Release, Version from `mods.csv` when resolvable; author, component id). Descriptions are **not** inlined under tree rows.
+
+**Attribute badges** (in addition to level / beta): `required`, `hidden` (`noDisplay`), `core`, `default`, and each comma-separated `tags` token.
+
+**Relation rows** (only when non-empty; flat label lists, no AND/OR structure):
+
+| Row | Source |
+| --- | --- |
+| Auto-included when | ids in this node’s `alwaysIf` |
+| Auto-includes | components whose `alwaysIf` mentions this id |
+| Shown when | ids in this node’s `displayIf` |
+| Unlocks | components whose `displayIf` mentions this id |
+| Hidden when | ids in this node’s `displayIfNot` |
+| Hides | components whose `displayIfNot` mentions this id |
+
+Related labels are clickable: switch to the target’s station when needed, focus the tree row if it is visible (including collapsed leaves). If the target is not in the display tree (e.g. `noDisplay`), the detail panel still shows that component from the model with no tree highlight.
 
 ### Level badges
 

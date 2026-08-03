@@ -92,11 +92,7 @@ export function evaluateCondition(
 
 const cache = new Map<string, ConditionAst | null>()
 
-export function evalConditionExpr(
-  expr: string | undefined,
-  selectedIds: ReadonlySet<string>,
-): boolean {
-  if (!expr?.trim()) return true
+function getCachedAst(expr: string): ConditionAst | null {
   let ast = cache.get(expr)
   if (ast === undefined) {
     try {
@@ -104,9 +100,45 @@ export function evalConditionExpr(
       cache.set(expr, ast)
     } catch {
       cache.set(expr, null)
-      return false
+      return null
     }
   }
+  return ast
+}
+
+/** Collect component ids referenced in a condition AST (flat, duplicates kept in walk order). */
+export function collectConditionIds(ast: ConditionAst): string[] {
+  const ids: string[] = []
+  function walk(node: ConditionAst) {
+    switch (node.type) {
+      case 'id':
+        ids.push(node.id)
+        break
+      case 'and':
+      case 'or':
+        walk(node.left)
+        walk(node.right)
+        break
+    }
+  }
+  walk(ast)
+  return ids
+}
+
+/** Parse expr (cached) and return referenced component ids; empty on missing/invalid. */
+export function collectConditionIdsFromExpr(expr: string | undefined): string[] {
+  if (!expr?.trim()) return []
+  const ast = getCachedAst(expr)
+  if (!ast) return []
+  return collectConditionIds(ast)
+}
+
+export function evalConditionExpr(
+  expr: string | undefined,
+  selectedIds: ReadonlySet<string>,
+): boolean {
+  if (!expr?.trim()) return true
+  const ast = getCachedAst(expr)
   if (ast === null) return false
   return evaluateCondition(ast, selectedIds)
 }
