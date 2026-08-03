@@ -40,6 +40,7 @@ import { StationNav } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
 import { ComponentTree } from './ui/ComponentTree'
 import { ComponentDetail } from './ui/ComponentDetail'
+import { ContentBranchNav } from './ui/ContentBranchNav'
 import { FiltersStrip } from './ui/FiltersStrip'
 import { LevelSelectStrip } from './ui/LevelSelectStrip'
 import './index.css'
@@ -76,6 +77,22 @@ function findDisplayByComponentId(
   return null
 }
 
+/** Path from a content main branch down to the node that owns `componentId`. */
+function findPathToComponent(
+  nodes: DisplayNode[],
+  componentId: string,
+  path: DisplayNode[] = [],
+): DisplayNode[] | null {
+  for (const n of nodes) {
+    const next = [...path, n]
+    if (n.collapsedComponent?.componentId === componentId) return next
+    if (n.node.kind === 'component' && n.node.componentId === componentId) return next
+    const found = findPathToComponent(n.children, componentId, next)
+    if (found) return found
+  }
+  return null
+}
+
 export default function App() {
   const { model, warnings } = parsed
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
@@ -95,6 +112,8 @@ export default function App() {
   )
   const [ladderPreset, setLadderPreset] = useState<LadderLevel | null>(null)
   const [difficultyPreset, setDifficultyPreset] = useState(false)
+  const [contentMainKey, setContentMainKey] = useState<string | null>(null)
+  const [contentSubKey, setContentSubKey] = useState<string | null>(null)
 
   const visibleStations = useMemo(() => {
     if (!game) return [] as StationId[]
@@ -129,15 +148,70 @@ export default function App() {
     return block?.roots.find((r) => r.attrs.desc)?.attrs.desc
   }, [activeStation, model.stations])
 
+  const isContentStation = activeStation === 'content'
+  const contentMainBranches = isContentStation ? displayNodes : []
+  const selectedMain = useMemo(() => {
+    if (!contentMainKey) return null
+    return contentMainBranches.find((b) => b.node.key === contentMainKey) ?? null
+  }, [contentMainBranches, contentMainKey])
+  const contentSubBranches = selectedMain?.children ?? []
+  const selectedSub = useMemo(() => {
+    if (!contentSubKey) return null
+    return contentSubBranches.find((b) => b.node.key === contentSubKey) ?? null
+  }, [contentSubBranches, contentSubKey])
+  const listNodes = isContentStation ? (selectedSub?.children ?? []) : displayNodes
+
+  useEffect(() => {
+    if (!isContentStation) return
+    const mainValid =
+      contentMainKey != null &&
+      contentMainBranches.some((b) => b.node.key === contentMainKey)
+    const main = mainValid
+      ? contentMainBranches.find((b) => b.node.key === contentMainKey)!
+      : contentMainBranches[0]
+    if (!main) {
+      if (contentMainKey != null) setContentMainKey(null)
+      if (contentSubKey != null) setContentSubKey(null)
+      return
+    }
+    if (!mainValid) {
+      setContentMainKey(main.node.key)
+      setContentSubKey(main.children[0]?.node.key ?? null)
+      return
+    }
+    const subValid =
+      contentSubKey != null &&
+      main.children.some((b) => b.node.key === contentSubKey)
+    if (!subValid) {
+      setContentSubKey(main.children[0]?.node.key ?? null)
+    }
+  }, [isContentStation, contentMainBranches, contentMainKey, contentSubKey])
+
   useEffect(() => {
     if (!pendingFocusId) return
+    if (isContentStation) {
+      const path = findPathToComponent(displayNodes, pendingFocusId)
+      if (path && path.length >= 2) {
+        setContentMainKey(path[0].node.key)
+        setContentSubKey(path[1].node.key)
+        setFocusedKey(path[path.length - 1].node.key)
+        setFocusedComponentId(null)
+      } else if (path && path.length === 1) {
+        setContentMainKey(path[0].node.key)
+        setContentSubKey(path[0].children[0]?.node.key ?? null)
+        setFocusedKey(path[0].node.key)
+        setFocusedComponentId(null)
+      }
+      setPendingFocusId(null)
+      return
+    }
     const found = findDisplayByComponentId(displayNodes, pendingFocusId)
     if (found) {
       setFocusedKey(found.node.key)
       setFocusedComponentId(null)
     }
     setPendingFocusId(null)
-  }, [displayNodes, pendingFocusId])
+  }, [displayNodes, pendingFocusId, isContentStation])
 
   const focusedDisplay = useMemo(() => {
     if (focusedKey) {
@@ -159,6 +233,18 @@ export default function App() {
     setFocusedKey(null)
     setFocusedComponentId(null)
     setPendingFocusId(null)
+  }
+
+  function selectContentMain(key: string) {
+    const main = contentMainBranches.find((b) => b.node.key === key)
+    setContentMainKey(key)
+    setContentSubKey(main?.children[0]?.node.key ?? null)
+    clearFocus()
+  }
+
+  function selectContentSub(key: string) {
+    setContentSubKey(key)
+    clearFocus()
   }
 
   function chooseGame(next: SelectedGame) {
@@ -286,11 +372,25 @@ export default function App() {
                 <p className="lede">
                   {stationDesc ?? 'Tick what you want on this stop. Switch stations anytime.'}
                 </p>
+                {isContentStation && (
+                  <ContentBranchNav
+                    mainBranches={contentMainBranches}
+                    subBranches={contentSubBranches}
+                    mainKey={contentMainKey}
+                    subKey={contentSubKey}
+                    onSelectMain={selectContentMain}
+                    onSelectSub={selectContentSub}
+                  />
+                )}
               </div>
               <div className="list-pane-scroll">
                 <ComponentTree
-                  key={activeStation}
-                  nodes={displayNodes}
+                  key={
+                    isContentStation
+                      ? `${activeStation}:${contentMainKey ?? ''}:${contentSubKey ?? ''}`
+                      : activeStation
+                  }
+                  nodes={listNodes}
                   selectedIds={selectedIds}
                   game={game}
                   focusedKey={focusedKey}

@@ -64,7 +64,7 @@ Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not i
 4. Each `<component id="…">` also gets:
    - `componentId`
    - `orderIndex` — monotonic counter in **document order** (used for export)
-5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Structural org tags (`add`, `update`, `tweaks`, `items`, …) reunite by tag; labeled buckets (`group`, `common`, …) reunite only when they share `sectionId`. Mods/components/alternatives are never folded. Export still uses each component’s original `orderIndex`.
+5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Structural org tags (`add`, `update`, `tweaks`, `items`, …) reunite by tag; labeled buckets (`group`, `restorations`, `restructure`, `common`, …) reunite only when they share `sectionId`. Mods/components/alternatives are never folded. Export still uses each component’s original `orderIndex`.
 6. **Content station remount (UI only, after fold):** depending on the selected game, commons are absorbed into a target bucket with the same sibling-fold rules (`npc`/`items`/`tweaks` reunite by tag). `sod` / `pst` stay top-level.
    - `bg1` → fold `universal-bg-content` + `universal-bg-iwd` into `bg1-content`
    - `bg2` → fold both commons into `bg2-content`
@@ -166,10 +166,10 @@ Every displayed container with children gets a fold control (chevron).
 
 | Tags | Default |
 | --- | --- |
-| `mod`, `group`, `alternatives` | **Folded** |
+| `mod`, `group`, `restorations`, `restructure`, `alternatives` | **Folded** |
 | All other containers (`bg1`, `tweaks`, `add`, …) | **Expanded** |
 
-Fold state is per station (tree remounts on station change). Checking the parent still works while folded.
+Fold state is per station (tree remounts on station change; Content also remounts when switching main/sub branch). Checking the parent still works while folded.
 
 ### App shell layout
 
@@ -218,6 +218,15 @@ When Hidden is Show or Only, `buildDisplayTree` is called with `includeHidden` s
 ### Station heading
 
 Station list-pane heading uses `STATION_LABELS`. Under it, the first station root with a `desc` attribute is shown as the lede. If none, a short generic fallback is used.
+
+### Content branch navigation
+
+On the Content station only, two button rows sit under the heading:
+
+1. **Main branches** — one button per top-level remapped content bucket (`bg1`, `sod`, `bg2`, `common`, …). Label from `label` attr, else the tag name.
+2. **Subbranches** — one button per direct child of the selected main branch (`restorations`, `restructure`, `quest`, `npc`, …). Same label rule; buttons are dynamic (e.g. SoD may omit `restorations`).
+
+The list shows **only the children** of the selected subbranch (no main/sub wrapper rows). First main and first subbranch autoselect when entering Content or when the current keys disappear after remap/filter. Relation links into Content also select the main/sub path that contains the target.
 
 ### Detail panel
 
@@ -390,7 +399,7 @@ Domain logic is kept in pure TypeScript under `src/lib/` so those features can w
 | Uncheck core | Whole mod cleared |
 | One visible child under a group | Only group row shown; check selects that child |
 | `noBranches` container | Components listed flat under it; nested mod/group rows omitted |
-| Fold chevron | `mod` / `group` / `alternatives` start folded; others expanded |
+| Fold chevron | `mod` / `group` / `restorations` / `restructure` / `alternatives` start folded; others expanded |
 | Station with `desc` | Desc shown under station heading in the list pane |
 | Focus a tree row | Detail panel shows desc / mod metadata (not inlined in the list) |
 | Level on component/container | Colored level badge next to label |

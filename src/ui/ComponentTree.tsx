@@ -15,7 +15,13 @@ interface Props {
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
 }
 
-const DEFAULT_FOLDED_TAGS = new Set(['mod', 'group', 'alternatives'])
+const DEFAULT_FOLDED_TAGS = new Set([
+  'mod',
+  'group',
+  'restorations',
+  'restructure',
+  'alternatives',
+])
 
 function isDefaultFolded(node: TreeNode): boolean {
   return DEFAULT_FOLDED_TAGS.has(node.tag)

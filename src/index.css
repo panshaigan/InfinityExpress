@@ -465,6 +465,46 @@ body {
   max-width: 42rem;
 }
 
+.branch-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.65rem;
+}
+
+.branch-nav-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.15rem;
+}
+
+.branch-nav-row button {
+  text-align: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: 2px solid transparent;
+  color: var(--ink);
+  padding: 0.3rem 0.55rem;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.branch-nav-row button:hover {
+  background: var(--accent-soft);
+}
+
+.branch-nav-row button.active {
+  border-color: transparent;
+  border-bottom-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
 .list-pane-scroll {
   flex: 1;
   min-height: 0;
