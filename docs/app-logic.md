@@ -167,7 +167,8 @@ Every displayed container with children gets a fold control (chevron).
 | Tags | Default |
 | --- | --- |
 | `mod`, `group`, `restorations`, `restructure`, `alternatives` | **Folded** |
-| All other containers (`bg1`, `tweaks`, `add`, …) | **Expanded** |
+| npc/items org folders: `expansions`, `romances`, `bioware`, `beamdog`, `custom`, `banters`, `tweaks`, `add`, `update`, `upgrade` | **Folded** |
+| All other containers (`bg1`, `npc`, `quest`, …) | **Expanded** |
 
 Fold state is per station (tree remounts on station change; Content also remounts when switching main/sub branch). Checking the parent still works while folded.
 
@@ -399,7 +400,7 @@ Domain logic is kept in pure TypeScript under `src/lib/` so those features can w
 | Uncheck core | Whole mod cleared |
 | One visible child under a group | Only group row shown; check selects that child |
 | `noBranches` container | Components listed flat under it; nested mod/group rows omitted |
-| Fold chevron | `mod` / `group` / `restorations` / `restructure` / `alternatives` start folded; others expanded |
+| Fold chevron | `mod` / `group` / `restorations` / `restructure` / `alternatives` and npc/items org folders (`expansions`, `romances`, `bioware`, `beamdog`, `custom`, `banters`, `tweaks`, `add`, `update`, `upgrade`) start folded; others expanded |
 | Station with `desc` | Desc shown under station heading in the list pane |
 | Focus a tree row | Detail panel shows desc / mod metadata (not inlined in the list) |
 | Level on component/container | Colored level badge next to label |

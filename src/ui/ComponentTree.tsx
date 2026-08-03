@@ -21,6 +21,16 @@ const DEFAULT_FOLDED_TAGS = new Set([
   'restorations',
   'restructure',
   'alternatives',
+  'expansions',
+  'romances',
+  'bioware',
+  'beamdog',
+  'custom',
+  'banters',
+  'tweaks',
+  'add',
+  'update',
+  'upgrade',
 ])
 
 function isDefaultFolded(node: TreeNode): boolean {

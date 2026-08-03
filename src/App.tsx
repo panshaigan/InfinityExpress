@@ -93,6 +93,14 @@ function findPathToComponent(
   return null
 }
 
+function preferredSub(main: DisplayNode, preferredTag: string | null): DisplayNode | null {
+  if (preferredTag) {
+    const match = main.children.find((c) => c.node.tag === preferredTag)
+    if (match) return match
+  }
+  return main.children[0] ?? null
+}
+
 export default function App() {
   const { model, warnings } = parsed
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
@@ -114,6 +122,7 @@ export default function App() {
   const [difficultyPreset, setDifficultyPreset] = useState(false)
   const [contentMainKey, setContentMainKey] = useState<string | null>(null)
   const [contentSubKey, setContentSubKey] = useState<string | null>(null)
+  const [contentSubTag, setContentSubTag] = useState<string | null>(null)
 
   const visibleStations = useMemo(() => {
     if (!game) return [] as StationId[]
@@ -175,17 +184,21 @@ export default function App() {
       return
     }
     if (!mainValid) {
+      const sub = preferredSub(main, contentSubTag)
       setContentMainKey(main.node.key)
-      setContentSubKey(main.children[0]?.node.key ?? null)
+      setContentSubKey(sub?.node.key ?? null)
+      if (!contentSubTag && sub) setContentSubTag(sub.node.tag)
       return
     }
     const subValid =
       contentSubKey != null &&
       main.children.some((b) => b.node.key === contentSubKey)
     if (!subValid) {
-      setContentSubKey(main.children[0]?.node.key ?? null)
+      const sub = preferredSub(main, contentSubTag)
+      setContentSubKey(sub?.node.key ?? null)
+      if (!contentSubTag && sub) setContentSubTag(sub.node.tag)
     }
-  }, [isContentStation, contentMainBranches, contentMainKey, contentSubKey])
+  }, [isContentStation, contentMainBranches, contentMainKey, contentSubKey, contentSubTag])
 
   useEffect(() => {
     if (!pendingFocusId) return
@@ -194,11 +207,14 @@ export default function App() {
       if (path && path.length >= 2) {
         setContentMainKey(path[0].node.key)
         setContentSubKey(path[1].node.key)
+        setContentSubTag(path[1].node.tag)
         setFocusedKey(path[path.length - 1].node.key)
         setFocusedComponentId(null)
       } else if (path && path.length === 1) {
+        const sub = preferredSub(path[0], contentSubTag)
         setContentMainKey(path[0].node.key)
-        setContentSubKey(path[0].children[0]?.node.key ?? null)
+        setContentSubKey(sub?.node.key ?? null)
+        if (!contentSubTag && sub) setContentSubTag(sub.node.tag)
         setFocusedKey(path[0].node.key)
         setFocusedComponentId(null)
       }
@@ -211,7 +227,7 @@ export default function App() {
       setFocusedComponentId(null)
     }
     setPendingFocusId(null)
-  }, [displayNodes, pendingFocusId, isContentStation])
+  }, [displayNodes, pendingFocusId, isContentStation, contentSubTag])
 
   const focusedDisplay = useMemo(() => {
     if (focusedKey) {
@@ -237,13 +253,16 @@ export default function App() {
 
   function selectContentMain(key: string) {
     const main = contentMainBranches.find((b) => b.node.key === key)
+    const sub = main ? preferredSub(main, contentSubTag) : null
     setContentMainKey(key)
-    setContentSubKey(main?.children[0]?.node.key ?? null)
+    setContentSubKey(sub?.node.key ?? null)
     clearFocus()
   }
 
   function selectContentSub(key: string) {
+    const sub = contentSubBranches.find((b) => b.node.key === key)
     setContentSubKey(key)
+    if (sub) setContentSubTag(sub.node.tag)
     clearFocus()
   }
 
