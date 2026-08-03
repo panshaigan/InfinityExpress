@@ -9,9 +9,11 @@ import {
   filterDisplayTree,
   normalizeStability,
   type FilterCriteria,
+  type FilterModContext,
 } from '../selection/filterDisplayTree'
 import type { DisplayNode } from '../selection/visibility'
-import type { ComponentNode, TreeNode } from '../xml/schema'
+import type { ComponentNode, InstallSequenceModel, TreeNode } from '../xml/schema'
+import type { ModInfo } from '../mods/loadMods'
 
 const ALL_TEST_TAGS = ['bigQuest', 'smallQuest']
 
@@ -278,5 +280,179 @@ describe('filterDisplayTree', () => {
     expect(out).toHaveLength(1)
     expect(out[0].node.attrs.label).toBe('g1')
     expect(ids(out)).toEqual(['a'])
+  })
+})
+
+describe('filterDisplayTree size and author', () => {
+  const AUTHOR_OPTIONS = ['Lava', 'Argent77']
+  const SIZE_BOUNDS = { min: 100, max: 1000 }
+
+  function modComponent(
+    id: string,
+    modId: string,
+    attrs: ComponentNode['attrs'] & { effectiveLevel?: string } = {},
+  ): DisplayNode {
+    return component(id, { ...attrs, modId, effectiveLevel: attrs.effectiveLevel ?? 'fixes' })
+  }
+
+  function modelFor(...nodes: ComponentNode[]): InstallSequenceModel {
+    const nodesByKey = new Map(nodes.map((n) => [n.key, n]))
+    return {
+      stations: [],
+      componentsById: new Map(nodes.map((n) => [n.componentId, n])),
+      componentsInOrder: nodes,
+      nodesByKey,
+    }
+  }
+
+  const modsByCodename = new Map<string, ModInfo>([
+    [
+      'small',
+      {
+        codename: 'small',
+        url: '',
+        release: '',
+        version: '',
+        sizeBytes: 100,
+        author: 'SoloDev',
+      },
+    ],
+    [
+      'mid',
+      {
+        codename: 'mid',
+        url: '',
+        release: '',
+        version: '',
+        sizeBytes: 500,
+        author: 'Lava',
+      },
+    ],
+    [
+      'big',
+      {
+        codename: 'big',
+        url: '',
+        release: '',
+        version: '',
+        sizeBytes: 1000,
+        author: 'Argent77',
+      },
+    ],
+  ])
+
+  const leaves = [
+    modComponent('s', 'small'),
+    modComponent('m', 'mid'),
+    modComponent('b', 'big'),
+    component('orphan', { label: 'No Mod', effectiveLevel: 'fixes' }),
+  ]
+  const sizeTree: DisplayNode[] = [group('g', leaves)]
+  const ctx: FilterModContext = {
+    model: modelFor(
+      ...leaves.map((d) => d.node as ComponentNode),
+    ),
+    modsByCodename,
+  }
+  const seed = { authorOptions: AUTHOR_OPTIONS, sizeBounds: SIZE_BOUNDS }
+
+  function sizeCriteria(partial: Partial<FilterCriteria> = {}): FilterCriteria {
+    return criteria({
+      sizeMinBytes: SIZE_BOUNDS.min,
+      sizeMaxBytes: SIZE_BOUNDS.max,
+      authors: new Set(AUTHOR_OPTIONS),
+      authorMode: 'include',
+      ...partial,
+    })
+  }
+
+  it('size range filters by bytes; full range keeps all with mods', () => {
+    expect(ids(filterDisplayTree(sizeTree, sizeCriteria(), ctx, seed))).toEqual([
+      's',
+      'm',
+      'b',
+      'orphan',
+    ])
+    expect(
+      ids(
+        filterDisplayTree(
+          sizeTree,
+          sizeCriteria({ sizeMinBytes: 400, sizeMaxBytes: 600 }),
+          ctx,
+          seed,
+        ),
+      ),
+    ).toEqual(['m'])
+  })
+
+  it('hides nodes without size when size range is narrowed', () => {
+    expect(
+      ids(
+        filterDisplayTree(
+          sizeTree,
+          sizeCriteria({ sizeMinBytes: 100, sizeMaxBytes: 1000 }),
+          ctx,
+          seed,
+        ),
+      ),
+    ).toEqual(['s', 'm', 'b', 'orphan'])
+    expect(
+      ids(
+        filterDisplayTree(
+          sizeTree,
+          sizeCriteria({ sizeMinBytes: 100, sizeMaxBytes: 999 }),
+          ctx,
+          seed,
+        ),
+      ),
+    ).toEqual(['s', 'm'])
+  })
+
+  it('author include: all selected is inactive (unlisted authors pass)', () => {
+    expect(
+      ids(filterDisplayTree(sizeTree, sizeCriteria(), ctx, seed)),
+    ).toEqual(['s', 'm', 'b', 'orphan'])
+  })
+
+  it('author include: partial selection keeps only selected authors', () => {
+    expect(
+      ids(
+        filterDisplayTree(
+          sizeTree,
+          sizeCriteria({ authors: new Set(['Lava']) }),
+          ctx,
+          seed,
+        ),
+      ),
+    ).toEqual(['m'])
+  })
+
+  it('author exclude: hides selected authors; unlisted pass', () => {
+    expect(
+      ids(
+        filterDisplayTree(
+          sizeTree,
+          sizeCriteria({
+            authorMode: 'exclude',
+            authors: new Set(['Lava']),
+          }),
+          ctx,
+          seed,
+        ),
+      ),
+    ).toEqual(['s', 'b', 'orphan'])
+  })
+
+  it('author exclude with empty selection is inactive', () => {
+    expect(
+      ids(
+        filterDisplayTree(
+          sizeTree,
+          sizeCriteria({ authorMode: 'exclude', authors: new Set() }),
+          ctx,
+          seed,
+        ),
+      ),
+    ).toEqual(['s', 'm', 'b', 'orphan'])
   })
 })

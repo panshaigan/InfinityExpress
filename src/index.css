@@ -318,6 +318,108 @@ body {
   color: var(--ink);
 }
 
+.filter-inline-action {
+  font-size: 0.75rem;
+  color: var(--accent);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0.35rem;
+  white-space: nowrap;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.filter-inline-action:hover {
+  color: var(--ink);
+}
+
+.filter-size {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: min(22rem, 100%);
+  flex: 1;
+  padding: 0.15rem 0.25rem 0.35rem;
+}
+
+.filter-size-labels {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.filter-size-bounds {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.filter-size-slider {
+  position: relative;
+  height: 1.5rem;
+}
+
+.filter-size-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.filter-size-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.filter-size-range::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.filter-size-range::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  pointer-events: auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  margin-top: -5px;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+
+.filter-size-range::-moz-range-thumb {
+  pointer-events: auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+
+.filter-size-range-max {
+  z-index: 1;
+}
+
 /* —— Body: list | detail —— */
 
 .workspace {

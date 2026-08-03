@@ -17,7 +17,11 @@ import {
   splitTags,
   stabilityBadgeLabel,
 } from '../lib/selection/filterDisplayTree'
-import { parseModsCsv, resolveModLookupKey } from '../lib/mods/loadMods'
+import {
+  formatBytes,
+  parseModsCsv,
+  resolveModLookupKey,
+} from '../lib/mods/loadMods'
 
 const modsByCodename = parseModsCsv(modsCsv)
 
@@ -90,7 +94,6 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
   const label = resolveLabel(node, collapsedComponent)
   const desc = node.attrs.desc ?? collapsedComponent?.attrs.desc
   const level = collapsedComponent?.effectiveLevel ?? node.effectiveLevel
-  const author = source.attrs.author ?? node.attrs.author
   const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
   const componentId = collapsedComponent
     ? collapsedComponent.componentId
@@ -157,12 +160,18 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
                 <dd>{mod.version}</dd>
               </>
             )}
-          </>
-        )}
-        {author && (
-          <>
-            <dt>Author</dt>
-            <dd>{author}</dd>
+            {mod?.sizeBytes != null && (
+              <>
+                <dt>Size</dt>
+                <dd>{formatBytes(mod.sizeBytes)}</dd>
+              </>
+            )}
+            {mod?.author && (
+              <>
+                <dt>Author</dt>
+                <dd>{mod.author}</dd>
+              </>
+            )}
           </>
         )}
         {componentId && (

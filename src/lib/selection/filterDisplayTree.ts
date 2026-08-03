@@ -1,5 +1,10 @@
 import { levelPassesFilter } from '../levels'
 import {
+  resolveModLookupKey,
+  type ModInfo,
+  type SizeBounds,
+} from '../mods/loadMods'
+import {
   isComponentNode,
   type InstallSequenceModel,
   type TreeNode,
@@ -10,6 +15,7 @@ import type { DisplayNode } from './visibility'
 export const STABILITY_RELEASED = 'released'
 
 export type TriFilterMode = 'show' | 'hide' | 'only'
+export type AuthorFilterMode = 'include' | 'exclude'
 
 export interface FilterCriteria {
   search: string
@@ -28,6 +34,23 @@ export interface FilterCriteria {
    * When true: only components with at least one allowed tag pass (untagged fail).
    */
   tagsOnlyChecked: boolean
+  /** Inclusive size range in bytes; null when catalog has no sizes. */
+  sizeMinBytes: number | null
+  sizeMaxBytes: number | null
+  /** Selected authors for include/exclude mode. */
+  authors: ReadonlySet<string>
+  authorMode: AuthorFilterMode
+}
+
+export interface FilterSeedOptions {
+  tagOptions?: string[]
+  authorOptions?: string[]
+  sizeBounds?: SizeBounds | null
+}
+
+export interface FilterModContext {
+  model: InstallSequenceModel
+  modsByCodename: ReadonlyMap<string, ModInfo>
 }
 
 export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
@@ -40,15 +63,28 @@ export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   stability: new Set([STABILITY_RELEASED]),
   tags: new Set(),
   tagsOnlyChecked: false,
+  sizeMinBytes: null,
+  sizeMaxBytes: null,
+  authors: new Set(),
+  authorMode: 'include',
 }
 
-/** Build default criteria with all discovered tags checked and Released-only stability. */
-export function createDefaultFilterCriteria(tagOptions: string[]): FilterCriteria {
+/** Build default criteria with all discovered tags/authors checked and Released-only stability. */
+export function createDefaultFilterCriteria(
+  tagOptions: string[] = [],
+  extras: Omit<FilterSeedOptions, 'tagOptions'> = {},
+): FilterCriteria {
+  const bounds = extras.sizeBounds ?? null
+  const authorOptions = extras.authorOptions ?? []
   return {
     ...DEFAULT_FILTER_CRITERIA,
     stability: new Set([STABILITY_RELEASED]),
     tags: new Set(tagOptions),
     tagsOnlyChecked: false,
+    sizeMinBytes: bounds?.min ?? null,
+    sizeMaxBytes: bounds?.max ?? null,
+    authors: new Set(authorOptions),
+    authorMode: 'include',
   }
 }
 
@@ -85,9 +121,36 @@ function setsEqual(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
   return true
 }
 
-/** True when criteria differ from the seeded defaults for the given tag options. */
-export function isFilterActive(criteria: FilterCriteria, tagOptions: string[]): boolean {
-  const defaults = createDefaultFilterCriteria(tagOptions)
+export function isSizeFilterActive(
+  criteria: FilterCriteria,
+  sizeBounds: SizeBounds | null | undefined,
+): boolean {
+  if (!sizeBounds) return false
+  if (criteria.sizeMinBytes == null || criteria.sizeMaxBytes == null) return false
+  return (
+    criteria.sizeMinBytes !== sizeBounds.min ||
+    criteria.sizeMaxBytes !== sizeBounds.max
+  )
+}
+
+export function isAuthorFilterActive(
+  criteria: FilterCriteria,
+  authorOptions: readonly string[],
+): boolean {
+  if (criteria.authorMode === 'exclude') {
+    return criteria.authors.size > 0
+  }
+  const all = new Set(authorOptions)
+  return !setsEqual(criteria.authors, all)
+}
+
+/** True when criteria differ from the seeded defaults for the given options. */
+export function isFilterActive(
+  criteria: FilterCriteria,
+  tagOptions: string[],
+  extras: Omit<FilterSeedOptions, 'tagOptions'> = {},
+): boolean {
+  const defaults = createDefaultFilterCriteria(tagOptions, extras)
   return (
     criteria.search.trim() !== '' ||
     criteria.maxLevel !== null ||
@@ -97,7 +160,9 @@ export function isFilterActive(criteria: FilterCriteria, tagOptions: string[]): 
     criteria.requiredMode !== defaults.requiredMode ||
     criteria.tagsOnlyChecked !== defaults.tagsOnlyChecked ||
     !setsEqual(criteria.stability, defaults.stability) ||
-    !setsEqual(criteria.tags, defaults.tags)
+    !setsEqual(criteria.tags, defaults.tags) ||
+    isSizeFilterActive(criteria, extras.sizeBounds ?? null) ||
+    isAuthorFilterActive(criteria, extras.authorOptions ?? [])
   )
 }
 
@@ -131,7 +196,49 @@ function tagsPass(
   return nodeTags.some((t) => allowed.has(t))
 }
 
-function leafMatchesCriteria(display: DisplayNode, criteria: FilterCriteria): boolean {
+function resolveMod(
+  display: DisplayNode,
+  ctx: FilterModContext | undefined,
+): ModInfo | undefined {
+  if (!ctx) return undefined
+  const source = displaySource(display)
+  const key = resolveModLookupKey(ctx.model, source)
+  if (!key) return undefined
+  return ctx.modsByCodename.get(key)
+}
+
+function sizePasses(
+  mod: ModInfo | undefined,
+  criteria: FilterCriteria,
+  sizeBounds: SizeBounds | null | undefined,
+): boolean {
+  if (!isSizeFilterActive(criteria, sizeBounds)) return true
+  if (mod?.sizeBytes == null) return false
+  const min = criteria.sizeMinBytes!
+  const max = criteria.sizeMaxBytes!
+  return mod.sizeBytes >= min && mod.sizeBytes <= max
+}
+
+function authorPasses(
+  mod: ModInfo | undefined,
+  criteria: FilterCriteria,
+  authorOptions: readonly string[],
+): boolean {
+  if (!isAuthorFilterActive(criteria, authorOptions)) return true
+  const author = mod?.author ?? ''
+  if (criteria.authorMode === 'exclude') {
+    return !author || !criteria.authors.has(author)
+  }
+  // include + partial selection
+  return Boolean(author) && criteria.authors.has(author)
+}
+
+function leafMatchesCriteria(
+  display: DisplayNode,
+  criteria: FilterCriteria,
+  ctx: FilterModContext | undefined,
+  seed: Omit<FilterSeedOptions, 'tagOptions'>,
+): boolean {
   const source = displaySource(display)
   const attrs = source.attrs
   const level =
@@ -163,6 +270,10 @@ function leafMatchesCriteria(display: DisplayNode, criteria: FilterCriteria): bo
     return false
   }
 
+  const mod = resolveMod(display, ctx)
+  if (!sizePasses(mod, criteria, seed.sizeBounds ?? null)) return false
+  if (!authorPasses(mod, criteria, seed.authorOptions ?? [])) return false
+
   const q = criteria.search.trim().toLowerCase()
   if (q) {
     const label = (
@@ -193,6 +304,8 @@ function leafMatchesCriteria(display: DisplayNode, criteria: FilterCriteria): bo
 export function filterDisplayTree(
   nodes: DisplayNode[],
   criteria: FilterCriteria,
+  ctx?: FilterModContext,
+  seed: Omit<FilterSeedOptions, 'tagOptions'> = {},
 ): DisplayNode[] {
   const result: DisplayNode[] = []
 
@@ -200,13 +313,13 @@ export function filterDisplayTree(
     const isLeaf = display.children.length === 0 || Boolean(display.collapsedComponent)
 
     if (isLeaf) {
-      if (leafMatchesCriteria(display, criteria)) {
+      if (leafMatchesCriteria(display, criteria, ctx, seed)) {
         result.push({ ...display, children: [] })
       }
       continue
     }
 
-    const filteredChildren = filterDisplayTree(display.children, criteria)
+    const filteredChildren = filterDisplayTree(display.children, criteria, ctx, seed)
     if (filteredChildren.length > 0) {
       result.push({ ...display, children: filteredChildren })
     }

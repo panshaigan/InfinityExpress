@@ -65,7 +65,6 @@ export interface NodeAttrs {
   default?: boolean
   core?: boolean
   stability?: string
-  author?: string
   noBranches?: boolean
   tags?: string
 }

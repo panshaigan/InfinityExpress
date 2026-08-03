@@ -47,7 +47,7 @@ InstallSequence.xml
    Export install-order.txt   ← selected ids, document order, first-id wins
 ```
 
-Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Release / Version. Downloading mods / WeiDU come later.
+Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Release / Version / Size / Author. Downloading mods / WeiDU come later.
 
 Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not internal tree keys.
 
@@ -172,7 +172,7 @@ Fixed-viewport desktop shell (`100vh`, page does not scroll):
 1. **Top bar** — brand, current engine badge, selection count, Export
 2. **Station tabs** — horizontal scrollable tabs (Engine first, then visible content stations)
 3. **Level selection strip** — mass-check presets by ladder max + independent Difficulty (writes `selectedIds`; independent of Filters)
-4. **Filters strip** — search plus Level / Stability / Tags / Hidden / Required controls (display-only; never clears selection)
+4. **Filters strip** — search plus Level / Stability / Tags / Size / Author / Hidden / Required controls (display-only; never clears selection)
 5. **Workspace** — dense component list (left) + detail panel (right). On the Engine station the detail column is hidden and the game picker uses full width
 
 List and detail panes scroll independently. Station `desc` is **not** shown in the tab bar.
@@ -198,6 +198,8 @@ Filters run **after** `buildDisplayTree` and only affect what is shown. Checked 
 | Level | Display filter only — pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Difficulty** ORs in `difficulty` (never part of the cumulative ladder). Missing `effectiveLevel` is excluded when a ladder filter is active. Does **not** mass-check selection. | All levels; Include Difficulty on |
 | Stability | Multi-select allow-list; **Released** = missing/`released`. Other values discovered from data (`beta`, `alpha`, …) | **Released** only |
 | Tags | Allow-list of discovered tags (checked = show that tag). Untagged always shown unless **Only checked tags** is on | all tags checked; Only checked tags off |
+| Size | Dual-handle range over `mods.csv` Size (bytes); human-readable labels. Inactive when spanning full catalog min/max. Nodes without a resolvable size are hidden when the range is narrowed | full catalog range |
+| Author | Checklist of authors with more than 2 mods in `mods.csv`, plus **Include selected** / **Exclude selected**. Include + all listed selected = inactive (unlisted authors still shown). Exclude + empty = inactive | all listed authors; Include |
 | Hidden | Show / Hide / Only for `noDisplay` | **Hide** |
 | Required | Show / Hide / Only for `required` | **Hide** |
 
@@ -213,7 +215,7 @@ Station list-pane heading uses `STATION_LABELS`. Under it, the first station roo
 
 ### Detail panel
 
-Clicking a tree row focuses it (highlight distinct from checkbox selection). The right detail panel shows label, badges, full `desc`, and metadata (Codename, linkable URL, Release, Version from `mods.csv` when resolvable; author, component id). Descriptions are **not** inlined under tree rows.
+Clicking a tree row focuses it (highlight distinct from checkbox selection). The right detail panel shows label, badges, full `desc`, and metadata (Codename, linkable URL, Release, Version, human-readable Size, Author from `mods.csv` when resolvable; component id). Descriptions are **not** inlined under tree rows.
 
 **Attribute badges** (in addition to level / non-released stability): `required`, `hidden` (`noDisplay`), `core`, `default`, and each comma-separated `tags` token.
 

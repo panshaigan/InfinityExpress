@@ -32,7 +32,6 @@ function readAttrs(el: Element): NodeAttrs {
     default: truthyAttr(el.getAttribute('default')),
     core: truthyAttr(el.getAttribute('core')),
     stability: g('stability'),
-    author: g('author'),
     noBranches: truthyAttr(el.getAttribute('noBranches')),
     tags: g('tags'),
   }

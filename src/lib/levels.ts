@@ -13,7 +13,7 @@ export type LadderLevel = (typeof LADDER_LEVELS)[number]
 export const LEVEL_LABELS: Record<string, string> = {
   fixes: 'Fixes',
   restoration: 'Restorations',
-  vanillaPlus: 'Vanilla+ (QoL)',
+  vanillaPlus: 'Vanilla+',
   blendWell: 'Well blended',
   restructure: 'Restructure',
   quality: 'Quality',
@@ -46,9 +46,9 @@ export function levelFilterRank(level: string | undefined): number | null {
 
 /**
  * Whether a node's effectiveLevel passes the level filter.
- * No ladder selection → everything passes (Difficulty toggle ignored).
+ * Difficulty only when `includeDifficulty` is on (even with no ladder max).
+ * No ladder selection → every non-difficulty level passes.
  * Missing level fails when a ladder filter is active (treated as above the ladder).
- * Difficulty only when `includeDifficulty` is on.
  */
 export function levelPassesFilter(
   level: string | undefined,
@@ -56,9 +56,9 @@ export function levelPassesFilter(
   exact: boolean,
   includeDifficulty: boolean,
 ): boolean {
+  if (level === 'difficulty') return includeDifficulty
   if (maxLevel === null) return true
   if (!level) return false
-  if (level === 'difficulty') return includeDifficulty
 
   const nodeRank = levelFilterRank(level)
   if (nodeRank === null) return false

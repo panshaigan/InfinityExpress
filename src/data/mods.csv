@@ -1,17 +1,17 @@
 "Codename","Category","URL","Game","UseMaster","UseAssets","Release","Version","Size","Author"
 "tactics-remix","AI","https://www.morpheus-mart.com/tactics-remix","BG1-BG2-IWD",,,"2026-04-07","7.3","1000808525","Morpheus562"
-"skills-and-abilities","TWEAKS","https://www.morpheus-mart.com/skills-and-abilities","BG1-BG2-IWD",,,"2026-04-07","5.2","2083974","Morpheus563"
-"morpheus562s-kitpack","KITS","https://www.morpheus-mart.com/morpheus562s-kitpack","BG1-BG2-IWD",,,"2026-03-15","5.9","980523","Morpheus564"
-"forgotten-armament","ITEMS","https://www.morpheus-mart.com/forgotten-armament","BG1-BG2-IWD",,,"2026-03-15","6.0","1636005","Morpheus565"
-"fight-the-heavens","QUEST","https://www.morpheus-mart.com/fight-the-heavens","BG2",,,"2025-10-11","v1.2","11472","Morpheus566"
-"enhanced-powergaming-scripts","AI","https://www.morpheus-mart.com/enhanced-powergaming-scripts","BG1-BG2-IWD",,,"2026-07-26","17.1","8684728","Morpheus567"
-"crucible","QUEST","https://www.morpheus-mart.com/crucible","BG2",,,"2026-03-15","5.0","495576570","Morpheus568"
-"continuous-npcs","NPC","https://www.morpheus-mart.com/continuous-npcs","BG1-BG2",,,"2026-06-25","2.0","456861","Morpheus569"
+"skills-and-abilities","TWEAKS","https://www.morpheus-mart.com/skills-and-abilities","BG1-BG2-IWD",,,"2026-04-07","5.2","2083974","Morpheus562"
+"morpheus562s-kitpack","KITS","https://www.morpheus-mart.com/morpheus562s-kitpack","BG1-BG2-IWD",,,"2026-03-15","5.9","980523","Morpheus562"
+"forgotten-armament","ITEMS","https://www.morpheus-mart.com/forgotten-armament","BG1-BG2-IWD",,,"2026-03-15","6.0","1636005","Morpheus562"
+"fight-the-heavens","QUEST","https://www.morpheus-mart.com/fight-the-heavens","BG2",,,"2025-10-11","v1.2","11472","Morpheus562"
+"enhanced-powergaming-scripts","AI","https://www.morpheus-mart.com/enhanced-powergaming-scripts","BG1-BG2-IWD",,,"2026-07-26","17.1","8684728","Morpheus562"
+"crucible","QUEST","https://www.morpheus-mart.com/crucible","BG2",,,"2026-03-15","5.0","495576570","Morpheus562"
+"continuous-npcs","NPC","https://www.morpheus-mart.com/continuous-npcs","BG1-BG2",,,"2026-06-25","2.0","456861","Morpheus562"
 "XGTCumulativeCasterLevels","TWEAKS","https://github.com/Xgatt/XGTCumulativeCasterLevels","BG1-BG2-IWD",,,"2026-05-08","0.6b","1408594","Xgatt"
 "DialogueChoiceAdditions","TWEAKS","https://github.com/virginviolet/DialogueChoiceAdditions","BG1-BG2",,,"2026-05-21","v1.4.0","1785912","VioletSister"
 "TomeAndBlood","KITS","https://github.com/UnearthedArcana/TomeAndBlood","BG1-BG2-IWD",,,"2025-03-19","1.4","4477571","aquadrizzt"
-"LivingClara","NPC-EXPANSION","https://github.com/trow/LivingClara","BG2",,,"2026-07-26","v1.2.0","10926099",
-"Bg2Dorn","NPC","https://github.com/trinit2/Bg2Dorn","BG2",,,"2022-05-01","ece4aad","6595920",
+"LivingClara","NPC-EXPANSION","https://github.com/trow/LivingClara","BG2",,,"2026-07-26","v1.2.0","10926099","MephistoSatanDevil"
+"Bg2Dorn","NPC","https://github.com/trinit2/Bg2Dorn","BG2",,,"2022-05-01","ece4aad","6595920","trinit"
 "gorgon","QUEST","https://github.com/TotalMilk90/gorgon","BG1",,,"2024-09-28","v4.8","29290545","TotalMilk90"
 "BGEE-Graphics-Enhanced","GFX","https://github.com/TheForgotten69/BGEE-Graphics-Enhanced","BG1",,,"2025-09-29","v0.2.0","1871378741","TheForgotten69"
 "The-Artisan-s-Kitpack","KITS","https://github.com/TheArtisanBG/The-Artisan-s-Kitpack","BG1-BG2-IWD","1",,"2026-05-31","85928f9","117706558","TheArtisan"
@@ -29,60 +29,60 @@
 "Candlekeep-Revisited","QUEST","https://github.com/TheArtisanBG/Candlekeep-Revisited","BG1",,,"2026-04-07","97bb6d3","7973031","TheArtisan"
 "Bardic-Wonders","KITS","https://github.com/TheArtisanBG/Bardic-Wonders","BG1-BG2-IWD","1",,"2026-05-31","4e72d97","32833478","TheArtisan"
 "Artisans-Shaman-Tweaks","TWEAKS","https://github.com/TheArtisanBG/Artisans-Shaman-Tweaks","BG1-BG2-IWD","1",,"2024-07-17","a442c97","1179864","TheArtisan"
-"NeeraBanters","NPC","https://github.com/The-Gate-Project/NeeraBanters","BG1",,,"2024-11-19","v0.9.3","4540570",
-"JaheiraRecast","SOUND","https://github.com/The-Gate-Project/JaheiraRecast","BG1-BG2",,,"2024-07-09","3.2","11831987",
-"IWD2_EET","QUEST","https://github.com/The-Gate-Project/IWD2_EET","BG2",,,"2026-05-09","57a934b","1345415086",
-"IWD1_EET","QUEST","https://github.com/The-Gate-Project/IWD1_EET","BG1",,,"2026-07-12","59d7185","1487005772",
-"IWD_EET_End","QUEST","https://github.com/The-Gate-Project/IWD_EET_End","BG1-BG2",,,"2025-08-15","ae5728f","9507205",
-"HoW_EET","QUEST","https://github.com/The-Gate-Project/HoW_EET","BG1-BG2",,,"2026-05-07","d83619a","302629798",
-"Garrick_Tales-of-a-Troubadour","NPC","https://github.com/The-Gate-Project/Garrick_Tales-of-a-Troubadour","BG1",,,"2025-12-24","v1.28","7017447",
-"ChattyImoen","NPC-EXPANSION","https://github.com/The-Gate-Project/ChattyImoen","BG1",,,"2023-11-21","v1.5","8031401",
-"Alora-NPC-for-BG2","NPC","https://github.com/The-Gate-Project/Alora-NPC-for-BG2","BG2",,,"2025-10-06","v2.1","14141985",
-"AerieBG1","NPC","https://github.com/The-Gate-Project/AerieBG1","BG1",,,"2023-11-22","v2.5","14394511",
-"ZSTweaks","TWEAKS","https://github.com/szaumoor/ZSTweaks","BG1-BG2-IWD",,,"2026-04-04","1.6.9","5480157",
-"ZS_ShadowdancerOverhaul","KITS","https://github.com/szaumoor/ZS_ShadowdancerOverhaul","BG1-BG2-IWD",,,"2026-07-26","1.3.0a","10536228",
-"ZS_CanIStabYou-Mod","TWEAKS","https://github.com/szaumoor/ZS_CanIStabYou-Mod","BG1-BG2-IWD",,,"2026-03-20","1.0.8","1257741",
-"mkhiinbg2","NPC","https://github.com/szaumoor/mkhiinbg2","BG2",,,"2025-08-05","9531db2","23401903",
+"NeeraBanters","NPC","https://github.com/The-Gate-Project/NeeraBanters","BG1",,,"2024-11-19","v0.9.3","4540570","AstroBryGuy"
+"JaheiraRecast","SOUND","https://github.com/The-Gate-Project/JaheiraRecast","BG1-BG2",,,"2024-07-09","3.2","11831987","AstroBryGuy"
+"IWD2_EET","QUEST","https://github.com/The-Gate-Project/IWD2_EET","BG2",,,"2026-05-09","57a934b","1345415086","tipun"
+"IWD1_EET","QUEST","https://github.com/The-Gate-Project/IWD1_EET","BG1",,,"2026-07-12","59d7185","1487005772","tipun"
+"IWD_EET_End","QUEST","https://github.com/The-Gate-Project/IWD_EET_End","BG1-BG2",,,"2025-08-15","ae5728f","9507205","tipun"
+"HoW_EET","QUEST","https://github.com/The-Gate-Project/HoW_EET","BG1-BG2",,,"2026-05-07","d83619a","302629798","tipun"
+"Garrick_Tales-of-a-Troubadour","NPC","https://github.com/The-Gate-Project/Garrick_Tales-of-a-Troubadour","BG1",,,"2025-12-24","v1.28","7017447","mirandir"
+"ChattyImoen","NPC-EXPANSION","https://github.com/The-Gate-Project/ChattyImoen","BG1",,,"2023-11-21","v1.5","8031401","AstroBryGuy"
+"Alora-NPC-for-BG2","NPC","https://github.com/The-Gate-Project/Alora-NPC-for-BG2","BG2",,,"2025-10-06","v2.1","14141985","Raven"
+"AerieBG1","NPC","https://github.com/The-Gate-Project/AerieBG1","BG1",,,"2023-11-22","v2.5","14394511","Coutelier"
+"ZSTweaks","TWEAKS","https://github.com/szaumoor/ZSTweaks","BG1-BG2-IWD",,,"2026-04-04","1.6.9","5480157","Kaelyn"
+"ZS_ShadowdancerOverhaul","KITS","https://github.com/szaumoor/ZS_ShadowdancerOverhaul","BG1-BG2-IWD",,,"2026-07-26","1.3.0a","10536228","Kaelyn"
+"ZS_CanIStabYou-Mod","TWEAKS","https://github.com/szaumoor/ZS_CanIStabYou-Mod","BG1-BG2-IWD",,,"2026-03-20","1.0.8","1257741","Kaelyn"
+"mkhiinbg2","NPC","https://github.com/szaumoor/mkhiinbg2","BG2",,,"2025-08-05","9531db2","23401903","Kaelyn"
 "SubtleD_Stat_Overhauls","TWEAKS","https://github.com/subtledoctor/SubtleD_Stat_Overhauls","BG1-BG2-IWD",,,"2025-02-22","1.8","2982784","subtledoctor"
 "SubtleD_Spell_Tweaks","TWEAKS","https://github.com/subtledoctor/SubtleD_Spell_Tweaks","BG1-BG2-IWD",,,"2025-10-03","2.9.1","3173675","subtledoctor"
 "SubtleD_Item_Tweaks","TWEAKS","https://github.com/subtledoctor/SubtleD_Item_Tweaks","BG1-BG2-IWD",,,"2025-10-22","1.5","2736160","subtledoctor"
 "Reflections-of-Destiny","QUEST","https://github.com/subtledoctor/Reflections-of-Destiny","BG1",,,"2025-03-18","0.9","2532953","subtledoctor"
 "Combat_Skill_Proficiencies","TWEAKS","https://github.com/subtledoctor/Combat_Skill_Proficiencies","BG1-BG2-IWD",,,"2025-09-20","1.5.2","2942601","subtledoctor"
-"Yoshimo-Friendship","NPC","https://github.com/Spellhold-Studios/Yoshimo-Friendship","BG2",,,"2024-12-15","v5.0","2916682",
-"Yeslick-NPC","NPC","https://github.com/Spellhold-Studios/Yeslick-NPC","BG2",,,"2024-12-15","v5.0","8828591",
-"Viconia-Friendship","NPC-EXPANSION","https://github.com/Spellhold-Studios/Viconia-Friendship","B2",,,"2024-12-15","v4.5","1632470",
-"Valygar-Friendship","NPC","https://github.com/Spellhold-Studios/Valygar-Friendship","BG2",,,"2024-12-15","v1.5","2949936",
-"Valerie-NPC","NPC","https://github.com/Spellhold-Studios/Valerie-NPC","BG1",,,"2024-12-15","v1.2","3653810",
-"Stuff-of-the-Magi","ITEMS","https://github.com/Spellhold-Studios/Stuff-of-the-Magi","BG2",,,"2024-12-15","v6.0.0","3124025",
-"Sarevok-Romance","NPC","https://github.com/Spellhold-Studios/Sarevok-Romance","BG2",,,"2025-09-18","v1.4","2093514",
-"Sarevok-Friendship","NPC","https://github.com/Spellhold-Studios/Sarevok-Friendship","BG2",,,"2024-12-15","v2.7","1416144",
-"Saradas-Magic-BG2","NPC","https://github.com/Spellhold-Studios/Saradas-Magic-BG2","BG2",,,"2024-12-15","v2.0.0","4468845",
-"Neera-Expansion","NPC","https://github.com/Spellhold-Studios/Neera-Expansion","BG1",,,"2024-12-15","v1.3.1","504029",
-"Minsc-Friendship","NPC","https://github.com/Spellhold-Studios/Minsc-Friendship","BG2",,,"2024-12-15","v1.3","2961151",
-"Mazzy-Friendship","NPC","https://github.com/Spellhold-Studios/Mazzy-Friendship","BG2",,,"2024-12-15","v3.5","1505534",
-"Korgan-Redemption","NPC","https://github.com/Spellhold-Studios/Korgan-Redemption","BG2",,,"2024-12-15","v10.0.1","1220938",
-"Korgan-Friendship","NPC","https://github.com/Spellhold-Studios/Korgan-Friendship","BG2",,,"2024-12-15","v1.6","1399887",
-"Jaheira-Friendship","NPC","https://github.com/Spellhold-Studios/Jaheira-Friendship","BG2",,,"2024-12-10","v1.3","1562669",
-"Isra-NPC-BG2","NPC","https://github.com/Spellhold-Studios/Isra-NPC-BG2","BG2",,,"2024-12-15","v3.1","15741202",
-"Isra-NPC","NPC","https://github.com/Spellhold-Studios/Isra-NPC","BG1",,,"2024-12-15","v3.5","10116626",
-"Infinity-Sounds","SOUND","https://github.com/Spellhold-Studios/Infinity-Sounds","BG1-BG2-IWD",,,"2025-07-09","v2.2","43478952",
-"Imoen-Friendship","NPC-EXPANSION","https://github.com/Spellhold-Studios/Imoen-Friendship","BG2",,,"2024-12-15","v3.6","2790412",
-"IEP-Extended-Banters","NPC-RELATED","https://github.com/Spellhold-Studios/IEP-Extended-Banters","BG2",,,"2024-12-15","v5.9","3390458",
-"Icewind-Dale-Graphical-Overhaul","GFX","https://github.com/Spellhold-Studios/Icewind-Dale-Graphical-Overhaul","IWD",,,"2026-03-22","v1,1","492732782",
-"Hexxat-Friendship","NPC","https://github.com/Spellhold-Studios/Hexxat-Friendship","BG2",,,"2024-07-15","v1.2","165581",
-"HaerDalis-Swords","ITEMS","https://github.com/Spellhold-Studios/HaerDalis-Swords","BG2",,,"2024-12-15","v3.1.0","2701377",
-"HaerDalis-Friendship","NPC","https://github.com/Spellhold-Studios/HaerDalis-Friendship","BG2",,,"2024-12-15","v1.2","2877935",
-"Fade-NPC","NPC","https://github.com/Spellhold-Studios/Fade-NPC","BG2",,,"2020-08-03","v5.6","13684631",
-"Expanded-Thief-Stronghold","QUEST","https://github.com/Spellhold-Studios/Expanded-Thief-Stronghold","BG2",,,"2024-12-15","v3.0.0","10006423",
-"Edwin-Romance","NPC","https://github.com/Spellhold-Studios/Edwin-Romance","BG2",,,"2023-12-04","v4.0","19413830",
-"Dorn-Friendship","NPC","https://github.com/Spellhold-Studios/Dorn-Friendship","BG2",,,"2026-01-22","v1.2","221183",
-"Cernd-Friendship","NPC","https://github.com/Spellhold-Studios/Cernd-Friendship","BG2",,,"2024-12-15","v1.4","1348848",
-"BGSpawn","TWEAKS","https://github.com/Spellhold-Studios/BGSpawn","BG1",,,"2025-05-19","1.3.4","144700643",
-"Baldurs-Gate-Graphical-Overhaul","GFX","https://github.com/Spellhold-Studios/Baldurs-Gate-Graphical-Overhaul","BG1-BG2",,,"2026-03-21","v3.6","1554582660",
-"Arnel-Nalia-Romance-Revision","NPC-EXPANSION","https://github.com/Spellhold-Studios/Arnel-Nalia-Romance-Revision","BG2",,,"2024-12-15","v2.0.0","3091834",
-"Almateria-Restoration-Project","QUEST","https://github.com/Spellhold-Studios/Almateria-Restoration-Project","BG2",,,"2024-12-03","v10.1","1830679",
-"Adrian-NPC","NPC","https://github.com/Spellhold-Studios/Adrian-NPC","BG2",,,"2023-06-15","v6.1","15071512",
-"AC-Miscellaneous-Tweaks","TWEAKS/GFX","https://github.com/Spellhold-Studios/AC-Miscellaneous-Tweaks","BG1-BG2",,,"2024-02-02","v1.25","48009673",
+"Yoshimo-Friendship","NPC","https://github.com/Spellhold-Studios/Yoshimo-Friendship","BG2",,,"2024-12-15","v5.0","2916682","Shadowhawke "
+"Yeslick-NPC","NPC","https://github.com/Spellhold-Studios/Yeslick-NPC","BG2",,,"2024-12-15","v5.0","8828591","Pixel Kaiser, Kaeloree, Lava"
+"Viconia-Friendship","NPC-EXPANSION","https://github.com/Spellhold-Studios/Viconia-Friendship","B2",,,"2024-12-15","v4.5","1632470","Kaeloree"
+"Valygar-Friendship","NPC","https://github.com/Spellhold-Studios/Valygar-Friendship","BG2",,,"2024-12-15","v1.5","2949936","Lava"
+"Valerie-NPC","NPC","https://github.com/Spellhold-Studios/Valerie-NPC","BG1",,,"2024-12-15","v1.2","3653810","Tempest "
+"Stuff-of-the-Magi","ITEMS","https://github.com/Spellhold-Studios/Stuff-of-the-Magi","BG2",,,"2024-12-15","v6.0.0","3124025","Victor Straffe "
+"Sarevok-Romance","NPC","https://github.com/Spellhold-Studios/Sarevok-Romance","BG2",,,"2025-09-18","v1.4","2093514","Aeryn"
+"Sarevok-Friendship","NPC","https://github.com/Spellhold-Studios/Sarevok-Friendship","BG2",,,"2024-12-15","v2.7","1416144","Aeryn"
+"Saradas-Magic-BG2","NPC","https://github.com/Spellhold-Studios/Saradas-Magic-BG2","BG2",,,"2024-12-15","v2.0.0","4468845","Saradas"
+"Neera-Expansion","NPC","https://github.com/Spellhold-Studios/Neera-Expansion","BG1",,,"2024-12-15","v1.3.1","504029","Kaeloree"
+"Minsc-Friendship","NPC","https://github.com/Spellhold-Studios/Minsc-Friendship","BG2",,,"2024-12-15","v1.3","2961151","Kaeloree, Lava, TheArtisan"
+"Mazzy-Friendship","NPC","https://github.com/Spellhold-Studios/Mazzy-Friendship","BG2",,,"2024-12-15","v3.5","1505534","Lava, Kaeloree, TheArtisan"
+"Korgan-Redemption","NPC","https://github.com/Spellhold-Studios/Korgan-Redemption","BG2",,,"2024-12-15","v10.0.1","1220938","Picollo"
+"Korgan-Friendship","NPC","https://github.com/Spellhold-Studios/Korgan-Friendship","BG2",,,"2024-12-15","v1.6","1399887","Lava, fluke13"
+"Jaheira-Friendship","NPC","https://github.com/Spellhold-Studios/Jaheira-Friendship","BG2",,,"2024-12-10","v1.3","1562669","Lava  "
+"Isra-NPC-BG2","NPC","https://github.com/Spellhold-Studios/Isra-NPC-BG2","BG2",,,"2024-12-15","v3.1","15741202","Rhaella "
+"Isra-NPC","NPC","https://github.com/Spellhold-Studios/Isra-NPC","BG1",,,"2024-12-15","v3.5","10116626","Rhaella "
+"Infinity-Sounds","SOUND","https://github.com/Spellhold-Studios/Infinity-Sounds","BG1-BG2-IWD",,,"2025-07-09","v2.2","43478952","skellytz, Tash"
+"Imoen-Friendship","NPC-EXPANSION","https://github.com/Spellhold-Studios/Imoen-Friendship","BG2",,,"2024-12-15","v3.6","2790412","Kaeloree "
+"IEP-Extended-Banters","NPC-RELATED","https://github.com/Spellhold-Studios/IEP-Extended-Banters","BG2",,,"2024-12-15","v5.9","3390458","Multiple "
+"Icewind-Dale-Graphical-Overhaul","GFX","https://github.com/Spellhold-Studios/Icewind-Dale-Graphical-Overhaul","IWD",,,"2026-03-22","v1,1","492732782","Yovaneth, Weigo "
+"Hexxat-Friendship","NPC","https://github.com/Spellhold-Studios/Hexxat-Friendship","BG2",,,"2024-07-15","v1.2","165581","Lava"
+"HaerDalis-Swords","ITEMS","https://github.com/Spellhold-Studios/HaerDalis-Swords","BG2",,,"2024-12-15","v3.1.0","2701377","Badgert, Kania Blade "
+"HaerDalis-Friendship","NPC","https://github.com/Spellhold-Studios/HaerDalis-Friendship","BG2",,,"2024-12-15","v1.2","2877935","Aeryn"
+"Fade-NPC","NPC","https://github.com/Spellhold-Studios/Fade-NPC","BG2",,,"2020-08-03","v5.6","13684631","Mistress Elysia, Silmarien, Lava, Kai of Candlekeep"
+"Expanded-Thief-Stronghold","QUEST","https://github.com/Spellhold-Studios/Expanded-Thief-Stronghold","BG2",,,"2024-12-15","v3.0.0","10006423","Gebhard Blucher "
+"Edwin-Romance","NPC","https://github.com/Spellhold-Studios/Edwin-Romance","BG2",,,"2023-12-04","v4.0","19413830","laufeygreen"
+"Dorn-Friendship","NPC","https://github.com/Spellhold-Studios/Dorn-Friendship","BG2",,,"2026-01-22","v1.2","221183","Lava"
+"Cernd-Friendship","NPC","https://github.com/Spellhold-Studios/Cernd-Friendship","BG2",,,"2024-12-15","v1.4","1348848","Kaeloree, Lava"
+"BGSpawn","TWEAKS","https://github.com/Spellhold-Studios/BGSpawn","BG1",,,"2025-05-19","1.3.4","144700643","melkor_morgoth75"
+"Baldurs-Gate-Graphical-Overhaul","GFX","https://github.com/Spellhold-Studios/Baldurs-Gate-Graphical-Overhaul","BG1-BG2",,,"2026-03-21","v3.6","1554582660","Yovaneth, White Agnus, Weigo"
+"Arnel-Nalia-Romance-Revision","NPC-EXPANSION","https://github.com/Spellhold-Studios/Arnel-Nalia-Romance-Revision","BG2",,,"2024-12-15","v2.0.0","3091834","Arnel "
+"Almateria-Restoration-Project","QUEST","https://github.com/Spellhold-Studios/Almateria-Restoration-Project","BG2",,,"2024-12-03","v10.1","1830679","Almateria"
+"Adrian-NPC","NPC","https://github.com/Spellhold-Studios/Adrian-NPC","BG2",,,"2023-06-15","v6.1","15071512","Rhaella, Kaeloree"
+"AC-Miscellaneous-Tweaks","TWEAKS/GFX","https://github.com/Spellhold-Studios/AC-Miscellaneous-Tweaks","BG1-BG2",,,"2024-02-02","v1.25","48009673","Andrea C "
 "Portraits-Portraits-Everywhere","GFX","https://github.com/smeagolheart/Portraits-Portraits-Everywhere","IWD",,,"2018-04-16","54c94e7","496059933","smeagolheart"
 "Wings","NPC-EXPANSION","https://github.com/Skitia/Wings","BG2",,,"2024-10-07","v1.07","2742773","Skitia"
 "Vienxay-BG1","NPC","https://github.com/Skitia/Vienxay-BG1","BG1",,,"2024-11-04","cf2ac83","5864155","Skitia"
@@ -96,30 +96,30 @@
 "LeUI-BG1EE","GFX","https://github.com/r-e-d/LeUI-BG1EE","BG1-BG2-IWD",,,"2025-01-18","v4.9.1","22472897","lefreut"
 "LeUI","GFX","https://github.com/r-e-d/LeUI","BG1-BG2-IWD",,,"2025-01-18","v4.9.1","19973077","lefreut"
 "EEUITweaks","GFX","https://github.com/r-e-d/EEUITweaks","BG1-BG2-IWD",,,"2024-09-15","v4.0.7","27665862","lefreut"
-"Xan_for_BGII","NPC","https://github.com/Pocket-Plane-Group/Xan_for_BGII","BG2",,,"2020-08-04","v19","78769853",
-"Xan_BG1_Friendship","NPC","https://github.com/Pocket-Plane-Group/Xan_BG1_Friendship","BG1",,,"2020-08-03","v11","6055126",
-"UnfinishedBusiness","QUEST","https://github.com/Pocket-Plane-Group/UnfinishedBusiness","BG2",,,"2021-01-03","v28","7898622",
-"Under-Respresented_Items","ITEMS","https://github.com/Pocket-Plane-Group/Under-Respresented_Items","BG2",,,"2025-06-10","v14","2145107",
-"IWD_NPC","NPC","https://github.com/Pocket-Plane-Group/IWD_NPC","IWD",,,"2022-09-23","v9","26807285",
-"Item_Upgrade","ITEMS","https://github.com/Pocket-Plane-Group/Item_Upgrade","BG2",,,"2026-04-24","v57","11205544",
-"Coran_for_BGII","NPC","https://github.com/Pocket-Plane-Group/Coran_for_BGII","BG2",,,"2023-01-21","v9","6930998",
-"bg1ub","QUEST","https://github.com/Pocket-Plane-Group/bg1ub","BG1",,,"2025-08-25","v17.1","20553358",
-"Banter_Pack","NPC-RELATED","https://github.com/Pocket-Plane-Group/Banter_Pack","BG2",,,"2021-09-17","v18","3830396",
-"Assassinations","QUEST","https://github.com/Pocket-Plane-Group/Assassinations","BG2",,,"2023-08-30","v19","11921452",
+"Xan_for_BGII","NPC","https://github.com/Pocket-Plane-Group/Xan_for_BGII","BG2",,,"2020-08-04","v19","78769853","Kulyok"
+"Xan_BG1_Friendship","NPC","https://github.com/Pocket-Plane-Group/Xan_BG1_Friendship","BG1",,,"2020-08-03","v11","6055126","Kulyok"
+"UnfinishedBusiness","QUEST","https://github.com/Pocket-Plane-Group/UnfinishedBusiness","BG2",,,"2021-01-03","v28","7898622","Multiple "
+"Under-Respresented_Items","ITEMS","https://github.com/Pocket-Plane-Group/Under-Respresented_Items","BG2",,,"2025-06-10","v14","2145107","Weimer "
+"IWD_NPC","NPC","https://github.com/Pocket-Plane-Group/IWD_NPC","IWD",,,"2022-09-23","v9","26807285","Kulyok "
+"Item_Upgrade","ITEMS","https://github.com/Pocket-Plane-Group/Item_Upgrade","BG2",,,"2026-04-24","v57","11205544","Weimer"
+"Coran_for_BGII","NPC","https://github.com/Pocket-Plane-Group/Coran_for_BGII","BG2",,,"2023-01-21","v9","6930998","Kulyok "
+"bg1ub","QUEST","https://github.com/Pocket-Plane-Group/bg1ub","BG1",,,"2025-08-25","v17.1","20553358","Multiple "
+"Banter_Pack","NPC-RELATED","https://github.com/Pocket-Plane-Group/Banter_Pack","BG2",,,"2021-09-17","v18","3830396","Multiple "
+"Assassinations","QUEST","https://github.com/Pocket-Plane-Group/Assassinations","BG2",,,"2023-08-30","v19","11921452","Kulyok "
 "BG2-Romance-Expanded","NPC","https://github.com/Otherwisely/BG2-Romance-Expanded","BG2",,"1","2024-03-07","v1.0.6","3768136","Otherwisely"
 "Olvyn-Tweaks","TWEAKS","https://github.com/OlvynChuru/Olvyn-Tweaks","BG1-BG2-IWD",,,"2022-08-19","ebe1f59","1154760","OlvynChuru"
 "Epic-Thieving","KITS","https://github.com/OlvynChuru/Epic-Thieving","BG1-BG2-IWD",,,"2023-06-04","149ac53","3210824","OlvynChuru"
 "rogue_rebalancing","KITS","https://github.com/mleduque/rogue_rebalancing","BG1-BG2-IWD",,,"2021-06-18","29f0383","9912552","aVENGER"
-"Imoen-Romance-Mod","NPC-EXPANSION","https://github.com/Mirrabbo/Imoen-Romance-Mod","BG2",,,"2026-03-27","mod","47267079",
-"Dax-Tweaks","TWEAKS","https://github.com/Maltodaxtrin/Dax-Tweaks","BG1-BG2-IWD",,,"2026-07-27","1.0.2","9660534",
-"themed_tweaks","QUEST","https://github.com/lzenner/themed_tweaks","BG1-BG2",,,"2026-01-19","v0.5","2118596",
+"Imoen-Romance-Mod","NPC-EXPANSION","https://github.com/Mirrabbo/Imoen-Romance-Mod","BG2",,,"2026-03-27","mod","47267079","Israel Blargh,vanatos, T.C Dale"
+"Dax-Tweaks","TWEAKS","https://github.com/Maltodaxtrin/Dax-Tweaks","BG1-BG2-IWD",,,"2026-07-27","1.0.2","9660534","Daxtreme "
+"themed_tweaks","QUEST","https://github.com/lzenner/themed_tweaks","BG1-BG2",,,"2026-01-19","v0.5","2118596","Lauriel "
 "OphysiaBG1","NPC","https://github.com/Llewren/OphysiaBG1","BG1",,,"2026-01-26","v1.4.1","24307185","Llewren"
-"ForcedSlayerTransform","TWEAKS","https://github.com/LCA-EET/ForcedSlayerTransform","BG2",,,"2026-06-27","v1.0","33279",
-"BG2EE-Slayer-Portrait-Change","TWEAKS","https://github.com/LCA-EET/BG2EE-Slayer-Portrait-Change","BG2",,,"2026-06-26","v1.0.1","219293",
-"AutoLoot","BASE","https://github.com/LCA-EET/AutoLoot","BG1-BG2-IWD",,,"2026-06-20","v1.3","171049",
+"ForcedSlayerTransform","TWEAKS","https://github.com/LCA-EET/ForcedSlayerTransform","BG2",,,"2026-06-27","v1.0","33279","LCAMod "
+"BG2EE-Slayer-Portrait-Change","TWEAKS","https://github.com/LCA-EET/BG2EE-Slayer-Portrait-Change","BG2",,,"2026-06-26","v1.0.1","219293","LCAMod "
+"AutoLoot","BASE","https://github.com/LCA-EET/AutoLoot","BG1-BG2-IWD",,,"2026-06-20","v1.3","171049","LCAMod "
 "EET_Tweaks","TWEAKS","https://github.com/K4thos/EET_Tweaks","BG1-BG2",,,"2019-08-01","v1.12","19498391","K4thos"
-"BaldursGateMods","NPC","https://github.com/jessicq/BaldursGateMods","BG1-BG2",,,"2026-03-06","056c349","50314334",
-"Ascension","QUEST","https://github.com/InfinityMods/Ascension","BG2",,,"2025-05-18","2.1.0","12461623",
+"BaldursGateMods","NPC","https://github.com/jessicq/BaldursGateMods","BG1-BG2",,,"2026-03-06","056c349","50314334","jmaeq"
+"Ascension","QUEST","https://github.com/InfinityMods/Ascension","BG2",,,"2025-05-18","2.1.0","12461623","DavidW "
 "HPS-Portraits-Project-1.0","GFX","https://github.com/HoldenBG/HPS-Portraits-Project-1.0","BG1-BG2",,"1","2026-06-01","v1.2","1006595617","Holden"
 "bg_enemy_randomizer","TWEAKS","https://github.com/GuardianAnubite/bg_enemy_randomizer","BG1-BG2",,,"2024-08-26","v1.1.3","597787","GuardianAnubite"
 "RandomGraionTweaks","TWEAKS","https://github.com/GraionDilach/RandomGraionTweaks","BG1-BG2-IWD",,,"2024-12-20","version-1.17","19011227","GraionDilach"
@@ -130,76 +130,76 @@
 "Baldurs-Gate-Voice-Pack-for-EE-2.6","SOUND","https://github.com/GraionDilach/Baldurs-Gate-Voice-Pack-for-EE-2.6","BG1-BG2-IWD",,,"2023-05-21","version-1.1.0","12500336","GraionDilach"
 "Baldurs-Gate-NPC-Voice-Pack-for-EE-2.6","SOUND","https://github.com/GraionDilach/Baldurs-Gate-NPC-Voice-Pack-for-EE-2.6","BG1-BG2-IWD",,,"2023-08-27","version-0.3.1","51407743","GraionDilach"
 "Baldurs-Gate-II-Voice-Pack-for-EE-2.6","SOUND","https://github.com/GraionDilach/Baldurs-Gate-II-Voice-Pack-for-EE-2.6","BG1-BG2-IWD",,,"2023-05-21","version-1.2.0","4567878","GraionDilach"
-"Solaufeins_Rescue_NPC","NPC","https://github.com/Gitjas/Solaufeins_Rescue_NPC","BG2",,,"2024-06-07","v5","47079505",
-"JA-AdventurePack","QUEST","https://github.com/Gitjas/JA-AdventurePack","BG1",,,"2025-07-13","v1.0","23236764",
-"Husam_NPC","NPC","https://github.com/Gitjas/Husam_NPC","BG1",,,"2023-11-18","vBeta_231118","5221176",
-"hiddenadventure","QUEST","https://github.com/Gitjas/hiddenadventure","BG2",,,"2025-01-29","vBeta_9","4067744",
-"Brages_Redemption","NPC","https://github.com/Gitjas/Brages_Redemption","BG1-BG2",,,"2026-01-15","v10.1","9582751",
-"Ascalons_Questpack","QUEST","https://github.com/Gitjas/Ascalons_Questpack","BG1",,,"2026-07-25","v7.0","26963241",
-"Adalons_Blood","QUEST","https://github.com/Gitjas/Adalons_Blood","BG2",,,"2026-07-25","v17.3","2961922",
-"Yoshimos_Remorse","NPC-EXPANSION","https://github.com/Gibberlings3/Yoshimos_Remorse","BG2",,,"2026-03-17","v3.3","9046362",
-"Tweaks-Anthology","TWEAKS","https://github.com/Gibberlings3/Tweaks-Anthology","BG1-BG2-IWD-PST",,,"2025-08-22","v18","32012693",
-"Totemic_Cernd","NPC","https://github.com/Gibberlings3/Totemic_Cernd","BG2",,,"2017-06-06","v3","186394",
-"The_Calling","QUEST","https://github.com/Gibberlings3/The_Calling","BG1",,,"2026-06-21","v6","53000372",
-"The_Boareskyr_Bridge_Scene","QUEST","https://github.com/Gibberlings3/The_Boareskyr_Bridge_Scene","BG1",,,"2025-02-02","v8","2873107",
-"SwordCoastStratagems","TWEAKS","https://github.com/Gibberlings3/SwordCoastStratagems","BG1-BG2-IWD",,,"2024-11-21","v35.21","95733180",
-"SP_Collection","TWEAKS","https://github.com/Gibberlings3/SP_Collection","BG1-BG2",,,"2026-04-03","v17","2069646",
-"Romantic_Encounters_BG2","QUEST","https://github.com/Gibberlings3/Romantic_Encounters_BG2","BG2",,,"2020-05-21","v15","8872201",
-"Road_To_Discovery_for_SoD","QUEST","https://github.com/Gibberlings3/Road_To_Discovery_for_SoD","BG1",,,"2026-01-19","v6","1172063",
-"Lore_From_Learning","TWEAKS","https://github.com/Gibberlings3/Lore_From_Learning","BG1-BG2",,,"2026-03-16","v10","1568600",
-"Kivan_and_Deheriana","NPC","https://github.com/Gibberlings3/Kivan_and_Deheriana","BG2",,,"2025-01-15","v19","15323219",
-"Keldorn_Romance","NPC-EXPANSION","https://github.com/Gibberlings3/Keldorn_Romance","BG2",,,"2023-01-21","v8.1","11861860",
-"Jasteys_SoD_Tweakpack","QUEST","https://github.com/Gibberlings3/Jasteys_SoD_Tweakpack","BG1",,,"2025-02-01","v13","3343758",
-"iwdification","TWEAKS/ITEMS","https://github.com/Gibberlings3/iwdification","BG1-BG2",,,"2025-07-12","v11","65733925",
-"iwdcrossmod","NPC RELATED","https://github.com/Gibberlings3/iwdcrossmod","IWD",,,"2024-12-26","v5","1228134",
-"iwd_unfinished_business","QUEST","https://github.com/Gibberlings3/iwd_unfinished_business","IWD",,,"2025-02-12","v13","2153335",
-"iwd_description_icons","GFX","https://github.com/Gibberlings3/iwd_description_icons","IWD",,,"2026-05-29","925cd31","7385089",
-"Infinity_Collection_Portrait_Pack","GFX","https://github.com/Gibberlings3/Infinity_Collection_Portrait_Pack","BG1-BG2-IWD",,,"2022-03-07","v2","44496778",
-"Imoen4Ever","NPC","https://github.com/Gibberlings3/Imoen4Ever","BG1-BG2",,,"2026-01-16","v11.6","4639411",
-"Geomantic_Sorcerer","QUEST","https://github.com/Gibberlings3/Geomantic_Sorcerer","IWD",,,"2025-05-07","v9","8880834",
-"EndlessBG1","QUEST","https://github.com/Gibberlings3/EndlessBG1","BG1",,,"2026-01-27","v20.2","3481367",
-"EET","BASE","https://github.com/Gibberlings3/EET","BG1-BG2",,,"2025-04-07","v14.1","242152031",
-"EE_Fixpack","FIX","https://github.com/Gibberlings3/EE_Fixpack","BG1-BG2-IWD-PST","1",,"2026-07-20","e422b3f","139376523",
-"Crossmod_Banter_Pack_for_Baldurs_Gate_II","NPC-RELATED","https://github.com/Gibberlings3/Crossmod_Banter_Pack_for_Baldurs_Gate_II","BG2",,,"2025-08-19","v30","6836504",
-"CowledMenace","QUEST","https://github.com/Gibberlings3/CowledMenace","BG2",,,"2026-07-27","2.1.0","1653276",
-"Corthala_Romantique","NPC-EXPANSION","https://github.com/Gibberlings3/Corthala_Romantique","BG2",,,"2022-04-02","v5","3435184",
-"CoranBGFriend","NPC","https://github.com/Gibberlings3/CoranBGFriend","BG1",,,"2022-09-19","v5.2","2984133",
-"Continuous_NPC_Portraits","NPC","https://github.com/Gibberlings3/Continuous_NPC_Portraits","BG1-BG2",,,"2022-03-07","v3","10713269",
-"BS_Baldurans_Seatower","QUEST","https://github.com/Gibberlings3/BS_Baldurans_Seatower","BG1",,,"2023-12-08","vEAOB.9","163581861",
-"BG1NPC","NPC-EXPANSION","https://github.com/Gibberlings3/BG1NPC","BG1",,,"2023-08-02","v32","55257230",
-"BG1_Romantic_Encounters","QUEST","https://github.com/Gibberlings3/BG1_Romantic_Encounters","BG1",,,"2026-07-24","v16","14272159",
-"BG_Quests_And_Encounters","QUEST","https://github.com/Gibberlings3/BG_Quests_And_Encounters","BG1",,,"2026-01-17","v31","6187315",
-"Another_Fine_Hell","QUEST","https://github.com/Gibberlings3/Another_Fine_Hell","BG1",,,"2023-09-19","vAlpha_230919","3014847",
-"Angelo","NPC","https://github.com/Gibberlings3/Angelo","BG2",,,"2021-09-28","v9","19416717",
-"Ajantis_BG2","NPC","https://github.com/Gibberlings3/Ajantis_BG2","BG2",,,"2025-09-19","v21","11691780",
-"Ajantis_BG1_Expansion","NPC","https://github.com/Gibberlings3/Ajantis_BG1_Expansion","BG1",,,"2026-01-07","v22","5735231",
+"Solaufeins_Rescue_NPC","NPC","https://github.com/Gitjas/Solaufeins_Rescue_NPC","BG2",,,"2024-06-07","v5","47079505","jastey"
+"JA-AdventurePack","QUEST","https://github.com/Gitjas/JA-AdventurePack","BG1",,,"2025-07-13","v1.0","23236764","Jarl"
+"Husam_NPC","NPC","https://github.com/Gitjas/Husam_NPC","BG1",,,"2023-11-18","vBeta_231118","5221176","jastey"
+"hiddenadventure","QUEST","https://github.com/Gitjas/hiddenadventure","BG2",,,"2025-01-29","vBeta_9","4067744","Lumorus, jastey "
+"Brages_Redemption","NPC","https://github.com/Gitjas/Brages_Redemption","BG1-BG2",,,"2026-01-15","v10.1","9582751","jastey"
+"Ascalons_Questpack","QUEST","https://github.com/Gitjas/Ascalons_Questpack","BG1",,,"2026-07-25","v7.0","26963241","Ascalon"
+"Adalons_Blood","QUEST","https://github.com/Gitjas/Adalons_Blood","BG2",,,"2026-07-25","v17.3","2961922","Gandalf the white, jastey"
+"Yoshimos_Remorse","NPC-EXPANSION","https://github.com/Gibberlings3/Yoshimos_Remorse","BG2",,,"2026-03-17","v3.3","9046362","Lava"
+"Tweaks-Anthology","TWEAKS","https://github.com/Gibberlings3/Tweaks-Anthology","BG1-BG2-IWD-PST",,,"2025-08-22","v18","32012693","Multiple "
+"Totemic_Cernd","NPC","https://github.com/Gibberlings3/Totemic_Cernd","BG2",,,"2017-06-06","v3","186394","cirerrek"
+"The_Calling","QUEST","https://github.com/Gibberlings3/The_Calling","BG1",,,"2026-06-21","v6","53000372","Multiple "
+"The_Boareskyr_Bridge_Scene","QUEST","https://github.com/Gibberlings3/The_Boareskyr_Bridge_Scene","BG1",,,"2025-02-02","v8","2873107","jastey"
+"SwordCoastStratagems","TWEAKS","https://github.com/Gibberlings3/SwordCoastStratagems","BG1-BG2-IWD",,,"2024-11-21","v35.21","95733180","DavidW"
+"SP_Collection","TWEAKS","https://github.com/Gibberlings3/SP_Collection","BG1-BG2",,,"2026-04-03","v17","2069646","Multiple "
+"Romantic_Encounters_BG2","QUEST","https://github.com/Gibberlings3/Romantic_Encounters_BG2","BG2",,,"2020-05-21","v15","8872201","Multiple "
+"Road_To_Discovery_for_SoD","QUEST","https://github.com/Gibberlings3/Road_To_Discovery_for_SoD","BG1",,,"2026-01-19","v6","1172063","jastey"
+"Lore_From_Learning","TWEAKS","https://github.com/Gibberlings3/Lore_From_Learning","BG1-BG2",,,"2026-03-16","v10","1568600","CamDawg"
+"Kivan_and_Deheriana","NPC","https://github.com/Gibberlings3/Kivan_and_Deheriana","BG2",,,"2025-01-15","v19","15323219","Domi"
+"Keldorn_Romance","NPC-EXPANSION","https://github.com/Gibberlings3/Keldorn_Romance","BG2",,,"2023-01-21","v8.1","11861860","berelinde"
+"Jasteys_SoD_Tweakpack","QUEST","https://github.com/Gibberlings3/Jasteys_SoD_Tweakpack","BG1",,,"2025-02-01","v13","3343758","jastey"
+"iwdification","TWEAKS/ITEMS","https://github.com/Gibberlings3/iwdification","BG1-BG2",,,"2025-07-12","v11","65733925","Multiple "
+"iwdcrossmod","NPC RELATED","https://github.com/Gibberlings3/iwdcrossmod","IWD",,,"2024-12-26","v5","1228134","Multiple "
+"iwd_unfinished_business","QUEST","https://github.com/Gibberlings3/iwd_unfinished_business","IWD",,,"2025-02-12","v13","2153335","CamDawg"
+"iwd_description_icons","GFX","https://github.com/Gibberlings3/iwd_description_icons","IWD",,,"2026-05-29","925cd31","7385089","Parys"
+"Infinity_Collection_Portrait_Pack","GFX","https://github.com/Gibberlings3/Infinity_Collection_Portrait_Pack","BG1-BG2-IWD",,,"2022-03-07","v2","44496778","CamDawg "
+"Imoen4Ever","NPC","https://github.com/Gibberlings3/Imoen4Ever","BG1-BG2",,,"2026-01-16","v11.6","4639411","jastey"
+"Geomantic_Sorcerer","QUEST","https://github.com/Gibberlings3/Geomantic_Sorcerer","IWD",,,"2025-05-07","v9","8880834","Caedwyr"
+"EndlessBG1","QUEST","https://github.com/Gibberlings3/EndlessBG1","BG1",,,"2026-01-27","v20.2","3481367","jastey"
+"EET","BASE","https://github.com/Gibberlings3/EET","BG1-BG2",,,"2025-04-07","v14.1","242152031","K4thos"
+"EE_Fixpack","FIX","https://github.com/Gibberlings3/EE_Fixpack","BG1-BG2-IWD-PST","1",,"2026-07-20","e422b3f","139376523","Multiple "
+"Crossmod_Banter_Pack_for_Baldurs_Gate_II","NPC-RELATED","https://github.com/Gibberlings3/Crossmod_Banter_Pack_for_Baldurs_Gate_II","BG2",,,"2025-08-19","v30","6836504","Grim Squeaker "
+"CowledMenace","QUEST","https://github.com/Gibberlings3/CowledMenace","BG2",,,"2026-07-27","2.1.0","1653276","Daxtreme "
+"Corthala_Romantique","NPC-EXPANSION","https://github.com/Gibberlings3/Corthala_Romantique","BG2",,,"2022-04-02","v5","3435184","Domi, Beyshaliban, Caetlyn, Meira, jastey "
+"CoranBGFriend","NPC","https://github.com/Gibberlings3/CoranBGFriend","BG1",,,"2022-09-19","v5.2","2984133","Domi"
+"Continuous_NPC_Portraits","NPC","https://github.com/Gibberlings3/Continuous_NPC_Portraits","BG1-BG2",,,"2022-03-07","v3","10713269","CamDawg"
+"BS_Baldurans_Seatower","QUEST","https://github.com/Gibberlings3/BS_Baldurans_Seatower","BG1",,,"2023-12-08","vEAOB.9","163581861","Multiple "
+"BG1NPC","NPC-EXPANSION","https://github.com/Gibberlings3/BG1NPC","BG1",,,"2023-08-02","v32","55257230","Multiple "
+"BG1_Romantic_Encounters","QUEST","https://github.com/Gibberlings3/BG1_Romantic_Encounters","BG1",,,"2026-07-24","v16","14272159","Multiple "
+"BG_Quests_And_Encounters","QUEST","https://github.com/Gibberlings3/BG_Quests_And_Encounters","BG1",,,"2026-01-17","v31","6187315","jastey"
+"Another_Fine_Hell","QUEST","https://github.com/Gibberlings3/Another_Fine_Hell","BG1",,,"2023-09-19","vAlpha_230919","3014847","jastey"
+"Angelo","NPC","https://github.com/Gibberlings3/Angelo","BG2",,,"2021-09-28","v9","19416717","Sister Vigilante, Kulyok"
+"Ajantis_BG2","NPC","https://github.com/Gibberlings3/Ajantis_BG2","BG2",,,"2025-09-19","v21","11691780","jastey"
+"Ajantis_BG1_Expansion","NPC","https://github.com/Gibberlings3/Ajantis_BG1_Expansion","BG1",,,"2026-01-07","v22","5735231","jastey"
 "randomiser","TWEAKS","https://github.com/FredrikLindgren/randomiser","BG1-BG2",,,"2018-09-23","v7","5033551","FredrikLindgren"
 "aTweaks","TWEAKS","https://github.com/FredrikLindgren/aTweaks","BG1-BG2-IWD",,,"2018-05-19","07d7bad","14619253","FredrikLindgren"
-"bg2-autumns-twilight-mod","QUEST/NPC","https://github.com/evancauteren/bg2-autumns-twilight-mod","BG2",,,"2026-05-02","v1.4.5-hotfix4","1602037039",
-"More-Style-for-Mages-MSFM-","ITEMS","https://github.com/Endarire/More-Style-for-Mages-MSFM-","BG1-BG2-IWD",,"1","2023-07-12","1.6-Prerelease-Take-2","188",
-"Haer-Dalis-Romance","NPC-EXPANSION","https://github.com/Endarire/Haer-Dalis-Romance","BG2",,"1","2023-08-01","2.2","67",
+"bg2-autumns-twilight-mod","QUEST/NPC","https://github.com/evancauteren/bg2-autumns-twilight-mod","BG2",,,"2026-05-02","v1.4.5-hotfix4","1602037039","Pol Rupes"
+"More-Style-for-Mages-MSFM-","ITEMS","https://github.com/Endarire/More-Style-for-Mages-MSFM-","BG1-BG2-IWD",,"1","2023-07-12","1.6-Prerelease-Take-2","188","Pecca"
+"Haer-Dalis-Romance","NPC-EXPANSION","https://github.com/Endarire/Haer-Dalis-Romance","BG2",,"1","2023-08-01","2.2","67","Aeryn"
 "NecromancersQuestRestored","QUEST","https://github.com/Dziadekkk/NecromancersQuestRestored","BG1",,,"2026-07-27","v1.4","1415905","Dziadekkk"
 "sod-items-to-bg2ee-eet","ITEMS","https://github.com/dark0dave/sod-items-to-bg2ee-eet","BG2",,,"2026-07-25","v4.0.0","7954093","dark0dave"
 "M-khiin-Friendship","NPC","https://github.com/dark0dave/M-khiin-Friendship","BG1",,,"2026-01-25","V1.4","1468179","dark0dave"
 "BaeBG2","NPC","https://github.com/dark0dave/BaeBG2","BG2",,,"2025-09-12","v0.2.0","16271228","dark0dave"
-"Better-IWD-Pregen","TWEAKS","https://github.com/D2-mods/Better-IWD-Pregen","BG1-BG2-IWD",,,"2025-10-26","v8.0","2503501",
-"thalan","ITEMS","https://github.com/CrevsDaak/thalan","BG1",,,"2024-06-16","v4.5.1","1489852",
-"VoicesVoicesExtravaganza-SOD","SOUND","https://github.com/ColossusChang/VoicesVoicesExtravaganza-SOD","BG1-BG2",,"1","2025-05-12","v1.0","337785344",
-"VoicesVoicesExtravaganza","SOUND","https://github.com/ColossusChang/VoicesVoicesExtravaganza","BG1-BG2",,"1","2024-10-13","v1.1","1029060192",
-"bg-eeex-buffbot","ENGINE","https://github.com/Chrizhermann/bg-eeex-buffbot","BG1-BG2-IWD",,,"2026-07-19","v1.6.1-alpha","11926479",
-"Jarnip",,"https://github.com/Carsomyr6/Jarnip","BG2",,,"2026-07-13","Jarnip","2460979",
-"the-pursuit-of-justice","QUEST","https://github.com/bucketfulofsunshine/the-pursuit-of-justice","BG2",,,"2026-06-30","V1.2","294586",
-"Reflection","NPC","https://github.com/bucketfulofsunshine/Reflection","BG1-BG2",,,"2026-03-05","V0.1","1382999",
-"Lunia-For-Good-Parties","QUEST","https://github.com/bucketfulofsunshine/Lunia-For-Good-Parties","BG2",,,"2026-04-22","V1.9.1","7760929",
-"baldurian-bar-hop","QUEST","https://github.com/bucketfulofsunshine/baldurian-bar-hop","BG1",,,"2026-07-20","V0.91","7819266",
-"IE-Snippets","BASE","https://github.com/Bubb13/IE-Snippets","BG1-BG2-IWD",,,"2023-03-04","files","27512826",
-"EEex","BASE","https://github.com/Bubb13/EEex","BG1-BG2-IWD",,,"2026-07-31","v1.1.6","110015180",
-"Bubbs-Spell-Menu-Extended","GFX","https://github.com/Bubb13/Bubbs-Spell-Menu-Extended","BG1-BG2-IWD",,,"2026-05-11","v5.2","1832164",
-"blizzard-in-baator","QUEST","https://github.com/BallDamage312/blizzard-in-baator","PST",,,"2026-06-20","1.0.2","864941205",
+"Better-IWD-Pregen","TWEAKS","https://github.com/D2-mods/Better-IWD-Pregen","BG1-BG2-IWD",,,"2025-10-26","v8.0","2503501","Dan_P"
+"thalan","ITEMS","https://github.com/CrevsDaak/thalan","BG1",,,"2024-06-16","v4.5.1","1489852","Serdrick, Crevs Daak"
+"VoicesVoicesExtravaganza-SOD","SOUND","https://github.com/ColossusChang/VoicesVoicesExtravaganza-SOD","BG1-BG2",,"1","2025-05-12","v1.0","337785344","Colossus"
+"VoicesVoicesExtravaganza","SOUND","https://github.com/ColossusChang/VoicesVoicesExtravaganza","BG1-BG2",,"1","2024-10-13","v1.1","1029060192","Colossus"
+"bg-eeex-buffbot","ENGINE","https://github.com/Chrizhermann/bg-eeex-buffbot","BG1-BG2-IWD",,,"2026-07-19","v1.6.1-alpha","11926479","Chrizhermann"
+"Jarnip",,"https://github.com/Carsomyr6/Jarnip","BG2",,,"2026-07-13","Jarnip","2460979","RZABON"
+"the-pursuit-of-justice","QUEST","https://github.com/bucketfulofsunshine/the-pursuit-of-justice","BG2",,,"2026-06-30","V1.2","294586","bucketfulofsunshine  "
+"Reflection","NPC","https://github.com/bucketfulofsunshine/Reflection","BG1-BG2",,,"2026-03-05","V0.1","1382999","bucketfulofsunshine  "
+"Lunia-For-Good-Parties","QUEST","https://github.com/bucketfulofsunshine/Lunia-For-Good-Parties","BG2",,,"2026-04-22","V1.9.1","7760929","bucketfulofsunshine  "
+"baldurian-bar-hop","QUEST","https://github.com/bucketfulofsunshine/baldurian-bar-hop","BG1",,,"2026-07-20","V0.91","7819266","bucketfulofsunshine"
+"IE-Snippets","BASE","https://github.com/Bubb13/IE-Snippets","BG1-BG2-IWD",,,"2023-03-04","files","27512826","Bubb"
+"EEex","BASE","https://github.com/Bubb13/EEex","BG1-BG2-IWD",,,"2026-07-31","v1.1.6","110015180","Bubb"
+"Bubbs-Spell-Menu-Extended","GFX","https://github.com/Bubb13/Bubbs-Spell-Menu-Extended","BG1-BG2-IWD",,,"2026-05-11","v5.2","1832164","Bubb"
+"blizzard-in-baator","QUEST","https://github.com/BallDamage312/blizzard-in-baator","PST",,,"2026-06-20","1.0.2","864941205","CANIA BELIEVE IT"
 "SearchGuild","QUEST","https://github.com/Austin-BG/SearchGuild","BG2",,,"2026-06-01","v.1.5.3","28691383","Austin"
 "HTaM","QUEST","https://github.com/Austin-BG/HTaM","BG2",,,"2026-02-23","v.4.6.4","110312387","Austin"
-"CassiaNPC","NPC","https://github.com/Arvendor/CassiaNPC","IWD",,,"2024-01-20","8f9af4c","4827405",
-"Kvel-BG1",,"https://github.com/ArtemiusI/Kvel-BG1","BG1","1",,"2026-05-30","ea55144","5803117","The Artisan"
+"CassiaNPC","NPC","https://github.com/Arvendor/CassiaNPC","IWD",,,"2024-01-20","8f9af4c","4827405","Arvendor"
+"Kvel-BG1",,"https://github.com/ArtemiusI/Kvel-BG1","BG1","1",,"2026-05-30","ea55144","5803117","TheArtisan"
 "PST-UB-reloaded","QUEST","https://github.com/Argent77/PST-UB-reloaded","PST",,,"2026-05-08","v2.5","16625326","Argent77"
 "HQ-SoundClips-BG2EE","SOUND","https://github.com/Argent77/HQ-SoundClips-BG2EE","BG2",,,"2023-09-16","v1.3","209079602","Argent77"
 "A7-TotLM-BG2EE","QUEST","https://github.com/Argent77/A7-TotLM-BG2EE","BG2",,,"2026-01-14","v4.4","98192971","Argent77"
@@ -217,13 +217,13 @@
 "A7-BagsOfTorment","ITEMS","https://github.com/Argent77/A7-BagsOfTorment","PST",,,"2023-12-09","v1.3","159998","Argent77"
 "PlanarItems","ITEMS","https://github.com/aquadrizzt/PlanarItems","PST",,,"2023-04-16","v0.61","8575071","aquadrizzt"
 "MortuaryBeGone","QUEST","https://github.com/aquadrizzt/MortuaryBeGone","PST",,,"2023-06-21","v0.11","1375923","aquadrizzt"
-"bg1_icons_pack_mod","GFX","https://github.com/Alexander12-creator/bg1_icons_pack_mod","BG1",,,"2024-12-02","1.0","6929857",
+"bg1_icons_pack_mod","GFX","https://github.com/Alexander12-creator/bg1_icons_pack_mod","BG1",,,"2024-12-02","1.0","6929857","Alexander12"
 "Throne-of-the-Mad-God","QUEST","https://github.com/AciferBG/Throne-of-the-Mad-God","BG2",,,"2026-07-01","v2.3","343069863","Acifer"
 "Poisoned-Pathways","QUEST","https://github.com/AciferBG/Poisoned-Pathways","BG2",,,"2026-07-22","v1.3","209898671","Acifer"
 "Loretakers","QUEST","https://github.com/AciferBG/Loretakers","BG1",,,"2026-02-25","v2.6","28040737","Acifer"
 "Dark-Tidings","QUEST","https://github.com/AciferBG/Dark-Tidings","BG2",,,"2026-03-14","v3.0","184602397","Acifer"
 "Call-of-the-Lost-Goddess","QUEST","https://github.com/AciferBG/Call-of-the-Lost-Goddess","BG2",,,"2026-07-01","v3.0","467786145","Acifer"
-"NWNForBG","QUEST","https://github.com/abalabokhin/NWNForBG","BG2",,,"2025-12-31","1.00","2542925946",
+"NWNForBG","QUEST","https://github.com/abalabokhin/NWNForBG","BG2",,,"2025-12-31","1.00","2542925946","AGKanevchev, paladin84"
 "Black-Hearts","QUEST","https://github.com/A-Wizard-Did-It/Black-Hearts","BG1",,,"2025-05-27","v2.03","61788974","A-Wizard-Did-It"
 "Sharteel-NPC-SoD","NPC","https://github.com/11jo/Sharteel-NPC-SoD","BG1",,,"2026-05-20","6f5b194","1520861","11jo"
 "yoshimo-romance","NPC-EXPANSION","https://downloads.weaselmods.net/download/yoshimo-romance","BG2",,,"2026-01-23","8.0","58228645","Lava"

@@ -62,7 +62,6 @@ Unknown nesting tags are still rendered as tree nodes.
 | `default` | `1` = default when parent `<alternatives>` is checked as a whole |
 | `core` | `1` = core of parent `<mod>`; auto-on with siblings; off clears mod |
 | `stability` | Metadata (e.g. `beta`); omit or `released` = stable / no badge |
-| `author` | Metadata |
 | `noBranches` | UI: keep this container row, but flatten nested grouping under it (show components / alternatives units only; see app-logic.md) |
 | `tags` | Comma-separated metadata; UI filter matches with OR |
 

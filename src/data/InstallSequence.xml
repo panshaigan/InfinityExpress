@@ -3,7 +3,7 @@
 	<base desc="Base game fixes and modifications">
 		<component id="A7-DLCMERGER-MERGE_SOD" label='Merge SoD DLC' desc="Required for further BG1 modding" modId="A7-DlcMerger" engine="bg1,eet1" required="1" noDisplay="1" />
 		<component id="bubb_revert_pathfinding:0" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,eet1,iwd,pst" required="1" noDisplay="1" />
-		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" level="fixes">
+		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" desc="The Enhanced Edition Fixpack is an unofficial collection of fixes for the Enhanced Editions of Baldur's Gate, Baldur's Gate II, Icewind Dale, and Planescape: Torment." level="fixes" stability="beta">
 			<component id="cd_eefp_core_fixes" label="Core fixes" modId="EE_Fixpack" />
 			<component id="cd_eefp_game_text_update" label="Game Text Update" modId="EE_Fixpack" noDisplay="1" alwaysIf="cd_eefp_core_fixes" />
 		</group>
@@ -37,10 +37,6 @@
 		<mod id="A7-HiddenGameplayOptions" label="Reveal Hidden Gameplay Options" engine="bg,eet,iwd,pst">
 			<component id="A7-HIDDENGAMEPLAYOPTIONS-INSTALL_ALL" label="Reveal Hidden Gameplay Options" />
 			<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU" label="Improved Cheat Menu" alwaysIf="A7-HIDDENGAMEPLAYOPTIONS-INSTALL_ALL" noDisplay="1" />
-		</mod>
-		<mod id="A7-MiscTweaks" label="Tweaks">
-			<component id="A7_MISCTWEAKS_DUALCLASS_BACK_BUTTON" label="Reactivate 'Back' button in the Dual-Class menu" modId="A7-MiscTweaks" level="fixes" />
-			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" label="Disable creature tooltips" modId="A7-MiscTweaks" level="difficulty" engine="bg,eet,iwd,pst" />
 		</mod>
 		<component id="B3-BubbsSpellMenuExtended-Main" label="Bubb's Spell Menu Extended" modId="Bubbs-Spell-Menu-Extended" />
 		<mod modId="A7-LevelUpTweaks" engine="pst">
@@ -336,7 +332,7 @@
 			<items>
 				<add>
 					<component id="cd_tweaks_taerom_makes_multiple_ankheg_armor" label="Taerom Makes Additional Ankheg Armor" modId="Tweaks-Anthology" level="vanillaPlus" />
-					<component id="ForgottenArmament-Breach" label="Add Breach Scrolls to Sorcerous Sundries" modId="forgotten-armament" author="Morpheus562" />   
+					<component id="ForgottenArmament-Breach" label="Add Breach Scrolls to Sorcerous Sundries" modId="forgotten-armament" />   
 				</add>
 				<update>
 					<component id="ZSTweaks:1663" label="Make Sandthief Ring consistently grant one use of invisibility per day" modId="ZSTweaks" level="vanillaPlus" /> 
@@ -520,11 +516,11 @@
 				<component id="L#-SKIECOST-MAINQUEST" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" tags="bigQuest" />
 				<component id="cowledmenace:1000" label="Cowled Menace" modId="CowledMenace" tags="bigQuest" level="quality" />
 				<component id="AWizardDidIt-Blackhearts_BG2" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="blendWell" displayIfNot="AWizardDidIt-Blackhearts_BG1" />
-				<mod id="crucible" label="Crucible" author="Morpheus562">
-					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" tags="bigQuest" level="blendWell" author="Morpheus562" />
-					<component id="Crucible-FinalAssaultAI" label="Fully Voiced NPCs using AI" modId="crucible" tags="bigQuest" level="blendWell" author="Morpheus562" />
+				<mod id="crucible" label="Crucible">
+					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" tags="bigQuest" level="blendWell" />
+					<component id="Crucible-FinalAssaultAI" label="Fully Voiced NPCs using AI" modId="crucible" tags="bigQuest" level="blendWell" />
 				</mod>
-				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" tags="bigQuest" level="vanillaPlus" author="Morpheus562"/>
+				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" tags="bigQuest" level="vanillaPlus"/>
 				<component id="lfgp:0" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" tags="bigQuest" level="vanillaPlus" />
 				<component id="TPoJ:0" label="The Pursuit of Justice" modId="the-pursuit-of-justice" tags="bigQuest" level="vanillaPlus" />
 				<component id="saradas_magic_npc_for_bg2_monk" label="Saradas Magic" desc="SoA content + recruitable NPC (Human Neutral Good Cleric/Mage)" modId="Saradas-Magic-BG2" />
@@ -583,7 +579,7 @@
 					<component id="OWRomanceExpanded-Phaere" label="Phaere Expanded" modId="BG2-Romance-Expanded" />
 				</romances>
 				<bioware>
-					<mod id="continuous-npcs" label="Continuous BG1 NPCs" desc="Adds continuous BG1 characters to SoD and BG2. No interactions though." engine="eet" author="Morpheus562">
+					<mod id="continuous-npcs" label="Continuous BG1 NPCs" desc="Adds continuous BG1 characters to SoD and BG2. No interactions though." engine="eet">
 						<component id="AddKagainDD" label="Continuous Kagain (Dwarven Defender)" />
 						<component id="AddXan" label="Continuous Xan" />
 						<component id="AddYeslick" label="Continuous Yeslick" />
@@ -704,7 +700,7 @@
 					<component id="jarnip:0" label="Jarnip: New Bonus Merchant in the Adventurers Mart" modId="Jarnip" />
 					<component id="PlanarItems:0" label="PlanarItems - Revised Items" modId="PlanarItems" />
 					<component id="cd_spc_creslyn_item_pack" label="The SP Collection - Creslyn's BG2 Item Pack" modId="SP_Collection" />
-					<mod id="forgotten-armament" label="Forgotten Armament" author="Morpheus562">
+					<mod id="forgotten-armament" label="Forgotten Armament">
 						<component id="ForgottenArmament-RubyRay" label="Add Ruby Ray Scrolls to Trademeet Store" />
 						<component id="ForgottenArmament-FreedomScroll" label="Add Freedom Scrolls to Ribald's Store (Pre-Underdark)" />
 					</mod>
@@ -778,7 +774,7 @@
 						<component id="ZSTweaks:2250" label="Make Edwin's amulet nuanced in the privileges it grants to that snake" />
 						<component id="ZSTweaks:1556" label="Make minor improvements to Jaheira-specific items" />
 					</mod>
-					<component id="ForgottenArmament-NerfAPR" label="Nerf APR Increasing One-Handed Melee Weapons" modId="forgotten-armament" author="Morpheus562" />
+					<component id="ForgottenArmament-NerfAPR" label="Nerf APR Increasing One-Handed Melee Weapons" modId="forgotten-armament" />
 				</update>
 				<upgrade noBranches="1">
 					<mod id="Item_Upgrade" label="Item Upgrade - Revised Version">
@@ -931,7 +927,7 @@
 					<component id="L#-FINDIT-IWD" label="FindIt Item Pack" modId="findit-iwd" />
 					<component id="stratagems:3510" label="Wider availability of wizard spell scrolls in Icewind Dale" modId="SwordCoastStratagems" />
 					<component id="ee_cosmetic_enhancements:2" label="Add Bhaal's Fire and Benorg's Truth into loot tables" modId="EE_Cosmetic_Item_Enhancement" />
-					<mod id="forgotten-armament" author="Morpheus562">
+					<mod id="forgotten-armament">
 						<component id="ForgottenArmament-Orrick" label="Add more Items and Scrolls to Orrick's Store" />
 						<component id="ForgottenArmament-Conlan" label="Add more Items to Conlan's Smithy" />
 					</mod>
@@ -1005,7 +1001,7 @@
 						<component id="stratagems:3505" label="Wider selection of random scrolls" />
 					</mod>
 					<component id="cd_iwdification_2h_axes" label="Two-Handed Axe Item Pack" modId="Tweaks-Anthology" level="blendWell" />
-					<component id="ForgottenArmament-AddItems" label="Add New Items to the Game" modId="forgotten-armament" author="Morpheus562" />
+					<component id="ForgottenArmament-AddItems" label="Add New Items to the Game" modId="forgotten-armament" />
 				</add>
 				<update noBranches="1">
 					<mod id="Tweaks-Anthology" level="blendWell">
@@ -1035,7 +1031,7 @@
 						<component id="stratagems:2900" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" />
 					</mod>
 					<component id="cd_tweaks_removable_npc_items" label="Removable NPC Items" modId="Tweaks-Anthology" level="vanillaPlus" />    
-					<mod id="forgotten-armament" author="Morpheus562">
+					<mod id="forgotten-armament">
 						<component id="ForgottenArmament-UpdateItems" label="Update Existing In-Game Items" />
 						<component id="ForgottenArmament-SetBonus" label="Add Set Bonuses to PlanarItems" />
 					</mod>
@@ -1084,7 +1080,7 @@
 						<component id="msfm:12" label="Add Wizard's Hat" />
 						<component id="msfm:13" label="Add Wand Case" />
 					</mod>
-					<component id="ForgottenArmament-AcidResist" label="Create Potions of Acid Resistance" modId="forgotten-armament" author="Morpheus562" />
+					<component id="ForgottenArmament-AcidResist" label="Create Potions of Acid Resistance" modId="forgotten-armament" />
 				</add>
 				<update noBranches="1">
 					<mod id="Tweaks-Anthology">
@@ -1115,7 +1111,7 @@
 						<component id="ZSTweaks:1371" label="Make Arrows of Dispelling force a save vs. Spell at -2 for them to work" />
 						<component id="ZSTweaks:1388" label="Make Acid Arrow's extra damage not subject to magic resistance" />
 					</mod>
-					<mod id="forgotten-armament" author="Morpheus562">
+					<mod id="forgotten-armament">
 						<component id="ForgottenArmament-ReplaceSpeedBoots" label="Replace Boots of Speed (Paws of the Cheetah)"  />
 						<component id="ForgottenArmament-StatIncreaseItems" label="Update Items Setting an Ability Score to Increment the Increase" />
 					</mod>
@@ -1147,7 +1143,7 @@
 		<add level="quality" noBranches="1">
 			<component id="A7-CHAOSSORCERER-MAIN" label="The Chaos Sorcerer: A Wild Magic Kit for Sorcerers" modId="A7-ChaosSorcerer" />
 			<component id="ArtisansKitpack:20000" label="Eldritch Knight (Fighter / Mage Kit)" modId="The-Artisan-s-Kitpack" />
-			<component id="Morpheus562sKitpackShieldBreaker" label="Shield Breaker Fighter Kit" modId="morpheus562s-kitpack" author="Morpheus562" />
+			<component id="Morpheus562sKitpackShieldBreaker" label="Shield Breaker Fighter Kit" modId="morpheus562s-kitpack" />
 			<component id="ArtisansKitpack:9001" label="Warhorn Shaman Kit" modId="The-Artisan-s-Kitpack" />
 		</add>
 		<update level="quality">
@@ -1338,7 +1334,7 @@
 				<component id="ZS_CanIStabYou:310" label="Yaga-Shura cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
 				<component id="ZS_CanIStabYou:311" label="Amelyssan cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
 			</mod>
-			<component id="ForgottenArmament-CritImmunity2" label="Allow Difficult Enemies to Remain Immune to Critical Hits" modId="forgotten-armament" author="Morpheus562" />
+			<component id="ForgottenArmament-CritImmunity2" label="Allow Difficult Enemies to Remain Immune to Critical Hits" modId="forgotten-armament" />
 			<component id="HouseTweaks:20" label="Faster Troll Unconsciousness" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg,iwd,eet" />
 			<component id="METweaks:3150" label="Give Belhifet more reasonable immunities" level="vanillaPlus" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
 			<mod id="ZSTweaks" engine="bg,eet" noBranches="1">
@@ -1622,7 +1618,7 @@
 			<component id="D2-SCRIPT-NYMPH" label="Use revised script for nymph summon. Compatible with SCS." desc="Cooldown hotkeys, faster movement, AI can cast Barkskin, Mass Cure, Entangle, or Summon Insects once each per combat encounter." />
 			<component id="D2-SCRIPT-NGAUTO" label="Auto-assign Better IWD Pregen (d2scrp) to new characters" />
 		</mod>
-		<mod id="enhanced-powergaming-scripts" label="Enhanced Powergaming Scripts" author="Morpheus562">
+		<mod id="enhanced-powergaming-scripts" label="Enhanced Powergaming Scripts">
 			<component id="EnhancedPowergamingScripts-MainAccelerated" label="Enhanced Powergaming Scripts - Accelerated Pre-Buffing Speed" />
 			<component id="EnhancedPowergamingScripts-Simulacrum" label="Install Enhanced Scripts for Simulacrum" alwaysIf="EnhancedPowergamingScripts-MainAccelerated" noDisplay="1" />
 		</mod>
@@ -1650,15 +1646,19 @@
 		<component id="AutoLoot:0" label="Bubb's Auto Loot" modId="AutoLoot" />
 		<component id="buffbot:0" label="BuffBot: In-Game Buff Automation" modId="bg-eeex-buffbot" />
 		<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU_UPDATE" label="Update resource tables for &quot;Improved Cheat Menu&quot;" modId="A7-HiddenGameplayOptions" alwaysIf="A7-HIDDENGAMEPLAYOPTIONS-INSTALL_ALL" noDisplay="1" engine="bg,eet,iwd,pst" />
+		<mod id="A7-MiscTweaks" label="Tweaks" unfolded="1">
+			<component id="A7_MISCTWEAKS_DUALCLASS_BACK_BUTTON" label="Reactivate 'Back' button in the Dual-Class menu" modId="A7-MiscTweaks" level="fixes" />
+			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" label="Disable creature tooltips" modId="A7-MiscTweaks" level="difficulty" engine="bg,eet,iwd,pst" />
+		</mod>
 	</ui>
 
 	<base engine="eet">
-		<component id="EET_end:0" label="Baldur's Gate: Enhanced Edition Trilogy (EET) - End - Standard installation" alwaysIf="EET:0" noDisplay="1" />
+		<component id="EET_end:0" label="Baldur's Gate: Enhanced Edition Trilogy (EET) - End" required="1" noDisplay="1" />
 	</base>
 
 	<kits engine="bg,eet,iwd">
 		<update>
-			<mod id="skills-and-abilities" label="New class/kit abillities" author="Morpheus562">
+			<mod id="skills-and-abilities" label="New class/kit abillities">
 				<component id="SkillsAndAbilitiesFighter" label="Add New Fighter Abilities" />
 				<component id="SkillsAndAbilitiesPaladin1" label="Add New Paladin Abilities" />
 				<component id="SkillsAndAbilitiesMonk" label="Update Skills for Monks" displayIf="EEex:1" />
@@ -1705,7 +1705,7 @@
 							<component id="HouseTweaks:5" label="Rebalanced Weapon Styles" modId="House-Rule-Tweaks" />
 						</alternatives>
 					</group>
-					<mod id="skills-and-abilities" labels="Skills And Abilities" author="Morpheus562">
+					<mod id="skills-and-abilities" labels="Skills And Abilities">
 						<component id="SkillsAndAbilitiesWeapStyle" label="Update Weapon Fighting Styles" />
 						<alternatives label="Overhaul Proficiency System - Add New Proficiencies and Weapon Styles">
 							<component id="SkillsAndAbilitiesNewProf1" label="Vanilla Proficiency Progression" default="1" />
@@ -1724,7 +1724,7 @@
 			</group>
 			<group label="Universal tweaks" noBranches="1">
 				<component id="cd_tweaks_triple_class_hla_table" label="Triple-Class HLA Tables" modId="Tweaks-Anthology" />
-				<mod id="skills-and-abilities" author="Morpheus562">
+				<mod id="skills-and-abilities">
 					<component id="SkillsAndAbilitiesNewHLA" label="Add New HLAs for ALL Classes and Kits" />
 					<component id="SkillsAndAbilitiesUpdateHLA" label="Update Existing HLAs" />
 					<component id="SkillsAndAbilitiesClericThief" label="Adjust Cleric/Thief Actionbar" displayIf="EEex:1" />
@@ -1733,7 +1733,7 @@
 				</mod>
 			</group>
 			<group label="Warrior tweaks" noBranches="1">
-				<mod id="skills-and-abilities" label="Allow Fighter Multiclasses to achieve higher Weapon Proficiency" author="Morpheus562">
+				<mod id="skills-and-abilities" label="Allow Fighter Multiclasses to achieve higher Weapon Proficiency">
 					<alternatives>
 						<component id="SkillsAndAbilitiesWeaponProf1" label="Master (3 pips)" />
 						<component id="SkillsAndAbilitiesWeaponProf2" label="High Master (4 pips)" />
@@ -1742,7 +1742,7 @@
 				</mod>
 			</group>
 			<group label="Rogue tweaks" noBranches="1">
-				<mod id="skills-and-abilities" author="Morpheus562">
+				<mod id="skills-and-abilities">
 					<alternatives label="Bard Skills" displayIf="EEex:1">
 						<component id="SkillsAndAbilitiesBard1" label="Add Lockpicking" displayIf="EEex:1" />
 						<component id="SkillsAndAbilitiesBard2" label="Add Lockpicking and Find/Disarm Traps" displayIf="EEex:1" />

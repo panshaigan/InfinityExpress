@@ -5,9 +5,17 @@ import {
   type LadderLevel,
 } from '../lib/levels'
 import {
+  formatBytes,
+  type AuthorOption,
+  type SizeBounds,
+} from '../lib/mods/loadMods'
+import {
   STABILITY_RELEASED,
   createDefaultFilterCriteria,
+  isAuthorFilterActive,
   isFilterActive,
+  isSizeFilterActive,
+  type AuthorFilterMode,
   type FilterCriteria,
   type TriFilterMode,
 } from '../lib/selection/filterDisplayTree'
@@ -17,14 +25,21 @@ interface Props {
   onChange: (next: FilterCriteria) => void
   tagOptions: string[]
   stabilityOptions: string[]
+  authorOptions: AuthorOption[]
+  sizeBounds: SizeBounds | null
 }
 
-type PanelId = 'level' | 'stability' | 'tags' | 'hidden' | 'required'
+type PanelId = 'level' | 'stability' | 'tags' | 'size' | 'author' | 'hidden' | 'required'
 
 const TRI_OPTIONS: { value: TriFilterMode; label: string }[] = [
   { value: 'show', label: 'Show' },
   { value: 'hide', label: 'Hide' },
   { value: 'only', label: 'Only' },
+]
+
+const AUTHOR_MODE_OPTIONS: { value: AuthorFilterMode; label: string }[] = [
+  { value: 'include', label: 'Include selected' },
+  { value: 'exclude', label: 'Exclude selected' },
 ]
 
 function toggleInSet(set: ReadonlySet<string>, value: string): Set<string> {
@@ -47,16 +62,22 @@ export function FiltersStrip({
   onChange,
   tagOptions,
   stabilityOptions,
+  authorOptions,
+  sizeBounds,
 }: Props) {
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null)
   const baseId = useId()
 
-  const defaults = createDefaultFilterCriteria(tagOptions)
-  const active = isFilterActive(criteria, tagOptions)
+  const authorNames = authorOptions.map((a) => a.name)
+  const seed = { authorOptions: authorNames, sizeBounds }
+  const defaults = createDefaultFilterCriteria(tagOptions, seed)
+  const active = isFilterActive(criteria, tagOptions, seed)
   const levelActive = criteria.maxLevel !== null
   const stabilityActive = !setsEqual(criteria.stability, defaults.stability)
   const tagsActive =
     criteria.tagsOnlyChecked || !setsEqual(criteria.tags, defaults.tags)
+  const sizeActive = isSizeFilterActive(criteria, sizeBounds)
+  const authorActive = isAuthorFilterActive(criteria, authorNames)
   const hiddenActive = criteria.hiddenMode !== 'hide'
   const requiredActive = criteria.requiredMode !== defaults.requiredMode
 
@@ -69,7 +90,7 @@ export function FiltersStrip({
   }
 
   function clearFilters() {
-    onChange(createDefaultFilterCriteria(tagOptions))
+    onChange(createDefaultFilterCriteria(tagOptions, seed))
   }
 
   function selectLadder(level: LadderLevel | null) {
@@ -77,6 +98,18 @@ export function FiltersStrip({
       maxLevel: level,
       levelExact: level ? criteria.levelExact : false,
     })
+  }
+
+  function setSizeMin(value: number) {
+    if (!sizeBounds) return
+    const max = criteria.sizeMaxBytes ?? sizeBounds.max
+    patch({ sizeMinBytes: Math.min(value, max) })
+  }
+
+  function setSizeMax(value: number) {
+    if (!sizeBounds) return
+    const min = criteria.sizeMinBytes ?? sizeBounds.min
+    patch({ sizeMaxBytes: Math.max(value, min) })
   }
 
   function wrapPanel(id: string, label: string, body: ReactNode) {
@@ -199,6 +232,96 @@ export function FiltersStrip({
         )}
       </>,
     )
+  } else if (openPanel === 'size') {
+    const min = criteria.sizeMinBytes ?? sizeBounds?.min ?? 0
+    const max = criteria.sizeMaxBytes ?? sizeBounds?.max ?? 0
+    panelBody = wrapPanel(
+      `${baseId}-size`,
+      'Size',
+      sizeBounds ? (
+        <div className="filter-size">
+          <div className="filter-size-labels">
+            <span>{formatBytes(min)}</span>
+            <span>—</span>
+            <span>{formatBytes(max)}</span>
+          </div>
+          <div className="filter-size-slider">
+            <input
+              type="range"
+              className="filter-size-range filter-size-range-min"
+              min={sizeBounds.min}
+              max={sizeBounds.max}
+              value={min}
+              aria-label="Minimum size"
+              onChange={(e) => setSizeMin(Number(e.target.value))}
+            />
+            <input
+              type="range"
+              className="filter-size-range filter-size-range-max"
+              min={sizeBounds.min}
+              max={sizeBounds.max}
+              value={max}
+              aria-label="Maximum size"
+              onChange={(e) => setSizeMax(Number(e.target.value))}
+            />
+          </div>
+          <div className="filter-size-bounds">
+            <span>{formatBytes(sizeBounds.min)}</span>
+            <span>{formatBytes(sizeBounds.max)}</span>
+          </div>
+        </div>
+      ) : (
+        <p className="filter-panel-empty">No size data in mods.csv.</p>
+      ),
+    )
+  } else if (openPanel === 'author') {
+    panelBody = wrapPanel(
+      `${baseId}-author`,
+      'Author',
+      authorOptions.length === 0 ? (
+        <p className="filter-panel-empty">No frequent authors in mods.csv.</p>
+      ) : (
+        <>
+          {AUTHOR_MODE_OPTIONS.map((opt) => (
+            <label key={opt.value} className="filter-option">
+              <input
+                type="radio"
+                name={`${baseId}-author-mode`}
+                checked={criteria.authorMode === opt.value}
+                onChange={() => patch({ authorMode: opt.value })}
+              />
+              {opt.label}
+            </label>
+          ))}
+          <button
+            type="button"
+            className="filter-inline-action"
+            onClick={() => patch({ authors: new Set(authorNames) })}
+          >
+            Select all
+          </button>
+          <button
+            type="button"
+            className="filter-inline-action"
+            onClick={() => patch({ authors: new Set() })}
+          >
+            Clear
+          </button>
+          {authorOptions.map((opt) => (
+            <label key={opt.name} className="filter-option">
+              <input
+                type="checkbox"
+                checked={criteria.authors.has(opt.name)}
+                onChange={() =>
+                  patch({ authors: toggleInSet(criteria.authors, opt.name) })
+                }
+              />
+              {opt.name} ({opt.count})
+            </label>
+          ))}
+        </>
+      ),
+    )
   } else if (openPanel === 'hidden') {
     panelBody = wrapPanel(
       `${baseId}-hidden`,
@@ -232,6 +355,13 @@ export function FiltersStrip({
       )),
     )
   }
+
+  const sizeChipLabel =
+    sizeActive &&
+    criteria.sizeMinBytes != null &&
+    criteria.sizeMaxBytes != null
+      ? `: ${formatBytes(criteria.sizeMinBytes)}–${formatBytes(criteria.sizeMaxBytes)}`
+      : ''
 
   return (
     <div className="filters-strip" aria-label="Filters">
@@ -278,6 +408,31 @@ export function FiltersStrip({
           disabled={tagOptions.length === 0}
         >
           Tags{tagsActive ? ` (${criteria.tags.size})` : ''}
+        </button>
+
+        <button
+          type="button"
+          className={`filter-chip${sizeActive ? ' active' : ''}${openPanel === 'size' ? ' open' : ''}`}
+          aria-expanded={openPanel === 'size'}
+          aria-controls={`${baseId}-size`}
+          onClick={() => togglePanel('size')}
+          disabled={!sizeBounds}
+        >
+          Size{sizeChipLabel}
+        </button>
+
+        <button
+          type="button"
+          className={`filter-chip${authorActive ? ' active' : ''}${openPanel === 'author' ? ' open' : ''}`}
+          aria-expanded={openPanel === 'author'}
+          aria-controls={`${baseId}-author`}
+          onClick={() => togglePanel('author')}
+          disabled={authorOptions.length === 0}
+        >
+          Author
+          {authorActive
+            ? ` ${criteria.authorMode === 'exclude' ? 'excl.' : ''}(${criteria.authors.size})`
+            : ''}
         </button>
 
         <button

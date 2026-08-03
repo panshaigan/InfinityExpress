@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import installSequenceXml from './data/InstallSequence.xml?raw'
+import modsCsv from './data/mods.csv?raw'
 import { parseInstallSequence } from './lib/xml/parseInstallSequence'
 import {
   GAME_LABELS,
@@ -29,6 +30,11 @@ import {
   filtersNeedIncludeHidden,
   type FilterCriteria,
 } from './lib/selection/filterDisplayTree'
+import {
+  collectAuthorOptions,
+  modSizeBounds,
+  parseModsCsv,
+} from './lib/mods/loadMods'
 import { buildRelationIndex } from './lib/selection/relations'
 import { downloadInstallOrder } from './lib/export/installOrder'
 import { StationNav } from './ui/StationNav'
@@ -40,6 +46,14 @@ import { LevelSelectStrip } from './ui/LevelSelectStrip'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
+const modsByCodename = parseModsCsv(modsCsv)
+const catalogSizeBounds = modSizeBounds(modsByCodename)
+const catalogAuthorOptions = collectAuthorOptions(modsByCodename, 3)
+const catalogAuthorNames = catalogAuthorOptions.map((a) => a.name)
+const filterSeed = {
+  authorOptions: catalogAuthorNames,
+  sizeBounds: catalogSizeBounds,
+}
 
 function findDisplayNode(nodes: DisplayNode[], key: string): DisplayNode | null {
   for (const n of nodes) {
@@ -75,7 +89,10 @@ export default function App() {
 
   const filterOptions = useMemo(() => collectFilterOptions(model), [model])
   const [filters, setFilters] = useState<FilterCriteria>(() =>
-    createDefaultFilterCriteria(collectFilterOptions(parsed.model).tags),
+    createDefaultFilterCriteria(
+      collectFilterOptions(parsed.model).tags,
+      filterSeed,
+    ),
   )
   const [ladderPreset, setLadderPreset] = useState<LadderLevel | null>(null)
   const [difficultyPreset, setDifficultyPreset] = useState(false)
@@ -95,8 +112,13 @@ export default function App() {
     if (!block) return []
     const includeHidden = filtersNeedIncludeHidden(filters)
     const built = buildDisplayTree(block.children, { game, selectedIds, includeHidden })
-    return filterDisplayTree(built, filters)
-  }, [activeStation, filters, game, model.stations, selectedIds])
+    return filterDisplayTree(
+      built,
+      filters,
+      { model, modsByCodename },
+      filterSeed,
+    )
+  }, [activeStation, filters, game, model, selectedIds])
 
   const stationDesc = useMemo(() => {
     if (activeStation === 'engine') return undefined
@@ -238,6 +260,8 @@ export default function App() {
         onChange={setFilters}
         tagOptions={filterOptions.tags}
         stabilityOptions={filterOptions.stabilities}
+        authorOptions={catalogAuthorOptions}
+        sizeBounds={catalogSizeBounds}
       />
 
       <div className={`workspace${showDetail ? '' : ' engine-only'}`}>
