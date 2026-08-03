@@ -195,7 +195,7 @@ Filters run **after** `buildDisplayTree` and only affect what is shown. Checked 
 | Control | Behaviour | Default |
 | --- | --- | --- |
 | Search | Case-insensitive match on label, component id, `modId`, desc | empty |
-| Level | Display filter only — pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Difficulty** ORs in `difficulty` (never part of the cumulative ladder). Missing `effectiveLevel` is excluded when a ladder filter is active. Does **not** mass-check selection. | All levels; Include Difficulty on |
+| Level | Display filter only — pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Difficulty** shows/hides `difficulty` independently of ladder max (including under All levels; never part of the cumulative ladder). Missing `effectiveLevel` is excluded when a ladder filter is active. Does **not** mass-check selection. | All levels; Include Difficulty on |
 | Stability | Multi-select allow-list; **Released** = missing/`released`. Other values discovered from data (`beta`, `alpha`, …) | **Released** only |
 | Tags | Allow-list of discovered tags (checked = show that tag). Untagged always shown unless **Only checked tags** is on | all tags checked; Only checked tags off |
 | Size | Dual-handle range over `mods.csv` Size (bytes); human-readable labels. Inactive when spanning full catalog min/max. Nodes without a resolvable size are hidden when the range is narrowed | full catalog range |

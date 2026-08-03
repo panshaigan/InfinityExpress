@@ -85,8 +85,7 @@ describe('levelFilterRank', () => {
 })
 
 describe('levelPassesFilter', () => {
-  it('passes everything when no ladder max is set', () => {
-    expect(levelPassesFilter('difficulty', null, false, false)).toBe(true)
+  it('passes non-difficulty levels when no ladder max is set', () => {
     expect(levelPassesFilter('quality', null, false, false)).toBe(true)
     expect(levelPassesFilter(undefined, null, false, false)).toBe(true)
   })
@@ -109,6 +108,8 @@ describe('levelPassesFilter', () => {
   it('excludes difficulty unless includeDifficulty', () => {
     expect(levelPassesFilter('difficulty', 'quality', false, false)).toBe(false)
     expect(levelPassesFilter('difficulty', 'quality', false, true)).toBe(true)
+    expect(levelPassesFilter('difficulty', null, false, false)).toBe(false)
+    expect(levelPassesFilter('difficulty', null, false, true)).toBe(true)
   })
 
   it('excludes unleveled nodes when filtering by level', () => {
@@ -188,6 +189,32 @@ describe('filterDisplayTree', () => {
       }),
     )
     expect(ids(out)).toEqual(['a', 'c'])
+  })
+
+  it('hides difficulty under All levels when includeDifficulty is off', () => {
+    const withDiff = filterDisplayTree(
+      tree,
+      criteria({
+        maxLevel: null,
+        includeDifficulty: true,
+        stability: new Set([STABILITY_RELEASED, 'beta']),
+      }),
+    )
+    expect(ids(withDiff)).toContain('c')
+    expect(ids(withDiff)).toContain('a')
+    expect(ids(withDiff)).toContain('nolevel')
+
+    const withoutDiff = filterDisplayTree(
+      tree,
+      criteria({
+        maxLevel: null,
+        includeDifficulty: false,
+        stability: new Set([STABILITY_RELEASED, 'beta']),
+      }),
+    )
+    expect(ids(withoutDiff)).not.toContain('c')
+    expect(ids(withoutDiff)).toContain('a')
+    expect(ids(withoutDiff)).toContain('nolevel')
   })
 
   it('filters stability Released vs beta', () => {
