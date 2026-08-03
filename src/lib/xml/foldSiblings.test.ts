@@ -41,6 +41,8 @@ describe('mergeKey', () => {
   it('uses tag alone for structural org folders', () => {
     expect(mergeKey(container('update'))).toBe('tag:update')
     expect(mergeKey(container('items'))).toBe('tag:items')
+    expect(mergeKey(container('restorations'))).toBe('tag:restorations')
+    expect(mergeKey(container('restructure'))).toBe('tag:restructure')
   })
 
   it('does not merge group/common without sectionId', () => {
@@ -61,6 +63,24 @@ describe('mergeKey', () => {
 })
 
 describe('foldSiblings', () => {
+  it('folds restorations and restructure siblings by tag', () => {
+    const folded = foldSiblings([
+      container('restructure', {}, [component('early-restructure', 0)]),
+      container('quest', {}, [component('quest-a', 1)]),
+      container('restructure', {}, [component('late-restructure', 2)]),
+      container('restorations', {}, [component('early-rest', 3)]),
+      container('restorations', {}, [component('late-rest', 4)]),
+    ])
+
+    expect(folded.map((n) => n.tag)).toEqual(['restructure', 'quest', 'restorations'])
+    expect(
+      folded[0]!.children.map((c) => (c.kind === 'component' ? c.componentId : c.tag)),
+    ).toEqual(['early-restructure', 'late-restructure'])
+    expect(
+      folded[2]!.children.map((c) => (c.kind === 'component' ? c.componentId : c.tag)),
+    ).toEqual(['early-rest', 'late-rest'])
+  })
+
   it('folds structural tags and sectionId groups recursively', () => {
     const earlyWarrior = component('early-warrior', 0)
     const lateWarrior = component('late-warrior', 1)
@@ -266,6 +286,18 @@ describe('curated InstallSequence.xml folding', () => {
     expect(
       add.children.some((c) => c.kind === 'component' && c.componentId === 'rr:7'),
     ).toBe(true)
+
+    const sod = content.children.find((c) => c.tag === 'sod')!
+    expect(sod.children.filter((c) => c.tag === 'restructure')).toHaveLength(1)
+    const sodRestructure = sod.children.find((c) => c.tag === 'restructure')!
+    const sodRestructureIds: string[] = []
+    const walkSod = (n: (typeof sodRestructure.children)[0]) => {
+      if (n.kind === 'component') sodRestructureIds.push(n.componentId)
+      else n.children.forEach(walkSod)
+    }
+    sodRestructure.children.forEach(walkSod)
+    expect(sodRestructureIds).toContain('Reflections_of_Destiny:200')
+    expect(sodRestructureIds).toContain('C#AnotherFineHell-Main')
 
     const earlyWarrior = model.componentsById.get('ZSTweaks:2120')!
     const lateWarrior = model.componentsById.get('SkillsAndAbilitiesWeaponProf1')!

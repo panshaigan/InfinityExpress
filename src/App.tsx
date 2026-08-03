@@ -43,6 +43,7 @@ import { ComponentDetail } from './ui/ComponentDetail'
 import { ContentBranchNav } from './ui/ContentBranchNav'
 import { FiltersStrip } from './ui/FiltersStrip'
 import { LevelSelectStrip } from './ui/LevelSelectStrip'
+import { sortContentSubBranches } from './lib/contentBranchOrder'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
@@ -94,11 +95,12 @@ function findPathToComponent(
 }
 
 function preferredSub(main: DisplayNode, preferredTag: string | null): DisplayNode | null {
+  const ordered = sortContentSubBranches(main.children)
   if (preferredTag) {
-    const match = main.children.find((c) => c.node.tag === preferredTag)
+    const match = ordered.find((c) => c.node.tag === preferredTag)
     if (match) return match
   }
-  return main.children[0] ?? null
+  return ordered[0] ?? null
 }
 
 export default function App() {
@@ -163,7 +165,10 @@ export default function App() {
     if (!contentMainKey) return null
     return contentMainBranches.find((b) => b.node.key === contentMainKey) ?? null
   }, [contentMainBranches, contentMainKey])
-  const contentSubBranches = selectedMain?.children ?? []
+  const contentSubBranches = useMemo(
+    () => sortContentSubBranches(selectedMain?.children ?? []),
+    [selectedMain],
+  )
   const selectedSub = useMemo(() => {
     if (!contentSubKey) return null
     return contentSubBranches.find((b) => b.node.key === contentSubKey) ?? null

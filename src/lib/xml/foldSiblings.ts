@@ -11,6 +11,8 @@ export const STRUCTURAL_MERGE_TAGS = new Set([
   'npc',
   'romances',
   'quest',
+  'restorations',
+  'restructure',
 ])
 
 /**

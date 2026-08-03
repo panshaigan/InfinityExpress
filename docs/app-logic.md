@@ -64,7 +64,7 @@ Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not i
 4. Each `<component id="…">` also gets:
    - `componentId`
    - `orderIndex` — monotonic counter in **document order** (used for export)
-5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Structural org tags (`add`, `update`, `tweaks`, `items`, …) reunite by tag; labeled buckets (`group`, `restorations`, `restructure`, `common`, …) reunite only when they share `sectionId`. Mods/components/alternatives are never folded. Export still uses each component’s original `orderIndex`.
+5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Structural org tags (`add`, `update`, `tweaks`, `items`, `quest`, `npc`, `restorations`, `restructure`, …) reunite by tag; labeled buckets (`group`, `common`, …) reunite only when they share `sectionId`. Mods/components/alternatives are never folded. Export still uses each component’s original `orderIndex`.
 6. **Content station remount (UI only, after fold):** depending on the selected game, commons are absorbed into a target bucket with the same sibling-fold rules (`npc`/`items`/`tweaks` reunite by tag). `sod` / `pst` stay top-level.
    - `bg1` → fold `universal-bg-content` + `universal-bg-iwd` into `bg1-content`
    - `bg2` → fold both commons into `bg2-content`
@@ -225,9 +225,9 @@ Station list-pane heading uses `STATION_LABELS`. Under it, the first station roo
 On the Content station only, two button rows sit under the heading:
 
 1. **Main branches** — one button per top-level remapped content bucket (`bg1`, `sod`, `bg2`, `common`, …). Label from `label` attr, else the tag name.
-2. **Subbranches** — one button per direct child of the selected main branch (`restorations`, `restructure`, `quest`, `npc`, …). Same label rule; buttons are dynamic (e.g. SoD may omit `restorations`).
+2. **Subbranches** — one button per direct child of the selected main branch. Presence is dynamic (e.g. SoD may omit `restorations` / `items`). Button order is fixed: `restorations` → `restructure` → `quest` → `npc` → `items` → `tweaks` (other tags append after). Same label rule (`label` attr, else tag). Sibling containers with the same structural tag (including `restorations` / `restructure`) are merged into one button and one list.
 
-The list shows **only the children** of the selected subbranch (no main/sub wrapper rows). First main and first subbranch autoselect when entering Content or when the current keys disappear after remap/filter. Relation links into Content also select the main/sub path that contains the target.
+The list shows **only the children** of the selected subbranch (no main/sub wrapper rows). First main and first subbranch (in the order above) autoselect when entering Content or when the current keys disappear after remap/filter. Switching main branches prefers the same subbranch tag when present. Relation links into Content also select the main/sub path that contains the target.
 
 ### Detail panel
 

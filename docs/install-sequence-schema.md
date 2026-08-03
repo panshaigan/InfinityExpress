@@ -38,9 +38,9 @@ Any non-station element may nest further. Common ones:
 
 - `component` — installable unit (`id` required, `label` recommended)
 - `mod` — named mod grouping components
-- `group`, `restorations`, `restructure`, `alternatives` — grouping / exclusive choice (`restorations` / `restructure` behave like `group`: default folded in the UI; merge only via `sectionId`, not by tag alone)
+- `group`, `alternatives` — grouping / exclusive choice (`group` merges only via `sectionId`)
 - `bg1`, `sod`, `bg2`, `iwd`, `pst`, `common` — content subsections (main branches in the Content UI)
-- `add`, `update`, `upgrade`, `delete`, `tweaks`, `items`, `npc`, `romances`, `quest` — organizational folders (Content subbranches are typically `restorations`, `restructure`, `quest`, `npc`, `items`, `tweaks`)
+- `add`, `update`, `upgrade`, `delete`, `tweaks`, `items`, `npc`, `romances`, `quest`, `restorations`, `restructure` — organizational folders (Content subbranches are typically `restorations`, `restructure`, `quest`, `npc`, `items`, `tweaks`; `restorations` / `restructure` also default-folded in the tree like `group`)
 
 Unknown nesting tags are still rendered as tree nodes.
 
@@ -49,7 +49,7 @@ Unknown nesting tags are still rendered as tree nodes.
 | Attribute | Meaning |
 | --- | --- |
 | `id` | Component id (required on `component`) |
-| `sectionId` | Stable section identity for UI merge across split station blocks. Containers with the same `sectionId` fold into one (first attrs kept; children appended then re-folded). Required for intentional merges of `group` / `restorations` / `restructure` / `common` / similar labeled buckets — labels alone never merge. Org folders `add`, `update`, `upgrade`, `delete`, `tweaks`, `items`, `npc`, `romances`, `quest` merge by tag alone when `sectionId` is absent. `mod`, `component`, and `alternatives` never merge. Content game buckets use `bg1-content`, `bg2-content`, `iwd-content` as remount targets; commons use `universal-bg-content` / `universal-bg-iwd` (game-dependent absorb into those buckets — see app-logic.md). |
+| `sectionId` | Stable section identity for UI merge across split station blocks. Containers with the same `sectionId` fold into one (first attrs kept; children appended then re-folded). Required for intentional merges of `group` / `common` / similar labeled buckets — labels alone never merge. Org folders `add`, `update`, `upgrade`, `delete`, `tweaks`, `items`, `npc`, `romances`, `quest`, `restorations`, `restructure` merge by tag alone when `sectionId` is absent. `mod`, `component`, and `alternatives` never merge. Content game buckets use `bg1-content`, `bg2-content`, `iwd-content` as remount targets; commons use `universal-bg-content` / `universal-bg-iwd` (game-dependent absorb into those buckets — see app-logic.md). |
 | `label` | Display name |
 | `desc` | Longer description |
 | `modId` | Mod package id (download key later) |

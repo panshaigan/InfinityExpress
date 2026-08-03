@@ -86,8 +86,8 @@
 	</gfx>
 
 	<content>
-		<bg1 sectionId="bg1-content" label="BG1 Content mods" engine="bg1,eet">
-			<restorations>
+		<bg1 sectionId="bg1-content" label="BG1" engine="bg1,eet">
+			<restorations label="Restorations">
 				<mod id="bg1ub" label="Unfinished Business" level="restoration" engine="bg1,eet1">
 					<component id="bg1ub:11" label="Scar and the Sashenstar's Daughter" />
 					<component id="bg1ub:12" label="Quoningar, the Cleric" />
@@ -106,8 +106,8 @@
 					<component id="bg1ub:34" label="Chapter 6 Dialogue Restorations" />
 				</mod>
 			</restorations>
-			<restructure>
-				<alternatives label="The way of handling BG1 postgame">
+			<restructure label="Restructure">
+				<alternatives label="Postgame" desc="Allows playing after killing Sarevok">
 					<mod id="EndlessBG1" label="Endless BG1" level="restructure">
 						<component id="EBG1_MainComponent" label="Main Component (Required)" core="1" />
 						<component id="EBG1_MoreFlavor" label="More Flavor to Hero of Baldur's Gate (Includes PC's Residence Inside Palace)" />
@@ -132,7 +132,7 @@
 					</mod>
 				</alternatives>
 			</restructure>
-			<quest>
+			<quest label="Quests and Encounters">
 				<component id="Loretakers:0" label="Loretakers" modId="Loretakers" tags="bigQuest" level="blendWell" />
 				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" level="blendWell" tags="smallQuest">
 					<component id="bgqe_slimequest" label="Slime Quest" />
@@ -258,7 +258,7 @@
 					<component id="candlekeep_revisited:1" label="BG1 Expanded Starting Sequence" tags="smallQuest" modId="Candlekeep-Revisited" />
 				</mod>
 			</quest>
-			<npc>
+			<npc label="Joinable NPCs">
 				<expansions>
 					<mod id="BG1NPC" label="The BG1NPC Project" desc="Make the original BG1 NPCs talkative as in BG2">
 						<component id="bg1npc_project-main" label="Required Modifications" core="1" />
@@ -329,7 +329,7 @@
 					</group>
 				</tweaks>
 			</npc>
-			<items>
+			<items label="Items">
 				<add>
 					<component id="cd_tweaks_taerom_makes_multiple_ankheg_armor" label="Taerom Makes Additional Ankheg Armor" modId="Tweaks-Anthology" level="vanillaPlus" />
 					<component id="ForgottenArmament-Breach" label="Add Breach Scrolls to Sorcerous Sundries" modId="forgotten-armament" />   
@@ -342,7 +342,7 @@
 					<component id="ThalantyrItemUpgrade-Main" label="Thalantyr Item Upgrade - introduce item upgrading in BG1" modId="thalan" />
 				</upgrade>
 			</items>
-			<tweaks noBranches="1">
+			<tweaks label="Tweaks" noBranches="1">
 				<mod id="Olvyn-Tweaks" label="METweaks">
 					<component id="METweaks:2800" label="Make it possible to enter the Nashkel Mines through the back cave entrance" level="restructure" />
 					<component id="METweaks:3100" label="Make it so the Jacil and Wiven encounters aren't replaced by other quests" level="vanillaPlus" />
@@ -355,8 +355,8 @@
 				<component id="stratagems:4145" label="Remove the tutorial NPCs from Candlekeep" modId="SwordCoastStratagems" level="vanillaPlus" />    
 			</tweaks>
 		</bg1>
-		<sod label="SoD Content mods" engine="bg1,eet">
-			<restructure>
+		<sod label="SoD" engine="bg1,eet">
+			<restructure label="Restructure">
 				<mod id="Reflections-of-Destiny" label="Reflections_of_Destiny - SoD Story Rewrite" displayIfNot="C#AnotherFineHell-Main|SoDRoadToDiscovery-main" groupWith="sodRewrite">
 					<component id="Reflections_of_Destiny:200" label="Rewriting History" />
 					<component id="Reflections_of_Destiny:220" label="Magical Realism" />
@@ -364,7 +364,7 @@
 					<component id="Reflections_of_Destiny:240" label="The Precipice of Death" />
 				</mod>
 			</restructure>
-			<tweaks noBranches="1">
+			<tweaks label="Tweaks" noBranches="1">
 				<mod id="themed_tweaks" label="SoD Themed Tweaks" level="vanillaPlus">
 					<component id="#L-SOD-AID_IMOEN" label="Allow PC to give aid to Imoen after attack in palace" />
 					<component id="#L-SOD-STAT_BASED_OPTIONS" label="Stat-based observations and quest options" />
@@ -379,7 +379,7 @@
 					<component id="JasteySoDTweaks_HephernaanTakesKey" label="Hephernaan takes Dragonspear Vault Key" />
 				</mod>
 			</tweaks>
-			<quest>
+			<quest label="Quests and Encounters">
 				<mod id="The_Boareskyr_Bridge_Scene" label="The Boareskyr Bridge Scene" level="vanillaPlus">
 					<component id="c#sodboabri_AcknowledgeSceneBoareskyrBridge" label="Scene at Boareskyr Bridge will be Acknowledged: Add NPC Reactions" alwaysIf="c#sodboabri_DifferentChoices" noDisplay="1" />
 					<component id="c#sodboabri_TescriptionText" label="Add Description Text to Original Scene at Bridge" alwaysIf="c#sodboabri_DifferentChoices" noDisplay="1" />
@@ -387,7 +387,7 @@
 					<component id="c#sodboabri_StatChanges" label="Add Stat Changes to Choices at Bridge" />
 				</mod>
 			</quest>
-			<restructure>
+			<restructure label="Restructure">
 				<mod id="Another_Fine_Hell" label="Another Fine Hell for SoD - SoD Story Rewrite" level="blendWell" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240"  groupWith="sodRewrite">
 					<component id="C#AnotherFineHell-Main" label="Another Fine Hell - Optional Ending for SoD and BGII Closure" core="1" />
 					<component id="C#AnotherFineHell-Extended" label="Get the Hells Out - Quest Option with Extended BGII Content" />
@@ -414,7 +414,7 @@
 					<component id="Imoen4Ever-SoD-PIDChapters8to12" label="Give Imoen PID during chapters 8 to 12" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" />
 				</mod>
 			</restructure>
-			<npc>
+			<npc label="Joinable NPCs">
 				<expansions>
 					<component id="kinfriendship:1" label="M'Khiin Friendship for Siege of Dragonspear" modId="M-khiin-Friendship" />
 				</expansions>
@@ -431,8 +431,8 @@
 				</tweaks>
 			</npc>
 		</sod>
-		<bg2 sectionId="bg2-content" label="BG2 Content mods" engine="bg2,eet">
-			<restructure>
+		<bg2 sectionId="bg2-content" label="BG2" engine="bg2,eet">
+			<restructure label="Restructure">
 				<component id="Reflections_of_Destiny:330" label="Reflections of Destiny BG2: Wherever You Go There You Are (Allows visiting SoD maps in BG2 if they havent been played yet.)" modId="Reflections-of-Destiny" displayIf="Reflections_of_Destiny:100" level="restructure" />
 				<mod id="imoen4Ever" label="Imoen 4 Ever - Modify the story to allow Imoen staying in the party" level="restructure">
 					<component id="Imoen4Ever-BGII-ImoenReturnsChapter2" label="Imoen 4 Ever - Modify the story to allow Imoen staying in the party" />
@@ -458,7 +458,7 @@
 				</mod>
 				<component id="SoAExtended:1" label="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" tags="bigQuest" level="restructure" />
 			</restructure>
-			<restorations level="restoration">
+			<restorations label="Restorations" level="restoration">
 				<mod id="UnfinishedBusiness" label="Unfinished Business BG2" tags="smallQuest">
 					<component id="ub:5" label="The Pai'Na/Spider's Bane Quest" level="vanillaPlus" />
 					<component id="ub:6" label="Restored Crooked Crane Inn" level="restoration" />
@@ -487,7 +487,7 @@
 					<component id="Almaterias_Restoration_Project-Restored_Waukeens_Promenade_Cutscene" label="Restored Waukeen's Promenade Cutscene" />
 				</mod>
 			</restorations>
-			<quest>
+			<quest label="Quests and Encounters">
 				<component id="AdalonsBlood-main" label="Adalon's Blood" desc="Allows good characters to finish the skinner quest in a good way" modId="Adalons_Blood" tags="smallQuest" level="vanillaPlus" />
 				<mod id="hiddenadventure" label="Hidden Adventures" tags="smallQuest">
 					<component id="hidden_adventures-ladyelgea" label="Lady Elgea's extended plot" />
@@ -527,7 +527,7 @@
 				<component id="TPoJ:0" label="The Pursuit of Justice" modId="the-pursuit-of-justice" tags="bigQuest" level="vanillaPlus" />
 				<component id="saradas_magic_npc_for_bg2_monk" label="Saradas Magic" desc="SoA content + recruitable NPC (Human Neutral Good Cleric/Mage)" modId="Saradas-Magic-BG2" />
 			</quest>
-			<npc>
+			<npc label="Joinable NPCs">
 				<expansions>
 					<component id="imoenfriendship:0" label="Imoen Friendship" modId="Imoen-Friendship" />
 					<component id="jaheira_friendship" label="Jaheira Friendship" modId="Jaheira-Friendship" />
@@ -694,7 +694,7 @@
 					<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" />
 				</tweaks>
 			</npc>
-			<items>
+			<items label="Items">
 				<add noBranches="1">
 					<component id="u#_under-represented_items" label="Underrepresented Items From Icewind Dale II" modId="Under-Respresented_Items" />
 					<component id="L#-SKIECOST-SHOP" label="Add brand new SoD-oriented items to BG2" modId="skie-the-cost-of-one-girls-soul" />
@@ -793,7 +793,7 @@
 					</mod>
 				</upgrade>
 			</items>
-			<tweaks>
+			<tweaks label="Tweaks">
 				<component id="#L-TRANSITIONS-RESTORE_POWER" label="Use Irenicus in hell movie as dream to restore Bhaalspawn powers" modId="themed_tweaks" level="blendWell" />
 				<component id="HouseTweaks:16" label="Good-Aligned Roleplay Rewards" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="HouseTweaks:44" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" level="blendWell" />
@@ -827,8 +827,8 @@
 				</mod>
 			</tweaks>
 		</bg2>
-		<iwd sectionId="iwd-content" label="IWD Content mods" engine="iwd">
-			<quest>
+		<iwd sectionId="iwd-content" label="IWD" engine="iwd">
+			<quest label="Quests and Encounters">
 				<mod id="iwd_unfinished_business" label="Unfinished Business for Icewind Dale">
 					<component id="cd_iwd_ub_markeths_ring" label="Marketh's Ring" />
 					<component id="cd_iwd_ub_vale_of_shadows_shadow_respawn" label="Actual Shadows in Vale of Shadows" />
@@ -844,7 +844,7 @@
 				<component id="L#-BLOOM-ROT-NOPATCH" label="The War of Bloom and Rot" modId="the-war-of-bloom-and-rot" />
 				<component id="L#-Arszyk-IWD" label="Arszyk's Wonderful Decay" desc="NPC (Vampire Neutral Evil Fighter/Druid) and a late-game quest" modId="arszyk" />
 			</quest>
-			<npc>
+			<npc label="Joinable NPCs">
 				<custom>
 					<mod id="IWD_NPC" label="Icewind Dale NPCs Pack">
 						<component id="IWDNPC:0" label="Icewind Dale NPCs Pack" core="1"/>
@@ -925,7 +925,7 @@
 			<tweaks>
 				<component id="HouseTweaks:25" label="Reputation Bonuses" modId="House-Rule-Tweaks" level="blendWell" />
 			</tweaks>
-			<items>
+			<items label="Items">
 				<add noBranches="1">
 					<component id="L#-FINDIT-IWD" label="FindIt Item Pack" modId="findit-iwd" />
 					<component id="stratagems:3510" label="Wider availability of wizard spell scrolls in Icewind Dale" modId="SwordCoastStratagems" />
@@ -947,14 +947,14 @@
 					</mod>
 				</upgrade>
 			</items>
-			<tweaks>
+			<tweaks label="Tweaks">
 				<component id="A7_MISCTWEAKS_GREAT_OAKS_BEACON_IWDEE" label="Add Great Oak's Beacon ability (teleport to Kuldahar)" modId="A7-MiscTweaks" />
 				<component id="cd_tweaks_iwd_to_how_transition_no_change" label="Automatic Transition to the Heart of Winter Expansion after finishing the main campaign" modId="Tweaks-Anthology" />
 				<component id="HoWMod:0" label="HoW Ending Tweak" desc="The expansion does not end immediately after defeating the final boss. You will be able to return to Lonelywood and complete any unfinished business." modId="HoWMod" />
 			</tweaks>
 		</iwd>
-		<pst label="PST Content mods" engine="pst">
-			<quest>
+		<pst label="PST" engine="pst">
+			<quest label="Quests and Encounters">
 				<component id="A7-PST-UB-RELOADED-ALL" label="PS:T Unfinished Business - Reloaded" modId="PST-UB-reloaded" engine="pst"/>
 				<component id="A7-PST-UB-RELOADED-EXPANDED_DEIONARRA_TRUTH" label="PS:T UB - Expanded Deionarra's Truth Mod" modId="PST-UB-reloaded" engine="pst"/>
 				<mod modId="blizzard-in-baator" engine="pst">
@@ -964,7 +964,7 @@
 					<component id="BlizzardinBaator:7" label="BlizzardinBaator - Restore footsteps/movement sounds, absent in the base game" alwaysIf="BlizzardinBaator:0" noDisplay="1" />
 				</mod>
 			</quest>
-			<items>
+			<items label="Items">
 				<add>
 					<mod modId="A7-BagsOfTorment" engine="pst">
 						<component id="A7-BAGSOFTORMENT-MAIN" label="Bags of Torment - Containers for PST:EE" />
@@ -972,13 +972,13 @@
 					</mod>
 				</add>
 			</items>
-			<tweaks>
+			<tweaks label="Tweaks">
 				<component id="cd_tweaks_add_map_notes" label="Add Map Notes" modId="Tweaks-Anthology" engine="pst"/>
 				<component id="cd_tweaks_reset_undersigil_fow" label="Reset UnderSigil Fog of War" modId="Tweaks-Anthology" engine="pst" />
 			</tweaks>
 		</pst>
-		<common sectionId="universal-bg-content" label="Universal BG Content Mods" engine="bg,eet">
-			<npc>
+		<common sectionId="universal-bg-content" label="Common BG1/BG2" engine="bg,eet">
+			<npc label="Joinable NPCs">
 				<custom>
 					<!-- component id="c#husam-main" label="Husam - Human Chaotic Neutral Thief" modId="Husam_NPC" stability="beta" /-->
 				</custom>
@@ -992,7 +992,7 @@
 					<component id="reflection:0" label="Reflection (new dialogue options)" modId="Reflection" />
 				</tweaks>
 			</npc>
-			<items>
+			<items label="Items">
 				<add noBranches="1">
 					<mod id="EET_Tweaks" label="Baldur's Gate: Enhanced Edition Trilogy Tweaks" level="vanillaPlus">
 						<component id="EET_Tweaks:4050" label="Books/Scrolls categorization" />
@@ -1046,7 +1046,7 @@
 					</mod>
 				</delete>
 			</items>
-			<tweaks noBranches="1">
+			<tweaks label="Tweaks" noBranches="1">
 				<mod id="DialogueChoiceAdditions" label="Dialogue Choice Additions">
 					<component id="DialogueChoiceAdditions-Core" label="Dialogue Choice Additions" />
 					<component id="DialogueChoiceAdditions-VVECompatibilityPatch" label="VVE Compatibility Patch" alwaysIf="DialogueChoiceAdditions-Core,vveBG:0" noDisplay="1" />
@@ -1064,7 +1064,7 @@
 			</tweaks>
 		</common>
 		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
-			<npc>
+			<npc label="Joinable NPCs">
 				<tweaks>
 					<component id="cd_tweaks_happy_neutrals" label="Neutral Characters Make Happy Comments at Mid-Range Reputation" modId="Tweaks-Anthology" />
 					<component id="cd_tweaks_tob_style_npcs" label="ToB-Style NPCs" desc="Alter all joinable NPCs to immediately level-up upon joining, with a caveat: all creature files are moved down to their lowest experience version" modId="Tweaks-Anthology" />
@@ -1075,7 +1075,7 @@
 					</alternatives>
 				</tweaks>
 			</npc>
-			<items>
+			<items label="Items">
 				<add noBranches="1">
 					<component id="cd_tweaks_add_bags_of_holding" label="Add Bags of Holding" modId="Tweaks-Anthology" />
 					<mod model="msfm">
@@ -1120,7 +1120,7 @@
 					</mod>
 				</update>
 			</items>
-			<tweaks noBranches="1">
+			<tweaks label="Tweaks" noBranches="1">
 				<component id="METweaks:2600" label="No Party Required area transitions" modId="Olvyn-Tweaks" />
 				<mod id="Tweaks-Anthology">
 					<component id="cd_tweaks_noncombat_speed_casting_increase_50" label="Increase movement and casting speed by 50 percent outside of combat" />
