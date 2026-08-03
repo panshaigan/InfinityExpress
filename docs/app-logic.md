@@ -183,13 +183,15 @@ Filters run **after** `buildDisplayTree` and only affect what is shown. Checked 
 | Control | Behaviour | Default |
 | --- | --- | --- |
 | Search | Case-insensitive match on label, component id, `modId`, desc | empty |
-| Level | Pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Difficulty** ORs in `difficulty` (never part of the cumulative ladder). | All levels |
-| Stability | Multi-select; **Released** = missing/`released`. Other values discovered from data (`beta`, `alpha`, …) | all |
-| Tags | Multi-select, **OR** match on comma-separated `tags` | all |
+| Level | Pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Difficulty** ORs in `difficulty` (never part of the cumulative ladder). Missing `effectiveLevel` is excluded when a ladder filter is active. | All levels; Include Difficulty on |
+| Stability | Multi-select allow-list; **Released** = missing/`released`. Other values discovered from data (`beta`, `alpha`, …) | **Released** only |
+| Tags | Allow-list of discovered tags (checked = show that tag). Untagged always shown unless **Only checked tags** is on | all tags checked; Only checked tags off |
 | Hidden | Show / Hide / Only for `noDisplay` | **Hide** |
-| Required | Show / Hide / Only for `required` | **Show** |
+| Required | Show / Hide / Only for `required` | **Hide** |
 
-Level filter ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `quality`. Token `restructure` shares the Well blended bucket. Unleveled nodes always pass a level filter.
+Level filter ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `quality`. Token `restructure` shares the Well blended bucket. Unleveled nodes are treated as above the ladder and hidden when filtering by level.
+
+The unfolded filter options panel stays open until the user clicks **Hide** (it does not close on outside click).
 
 When Hidden is Show or Only, `buildDisplayTree` is called with `includeHidden` so `noDisplay` components can appear.
 

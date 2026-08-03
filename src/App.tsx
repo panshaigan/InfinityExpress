@@ -17,8 +17,8 @@ import {
   type DisplayNode,
 } from './lib/selection/visibility'
 import {
-  DEFAULT_FILTER_CRITERIA,
   collectFilterOptions,
+  createDefaultFilterCriteria,
   filterDisplayTree,
   filtersNeedIncludeHidden,
   type FilterCriteria,
@@ -65,13 +65,11 @@ export default function App() {
   const [focusedKey, setFocusedKey] = useState<string | null>(null)
   const [focusedComponentId, setFocusedComponentId] = useState<string | null>(null)
   const [pendingFocusId, setPendingFocusId] = useState<string | null>(null)
-  const [filters, setFilters] = useState<FilterCriteria>(() => ({
-    ...DEFAULT_FILTER_CRITERIA,
-    stability: new Set(),
-    tags: new Set(),
-  }))
 
   const filterOptions = useMemo(() => collectFilterOptions(model), [model])
+  const [filters, setFilters] = useState<FilterCriteria>(() =>
+    createDefaultFilterCriteria(collectFilterOptions(parsed.model).tags),
+  )
 
   const visibleStations = useMemo(() => {
     if (!game) return [] as StationId[]

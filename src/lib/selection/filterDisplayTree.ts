@@ -19,21 +19,37 @@ export interface FilterCriteria {
   includeDifficulty: boolean
   hiddenMode: TriFilterMode
   requiredMode: TriFilterMode
-  /** Empty = all; values are normalized stability tokens (incl. STABILITY_RELEASED). */
+  /** Allow-list of stability tokens (incl. STABILITY_RELEASED). */
   stability: ReadonlySet<string>
-  /** Empty = all; OR match across selected tags. */
+  /** Allow-list of tag tokens (all discovered tags checked by default). */
   tags: ReadonlySet<string>
+  /**
+   * When false (default): untagged always pass; tagged pass if any tag is allowed.
+   * When true: only components with at least one allowed tag pass (untagged fail).
+   */
+  tagsOnlyChecked: boolean
 }
 
 export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   search: '',
   maxLevel: null,
   levelExact: false,
-  includeDifficulty: false,
+  includeDifficulty: true,
   hiddenMode: 'hide',
-  requiredMode: 'show',
-  stability: new Set(),
+  requiredMode: 'hide',
+  stability: new Set([STABILITY_RELEASED]),
   tags: new Set(),
+  tagsOnlyChecked: false,
+}
+
+/** Build default criteria with all discovered tags checked and Released-only stability. */
+export function createDefaultFilterCriteria(tagOptions: string[]): FilterCriteria {
+  return {
+    ...DEFAULT_FILTER_CRITERIA,
+    stability: new Set([STABILITY_RELEASED]),
+    tags: new Set(tagOptions),
+    tagsOnlyChecked: false,
+  }
 }
 
 export function splitTags(tags: string | undefined): string[] {
@@ -61,14 +77,27 @@ export function filtersNeedIncludeHidden(criteria: FilterCriteria): boolean {
   return criteria.hiddenMode !== 'hide'
 }
 
-export function isFilterActive(criteria: FilterCriteria): boolean {
+function setsEqual(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
+  if (a.size !== b.size) return false
+  for (const v of a) {
+    if (!b.has(v)) return false
+  }
+  return true
+}
+
+/** True when criteria differ from the seeded defaults for the given tag options. */
+export function isFilterActive(criteria: FilterCriteria, tagOptions: string[]): boolean {
+  const defaults = createDefaultFilterCriteria(tagOptions)
   return (
     criteria.search.trim() !== '' ||
     criteria.maxLevel !== null ||
-    criteria.hiddenMode !== 'hide' ||
-    criteria.requiredMode !== 'show' ||
-    criteria.stability.size > 0 ||
-    criteria.tags.size > 0
+    criteria.levelExact !== defaults.levelExact ||
+    criteria.includeDifficulty !== defaults.includeDifficulty ||
+    criteria.hiddenMode !== defaults.hiddenMode ||
+    criteria.requiredMode !== defaults.requiredMode ||
+    criteria.tagsOnlyChecked !== defaults.tagsOnlyChecked ||
+    !setsEqual(criteria.stability, defaults.stability) ||
+    !setsEqual(criteria.tags, defaults.tags)
   )
 }
 
@@ -91,6 +120,15 @@ export function collectFilterOptions(model: InstallSequenceModel): {
 
 function displaySource(display: DisplayNode): TreeNode {
   return display.collapsedComponent ?? display.node
+}
+
+function tagsPass(
+  nodeTags: string[],
+  allowed: ReadonlySet<string>,
+  onlyChecked: boolean,
+): boolean {
+  if (nodeTags.length === 0) return !onlyChecked
+  return nodeTags.some((t) => allowed.has(t))
 }
 
 function leafMatchesCriteria(display: DisplayNode, criteria: FilterCriteria): boolean {
@@ -118,14 +156,11 @@ function leafMatchesCriteria(display: DisplayNode, criteria: FilterCriteria): bo
   if (criteria.requiredMode === 'only' && !isRequired) return false
   if (criteria.requiredMode === 'hide' && isRequired) return false
 
-  if (criteria.stability.size > 0) {
-    const stab = normalizeStability(attrs.stability)
-    if (!criteria.stability.has(stab)) return false
-  }
+  const stab = normalizeStability(attrs.stability)
+  if (!criteria.stability.has(stab)) return false
 
-  if (criteria.tags.size > 0) {
-    const nodeTags = splitTags(attrs.tags)
-    if (!nodeTags.some((t) => criteria.tags.has(t))) return false
+  if (!tagsPass(splitTags(attrs.tags), criteria.tags, criteria.tagsOnlyChecked)) {
+    return false
   }
 
   const q = criteria.search.trim().toLowerCase()

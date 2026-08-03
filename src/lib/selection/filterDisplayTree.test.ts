@@ -4,14 +4,16 @@ import {
   levelPassesFilter,
 } from '../levels'
 import {
-  DEFAULT_FILTER_CRITERIA,
   STABILITY_RELEASED,
+  createDefaultFilterCriteria,
   filterDisplayTree,
   normalizeStability,
   type FilterCriteria,
 } from '../selection/filterDisplayTree'
 import type { DisplayNode } from '../selection/visibility'
 import type { ComponentNode, TreeNode } from '../xml/schema'
+
+const ALL_TEST_TAGS = ['bigQuest', 'smallQuest']
 
 function component(
   id: string,
@@ -45,12 +47,13 @@ function group(key: string, children: DisplayNode[], label = key): DisplayNode {
   return { node, children }
 }
 
-function criteria(partial: Partial<FilterCriteria>): FilterCriteria {
+function criteria(partial: Partial<FilterCriteria> = {}): FilterCriteria {
+  const base = createDefaultFilterCriteria(ALL_TEST_TAGS)
   return {
-    ...DEFAULT_FILTER_CRITERIA,
+    ...base,
     ...partial,
-    stability: partial.stability ?? DEFAULT_FILTER_CRITERIA.stability,
-    tags: partial.tags ?? DEFAULT_FILTER_CRITERIA.tags,
+    stability: partial.stability ?? base.stability,
+    tags: partial.tags ?? base.tags,
   }
 }
 
@@ -83,6 +86,7 @@ describe('levelPassesFilter', () => {
   it('passes everything when no ladder max is set', () => {
     expect(levelPassesFilter('difficulty', null, false, false)).toBe(true)
     expect(levelPassesFilter('quality', null, false, false)).toBe(true)
+    expect(levelPassesFilter(undefined, null, false, false)).toBe(true)
   })
 
   it('is cumulative by default', () => {
@@ -105,8 +109,9 @@ describe('levelPassesFilter', () => {
     expect(levelPassesFilter('difficulty', 'quality', false, true)).toBe(true)
   })
 
-  it('always passes unleveled nodes when filtering', () => {
-    expect(levelPassesFilter(undefined, 'fixes', true, false)).toBe(true)
+  it('excludes unleveled nodes when filtering by level', () => {
+    expect(levelPassesFilter(undefined, 'fixes', true, false)).toBe(false)
+    expect(levelPassesFilter(undefined, 'quality', false, true)).toBe(false)
   })
 })
 
@@ -147,12 +152,20 @@ describe('filterDisplayTree', () => {
         tags: 'smallQuest',
       }),
       component('f', { label: 'Plain', effectiveLevel: 'quality' }),
+      component('nolevel', { label: 'No Level Item' }),
     ]),
   ]
 
-  it('filters cumulatively by level (hidden still hidden by default)', () => {
+  it('filters cumulatively by level (required/hidden/beta excluded by defaults)', () => {
     const out = filterDisplayTree(tree, criteria({ maxLevel: 'vanillaPlus' }))
-    expect(ids(out)).toEqual(['a', 'reqVis'])
+    expect(ids(out)).toEqual(['a'])
+  })
+
+  it('excludes unleveled when a level filter is active', () => {
+    const out = filterDisplayTree(tree, criteria({ maxLevel: 'quality' }))
+    expect(ids(out)).not.toContain('nolevel')
+    expect(ids(out)).toContain('a')
+    expect(ids(out)).toContain('f')
   })
 
   it('exact blendWell includes restructure', () => {
@@ -166,9 +179,13 @@ describe('filterDisplayTree', () => {
   it('ORs difficulty when includeDifficulty', () => {
     const out = filterDisplayTree(
       tree,
-      criteria({ maxLevel: 'fixes', includeDifficulty: true }),
+      criteria({
+        maxLevel: 'fixes',
+        includeDifficulty: true,
+        stability: new Set([STABILITY_RELEASED, 'beta']),
+      }),
     )
-    expect(ids(out)).toEqual(['a', 'c', 'reqVis'])
+    expect(ids(out)).toEqual(['a', 'c'])
   })
 
   it('filters stability Released vs beta', () => {
@@ -176,24 +193,35 @@ describe('filterDisplayTree', () => {
       tree,
       criteria({ stability: new Set([STABILITY_RELEASED]) }),
     )
-    expect(ids(released)).toEqual(['a', 'b', 'reqVis', 'e', 'f'])
+    expect(ids(released)).toEqual(['a', 'b', 'e', 'f', 'nolevel'])
 
     const beta = filterDisplayTree(tree, criteria({ stability: new Set(['beta']) }))
     expect(ids(beta)).toEqual(['c'])
   })
 
-  it('matches tags with OR', () => {
+  it('tag allow-list: unchecking hides that tag; untagged still show', () => {
+    const withoutBig = filterDisplayTree(
+      tree,
+      criteria({ tags: new Set(['smallQuest']) }),
+    )
+    expect(ids(withoutBig)).toEqual(['a', 'e', 'f', 'nolevel'])
+  })
+
+  it('only checked tags hides untagged', () => {
     const out = filterDisplayTree(
       tree,
-      criteria({ tags: new Set(['bigQuest', 'smallQuest']) }),
+      criteria({
+        tags: new Set(['bigQuest', 'smallQuest']),
+        tagsOnlyChecked: true,
+      }),
     )
     expect(ids(out)).toEqual(['b', 'e'])
   })
 
   it('supports required only / hide', () => {
-    expect(ids(filterDisplayTree(tree, criteria({ requiredMode: 'only' })))).toEqual([
-      'reqVis',
-    ])
+    expect(
+      ids(filterDisplayTree(tree, criteria({ requiredMode: 'only' }))),
+    ).toEqual(['reqVis'])
     expect(
       ids(
         filterDisplayTree(
@@ -205,28 +233,50 @@ describe('filterDisplayTree', () => {
     expect(ids(filterDisplayTree(tree, criteria({ requiredMode: 'hide' })))).toEqual([
       'a',
       'b',
-      'c',
       'e',
       'f',
+      'nolevel',
     ])
   })
 
   it('supports hidden only', () => {
-    expect(ids(filterDisplayTree(tree, criteria({ hiddenMode: 'only' })))).toEqual(['d'])
+    expect(
+      ids(
+        filterDisplayTree(
+          tree,
+          criteria({ hiddenMode: 'only', requiredMode: 'show' }),
+        ),
+      ),
+    ).toEqual(['d'])
   })
 
   it('searches label and id', () => {
     expect(ids(filterDisplayTree(tree, criteria({ search: 'quest' })))).toEqual(['b'])
-    expect(ids(filterDisplayTree(tree, criteria({ search: 'Hard' })))).toEqual(['c'])
-    expect(ids(filterDisplayTree(tree, criteria({ search: 'reqVis' })))).toEqual([
-      'reqVis',
-    ])
+    expect(
+      ids(
+        filterDisplayTree(
+          tree,
+          criteria({
+            search: 'Hard',
+            stability: new Set([STABILITY_RELEASED, 'beta']),
+          }),
+        ),
+      ),
+    ).toEqual(['c'])
+    expect(
+      ids(
+        filterDisplayTree(
+          tree,
+          criteria({ search: 'reqVis', requiredMode: 'show' }),
+        ),
+      ),
+    ).toEqual(['reqVis'])
   })
 
   it('keeps ancestor groups for matching leaves', () => {
     const out = filterDisplayTree(tree, criteria({ maxLevel: 'fixes', levelExact: true }))
     expect(out).toHaveLength(1)
     expect(out[0].node.attrs.label).toBe('g1')
-    expect(ids(out)).toEqual(['a', 'reqVis'])
+    expect(ids(out)).toEqual(['a'])
   })
 })

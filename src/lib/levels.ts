@@ -47,7 +47,7 @@ export function levelFilterRank(level: string | undefined): number | null {
 /**
  * Whether a node's effectiveLevel passes the level filter.
  * No ladder selection → everything passes (Difficulty toggle ignored).
- * Unleveled nodes always pass when a ladder filter is active.
+ * Missing level fails when a ladder filter is active (treated as above the ladder).
  * Difficulty only when `includeDifficulty` is on.
  */
 export function levelPassesFilter(
@@ -57,7 +57,7 @@ export function levelPassesFilter(
   includeDifficulty: boolean,
 ): boolean {
   if (maxLevel === null) return true
-  if (!level) return true
+  if (!level) return false
   if (level === 'difficulty') return includeDifficulty
 
   const nodeRank = levelFilterRank(level)
