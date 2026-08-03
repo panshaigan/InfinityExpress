@@ -50,5 +50,7 @@ Desktop.ini
 .turbo/
 .parcel-cache/
 
-# Cursor (local)
-.cursor/
+# Cursor (keep shared rules; ignore local state)
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**

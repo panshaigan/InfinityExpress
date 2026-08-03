@@ -1,0 +1,70 @@
+---
+description: End file-changing tasks with a copyable typed commit message
+alwaysApply: true
+---
+
+# Suggest Commit Message After File Changes
+
+When a task adds, modifies, or deletes any files, end the final response with a suggested commit message the user can copy in one click.
+
+## When
+
+- Apply after any successful task that changed the working tree (create, edit, delete, rename, or move files).
+- Skip if no files were changed, or if the user already asked you to commit.
+
+## Format
+
+Use this structure:
+
+1. **Type** — one of: `feat`, `fix`, `ui`, `refactor`, `docs`, `test`, `chore`, `perf`, `build`, `ci`
+2. **Title** — short imperative summary on the same line as the type (`type: title`)
+3. **Body** — blank line, then 1–4 short bullets or sentences with what changed and why
+
+Put the **entire** commit message inside a fenced code block (so the UI shows a copy control). Label it above the block; do not put prose inside the block.
+
+```
+Suggested commit message:
+```
+type: short imperative title
+
+- Detail about what changed and why.
+- Another concrete detail if needed.
+```
+```
+
+## Rules
+
+- Do **not** create the commit unless the user explicitly asks.
+- Title: ~50 characters or less, imperative mood, no trailing period.
+- Body: focus on why and user-visible impact; avoid dumping raw file lists.
+- Prefer one primary type; if mixed, pick the dominant change.
+- Prefer the repository's existing commit style when history clearly differs.
+
+## Examples
+
+Suggested commit message:
+
+```
+chore: add project gitignore for Vite and Node
+
+- Ignore node_modules, dist, env files, and local editor/OS junk.
+- Keep shared .cursor/rules trackable while ignoring other Cursor state.
+```
+
+Suggested commit message:
+
+```
+fix: skip hidden components with unmet conditions
+
+- Selection engine no longer includes components that fail visibility checks.
+- Aligns install-order export with station UI behavior.
+```
+
+Suggested commit message:
+
+```
+ui: tighten station nav hierarchy
+
+- Make the active station clearer without adding extra chrome.
+- Keep first viewport focused on brand and primary CTA.
+```
