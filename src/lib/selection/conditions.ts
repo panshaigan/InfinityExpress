@@ -11,7 +11,7 @@ class ParseError extends Error {
 }
 
 /**
- * Parse alwaysIf / displayIf expressions.
+ * Parse alwaysIf / displayIf / displayIfNot expressions.
  * Identifiers: component ids (letters, digits, _ : - @ #)
  * `,` = AND (higher precedence than `|` when ungrouped — use `()` explicitly)
  * `|` = OR

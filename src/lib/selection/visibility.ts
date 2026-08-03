@@ -12,10 +12,13 @@ export interface VisibilityContext {
   selectedIds: ReadonlySet<string>
 }
 
-/** Engine-eligible and displayIf satisfied (ignores noDisplay). */
+/** Engine-eligible and displayIf / displayIfNot satisfied (ignores noDisplay). */
 export function isEngineAndDisplayEligible(node: TreeNode, ctx: VisibilityContext): boolean {
   if (!engineMatches(node.effectiveEngine, ctx.game)) return false
   if (node.attrs.displayIf && !evalConditionExpr(node.attrs.displayIf, ctx.selectedIds)) {
+    return false
+  }
+  if (node.attrs.displayIfNot && evalConditionExpr(node.attrs.displayIfNot, ctx.selectedIds)) {
     return false
   }
   return true

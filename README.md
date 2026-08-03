@@ -7,7 +7,7 @@ Desktop-oriented mod route planner for Infinity Engine Enhanced Edition games.
 Station-based component picker driven by curated data:
 
 - `src/data/InstallSequence.xml`
-- `src/data/mods.csv` (bundled for later download support; unused in M1)
+- `src/data/mods.csv` (detail panel lookup for Codename / URL / Release / Version; download support later)
 
 ## Tech stack
 

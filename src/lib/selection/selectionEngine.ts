@@ -144,6 +144,7 @@ function selectableDescendants(
   function walk(n: TreeNode) {
     if (!engineMatches(n.effectiveEngine, game)) return
     if (n.attrs.displayIf && !evalConditionExpr(n.attrs.displayIf, selected)) return
+    if (n.attrs.displayIfNot && evalConditionExpr(n.attrs.displayIfNot, selected)) return
 
     if (isComponentNode(n)) {
       out.push(n)

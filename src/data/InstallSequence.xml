@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <installSequence>
 	<base desc="Base game fixes and modifications">
-		<component id="A7-DLCMERGER-MERGE_SOD" label='Merge SoD DLC' desc="Required for further modding" modId="A7-DlcMerger" engine="bg1,eet1" required="1" noDisplay="1" />
-		<component id="bubb_revert_pathfinding:0" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,eet1,iwd,pst" level="fixes" required="1" noDisplay="1" />
+		<component id="A7-DLCMERGER-MERGE_SOD" label='Merge SoD DLC' desc="Required for further BG1 modding" modId="A7-DlcMerger" engine="bg1,eet1" required="1" noDisplay="1" />
+		<component id="bubb_revert_pathfinding:0" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,eet1,iwd,pst" required="1" noDisplay="1" />
 		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" level="fixes">
 			<component id="cd_eefp_core_fixes" label="Core fixes" modId="EE_Fixpack" />
 			<component id="cd_eefp_game_text_update" label="Game Text Update" modId="EE_Fixpack" noDisplay="1" alwaysIf="cd_eefp_core_fixes" />
@@ -137,8 +137,8 @@
 				</alternatives>
 			</group>
 			<quest>
-				<component id="Loretakers:0" label="Loretakers" modId="Loretakers" type="bigQuest" level="blendWell" />
-				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" level="blendWell" type="smallQuest">
+				<component id="Loretakers:0" label="Loretakers" modId="Loretakers" tags="bigQuest" level="blendWell" />
+				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" level="blendWell" tags="smallQuest">
 					<component id="bgqe_slimequest" label="Slime Quest" />
 					<component id="bgqe_fallenpaladin" label="Fallen Paladin Quest" level="vanillaPlus" />
 					<component id="bgqe_undyinglove" label="Undying Love Quest" level="vanillaPlus" />
@@ -153,7 +153,7 @@
 					<component id="bgqe_cordyrnokillingsil" label="Finish Cordyr's Quest without killing Sil" level="vanillaPlus" />
 					<component id="bgqe_improved_borda" label="Improved Borda"/>
 				</mod>
-				<mod id="JA-AdventurePack" label="Jarl's Adventure Pack" type="smallQuest" level="restoration">
+				<mod id="JA-AdventurePack" label="Jarl's Adventure Pack" tags="smallQuest" level="restoration">
 					<component id="JA#BGT_AdvPack-Law_System" label="Extended Law System" level="vanillaPlus" />
 					<component id="JA#BGT_AdvPack-Ramazith" label="Ramazith" level="vanillaPlus" />
 					<component id="JA#BGT_AdvPack-Jopi" label="Jopi and his uncle Ragefast" level="vanillaPlus" />
@@ -206,7 +206,7 @@
 					<component id="JA#BGT_AdvPack-Backdoor_Gellana" label="Backdoor to Gellana's temple" level="vanillaPlus" />
 					<component id="JA#BGT_AdvPack-Backdoor_Waterqueen" label="Backdoor to Waterqueen's House" level="vanillaPlus" />
 				</mod>
-				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" type="smallQuest" level="quality">
+				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" tags="smallQuest" level="quality">
 					<component id="bg1re-required-teen_skip" label="Core" core="1" />
 					<component id="bg1re_purchased_love" label="Purchased Love, by Thimblerig" />
 					<component id="bg1re_late_night_jaheira" label="Late Night with Jaheira, by Kulyok" level="vanillaPlus" />
@@ -219,8 +219,8 @@
 					<component id="bg1re_camryn_and_tamah" label="Camryn and Tamah, by tibicina" />
 					<component id="bg1re_cloakwood_lovers" label="Cloakwood Lovers, by tibicina" />
 				</mod>
-				<component id="BS_BalduransSeatower-main" label="Balduran's Seatower" type="bigQuest" modId="BS_Baldurans_Seatower" level="blendWell" />
-				<mod id="Ascalons_Questpack" label="Ascalon's Questpack" type="smallQuest" level="quality">
+				<component id="BS_BalduransSeatower-main" label="Balduran's Seatower" tags="bigQuest" modId="BS_Baldurans_Seatower" level="blendWell" />
+				<mod id="Ascalons_Questpack" label="Ascalon's Questpack" tags="smallQuest" level="quality">
 					<component id="AscalonsQuestpack-FeastforGnolls" label="A Feast for the Gnolls" />
 					<component id="AscalonsQuestpack-LostSon" label="The Lost Son" />
 					<component id="AscalonsQuestpack-WolvesMen_Highhedge" label="Quest uses hut near Thalantyr in High Hedge." />
@@ -228,20 +228,20 @@
 					<component id="AscalonsQuestpack-Fans" label="Fangirls" level="vanillaPlus" />
 					<component id="AscalonsQuestpack-HalflingEyeless" label="A Halfling among the Eyeless" />
 				</mod>
-				<mod id="ExtraExpandedEnhancedEncounters" label="Extra Enhanced Expanded Encounters!" type="smallQuest" level="vanillaPlus">
+				<mod id="ExtraExpandedEnhancedEncounters" label="Extra Enhanced Expanded Encounters!" tags="smallQuest" level="vanillaPlus">
 					<component id="OL-EEEE-COAST-WAY" label="Melia Quicknight, Crossroads" />
 					<component id="OL-EEEE-LONELY-PEAKS" label="Bimmy's Badgering Bandits" />
 					<component id="OL-EEEE-GNOLL-STRONGHOLD-CAVE" label="Bear Encounter near the Gnoll Stronghold" />
 					<component id="OL-EEEE-CLOAKWOOD-BRIDGE" label="Daenni's Bridge Bandits" />
 				</mod>
-				<component id="AWizardDidIt-Blackhearts_BG1" label="Blackhearts" modId="Black-Hearts" type="bigQuest" level="blendWell" />
-				<component id="SotSC:0" label="Shades of the Sword Coast - Expansion Pack for BGEE" modId="shades-of-the-sword-coast" level="quality" type="smallQuest" />
-				<mod id="baldurian-bar-hop" label="baldurianbarhop" type="smallQuest">
+				<component id="AWizardDidIt-Blackhearts_BG1" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="blendWell" />
+				<component id="SotSC:0" label="Shades of the Sword Coast - Expansion Pack for BGEE" modId="shades-of-the-sword-coast" level="quality" tags="smallQuest" />
+				<mod id="baldurian-bar-hop" label="baldurianbarhop" tags="smallQuest">
 					<component id="baldurianbarhop:0" label="Thirst Things First" />
 					<component id="baldurianbarhop:10" label="Dress to Distress" />
 					<component id="baldurianbarhop:20" label="Fully Booked and Plot Twist" />
 				</mod>
-				<mod id="The_Calling" label="The Calling" level="quality" type="bigQuest">
+				<mod id="The_Calling" label="The Calling" level="quality" tags="bigQuest">
 					<component id="cd_the_calling_mage" label="Mage - The Cursed Bracers" />
 					<component id="cd_the_calling_fighter" label="Fighter - Expanded Gnoll Fortress" />
 					<component id="cd_the_calling_shaman_golden_text" label="Shaman" />
@@ -249,17 +249,17 @@
 					<component id="cd_the_calling_thief" label="Thief - The Bargain" />
 					<component id="cd_the_calling_peaceful_kaishas_resolution" label="Peaceful Werewolf Isle Resolution" level="vanillaPlus" />
 				</mod>
-				<component id="Coutelier-AerieBG1" label="Aerie in BG:EE" type="smallQuest" modId="AerieBG1" />
-				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" label="The Vanishing of Skie Silvershield" desc="Lets Eldoth and Skie join your party sooner" type="smallQuest" modId="the-vanishing-of-skie-silvershield" />
-				<component id="NQR" label="Necromancers Quest Restored" type="smallQuest" modId="NecromancersQuestRestored" level="restoration" />
-				<mod id="gorgon" label="Gorgon's Eye" level="quality" type="bigQuest">
+				<component id="Coutelier-AerieBG1" label="Aerie in BG:EE" tags="smallQuest" modId="AerieBG1" />
+				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" label="The Vanishing of Skie Silvershield" desc="Lets Eldoth and Skie join your party sooner" tags="smallQuest" modId="the-vanishing-of-skie-silvershield" />
+				<component id="NQR" label="Necromancers Quest Restored" tags="smallQuest" modId="NecromancersQuestRestored" level="restoration" />
+				<mod id="gorgon" label="Gorgon's Eye" level="quality" tags="bigQuest">
 					<component id="gorgon:0" label="Gorgon's Eye" core="1" />
 					<component id="gorgon:1" label="Give portraits to all characters added from this mod" alwaysIf="gorgon:0" noDisplay="1" />
 					<component id="gorgon:4" label="Add More Pickpocketable Items"/>
 				</mod>
-				<mod id="Candlekeep-Revisited" label="Candlekeep Revisited" type="smallQuest">
-					<component id="candlekeep_revisited:0" label="BG1 Prologue Expansion" type="smallQuest" modId="Candlekeep-Revisited" />
-					<component id="candlekeep_revisited:1" label="BG1 Expanded Starting Sequence" type="smallQuest" modId="Candlekeep-Revisited" />
+				<mod id="Candlekeep-Revisited" label="Candlekeep Revisited" tags="smallQuest">
+					<component id="candlekeep_revisited:0" label="BG1 Prologue Expansion" tags="smallQuest" modId="Candlekeep-Revisited" />
+					<component id="candlekeep_revisited:1" label="BG1 Expanded Starting Sequence" tags="smallQuest" modId="Candlekeep-Revisited" />
 				</mod>
 			</quest>
 			<npc>
@@ -275,13 +275,13 @@
 					</mod>
 					<mod id="Ajantis_BG1_Expansion" label="Ajantis BG1 Expansion">
 						<component id="AjantisBG1Expansion-main" label="Ajantis BG1 Expansion Modification - Installs Ajantis BG1 Expansion Modification" core="1" />
-						<component id="AjantisBG1Expansion-shieldBAM" label="Ajantis BG1 Expansion Modification - Install the unique BG:EE BAM for Ajantis' Family Shield" alwaysIf="AjantisBG1Expansion-main" noDisplay="" />
+						<component id="AjantisBG1Expansion-shieldBAM" label="Ajantis BG1 Expansion Modification - Install the unique BG:EE BAM for Ajantis' Family Shield" alwaysIf="AjantisBG1Expansion-main" noDisplay="1" />
 					</mod>
 					<component id="Artisans_Rasaad_BG1:0" label="Rasaad Expansion" modId="Rasaad-Expansion-BG1" />
 					<component id="XanBG1Friend:0" label="Xan's friendship path" modId="Xan_BG1_Friendship" />
 					<component id="Domi-CoranBGFriend-Main" label="Coran's Extended BG Friendship Talks" modId="CoranBGFriend" />
 					<component id="garrick-mirandir" label="Garrick: Tales of a Troubadour" modId="Garrick_Tales-of-a-Troubadour" />
-					<component id="neera_expansion" label="Neera Expansion" modId="Neera-Expansion" type="beamdog" />
+					<component id="neera_expansion" label="Neera Expansion" modId="Neera-Expansion" tags="beamdog" />
 				</expansions>
 				<romances noBranches="1">
 					<mod id="BG1NPC">
@@ -293,7 +293,7 @@
 						<component id="bg1npc_project-xanromance_1h" label="Xan Romance" />
 						<component id="bg1npc_project-romancechallenge" label="Female Romance Challenges, Ajantis vs Xan vs Coran" />
 					</mod>
-					<mod id="Neera-Expansion" label="Neera Expansion" type="beamdog">
+					<mod id="Neera-Expansion" label="Neera Expansion" tags="beamdog">
 						<component id="neera_romanceable_by_women" label="Make Neera romanceable by women" />
 						<component id="rasaad_romanceable_by_men" label="Make Rasaad romanceable by men" />
 					</mod>
@@ -328,7 +328,7 @@
 							<component id="cd_tweaks_move_bg_npcs_sharteel" label="Move Shar-Teel to North Nashkel Road" />
 							<component id="cd_tweaks_move_bg_npcs_tiax" label="Move Tiax to Beregost" />
 							<component id="cd_tweaks_move_bg_npcs_viconia" label="Move Viconia to South Beregost Road" />
-							<component id="cd_tweaks_move_bg_npcs_eldoth" label="Move Eldoth to the Coastal Way" ifNot="L#-THEVANISHINGOFSKIESILVERSHIELD" />
+							<component id="cd_tweaks_move_bg_npcs_eldoth" label="Move Eldoth to the Coastal Way" displayIfNot="L#-THEVANISHINGOFSKIESILVERSHIELD" />
 						</mod>
 					</group>
 				</tweaks>
@@ -361,7 +361,7 @@
 		</bg1>
 		<sod label="SoD Content mods" engine="bg1,eet">
 			<group label="Restructure">
-				<mod id="Reflections-of-Destiny" label="Reflections_of_Destiny - SoD Story Rewrite" ifNot="C#AnotherFineHell-Main,SoDRoadToDiscovery-main" groupWith="sodRewrite">
+				<mod id="Reflections-of-Destiny" label="Reflections_of_Destiny - SoD Story Rewrite" displayIfNot="C#AnotherFineHell-Main|SoDRoadToDiscovery-main" groupWith="sodRewrite">
 					<component id="Reflections_of_Destiny:200" label="Rewriting History" />
 					<component id="Reflections_of_Destiny:220" label="Magical Realism" />
 					<component id="Reflections_of_Destiny:230" label="Nothing to Fear but Feyr Itself" />
@@ -390,12 +390,12 @@
 				<component id="c#sodboabri_StatChanges" label="Add Stat Changes to Choices at Bridge" />
 			</mod>
 			<group label="Restructure">
-				<mod id="Another_Fine_Hell" label="Another Fine Hell for SoD - SoD Story Rewrite" level="blendWell" ifNot="Reflections_of_Destiny:200,Reflections_of_Destiny:220,Reflections_of_Destiny:230,Reflections_of_Destiny:240"  groupWith="sodRewrite">
+				<mod id="Another_Fine_Hell" label="Another Fine Hell for SoD - SoD Story Rewrite" level="blendWell" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240"  groupWith="sodRewrite">
 					<component id="C#AnotherFineHell-Main" label="Another Fine Hell - Optional Ending for SoD and BGII Closure" core="1" />
 					<component id="C#AnotherFineHell-Extended" label="Get the Hells Out - Quest Option with Extended BGII Content" />
 					<component id="C#AnotherFineHell-ImoensChest" label="PC's and Imoen's chest in Palace should have their content" alwaysIf="C#AnotherFineHell-Main" noDisplay="1" />
 				</mod>
-				<mod id="Road_To_Discovery_for_SoD" label="Road to Discovery for SoD - SoD Story Enhancements" level="vanillaPlus" ifNot="Reflections_of_Destiny:200,Reflections_of_Destiny:220,Reflections_of_Destiny:230,Reflections_of_Destiny:240" groupWith="sodRewrite">
+				<mod id="Road_To_Discovery_for_SoD" label="Road to Discovery for SoD - SoD Story Enhancements" level="vanillaPlus" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240" groupWith="sodRewrite">
 					<component id="SoDRoadToDiscovery-main" label="Road to Discovery for SoD - SoD Story Enhancements" core="1" proposeIf="c#husam-main" />
 					<component id="SoDRoadToDiscovery-consistency" label="Consistency Changes to Game Dialogues" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
 					<component id="SoDRoadToDiscovery-aware_officers" label="Officers Are Aware" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
@@ -458,10 +458,10 @@
 					<component id="Ascension-SharperPortraitsAbazigalGromnir" label="Sharper portraits of Abazigal and Gromnir for the Enhanced Edition, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
 					<component id="Ascension-SlightlyImprovedCutscenes" label="Slightly improved cutscenes, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
 				</mod>
-				<component id="SoAExtended:1" label="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" type="bigQuest" level="restructure" />
+				<component id="SoAExtended:1" label="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" tags="bigQuest" level="restructure" />
 			</group>
 			<group label="Restorations" level="restoration">
-				<mod id="UnfinishedBusiness" label="Unfinished Business BG2" type="smallQuest">
+				<mod id="UnfinishedBusiness" label="Unfinished Business BG2" tags="smallQuest">
 					<component id="ub:5" label="The Pai'Na/Spider's Bane Quest" level="vanillaPlus" />
 					<component id="ub:6" label="Restored Crooked Crane Inn" level="restoration" />
 					<component id="ub:7" label="Restored Encounters" level="restoration" />
@@ -474,7 +474,7 @@
 					<component id="ub:20" label="Extended ToB Item Descriptions" level="vanillaPlus" />
 					<component id="ub:21" label="Throne of Bhaal Minor Restorations" level="restoration" />
 				</mod>
-				<mod id="Almateria-Restoration-Project" label="Almateria's Restoration Project" type="smallQuest" level="restoration">
+				<mod id="Almateria-Restoration-Project" label="Almateria's Restoration Project" tags="smallQuest" level="restoration">
 					<component id="Almaterias_Restoration_Project-Restored_Locations" label="Restored Locations" />
 					<component id="Almaterias_Restoration_Project-Restored_Characters_and_Dialogs" label="Restored Characters and Dialogs" />
 					<component id="Almaterias_Restoration_Project-Restored_Sounds" label="Restored Sounds" />
@@ -490,8 +490,8 @@
 				</mod>
 			</group>
 			<quest>
-				<component id="AdalonsBlood-main" label="Adalon's Blood" desc="Allows good characters to finish the skinner quest in a good way" modId="Adalons_Blood" type="smallQuest" level="vanillaPlus" />
-				<mod id="hiddenadventure" label="Hidden Adventures" type="smallQuest">
+				<component id="AdalonsBlood-main" label="Adalon's Blood" desc="Allows good characters to finish the skinner quest in a good way" modId="Adalons_Blood" tags="smallQuest" level="vanillaPlus" />
+				<mod id="hiddenadventure" label="Hidden Adventures" tags="smallQuest">
 					<component id="hidden_adventures-ladyelgea" label="Lady Elgea's extended plot" />
 					<component id="hidden_adventures-anomenplot" label="Anomen's extended plot" />
 					<component id="hidden_adventures-jerliashop" label="Jerlia's Ore Shop" />
@@ -504,29 +504,29 @@
 					<component id="hidden_adventures-tunnel_saradush" label="A Tunnel for Saradush" />
 					<component id="hidden_adventures-masktemple_docks" label="Temple of Mask in Docks District" />
 				</mod>
-				<component id="CorthalaRomantique-SphereGuard" label="A Guard for the Sphere (Corthala Romantique's Leonora Content)" modId="Corthala_Romantique" type="smallQuest" />
-				<component id="Assassinations:0" label="Assassinations" modId="Assassinations" type="bigQuest" />
-				<component id="ts_expanded_thief_stronghold_main" label="Expanded Thief Stronghold" modId="Expanded-Thief-Stronghold" type="bigQuest" />
-				<component id="Tidings:0" label="Dark Tidings" modId="Dark-Tidings" type="bigQuest" level="blendWell" />
-				<mod id="Call-of-the-Lost-Goddess" label="Call Of The Lost Goddess" type="bigQuest" level="blendWell">
+				<component id="CorthalaRomantique-SphereGuard" label="A Guard for the Sphere (Corthala Romantique's Leonora Content)" modId="Corthala_Romantique" tags="smallQuest" />
+				<component id="Assassinations:0" label="Assassinations" modId="Assassinations" tags="bigQuest" />
+				<component id="ts_expanded_thief_stronghold_main" label="Expanded Thief Stronghold" modId="Expanded-Thief-Stronghold" tags="bigQuest" />
+				<component id="Tidings:0" label="Dark Tidings" modId="Dark-Tidings" tags="bigQuest" level="blendWell" />
+				<mod id="Call-of-the-Lost-Goddess" label="Call Of The Lost Goddess" tags="bigQuest" level="blendWell">
 					<component id="Godcall:0" label="Call Of The Lost Goddess V 2.01" />
 					<component id="Godcall:50" label="Install portraits for the major NPCs of the mod" />
 					<component id="Godcall:200" label="Install AI voiceover for major NPCs of the mod (mostly in English)" />
 				</mod>
-				<component id="ThroneoftheMadGod:0" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" type="bigQuest" level="blendWell" />
-				<component id="Poisoned_pathways:0" label="Poisoned pathways" modId="Poisoned-Pathways" type="bigQuest" level="blendWell" />
-				<component id="TangledIsle:0" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" type="bigQuest" level="quality" />
-				<component id="L#-OOZESLOUNGE" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" type="bigQuest" level="quality" />
-				<component id="L#-SKIECOST-MAINQUEST" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" type="bigQuest" />
-				<component id="cowledmenace:1000" label="Cowled Menace" modId="CowledMenace" type="bigQuest" level="quality" />
-				<component id="AWizardDidIt-Blackhearts_BG2" label="Blackhearts" modId="Black-Hearts" type="bigQuest" level="blendWell" ifNot="AWizardDidIt-Blackhearts_BG1" />
+				<component id="ThroneoftheMadGod:0" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" tags="bigQuest" level="blendWell" />
+				<component id="Poisoned_pathways:0" label="Poisoned pathways" modId="Poisoned-Pathways" tags="bigQuest" level="blendWell" />
+				<component id="TangledIsle:0" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" tags="bigQuest" level="quality" />
+				<component id="L#-OOZESLOUNGE" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" tags="bigQuest" level="quality" />
+				<component id="L#-SKIECOST-MAINQUEST" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" tags="bigQuest" />
+				<component id="cowledmenace:1000" label="Cowled Menace" modId="CowledMenace" tags="bigQuest" level="quality" />
+				<component id="AWizardDidIt-Blackhearts_BG2" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="blendWell" displayIfNot="AWizardDidIt-Blackhearts_BG1" />
 				<mod id="crucible" label="Crucible" author="Morpheus562">
-					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" type="bigQuest" level="blendWell" author="Morpheus562" />
-					<component id="Crucible-FinalAssaultAI" label="Fully Voiced NPCs using AI" modId="crucible" type="bigQuest" level="blendWell" author="Morpheus562" />
+					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" tags="bigQuest" level="blendWell" author="Morpheus562" />
+					<component id="Crucible-FinalAssaultAI" label="Fully Voiced NPCs using AI" modId="crucible" tags="bigQuest" level="blendWell" author="Morpheus562" />
 				</mod>
-				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" type="bigQuest" level="vanillaPlus" author="Morpheus562"/>
-				<component id="lfgp:0" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" type="bigQuest" level="vanillaPlus" />
-				<component id="TPoJ:0" label="The Pursuit of Justice" modId="the-pursuit-of-justice" type="bigQuest" level="vanillaPlus" />
+				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" tags="bigQuest" level="vanillaPlus" author="Morpheus562"/>
+				<component id="lfgp:0" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" tags="bigQuest" level="vanillaPlus" />
+				<component id="TPoJ:0" label="The Pursuit of Justice" modId="the-pursuit-of-justice" tags="bigQuest" level="vanillaPlus" />
 				<component id="saradas_magic_npc_for_bg2_monk" label="Saradas Magic" desc="SoA content + recruitable NPC (Human Neutral Good Cleric/Mage)" modId="Saradas-Magic-BG2" />
 			</quest>
 			<npc>
@@ -542,13 +542,13 @@
 					<component id="korganfriendship:0" label="Korgan Friendship" modId="Korgan-Friendship" />
 					<component id="sarevokfriendship:0" label="Sarevok Friendship" modId="Sarevok-Friendship" />
 					<component id="viconia:0" label="Viconia Friendship" modId="Viconia-Friendship" />
-					<component id="Dorn_friendship" label="Dorn Friendship" modId="Dorn-Friendship" type="beamdog" />
-					<component id="HexxatFriendship:0" label="Hexxat Friendship" modId="Hexxat-Friendship" type="beamdog" />
+					<component id="Dorn_friendship" label="Dorn Friendship" modId="Dorn-Friendship" tags="beamdog" />
+					<component id="HexxatFriendship:0" label="Hexxat Friendship" modId="Hexxat-Friendship" tags="beamdog" />
 					<component id="YoshimosRemorse:0" label="YoshimosRemorse" desc="Makes Yoshimo a playable NPC in SoD" modId="Yoshimos_Remorse" />
 					<component id="korgan:0" label="Korgan's Redemption" desc="Provides the possibility of redeeming Korgan if Mazzy is in your party." modId="Korgan-Redemption" />
 					<component id="Wings:0" label="Wings - Aerie Expansion" modId="Wings" />
 				</expansions>
-				<romances ifNot="cd_tweaks_disable_romances">
+				<romances displayIfNot="cd_tweaks_disable_romances">
 					<mod id="Imoen-Romance-Mod" label="Imoen Romance">
 						<component id="ImoenRomance:0" label="Imoen Romance" />
 						<component id="ImoenRomance:2" label="Don't Allow multiple Romance (Only valid for Vanilla romances)" alwaysIf="ImoenRomance:0" noDisplay="1" />
@@ -560,7 +560,7 @@
 					<component id="luvnalia:0" label="Nalia Romance" modId="Arnel-Nalia-Romance-Revision" />
 					<mod id="Nalia_At_Last" label="Nalia at Last">
 						<component id="Nalia_at_Last:0" label="Nalia at Last (ToB Romance)" />
-						<component id="Nalia_at_Last:1" label="Romance Theme Music" alwaysIf="Nalia_At_Last:0" noDisplay="1" />
+						<component id="Nalia_at_Last:1" label="Romance Theme Music" alwaysIf="Nalia_at_Last:0" noDisplay="1" />
 					</mod>
 					<mod id="yoshimo-romance" label="Yoshimo Romance">
 						<component id="L#-YOSHIMO-ROMANCE" label="Yoshimo Romance" />
@@ -575,7 +575,7 @@
 					</mod>
 					<component id="CorthalaRomantique-main" label="Valygar Romance" modId="Corthala_Romantique" />
 					<component id="haerdalisromance:0" label="Haer'Dalis Romance" modId="Haer-Dalis-Romance" />
-					<component id="Dorn:0" label="Dorn Expanded Romance" modId="Bg2Dorn" type="beamdog" />
+					<component id="Dorn:0" label="Dorn Expanded Romance" modId="Bg2Dorn" tags="beamdog" />
 					<component id="sarevokromance:0" label="Sarevok Romance" modId="Sarevok-Romance" />
 					<component id="SkitiaRomanceTweak:0" label="Skitia's Romance Tweak" modId="SkitiaBG2RomanceTweaks" />
 					<component id="LaufeysNewViconiaEnding-Main" label="New ending for Viconia Romance" modId="Edwin-Romance"/>
@@ -615,7 +615,7 @@
 					
 					<mod id="Coran_for_BGII" label="Coran">
 						<component id="O#CoranBGII-main" label="Coran NPC MOD for Baldur's Gate II" />
-						<component id="O#CoranBGII-Delete_original_Coran" label="Delete old Coran from the Forest of Tethyr (RECOMMENDED)" alwaysIf="ajantisbg2:0" noDisplay="1" />
+						<component id="O#CoranBGII-Delete_original_Coran" label="Delete old Coran from the Forest of Tethyr (RECOMMENDED)" alwaysIf="O#CoranBGII-main" noDisplay="1" />
 					</mod>
 					<mod id="shar-teel-bg2ee" label="Shar-Teel">
 						<component id="L#-SHARTEELBG2EE" label="Shar-Teel for Baldur's Gate 2: Enhanced Edition" />
@@ -795,10 +795,8 @@
 				</upgrade>
 			</items>
 			<tweaks>
-				<component id="#L-BG2-CUTSCENES" label="Remove cut scenes that the PC shouldn't be privy to" modId="themed_tweaks" level="blendWell" />
 				<component id="#L-TRANSITIONS-RESTORE_POWER" label="Use Irenicus in hell movie as dream to restore Bhaalspawn powers" modId="themed_tweaks" level="blendWell" />
 				<component id="HouseTweaks:16" label="Good-Aligned Roleplay Rewards" modId="House-Rule-Tweaks" level="blendWell" />
-				<component id="HouseTweaks:26" label="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="HouseTweaks:44" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="cd_tweaks_yoshimo_better_trapsetting" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" level="vanillaPlus" />
 				<component id="cd_tweaks_disable_malchor" label="Keep Drizzt's Loot, Disable Malchor Harpell" modId="Tweaks-Anthology" level="vanillaPlus" />
@@ -1034,7 +1032,7 @@
 					</mod>
 					<mod id="SwordCoastStratagems" level="blendWell">
 						<component id="stratagems:3010" label="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" />
-						<component id="stratagems:2900" label="Move or modify some overpowered magic items" ifNot="randomiser:1100|randomiser:1300" />
+						<component id="stratagems:2900" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" />
 					</mod>
 					<component id="cd_tweaks_removable_npc_items" label="Removable NPC Items" modId="Tweaks-Anthology" level="vanillaPlus" />    
 					<mod id="forgotten-armament" author="Morpheus562">
@@ -1056,7 +1054,7 @@
 				</mod>
 				<mod id="themed_tweaks" label="Themed Tweaks" level="vanillaPlus">
 					<component id="#L-BG2-SNARK" label="Add a little snark to dialogues (SoD/BG2EE)" />
-					<component id="#L-BG2-CUTSCENES" label="Remove cut scenes that the PC shouldn't be privy to (SoD/BG2EE)" />
+					<component id="#L-BG2-CUTSCENES" label="Remove cut scenes that the PC shouldn't be privy to" level="blendWell" />
 				</mod>
 				<component id="stratagems:4051" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="vanillaPlus" />
 				<mod id="AC-Miscellaneous-Tweaks" label="AC Miscellaneous Tweaks" level="blendWell">
@@ -1210,7 +1208,7 @@
 			</group>
 			<group label="Universal tweaks" noBranches="1">
 				<mod id="Tweaks-Anthology">
-					<component id="cd_tweaks_infravision" label="Make Infravision Useful" level="blendWell" comment="May bring performance problems" displayIf="EEex:1" />
+					<component id="cd_tweaks_infravision" label="Make Infravision Useful" level="blendWell" desc="May bring performance problems" displayIf="EEex:1" />
 					<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" />
 					<component id="cd_tweaks_grandmastery_bonus_true" label="True grandmastery" level="vanillaPlus" engine="bg,eet,iwd,pst" />
 					<component id="cd_tweaks_multiclass_gm" label="Multi-Class Grandmastery" level="vanillaPlus" />
@@ -1320,25 +1318,25 @@
 
 	<combat level="difficulty">
 		<tweaks>
-			<alternatives label="Remove backstabbing limits to make thiefs useful">
+			<alternatives label="Remove backstabbing limits to make thiefs useful" modId="ZS_CanIStabYou-Mod">
 				<component id="ZS_CanIStabYou:99" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd"/>
 				<component id="ZS_CanIStabYou:106" label="Keep Reasonable backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd" level="blendWell" />
 			</alternatives>
-			<mod id="ZS_CanIStabYou-Mod" label="ZS_CanIStabYou" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet">
-				<component id="ZS_CanIStabYou:102" label="Humanoid ToB bosses can be backstabbed" />
-				<component id="ZS_CanIStabYou:103" label="Yaga-Shura can be backstabbed" />
-				<component id="ZS_CanIStabYou:113" label="Abazigal can be backstabbed (human form)" />
-				<component id="ZS_CanIStabYou:114" label="Abazigal can be backstabbed (dragon form)" />
-				<component id="ZS_CanIStabYou:100" label="Beholders can be backstabbed" engine="bg,eet,iwd"/>
-				<component id="ZS_CanIStabYou:104" label="Minotaurs can be backstabbed" engine="bg,eet,iwd"/>
-				<component id="ZS_CanIStabYou:201" label="All spectral creatures are immune to backstab" engine="bg,eet,iwd" />
-				<component id="ZS_CanIStabYou:205" label="All golems are immune to backstab" engine="bg,eet,iwd" />
-				<component id="ZS_CanIStabYou:300" label="Every creature marked as able to see through invisibility is automatically immune to backstabs (version 2.6+)" engine="bg,eet,iwd" />
-				<component id="ZS_CanIStabYou:302" label="Dragons cannot see through invisibility, except Abazigal" engine="bg,eet,iwd" />
-				<component id="ZS_CanIStabYou:308" label="Sendai cannot see through invisibility" />
-				<component id="ZS_CanIStabYou:309" label="Balthazar cannot see through invisibility" />
-				<component id="ZS_CanIStabYou:310" label="Yaga-Shura cannot see through invisibility" />
-				<component id="ZS_CanIStabYou:311" label="Amelyssan cannot see through invisibility" />
+			<mod id="ZS_CanIStabYou-Mod" label="ZS_CanIStabYou" engine="bg,eet">
+				<component id="ZS_CanIStabYou:102" label="Humanoid ToB bosses can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+				<component id="ZS_CanIStabYou:103" label="Yaga-Shura can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+				<component id="ZS_CanIStabYou:113" label="Abazigal can be backstabbed (human form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+				<component id="ZS_CanIStabYou:114" label="Abazigal can be backstabbed (dragon form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+				<component id="ZS_CanIStabYou:100" label="Beholders can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd"/>
+				<component id="ZS_CanIStabYou:104" label="Minotaurs can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd"/>
+				<component id="ZS_CanIStabYou:201" label="All spectral creatures are immune to backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+				<component id="ZS_CanIStabYou:205" label="All golems are immune to backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+				<component id="ZS_CanIStabYou:300" label="Every creature marked as able to see through invisibility is automatically immune to backstabs (version 2.6+)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+				<component id="ZS_CanIStabYou:302" label="Dragons cannot see through invisibility, except Abazigal" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+				<component id="ZS_CanIStabYou:308" label="Sendai cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+				<component id="ZS_CanIStabYou:309" label="Balthazar cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+				<component id="ZS_CanIStabYou:310" label="Yaga-Shura cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+				<component id="ZS_CanIStabYou:311" label="Amelyssan cannot see through invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
 			</mod>
 			<component id="ForgottenArmament-CritImmunity2" label="Allow Difficult Enemies to Remain Immune to Critical Hits" modId="forgotten-armament" author="Morpheus562" />
 			<component id="HouseTweaks:20" label="Faster Troll Unconsciousness" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg,iwd,eet" />
@@ -1447,8 +1445,8 @@
 		</group>
 		<component id="HouseTweaks:24" label="NPC Soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" />
 		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" label="High Quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" />
-		<component id="vveBG:0" label="Adds AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" tags="bigDownload" engine="bg1,eet" />
-		<component id="vveSOD:0" label="Adds AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" tags="bigDownload" engine="bg1,eet" />
+		<component id="vveBG:0" label="Adds AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
+		<component id="vveSOD:0" label="Adds AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
 		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet">
 			<alternatives label="Choose the way how she should be recasted">
 				<component id="jaheirarecast:0" label="Use new SoD Character Sounds" default="1" />
@@ -1474,7 +1472,7 @@
 			<component id="s@-IS-Salk-NPC-Voiceovers" label="Additional NPC Voiceovers (by Salk)" level="vanillaPlus" />
 		</mod>
 		<component id="HouseTweaks:21" label="Restore Reputation Increase Sound Effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" />
-		<component id="HouseTweaks:26" label="Soundset Tweaks for Anomen and Sarevok" modId="House-Rule-Tweaks" level="restoration" engine="bg2,eet"/>
+		<component id="HouseTweaks:26" label="Soundset Tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="restoration" engine="bg2,eet"/>
 	</sounds>
 
 	<portraits engine="bg,eet">
@@ -1492,7 +1490,7 @@
 				<component id="HPSPP-ToBNPCs" label="Add new Portraits to Throne of Bhaal NPCs" />
 			</mod>
 			<!-- component id="c#husam-portrait_sound_original_Husam" label="Give original Husam the Mod's Portrait" modId="Husam_NPC" alwaysIf="c#husam-main" stability="beta" /-->
-			<component id="JasteysSolaufeinRescue-Give_Ust_Natha_Solaufein_Portrait" label="Give original Solaufein the Mod's Portrait" modId="Solaufeins_Rescue_NPC"  alwaysIf="JasteysSolaufeinRescue-Main"/>
+			<component id="JasteysSolaufeinRescue-Give_Ust_Natha_Solaufein_Portrait" label="Give original Solaufein the Mod's Portrait" modId="Solaufeins_Rescue_NPC"  alwaysIf="JasteysSolaufeinRescue-Main" noDisplay="1" />
 			<component id="EET_Tweaks:1050" label="Add Portraits to Cameo NPCs from BG1" modId="EET_Tweaks" engine="bg2,eet" />
 		</group>
 		<group label="Original Playable NPCs">
@@ -1588,7 +1586,7 @@
 		<group label="PC portraits">
 			<component id="sha-tweaks:0" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" />
 			<component id="sha-tweaks:1" label="Add Extended Isandir's Portrait Pack" modId="shatweaks" engine="bg,eet" />
-			<component id="cd_icpp_iwd2" label="Add IWD2 portraits" modId="Infinity_Collection_Portrait_Pack" engine="bg,eet,iwd" />
+			<component id="cd_icpp_iwd2" label="Install IWD1 and IWD2 portraits" modId="Infinity_Collection_Portrait_Pack" engine="bg,eet,iwd" alwaysIf="IWD_EET_integration:100" />
 		</group>
 		<group label="Special" engine="bg2,eet">
 			<alternatives label="Add Drow NPC Portraits">
@@ -1645,7 +1643,6 @@
 			<component id="IWD_EET_integration:160" label="Add IWD1 Easter Egg Content to BG2" />
 			<component id="IWD_EET_integration:180" label="Play NWN after the IWD1 Campaign" displayIf="NWN_MainComponent" />
 		</mod>
-		<component id="cd_icpp_iwd2" label="Install IWD1 and IWD2 portraits" modId="Infinity_Collection_Portrait_Pack" alwaysIf="IWD_EET_integration:100" noDisplay="1" />
 		<component id="NWN_WorldmapDedicatedCampaign" label="Install NWN as a dedicated campaign" modId="NWNForBG" displayIf="NWN_MainComponent" engine="eet" />
 	</campaigns>
 
@@ -1712,7 +1709,7 @@
 						<component id="SkillsAndAbilitiesWeapStyle" label="Update Weapon Fighting Styles" />
 						<alternatives label="Overhaul Proficiency System - Add New Proficiencies and Weapon Styles">
 							<component id="SkillsAndAbilitiesNewProf1" label="Vanilla Proficiency Progression" default="1" />
-							<component id="SkillsAndAbilitiesNewProf3" label="Accelerated Proficiency Progression" />
+							<component id="SkillsAndAbilitiesNewProf2" label="Accelerated Proficiency Progression" />
 							<component id="SkillsAndAbilitiesNewProf3" label="NWN2 Style Proficiency Progression" />
 						</alternatives>
 					</mod>
@@ -1805,7 +1802,7 @@
 				<component id="randomiser:5005" label="Beholders have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
 				<component id="randomiser:5015" label="Demi-liches have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
 				<component id="randomiser:5025" label="Dragons have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-				<component id="randomiser:5035" label="Elementals have no items equipped" engine="bg2,eet" onalwaysIflyIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+				<component id="randomiser:5035" label="Elementals have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
 				<component id="randomiser:5045" label="Fiends have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
 				<component id="randomiser:5055" label="Golems have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
 				<component id="randomiser:5065" label="Master Brains have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />

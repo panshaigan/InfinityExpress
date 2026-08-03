@@ -1,13 +1,19 @@
+import modsCsv from '../data/mods.csv?raw'
 import {
   isComponentNode,
   type ComponentNode,
+  type InstallSequenceModel,
   type TreeNode,
 } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
+import { parseModsCsv, resolveModLookupKey } from '../lib/mods/loadMods'
+
+const modsByCodename = parseModsCsv(modsCsv)
 
 interface Props {
   display: DisplayNode | null
+  model: InstallSequenceModel
 }
 
 function resolveLabel(node: TreeNode, collapsed?: ComponentNode): string {
@@ -18,7 +24,7 @@ function resolveLabel(node: TreeNode, collapsed?: ComponentNode): string {
   )
 }
 
-export function ComponentDetail({ display }: Props) {
+export function ComponentDetail({ display, model }: Props) {
   if (!display) {
     return <p className="detail-empty">Select a component to see details.</p>
   }
@@ -28,9 +34,7 @@ export function ComponentDetail({ display }: Props) {
   const label = resolveLabel(node, collapsedComponent)
   const desc = node.attrs.desc ?? collapsedComponent?.attrs.desc
   const level = collapsedComponent?.effectiveLevel ?? node.effectiveLevel
-  const modId = source.attrs.modId ?? node.attrs.modId
   const author = source.attrs.author ?? node.attrs.author
-  const comment = source.attrs.comment ?? node.attrs.comment
   const tags = source.attrs.tags ?? node.attrs.tags
   const componentId = collapsedComponent
     ? collapsedComponent.componentId
@@ -38,6 +42,9 @@ export function ComponentDetail({ display }: Props) {
       ? node.componentId
       : undefined
   const stability = node.attrs.stability ?? collapsedComponent?.attrs.stability
+
+  const codename = resolveModLookupKey(model, source)
+  const mod = codename ? modsByCodename.get(codename) : undefined
 
   return (
     <article className="component-detail">
@@ -54,14 +61,34 @@ export function ComponentDetail({ display }: Props) {
         <p className="detail-empty">No description.</p>
       )}
       <dl className="detail-meta">
-        {modId && (
+        {codename && (
           <>
-            <dt>Mod</dt>
-            <dd>{modId}</dd>
+            <dt>Codename</dt>
+            <dd>{codename}</dd>
+            {mod?.url && (
+              <>
+                <dt>URL</dt>
+                <dd>
+                  <a href={mod.url} target="_blank" rel="noopener noreferrer">
+                    {mod.url}
+                  </a>
+                </dd>
+              </>
+            )}
+            {mod?.release && (
+              <>
+                <dt>Release</dt>
+                <dd>{mod.release}</dd>
+              </>
+            )}
+            {mod?.version && (
+              <>
+                <dt>Version</dt>
+                <dd>{mod.version}</dd>
+              </>
+            )}
           </>
         )}
-        <dt>Mod URL</dt>
-        <dd className="placeholder">Coming later</dd>
         {author && (
           <>
             <dt>Author</dt>
@@ -80,12 +107,6 @@ export function ComponentDetail({ display }: Props) {
           <>
             <dt>Tags</dt>
             <dd>{tags}</dd>
-          </>
-        )}
-        {comment && (
-          <>
-            <dt>Comment</dt>
-            <dd>{comment}</dd>
           </>
         )}
       </dl>

@@ -37,6 +37,10 @@ const SAMPLE = `<?xml version="1.0"?>
       <component id="solo:1" label="Only child" />
       <component id="solo:hidden" label="Hidden" noDisplay="1" alwaysIf="solo:1" />
     </group>
+    <mod id="Blockable" label="Blockable Mod" engine="bg1,eet">
+      <component id="blocker" label="Blocker" />
+      <component id="gated" label="Gated" displayIfNot="blocker" />
+    </mod>
   </base>
   <base engine="eet" noDisplay="1">
     <component id="eet_end" label="EET End" alwaysIf="req_hidden" engine="eet" />
@@ -215,5 +219,31 @@ describe('parse + selection', () => {
     expect(nested).toBeTruthy()
     expect(nested!.collapsedComponent?.attrs.label).toBe('Flat C')
     expect(nested!.children.length).toBe(0)
+  })
+
+  it('displayIfNot hides a component and skips it on parent select-all', () => {
+    const base = model.stations.find((s) => s.stationId === 'base')!
+    const blockable = base.children.find((c) => c.attrs.label === 'Blockable Mod')!
+
+    const visible = buildDisplayTree([blockable], {
+      game: 'bg1',
+      selectedIds: new Set(),
+    })
+    expect(visible[0]?.children.map((c) => c.node.attrs.id)).toEqual(['blocker', 'gated'])
+
+    const hidden = buildDisplayTree([blockable], {
+      game: 'bg1',
+      selectedIds: new Set(['blocker']),
+    })
+    // Single remaining leaf collapses the mod to that component
+    expect(hidden[0]?.collapsedComponent?.componentId).toBe('blocker')
+    expect(hidden[0]?.children).toEqual([])
+
+    let selected = createInitialSelection(model, 'bg1')
+    const blocker = model.componentsById.get('blocker')!
+    selected = toggleNode(model, selected, 'bg1', blocker, undefined, true)
+    selected = toggleNode(model, selected, 'bg1', blockable, undefined, true)
+    expect(selected.has('blocker')).toBe(true)
+    expect(selected.has('gated')).toBe(false)
   })
 })

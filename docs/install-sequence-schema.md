@@ -58,11 +58,11 @@ Unknown nesting tags are still rendered as tree nodes.
 | `noDisplay` | `1` = hidden in UI (may still install) |
 | `alwaysIf` | Auto-select when condition is true |
 | `displayIf` | Show only when condition is true |
+| `displayIfNot` | Hide when condition is true |
 | `default` | `1` = default when parent `<alternatives>` is checked as a whole |
 | `core` | `1` = core of parent `<mod>`; auto-on with siblings; off clears mod |
 | `stability` | Metadata (e.g. `beta`) |
 | `author` | Metadata |
-| `comment` | Metadata |
 | `noBranches` | UI: keep this container row, but flatten nested grouping under it (show components / alternatives units only; see app-logic.md) |
 | `tags` | Metadata |
 
@@ -82,7 +82,7 @@ Selected game is one of: `bg1`, `bg2`, `eet`, `iwd`, `pst`.
 
 A node matches if any token in its (inherited) `engine` list covers the selected game. Empty engine → visible for all games.
 
-### Conditions (`alwaysIf` / `displayIf`)
+### Conditions (`alwaysIf` / `displayIf` / `displayIfNot`)
 
 - Identifiers are component ids
 - `,` = AND
@@ -90,3 +90,5 @@ A node matches if any token in its (inherited) `engine` list covers the selected
 - `()` for grouping
 
 Example: `ArtisansKitpack:20000,(xan:1|xan:3)`
+
+`displayIfNot` uses the same expression language; the node is shown only when the expression is **false**.

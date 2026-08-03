@@ -197,7 +197,7 @@ export default function App() {
         {showDetail && (
           <aside className="detail-pane" aria-label="Component details">
             <div className="detail-pane-scroll">
-              <ComponentDetail display={focusedDisplay} />
+              <ComponentDetail display={focusedDisplay} model={model} />
             </div>
           </aside>
         )}

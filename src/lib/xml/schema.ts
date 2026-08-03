@@ -61,11 +61,11 @@ export interface NodeAttrs {
   noDisplay?: boolean
   alwaysIf?: string
   displayIf?: string
+  displayIfNot?: string
   default?: boolean
   core?: boolean
   stability?: string
   author?: string
-  comment?: string
   noBranches?: boolean
   tags?: string
 }

@@ -47,7 +47,7 @@ InstallSequence.xml
    Export install-order.txt   ← selected ids, document order, first-id wins
 ```
 
-Curated defaults live in `src/data/`. Milestone 1 does **not** use `mods.csv` yet (download/WeiDU come later).
+Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Release / Version. Downloading mods / WeiDU come later.
 
 Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not internal tree keys.
 
@@ -130,7 +130,8 @@ For each node, in order:
 
 1. **Engine** — must match selected game (`effectiveEngine`).
 2. **`displayIf`** — if present, expression must be true given current selection.
-3. **`noDisplay="1"`** — never shown in the UI (may still be selected/exported).
+3. **`displayIfNot`** — if present, expression must be false given current selection.
+4. **`noDisplay="1"`** — never shown in the UI (may still be selected/exported).
 
 Containers with `noDisplay` still contribute their children to the display tree (e.g. hidden trailing `<base>` that only holds auto components).
 
@@ -181,7 +182,7 @@ Station list-pane heading uses `STATION_LABELS`. Under it, the first station roo
 
 ### Detail panel
 
-Clicking a tree row focuses it (highlight distinct from checkbox selection). The right detail panel shows label, badges, full `desc`, and metadata (`modId`, author, comment, tags, component id). Mod URL is reserved as a “coming later” placeholder (resolved downloads / `mods.csv` are out of scope for this shell). Descriptions are **not** inlined under tree rows.
+Clicking a tree row focuses it (highlight distinct from checkbox selection). The right detail panel shows label, badges, full `desc`, and metadata (Codename, linkable URL, Release, Version from `mods.csv` when resolvable; author, tags, component id). Descriptions are **not** inlined under tree rows.
 
 ### Level badges
 
@@ -201,7 +202,7 @@ Unknown levels still render with a muted badge using the raw token. Stability `b
 
 ---
 
-## Condition expressions (`alwaysIf` / `displayIf`)
+## Condition expressions (`alwaysIf` / `displayIf` / `displayIfNot`)
 
 - Operands are **component ids**.
 - `,` = AND  
@@ -229,7 +230,7 @@ When the user picks an engine:
 ### Checkbox semantics
 
 - Every **displayed** nesting level has a checkbox (`group`, `mod`, `alternatives`, subsections, …).
-- Checking a **container** selects all currently applicable descendants (engine + `displayIf` ok), with special handling for nested `<alternatives>` (defaults only — see below).
+- Checking a **container** selects all currently applicable descendants (engine + `displayIf` / `displayIfNot` ok), with special handling for nested `<alternatives>` (defaults only — see below).
 - Unchecking a container clears all component descendants under it.
 - Checking/unchecking a **component** toggles that id (plus alternatives/core/alwaysIf side effects).
 
@@ -254,9 +255,12 @@ When false → remove from selection (typical for hidden companion components).
 
 Applied after every toggle until stable (bounded loop).
 
-### `displayIf`
+### `displayIf` / `displayIfNot`
 
-Affects **visibility** only (and whether parent “select all” walks into that subtree). Does not by itself select the component.
+Affect **visibility** only (and whether parent “select all” walks into that subtree). Do not by themselves select the component.
+
+- `displayIf` — show only when the expression is true.
+- `displayIfNot` — hide when the expression is true (same expression language).
 
 ### `default` (on alternatives)
 
@@ -308,7 +312,7 @@ Label fallback: `attrs.label`, else the component id.
 
 ## Out of scope (later milestones)
 
-- Reading `mods.csv` / downloading mods  
+- Downloading mods  
 - Invoking WeiDU  
 - User-supplied XML/CSV overrides  
 - Tauri desktop shell  

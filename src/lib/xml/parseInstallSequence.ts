@@ -28,11 +28,11 @@ function readAttrs(el: Element): NodeAttrs {
     noDisplay: truthyAttr(el.getAttribute('noDisplay')),
     alwaysIf: g('alwaysIf'),
     displayIf: g('displayIf'),
+    displayIfNot: g('displayIfNot'),
     default: truthyAttr(el.getAttribute('default')),
     core: truthyAttr(el.getAttribute('core')),
     stability: g('stability'),
     author: g('author'),
-    comment: g('comment'),
     noBranches: truthyAttr(el.getAttribute('noBranches')),
     tags: g('tags'),
   }
