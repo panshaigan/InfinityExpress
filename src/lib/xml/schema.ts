@@ -52,6 +52,8 @@ export type NodeKind = 'component' | 'container' | 'alternatives' | 'station'
 
 export interface NodeAttrs {
   id?: string
+  /** Stable id for folding duplicate sections across split station blocks. */
+  sectionId?: string
   label?: string
   desc?: string
   modId?: string
@@ -100,7 +102,7 @@ export interface StationBlock {
   stationId: StationId
   /** All top-level station elements with this tag, in document order. */
   roots: ContainerNode[]
-  /** Flattened children for UI (merged duplicate stations). */
+  /** UI children after folding matching sections across duplicate station roots. */
   children: TreeNode[]
 }
 

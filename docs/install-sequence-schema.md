@@ -13,7 +13,7 @@ Curated file: `src/data/InstallSequence.xml`
 
 ## Stations (top-level tags)
 
-Merged in the UI when the same tag appears more than once; install order always follows document order.
+Merged in the UI when the same tag appears more than once; install order always follows document order. Matching nested sections are folded (see `sectionId` and structural org tags below), not merely concatenated.
 
 | Tag | UI label |
 | --- | --- |
@@ -49,6 +49,7 @@ Unknown nesting tags are still rendered as tree nodes.
 | Attribute | Meaning |
 | --- | --- |
 | `id` | Component id (required on `component`) |
+| `sectionId` | Stable section identity for UI merge across split station blocks. Containers with the same `sectionId` fold into one (first attrs kept; children appended then re-folded). Required for intentional merges of `group` / `common` / similar labeled buckets — labels alone never merge. Org folders `add`, `update`, `upgrade`, `delete`, `tweaks`, `items`, `npc`, `romances`, `quest` merge by tag alone when `sectionId` is absent. `mod`, `component`, and `alternatives` never merge. |
 | `label` | Display name |
 | `desc` | Longer description |
 | `modId` | Mod package id (download key later) |

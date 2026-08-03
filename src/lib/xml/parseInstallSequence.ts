@@ -1,3 +1,4 @@
+import { foldSiblings } from './foldSiblings'
 import {
   type ComponentNode,
   type ContainerNode,
@@ -19,6 +20,7 @@ function readAttrs(el: Element): NodeAttrs {
   const g = (name: string) => el.getAttribute(name) ?? undefined
   return {
     id: g('id'),
+    sectionId: g('sectionId'),
     label: g('label'),
     desc: g('desc'),
     modId: g('modId') ?? g('modid'),
@@ -160,7 +162,7 @@ export function parseInstallSequence(xmlText: string): ParseResult {
   const stations: StationBlock[] = STATION_ORDER.filter((id) => stationBuckets.has(id)).map(
     (stationId) => {
       const roots = stationBuckets.get(stationId)!
-      const children = roots.flatMap((r) => r.children)
+      const children = foldSiblings(roots.flatMap((r) => r.children))
       return { stationId, roots, children }
     },
   )

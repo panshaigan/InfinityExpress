@@ -64,7 +64,7 @@ Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not i
 4. Each `<component id="…">` also gets:
    - `componentId`
    - `orderIndex` — monotonic counter in **document order** (used for export)
-5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the concatenation of all blocks’ children. Export still uses each component’s original `orderIndex`.
+5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Structural org tags (`add`, `update`, `tweaks`, `items`, …) reunite by tag; labeled buckets (`group`, `common`, …) reunite only when they share `sectionId`. Mods/components/alternatives are never folded. Export still uses each component’s original `orderIndex`.
 
 If `engine` / `level` is missing after inheritance, engine is treated as empty → **visible for all games**.
 

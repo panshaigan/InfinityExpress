@@ -975,7 +975,7 @@
 				<component id="cd_tweaks_reset_undersigil_fow" label="Reset UnderSigil Fog of War" modId="Tweaks-Anthology" engine="pst" />
 			</tweaks>
 		</pst>
-		<common label="Universal BG Content Mods" engine="bg,eet">
+		<common sectionId="universal-bg-content" label="Universal BG Content Mods" engine="bg,eet">
 			<npc>
 				<custom>
 					<!-- component id="c#husam-main" label="Husam - Human Chaotic Neutral Thief" modId="Husam_NPC" stability="beta" /-->
@@ -1061,7 +1061,7 @@
 				<component id="randomiser:10100" label="Remove Protection from Undead Scrolls from all stores" level="difficulty" engine="bg,eet" modId="randomiser" />
 			</tweaks>
 		</common>
-		<common label="Universal BG/IWD mods" engine="bg,eet,iwd">
+		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<npc>
 				<tweaks>
 					<component id="cd_tweaks_happy_neutrals" label="Neutral Characters Make Happy Comments at Mid-Range Reputation" modId="Tweaks-Anthology" />
@@ -1147,7 +1147,7 @@
 			<component id="Morpheus562sKitpackShieldBreaker" label="Shield Breaker Fighter Kit" modId="morpheus562s-kitpack" />
 			<component id="ArtisansKitpack:9001" label="Warhorn Shaman Kit" modId="The-Artisan-s-Kitpack" />
 		</add>
-		<update label="Overhaul flawed kits" level="quality">
+		<update label="Kits Overhaul" level="quality">
 			<component id="ArtisansKitpack:2012" label="Beast Master Overhaul" modId="The-Artisan-s-Kitpack" />
 			<component id="ArtisansKitpack:7008" label="Shadowdancer Overhaul" modId="The-Artisan-s-Kitpack" />
 			<component id="ArtisansKitpack:5100" label="Shapeshifter Overhaul" modId="The-Artisan-s-Kitpack" />
@@ -1163,14 +1163,14 @@
 			</mod>
 			<component id="ArtisansKitpack:1006" label="Wizard Slayer Overhaul" modId="The-Artisan-s-Kitpack" />
 		</update>
-		<tweaks>
-			<group label="Warrior tweaks" noBranches="1">
+		<tweaks label="Tweaks">
+			<group sectionId="warrior-tweaks" label="Warrior tweaks" noBranches="1">
 				<component id="ZSTweaks:2120" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" />
 				<component id="METweaks:400" label="Remove the limit of two proficiency points in a weapon at character creation" modId="Olvyn-Tweaks" />
 				
 				<component id="HouseTweaks:1" label="Expanded Racial Enemies" modId="House-Rule-Tweaks" />
 			</group>
-			<group label="Rogue tweaks" noBranches="1">
+			<group sectionId="rogue-tweaks" label="Rogue tweaks" noBranches="1">
 				<mod id="Epic-Thieving" label="Epic Thieving" level="blendWell">
 					<component id="EpicThieving:0" label="EpicThieving - Epic Locks, Traps, Pickpocketing, Illusions"  desc="Gives high valued thieving skills sense by adding difficult locks, traps, pickpocket opportunities and illusions" />
 					<component id="EpicThieving:100" label="EpicThieving - Epic Traps" alwaysIf="EpicThieving:0" noDisplay="1" />
@@ -1185,7 +1185,7 @@
 				</mod>
 				<component id="BardicWonders:2003" label="Armored Casting for Bards" modId="Bardic-Wonders" />
 			</group>
-			<group label="Spellcaster tweaks" noBranches="1">
+			<group sectionId="spellcaster-tweaks" label="Spellcaster tweaks" noBranches="1">
 				<component id="METweaks:900" label="Let Rangers and Paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
 				<component id="XGTCumulativeCasterLevels:100" label="Allow Caster Levels Bonuses and Penalties to Accumulate" level="fixes" modId="XGTCumulativeCasterLevels" stability="beta" displayIf="EEex:1" />
 				<component id="stratagems:4240" label="Treat mages' and priests' High-Level Abilities as innate abilities rather than memorisable spells" level="blendWell" modId="SwordCoastStratagems" />
@@ -1203,7 +1203,7 @@
 					<component id="EET_Tweaks:3021" label="Constitution loss for 1 week" modId="EET_Tweaks" />
 				</alternatives>
 			</group>
-			<group label="Universal tweaks" noBranches="1">
+			<group sectionId="universal-tweaks" label="Universal tweaks" noBranches="1">
 				<mod id="Tweaks-Anthology">
 					<component id="cd_tweaks_infravision" label="Make Infravision Useful" level="blendWell" desc="May bring performance problems" displayIf="EEex:1" />
 					<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" />
@@ -1225,7 +1225,7 @@
 	</kits>
 
 	<content>
-		<common label="Universal BG/IWD mods" engine="bg,eet,iwd">
+		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<items>
 				<add>
 					<component id="rr:7" label="Additional equipment for Thieves and Bards" modId="rogue_rebalancing" />
@@ -1518,7 +1518,7 @@
 			<component id="zdbae:10" label="Baeloth - Alternative portrait" modId="BaeBG2" displayIf="zdbae:0" engine="bg2,eet" />
 			<component id="SisterVigilantes_Angelo-Portrait_cassinus_free_fr" label="Angelo - Alternative portrait" modId="Angelo" displayIf="SisterVigilantes_Angelo-main" engine="bg2,eet" />
 			<component id="candlekeep_revisited:3" label="Candlekeep Revisited - New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" displayIf="candlekeep_revisited:0" engine="bg1,eet" />
-			<mod id="HPS-Portraits-Project-1.0" label="Add new portraits" engine="bg,eet">
+			<mod id="HPS-Portraits-Project-1.0" label="Add lacking portraits" engine="bg,eet">
 				<component id="HPSPP-ModNpcsACQ" label="Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and other stories" />
 				<component id="HPSPP-ModNpcsAdalonsBlood" label="Adalon's Blood" />
 				<component id="HPSPP-ModNpcsAerieWings" label="Aerie Wings" />
@@ -1551,32 +1551,49 @@
 				<component id="HPSPP-ModNpcsTheCalling" label="The Calling" />
 				<component id="HPSPP-ModNpcsTheVanishingOfSkieSilvershield" label="The Vanishing of Skie Silvershield" />
 			</mod>
-			<alternatives label="Choose the way to handle mods with existing portraits">
-				<mod id="HPS-Portraits-Project-1.0" label="Add new portraits and replace original">
-					<component id="HPSPP-ModNpcsBG2UB_opt1" label="Add portraits for all NPCs including replacing the original mod NPCs portraits" />
-					<component id="HPSPP-ModNpcsSolaufeinRescue_opt1" label="Add portraits for all NPCs including replacing Solaufein's portraits" />
-					<component id="HPSPP-ModNpcsBlackhearts_opt1" label="Add portraits for all NPCs including replacing the original mod NPCs portraits" />
-					<component id="HPSPP-ModNpcsRR_opt1" label="Add portraits for all NPCs including replacing the original mod NPCs portraits" />
-					<component id="HPSPP-ModNpcsSkieCost_opt1" label="Add portraits for all NPCs including replacing Skie's portraits" />
-					<component id="HPSPP-ModNpcsYosh_Remorse_opt1" label="Add portraits for all NPCs including replacing Yoshimo's portraits" />
-					<component id="HPSPP-ModNpcsAdrianBG2_opt1" label="Add portraits for all NPCs including replacing Adrian's portraits" />
-					<component id="HPSPP-ModNpcsAngelo_opt1" label="Add portraits for all NPCs including replacing Angelo's portraits" />
-					<component id="HPSPP-ModNpcsCowledMenace_opt1" label="Add portraits for all NPCs including replacing the original mod NPCs portraits" />
-					<component id="HPSPP-ModNpcsOozeLounge_opt1" label="Add portraits for all NPCs including replacing the original mod NPCs portraits" />
-				</mod>
-				<mod id="HPS-Portraits-Project-1.0" label="Add only new portraits">
-					<component id="HPSPP-ModNpcsBG2UB_opt2" label="Add portraits for all NPCs but do not replace the original mod NPCs portraits" />
-					<component id="HPSPP-ModNpcsBlackhearts_opt2" label="Add portraits for all NPCs but do not replace the original mod NPCs portraits" />
-					<component id="HPSPP-ModNpcsRR_opt2" label="Add portraits for all NPCs but do not replace the original mod NPCs portraits" />
-					<component id="HPSPP-ModNpcsSkieCost_opt2" label="Add portraits for all NPCs but do not replace Skie's portraits" />
-					<component id="HPSPP-ModNpcsSolaufeinRescue_opt2" label="Add portraits for all NPCs but do not replace Solaufein's portraits" />
-					<component id="HPSPP-ModNpcsYosh_Remorse_opt2" label="Add portraits for all NPCs but do not replace Yoshimo's portraits" />
-					<component id="HPSPP-ModNpcsAdrianBG2_opt2" label="Add portraits for all NPCs but do not replace Adrian's portraits" />
-					<component id="HPSPP-ModNpcsAngelo_opt2" label="Add portraits for all NPCs but do not replace Angelo's portraits" />
-					<component id="HPSPP-ModNpcsCowledMenace_opt2" label="Add portraits for all NPCs but do not replace the original mod NPCs portraits" />
-					<component id="HPSPP-ModNpcsOozeLounge_opt2" label="Add portraits for all NPCs but do not replace the original mod NPCs portraits" />
-				</mod>
-			</alternatives>
+			<mod id="HPS-Portraits-Project-1.0" label="Add just lacking portraits or add and replace all">
+				<alternatives label="BG2 Unfinished Business">
+					<component id="HPSPP-ModNpcsBG2UB_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsBG2UB_opt2" label="Just add lacking ones" />
+				</alternatives>
+				<alternatives label="Solaufein's Rescue">
+					<component id="HPSPP-ModNpcsSolaufeinRescue_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsSolaufeinRescue_opt2" label="Just add lacking ones" />
+				</alternatives>
+				<alternatives label="Blackhearts">
+					<component id="HPSPP-ModNpcsBlackhearts_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsBlackhearts_opt2" label="Just add lacking ones" />
+				</alternatives>
+				<alternatives label="Rogue Rebalancing">
+					<component id="HPSPP-ModNpcsRR_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsRR_opt2" label="Just add lacking ones" />
+				</alternatives>
+				<alternatives label="Skie: The Cost Of One Girl's Soul">
+					<component id="HPSPP-ModNpcsSkieCost_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsSkieCost_opt2" label="Just add lacking ones" />
+				</alternatives>
+				<alternatives label="Yoshimo's Remorse">
+					<component id="HPSPP-ModNpcsYosh_Remorse_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsYosh_Remorse_opt2" label="Just add lacking ones" />
+				</alternatives>
+				<alternatives label="Adrian NPC">
+					<component id="HPSPP-ModNpcsAdrianBG2_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsAdrianBG2_opt2" label="Just add lacking ones" />
+				</alternatives>
+				<alternatives label="Angelo NPC">
+					<component id="HPSPP-ModNpcsAngelo_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsAngelo_opt2" label="Just add lacking ones" />
+				</alternatives>
+				<alternatives label="Cowled Menace">
+					<component id="HPSPP-ModNpcsCowledMenace_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsCowledMenace_opt2" label="Just add lacking ones" />
+				</alternatives>
+				<alternatives label="Ooze's Lounge">
+					<component id="HPSPP-ModNpcsOozeLounge_opt1" label="Add and replace" />
+					<component id="HPSPP-ModNpcsOozeLounge_opt2" label="Just add lacking ones" />
+				</alternatives>
+			</mod>
+
 		</group>
 		<group label="PC portraits">
 			<component id="sha-tweaks:0" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" />
@@ -1589,7 +1606,7 @@
 				<component id="HPSPP-PartyNPCsDrow" label="HPS version" modId="HPS-Portraits-Project-1.0" />	
 			</alternatives>
 			<component id="PPE:40" label="PPE Vampire NPCs" engine="bg,eet,iwd" modId="Portraits-Portraits-Everywhere" />
-			<component id="cd_tweaks_edwina" label="Female Edwina [Davide Carte, Wendy Yung, Weimer]" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_edwina" label="Female Edwina" modId="Tweaks-Anthology" />
 			<component id="SPC:0" label="Slayer Portrait Change" desc="Changes the PC portrait during the Slayer transformation" modId="BG2EE-Slayer-Portrait-Change" />
 		</group>
 	</portraits>
@@ -1656,31 +1673,29 @@
 
 	<kits engine="bg,eet,iwd">
 		<update>
-			<mod id="skills-and-abilities" label="New class/kit abillities">
-				<component id="SkillsAndAbilitiesFighter" label="Add New Fighter Abilities" />
-				<component id="SkillsAndAbilitiesPaladin1" label="Add New Paladin Abilities" />
-				<component id="SkillsAndAbilitiesMonk" label="Update Skills for Monks" displayIf="EEex:1" />
-				<component id="SkillsAndAbilitiesUpdateArcher" label="Update Archer to provide to hit and damage bonuses per the kit description" />
-				<component id="SkillsAndAbilitiesDI2" label="Replace Inquisitor True Seeing for Detect Illusion Skill" displayIf="EEex:1" />
-				<component id="SkillsAndAbilitiesInquisitor1" label="Allow Inquisitor Kit to Cast Divine Spells" />
-				<component id="SkillsAndAbilitiesBlade" label="Blade Kit Enhancements" />
-				<component id="SkillsAndAbilitiesSkald" label="Skald Kit Enhancements" />
-				<component id="SkillsAndAbilitiesDI1" label="Wizard Slayer Kit Enhancements" displayIf="EEex:1"/>
-			</mod>
-			<mod id="Olvyn-Tweaks">
+			<group label="New class/kit abillities">
+				<component id="SkillsAndAbilitiesFighter" label="Add New Fighter Abilities" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesPaladin1" label="Add New Paladin Abilities" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesMonk" label="Update Skills for Monks" modId="skills-and-abilities" displayIf="EEex:1" />
+				<component id="SkillsAndAbilitiesUpdateArcher" label="Update Archer to provide to hit and damage bonuses per the kit description" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesDI2" label="Replace Inquisitor True Seeing for Detect Illusion Skill" displayIf="EEex:1" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesInquisitor1" label="Allow Inquisitor Kit to Cast Divine Spells" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesBlade" label="Blade Kit Enhancements" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesSkald" label="Skald Kit Enhancements" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesDI1" label="Wizard Slayer Kit Enhancements" displayIf="EEex:1" modId="skills-and-abilities" />
 				<component id="METweaks:810" label="Both Clerics and Monks can get to level 9 during BG1" modId="Olvyn-Tweaks" />
 				<component id="METweaks:1200" label="Give Rangers the Tracking ability (from Throne of Bhaal) starting at level 1" modId="Olvyn-Tweaks" />
 				<component id="METweaks:1400" label="Power Up Ranger Charm Animal" modId="Olvyn-Tweaks" />
 				<component id="METweaks:1500" label="Turn Paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" />
-			</mod>
+			</group>
 		</update>
 		<tweaks>
 			<group label="Stats">
 				<component id="D5_REVISED_ABILITY_SCORES" label="Ability Score Overhaul" modId="SubtleD_Stat_Overhauls" />
 				<component id="HouseTweaks:9" label="Constitution Bonuses for All Classes + Regeneration Changes" modId="House-Rule-Tweaks" />
-				<alternatives>
-					<component id="D5_ABILITY_SCORE_SPELL_SLOTS" label="Stat-based Bonus Spell Slots" modId="SubtleD_Stat_Overhauls" />
-					<component id="HouseTweaks:12" label="INT/WIS/CHA-based Bonus Spell Slots" modId="House-Rule-Tweaks" />
+				<alternatives label="Stat-based Bonus Spell slots">
+					<component id="D5_ABILITY_SCORE_SPELL_SLOTS" label="SubtleD Stat Overhauls version" modId="SubtleD_Stat_Overhauls" />
+					<component id="HouseTweaks:12" label="House-Rule-Tweaks version" modId="House-Rule-Tweaks" />
 				</alternatives>
 				<component id="cd_tweaks_exceptional_strength_weight_limits" label="Exceptional Strength Weight Limit Changes" modId="Tweaks-Anthology" level="vanillaPlus" engine="bg,eet,iwd,pst" />
 				<component id="D5_1_HAND_STR_PENALTY" label="Full Strength for 2-Hand Weapons Only" modId="SubtleD_Stat_Overhauls" />
@@ -1689,38 +1704,36 @@
 				<component id="D5_REVISED_DUAL_CLASS_REQS" label="Lower Dual-Class Requirements" modId="SubtleD_Stat_Overhauls" />
 				<component id="D5_UNIFORM_XP_TABLES" label="Slower, Standardized XP Tables" modId="SubtleD_Stat_Overhauls" />
 			</group>
-			<group label="Proficiency/Fighting Styles tweaks">
-				<alternatives>
-					<group label="Tweaks Anthology/House Tweaks">
-						<component id="METweaks:500" label="Fighters get 1 proficiency point per 2 levels" modId="Olvyn-Tweaks" />
-						<alternatives label="Proficiency system">
-							<component id="cd_tweaks_alter_prof_rebalanced" label="Rebalanced weapon proficiencies" modId="Tweaks-Anthology" />
-							<component id="cd_tweaks_alter_prof_bg_with_styles" label="BG-style weapon proficiencies, with weapon styles" modId="Tweaks-Anthology" />
-							<component id="cd_tweaks_alter_prof_iwd_with_styles" label="IWD-style proficiencies with weapon styles" modId="Tweaks-Anthology" />
-						</alternatives>
-						<alternatives label="Fighting styles">
-							<component id="METweaks:4000" label="Modify Fighting Styles" modId="Olvyn-Tweaks" />
-							<component id="HouseTweaks:5" label="Rebalanced Weapon Styles" modId="House-Rule-Tweaks" />
-						</alternatives>
-					</group>
-					<mod id="skills-and-abilities" labels="Skills And Abilities">
-						<component id="SkillsAndAbilitiesWeapStyle" label="Update Weapon Fighting Styles" />
-						<alternatives label="Overhaul Proficiency System - Add New Proficiencies and Weapon Styles">
-							<component id="SkillsAndAbilitiesNewProf1" label="Vanilla Proficiency Progression" default="1" />
-							<component id="SkillsAndAbilitiesNewProf2" label="Accelerated Proficiency Progression" />
-							<component id="SkillsAndAbilitiesNewProf3" label="NWN2 Style Proficiency Progression" />
-						</alternatives>
-					</mod>
-					<mod id="Combat_Skill_Proficiencies" label="SubtleD Combat Skills &amp; Proficiencies">
-						<component id="D5_REVISED_PROFICIENCIES" label="Revised Proficiency System" />
-						<component id="D5_COMBAT_SKILLS" label="Combat Skill Points" />
-						<component id="D5_COMBINED_WEAPON_CATEGORIES" label="Weapon Category Grouping" />
-						<component id="D5_REVISED_WEAPON_STYLES" label="Fighting Style Changes" />
-						<component id="D5_EE_WSPATCK_FOR_ALL" label="APR on Spec" />
-					</mod>
-				</alternatives>
-			</group>
-			<group label="Universal tweaks" noBranches="1">
+			<alternatives label="Proficiency/Fighting Styles tweaks">
+				<group label="Tweaks Anthology/House Tweaks">
+					<component id="METweaks:500" label="Fighters get 1 proficiency point per 2 levels" modId="Olvyn-Tweaks" />
+					<alternatives label="Proficiency system">
+						<component id="cd_tweaks_alter_prof_rebalanced" label="Rebalanced weapon proficiencies" modId="Tweaks-Anthology" />
+						<component id="cd_tweaks_alter_prof_bg_with_styles" label="BG-style weapon proficiencies, with weapon styles" modId="Tweaks-Anthology" />
+						<component id="cd_tweaks_alter_prof_iwd_with_styles" label="IWD-style proficiencies with weapon styles" modId="Tweaks-Anthology" />
+					</alternatives>
+					<alternatives label="Fighting styles">
+						<component id="METweaks:4000" label="Modify Fighting Styles" modId="Olvyn-Tweaks" />
+						<component id="HouseTweaks:5" label="Rebalanced Weapon Styles" modId="House-Rule-Tweaks" />
+					</alternatives>
+				</group>
+				<mod id="skills-and-abilities" label="Skills And Abilities">
+					<component id="SkillsAndAbilitiesWeapStyle" label="Update Weapon Fighting Styles" />
+					<alternatives label="Overhaul Proficiency System - Add New Proficiencies and Weapon Styles">
+						<component id="SkillsAndAbilitiesNewProf1" label="Vanilla Proficiency Progression" default="1" />
+						<component id="SkillsAndAbilitiesNewProf2" label="Accelerated Proficiency Progression" />
+						<component id="SkillsAndAbilitiesNewProf3" label="NWN2 Style Proficiency Progression" />
+					</alternatives>
+				</mod>
+				<mod id="Combat_Skill_Proficiencies" label="SubtleD Combat Skills &amp; Proficiencies">
+					<component id="D5_REVISED_PROFICIENCIES" label="Revised Proficiency System" />
+					<component id="D5_COMBAT_SKILLS" label="Combat Skill Points" />
+					<component id="D5_COMBINED_WEAPON_CATEGORIES" label="Weapon Category Grouping" />
+					<component id="D5_REVISED_WEAPON_STYLES" label="Fighting Style Changes" />
+					<component id="D5_EE_WSPATCK_FOR_ALL" label="APR on Spec" />
+				</mod>
+			</alternatives>
+			<group sectionId="universal-tweaks" label="Universal tweaks" noBranches="1">
 				<component id="cd_tweaks_triple_class_hla_table" label="Triple-Class HLA Tables" modId="Tweaks-Anthology" />
 				<mod id="skills-and-abilities">
 					<component id="SkillsAndAbilitiesNewHLA" label="Add New HLAs for ALL Classes and Kits" />
@@ -1730,16 +1743,14 @@
 					<component id="SkillsAndAbilitiesSTR" label="2H Weapon Additional Strength Bonus" />
 				</mod>
 			</group>
-			<group label="Warrior tweaks" noBranches="1">
-				<mod id="skills-and-abilities" label="Allow Fighter Multiclasses to achieve higher Weapon Proficiency">
-					<alternatives>
-						<component id="SkillsAndAbilitiesWeaponProf1" label="Master (3 pips)" />
-						<component id="SkillsAndAbilitiesWeaponProf2" label="High Master (4 pips)" />
-						<component id="SkillsAndAbilitiesWeaponProf3" label="Grand Master (5 pips)" />
-					</alternatives>
-				</mod>
+			<group sectionId="warrior-tweaks" label="Warrior tweaks">
+				<alternatives label="Allow Fighter Multiclasses to achieve higher Weapon Proficiency">
+					<component id="SkillsAndAbilitiesWeaponProf1" label="Master (3 pips)" modId="skills-and-abilities" />
+					<component id="SkillsAndAbilitiesWeaponProf2" label="High Master (4 pips)" modId="skills-and-abilities" />
+					<component id="SkillsAndAbilitiesWeaponProf3" label="Grand Master (5 pips)" modId="skills-and-abilities" />
+				</alternatives>
 			</group>
-			<group label="Rogue tweaks" noBranches="1">
+			<group sectionId="rogue-tweaks" label="Rogue tweaks" noBranches="1">
 				<mod id="skills-and-abilities">
 					<alternatives label="Bard Skills" displayIf="EEex:1">
 						<component id="SkillsAndAbilitiesBard1" label="Add Lockpicking" displayIf="EEex:1" />
@@ -1748,7 +1759,7 @@
 					<component id="SkillsAndAbilitiesSongDuration" label="Bard Songs Last 1 Turn" />
 				</mod>
 			</group>
-			<group label="Spellcaster tweaks" noBranches="1">
+			<group sectionId="spellcaster-tweaks" label="Spellcaster tweaks" noBranches="1">
 				<component id="SkillsAndAbilitiesConcentration" label="Add Concentration Check to Resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" />
 			</group>
 		</tweaks>
