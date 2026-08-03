@@ -86,7 +86,7 @@
 	</gfx>
 
 	<content>
-		<bg1 label="BG1 Content mods" engine="bg1,eet">
+		<bg1 sectionId="bg1-content" label="BG1 Content mods" engine="bg1,eet">
 			<group label="Restorations">
 				<mod id="bg1ub" label="Unfinished Business" level="restoration" engine="bg1,eet1">
 					<component id="bg1ub:11" label="Scar and the Sashenstar's Daughter" />
@@ -429,7 +429,7 @@
 				</tweaks>
 			</npc>
 		</sod>
-		<bg2 label="BG2 Content mods" engine="bg2,eet">
+		<bg2 sectionId="bg2-content" label="BG2 Content mods" engine="bg2,eet">
 			<group label="Restructure">
 				<component id="Reflections_of_Destiny:330" label="Reflections of Destiny BG2: Wherever You Go There You Are (Allows visiting SoD maps in BG2 if they havent been played yet.)" modId="Reflections-of-Destiny" displayIf="Reflections_of_Destiny:100" level="restructure" />
 				<mod id="imoen4Ever" label="Imoen 4 Ever - Modify the story to allow Imoen staying in the party" level="restructure">
@@ -825,7 +825,7 @@
 				</mod>
 			</tweaks>
 		</bg2>
-		<iwd label="IWD Content mods" engine="iwd">
+		<iwd sectionId="iwd-content" label="IWD Content mods" engine="iwd">
 			<quest>
 				<mod id="iwd_unfinished_business" label="Unfinished Business for Icewind Dale">
 					<component id="cd_iwd_ub_markeths_ring" label="Marketh's Ring" />

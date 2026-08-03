@@ -21,6 +21,7 @@ import {
   displayTreeHasVisible,
   type DisplayNode,
 } from './lib/selection/visibility'
+import { remapContentForGame } from './lib/xml/remapContentForGame'
 import {
   collectFilterOptions,
   createDefaultFilterCriteria,
@@ -100,7 +101,9 @@ export default function App() {
     return STATION_ORDER.filter((id) => {
       const block = model.stations.find((s) => s.stationId === id)
       if (!block) return false
-      return displayTreeHasVisible(block.children, { game, selectedIds })
+      const stationChildren =
+        block.stationId === 'content' ? remapContentForGame(block.children, game) : block.children
+      return displayTreeHasVisible(stationChildren, { game, selectedIds })
     })
   }, [game, model.stations, selectedIds])
 
@@ -109,7 +112,9 @@ export default function App() {
     const block = model.stations.find((s) => s.stationId === activeStation)
     if (!block) return []
     const includeHidden = filtersNeedIncludeHidden(filters)
-    const built = buildDisplayTree(block.children, { game, selectedIds, includeHidden })
+    const stationChildren =
+      block.stationId === 'content' ? remapContentForGame(block.children, game) : block.children
+    const built = buildDisplayTree(stationChildren, { game, selectedIds, includeHidden })
     return filterDisplayTree(
       built,
       filters,

@@ -65,6 +65,12 @@ Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not i
    - `componentId`
    - `orderIndex` — monotonic counter in **document order** (used for export)
 5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Structural org tags (`add`, `update`, `tweaks`, `items`, …) reunite by tag; labeled buckets (`group`, `common`, …) reunite only when they share `sectionId`. Mods/components/alternatives are never folded. Export still uses each component’s original `orderIndex`.
+6. **Content station remount (UI only, after fold):** depending on the selected game, commons are absorbed into a target bucket with the same sibling-fold rules (`npc`/`items`/`tweaks` reunite by tag). `sod` / `pst` stay top-level.
+   - `bg1` → fold `universal-bg-content` + `universal-bg-iwd` into `bg1-content`
+   - `bg2` → fold both commons into `bg2-content`
+   - `iwd` → fold `universal-bg-iwd` into `iwd-content`
+   - `eet` → fold `universal-bg-iwd` into `universal-bg-content` (game buckets stay siblings)
+   - `pst` → no remount
 
 If `engine` / `level` is missing after inheritance, engine is treated as empty → **visible for all games**.
 

@@ -49,7 +49,7 @@ Unknown nesting tags are still rendered as tree nodes.
 | Attribute | Meaning |
 | --- | --- |
 | `id` | Component id (required on `component`) |
-| `sectionId` | Stable section identity for UI merge across split station blocks. Containers with the same `sectionId` fold into one (first attrs kept; children appended then re-folded). Required for intentional merges of `group` / `common` / similar labeled buckets — labels alone never merge. Org folders `add`, `update`, `upgrade`, `delete`, `tweaks`, `items`, `npc`, `romances`, `quest` merge by tag alone when `sectionId` is absent. `mod`, `component`, and `alternatives` never merge. |
+| `sectionId` | Stable section identity for UI merge across split station blocks. Containers with the same `sectionId` fold into one (first attrs kept; children appended then re-folded). Required for intentional merges of `group` / `common` / similar labeled buckets — labels alone never merge. Org folders `add`, `update`, `upgrade`, `delete`, `tweaks`, `items`, `npc`, `romances`, `quest` merge by tag alone when `sectionId` is absent. `mod`, `component`, and `alternatives` never merge. Content game buckets use `bg1-content`, `bg2-content`, `iwd-content` as remount targets; commons use `universal-bg-content` / `universal-bg-iwd` (game-dependent absorb into those buckets — see app-logic.md). |
 | `label` | Display name |
 | `desc` | Longer description |
 | `modId` | Mod package id (download key later) |
