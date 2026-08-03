@@ -1,4 +1,5 @@
 import { engineMatches } from '../engine/matchEngine'
+import { levelFilterRank, type LadderLevel } from '../levels'
 import { evalConditionExpr } from './conditions'
 import {
   type ComponentNode,
@@ -205,6 +206,168 @@ export function createInitialSelection(
   }
   applyAlwaysIf(model, selected, game)
   return selected
+}
+
+function passesDisplayGates(
+  node: TreeNode,
+  selected: ReadonlySet<string>,
+): boolean {
+  if (node.attrs.displayIf && !evalConditionExpr(node.attrs.displayIf, selected)) {
+    return false
+  }
+  if (node.attrs.displayIfNot && evalConditionExpr(node.attrs.displayIfNot, selected)) {
+    return false
+  }
+  return true
+}
+
+function isLadderLeveled(component: ComponentNode): boolean {
+  return levelFilterRank(component.effectiveLevel) !== null
+}
+
+/** Among level-matching candidates, keep one option per alternatives group. */
+function pickLevelMassCheckCandidates(
+  model: InstallSequenceModel,
+  candidates: ComponentNode[],
+): ComponentNode[] {
+  const groups = new Map<string | null, ComponentNode[]>()
+  for (const c of candidates) {
+    const alts = findEnclosingAlternatives(model, c)
+    const key = alts?.key ?? null
+    const list = groups.get(key)
+    if (list) list.push(c)
+    else groups.set(key, [c])
+  }
+
+  const out: ComponentNode[] = []
+  for (const [key, comps] of groups) {
+    if (key === null) {
+      out.push(...comps)
+      continue
+    }
+    const defaults = comps.filter((c) => c.attrs.default)
+    out.push(defaults[0] ?? comps[0]!)
+  }
+  return out
+}
+
+function selectMassCheckComponents(
+  model: InstallSequenceModel,
+  selected: SelectionSet,
+  game: SelectedGame,
+  components: ComponentNode[],
+  coreFilter: (c: ComponentNode) => boolean,
+): boolean {
+  let changed = false
+  for (const c of components) {
+    if (!selected.has(c.componentId)) {
+      selected.add(c.componentId)
+      changed = true
+    }
+    applyAlternativesExclusion(model, selected, c)
+    const mod = findEnclosingMod(model, c)
+    if (!mod) continue
+    const cores = eligibleComponents(
+      allComponentDescendants(mod).filter((x) => x.attrs.core && coreFilter(x)),
+      game,
+    )
+    for (const core of cores) {
+      if (!selected.has(core.componentId)) {
+        selected.add(core.componentId)
+        changed = true
+      }
+    }
+  }
+  return changed
+}
+
+/**
+ * Resync ladder-leveled components to a cumulative max (or clear with null).
+ * Difficulty and unleveled components are left alone. Required stays selected.
+ */
+export function applyLadderLevelSelection(
+  model: InstallSequenceModel,
+  selected: ReadonlySet<string>,
+  game: SelectedGame,
+  maxLevel: LadderLevel | null,
+): SelectionSet {
+  const next = new Set(selected)
+  const maxRank = maxLevel ? levelFilterRank(maxLevel) : null
+
+  for (const c of model.componentsInOrder) {
+    if (!isLadderLeveled(c)) continue
+    if (!engineMatches(c.effectiveEngine, game)) continue
+
+    const rank = levelFilterRank(c.effectiveLevel)!
+    const want = maxRank !== null && rank <= maxRank
+    if (!want && !c.attrs.required) {
+      next.delete(c.componentId)
+    }
+  }
+
+  if (maxRank !== null) {
+    const coreFilter = (c: ComponentNode) => {
+      const rank = levelFilterRank(c.effectiveLevel)
+      return rank !== null && rank <= maxRank
+    }
+    let guard = 0
+    while (guard++ < 50) {
+      const candidates: ComponentNode[] = []
+      for (const c of model.componentsInOrder) {
+        if (!isLadderLeveled(c)) continue
+        if (!engineMatches(c.effectiveEngine, game)) continue
+        const rank = levelFilterRank(c.effectiveLevel)!
+        if (rank > maxRank) continue
+        if (!passesDisplayGates(c, next)) continue
+        candidates.push(c)
+      }
+      const toSelect = pickLevelMassCheckCandidates(model, candidates)
+      if (!selectMassCheckComponents(model, next, game, toSelect, coreFilter)) break
+    }
+  }
+
+  applyAlwaysIf(model, next, game)
+  return next
+}
+
+/**
+ * Select or clear only difficulty-leveled components. Ladder / unleveled untouched.
+ */
+export function setDifficultySelection(
+  model: InstallSequenceModel,
+  selected: ReadonlySet<string>,
+  game: SelectedGame,
+  wantSelected: boolean,
+): SelectionSet {
+  const next = new Set(selected)
+
+  if (!wantSelected) {
+    for (const c of model.componentsInOrder) {
+      if (c.effectiveLevel !== 'difficulty') continue
+      if (!engineMatches(c.effectiveEngine, game)) continue
+      if (c.attrs.required) continue
+      next.delete(c.componentId)
+    }
+    applyAlwaysIf(model, next, game)
+    return next
+  }
+
+  const coreFilter = (c: ComponentNode) => c.effectiveLevel === 'difficulty'
+  let guard = 0
+  while (guard++ < 50) {
+    const candidates: ComponentNode[] = []
+    for (const c of model.componentsInOrder) {
+      if (c.effectiveLevel !== 'difficulty') continue
+      if (!engineMatches(c.effectiveEngine, game)) continue
+      if (!passesDisplayGates(c, next)) continue
+      candidates.push(c)
+    }
+    const toSelect = pickLevelMassCheckCandidates(model, candidates)
+    if (!selectMassCheckComponents(model, next, game, toSelect, coreFilter)) break
+  }
+
+  applyAlwaysIf(model, next, game)
+  return next
 }
 
 export function toggleNode(

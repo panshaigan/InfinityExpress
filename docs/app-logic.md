@@ -171,10 +171,22 @@ Fixed-viewport desktop shell (`100vh`, page does not scroll):
 
 1. **Top bar** — brand, current engine badge, selection count, Export
 2. **Station tabs** — horizontal scrollable tabs (Engine first, then visible content stations)
-3. **Filters strip** — search plus Level / Stability / Tags / Hidden / Required controls (display-only; never clears selection)
-4. **Workspace** — dense component list (left) + detail panel (right). On the Engine station the detail column is hidden and the game picker uses full width
+3. **Level selection strip** — mass-check presets by ladder max + independent Difficulty (writes `selectedIds`; independent of Filters)
+4. **Filters strip** — search plus Level / Stability / Tags / Hidden / Required controls (display-only; never clears selection)
+5. **Workspace** — dense component list (left) + detail panel (right). On the Engine station the detail column is hidden and the game picker uses full width
 
 List and detail panes scroll independently. Station `desc` is **not** shown in the tab bar.
+
+### Level selection
+
+Separate from the Filters Level control. Disabled until an engine is chosen. Preset UI state resets when the engine changes.
+
+| Control | Behaviour |
+| --- | --- |
+| Ladder radios (**None** / Fixes / … / Quality) | Cumulative mass-check: select engine-eligible components with ladder `effectiveLevel` rank ≤ the chosen max; **deselect** higher ladder ranks. **None** clears all non-required ladder-leveled selections. Difficulty and unleveled components are never changed. |
+| **Difficulty** checkbox | Selects or clears only `effectiveLevel === 'difficulty'` components. Does not change ladder or unleveled picks. |
+
+Shared rules with other selection paths: `required` stays selected; `displayIf` / `displayIfNot` gate eligibility; inside `<alternatives>`, prefer a matching `default` option else the first matching option in document order; `alwaysIf` converges afterward. Core auto-select during these presets only pulls cores that match the same operation (ladder max or difficulty), so a Difficulty toggle cannot pull in ladder cores and vice versa.
 
 ### Filters
 
@@ -183,7 +195,7 @@ Filters run **after** `buildDisplayTree` and only affect what is shown. Checked 
 | Control | Behaviour | Default |
 | --- | --- | --- |
 | Search | Case-insensitive match on label, component id, `modId`, desc | empty |
-| Level | Pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Difficulty** ORs in `difficulty` (never part of the cumulative ladder). Missing `effectiveLevel` is excluded when a ladder filter is active. | All levels; Include Difficulty on |
+| Level | Display filter only — pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Difficulty** ORs in `difficulty` (never part of the cumulative ladder). Missing `effectiveLevel` is excluded when a ladder filter is active. Does **not** mass-check selection. | All levels; Include Difficulty on |
 | Stability | Multi-select allow-list; **Released** = missing/`released`. Other values discovered from data (`beta`, `alpha`, …) | **Released** only |
 | Tags | Allow-list of discovered tags (checked = show that tag). Untagged always shown unless **Only checked tags** is on | all tags checked; Only checked tags off |
 | Hidden | Show / Hide / Only for `noDisplay` | **Hide** |

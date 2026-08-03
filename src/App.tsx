@@ -10,7 +10,13 @@ import {
   type ComponentNode,
   type TreeNode,
 } from './lib/xml/schema'
-import { createInitialSelection, toggleNode } from './lib/selection/selectionEngine'
+import {
+  applyLadderLevelSelection,
+  createInitialSelection,
+  setDifficultySelection,
+  toggleNode,
+} from './lib/selection/selectionEngine'
+import type { LadderLevel } from './lib/levels'
 import {
   buildDisplayTree,
   displayTreeHasVisible,
@@ -30,6 +36,7 @@ import { EngineStation } from './ui/EngineStation'
 import { ComponentTree } from './ui/ComponentTree'
 import { ComponentDetail } from './ui/ComponentDetail'
 import { FiltersStrip } from './ui/FiltersStrip'
+import { LevelSelectStrip } from './ui/LevelSelectStrip'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
@@ -70,6 +77,8 @@ export default function App() {
   const [filters, setFilters] = useState<FilterCriteria>(() =>
     createDefaultFilterCriteria(collectFilterOptions(parsed.model).tags),
   )
+  const [ladderPreset, setLadderPreset] = useState<LadderLevel | null>(null)
+  const [difficultyPreset, setDifficultyPreset] = useState(false)
 
   const visibleStations = useMemo(() => {
     if (!game) return [] as StationId[]
@@ -130,8 +139,22 @@ export default function App() {
   function chooseGame(next: SelectedGame) {
     setGame(next)
     setSelectedIds(createInitialSelection(model, next))
+    setLadderPreset(null)
+    setDifficultyPreset(false)
     setActiveStation('base')
     clearFocus()
+  }
+
+  function onLadderPresetChange(level: LadderLevel | null) {
+    if (!game) return
+    setLadderPreset(level)
+    setSelectedIds((prev) => applyLadderLevelSelection(model, prev, game, level))
+  }
+
+  function onDifficultyPresetChange(want: boolean) {
+    if (!game) return
+    setDifficultyPreset(want)
+    setSelectedIds((prev) => setDifficultySelection(model, prev, game, want))
   }
 
   function selectEngine() {
@@ -200,6 +223,14 @@ export default function App() {
         visibleStations={visibleStations}
         onSelectEngine={selectEngine}
         onSelectStation={selectStation}
+      />
+
+      <LevelSelectStrip
+        enabled={!!game}
+        ladder={ladderPreset}
+        difficulty={difficultyPreset}
+        onLadderChange={onLadderPresetChange}
+        onDifficultyChange={onDifficultyPresetChange}
       />
 
       <FiltersStrip
