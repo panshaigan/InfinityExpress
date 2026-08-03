@@ -16,12 +16,20 @@ import {
   displayTreeHasVisible,
   type DisplayNode,
 } from './lib/selection/visibility'
+import {
+  DEFAULT_FILTER_CRITERIA,
+  collectFilterOptions,
+  filterDisplayTree,
+  filtersNeedIncludeHidden,
+  type FilterCriteria,
+} from './lib/selection/filterDisplayTree'
 import { buildRelationIndex } from './lib/selection/relations'
 import { downloadInstallOrder } from './lib/export/installOrder'
 import { StationNav } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
 import { ComponentTree } from './ui/ComponentTree'
 import { ComponentDetail } from './ui/ComponentDetail'
+import { FiltersStrip } from './ui/FiltersStrip'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
@@ -57,6 +65,13 @@ export default function App() {
   const [focusedKey, setFocusedKey] = useState<string | null>(null)
   const [focusedComponentId, setFocusedComponentId] = useState<string | null>(null)
   const [pendingFocusId, setPendingFocusId] = useState<string | null>(null)
+  const [filters, setFilters] = useState<FilterCriteria>(() => ({
+    ...DEFAULT_FILTER_CRITERIA,
+    stability: new Set(),
+    tags: new Set(),
+  }))
+
+  const filterOptions = useMemo(() => collectFilterOptions(model), [model])
 
   const visibleStations = useMemo(() => {
     if (!game) return [] as StationId[]
@@ -71,8 +86,10 @@ export default function App() {
     if (!game || activeStation === 'engine') return []
     const block = model.stations.find((s) => s.stationId === activeStation)
     if (!block) return []
-    return buildDisplayTree(block.children, { game, selectedIds })
-  }, [activeStation, game, model.stations, selectedIds])
+    const includeHidden = filtersNeedIncludeHidden(filters)
+    const built = buildDisplayTree(block.children, { game, selectedIds, includeHidden })
+    return filterDisplayTree(built, filters)
+  }, [activeStation, filters, game, model.stations, selectedIds])
 
   const stationDesc = useMemo(() => {
     if (activeStation === 'engine') return undefined
@@ -187,22 +204,12 @@ export default function App() {
         onSelectStation={selectStation}
       />
 
-      <div className="filters-strip" aria-label="Filters">
-        <span className="filters-label">Filters</span>
-        <input
-          type="search"
-          className="filters-search"
-          placeholder="Search…"
-          disabled
-          aria-disabled="true"
-        />
-        <button type="button" className="filter-chip" disabled>
-          Level
-        </button>
-        <button type="button" className="filter-chip" disabled>
-          Stability
-        </button>
-      </div>
+      <FiltersStrip
+        criteria={filters}
+        onChange={setFilters}
+        tagOptions={filterOptions.tags}
+        stabilityOptions={filterOptions.stabilities}
+      />
 
       <div className={`workspace${showDetail ? '' : ' engine-only'}`}>
         <div className="list-pane">

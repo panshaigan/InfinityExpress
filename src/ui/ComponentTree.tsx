@@ -4,6 +4,7 @@ import type { DisplayNode } from '../lib/selection/visibility'
 import { nodeSelectionState } from '../lib/selection/selectionEngine'
 import type { SelectedGame } from '../lib/xml/schema'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
+import { stabilityBadgeLabel } from '../lib/selection/filterDisplayTree'
 
 interface Props {
   nodes: DisplayNode[]
@@ -72,6 +73,9 @@ function CheckboxRow({
     (collapsedComponent ? collapsedComponent.attrs.label : undefined) ??
     node.tag
   const level = collapsedComponent?.effectiveLevel ?? node.effectiveLevel
+  const stability =
+    collapsedComponent?.attrs.stability ?? node.attrs.stability
+  const stabilityLabel = stabilityBadgeLabel(stability)
 
   function handleFoldClick(e: MouseEvent) {
     e.preventDefault()
@@ -118,7 +122,7 @@ function CheckboxRow({
           {level && (
             <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
-          {node.attrs.stability === 'beta' && <span className="badge">beta</span>}
+          {stabilityLabel && <span className="badge">{stabilityLabel}</span>}
         </div>
       </div>
       {expanded &&

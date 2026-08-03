@@ -53,18 +53,18 @@ Unknown nesting tags are still rendered as tree nodes.
 | `desc` | Longer description |
 | `modId` | Mod package id (download key later) |
 | `engine` | Comma allow-list of engine tokens; inherited from ancestors |
-| `level` | Category (`fixes`, `vanillaPlus`, …); inherited |
+| `level` | Category (`fixes`, `vanillaPlus`, …); inherited. UI filter ladder: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `quality`; `restructure` groups with `blendWell`; `difficulty` is opt-in only |
 | `required` | `1` = auto-select when engine-eligible |
-| `noDisplay` | `1` = hidden in UI (may still install) |
+| `noDisplay` | `1` = hidden in UI by default (may still install); filter can show/only |
 | `alwaysIf` | Auto-select when condition is true |
 | `displayIf` | Show only when condition is true |
 | `displayIfNot` | Hide when condition is true |
 | `default` | `1` = default when parent `<alternatives>` is checked as a whole |
 | `core` | `1` = core of parent `<mod>`; auto-on with siblings; off clears mod |
-| `stability` | Metadata (e.g. `beta`) |
+| `stability` | Metadata (e.g. `beta`); omit or `released` = stable / no badge |
 | `author` | Metadata |
 | `noBranches` | UI: keep this container row, but flatten nested grouping under it (show components / alternatives units only; see app-logic.md) |
-| `tags` | Metadata |
+| `tags` | Comma-separated metadata; UI filter matches with OR |
 
 ### Engine tokens
 

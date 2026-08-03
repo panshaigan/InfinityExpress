@@ -13,6 +13,10 @@ import {
   type RelatedRef,
 } from '../lib/selection/relations'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
+import {
+  splitTags,
+  stabilityBadgeLabel,
+} from '../lib/selection/filterDisplayTree'
 import { parseModsCsv, resolveModLookupKey } from '../lib/mods/loadMods'
 
 const modsByCodename = parseModsCsv(modsCsv)
@@ -29,14 +33,6 @@ function resolveLabel(node: TreeNode, collapsed?: ComponentNode): string {
     (collapsed ? collapsed.attrs.label : undefined) ??
     node.tag
   )
-}
-
-function splitTags(tags: string | undefined): string[] {
-  if (!tags?.trim()) return []
-  return tags
-    .split(',')
-    .map((t) => t.trim())
-    .filter(Boolean)
 }
 
 function RelationRow({
@@ -102,6 +98,7 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
       ? node.componentId
       : undefined
   const stability = node.attrs.stability ?? collapsedComponent?.attrs.stability
+  const stabilityLabel = stabilityBadgeLabel(stability)
   const attrs = source.attrs
 
   const codename = resolveModLookupKey(model, source)
@@ -117,7 +114,7 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
         {level && (
           <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
         )}
-        {stability === 'beta' && <span className="badge">beta</span>}
+        {stabilityLabel && <span className="badge">{stabilityLabel}</span>}
         {attrs.required && <span className="badge">required</span>}
         {attrs.noDisplay && <span className="badge">hidden</span>}
         {attrs.core && <span className="badge">core</span>}

@@ -171,10 +171,27 @@ Fixed-viewport desktop shell (`100vh`, page does not scroll):
 
 1. **Top bar** — brand, current engine badge, selection count, Export
 2. **Station tabs** — horizontal scrollable tabs (Engine first, then visible content stations)
-3. **Filters strip** — placeholder only (disabled search + chips); no filtering yet
+3. **Filters strip** — search plus Level / Stability / Tags / Hidden / Required controls (display-only; never clears selection)
 4. **Workspace** — dense component list (left) + detail panel (right). On the Engine station the detail column is hidden and the game picker uses full width
 
 List and detail panes scroll independently. Station `desc` is **not** shown in the tab bar.
+
+### Filters
+
+Filters run **after** `buildDisplayTree` and only affect what is shown. Checked items and export are unchanged. Station tabs ignore user filters (still based on engine + `displayIf` visibility).
+
+| Control | Behaviour | Default |
+| --- | --- | --- |
+| Search | Case-insensitive match on label, component id, `modId`, desc | empty |
+| Level | Pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Difficulty** ORs in `difficulty` (never part of the cumulative ladder). | All levels |
+| Stability | Multi-select; **Released** = missing/`released`. Other values discovered from data (`beta`, `alpha`, …) | all |
+| Tags | Multi-select, **OR** match on comma-separated `tags` | all |
+| Hidden | Show / Hide / Only for `noDisplay` | **Hide** |
+| Required | Show / Hide / Only for `required` | **Show** |
+
+Level filter ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `quality`. Token `restructure` shares the Well blended bucket. Unleveled nodes always pass a level filter.
+
+When Hidden is Show or Only, `buildDisplayTree` is called with `includeHidden` so `noDisplay` components can appear.
 
 ### Station heading
 
@@ -184,7 +201,7 @@ Station list-pane heading uses `STATION_LABELS`. Under it, the first station roo
 
 Clicking a tree row focuses it (highlight distinct from checkbox selection). The right detail panel shows label, badges, full `desc`, and metadata (Codename, linkable URL, Release, Version from `mods.csv` when resolvable; author, component id). Descriptions are **not** inlined under tree rows.
 
-**Attribute badges** (in addition to level / beta): `required`, `hidden` (`noDisplay`), `core`, `default`, and each comma-separated `tags` token.
+**Attribute badges** (in addition to level / non-released stability): `required`, `hidden` (`noDisplay`), `core`, `default`, and each comma-separated `tags` token.
 
 **Relation rows** (only when non-empty; flat label lists, no AND/OR structure):
 
@@ -205,15 +222,15 @@ Next to each row label, if the node (or its `collapsedComponent`) has an `effect
 
 | Level token | Badge text |
 | --- | --- |
-| `fixes` | fixes |
-| `vanillaPlus` | vanilla+ |
-| `restoration` | restoration |
-| `restructure` | restructure |
-| `blendWell` | blend well |
-| `quality` | quality |
-| `difficulty` | difficulty |
+| `fixes` | Fixes |
+| `restoration` | Restorations |
+| `vanillaPlus` | Vanilla+ (QoL) |
+| `blendWell` | Well blended |
+| `restructure` | Restructure |
+| `quality` | Quality |
+| `difficulty` | Difficulty |
 
-Unknown levels still render with a muted badge using the raw token. Stability `beta` remains a separate badge.
+Unknown levels still render with a muted badge using the raw token. Non-released `stability` values (e.g. `beta`, `alpha`) show as a separate badge; missing/`released` does not.
 
 ---
 

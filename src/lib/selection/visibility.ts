@@ -10,6 +10,8 @@ import {
 export interface VisibilityContext {
   game: SelectedGame
   selectedIds: ReadonlySet<string>
+  /** When true, include `noDisplay` components in the display tree. */
+  includeHidden?: boolean
 }
 
 /** Engine-eligible and displayIf / displayIfNot satisfied (ignores noDisplay). */
@@ -26,7 +28,7 @@ export function isEngineAndDisplayEligible(node: TreeNode, ctx: VisibilityContex
 
 /** Shown in the UI tree. */
 export function isUiVisible(node: TreeNode, ctx: VisibilityContext): boolean {
-  if (node.attrs.noDisplay) return false
+  if (node.attrs.noDisplay && !ctx.includeHidden) return false
   return isEngineAndDisplayEligible(node, ctx)
 }
 
@@ -41,7 +43,7 @@ export interface DisplayNode {
 function collectVisibleComponentLeaves(node: TreeNode, ctx: VisibilityContext): ComponentNode[] {
   if (!isEngineAndDisplayEligible(node, ctx)) return []
   if (isComponentNode(node)) {
-    if (node.attrs.noDisplay) return []
+    if (node.attrs.noDisplay && !ctx.includeHidden) return []
     return [node]
   }
   return node.children.flatMap((c) => collectVisibleComponentLeaves(c, ctx))
@@ -58,7 +60,7 @@ function flattenNoBranchesChildren(nodes: TreeNode[], ctx: VisibilityContext): D
     if (!isEngineAndDisplayEligible(node, ctx)) continue
 
     if (isComponentNode(node)) {
-      if (node.attrs.noDisplay) continue
+      if (node.attrs.noDisplay && !ctx.includeHidden) continue
       result.push({ node, children: [] })
       continue
     }
@@ -108,8 +110,8 @@ function finalizeContainerDisplay(
 
 /**
  * Build display tree with single-child collapse:
- * if a container has exactly one visible component leaf (ignoring noDisplay siblings),
- * show only the container (checking it selects that component).
+ * if a container has exactly one visible component leaf (ignoring noDisplay siblings
+ * unless includeHidden), show only the container (checking it selects that component).
  *
  * noBranches containers keep their own row but hoist nested grouping so children
  * are flat components (alternatives kept as units).
@@ -121,7 +123,7 @@ export function buildDisplayTree(nodes: TreeNode[], ctx: VisibilityContext): Dis
     if (!isEngineAndDisplayEligible(node, ctx)) continue
 
     if (isComponentNode(node)) {
-      if (node.attrs.noDisplay) continue
+      if (node.attrs.noDisplay && !ctx.includeHidden) continue
       result.push({ node, children: [] })
       continue
     }
@@ -144,5 +146,5 @@ export function buildDisplayTree(nodes: TreeNode[], ctx: VisibilityContext): Dis
 }
 
 export function displayTreeHasVisible(nodes: TreeNode[], ctx: VisibilityContext): boolean {
-  return buildDisplayTree(nodes, ctx).length > 0
+  return buildDisplayTree(nodes, { ...ctx, includeHidden: false }).length > 0
 }
