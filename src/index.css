@@ -114,7 +114,7 @@ body {
   overflow: hidden;
 }
 
-/* —— Station rail (left, sideways labels) —— */
+/* —— Station rail (left) —— */
 
 .station-nav {
   display: flex;
@@ -122,29 +122,28 @@ body {
   flex-wrap: nowrap;
   align-items: stretch;
   gap: 0.15rem;
-  padding: 0.4rem 0.25rem;
+  padding: 0.4rem 0.35rem;
   background: var(--panel);
   border-right: 1px solid var(--line);
   overflow-x: hidden;
   overflow-y: auto;
   flex-shrink: 0;
+  min-width: 7.5rem;
 }
 
 .station-nav button {
-  text-align: center;
+  text-align: left;
   background: transparent;
   border: 1px solid transparent;
   border-right: 2px solid transparent;
   color: var(--ink);
-  padding: 0.7rem 0.35rem;
+  padding: 0.45rem 0.55rem;
   border-radius: 4px 0 0 4px;
   cursor: pointer;
   font: inherit;
   font-size: 0.85rem;
   white-space: nowrap;
   flex-shrink: 0;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
 }
 
 .station-nav button:hover:not(:disabled) {
@@ -928,11 +927,12 @@ body {
   }
 
   .station-nav {
-    padding: 0.3rem 0.15rem;
+    min-width: 6.5rem;
+    padding: 0.3rem 0.25rem;
   }
 
   .station-nav button {
-    padding: 0.55rem 0.25rem;
+    padding: 0.4rem 0.45rem;
     font-size: 0.8rem;
   }
 
