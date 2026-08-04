@@ -36,12 +36,19 @@ import {
 } from './lib/mods/loadMods'
 import { buildRelationIndex } from './lib/selection/relations'
 import { downloadInstallOrder } from './lib/export/installOrder'
+import {
+  cycleStation,
+  isTypingTarget,
+  resolveChromeHotkey,
+  stationCycleOrder,
+  type StationSlot,
+} from './lib/ui/chromeHotkeys'
 import { StationNav } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
 import { ComponentTree } from './ui/ComponentTree'
 import { ComponentDetail } from './ui/ComponentDetail'
 import { ContentBranchNav } from './ui/ContentBranchNav'
-import { FiltersStrip } from './ui/FiltersStrip'
+import { FILTERS_SEARCH_ID, FiltersStrip } from './ui/FiltersStrip'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
 import './index.css'
 
@@ -344,6 +351,55 @@ export default function App() {
     setSelectedIds((prev) => toggleDisplayNode(model, prev, game, display, wantSelected))
   }
 
+  function focusComponentTree() {
+    const row = document.querySelector<HTMLElement>(
+      '.component-tree [role="treeitem"][tabindex="0"]',
+    )
+    row?.focus()
+  }
+
+  function focusFiltersSearch() {
+    const el = document.getElementById(FILTERS_SEARCH_ID) as HTMLInputElement | null
+    if (!el) return
+    el.focus()
+    el.select()
+  }
+
+  function applyStationSlot(slot: StationSlot) {
+    if (slot === 'engine') selectEngine()
+    else selectStation(slot)
+  }
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.altKey || e.ctrlKey || e.metaKey) return
+      const searchEl = document.getElementById(FILTERS_SEARCH_ID)
+      const cmd = resolveChromeHotkey(e.key, {
+        isTypingTarget: isTypingTarget(e.target),
+        filterPanelOpen: false,
+        searchFocused: searchEl != null && document.activeElement === searchEl,
+      })
+      if (!cmd) return
+      if (cmd.type === 'escapeChrome') return
+
+      if (cmd.type === 'focusSearch') {
+        e.preventDefault()
+        focusFiltersSearch()
+        return
+      }
+
+      if (cmd.type === 'cycleStation') {
+        e.preventDefault()
+        const order = stationCycleOrder(visibleStations)
+        const next = cycleStation(order, activeStation, cmd.direction)
+        if (next) applyStationSlot(next)
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [activeStation, visibleStations])
+
   return (
     <div className="app">
       <header className="top-bar">
@@ -384,6 +440,7 @@ export default function App() {
             tagOptions={filterOptions.tags}
             authorOptions={catalogAuthorOptions}
             sizeBounds={catalogSizeBounds}
+            onRequestTreeFocus={focusComponentTree}
           />
 
           <div className={`workspace${showDetail ? '' : ' engine-only'}`}>

@@ -1,6 +1,10 @@
 # Infinity Express — application logic (Milestone 1)
 
-This document describes **runtime behaviour** of the selection UI. For XML tag/attribute reference, see [install-sequence-schema.md](install-sequence-schema.md).
+This document describes **runtime behaviour** of the selection UI. For XML tag/attribute reference, see [install-sequence-schema.md](install-sequence-schema.md). For key bindings, see [keyboard.md](keyboard.md).
+
+### Runtime / target stack
+
+Milestone 1 runs in the browser via **Vite + React 18 + TypeScript**. The product target is **Tauri 2 + TypeScript + React**: the same React app in a Tauri webview, with selection engines and keyboard command resolvers kept in pure TypeScript under `src/lib/` (including `src/lib/ui/` for portable hotkey → command mapping).
 
 Primary code:
 
@@ -13,6 +17,7 @@ Primary code:
 | Conditions             | `src/lib/selection/conditions.ts`      |
 | Checkboxes / selection | `src/lib/selection/selectionEngine.ts` |
 | What appears in the UI | `src/lib/selection/visibility.ts`      |
+| Tree / chrome hotkeys  | `src/lib/ui/treeKeyboard.ts`, `chromeHotkeys.ts` |
 | Export text file       | `src/lib/export/installOrder.ts`       |
 | Shell UI               | `src/App.tsx`, `src/ui/*`              |
 
@@ -187,6 +192,10 @@ Every displayed container with children gets a fold control (chevron).
 
 
 Fold state is per station (tree remounts on station change; Content also remounts when switching main/sub branch). Checking the parent still works while folded.
+
+### Keyboard
+
+The component tree supports arrow-key navigation, Space to check, and fold/unfold with `←`/`→`. App chrome adds `[`/`]` for stations and `/` for filter search. Full binding tables: [keyboard.md](keyboard.md). Pure resolvers live in `src/lib/ui/` for the Tauri 2 port.
 
 ### App shell layout
 
@@ -423,7 +432,7 @@ Label fallback: `attrs.label`, else the component id.
 - Downloading mods  
 - Invoking WeiDU  
 - User-supplied XML/CSV overrides  
-- Tauri desktop shell
+- Tauri 2 shell wiring (window, FS, native menus) — UI and `src/lib/` logic are already oriented for that host
 
 Domain logic is kept in pure TypeScript under `src/lib/` so those features can wrap the same modules.
 

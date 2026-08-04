@@ -11,10 +11,18 @@ Station-based component picker driven by curated data:
 
 ## Tech stack
 
+**Current (Milestone 1):**
+
 - React 18
 - TypeScript
 - Vite 5
 - Vitest + jsdom
+
+**Target desktop host:**
+
+- **Tauri 2 + TypeScript + React** — same React UI and pure `src/lib/` domain/keyboard logic in a Tauri webview; native shell (window, FS, menus) comes later.
+
+Domain and keyboard command resolution stay in pure TypeScript under `src/lib/` so the web and Tauri hosts share behaviour.
 
 ## Requirements
 
@@ -73,6 +81,7 @@ Lines follow XML document order (duplicate stations merged in the UI only).
 
 - [docs/app-logic.md](docs/app-logic.md) — runtime selection / station / export behaviour
 - [docs/install-sequence-schema.md](docs/install-sequence-schema.md) — XML tags and attributes
+- [docs/keyboard.md](docs/keyboard.md) — tree and chrome keyboard bindings
 
 ## Data and scripts
 

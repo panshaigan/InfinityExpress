@@ -1,4 +1,4 @@
-import { useId, useState, type ReactNode } from 'react'
+import { useId, useRef, useState, type ReactNode } from 'react'
 import {
   FILTER_LADDER_LEVELS,
   LEVEL_LABELS,
@@ -18,6 +18,9 @@ import {
   type FilterCriteria,
 } from '../lib/selection/filterDisplayTree'
 
+/** Stable id for chrome hotkey `/` focus jump. */
+export const FILTERS_SEARCH_ID = 'filters-search'
+
 interface Props {
   criteria: FilterCriteria
   onChange: (next: FilterCriteria) => void
@@ -25,6 +28,8 @@ interface Props {
   tagOptions: string[]
   authorOptions: AuthorOption[]
   sizeBounds: SizeBounds | null
+  /** Called when Esc blurs search so focus can return to the component tree. */
+  onRequestTreeFocus?: () => void
 }
 
 type PanelId = 'level' | 'size' | 'author'
@@ -50,9 +55,11 @@ export function FiltersStrip({
   tagOptions,
   authorOptions,
   sizeBounds,
+  onRequestTreeFocus,
 }: Props) {
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null)
   const baseId = useId()
+  const searchRef = useRef<HTMLInputElement>(null)
 
   const authorNames = authorOptions.map((a) => a.name)
   const seed = { authorOptions: authorNames, sizeBounds }
@@ -267,10 +274,28 @@ export function FiltersStrip({
       : ''
 
   return (
-    <div className="filters-strip" aria-label="Filters">
+    <div
+      className="filters-strip"
+      aria-label="Filters"
+      onKeyDown={(e) => {
+        if (e.key !== 'Escape') return
+        if (openPanel) {
+          e.preventDefault()
+          setOpenPanel(null)
+          return
+        }
+        if (document.activeElement === searchRef.current) {
+          e.preventDefault()
+          searchRef.current?.blur()
+          onRequestTreeFocus?.()
+        }
+      }}
+    >
       <div className="filters-row">
         <span className="filters-label">Filters</span>
         <input
+          ref={searchRef}
+          id={FILTERS_SEARCH_ID}
           type="search"
           className="filters-search"
           placeholder="Search in this window..."

@@ -1639,7 +1639,7 @@
 	<campaigns engine="eet">
 		<component id="iwd_eet-party-banter:0" label="Icewind Dale in EET Party Banter" modId="iwd_eet-party-banter" displayIf="Tipun_iwd1_eet|iwd2_eet:0" />
 		<component id="iwd_eet_end:0" label="IWD EET End" modId="IWD_EET_End" alwaysIf="Tipun_iwd1_eet|iwd2_eet:0" noDisplay="1" />
-		<mod id="IWD_EET_Integration" label="IWD Integration tweaks" displayIf="Tipun_iwd1_eet|iwd2_eet:0">
+		<mod id="IWD_EET_Integration" label="IWD Integration tweaks" displayIf="Tipun_iwd1_eet,iwd2_eet:0">
 			<component id="IWD_EET_integration:100" label="Install IWD as dedicated campaigns in EET Menu" />
 			<component id="IWD_EET_integration:110" label="Adjust IWD1 XP for Full Campaign" alwaysIf="IWD_EET_integration:100" noDisplay="1" />
 			<component id="IWD_EET_integration:115" label="Adjust IWD1 Creature Stats for Full Campaign" alwaysIf="IWD_EET_integration:100" noDisplay="1" />

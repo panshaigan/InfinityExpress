@@ -1,9 +1,12 @@
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ChangeEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent,
+  type MutableRefObject,
 } from 'react'
 import type { TreeNode } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
@@ -11,6 +14,12 @@ import { displaySelectionState } from '../lib/selection/selectionEngine'
 import type { SelectedGame } from '../lib/xml/schema'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import { stabilityBadgeLabel } from '../lib/selection/filterDisplayTree'
+import {
+  buildTreeKeyboardContext,
+  collectExpandableDescendantKeys,
+  resolveTreeKey,
+  type TreeCommand,
+} from '../lib/ui/treeKeyboard'
 
 interface Props {
   nodes: DisplayNode[]
@@ -52,22 +61,35 @@ function collectExpandableKeys(nodes: DisplayNode[], into: Set<string>) {
   }
 }
 
+function findDisplayInTree(nodes: DisplayNode[], key: string): DisplayNode | null {
+  for (const d of nodes) {
+    if (d.node.key === key) return d
+    const found = findDisplayInTree(d.children, key)
+    if (found) return found
+  }
+  return null
+}
+
 function CheckboxRow({
   display,
   selectedIds,
   game,
   focusedKey,
+  tabbableKey,
   onFocus,
   onToggle,
   depth,
   expandedKeys,
   onToggleExpand,
   exclusiveGroupKey,
+  rowRefs,
 }: {
   display: DisplayNode
   selectedIds: ReadonlySet<string>
   game: SelectedGame
   focusedKey: string | null
+  /** Row that holds tabIndex={0} (roving tabindex). */
+  tabbableKey: string | null
   onFocus: (key: string) => void
   onToggle: Props['onToggle']
   depth: number
@@ -75,6 +97,7 @@ function CheckboxRow({
   onToggleExpand: (key: string) => void
   /** When set, this row is a mutually exclusive option under an alternatives parent. */
   exclusiveGroupKey?: string
+  rowRefs: MutableRefObject<Map<string, HTMLDivElement>>
 }) {
   const { node, collapsedComponent, children } = display
   const state = displaySelectionState(display, selectedIds, game)
@@ -106,9 +129,14 @@ function CheckboxRow({
     e.preventDefault()
     e.stopPropagation()
     onToggleExpand(node.key)
+    onFocus(node.key)
   }
 
   function handleRowActivate() {
+    onFocus(node.key)
+  }
+
+  function handleRowFocus() {
     onFocus(node.key)
   }
 
@@ -130,15 +158,26 @@ function CheckboxRow({
   const childExclusiveKey = isAlternatives ? node.key : undefined
 
   return (
-    <div className="tree-node" style={{ marginLeft: depth * 16 }}>
+    <div className="tree-node" style={{ marginLeft: depth * 16 }} role="none">
       <div
         className={`tree-row-wrap${focused ? ' focused' : ''}`}
+        role="treeitem"
+        tabIndex={tabbableKey === node.key ? 0 : -1}
+        aria-expanded={foldable ? expanded : undefined}
+        aria-selected={focused}
+        aria-label={label}
         onClick={handleRowActivate}
+        onFocus={handleRowFocus}
+        ref={(el) => {
+          if (el) rowRefs.current.set(node.key, el)
+          else rowRefs.current.delete(node.key)
+        }}
       >
         {foldable ? (
           <button
             type="button"
             className="tree-fold"
+            tabIndex={-1}
             aria-expanded={expanded}
             aria-label={expanded ? 'Collapse' : 'Expand'}
             onClick={handleFoldClick}
@@ -154,6 +193,7 @@ function CheckboxRow({
             type={isExclusiveOption ? 'radio' : 'checkbox'}
             name={isExclusiveOption ? exclusiveGroupKey : undefined}
             checked={checked}
+            tabIndex={-1}
             aria-label={label}
             onChange={handleInputChange}
             onClick={handleInputClick}
@@ -174,12 +214,14 @@ function CheckboxRow({
             selectedIds={selectedIds}
             game={game}
             focusedKey={focusedKey}
+            tabbableKey={tabbableKey}
             onFocus={onFocus}
             onToggle={onToggle}
             depth={depth + 1}
             expandedKeys={expandedKeys}
             onToggleExpand={onToggleExpand}
             exclusiveGroupKey={childExclusiveKey}
+            rowRefs={rowRefs}
           />
         ))}
     </div>
@@ -187,6 +229,7 @@ function CheckboxRow({
 }
 
 export function ComponentTree(props: Props) {
+  const rowRefs = useRef(new Map<string, HTMLDivElement>())
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => {
     const initial = new Set<string>()
     collectExpandableKeys(props.nodes, initial)
@@ -211,6 +254,22 @@ export function ComponentTree(props: Props) {
     })
   }, [props.nodes])
 
+  // Keep DOM focus on the focused row (arrow nav, click, relation jump).
+  useEffect(() => {
+    if (!props.focusedKey) return
+    const el = rowRefs.current.get(props.focusedKey)
+    if (!el) return
+    if (document.activeElement !== el) {
+      el.focus({ preventScroll: true })
+    }
+    el.scrollIntoView({ block: 'nearest' })
+  }, [props.focusedKey, expandedKeys, props.nodes])
+
+  const keyboardCtx = useMemo(
+    () => buildTreeKeyboardContext(props.nodes, expandedKeys, props.focusedKey),
+    [props.nodes, expandedKeys, props.focusedKey],
+  )
+
   function onToggleExpand(key: string) {
     setExpandedKeys((prev) => {
       const next = new Set(prev)
@@ -220,11 +279,78 @@ export function ComponentTree(props: Props) {
     })
   }
 
+  function setExpanded(key: string, want: boolean) {
+    setExpandedKeys((prev) => {
+      const next = new Set(prev)
+      if (want) next.add(key)
+      else next.delete(key)
+      return next
+    })
+  }
+
+  function applyCommand(cmd: TreeCommand) {
+    switch (cmd.type) {
+      case 'move':
+      case 'focusDetail':
+        props.onFocus(cmd.key)
+        break
+      case 'expand':
+        setExpanded(cmd.key, true)
+        props.onFocus(cmd.key)
+        break
+      case 'collapse':
+        setExpanded(cmd.key, false)
+        props.onFocus(cmd.key)
+        break
+      case 'expandSubtree': {
+        const display = findDisplayInTree(props.nodes, cmd.key)
+        if (display) {
+          const keys = collectExpandableDescendantKeys(display)
+          setExpandedKeys((prev) => {
+            const next = new Set(prev)
+            for (const k of keys) next.add(k)
+            return next
+          })
+        }
+        props.onFocus(cmd.key)
+        break
+      }
+      case 'toggleCheck': {
+        const row = keyboardCtx.visibleRows.find((r) => r.key === cmd.key)
+        if (!row) break
+        const state = displaySelectionState(row.display, props.selectedIds, props.game)
+        const isExclusive =
+          row.parentKey != null &&
+          findDisplayInTree(props.nodes, row.parentKey)?.node.kind === 'alternatives'
+        const checked = isExclusive ? state !== 'unchecked' : state === 'checked'
+        props.onFocus(cmd.key)
+        props.onToggle(row.display, !checked)
+        break
+      }
+    }
+  }
+
+  function handleTreeKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
+    const cmd = resolveTreeKey(e.key, keyboardCtx)
+    if (!cmd) return
+    e.preventDefault()
+    e.stopPropagation()
+    applyCommand(cmd)
+  }
+
   if (props.nodes.length === 0) {
     return <p className="empty">Nothing to show for this engine at this station.</p>
   }
+
+  const tabbableKey = props.focusedKey ?? keyboardCtx.visibleRows[0]?.key ?? null
+
   return (
-    <div className="component-tree">
+    <div
+      className="component-tree"
+      role="tree"
+      aria-label="Components"
+      onKeyDown={handleTreeKeyDown}
+    >
       {props.nodes.map((n) => (
         <CheckboxRow
           key={n.node.key}
@@ -232,11 +358,13 @@ export function ComponentTree(props: Props) {
           selectedIds={props.selectedIds}
           game={props.game}
           focusedKey={props.focusedKey}
+          tabbableKey={tabbableKey}
           onFocus={props.onFocus}
           onToggle={props.onToggle}
           depth={0}
           expandedKeys={expandedKeys}
           onToggleExpand={onToggleExpand}
+          rowRefs={rowRefs}
         />
       ))}
     </div>

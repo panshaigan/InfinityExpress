@@ -713,11 +713,18 @@ body {
   gap: 0.15rem;
   border-radius: 4px;
   padding: 0.1rem 0.25rem 0.1rem 0;
+  outline: none;
 }
 
 .tree-row-wrap.focused {
   background: var(--accent-soft);
   outline: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.tree-row-wrap:focus-visible {
+  background: var(--accent-soft);
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .tree-fold,
