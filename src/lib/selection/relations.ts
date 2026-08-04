@@ -82,6 +82,18 @@ export function buildRelationIndex(model: InstallSequenceModel): RelationIndex {
   }
 }
 
+/** Component ids that belong to a station (from a relation index). */
+export function componentIdsForStation(
+  stationByComponentId: ReadonlyMap<string, StationId>,
+  stationId: StationId,
+): Set<string> {
+  const ids = new Set<string>()
+  for (const [id, sid] of stationByComponentId) {
+    if (sid === stationId) ids.add(id)
+  }
+  return ids
+}
+
 function toRefs(model: InstallSequenceModel, ids: string[]): RelatedRef[] {
   const seen = new Set<string>()
   const refs: RelatedRef[] = []

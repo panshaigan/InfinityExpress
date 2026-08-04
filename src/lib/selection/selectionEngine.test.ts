@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { parseInstallSequence } from '../xml/parseInstallSequence'
 import {
+  applyGlobalLevelBaseline,
   applyLadderLevelSelection,
   createInitialSelection,
   displaySelectionState,
@@ -15,6 +16,7 @@ import {
   filterDisplayTree,
 } from '../selection/filterDisplayTree'
 import { buildInstallOrderLines } from '../export/installOrder'
+import { buildRelationIndex, componentIdsForStation } from '../selection/relations'
 
 const SAMPLE = `<?xml version="1.0"?>
 <installSequence>
@@ -442,5 +444,68 @@ describe('level mass-check', () => {
     expect(selected.has('alt:rest')).toBe(true)
     expect(selected.has('alt:vp')).toBe(false)
     expect(selected.has('alt:qual')).toBe(false)
+  })
+})
+
+const SCOPED_LEVELS = `<?xml version="1.0"?>
+<installSequence>
+  <base label="Base" engine="bg1,eet">
+    <component id="base:fix" label="Base fix" level="fixes" />
+    <component id="base:rest" label="Base rest" level="restoration" />
+    <component id="base:diff" label="Base diff" level="difficulty" />
+  </base>
+  <ui label="UI" engine="bg1,eet">
+    <component id="ui:fix" label="UI fix" level="fixes" />
+    <component id="ui:rest" label="UI rest" level="restoration" />
+    <component id="ui:diff" label="UI diff" level="difficulty" />
+  </ui>
+</installSequence>`
+
+describe('scoped level mass-check', () => {
+  const { model } = parseInstallSequence(SCOPED_LEVELS)
+  const relationIndex = buildRelationIndex(model)
+  const uiScope = componentIdsForStation(relationIndex.stationByComponentId, 'ui')
+
+  it('station scope leaves other stations alone', () => {
+    let selected = createInitialSelection(model, 'bg1')
+    selected = applyLadderLevelSelection(
+      model,
+      selected,
+      'bg1',
+      new Set(['fixes', 'restoration']),
+      uiScope,
+    )
+    expect(selected.has('ui:fix')).toBe(true)
+    expect(selected.has('ui:rest')).toBe(true)
+    expect(selected.has('base:fix')).toBe(false)
+    expect(selected.has('base:rest')).toBe(false)
+  })
+
+  it('applyGlobalLevelBaseline resets station to remembered ranks', () => {
+    let selected = createInitialSelection(model, 'bg1')
+    selected = applyLadderLevelSelection(
+      model,
+      selected,
+      'bg1',
+      new Set(['fixes', 'restoration']),
+    )
+    selected = setDifficultySelection(model, selected, 'bg1', true)
+    expect(selected.has('ui:rest')).toBe(true)
+    expect(selected.has('ui:diff')).toBe(true)
+
+    selected = applyGlobalLevelBaseline(
+      model,
+      selected,
+      'bg1',
+      new Set(['fixes']),
+      false,
+      uiScope,
+    )
+    expect(selected.has('ui:fix')).toBe(true)
+    expect(selected.has('ui:rest')).toBe(false)
+    expect(selected.has('ui:diff')).toBe(false)
+    // Other station still has the earlier global apply.
+    expect(selected.has('base:rest')).toBe(true)
+    expect(selected.has('base:diff')).toBe(true)
   })
 })

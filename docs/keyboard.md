@@ -52,4 +52,21 @@ When focus is on a Content main- or sub-branch tab:
 | --- | --- |
 | `←` / `→` (also `↑` / `↓`) | Move to the previous / next tab in that row (wraps) |
 
+While the Content station is active (focus need not be on the tabs; ignored while typing in a text field):
+
+| Key | Action |
+| --- | --- |
+| `,` | Previous main branch (game bucket) |
+| `.` | Next main branch (game bucket) |
+| `Shift+,` / `<` | Previous subbranch (content type) |
+| `Shift+.` / `>` | Next subbranch (content type) |
+
 Tree `←` / `→` only apply when the component tree has focus, so the two do not conflict.
+
+### Mouse (component tree)
+
+| Action | Effect |
+| --- | --- |
+| Single click on a row | Focus the row (detail pane); does **not** toggle check |
+| Double-click on a row | Check / uncheck like the checkbox or Space |
+| Click the fold chevron | Expand / collapse only |

@@ -10,10 +10,13 @@ import {
   type StationId,
 } from './lib/xml/schema'
 import {
+  applyGlobalLevelBaseline,
   applyLadderLevelSelection,
   createInitialSelection,
+  listSelectionState,
   setDifficultySelection,
   toggleDisplayNode,
+  toggleListSelection,
 } from './lib/selection/selectionEngine'
 import { LADDER_LEVELS, type LadderLevel } from './lib/levels'
 import {
@@ -34,10 +37,11 @@ import {
   modSizeBounds,
   parseModsCsv,
 } from './lib/mods/loadMods'
-import { buildRelationIndex } from './lib/selection/relations'
+import { buildRelationIndex, componentIdsForStation } from './lib/selection/relations'
 import { downloadInstallOrder } from './lib/export/installOrder'
 import {
   cycleStation,
+  cycleTabIndex,
   isTypingTarget,
   resolveChromeHotkey,
   stationCycleOrder,
@@ -48,6 +52,7 @@ import { EngineStation } from './ui/EngineStation'
 import { ComponentTree } from './ui/ComponentTree'
 import { ComponentDetail } from './ui/ComponentDetail'
 import { ContentBranchNav } from './ui/ContentBranchNav'
+import { StationListToolbar } from './ui/StationListToolbar'
 import { FILTERS_SEARCH_ID, FiltersStrip } from './ui/FiltersStrip'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
 import './index.css'
@@ -109,6 +114,15 @@ function preferredSub(main: DisplayNode, preferredTag: string | null): DisplayNo
   return ordered[0] ?? null
 }
 
+interface StationLevelPreset {
+  ladder: Set<LadderLevel>
+  difficulty: boolean
+}
+
+function emptyStationPreset(): StationLevelPreset {
+  return { ladder: new Set(), difficulty: false }
+}
+
 export default function App() {
   const { model, warnings } = parsed
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
@@ -131,6 +145,12 @@ export default function App() {
   )
   const [ladderChecked, setLadderChecked] = useState<Set<LadderLevel>>(() => new Set())
   const [difficultyPreset, setDifficultyPreset] = useState(false)
+  /** Last Engine-applied baseline; used by station “Reset to global”. */
+  const [lastGlobalLadder, setLastGlobalLadder] = useState<Set<LadderLevel>>(() => new Set())
+  const [lastGlobalDifficulty, setLastGlobalDifficulty] = useState(false)
+  const [stationLevelPresets, setStationLevelPresets] = useState(
+    () => new Map<StationId, StationLevelPreset>(),
+  )
   const [contentMainKey, setContentMainKey] = useState<string | null>(null)
   const [contentSubKey, setContentSubKey] = useState<string | null>(null)
   const [contentSubTag, setContentSubTag] = useState<string | null>(null)
@@ -183,6 +203,14 @@ export default function App() {
     return contentSubBranches.find((b) => b.node.key === contentSubKey) ?? null
   }, [contentSubBranches, contentSubKey])
   const listNodes = isContentStation ? (selectedSub?.children ?? []) : displayNodes
+  const listCheckState = useMemo(() => {
+    if (!game) return 'unchecked' as const
+    return listSelectionState(listNodes, selectedIds, game)
+  }, [game, listNodes, selectedIds])
+  const activeStationPreset =
+    activeStation === 'engine'
+      ? emptyStationPreset()
+      : (stationLevelPresets.get(activeStation) ?? emptyStationPreset())
 
   useEffect(() => {
     if (!isContentStation) return
@@ -285,6 +313,9 @@ export default function App() {
     setSelectedIds(createInitialSelection(model, next))
     setLadderChecked(new Set())
     setDifficultyPreset(false)
+    setLastGlobalLadder(new Set())
+    setLastGlobalDifficulty(false)
+    setStationLevelPresets(new Map())
     setFinishedStations(new Set())
     setActiveStation('engine')
     clearFocus()
@@ -305,6 +336,7 @@ export default function App() {
         next.delete(level)
       }
 
+      setLastGlobalLadder(new Set(next))
       setSelectedIds((prevSelected) =>
         applyLadderLevelSelection(model, prevSelected, game, next),
       )
@@ -315,7 +347,73 @@ export default function App() {
   function onDifficultyPresetChange(want: boolean) {
     if (!game) return
     setDifficultyPreset(want)
+    setLastGlobalDifficulty(want)
     setSelectedIds((prev) => setDifficultySelection(model, prev, game, want))
+  }
+
+  function onStationLadderToggle(level: LadderLevel, wantChecked: boolean) {
+    if (!game || activeStation === 'engine') return
+    const stationId = activeStation
+    const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
+    setStationLevelPresets((prev) => {
+      const current = prev.get(stationId) ?? emptyStationPreset()
+      const nextLadder = new Set(current.ladder)
+      const idx = LADDER_LEVELS.indexOf(level)
+      if (idx === -1) return prev
+      if (wantChecked) {
+        for (let i = 0; i <= idx; i++) nextLadder.add(LADDER_LEVELS[i]!)
+      } else {
+        nextLadder.delete(level)
+      }
+      const next = new Map(prev)
+      next.set(stationId, { ladder: nextLadder, difficulty: current.difficulty })
+      setSelectedIds((prevSelected) =>
+        applyLadderLevelSelection(model, prevSelected, game, nextLadder, scope),
+      )
+      return next
+    })
+  }
+
+  function onStationDifficultyChange(want: boolean) {
+    if (!game || activeStation === 'engine') return
+    const stationId = activeStation
+    const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
+    setStationLevelPresets((prev) => {
+      const current = prev.get(stationId) ?? emptyStationPreset()
+      const next = new Map(prev)
+      next.set(stationId, { ladder: current.ladder, difficulty: want })
+      return next
+    })
+    setSelectedIds((prev) => setDifficultySelection(model, prev, game, want, scope))
+  }
+
+  function onClearToGlobal() {
+    if (!game || activeStation === 'engine') return
+    const stationId = activeStation
+    const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
+    setSelectedIds((prev) =>
+      applyGlobalLevelBaseline(
+        model,
+        prev,
+        game,
+        lastGlobalLadder,
+        lastGlobalDifficulty,
+        scope,
+      ),
+    )
+    setStationLevelPresets((prev) => {
+      const next = new Map(prev)
+      next.set(stationId, {
+        ladder: new Set(lastGlobalLadder),
+        difficulty: lastGlobalDifficulty,
+      })
+      return next
+    })
+  }
+
+  function onToggleAll(wantSelected: boolean) {
+    if (!game) return
+    setSelectedIds((prev) => toggleListSelection(model, prev, game, listNodes, wantSelected))
   }
 
   const stationOrder = useMemo(
@@ -401,6 +499,8 @@ export default function App() {
         isTypingTarget: isTypingTarget(e.target),
         filterPanelOpen: false,
         searchFocused: searchEl != null && document.activeElement === searchEl,
+        contentStationActive: activeStation === 'content',
+        shiftKey: e.shiftKey,
       })
       if (!cmd) return
       if (cmd.type === 'escapeChrome') return
@@ -416,12 +516,42 @@ export default function App() {
         const order = stationCycleOrder(visibleStations)
         const next = cycleStation(order, activeStation, cmd.direction)
         if (next) applyStationSlot(next)
+        return
+      }
+
+      if (cmd.type === 'cycleContentMain') {
+        if (contentMainBranches.length === 0) return
+        e.preventDefault()
+        const keys = contentMainBranches.map((b) => b.node.key)
+        const currentIndex = contentMainKey != null ? keys.indexOf(contentMainKey) : 0
+        const next = cycleTabIndex(keys.length, currentIndex, cmd.direction)
+        const nextKey = keys[next]
+        if (nextKey) selectContentMain(nextKey)
+        return
+      }
+
+      if (cmd.type === 'cycleContentSub') {
+        if (contentSubBranches.length === 0) return
+        e.preventDefault()
+        const keys = contentSubBranches.map((b) => b.node.key)
+        const currentIndex = contentSubKey != null ? keys.indexOf(contentSubKey) : 0
+        const next = cycleTabIndex(keys.length, currentIndex, cmd.direction)
+        const nextKey = keys[next]
+        if (nextKey) selectContentSub(nextKey)
       }
     }
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [activeStation, visibleStations])
+  }, [
+    activeStation,
+    visibleStations,
+    contentMainBranches,
+    contentSubBranches,
+    contentMainKey,
+    contentSubKey,
+    contentSubTag,
+  ])
 
   return (
     <div className="app">
@@ -516,6 +646,16 @@ export default function App() {
                     <p className="lede">
                       {stationDesc ?? 'Tick what you want on this stop. Switch stations anytime.'}
                     </p>
+                    <StationListToolbar
+                      listNodes={listNodes}
+                      listState={listCheckState}
+                      checkedLadderLevels={activeStationPreset.ladder}
+                      difficulty={activeStationPreset.difficulty}
+                      onToggleAll={onToggleAll}
+                      onLadderToggle={onStationLadderToggle}
+                      onDifficultyChange={onStationDifficultyChange}
+                      onClearToGlobal={onClearToGlobal}
+                    />
                     {isContentStation && (
                       <ContentBranchNav
                         mainBranches={contentMainBranches}

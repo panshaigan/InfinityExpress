@@ -69,6 +69,8 @@ export interface NodeAttrs {
   stability?: string
   noBranches?: boolean
   tags?: string
+  /** When true, the branch starts expanded in the UI despite default-folded tags. */
+  unfolded?: boolean
 }
 
 /** Shared fields for every tree node. */

@@ -49,6 +49,7 @@ const DEFAULT_FOLDED_TAGS = new Set([
 ])
 
 function isDefaultFolded(node: TreeNode): boolean {
+  if (node.attrs.unfolded) return false
   return DEFAULT_FOLDED_TAGS.has(node.tag)
 }
 
@@ -132,12 +133,24 @@ function CheckboxRow({
     onFocus(node.key)
   }
 
+  function handleFoldDoubleClick(e: MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
   function handleRowActivate() {
     onFocus(node.key)
   }
 
   function handleRowFocus() {
     onFocus(node.key)
+  }
+
+  function handleRowDoubleClick(e: MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    onFocus(node.key)
+    onToggle(display, !checked)
   }
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
@@ -167,6 +180,7 @@ function CheckboxRow({
         aria-selected={focused}
         aria-label={label}
         onClick={handleRowActivate}
+        onDoubleClick={handleRowDoubleClick}
         onFocus={handleRowFocus}
         ref={(el) => {
           if (el) rowRefs.current.set(node.key, el)
@@ -181,6 +195,7 @@ function CheckboxRow({
             aria-expanded={expanded}
             aria-label={expanded ? 'Collapse' : 'Expand'}
             onClick={handleFoldClick}
+            onDoubleClick={handleFoldDoubleClick}
           >
             {expanded ? '▾' : '▸'}
           </button>

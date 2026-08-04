@@ -36,6 +36,7 @@ function readAttrs(el: Element): NodeAttrs {
     stability: g('stability'),
     noBranches: truthyAttr(el.getAttribute('noBranches')),
     tags: g('tags'),
+    unfolded: truthyAttr(el.getAttribute('unfolded')),
   }
 }
 

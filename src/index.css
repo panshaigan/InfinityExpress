@@ -544,6 +544,48 @@ body {
   max-width: 42rem;
 }
 
+.station-list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  margin-top: 0.65rem;
+}
+
+.station-select-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.station-select-all.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.station-select-all input {
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+.station-list-toolbar-levels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.station-clear-to-global {
+  flex-shrink: 0;
+}
+
 .branch-nav {
   display: flex;
   flex-direction: column;
@@ -737,6 +779,39 @@ body {
   font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.25;
+}
+
+.level-preselect.compact {
+  width: auto;
+  flex: 1;
+  min-width: 0;
+}
+
+.level-preselect.compact .level-preselect-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  grid-template-columns: none;
+}
+
+.level-preselect.compact .level-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 0;
+  padding: 0.25rem 0.45rem;
+  border-radius: 4px;
+}
+
+.level-preselect.compact .level-card input {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.level-preselect.compact .level-card-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 /* —— Component tree —— */

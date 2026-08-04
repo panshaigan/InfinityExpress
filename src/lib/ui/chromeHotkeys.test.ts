@@ -26,6 +26,8 @@ describe('resolveChromeHotkey', () => {
     isTypingTarget: false,
     filterPanelOpen: false,
     searchFocused: false,
+    contentStationActive: false,
+    shiftKey: false,
   }
 
   it('maps [ ] / Esc and /', () => {
@@ -60,6 +62,31 @@ describe('resolveChromeHotkey', () => {
     expect(
       resolveChromeHotkey('/', { ...idle, searchFocused: true }),
     ).toBeNull()
+  })
+
+  it('cycles Content branches with ,/. and Shift variants', () => {
+    const content = { ...idle, contentStationActive: true }
+    expect(resolveChromeHotkey(',', content)).toEqual({
+      type: 'cycleContentMain',
+      direction: -1,
+    })
+    expect(resolveChromeHotkey('.', content)).toEqual({
+      type: 'cycleContentMain',
+      direction: 1,
+    })
+    expect(resolveChromeHotkey('<', content)).toEqual({
+      type: 'cycleContentSub',
+      direction: -1,
+    })
+    expect(resolveChromeHotkey('>', content)).toEqual({
+      type: 'cycleContentSub',
+      direction: 1,
+    })
+    expect(resolveChromeHotkey(',', { ...content, shiftKey: true })).toEqual({
+      type: 'cycleContentSub',
+      direction: -1,
+    })
+    expect(resolveChromeHotkey('.', idle)).toBeNull()
   })
 })
 

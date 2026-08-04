@@ -332,18 +332,27 @@ function selectMassCheckComponents(
   return changed
 }
 
+/** Optional scope: only touch component ids in this set. Omit for whole install sequence. */
+export type LevelSelectionScope = ReadonlySet<string> | undefined
+
+function inLevelScope(componentId: string, scope: LevelSelectionScope): boolean {
+  return scope == null || scope.has(componentId)
+}
+
 /**
  * Select or clear ladder-leveled components based on enabled ladder ranks.
  *
  * - `enabledLadderLevels` controls which ladder ranks are selected (empty set clears non-required ladder components).
  * - Difficulty and unleveled components are left to other selectors (`setDifficultySelection`).
  * - `required` ladder components are always kept selected.
+ * - When `scope` is set, only components in that id set are cleared/selected.
  */
 export function applyLadderLevelSelection(
   model: InstallSequenceModel,
   selected: ReadonlySet<string>,
   game: SelectedGame,
   enabledLadderLevels: ReadonlySet<LadderLevel>,
+  scope?: LevelSelectionScope,
 ): SelectionSet {
   const next = new Set(selected)
   const enabledRanks = new Set<number>()
@@ -355,6 +364,7 @@ export function applyLadderLevelSelection(
   }
 
   for (const c of model.componentsInOrder) {
+    if (!inLevelScope(c.componentId, scope)) continue
     if (!isLadderLeveled(c)) continue
     if (!engineMatches(c.effectiveEngine, game)) continue
 
@@ -367,6 +377,7 @@ export function applyLadderLevelSelection(
 
   if (enabledRanks.size > 0) {
     const coreFilter = (c: ComponentNode) => {
+      if (!inLevelScope(c.componentId, scope)) return false
       const rank = levelFilterRank(c.effectiveLevel)
       return rank !== null && enabledRanks.has(rank)
     }
@@ -374,6 +385,7 @@ export function applyLadderLevelSelection(
     while (guard++ < 50) {
       const candidates: ComponentNode[] = []
       for (const c of model.componentsInOrder) {
+        if (!inLevelScope(c.componentId, scope)) continue
         if (!isLadderLeveled(c)) continue
         if (!engineMatches(c.effectiveEngine, game)) continue
         const rank = levelFilterRank(c.effectiveLevel)!
@@ -392,17 +404,20 @@ export function applyLadderLevelSelection(
 
 /**
  * Select or clear only difficulty-leveled components. Ladder / unleveled untouched.
+ * When `scope` is set, only components in that id set are cleared/selected.
  */
 export function setDifficultySelection(
   model: InstallSequenceModel,
   selected: ReadonlySet<string>,
   game: SelectedGame,
   wantSelected: boolean,
+  scope?: LevelSelectionScope,
 ): SelectionSet {
   const next = new Set(selected)
 
   if (!wantSelected) {
     for (const c of model.componentsInOrder) {
+      if (!inLevelScope(c.componentId, scope)) continue
       if (c.effectiveLevel !== 'difficulty') continue
       if (!engineMatches(c.effectiveEngine, game)) continue
       if (c.attrs.required) continue
@@ -412,11 +427,13 @@ export function setDifficultySelection(
     return next
   }
 
-  const coreFilter = (c: ComponentNode) => c.effectiveLevel === 'difficulty'
+  const coreFilter = (c: ComponentNode) =>
+    inLevelScope(c.componentId, scope) && c.effectiveLevel === 'difficulty'
   let guard = 0
   while (guard++ < 50) {
     const candidates: ComponentNode[] = []
     for (const c of model.componentsInOrder) {
+      if (!inLevelScope(c.componentId, scope)) continue
       if (c.effectiveLevel !== 'difficulty') continue
       if (!engineMatches(c.effectiveEngine, game)) continue
       if (!passesDisplayGates(c, next)) continue
@@ -427,6 +444,20 @@ export function setDifficultySelection(
   }
 
   applyAlwaysIf(model, next, game)
+  return next
+}
+
+/** Apply remembered global ladder + difficulty to a station scope (clear extras beyond baseline). */
+export function applyGlobalLevelBaseline(
+  model: InstallSequenceModel,
+  selected: ReadonlySet<string>,
+  game: SelectedGame,
+  ladder: ReadonlySet<LadderLevel>,
+  difficulty: boolean,
+  scope: ReadonlySet<string>,
+): SelectionSet {
+  let next = applyLadderLevelSelection(model, selected, game, ladder, scope)
+  next = setDifficultySelection(model, next, game, difficulty, scope)
   return next
 }
 
@@ -691,4 +722,38 @@ export function displaySelectionState(
   if (!anySelected) return 'unchecked'
   if (fullySatisfied) return 'checked'
   return 'indeterminate'
+}
+
+/** Aggregate checkbox state for a flat list of display roots (station select-all). */
+export function listSelectionState(
+  nodes: readonly DisplayNode[],
+  selected: ReadonlySet<string>,
+  game: SelectedGame,
+): 'checked' | 'unchecked' | 'indeterminate' {
+  if (nodes.length === 0) return 'unchecked'
+  let anyChecked = false
+  let anyUnchecked = false
+  for (const n of nodes) {
+    const state = displaySelectionState(n, selected, game)
+    if (state === 'indeterminate') return 'indeterminate'
+    if (state === 'checked') anyChecked = true
+    else anyUnchecked = true
+    if (anyChecked && anyUnchecked) return 'indeterminate'
+  }
+  return anyChecked ? 'checked' : 'unchecked'
+}
+
+/** Check or uncheck every top-level display node in a list. */
+export function toggleListSelection(
+  model: InstallSequenceModel,
+  selected: SelectionSet,
+  game: SelectedGame,
+  nodes: readonly DisplayNode[],
+  wantSelected: boolean,
+): SelectionSet {
+  let next = selected
+  for (const display of nodes) {
+    next = toggleDisplayNode(model, next, game, display, wantSelected)
+  }
+  return next
 }
