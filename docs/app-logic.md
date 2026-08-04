@@ -193,12 +193,14 @@ Fold state is per station (tree remounts on station change; Content also remount
 Fixed-viewport desktop shell (`100vh`, page does not scroll):
 
 1. **Top bar** — brand, current engine badge, selection count, Export
-2. **Station tabs** — horizontal scrollable tabs (Engine first, then visible content stations)
+2. **Station rail** — left edge rail with sideways labels (Engine first, then visible content stations); scrolls vertically if needed
 3. **Level selection strip** — mass-check presets by ladder max + independent Difficulty (writes `selectedIds`; independent of Filters)
 4. **Filters strip** — search plus Level / Stability / Tags / Size / Author / Hidden / Required controls (display-only; never clears selection)
 5. **Workspace** — dense component list (left) + detail panel (right). On the Engine station the detail column is hidden and the game picker uses full width
 
-List and detail panes scroll independently. Station `desc` is **not** shown in the tab bar.
+Filters and workspace sit to the right of the station rail under the top bar.
+
+List and detail panes scroll independently. Station `desc` is **not** shown in the station rail.
 
 ### Level selection
 

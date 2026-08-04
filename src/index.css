@@ -97,19 +97,36 @@ body {
   white-space: nowrap;
 }
 
-/* —— Station tabs —— */
+/* —— App body (station rail + main) —— */
+
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* —— Station rail (left, sideways labels) —— */
 
 .station-nav {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: nowrap;
   align-items: stretch;
   gap: 0.15rem;
-  padding: 0.35rem 0.6rem;
+  padding: 0.4rem 0.25rem;
   background: var(--panel);
-  border-bottom: 1px solid var(--line);
-  overflow-x: auto;
-  overflow-y: hidden;
+  border-right: 1px solid var(--line);
+  overflow-x: hidden;
+  overflow-y: auto;
   flex-shrink: 0;
 }
 
@@ -117,15 +134,17 @@ body {
   text-align: center;
   background: transparent;
   border: 1px solid transparent;
-  border-bottom: 2px solid transparent;
+  border-right: 2px solid transparent;
   color: var(--ink);
-  padding: 0.4rem 0.7rem;
-  border-radius: 4px 4px 0 0;
+  padding: 0.7rem 0.35rem;
+  border-radius: 4px 0 0 4px;
   cursor: pointer;
   font: inherit;
   font-size: 0.85rem;
   white-space: nowrap;
   flex-shrink: 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
 .station-nav button:hover:not(:disabled) {
@@ -134,7 +153,7 @@ body {
 
 .station-nav button.active {
   border-color: transparent;
-  border-bottom-color: var(--accent);
+  border-right-color: var(--accent);
   background: var(--accent-soft);
   color: var(--ink);
 }
@@ -909,8 +928,12 @@ body {
   }
 
   .station-nav {
-    flex-wrap: wrap;
-    overflow-x: visible;
+    padding: 0.3rem 0.15rem;
+  }
+
+  .station-nav button {
+    padding: 0.55rem 0.25rem;
+    font-size: 0.8rem;
   }
 
   .top-bar {

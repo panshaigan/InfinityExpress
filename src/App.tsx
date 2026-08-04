@@ -368,105 +368,109 @@ export default function App() {
         </div>
       </header>
 
-      <StationNav
-        game={game}
-        activeStation={activeStation}
-        visibleStations={visibleStations}
-        onSelectEngine={selectEngine}
-        onSelectStation={selectStation}
-      />
+      <div className="app-body">
+        <StationNav
+          game={game}
+          activeStation={activeStation}
+          visibleStations={visibleStations}
+          onSelectEngine={selectEngine}
+          onSelectStation={selectStation}
+        />
 
-      <FiltersStrip
-        criteria={filters}
-        onChange={setFilters}
-        tagOptions={filterOptions.tags}
-        stabilityOptions={filterOptions.stabilities}
-        authorOptions={catalogAuthorOptions}
-        sizeBounds={catalogSizeBounds}
-      />
+        <div className="app-main">
+          <FiltersStrip
+            criteria={filters}
+            onChange={setFilters}
+            tagOptions={filterOptions.tags}
+            stabilityOptions={filterOptions.stabilities}
+            authorOptions={catalogAuthorOptions}
+            sizeBounds={catalogSizeBounds}
+          />
 
-      <div className={`workspace${showDetail ? '' : ' engine-only'}`}>
-        <div className="list-pane">
-          {activeStation === 'engine' || !game ? (
-            <div className="list-pane-scroll">
-              <EngineStation
-                game={game}
-                onChoose={chooseGame}
-                checkedLadderLevels={ladderChecked}
-                difficulty={difficultyPreset}
-                onLadderToggle={onLadderToggle}
-                onDifficultyChange={onDifficultyPresetChange}
-                onCustomize={onCustomize}
-              />
-              {warnings.length > 0 && (
-                <details className="warnings">
-                  <summary>{warnings.length} parse warnings</summary>
-                  <ul>
-                    {warnings.slice(0, 30).map((w) => (
-                      <li key={w}>{w}</li>
-                    ))}
-                  </ul>
-                </details>
+          <div className={`workspace${showDetail ? '' : ' engine-only'}`}>
+            <div className="list-pane">
+              {activeStation === 'engine' || !game ? (
+                <div className="list-pane-scroll">
+                  <EngineStation
+                    game={game}
+                    onChoose={chooseGame}
+                    checkedLadderLevels={ladderChecked}
+                    difficulty={difficultyPreset}
+                    onLadderToggle={onLadderToggle}
+                    onDifficultyChange={onDifficultyPresetChange}
+                    onCustomize={onCustomize}
+                  />
+                  {warnings.length > 0 && (
+                    <details className="warnings">
+                      <summary>{warnings.length} parse warnings</summary>
+                      <ul>
+                        {warnings.slice(0, 30).map((w) => (
+                          <li key={w}>{w}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <div className="list-pane-header">
+                    <h2>{STATION_LABELS[activeStation]}</h2>
+                    <p className="lede">
+                      {stationDesc ?? 'Tick what you want on this stop. Switch stations anytime.'}
+                    </p>
+                    {isContentStation && (
+                      <ContentBranchNav
+                        mainBranches={contentMainBranches}
+                        subBranches={contentSubBranches}
+                        mainKey={contentMainKey}
+                        subKey={contentSubKey}
+                        onSelectMain={selectContentMain}
+                        onSelectSub={selectContentSub}
+                      />
+                    )}
+                  </div>
+                  <div className="list-pane-scroll">
+                    <ComponentTree
+                      key={
+                        isContentStation
+                          ? `${activeStation}:${contentMainKey ?? ''}:${contentSubKey ?? ''}`
+                          : activeStation
+                      }
+                      nodes={listNodes}
+                      selectedIds={selectedIds}
+                      game={game}
+                      focusedKey={focusedKey}
+                      onFocus={onFocus}
+                      onToggle={onToggle}
+                    />
+                    {warnings.length > 0 && (
+                      <details className="warnings">
+                        <summary>{warnings.length} parse warnings</summary>
+                        <ul>
+                          {warnings.slice(0, 30).map((w) => (
+                            <li key={w}>{w}</li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
+                  </div>
+                </>
               )}
             </div>
-          ) : (
-            <>
-              <div className="list-pane-header">
-                <h2>{STATION_LABELS[activeStation]}</h2>
-                <p className="lede">
-                  {stationDesc ?? 'Tick what you want on this stop. Switch stations anytime.'}
-                </p>
-                {isContentStation && (
-                  <ContentBranchNav
-                    mainBranches={contentMainBranches}
-                    subBranches={contentSubBranches}
-                    mainKey={contentMainKey}
-                    subKey={contentSubKey}
-                    onSelectMain={selectContentMain}
-                    onSelectSub={selectContentSub}
-                  />
-                )}
-              </div>
-              <div className="list-pane-scroll">
-                <ComponentTree
-                  key={
-                    isContentStation
-                      ? `${activeStation}:${contentMainKey ?? ''}:${contentSubKey ?? ''}`
-                      : activeStation
-                  }
-                  nodes={listNodes}
-                  selectedIds={selectedIds}
-                  game={game}
-                  focusedKey={focusedKey}
-                  onFocus={onFocus}
-                  onToggle={onToggle}
-                />
-                {warnings.length > 0 && (
-                  <details className="warnings">
-                    <summary>{warnings.length} parse warnings</summary>
-                    <ul>
-                      {warnings.slice(0, 30).map((w) => (
-                        <li key={w}>{w}</li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-              </div>
-            </>
-          )}
-        </div>
 
-        {showDetail && (
-          <aside className="detail-pane" aria-label="Component details">
-            <div className="detail-pane-scroll">
-              <ComponentDetail
-                display={focusedDisplay}
-                model={model}
-                onNavigateToComponent={onNavigateToComponent}
-              />
-            </div>
-          </aside>
-        )}
+            {showDetail && (
+              <aside className="detail-pane" aria-label="Component details">
+                <div className="detail-pane-scroll">
+                  <ComponentDetail
+                    display={focusedDisplay}
+                    model={model}
+                    onNavigateToComponent={onNavigateToComponent}
+                  />
+                </div>
+              </aside>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
