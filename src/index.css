@@ -164,6 +164,15 @@ body {
   opacity: 0.65;
 }
 
+.level-select-strip .filter-option[data-checked="true"] {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
+.level-select-strip .filter-option[data-checked="true"]:hover {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
 .filters-row {
   display: flex;
   align-items: center;
@@ -663,6 +672,11 @@ body {
 .badge-level-blendWell {
   color: #8ab8b0;
   border-color: #8ab8b0;
+}
+
+.badge-level-extended {
+  color: #b89ad4;
+  border-color: #b89ad4;
 }
 
 .badge-level-quality {

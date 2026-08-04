@@ -4,7 +4,7 @@ export const LADDER_LEVELS = [
   'restoration',
   'vanillaPlus',
   'blendWell',
-  'quality',
+  'extended',
 ] as const
 
 export type LadderLevel = (typeof LADDER_LEVELS)[number]
@@ -16,7 +16,7 @@ export const LEVEL_LABELS: Record<string, string> = {
   vanillaPlus: 'Vanilla+',
   blendWell: 'Well blended',
   restructure: 'Restructure',
-  quality: 'Quality',
+  extended: 'Extended',
   difficulty: 'Difficulty',
 }
 

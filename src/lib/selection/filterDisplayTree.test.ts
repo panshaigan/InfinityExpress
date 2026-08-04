@@ -78,7 +78,7 @@ describe('levelFilterRank', () => {
     expect(levelFilterRank('vanillaPlus')).toBe(2)
     expect(levelFilterRank('blendWell')).toBe(3)
     expect(levelFilterRank('restructure')).toBe(3)
-    expect(levelFilterRank('quality')).toBe(4)
+    expect(levelFilterRank('extended')).toBe(4)
     expect(levelFilterRank('difficulty')).toBeNull()
     expect(levelFilterRank(undefined)).toBeNull()
   })
@@ -86,7 +86,7 @@ describe('levelFilterRank', () => {
 
 describe('levelPassesFilter', () => {
   it('passes non-difficulty levels when no ladder max is set', () => {
-    expect(levelPassesFilter('quality', null, false, false)).toBe(true)
+    expect(levelPassesFilter('extended', null, false, false)).toBe(true)
     expect(levelPassesFilter(undefined, null, false, false)).toBe(true)
   })
 
@@ -102,19 +102,19 @@ describe('levelPassesFilter', () => {
     expect(levelPassesFilter('fixes', 'blendWell', true, false)).toBe(false)
     expect(levelPassesFilter('blendWell', 'blendWell', true, false)).toBe(true)
     expect(levelPassesFilter('restructure', 'blendWell', true, false)).toBe(true)
-    expect(levelPassesFilter('quality', 'blendWell', true, false)).toBe(false)
+    expect(levelPassesFilter('extended', 'blendWell', true, false)).toBe(false)
   })
 
   it('excludes difficulty unless includeDifficulty', () => {
-    expect(levelPassesFilter('difficulty', 'quality', false, false)).toBe(false)
-    expect(levelPassesFilter('difficulty', 'quality', false, true)).toBe(true)
+    expect(levelPassesFilter('difficulty', 'extended', false, false)).toBe(false)
+    expect(levelPassesFilter('difficulty', 'extended', false, true)).toBe(true)
     expect(levelPassesFilter('difficulty', null, false, false)).toBe(false)
     expect(levelPassesFilter('difficulty', null, false, true)).toBe(true)
   })
 
   it('excludes unleveled nodes when filtering by level', () => {
     expect(levelPassesFilter(undefined, 'fixes', true, false)).toBe(false)
-    expect(levelPassesFilter(undefined, 'quality', false, true)).toBe(false)
+    expect(levelPassesFilter(undefined, 'extended', false, true)).toBe(false)
   })
 })
 
@@ -154,7 +154,7 @@ describe('filterDisplayTree', () => {
         effectiveLevel: 'restructure',
         tags: 'smallQuest',
       }),
-      component('f', { label: 'Plain', effectiveLevel: 'quality' }),
+      component('f', { label: 'Plain', effectiveLevel: 'extended' }),
       component('nolevel', { label: 'No Level Item' }),
     ]),
   ]
@@ -165,7 +165,7 @@ describe('filterDisplayTree', () => {
   })
 
   it('excludes unleveled when a level filter is active', () => {
-    const out = filterDisplayTree(tree, criteria({ maxLevel: 'quality' }))
+    const out = filterDisplayTree(tree, criteria({ maxLevel: 'extended' }))
     expect(ids(out)).not.toContain('nolevel')
     expect(ids(out)).toContain('a')
     expect(ids(out)).toContain('f')

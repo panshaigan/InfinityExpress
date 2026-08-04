@@ -7,17 +7,17 @@ import {
 
 interface Props {
   enabled: boolean
-  ladder: LadderLevel | null
+  checkedLadderLevels: ReadonlySet<LadderLevel>
   difficulty: boolean
-  onLadderChange: (level: LadderLevel | null) => void
+  onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
   onDifficultyChange: (want: boolean) => void
 }
 
 export function LevelSelectStrip({
   enabled,
-  ladder,
+  checkedLadderLevels,
   difficulty,
-  onLadderChange,
+  onLadderToggle,
   onDifficultyChange,
 }: Props) {
   const baseId = useId()
@@ -28,29 +28,19 @@ export function LevelSelectStrip({
       aria-label="Level selection"
     >
       <div className="filters-row">
-        <span className="filters-label">Level selection</span>
+        <span className="filters-label">Choose preselected components</span>
         <div className="filter-panel" role="group" aria-label="Ladder level">
-          <label className={`filter-option${!enabled ? ' disabled' : ''}`}>
-            <input
-              type="radio"
-              name={`${baseId}-ladder`}
-              checked={ladder === null}
-              disabled={!enabled}
-              onChange={() => onLadderChange(null)}
-            />
-            None
-          </label>
           {FILTER_LADDER_LEVELS.map((level) => (
             <label
               key={level}
               className={`filter-option${!enabled ? ' disabled' : ''}`}
+              data-checked={checkedLadderLevels.has(level)}
             >
               <input
-                type="radio"
-                name={`${baseId}-ladder`}
-                checked={ladder === level}
+                type="checkbox"
+                checked={checkedLadderLevels.has(level)}
                 disabled={!enabled}
-                onChange={() => onLadderChange(level)}
+                onChange={(e) => onLadderToggle(level, e.target.checked)}
               />
               {LEVEL_LABELS[level]}
             </label>

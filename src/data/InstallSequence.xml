@@ -74,7 +74,7 @@
 		</mod>
 	</campaigns>
 
-	<gfx level="fixes">
+	<gfx level="restorations">
 		<mod id="Baldurs-Gate-Graphical-Overhaul" label="Baldur's Gate Graphical Overhaul" engine="bg,eet">
 			<component id="baldurs_gate_graphical_overhaul" label="Baldur's Gate Graphical Overhaul" desc="Reinstates the extended night areas that are missing from all main areas" />
 			<component id="baldurs_gate_graphical_overhaul_alternate" label="Alternate Graphics" alwaysIf="baldurs_gate_graphical_overhaul" noDisplay="1" />
@@ -108,7 +108,7 @@
 			</restorations>
 			<restructure label="Restructure">
 				<alternatives label="Postgame" desc="Allows playing after killing Sarevok">
-					<mod id="EndlessBG1" label="Endless BG1" level="restructure">
+					<mod id="EndlessBG1" label="Endless BG1" level="blendWell">
 						<component id="EBG1_MainComponent" label="Main Component (Required)" core="1" />
 						<component id="EBG1_MoreFlavor" label="More Flavor to Hero of Baldur's Gate (Includes PC's Residence Inside Palace)" />
 						<component id="EBG1_HeroCutscene" label="Short Public Hero Tribute" />
@@ -126,7 +126,7 @@
 						<component id="EBG1_FensterInPalace" label="Fenster the Palace Healer Is in the Palace" />
 						<component id="EBG1_CorwinInPalace" label="Captain Corwin Is in the Palace" />
 					</mod>
-					<mod id="Reflections-of-Destiny" label="Reflections of Destiny" desc="Allows staying in BG1 after fulfilling its main quest and deciding when to progress to SoD/SoA" level="restructure">
+					<mod id="Reflections-of-Destiny" label="Reflections of Destiny" desc="Allows staying in BG1 after fulfilling its main quest and deciding when to progress to SoD/SoA" stability="beta">
 						<component id="Reflections_of_Destiny:100" label="The Future is Now" />
 						<component id="Reflections_of_Destiny:110" label="The Mirror Shard" />
 					</mod>
@@ -202,7 +202,7 @@
 					<component id="JA#BGT_AdvPack-Backdoor_Gellana" label="Backdoor to Gellana's temple" level="vanillaPlus" />
 					<component id="JA#BGT_AdvPack-Backdoor_Waterqueen" label="Backdoor to Waterqueen's House" level="vanillaPlus" />
 				</mod>
-				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" tags="smallQuest" level="quality">
+				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" tags="smallQuest" level="extended">
 					<component id="bg1re-required-teen_skip" label="Core" core="1" />
 					<component id="bg1re_purchased_love" label="Purchased Love, by Thimblerig" />
 					<component id="bg1re_late_night_jaheira" label="Late Night with Jaheira, by Kulyok" level="vanillaPlus" />
@@ -216,7 +216,7 @@
 					<component id="bg1re_cloakwood_lovers" label="Cloakwood Lovers, by tibicina" />
 				</mod>
 				<component id="BS_BalduransSeatower-main" label="Balduran's Seatower" tags="bigQuest" modId="BS_Baldurans_Seatower" level="blendWell" />
-				<mod id="Ascalons_Questpack" label="Ascalon's Questpack" tags="smallQuest" level="quality">
+				<mod id="Ascalons_Questpack" label="Ascalon's Questpack" tags="smallQuest" level="extended">
 					<component id="AscalonsQuestpack-FeastforGnolls" label="A Feast for the Gnolls" />
 					<component id="AscalonsQuestpack-LostSon" label="The Lost Son" />
 					<component id="AscalonsQuestpack-WolvesMen_Highhedge" label="Quest uses hut near Thalantyr in High Hedge." />
@@ -231,13 +231,13 @@
 					<component id="OL-EEEE-CLOAKWOOD-BRIDGE" label="Daenni's Bridge Bandits" />
 				</mod>
 				<component id="AWizardDidIt-Blackhearts_BG1" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="blendWell" />
-				<component id="SotSC:0" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" level="quality" tags="smallQuest" />
+				<component id="SotSC:0" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" level="extended" tags="smallQuest" />
 				<mod id="baldurian-bar-hop" label="Baldurian Bar Hop" tags="smallQuest" stability="beta">
 					<component id="baldurianbarhop:0" label="Thirst Things First" />
 					<component id="baldurianbarhop:10" label="Dress to Distress" />
 					<component id="baldurianbarhop:20" label="Fully Booked and Plot Twist" />
 				</mod>
-				<mod id="The_Calling" label="The Calling" level="quality" tags="bigQuest">
+				<mod id="The_Calling" label="The Calling" level="extended" tags="bigQuest">
 					<component id="cd_the_calling_mage" label="Mage - The Cursed Bracers" />
 					<component id="cd_the_calling_fighter" label="Fighter - Expanded Gnoll Fortress" />
 					<component id="cd_the_calling_shaman_golden_text" label="Shaman" />
@@ -248,7 +248,7 @@
 				<component id="Coutelier-AerieBG1" label="Aerie in BG:EE" tags="smallQuest" modId="AerieBG1" />
 				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" label="The Vanishing of Skie Silvershield" desc="Lets Eldoth and Skie join your party sooner" tags="smallQuest" modId="the-vanishing-of-skie-silvershield" />
 				<component id="NQR" label="Necromancers Quest Restored" tags="smallQuest" modId="NecromancersQuestRestored" level="restoration" />
-				<mod id="gorgon" label="Gorgon's Eye" level="quality" tags="bigQuest">
+				<mod id="gorgon" label="Gorgon's Eye" level="extended" tags="bigQuest">
 					<component id="gorgon:0" label="Gorgon's Eye" core="1" />
 					<component id="gorgon:1" label="Give portraits to all characters added from this mod" alwaysIf="gorgon:0" noDisplay="1" />
 					<component id="gorgon:4" label="Add More Pickpocketable Items"/>
@@ -518,10 +518,10 @@
 				</mod>
 				<component id="ThroneoftheMadGod:0" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" tags="bigQuest" level="blendWell" />
 				<component id="Poisoned_pathways:0" label="Poisoned pathways" modId="Poisoned-Pathways" tags="bigQuest" level="blendWell" />
-				<component id="TangledIsle:0" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" tags="bigQuest" level="quality" />
-				<component id="L#-OOZESLOUNGE" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" tags="bigQuest" level="quality" />
+				<component id="TangledIsle:0" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" tags="bigQuest" level="extended" />
+				<component id="L#-OOZESLOUNGE" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" tags="bigQuest" level="extended" />
 				<component id="L#-SKIECOST-MAINQUEST" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" tags="bigQuest" />
-				<component id="cowledmenace:1000" label="Cowled Menace" modId="CowledMenace" tags="bigQuest" level="quality" />
+				<component id="cowledmenace:1000" label="Cowled Menace" modId="CowledMenace" tags="bigQuest" level="extended" />
 				<component id="AWizardDidIt-Blackhearts_BG2" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="blendWell" displayIfNot="AWizardDidIt-Blackhearts_BG1" />
 				<mod id="crucible" label="Crucible">
 					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" tags="bigQuest" level="blendWell" />
@@ -1138,13 +1138,13 @@
 	</content>
 
 	<kits engine="bg,eet,iwd">
-		<add label="New kits" level="quality" noBranches="1">
+		<add label="New kits" level="extended" noBranches="1">
 			<component id="A7-CHAOSSORCERER-MAIN" label="The Chaos Sorcerer: A Wild Magic Kit for Sorcerers" modId="A7-ChaosSorcerer" />
 			<component id="ArtisansKitpack:20000" label="Eldritch Knight (Fighter / Mage Kit)" modId="The-Artisan-s-Kitpack" />
 			<component id="Morpheus562sKitpackShieldBreaker" label="Shield Breaker Fighter Kit" modId="morpheus562s-kitpack" />
 			<component id="ArtisansKitpack:9001" label="Warhorn Shaman Kit" modId="The-Artisan-s-Kitpack" />
 		</add>
-		<update label="Kits Overhaul" level="quality">
+		<update label="Kits Overhaul" level="extended">
 			<component id="ArtisansKitpack:2012" label="Beast Master Overhaul" modId="The-Artisan-s-Kitpack" />
 			<component id="ArtisansKitpack:7008" label="Shadowdancer Overhaul" modId="The-Artisan-s-Kitpack" />
 			<component id="ArtisansKitpack:5100" label="Shapeshifter Overhaul" modId="The-Artisan-s-Kitpack" />

@@ -333,33 +333,42 @@ function selectMassCheckComponents(
 }
 
 /**
- * Resync ladder-leveled components to a cumulative max (or clear with null).
- * Difficulty and unleveled components are left alone. Required stays selected.
+ * Select or clear ladder-leveled components based on enabled ladder ranks.
+ *
+ * - `enabledLadderLevels` controls which ladder ranks are selected (empty set clears non-required ladder components).
+ * - Difficulty and unleveled components are left to other selectors (`setDifficultySelection`).
+ * - `required` ladder components are always kept selected.
  */
 export function applyLadderLevelSelection(
   model: InstallSequenceModel,
   selected: ReadonlySet<string>,
   game: SelectedGame,
-  maxLevel: LadderLevel | null,
+  enabledLadderLevels: ReadonlySet<LadderLevel>,
 ): SelectionSet {
   const next = new Set(selected)
-  const maxRank = maxLevel ? levelFilterRank(maxLevel) : null
+  const enabledRanks = new Set<number>()
+
+  for (const level of enabledLadderLevels) {
+    const rank = levelFilterRank(level)
+    if (rank === null) continue
+    enabledRanks.add(rank)
+  }
 
   for (const c of model.componentsInOrder) {
     if (!isLadderLeveled(c)) continue
     if (!engineMatches(c.effectiveEngine, game)) continue
 
     const rank = levelFilterRank(c.effectiveLevel)!
-    const want = maxRank !== null && rank <= maxRank
+    const want = enabledRanks.has(rank)
     if (!want && !c.attrs.required) {
       next.delete(c.componentId)
     }
   }
 
-  if (maxRank !== null) {
+  if (enabledRanks.size > 0) {
     const coreFilter = (c: ComponentNode) => {
       const rank = levelFilterRank(c.effectiveLevel)
-      return rank !== null && rank <= maxRank
+      return rank !== null && enabledRanks.has(rank)
     }
     let guard = 0
     while (guard++ < 50) {
@@ -368,7 +377,7 @@ export function applyLadderLevelSelection(
         if (!isLadderLeveled(c)) continue
         if (!engineMatches(c.effectiveEngine, game)) continue
         const rank = levelFilterRank(c.effectiveLevel)!
-        if (rank > maxRank) continue
+        if (!enabledRanks.has(rank)) continue
         if (!passesDisplayGates(c, next)) continue
         candidates.push(c)
       }

@@ -15,7 +15,7 @@ import {
   setDifficultySelection,
   toggleDisplayNode,
 } from './lib/selection/selectionEngine'
-import type { LadderLevel } from './lib/levels'
+import { LADDER_LEVELS, type LadderLevel } from './lib/levels'
 import {
   buildDisplayTree,
   displayTreeHasVisible,
@@ -42,7 +42,6 @@ import { ComponentTree } from './ui/ComponentTree'
 import { ComponentDetail } from './ui/ComponentDetail'
 import { ContentBranchNav } from './ui/ContentBranchNav'
 import { FiltersStrip } from './ui/FiltersStrip'
-import { LevelSelectStrip } from './ui/LevelSelectStrip'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
 import './index.css'
 
@@ -120,7 +119,7 @@ export default function App() {
       filterSeed,
     ),
   )
-  const [ladderPreset, setLadderPreset] = useState<LadderLevel | null>(null)
+  const [ladderChecked, setLadderChecked] = useState<Set<LadderLevel>>(() => new Set())
   const [difficultyPreset, setDifficultyPreset] = useState(false)
   const [contentMainKey, setContentMainKey] = useState<string | null>(null)
   const [contentSubKey, setContentSubKey] = useState<string | null>(null)
@@ -274,22 +273,43 @@ export default function App() {
   function chooseGame(next: SelectedGame) {
     setGame(next)
     setSelectedIds(createInitialSelection(model, next))
-    setLadderPreset(null)
+    setLadderChecked(new Set())
     setDifficultyPreset(false)
-    setActiveStation('base')
+    setActiveStation('engine')
     clearFocus()
   }
 
-  function onLadderPresetChange(level: LadderLevel | null) {
+  function onLadderToggle(level: LadderLevel, wantChecked: boolean) {
     if (!game) return
-    setLadderPreset(level)
-    setSelectedIds((prev) => applyLadderLevelSelection(model, prev, game, level))
+    setLadderChecked((prev) => {
+      const next = new Set(prev)
+
+      const idx = LADDER_LEVELS.indexOf(level)
+      if (idx === -1) return prev
+
+      if (wantChecked) {
+        // Enable the previous ladder ranks too (prefix), but allow unchecking later.
+        for (let i = 0; i <= idx; i++) next.add(LADDER_LEVELS[i]!)
+      } else {
+        next.delete(level)
+      }
+
+      setSelectedIds((prevSelected) =>
+        applyLadderLevelSelection(model, prevSelected, game, next),
+      )
+      return next
+    })
   }
 
   function onDifficultyPresetChange(want: boolean) {
     if (!game) return
     setDifficultyPreset(want)
     setSelectedIds((prev) => setDifficultySelection(model, prev, game, want))
+  }
+
+  function onCustomize() {
+    setActiveStation('base')
+    clearFocus()
   }
 
   function selectEngine() {
@@ -356,14 +376,6 @@ export default function App() {
         onSelectStation={selectStation}
       />
 
-      <LevelSelectStrip
-        enabled={!!game}
-        ladder={ladderPreset}
-        difficulty={difficultyPreset}
-        onLadderChange={onLadderPresetChange}
-        onDifficultyChange={onDifficultyPresetChange}
-      />
-
       <FiltersStrip
         criteria={filters}
         onChange={setFilters}
@@ -377,7 +389,15 @@ export default function App() {
         <div className="list-pane">
           {activeStation === 'engine' || !game ? (
             <div className="list-pane-scroll">
-              <EngineStation game={game} onChoose={chooseGame} />
+              <EngineStation
+                game={game}
+                onChoose={chooseGame}
+                checkedLadderLevels={ladderChecked}
+                difficulty={difficultyPreset}
+                onLadderToggle={onLadderToggle}
+                onDifficultyChange={onDifficultyPresetChange}
+                onCustomize={onCustomize}
+              />
               {warnings.length > 0 && (
                 <details className="warnings">
                   <summary>{warnings.length} parse warnings</summary>

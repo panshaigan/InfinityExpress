@@ -190,7 +190,7 @@ describe('parse + selection', () => {
   <base label="Base" engine="bg1">
     <mod id="FilterMod" label="Filter Mod">
       <component id="vis:a" label="Visible A" level="fixes" />
-      <component id="vis:b" label="Visible B" level="quality" />
+      <component id="vis:b" label="Visible B" level="extended" />
       <component id="hid:c" label="Hidden C" noDisplay="1" />
     </mod>
   </base>
@@ -209,7 +209,7 @@ describe('parse + selection', () => {
     const filtered = filterDisplayTree(built, criteria, { model: fm, modsByCodename: new Map() })
     const modDisplay = filtered.find((d) => d.node.attrs.label === 'Filter Mod')!
     expect(modDisplay.children.map((c) => c.node.attrs.id)).toEqual(['vis:a'])
-    // quality leaf filtered out; noDisplay never in tree
+    // extended leaf filtered out; noDisplay never in tree
 
     let selected = createInitialSelection(fm, 'bg1')
     selected = toggleDisplayNode(fm, selected, 'bg1', modDisplay, true)
@@ -314,15 +314,15 @@ const LEVELED = `<?xml version="1.0"?>
     <component id="rest:a" label="Rest A" level="restoration" />
     <component id="vp:a" label="VP A" level="vanillaPlus" />
     <component id="bw:a" label="BW A" level="blendWell" />
-    <component id="qual:a" label="Quality A" level="quality" />
-    <component id="qual:req" label="Quality required" level="quality" required="1" />
+    <component id="qual:a" label="Extended A" level="extended" />
+    <component id="qual:req" label="Extended required" level="extended" required="1" />
     <component id="diff:a" label="Diff A" level="difficulty" />
     <component id="diff:b" label="Diff B" level="difficulty" />
     <component id="plain" label="Unleveled" />
     <alternatives label="Level alts">
       <component id="alt:rest" label="Alt rest" level="restoration" />
       <component id="alt:vp" label="Alt VP" level="vanillaPlus" default="1" />
-      <component id="alt:qual" label="Alt quality" level="quality" />
+      <component id="alt:qual" label="Alt extended" level="extended" />
     </alternatives>
   </base>
 </installSequence>`
@@ -330,9 +330,14 @@ const LEVELED = `<?xml version="1.0"?>
 describe('level mass-check', () => {
   const { model } = parseInstallSequence(LEVELED)
 
-  it('vanillaPlus selects fixes + restoration + vanillaPlus, not quality', () => {
+  it('vanillaPlus selects fixes + restoration + vanillaPlus, not extended', () => {
     let selected = createInitialSelection(model, 'bg1')
-    selected = applyLadderLevelSelection(model, selected, 'bg1', 'vanillaPlus')
+    selected = applyLadderLevelSelection(
+      model,
+      selected,
+      'bg1',
+      new Set(['fixes', 'restoration', 'vanillaPlus']),
+    )
     expect(selected.has('fix:a')).toBe(true)
     expect(selected.has('rest:a')).toBe(true)
     expect(selected.has('vp:a')).toBe(true)
@@ -343,14 +348,40 @@ describe('level mass-check', () => {
     expect(selected.has('diff:a')).toBe(false)
   })
 
+  it('supports non-prefix enabled ranks (uncheck previous while keeping higher)', () => {
+    let selected = createInitialSelection(model, 'bg1')
+    selected = applyLadderLevelSelection(
+      model,
+      selected,
+      'bg1',
+      new Set(['fixes', 'vanillaPlus']),
+    )
+
+    expect(selected.has('fix:a')).toBe(true)
+    expect(selected.has('rest:a')).toBe(false)
+    expect(selected.has('vp:a')).toBe(true)
+    expect(selected.has('bw:a')).toBe(false)
+    expect(selected.has('qual:a')).toBe(false)
+    expect(selected.has('qual:req')).toBe(true)
+
+    expect(selected.has('alt:vp')).toBe(true)
+    expect(selected.has('alt:rest')).toBe(false)
+    expect(selected.has('alt:qual')).toBe(false)
+  })
+
   it('dropping to Fixes deselects higher ladder ranks but keeps Difficulty', () => {
     let selected = createInitialSelection(model, 'bg1')
-    selected = applyLadderLevelSelection(model, selected, 'bg1', 'quality')
+    selected = applyLadderLevelSelection(
+      model,
+      selected,
+      'bg1',
+      new Set(['fixes', 'restoration', 'vanillaPlus', 'blendWell', 'extended']),
+    )
     selected = setDifficultySelection(model, selected, 'bg1', true)
     expect(selected.has('qual:a')).toBe(true)
     expect(selected.has('diff:a')).toBe(true)
 
-    selected = applyLadderLevelSelection(model, selected, 'bg1', 'fixes')
+    selected = applyLadderLevelSelection(model, selected, 'bg1', new Set(['fixes']))
     expect(selected.has('fix:a')).toBe(true)
     expect(selected.has('rest:a')).toBe(false)
     expect(selected.has('vp:a')).toBe(false)
@@ -362,7 +393,12 @@ describe('level mass-check', () => {
 
   it('Difficulty toggle only flips difficulty ids', () => {
     let selected = createInitialSelection(model, 'bg1')
-    selected = applyLadderLevelSelection(model, selected, 'bg1', 'restoration')
+    selected = applyLadderLevelSelection(
+      model,
+      selected,
+      'bg1',
+      new Set(['fixes', 'restoration']),
+    )
     selected = setDifficultySelection(model, selected, 'bg1', true)
     expect(selected.has('fix:a')).toBe(true)
     expect(selected.has('rest:a')).toBe(true)
@@ -380,16 +416,21 @@ describe('level mass-check', () => {
   it('required ladder component above max stays selected', () => {
     let selected = createInitialSelection(model, 'bg1')
     expect(selected.has('qual:req')).toBe(true)
-    selected = applyLadderLevelSelection(model, selected, 'bg1', 'fixes')
+    selected = applyLadderLevelSelection(model, selected, 'bg1', new Set(['fixes']))
     expect(selected.has('qual:req')).toBe(true)
-    selected = applyLadderLevelSelection(model, selected, 'bg1', null)
+    selected = applyLadderLevelSelection(model, selected, 'bg1', new Set())
     expect(selected.has('qual:req')).toBe(true)
     expect(selected.has('fix:a')).toBe(false)
   })
 
   it('alternatives: prefers default when it matches the ladder max', () => {
     let selected = createInitialSelection(model, 'bg1')
-    selected = applyLadderLevelSelection(model, selected, 'bg1', 'vanillaPlus')
+    selected = applyLadderLevelSelection(
+      model,
+      selected,
+      'bg1',
+      new Set(['fixes', 'restoration', 'vanillaPlus']),
+    )
     expect(selected.has('alt:vp')).toBe(true)
     expect(selected.has('alt:rest')).toBe(false)
     expect(selected.has('alt:qual')).toBe(false)
@@ -397,7 +438,7 @@ describe('level mass-check', () => {
 
   it('alternatives: picks first matching when default is above max', () => {
     let selected = createInitialSelection(model, 'bg1')
-    selected = applyLadderLevelSelection(model, selected, 'bg1', 'restoration')
+    selected = applyLadderLevelSelection(model, selected, 'bg1', new Set(['fixes', 'restoration']))
     expect(selected.has('alt:rest')).toBe(true)
     expect(selected.has('alt:vp')).toBe(false)
     expect(selected.has('alt:qual')).toBe(false)
