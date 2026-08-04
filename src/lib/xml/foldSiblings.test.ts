@@ -81,6 +81,41 @@ describe('foldSiblings', () => {
     ).toEqual(['early-rest', 'late-rest'])
   })
 
+  it('flattens only noBranches contributions when merging into a structured sibling', () => {
+    const folded = foldSiblings([
+      container('add', { label: 'New items' }, [component('early-item', 0)]),
+      container('add', { noBranches: true }, [
+        container('mod', { id: 'msfm' }, [component('msfm:10', 1)]),
+      ]),
+    ])
+
+    expect(folded).toHaveLength(1)
+    expect(folded[0]!.attrs.label).toBe('New items')
+    expect(folded[0]!.attrs.noBranches).toBeUndefined()
+    expect(
+      folded[0]!.children.map((c) => (c.kind === 'component' ? c.componentId : c.tag)),
+    ).toEqual(['early-item', 'msfm:10'])
+  })
+
+  it('materializes target noBranches then keeps structure from later siblings', () => {
+    const folded = foldSiblings([
+      container('add', { noBranches: true }, [
+        container('mod', { id: 'msfm' }, [component('msfm:10', 0)]),
+      ]),
+      container('add', { label: 'Later' }, [
+        container('mod', { id: 'other' }, [component('other:1', 1)]),
+      ]),
+    ])
+
+    expect(folded).toHaveLength(1)
+    expect(folded[0]!.attrs.noBranches).toBeUndefined()
+    expect(folded[0]!.attrs.label).toBeUndefined()
+    expect(
+      folded[0]!.children.map((c) => (c.kind === 'component' ? c.componentId : c.tag)),
+    ).toEqual(['msfm:10', 'mod'])
+    expect(folded[0]!.children[1]!.attrs.id).toBe('other')
+  })
+
   it('folds structural tags and sectionId groups recursively', () => {
     const earlyWarrior = component('early-warrior', 0)
     const lateWarrior = component('late-warrior', 1)
