@@ -1,4 +1,3 @@
-import { useId } from 'react'
 import {
   FILTER_LADDER_LEVELS,
   LEVEL_LABELS,
@@ -20,41 +19,45 @@ export function LevelSelectStrip({
   onLadderToggle,
   onDifficultyChange,
 }: Props) {
-  const baseId = useId()
-
   return (
     <div
-      className={`level-select-strip${!enabled ? ' disabled' : ''}`}
-      aria-label="Level selection"
+      className={`level-preselect${!enabled ? ' disabled' : ''}`}
+      aria-label="Choose preselected components"
     >
-      <div className="filters-row">
-        <span className="filters-label">Choose preselected components</span>
-        <div className="filter-panel" role="group" aria-label="Ladder level">
-          {FILTER_LADDER_LEVELS.map((level) => (
+      <h3 className="level-preselect-title">Choose preselected components</h3>
+      <p className="level-preselect-lede">
+        Tick the install levels you want filled in automatically. Checking a level also checks the
+        ones below it; you can uncheck any of them afterward.
+      </p>
+      <div className="level-preselect-grid" role="group" aria-label="Ladder levels">
+        {FILTER_LADDER_LEVELS.map((level) => {
+          const checked = checkedLadderLevels.has(level)
+          return (
             <label
               key={level}
-              className={`filter-option${!enabled ? ' disabled' : ''}`}
-              data-checked={checkedLadderLevels.has(level)}
+              className={`level-card${!enabled ? ' disabled' : ''}${checked ? ' active' : ''}`}
             >
               <input
                 type="checkbox"
-                checked={checkedLadderLevels.has(level)}
+                checked={checked}
                 disabled={!enabled}
                 onChange={(e) => onLadderToggle(level, e.target.checked)}
               />
-              {LEVEL_LABELS[level]}
+              <span className="level-card-label">{LEVEL_LABELS[level]}</span>
             </label>
-          ))}
-          <label className={`filter-option${!enabled ? ' disabled' : ''}`}>
-            <input
-              type="checkbox"
-              checked={difficulty}
-              disabled={!enabled}
-              onChange={(e) => onDifficultyChange(e.target.checked)}
-            />
-            {LEVEL_LABELS.difficulty}
-          </label>
-        </div>
+          )
+        })}
+        <label
+          className={`level-card${!enabled ? ' disabled' : ''}${difficulty ? ' active' : ''}`}
+        >
+          <input
+            type="checkbox"
+            checked={difficulty}
+            disabled={!enabled}
+            onChange={(e) => onDifficultyChange(e.target.checked)}
+          />
+          <span className="level-card-label">{LEVEL_LABELS.difficulty}</span>
+        </label>
       </div>
     </div>
   )

@@ -34,7 +34,7 @@ export function StationNav({
           key={id}
           type="button"
           className={activeStation === id ? 'active' : ''}
-          disabled={!game || activeStation === 'engine'}
+          disabled={!game}
           onClick={() => onSelectStation(id)}
         >
           {STATION_LABELS[id]}
