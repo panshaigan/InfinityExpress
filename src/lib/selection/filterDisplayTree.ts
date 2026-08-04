@@ -14,7 +14,6 @@ import type { DisplayNode } from './visibility'
 /** Sentinel / normalized token for missing or explicit released stability. */
 export const STABILITY_RELEASED = 'released'
 
-export type TriFilterMode = 'show' | 'hide' | 'only'
 export type AuthorFilterMode = 'include' | 'exclude'
 
 export interface FilterCriteria {
@@ -23,8 +22,10 @@ export interface FilterCriteria {
   maxLevel: string | null
   levelExact: boolean
   includeDifficulty: boolean
-  hiddenMode: TriFilterMode
-  requiredMode: TriFilterMode
+  /** When false (default), exclude noDisplay components. */
+  showHidden: boolean
+  /** When false (default), exclude required components. */
+  showRequired: boolean
   /** Allow-list of stability tokens (incl. STABILITY_RELEASED). */
   stability: ReadonlySet<string>
   /** Allow-list of tag tokens (all discovered tags checked by default). */
@@ -58,8 +59,8 @@ export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   maxLevel: null,
   levelExact: false,
   includeDifficulty: true,
-  hiddenMode: 'hide',
-  requiredMode: 'hide',
+  showHidden: false,
+  showRequired: false,
   stability: new Set([STABILITY_RELEASED]),
   tags: new Set(),
   tagsOnlyChecked: false,
@@ -102,15 +103,21 @@ export function normalizeStability(stability: string | undefined): string {
   return s
 }
 
+/** Capitalize first letter for display (beta → Beta). */
+export function capitalizeStabilityLabel(token: string): string {
+  if (!token) return token
+  return token.charAt(0).toUpperCase() + token.slice(1)
+}
+
 /** Non-released stability for badges; null when released/missing. */
 export function stabilityBadgeLabel(stability: string | undefined): string | null {
   const n = normalizeStability(stability)
   if (n === STABILITY_RELEASED) return null
-  return n
+  return capitalizeStabilityLabel(n)
 }
 
 export function filtersNeedIncludeHidden(criteria: FilterCriteria): boolean {
-  return criteria.hiddenMode !== 'hide'
+  return criteria.showHidden
 }
 
 function setsEqual(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
@@ -156,8 +163,8 @@ export function isFilterActive(
     criteria.maxLevel !== null ||
     criteria.levelExact !== defaults.levelExact ||
     criteria.includeDifficulty !== defaults.includeDifficulty ||
-    criteria.hiddenMode !== defaults.hiddenMode ||
-    criteria.requiredMode !== defaults.requiredMode ||
+    criteria.showHidden !== defaults.showHidden ||
+    criteria.showRequired !== defaults.showRequired ||
     criteria.tagsOnlyChecked !== defaults.tagsOnlyChecked ||
     !setsEqual(criteria.stability, defaults.stability) ||
     !setsEqual(criteria.tags, defaults.tags) ||
@@ -256,12 +263,10 @@ function leafMatchesCriteria(
   }
 
   const isHidden = Boolean(attrs.noDisplay)
-  if (criteria.hiddenMode === 'only' && !isHidden) return false
-  if (criteria.hiddenMode === 'hide' && isHidden) return false
+  if (!criteria.showHidden && isHidden) return false
 
   const isRequired = Boolean(attrs.required)
-  if (criteria.requiredMode === 'only' && !isRequired) return false
-  if (criteria.requiredMode === 'hide' && isRequired) return false
+  if (!criteria.showRequired && isRequired) return false
 
   const stab = normalizeStability(attrs.stability)
   if (!criteria.stability.has(stab)) return false

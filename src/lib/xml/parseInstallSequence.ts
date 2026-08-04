@@ -54,6 +54,13 @@ function inheritLevel(own: string | undefined, parent: string | undefined): stri
   return own?.trim() ? own.trim() : parent
 }
 
+function inheritStability(
+  own: string | undefined,
+  parent: string | undefined,
+): string | undefined {
+  return own?.trim() ? own.trim() : parent
+}
+
 export interface ParseResult {
   model: InstallSequenceModel
   warnings: string[]
@@ -91,6 +98,7 @@ export function parseInstallSequence(xmlText: string): ParseResult {
     el: Element,
     parentEngine: string,
     parentLevel: string | undefined,
+    parentStability: string | undefined,
     parentKey: string | undefined,
   ): TreeNode | null {
     const tag = el.tagName
@@ -99,6 +107,8 @@ export function parseInstallSequence(xmlText: string): ParseResult {
     const attrs = readAttrs(el)
     const effectiveEngine = inheritEngine(attrs.engine, parentEngine)
     const effectiveLevel = inheritLevel(attrs.level, parentLevel)
+    const effectiveStability = inheritStability(attrs.stability, parentStability)
+    if (effectiveStability) attrs.stability = effectiveStability
     const kind = kindForTag(tag)
     const key = nextKey(tag)
 
@@ -139,7 +149,13 @@ export function parseInstallSequence(xmlText: string): ParseResult {
     nodesByKey.set(key, node)
 
     for (const child of Array.from(el.children)) {
-      const childNode = walkElement(child, effectiveEngine, effectiveLevel, key)
+      const childNode = walkElement(
+        child,
+        effectiveEngine,
+        effectiveLevel,
+        effectiveStability,
+        key,
+      )
       if (childNode) node.children.push(childNode)
     }
 
@@ -152,7 +168,7 @@ export function parseInstallSequence(xmlText: string): ParseResult {
       warnings.push(`Skipping unknown top-level tag <${tag}>`)
       continue
     }
-    const stationNode = walkElement(child, '', undefined, undefined)
+    const stationNode = walkElement(child, '', undefined, undefined, undefined)
     if (!stationNode || stationNode.kind === 'component') continue
     const list = stationBuckets.get(tag) ?? []
     list.push(stationNode as ContainerNode)

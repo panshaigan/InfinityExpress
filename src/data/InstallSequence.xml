@@ -413,7 +413,7 @@
 			</restructure>
 			<npc label="Joinable NPCs">
 				<expansions>
-					<component id="kinfriendship:1" label="M'Khiin Expansion" modId="M-khiin-Friendship" />
+					<component id="kinfriendship:1" label="M'Khiin Expansion" modId="M-khiin-Friendship" tags="beamdog" />
 				</expansions>
 				<bioware label="Returning playable NPCs">
 					<component id="L#-ELDOTH-SOD" label="Eldoth" modId="eldoth-for-sod" />
@@ -432,7 +432,7 @@
 					<component id="C#Ajantis_SoD_NPC-crossmod_content" label="Ajantis Crossmod" modId="Ajantis_BG1_Expansion" />
 				</banters>
 				<tweaks>
-					<component id="A7-CONVENIENTEENPCS-APPEARANCE-CAELAR_FOLLOWER_CONDITIONAL" label="Caelar joins as controllable follower if no free party slots available" modId="A7-NoEENPCs" level="vanillaPlus"/>
+					<component id="A7-CONVENIENTEENPCS-APPEARANCE-CAELAR_FOLLOWER_CONDITIONAL" label="Caelar joins as controllable follower if no free party slots available" modId="A7-NoEENPCs" tags="beamdog" level="vanillaPlus"/>
 				</tweaks>
 			</npc>
 		</sod>
@@ -668,11 +668,11 @@
 					</mod>
 				</custom>
 				<banters label="Banters and Crossmods">
-					<component id="mkhiinbg2:20" label="M'Khiin Crossmod with Baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" />
+					<component id="mkhiinbg2:20" label="M'Khiin Crossmod with Baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" tags="beamdog" />
 					<component id="adrian_crossmod_content" label="Adrian Crossmod" modId="Adrian-NPC" />
 					<!-- component id="c#husam-crossmod" label="Husam Crossmod Content" modId="Husam_NP" stability="beta" /-->
 					<component id="Wings:1" label="Restore missing banters for Aerie" modId="Wings" />
-					<mod id="NeeraBanters" label="Neera Banters">
+					<mod id="NeeraBanters" label="Neera Banters" tags="beamdog">
 						<component id="AY-NEERABANTERS-DIALOGUE" label="Dialogue Banters and Interjections" />
 						<component id="AY-NEERABANTERS-INTERACTION" label="Interaction Banters" />
 					</mod>

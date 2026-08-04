@@ -11,36 +11,34 @@ import {
 } from '../lib/mods/loadMods'
 import {
   STABILITY_RELEASED,
+  capitalizeStabilityLabel,
   createDefaultFilterCriteria,
   isAuthorFilterActive,
   isFilterActive,
   isSizeFilterActive,
   type AuthorFilterMode,
   type FilterCriteria,
-  type TriFilterMode,
 } from '../lib/selection/filterDisplayTree'
 
 interface Props {
   criteria: FilterCriteria
   onChange: (next: FilterCriteria) => void
+  /** Kept for default criteria seeding; Tags UI deferred to stations. */
   tagOptions: string[]
   stabilityOptions: string[]
   authorOptions: AuthorOption[]
   sizeBounds: SizeBounds | null
 }
 
-type PanelId = 'level' | 'stability' | 'tags' | 'size' | 'author' | 'hidden' | 'required'
-
-const TRI_OPTIONS: { value: TriFilterMode; label: string }[] = [
-  { value: 'show', label: 'Show' },
-  { value: 'hide', label: 'Hide' },
-  { value: 'only', label: 'Only' },
-]
+type PanelId = 'level' | 'stability' | 'size' | 'author'
 
 const AUTHOR_MODE_OPTIONS: { value: AuthorFilterMode; label: string }[] = [
   { value: 'include', label: 'Include selected' },
   { value: 'exclude', label: 'Exclude selected' },
 ]
+
+const MORPHEUS_WARNING =
+  "This author is known for redirecting his site's domain to unsecure sites. If you use his mods, do so with caution."
 
 function toggleInSet(set: ReadonlySet<string>, value: string): Set<string> {
   const next = new Set(set)
@@ -74,12 +72,10 @@ export function FiltersStrip({
   const active = isFilterActive(criteria, tagOptions, seed)
   const levelActive = criteria.maxLevel !== null
   const stabilityActive = !setsEqual(criteria.stability, defaults.stability)
-  const tagsActive =
-    criteria.tagsOnlyChecked || !setsEqual(criteria.tags, defaults.tags)
   const sizeActive = isSizeFilterActive(criteria, sizeBounds)
   const authorActive = isAuthorFilterActive(criteria, authorNames)
-  const hiddenActive = criteria.hiddenMode !== 'hide'
-  const requiredActive = criteria.requiredMode !== defaults.requiredMode
+  const hiddenActive = criteria.showHidden
+  const requiredActive = criteria.showRequired
 
   function patch(partial: Partial<FilterCriteria>) {
     onChange({ ...criteria, ...partial })
@@ -196,40 +192,9 @@ export function FiltersStrip({
               checked={criteria.stability.has(s)}
               onChange={() => patch({ stability: toggleInSet(criteria.stability, s) })}
             />
-            {s}
+            {capitalizeStabilityLabel(s)}
           </label>
         ))}
-      </>,
-    )
-  } else if (openPanel === 'tags') {
-    panelBody = wrapPanel(
-      `${baseId}-tags`,
-      'Tags',
-      <>
-        {tagOptions.length === 0 ? (
-          <p className="filter-panel-empty">No tags in this sequence.</p>
-        ) : (
-          <>
-            {tagOptions.map((tag) => (
-              <label key={tag} className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={criteria.tags.has(tag)}
-                  onChange={() => patch({ tags: toggleInSet(criteria.tags, tag) })}
-                />
-                {tag}
-              </label>
-            ))}
-            <label className="filter-option">
-              <input
-                type="checkbox"
-                checked={criteria.tagsOnlyChecked}
-                onChange={(e) => patch({ tagsOnlyChecked: e.target.checked })}
-              />
-              Only checked tags
-            </label>
-          </>
-        )}
       </>,
     )
   } else if (openPanel === 'size') {
@@ -316,43 +281,23 @@ export function FiltersStrip({
                   patch({ authors: toggleInSet(criteria.authors, opt.name) })
                 }
               />
-              {opt.name} ({opt.count})
+              <span className="filter-author-name">
+                {opt.name}
+                {opt.name === 'Morpheus562' && (
+                  <span
+                    className="filter-author-warning"
+                    title={MORPHEUS_WARNING}
+                    aria-label={MORPHEUS_WARNING}
+                  >
+                    !
+                  </span>
+                )}
+              </span>
+              <span className="filter-author-count">({opt.count})</span>
             </label>
           ))}
         </>
       ),
-    )
-  } else if (openPanel === 'hidden') {
-    panelBody = wrapPanel(
-      `${baseId}-hidden`,
-      'Hidden',
-      TRI_OPTIONS.map((opt) => (
-        <label key={opt.value} className="filter-option">
-          <input
-            type="radio"
-            name={`${baseId}-hidden`}
-            checked={criteria.hiddenMode === opt.value}
-            onChange={() => patch({ hiddenMode: opt.value })}
-          />
-          {opt.label}
-        </label>
-      )),
-    )
-  } else if (openPanel === 'required') {
-    panelBody = wrapPanel(
-      `${baseId}-required`,
-      'Required',
-      TRI_OPTIONS.map((opt) => (
-        <label key={opt.value} className="filter-option">
-          <input
-            type="radio"
-            name={`${baseId}-required`}
-            checked={criteria.requiredMode === opt.value}
-            onChange={() => patch({ requiredMode: opt.value })}
-          />
-          {opt.label}
-        </label>
-      )),
     )
   }
 
@@ -401,17 +346,6 @@ export function FiltersStrip({
 
         <button
           type="button"
-          className={`filter-chip${tagsActive ? ' active' : ''}${openPanel === 'tags' ? ' open' : ''}`}
-          aria-expanded={openPanel === 'tags'}
-          aria-controls={`${baseId}-tags`}
-          onClick={() => togglePanel('tags')}
-          disabled={tagOptions.length === 0}
-        >
-          Tags{tagsActive ? ` (${criteria.tags.size})` : ''}
-        </button>
-
-        <button
-          type="button"
           className={`filter-chip${sizeActive ? ' active' : ''}${openPanel === 'size' ? ' open' : ''}`}
           aria-expanded={openPanel === 'size'}
           aria-controls={`${baseId}-size`}
@@ -437,22 +371,20 @@ export function FiltersStrip({
 
         <button
           type="button"
-          className={`filter-chip${hiddenActive ? ' active' : ''}${openPanel === 'hidden' ? ' open' : ''}`}
-          aria-expanded={openPanel === 'hidden'}
-          aria-controls={`${baseId}-hidden`}
-          onClick={() => togglePanel('hidden')}
+          className={`filter-chip${hiddenActive ? ' active' : ''}`}
+          aria-pressed={hiddenActive}
+          onClick={() => patch({ showHidden: !criteria.showHidden })}
         >
-          Hidden: {criteria.hiddenMode}
+          Show hidden components
         </button>
 
         <button
           type="button"
-          className={`filter-chip${requiredActive ? ' active' : ''}${openPanel === 'required' ? ' open' : ''}`}
-          aria-expanded={openPanel === 'required'}
-          aria-controls={`${baseId}-required`}
-          onClick={() => togglePanel('required')}
+          className={`filter-chip${requiredActive ? ' active' : ''}`}
+          aria-pressed={requiredActive}
+          onClick={() => patch({ showRequired: !criteria.showRequired })}
         >
-          Required: {criteria.requiredMode}
+          Show required components
         </button>
 
         {active && (

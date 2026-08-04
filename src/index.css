@@ -306,6 +306,31 @@ body {
   margin: 0;
 }
 
+.filter-author-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.filter-author-warning {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #8a4b00;
+  background: #f5d9a8;
+  cursor: help;
+}
+
+.filter-author-count {
+  color: var(--muted);
+}
+
 .filter-panel-empty {
   margin: 0;
   font-size: 0.8rem;

@@ -5,12 +5,15 @@ import {
 } from '../levels'
 import {
   STABILITY_RELEASED,
+  capitalizeStabilityLabel,
   createDefaultFilterCriteria,
   filterDisplayTree,
   normalizeStability,
+  stabilityBadgeLabel,
   type FilterCriteria,
   type FilterModContext,
 } from '../selection/filterDisplayTree'
+import { parseInstallSequence } from '../xml/parseInstallSequence'
 import type { DisplayNode } from '../selection/visibility'
 import type { ComponentNode, InstallSequenceModel, TreeNode } from '../xml/schema'
 import type { ModInfo } from '../mods/loadMods'
@@ -125,6 +128,16 @@ describe('normalizeStability', () => {
     expect(normalizeStability('released')).toBe(STABILITY_RELEASED)
     expect(normalizeStability('beta')).toBe('beta')
     expect(normalizeStability('alpha')).toBe('alpha')
+  })
+})
+
+describe('stability labels', () => {
+  it('capitalizes non-released tokens for display', () => {
+    expect(capitalizeStabilityLabel('beta')).toBe('Beta')
+    expect(capitalizeStabilityLabel('alpha')).toBe('Alpha')
+    expect(stabilityBadgeLabel('beta')).toBe('Beta')
+    expect(stabilityBadgeLabel(undefined)).toBeNull()
+    expect(stabilityBadgeLabel('released')).toBeNull()
   })
 })
 
@@ -247,36 +260,39 @@ describe('filterDisplayTree', () => {
     expect(ids(out)).toEqual(['b', 'e'])
   })
 
-  it('supports required only / hide', () => {
-    expect(
-      ids(filterDisplayTree(tree, criteria({ requiredMode: 'only' }))),
-    ).toEqual(['reqVis'])
-    expect(
-      ids(
-        filterDisplayTree(
-          tree,
-          criteria({ requiredMode: 'only', hiddenMode: 'show' }),
-        ),
-      ),
-    ).toEqual(['d', 'reqVis'])
-    expect(ids(filterDisplayTree(tree, criteria({ requiredMode: 'hide' })))).toEqual([
+  it('showRequired toggles required components', () => {
+    expect(ids(filterDisplayTree(tree, criteria()))).toEqual([
       'a',
       'b',
       'e',
       'f',
       'nolevel',
     ])
-  })
-
-  it('supports hidden only', () => {
+    expect(
+      ids(filterDisplayTree(tree, criteria({ showRequired: true }))),
+    ).toEqual(['a', 'b', 'reqVis', 'e', 'f', 'nolevel'])
     expect(
       ids(
         filterDisplayTree(
           tree,
-          criteria({ hiddenMode: 'only', requiredMode: 'show' }),
+          criteria({ showRequired: true, showHidden: true }),
         ),
       ),
-    ).toEqual(['d'])
+    ).toEqual(['a', 'b', 'd', 'reqVis', 'e', 'f', 'nolevel'])
+  })
+
+  it('showHidden includes noDisplay components', () => {
+    expect(
+      ids(
+        filterDisplayTree(
+          tree,
+          criteria({ showHidden: true, showRequired: true }),
+        ),
+      ),
+    ).toContain('d')
+    expect(ids(filterDisplayTree(tree, criteria({ showHidden: true })))).not.toContain(
+      'd',
+    )
   })
 
   it('searches label and id', () => {
@@ -296,10 +312,43 @@ describe('filterDisplayTree', () => {
       ids(
         filterDisplayTree(
           tree,
-          criteria({ search: 'reqVis', requiredMode: 'show' }),
+          criteria({ search: 'reqVis', showRequired: true }),
         ),
       ),
     ).toEqual(['reqVis'])
+  })
+
+  it('excludes children that inherit mod-level beta when Released-only', () => {
+    const { model } = parseInstallSequence(`<?xml version="1.0"?>
+<installSequence>
+  <content>
+    <mod id="Reflections-of-Destiny" label="Reflections of Destiny" stability="beta">
+      <component id="Reflections_of_Destiny:100" label="The Future is Now" />
+      <component id="Reflections_of_Destiny:110" label="The Mirror Shard" />
+    </mod>
+    <mod id="ok-mod" label="Ok">
+      <component id="ok:1" label="Released Comp" />
+    </mod>
+  </content>
+</installSequence>`)
+    expect(model.componentsById.get('Reflections_of_Destiny:100')?.attrs.stability).toBe(
+      'beta',
+    )
+    const display: DisplayNode[] = model.componentsInOrder.map((c) => ({
+      node: c,
+      children: [],
+    }))
+    expect(
+      ids(filterDisplayTree(display, criteria({ stability: new Set([STABILITY_RELEASED]) }))),
+    ).toEqual(['ok:1'])
+    expect(
+      ids(
+        filterDisplayTree(
+          display,
+          criteria({ stability: new Set([STABILITY_RELEASED, 'beta']) }),
+        ),
+      ),
+    ).toEqual(['Reflections_of_Destiny:100', 'Reflections_of_Destiny:110', 'ok:1'])
   })
 
   it('keeps ancestor groups for matching leaves', () => {
