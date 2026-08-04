@@ -72,12 +72,12 @@
 		</mod>
 	</campaigns>
 
-	<gfx level="restorations">
+	<gfx level="restoration">
 		<mod id="Baldurs-Gate-Graphical-Overhaul" label="Baldur's Gate Graphical Overhaul" engine="bg,eet">
 			<component id="baldurs_gate_graphical_overhaul" label="Baldur's Gate Graphical Overhaul" desc="Reinstates the extended night areas that are missing from all main areas" />
 			<component id="baldurs_gate_graphical_overhaul_alternate" label="Alternate Graphics" alwaysIf="baldurs_gate_graphical_overhaul" noDisplay="1" />
 		</mod>
-		<mod id="Icewind-Dale-Graphical-Overhaul" label="Icewind Dale Graphical Overhaul" engine="iwd,eet">
+		<mod id="Icewind-Dale-Graphical-Overhaul" label="Icewind Dale Graphical Overhaul" displayIf="Tipun_iwd1_eet|iwd2_eet:0" engine="iwd,eet">
 			<component id="iwdgo:0" label="Icewind Dale Graphical Overhaul" desc="Reinstates the extended night areas that are missing from all main areas" />
 			<component id="iwdgo:4" label="Alternate Graphics" alwaysIf="iwdgo:0" noDisplay="1" />
 		</mod>
@@ -1430,10 +1430,10 @@
 			<component id="ZG-VOICE-NWN" label="Neverwinter Nights Voice Pack" modId="Neverwinter-Nights-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" />
 		</group>
 		<component id="HouseTweaks:24" label="NPC Soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" />
-		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" label="High Quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" />
+		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" label="High Quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" level="fixes" />
 		<component id="vveBG:0" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
 		<component id="vveSOD:0" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
-		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet">
+		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet" level="restoration">
 			<alternatives label="Choose the way how she should be recasted">
 				<component id="jaheirarecast:0" label="Use new SoD Character Sounds" default="1" />
 				<component id="jaheirarecast:1" label="Use BG1+BG2 Character Sounds" />
@@ -1445,9 +1445,9 @@
 			<component id="s@-IS-BG1-Spell-Sounds" label="Restore BG1 Spellcasting Sounds" level="vanillaPlus" />
 			<component id="s@-IS-BG1-Weapon-Sounds" label="Restore BG1 Weapon Sounds" level="vanillaPlus" />
 			<component id="s@-IS-BG1-Armor-Sounds" label="Restore BG1 Armor Sounds" level="vanillaPlus" />
-			<component id="s@-IS-BG1-PC-Soundsets" label="Restore BG1 PC Soundsets" level="vanillaPlus" />
 			<component id="s@-IS-Gulp-Sound" label="Restore Gulp Sound" />
 			<component id="s@-IS-Chunked-Death-Sound" label="Restore Chunked Death Sound" />
+			<component id="s@-IS-Tweak-Volume-Levels" label="Tweak Sound Channel Volume Levels" level="vanillaPlus" />
 			<component id="s@-IS-Footsteps-Combat" label="Enable Footsteps During Combat" level="fixes" />
 			<component id="s@-IS-BG1-Ambient-Sounds" label="Restore BG1 Ambient Sounds" level="vanillaPlus" />
 			<component id="s@-IS-Enhance-Pos-Audio" label="Enhance Positional Audio" level="fixes" />
@@ -1607,7 +1607,7 @@
 		<component id="cd_tweaks_unique_icons" label="Unique icons for special items" modId="Tweaks-Anthology" />
 		<component id="BG1_IPM_MainComponent" label="Unique icons for the BG1 quest items" modId="bg1_icons_pack_mod" engine="bg1,eet"/>
 		<component id="ee_cosmetic_enhancements:0" label="BG Cosmetic Enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="bg,eet" />
-		<component id="ee_cosmetic_enhancements:1" label="IWD Cosmetic Enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="iwd,eet" />
+		<component id="ee_cosmetic_enhancements:1" label="IWD Cosmetic Enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="iwd" />
 		<component id="cd_iwd_description_icons" label="Description Icons for IWD Items" modId="iwd_description_icons" engine="iwd" stability="beta" />
 		<mod id="RemasteredSpellIcons" label="Remastered Spell Icons">
 			<component id="remastered_spell_icons:0" label="Core Component" core="1" />
