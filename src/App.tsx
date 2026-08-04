@@ -382,7 +382,6 @@ export default function App() {
             criteria={filters}
             onChange={setFilters}
             tagOptions={filterOptions.tags}
-            stabilityOptions={filterOptions.stabilities}
             authorOptions={catalogAuthorOptions}
             sizeBounds={catalogSizeBounds}
           />

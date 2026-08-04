@@ -57,7 +57,6 @@ function criteria(partial: Partial<FilterCriteria> = {}): FilterCriteria {
   return {
     ...base,
     ...partial,
-    stability: partial.stability ?? base.stability,
     tags: partial.tags ?? base.tags,
   }
 }
@@ -172,8 +171,11 @@ describe('filterDisplayTree', () => {
     ]),
   ]
 
-  it('filters cumulatively by level (required/hidden/beta excluded by defaults)', () => {
-    const out = filterDisplayTree(tree, criteria({ maxLevel: 'vanillaPlus' }))
+  it('filters cumulatively by level (required/hidden excluded by defaults)', () => {
+    const out = filterDisplayTree(
+      tree,
+      criteria({ maxLevel: 'vanillaPlus', includeDifficulty: false }),
+    )
     expect(ids(out)).toEqual(['a'])
   })
 
@@ -187,7 +189,7 @@ describe('filterDisplayTree', () => {
   it('exact blendWell includes restructure', () => {
     const out = filterDisplayTree(
       tree,
-      criteria({ maxLevel: 'blendWell', levelExact: true }),
+      criteria({ maxLevel: 'blendWell', levelExact: true, includeDifficulty: false }),
     )
     expect(ids(out)).toEqual(['b', 'e'])
   })
@@ -198,7 +200,6 @@ describe('filterDisplayTree', () => {
       criteria({
         maxLevel: 'fixes',
         includeDifficulty: true,
-        stability: new Set([STABILITY_RELEASED, 'beta']),
       }),
     )
     expect(ids(out)).toEqual(['a', 'c'])
@@ -210,7 +211,6 @@ describe('filterDisplayTree', () => {
       criteria({
         maxLevel: null,
         includeDifficulty: true,
-        stability: new Set([STABILITY_RELEASED, 'beta']),
       }),
     )
     expect(ids(withDiff)).toContain('c')
@@ -222,7 +222,6 @@ describe('filterDisplayTree', () => {
       criteria({
         maxLevel: null,
         includeDifficulty: false,
-        stability: new Set([STABILITY_RELEASED, 'beta']),
       }),
     )
     expect(ids(withoutDiff)).not.toContain('c')
@@ -230,15 +229,10 @@ describe('filterDisplayTree', () => {
     expect(ids(withoutDiff)).toContain('nolevel')
   })
 
-  it('filters stability Released vs beta', () => {
-    const released = filterDisplayTree(
-      tree,
-      criteria({ stability: new Set([STABILITY_RELEASED]) }),
-    )
-    expect(ids(released)).toEqual(['a', 'b', 'e', 'f', 'nolevel'])
-
-    const beta = filterDisplayTree(tree, criteria({ stability: new Set(['beta']) }))
-    expect(ids(beta)).toEqual(['c'])
+  it('always includes alpha/beta components (no stability filter)', () => {
+    const out = filterDisplayTree(tree, criteria())
+    expect(ids(out)).toContain('c')
+    expect(ids(out)).toEqual(['a', 'b', 'c', 'e', 'f', 'nolevel'])
   })
 
   it('tag allow-list: unchecking hides that tag; untagged still show', () => {
@@ -246,7 +240,7 @@ describe('filterDisplayTree', () => {
       tree,
       criteria({ tags: new Set(['smallQuest']) }),
     )
-    expect(ids(withoutBig)).toEqual(['a', 'e', 'f', 'nolevel'])
+    expect(ids(withoutBig)).toEqual(['a', 'c', 'e', 'f', 'nolevel'])
   })
 
   it('only checked tags hides untagged', () => {
@@ -260,65 +254,43 @@ describe('filterDisplayTree', () => {
     expect(ids(out)).toEqual(['b', 'e'])
   })
 
-  it('showRequired toggles required components', () => {
+  it('showHidden reveals both hidden and required components', () => {
     expect(ids(filterDisplayTree(tree, criteria()))).toEqual([
       'a',
       'b',
+      'c',
       'e',
       'f',
       'nolevel',
     ])
-    expect(
-      ids(filterDisplayTree(tree, criteria({ showRequired: true }))),
-    ).toEqual(['a', 'b', 'reqVis', 'e', 'f', 'nolevel'])
-    expect(
-      ids(
-        filterDisplayTree(
-          tree,
-          criteria({ showRequired: true, showHidden: true }),
-        ),
-      ),
-    ).toEqual(['a', 'b', 'd', 'reqVis', 'e', 'f', 'nolevel'])
-  })
-
-  it('showHidden includes noDisplay components', () => {
-    expect(
-      ids(
-        filterDisplayTree(
-          tree,
-          criteria({ showHidden: true, showRequired: true }),
-        ),
-      ),
-    ).toContain('d')
-    expect(ids(filterDisplayTree(tree, criteria({ showHidden: true })))).not.toContain(
+    expect(ids(filterDisplayTree(tree, criteria({ showHidden: true })))).toEqual([
+      'a',
+      'b',
+      'c',
       'd',
-    )
+      'reqVis',
+      'e',
+      'f',
+      'nolevel',
+    ])
   })
 
   it('searches label and id', () => {
     expect(ids(filterDisplayTree(tree, criteria({ search: 'quest' })))).toEqual(['b'])
     expect(
-      ids(
-        filterDisplayTree(
-          tree,
-          criteria({
-            search: 'Hard',
-            stability: new Set([STABILITY_RELEASED, 'beta']),
-          }),
-        ),
-      ),
+      ids(filterDisplayTree(tree, criteria({ search: 'Hard' }))),
     ).toEqual(['c'])
     expect(
       ids(
         filterDisplayTree(
           tree,
-          criteria({ search: 'reqVis', showRequired: true }),
+          criteria({ search: 'reqVis', showHidden: true }),
         ),
       ),
     ).toEqual(['reqVis'])
   })
 
-  it('excludes children that inherit mod-level beta when Released-only', () => {
+  it('inherits mod-level beta onto children for badges (still always visible)', () => {
     const { model } = parseInstallSequence(`<?xml version="1.0"?>
 <installSequence>
   <content>
@@ -338,21 +310,18 @@ describe('filterDisplayTree', () => {
       node: c,
       children: [],
     }))
-    expect(
-      ids(filterDisplayTree(display, criteria({ stability: new Set([STABILITY_RELEASED]) }))),
-    ).toEqual(['ok:1'])
-    expect(
-      ids(
-        filterDisplayTree(
-          display,
-          criteria({ stability: new Set([STABILITY_RELEASED, 'beta']) }),
-        ),
-      ),
-    ).toEqual(['Reflections_of_Destiny:100', 'Reflections_of_Destiny:110', 'ok:1'])
+    expect(ids(filterDisplayTree(display, criteria()))).toEqual([
+      'Reflections_of_Destiny:100',
+      'Reflections_of_Destiny:110',
+      'ok:1',
+    ])
   })
 
   it('keeps ancestor groups for matching leaves', () => {
-    const out = filterDisplayTree(tree, criteria({ maxLevel: 'fixes', levelExact: true }))
+    const out = filterDisplayTree(
+      tree,
+      criteria({ maxLevel: 'fixes', levelExact: true, includeDifficulty: false }),
+    )
     expect(out).toHaveLength(1)
     expect(out[0].node.attrs.label).toBe('g1')
     expect(ids(out)).toEqual(['a'])

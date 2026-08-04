@@ -10,8 +10,6 @@ import {
   type SizeBounds,
 } from '../lib/mods/loadMods'
 import {
-  STABILITY_RELEASED,
-  capitalizeStabilityLabel,
   createDefaultFilterCriteria,
   isAuthorFilterActive,
   isFilterActive,
@@ -25,12 +23,11 @@ interface Props {
   onChange: (next: FilterCriteria) => void
   /** Kept for default criteria seeding; Tags UI deferred to stations. */
   tagOptions: string[]
-  stabilityOptions: string[]
   authorOptions: AuthorOption[]
   sizeBounds: SizeBounds | null
 }
 
-type PanelId = 'level' | 'stability' | 'size' | 'author'
+type PanelId = 'level' | 'size' | 'author'
 
 const AUTHOR_MODE_OPTIONS: { value: AuthorFilterMode; label: string }[] = [
   { value: 'include', label: 'Include selected' },
@@ -47,19 +44,10 @@ function toggleInSet(set: ReadonlySet<string>, value: string): Set<string> {
   return next
 }
 
-function setsEqual(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
-  if (a.size !== b.size) return false
-  for (const v of a) {
-    if (!b.has(v)) return false
-  }
-  return true
-}
-
 export function FiltersStrip({
   criteria,
   onChange,
   tagOptions,
-  stabilityOptions,
   authorOptions,
   sizeBounds,
 }: Props) {
@@ -68,14 +56,11 @@ export function FiltersStrip({
 
   const authorNames = authorOptions.map((a) => a.name)
   const seed = { authorOptions: authorNames, sizeBounds }
-  const defaults = createDefaultFilterCriteria(tagOptions, seed)
   const active = isFilterActive(criteria, tagOptions, seed)
   const levelActive = criteria.maxLevel !== null
-  const stabilityActive = !setsEqual(criteria.stability, defaults.stability)
   const sizeActive = isSizeFilterActive(criteria, sizeBounds)
   const authorActive = isAuthorFilterActive(criteria, authorNames)
   const hiddenActive = criteria.showHidden
-  const requiredActive = criteria.showRequired
 
   function patch(partial: Partial<FilterCriteria>) {
     onChange({ ...criteria, ...partial })
@@ -168,33 +153,6 @@ export function FiltersStrip({
           />
           Include {LEVEL_LABELS.difficulty}
         </label>
-      </>,
-    )
-  } else if (openPanel === 'stability') {
-    panelBody = wrapPanel(
-      `${baseId}-stability`,
-      'Stability',
-      <>
-        <label className="filter-option">
-          <input
-            type="checkbox"
-            checked={criteria.stability.has(STABILITY_RELEASED)}
-            onChange={() =>
-              patch({ stability: toggleInSet(criteria.stability, STABILITY_RELEASED) })
-            }
-          />
-          Released
-        </label>
-        {stabilityOptions.map((s) => (
-          <label key={s} className="filter-option">
-            <input
-              type="checkbox"
-              checked={criteria.stability.has(s)}
-              onChange={() => patch({ stability: toggleInSet(criteria.stability, s) })}
-            />
-            {capitalizeStabilityLabel(s)}
-          </label>
-        ))}
       </>,
     )
   } else if (openPanel === 'size') {
@@ -315,10 +273,10 @@ export function FiltersStrip({
         <input
           type="search"
           className="filters-search"
-          placeholder="Search…"
+          placeholder="Search in this window..."
           value={criteria.search}
           onChange={(e) => patch({ search: e.target.value })}
-          aria-label="Search components"
+          aria-label="Search in this window"
         />
 
         <button
@@ -332,16 +290,6 @@ export function FiltersStrip({
           {levelActive && criteria.maxLevel
             ? `: ${LEVEL_LABELS[criteria.maxLevel] ?? criteria.maxLevel}`
             : ''}
-        </button>
-
-        <button
-          type="button"
-          className={`filter-chip${stabilityActive ? ' active' : ''}${openPanel === 'stability' ? ' open' : ''}`}
-          aria-expanded={openPanel === 'stability'}
-          aria-controls={`${baseId}-stability`}
-          onClick={() => togglePanel('stability')}
-        >
-          Stability{stabilityActive ? ` (${criteria.stability.size})` : ''}
         </button>
 
         <button
@@ -376,15 +324,6 @@ export function FiltersStrip({
           onClick={() => patch({ showHidden: !criteria.showHidden })}
         >
           Show hidden components
-        </button>
-
-        <button
-          type="button"
-          className={`filter-chip${requiredActive ? ' active' : ''}`}
-          aria-pressed={requiredActive}
-          onClick={() => patch({ showRequired: !criteria.showRequired })}
-        >
-          Show required components
         </button>
 
         {active && (

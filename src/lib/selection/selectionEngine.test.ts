@@ -204,7 +204,7 @@ describe('parse + selection', () => {
     const criteria = {
       ...createDefaultFilterCriteria(),
       maxLevel: 'fixes',
-      showRequired: true,
+      showHidden: true,
     }
     const filtered = filterDisplayTree(built, criteria, { model: fm, modsByCodename: new Map() })
     const modDisplay = filtered.find((d) => d.node.attrs.label === 'Filter Mod')!

@@ -22,12 +22,11 @@ export interface FilterCriteria {
   maxLevel: string | null
   levelExact: boolean
   includeDifficulty: boolean
-  /** When false (default), exclude noDisplay components. */
+  /**
+   * When false (default), exclude noDisplay and required components.
+   * When true, show both alongside other components.
+   */
   showHidden: boolean
-  /** When false (default), exclude required components. */
-  showRequired: boolean
-  /** Allow-list of stability tokens (incl. STABILITY_RELEASED). */
-  stability: ReadonlySet<string>
   /** Allow-list of tag tokens (all discovered tags checked by default). */
   tags: ReadonlySet<string>
   /**
@@ -60,8 +59,6 @@ export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   levelExact: false,
   includeDifficulty: true,
   showHidden: false,
-  showRequired: false,
-  stability: new Set([STABILITY_RELEASED]),
   tags: new Set(),
   tagsOnlyChecked: false,
   sizeMinBytes: null,
@@ -70,7 +67,7 @@ export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   authorMode: 'include',
 }
 
-/** Build default criteria with all discovered tags/authors checked and Released-only stability. */
+/** Build default criteria with all discovered tags/authors checked. */
 export function createDefaultFilterCriteria(
   tagOptions: string[] = [],
   extras: Omit<FilterSeedOptions, 'tagOptions'> = {},
@@ -79,7 +76,6 @@ export function createDefaultFilterCriteria(
   const authorOptions = extras.authorOptions ?? []
   return {
     ...DEFAULT_FILTER_CRITERIA,
-    stability: new Set([STABILITY_RELEASED]),
     tags: new Set(tagOptions),
     tagsOnlyChecked: false,
     sizeMinBytes: bounds?.min ?? null,
@@ -164,9 +160,7 @@ export function isFilterActive(
     criteria.levelExact !== defaults.levelExact ||
     criteria.includeDifficulty !== defaults.includeDifficulty ||
     criteria.showHidden !== defaults.showHidden ||
-    criteria.showRequired !== defaults.showRequired ||
     criteria.tagsOnlyChecked !== defaults.tagsOnlyChecked ||
-    !setsEqual(criteria.stability, defaults.stability) ||
     !setsEqual(criteria.tags, defaults.tags) ||
     isSizeFilterActive(criteria, extras.sizeBounds ?? null) ||
     isAuthorFilterActive(criteria, extras.authorOptions ?? [])
@@ -175,18 +169,13 @@ export function isFilterActive(
 
 export function collectFilterOptions(model: InstallSequenceModel): {
   tags: string[]
-  stabilities: string[]
 } {
   const tags = new Set<string>()
-  const stabilities = new Set<string>()
   for (const c of model.componentsInOrder) {
     for (const t of splitTags(c.attrs.tags)) tags.add(t)
-    const n = normalizeStability(c.attrs.stability)
-    if (n !== STABILITY_RELEASED) stabilities.add(n)
   }
   return {
     tags: [...tags].sort((a, b) => a.localeCompare(b)),
-    stabilities: [...stabilities].sort((a, b) => a.localeCompare(b)),
   }
 }
 
@@ -263,13 +252,8 @@ function leafMatchesCriteria(
   }
 
   const isHidden = Boolean(attrs.noDisplay)
-  if (!criteria.showHidden && isHidden) return false
-
   const isRequired = Boolean(attrs.required)
-  if (!criteria.showRequired && isRequired) return false
-
-  const stab = normalizeStability(attrs.stability)
-  if (!criteria.stability.has(stab)) return false
+  if (!criteria.showHidden && (isHidden || isRequired)) return false
 
   if (!tagsPass(splitTags(attrs.tags), criteria.tags, criteria.tagsOnlyChecked)) {
     return false
