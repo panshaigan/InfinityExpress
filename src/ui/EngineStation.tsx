@@ -11,7 +11,8 @@ interface Props {
   difficulty: boolean
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
   onDifficultyChange: (want: boolean) => void
-  onCustomize: () => void
+  canGoNext: boolean
+  onNext: () => void
 }
 
 export function EngineStation({
@@ -21,7 +22,8 @@ export function EngineStation({
   difficulty,
   onLadderToggle,
   onDifficultyChange,
-  onCustomize,
+  canGoNext,
+  onNext,
 }: Props) {
   return (
     <section className="engine-station">
@@ -53,11 +55,11 @@ export function EngineStation({
         />
         <button
           type="button"
-          className="btn customize-btn"
-          disabled={!game}
-          onClick={onCustomize}
+          className="btn next-station-btn"
+          disabled={!canGoNext}
+          onClick={onNext}
         >
-          Customize
+          Next {'>>'}
         </button>
       </div>
     </section>

@@ -4,19 +4,33 @@ import {
   type SelectedGame,
   type StationId,
 } from '../lib/xml/schema'
+import type { StationSlot } from '../lib/ui/chromeHotkeys'
 
 interface Props {
   game: SelectedGame | null
   activeStation: 'engine' | StationId
   visibleStations: StationId[]
+  finishedStations: ReadonlySet<StationSlot>
   onSelectEngine: () => void
   onSelectStation: (id: StationId) => void
+}
+
+function stationClass(
+  id: StationSlot,
+  activeStation: StationSlot,
+  finishedStations: ReadonlySet<StationSlot>,
+): string {
+  const parts: string[] = []
+  if (activeStation === id) parts.push('active')
+  if (finishedStations.has(id)) parts.push('finished')
+  return parts.join(' ')
 }
 
 export function StationNav({
   game,
   activeStation,
   visibleStations,
+  finishedStations,
   onSelectEngine,
   onSelectStation,
 }: Props) {
@@ -24,20 +38,30 @@ export function StationNav({
     <nav className="station-nav" aria-label="Stations">
       <button
         type="button"
-        className={activeStation === 'engine' ? 'active' : ''}
+        className={stationClass('engine', activeStation, finishedStations)}
         onClick={onSelectEngine}
       >
-        Engine
+        <span className="station-nav-label">Engine</span>
+        {finishedStations.has('engine') && (
+          <span className="station-finished-mark" aria-hidden="true">
+            ✓
+          </span>
+        )}
       </button>
       {STATION_ORDER.filter((id) => visibleStations.includes(id)).map((id) => (
         <button
           key={id}
           type="button"
-          className={activeStation === id ? 'active' : ''}
+          className={stationClass(id, activeStation, finishedStations)}
           disabled={!game}
           onClick={() => onSelectStation(id)}
         >
-          {STATION_LABELS[id]}
+          <span className="station-nav-label">{STATION_LABELS[id]}</span>
+          {finishedStations.has(id) && (
+            <span className="station-finished-mark" aria-hidden="true">
+              ✓
+            </span>
+          )}
         </button>
       ))}
     </nav>

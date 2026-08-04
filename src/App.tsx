@@ -115,6 +115,9 @@ export default function App() {
   const [game, setGame] = useState<SelectedGame | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const [activeStation, setActiveStation] = useState<'engine' | StationId>('engine')
+  const [finishedStations, setFinishedStations] = useState<Set<StationSlot>>(
+    () => new Set(),
+  )
   const [focusedKey, setFocusedKey] = useState<string | null>(null)
   const [focusedComponentId, setFocusedComponentId] = useState<string | null>(null)
   const [pendingFocusId, setPendingFocusId] = useState<string | null>(null)
@@ -282,6 +285,7 @@ export default function App() {
     setSelectedIds(createInitialSelection(model, next))
     setLadderChecked(new Set())
     setDifficultyPreset(false)
+    setFinishedStations(new Set())
     setActiveStation('engine')
     clearFocus()
   }
@@ -314,8 +318,27 @@ export default function App() {
     setSelectedIds((prev) => setDifficultySelection(model, prev, game, want))
   }
 
-  function onCustomize() {
-    setActiveStation('base')
+  const stationOrder = useMemo(
+    () => stationCycleOrder(visibleStations),
+    [visibleStations],
+  )
+  const activeIndex = stationOrder.indexOf(activeStation)
+  const nextStationSlot =
+    activeIndex >= 0 && activeIndex < stationOrder.length - 1
+      ? (stationOrder[activeIndex + 1] ?? null)
+      : null
+  const canGoNext =
+    nextStationSlot != null && (activeStation !== 'engine' || !!game)
+  const currentFinished = finishedStations.has(activeStation)
+
+  function goNextStation() {
+    if (!canGoNext || !nextStationSlot) return
+    setFinishedStations((prev) => {
+      const next = new Set(prev)
+      next.add(activeStation)
+      return next
+    })
+    setActiveStation(nextStationSlot)
     clearFocus()
   }
 
@@ -429,6 +452,7 @@ export default function App() {
           game={game}
           activeStation={activeStation}
           visibleStations={visibleStations}
+          finishedStations={finishedStations}
           onSelectEngine={selectEngine}
           onSelectStation={selectStation}
         />
@@ -454,7 +478,8 @@ export default function App() {
                     difficulty={difficultyPreset}
                     onLadderToggle={onLadderToggle}
                     onDifficultyChange={onDifficultyPresetChange}
-                    onCustomize={onCustomize}
+                    canGoNext={canGoNext}
+                    onNext={goNextStation}
                   />
                   {warnings.length > 0 && (
                     <details className="warnings">
@@ -470,7 +495,24 @@ export default function App() {
               ) : (
                 <>
                   <div className="list-pane-header">
-                    <h2>{STATION_LABELS[activeStation]}</h2>
+                    <div className="list-pane-header-title">
+                      <h2>
+                        {STATION_LABELS[activeStation]}
+                        {currentFinished && (
+                          <span className="station-finished-mark" aria-label="Finished">
+                            ✓
+                          </span>
+                        )}
+                      </h2>
+                      <button
+                        type="button"
+                        className="btn next-station-btn"
+                        disabled={!canGoNext}
+                        onClick={goNextStation}
+                      >
+                        Next {'>>'}
+                      </button>
+                    </div>
                     <p className="lede">
                       {stationDesc ?? 'Tick what you want on this stop. Switch stations anytime.'}
                     </p>

@@ -132,6 +132,10 @@ body {
 }
 
 .station-nav button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
   text-align: left;
   background: transparent;
   border: 1px solid transparent;
@@ -146,6 +150,20 @@ body {
   flex-shrink: 0;
 }
 
+.station-nav-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.station-finished-mark {
+  flex-shrink: 0;
+  color: var(--accent);
+  font-size: 0.85em;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .station-nav button:hover:not(:disabled) {
   background: var(--accent-soft);
 }
@@ -155,6 +173,14 @@ body {
   border-right-color: var(--accent);
   background: var(--accent-soft);
   color: var(--ink);
+}
+
+.station-nav button.finished {
+  background: color-mix(in srgb, var(--accent) 18%, var(--panel));
+}
+
+.station-nav button.finished.active {
+  background: color-mix(in srgb, var(--accent) 28%, var(--accent-soft));
 }
 
 .station-nav button:disabled {
@@ -491,9 +517,24 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
-.list-pane-header h2 {
+.list-pane-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.list-pane-header-title h2 {
   margin: 0;
   font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.list-pane-header-title .next-station-btn {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .list-pane-header .lede {
@@ -614,7 +655,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  align-items: flex-start;
+  align-items: stretch;
+}
+
+.engine-preselect .next-station-btn {
+  align-self: flex-end;
+  min-width: 10rem;
+  padding: 0.7rem 1.25rem;
+  font-size: 1rem;
 }
 
 .level-preselect {
@@ -689,12 +737,6 @@ body {
   font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.25;
-}
-
-.engine-preselect .customize-btn {
-  min-width: 10rem;
-  padding: 0.7rem 1.25rem;
-  font-size: 1rem;
 }
 
 /* —— Component tree —— */
