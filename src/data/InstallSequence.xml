@@ -39,10 +39,8 @@
 			<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU" label="Improved Cheat Menu" alwaysIf="A7-HIDDENGAMEPLAYOPTIONS-INSTALL_ALL" noDisplay="1" />
 		</mod>
 		<component id="B3-BubbsSpellMenuExtended-Main" label="Bubb's Spell Menu Extended" modId="Bubbs-Spell-Menu-Extended" />
-		<mod modId="A7-LevelUpTweaks" engine="pst">
-			<component id="A7-LEVELUPTWEAKS-MAIN" label="Enable Level Up icon activation switch in baldur.lua" core="1" />
-			<component id="A7-LEVELUPTWEAKS-ICON_IN_PORTRAIT" label="Move Level Up icon into character portrait" />
-		</mod>
+		<component id="A7-LEVELUPTWEAKS-MAIN" label="Enable Level Up icon activation switch in baldur.lua" core="1" modId="A7-LevelUpTweaks" engine="pst" />
+		<component id="A7-LEVELUPTWEAKS-ICON_IN_PORTRAIT" label="Move Level Up icon into character portrait" modId="A7-LevelUpTweaks" engine="pst" />
 		<component id="A7-RESIZEABLECOMBATLOG-MAIN" label="Freely resizeable combat log"  modId="A7-ResizeableCombatLog" engine="pst" />
 		<component id="A7_MISCTWEAKS_CUSTOMIZED_CIRCLE_PSTEE_TRANSLUCENT" label="Make selection circles translucent"  modId="A7-MiscTweaks" engine="pst" />
 		<component id="A7_MISCTWEAKS_BREAKABLE_CUTSCENES_PSTEE" label="Breakable cutscenes" modId="A7-MiscTweaks" engine="pst" />
@@ -852,7 +850,7 @@
 				<component id="L#-Arszyk-IWD" label="Arszyk's Wonderful Decay" desc="NPC (Vampire Neutral Evil Fighter/Druid) and a late-game quest" modId="arszyk" />
 			</quest>
 			<npc label="Joinable NPCs">
-				<custom>
+				<custom label="Custom interactive NPCs">
 					<mod id="IWD_NPC" label="Icewind Dale NPCs Pack">
 						<component id="IWDNPC:0" label="Icewind Dale NPCs Pack" core="1"/>
 						<alternatives label="Change class for Holvir (Human Lawful Good Paladin)">
@@ -910,14 +908,12 @@
 					<component id="GuldrukNPC:0" label="Guldruk - Half-Orc Neutral Evil Fighter" modId="IWD-Guldruk-NPC" />
 					<component id="NirikNPC:0" label="Nirik - Half-Orc Chaotic Neutral Barbarian" modId="IWD-Nirik-NPC" />
 					<component id="Vito:0" label="Vito - Kenku Lawful Neutral Diviner" modId="vito" />
-					<mod id="IWD-Athanasios-NPC" label="Athanasios - Halfing Chaotic Good Priest of Tempus">
-						<alternatives>
-							<component id="AthanasiosNPC:0" label="Athanasios NPC" modId="IWD-Athanasios-NPC" core="1" />
-							<component id="AthanasiosNPC:1" label="Change class to Fighter/Cleric" modId="IWD-Athanasios-NPC" />
-						</alternatives>
-					</mod>
+					<alternatives label="Athanasios - Halfing Chaotic Good Priest of Tempus">
+						<component id="AthanasiosNPC:0" label="Athanasios NPC" modId="IWD-Athanasios-NPC" core="1" />
+						<component id="AthanasiosNPC:1" label="Change class to Fighter/Cleric" modId="IWD-Athanasios-NPC" />
+					</alternatives>
 				</custom>
-				<banters>
+				<banters label="Banters">
 					<mod id="iwdcrossmod" label="Icewind Dale Crossmod Banter Pack">
 						<alternatives label="Install Banter Pack with the minimum delay between banters:" core="1">
 							<component id="cd_crossmod_banter_pack_iwd_banter_timer_15" label="15 minutes" default="1"/>
@@ -929,11 +925,11 @@
 					</mod>
 				</banters>
 			</npc>
-			<tweaks>
+			<tweaks label="Tweaks">
 				<component id="HouseTweaks:25" label="Reputation Bonuses" modId="House-Rule-Tweaks" level="blendWell" />
 			</tweaks>
 			<items label="Items">
-				<add noBranches="1">
+				<add label="New items" noBranches="1">
 					<component id="L#-FINDIT-IWD" label="FindIt Item Pack" modId="findit-iwd" />
 					<component id="stratagems:3510" label="Wider availability of wizard spell scrolls in Icewind Dale" modId="SwordCoastStratagems" />
 					<component id="ee_cosmetic_enhancements:2" label="Add Bhaal's Fire and Benorg's Truth into loot tables" modId="EE_Cosmetic_Item_Enhancement" />
@@ -947,7 +943,7 @@
 						<component id="Frostforged:2" label="Key Ring" />
 					</mod>
 				</add>
-				<upgrade>
+				<upgrade label="Item upgrades">
 					<mod id="forgeit-iwd" label="ForgeIt - Forgeable artifacts">
 						<component id="L#-FORGEIT-IWD-MAIN" label="Main Component" core="1" />
 						<component id="L#-FORGEIT-IWD-CDSCALE" label="Improved Icasaracht Armor for IWD EE" />
@@ -972,11 +968,9 @@
 				</mod>
 			</quest>
 			<items label="Items">
-				<add>
-					<mod modId="A7-BagsOfTorment" engine="pst">
-						<component id="A7-BAGSOFTORMENT-MAIN" label="Bags of Torment - Containers for PST:EE" />
-						<component id="A7-BAGSOFTORMENT-INCREASE_CAPACITY" label="Bags of Torment - Increase storage capacity of containers" />
-					</mod>
+				<add label="New items">
+					<component id="A7-BAGSOFTORMENT-MAIN" label="Bags of Torment - Containers for PST:EE" modId="A7-BagsOfTorment" />
+					<component id="A7-BAGSOFTORMENT-INCREASE_CAPACITY" label="Bags of Torment - Increase storage capacity of containers" modId="A7-BagsOfTorment" />
 				</add>
 			</items>
 			<tweaks label="Tweaks">
@@ -1068,7 +1062,7 @@
 		</common>
 		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<npc label="Joinable NPCs">
-				<tweaks>
+				<tweaks label="Tweaks">
 					<component id="cd_tweaks_happy_neutrals" label="Neutral Characters Make Happy Comments at Mid-Range Reputation" modId="Tweaks-Anthology" />
 					<component id="cd_tweaks_tob_style_npcs" label="ToB-Style NPCs" desc="Alter all joinable NPCs to immediately level-up upon joining, with a caveat: all creature files are moved down to their lowest experience version" modId="Tweaks-Anthology" />
 					<alternatives label="Banter Accelerator">
@@ -1830,7 +1824,7 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 
 	-->
 
-	<adjustements>
+	<adjustements engine="bg,eet">
 		<component id="cd_tweaks_remove_xp_cap" label="Remove total experience cap" modId="Tweaks-Anthology" />
 		<alternatives label="Limit XP in BG1" engine="eet">
 			<component id="EET_Tweaks:2011" label="161,000 (default)" modId="EET_Tweaks"/>

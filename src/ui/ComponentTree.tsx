@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type MouseEvent,
+} from 'react'
 import type { TreeNode } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { displaySelectionState } from '../lib/selection/selectionEngine'
@@ -56,6 +62,7 @@ function CheckboxRow({
   depth,
   expandedKeys,
   onToggleExpand,
+  exclusiveGroupKey,
 }: {
   display: DisplayNode
   selectedIds: ReadonlySet<string>
@@ -66,6 +73,8 @@ function CheckboxRow({
   depth: number
   expandedKeys: ReadonlySet<string>
   onToggleExpand: (key: string) => void
+  /** When set, this row is a mutually exclusive option under an alternatives parent. */
+  exclusiveGroupKey?: string
 }) {
   const { node, collapsedComponent, children } = display
   const state = displaySelectionState(display, selectedIds, game)
@@ -73,12 +82,16 @@ function CheckboxRow({
   const foldable = children.length > 0
   const expanded = foldable && expandedKeys.has(node.key)
   const focused = focusedKey === node.key
+  const isAlternatives = node.kind === 'alternatives'
+  const isExclusiveOption = exclusiveGroupKey != null
+  // Exclusive branch radios light up for any selection under the option (incl. partial).
+  const checked = isExclusiveOption ? state !== 'unchecked' : state === 'checked'
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && !isExclusiveOption) {
       inputRef.current.indeterminate = state === 'indeterminate'
     }
-  }, [state])
+  }, [state, isExclusiveOption])
 
   const label =
     node.attrs.label ??
@@ -98,6 +111,23 @@ function CheckboxRow({
   function handleRowActivate() {
     onFocus(node.key)
   }
+
+  function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
+    onFocus(node.key)
+    onToggle(display, e.target.checked)
+  }
+
+  function handleInputClick(e: MouseEvent<HTMLInputElement>) {
+    e.stopPropagation()
+    // Radios don't fire change when re-clicking the selected option; allow deselect.
+    if (isExclusiveOption && checked) {
+      e.preventDefault()
+      onFocus(node.key)
+      onToggle(display, false)
+    }
+  }
+
+  const childExclusiveKey = isAlternatives ? node.key : undefined
 
   return (
     <div className="tree-node" style={{ marginLeft: depth * 16 }}>
@@ -121,16 +151,15 @@ function CheckboxRow({
         <div className="tree-row">
           <input
             ref={inputRef}
-            type="checkbox"
-            checked={state === 'checked'}
+            type={isExclusiveOption ? 'radio' : 'checkbox'}
+            name={isExclusiveOption ? exclusiveGroupKey : undefined}
+            checked={checked}
             aria-label={label}
-            onChange={(e) => {
-              onFocus(node.key)
-              onToggle(display, e.target.checked)
-            }}
-            onClick={(e) => e.stopPropagation()}
+            onChange={handleInputChange}
+            onClick={handleInputClick}
           />
           <span className="tree-label">{label}</span>
+          {isAlternatives && <span className="badge">choose one</span>}
           {level && (
             <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
@@ -150,6 +179,7 @@ function CheckboxRow({
             depth={depth + 1}
             expandedKeys={expandedKeys}
             onToggleExpand={onToggleExpand}
+            exclusiveGroupKey={childExclusiveKey}
           />
         ))}
     </div>

@@ -876,14 +876,67 @@ body {
   font-style: italic;
 }
 
+.detail-url {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1px;
+  transition: color 0.12s ease;
+  word-break: break-all;
+}
+
+.detail-url:visited {
+  color: #a67c52;
+}
+
+.detail-url:hover {
+  color: var(--ink);
+}
+
+.detail-url:active {
+  color: color-mix(in srgb, var(--accent) 70%, #000);
+}
+
 .detail-relations {
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.detail-relation-section {
+  margin: 0;
+}
+
+.detail-relation-heading {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0.01em;
 }
 
 .detail-relation-list {
-  line-height: 1.45;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.detail-relation-item {
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.detail-relation-item:nth-child(even) {
+  background: color-mix(in srgb, var(--line) 35%, transparent);
 }
 
 .detail-relation-link {

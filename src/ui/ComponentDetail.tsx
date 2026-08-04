@@ -39,7 +39,7 @@ function resolveLabel(node: TreeNode, collapsed?: ComponentNode): string {
   )
 }
 
-function RelationRow({
+function RelationSection({
   label,
   refs,
   onNavigate,
@@ -49,12 +49,11 @@ function RelationRow({
   onNavigate?: (componentId: string) => void
 }) {
   return (
-    <>
-      <dt>{label}</dt>
-      <dd className="detail-relation-list">
-        {refs.map((ref, i) => (
-          <span key={ref.id}>
-            {i > 0 && ', '}
+    <section className="detail-relation-section">
+      <h4 className="detail-relation-heading">{label}</h4>
+      <ul className="detail-relation-list">
+        {refs.map((ref) => (
+          <li key={ref.id} className="detail-relation-item">
             {ref.navigable && onNavigate ? (
               <button
                 type="button"
@@ -66,10 +65,10 @@ function RelationRow({
             ) : (
               <span>{ref.label}</span>
             )}
-          </span>
+          </li>
         ))}
-      </dd>
-    </>
+      </ul>
+    </section>
   )
 }
 
@@ -136,13 +135,18 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
       <dl className="detail-meta">
         {codename && (
           <>
-            <dt>Codename</dt>
+            <dt>Mod</dt>
             <dd>{codename}</dd>
             {mod?.url && (
               <>
                 <dt>URL</dt>
                 <dd>
-                  <a href={mod.url} target="_blank" rel="noopener noreferrer">
+                  <a
+                    className="detail-url"
+                    href={mod.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {mod.url}
                   </a>
                 </dd>
@@ -184,12 +188,12 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
         )}
       </dl>
       {hasRelations && (
-        <dl className="detail-meta detail-relations">
+        <div className="detail-relations">
           {RELATION_ROWS.map(({ key, label: rowLabel }) => {
             const refs = relations[key]
             if (refs.length === 0) return null
             return (
-              <RelationRow
+              <RelationSection
                 key={key}
                 label={rowLabel}
                 refs={refs}
@@ -197,7 +201,7 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
               />
             )
           })}
-        </dl>
+        </div>
       )}
     </article>
   )
