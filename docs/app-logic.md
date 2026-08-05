@@ -204,7 +204,7 @@ Fixed-viewport desktop shell (`100vh`, page does not scroll):
 1. **Top bar** — brand, current engine badge, selection count, Export
 2. **Station rail** — left edge rail with upright labels stacked top-to-bottom (Engine first, then visible content stations); scrolls vertically if needed
 3. **Level selection strip** — mass-check presets by ladder ranks + independent Lower / Higher difficulty (writes `selectedIds`; independent of Filters)
-4. **Filters strip** — search plus Level / Stability / Tags / Size / Author / Hidden / Required controls (display-only; never clears selection)
+4. **Filters strip** — search plus Level / Stability / Tags / Size / Author / Hidden / Required / Unchecked only controls (display-only; never clears selection)
 5. **Workspace** — dense component list (left) + detail panel (right). On the Engine station the detail column is hidden and the game picker uses full width
 
 Filters and workspace sit to the right of the station rail under the top bar.
@@ -239,6 +239,7 @@ Filters run **after** `buildDisplayTree` and only affect what is shown. Checked 
 | Author    | Checklist of authors with more than 2 mods in `mods.csv`, plus **Include selected** / **Exclude selected**. Include + all listed selected = inactive (unlisted authors still shown). Exclude + empty = inactive                                                                                                                                               | all listed authors; Include             |
 | Hidden    | Show / Hide / Only for `noDisplay`                                                                                                                                                                                                                                                                                                                            | **Hide**                                |
 | Required  | Show / Hide / Only for `required`                                                                                                                                                                                                                                                                                                                             | **Hide**                                |
+| Unchecked only | When on, hide fully checked rows. Entire `<alternatives>` groups stay visible (including the checked option) so choices can still be switched. Display-only; selection and export unchanged.                                                                                                                                                                | off                                     |
 
 
 Level filter ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `quality`. Token `restructure` shares the Well blended bucket. Unleveled nodes are treated as above the ladder and hidden when filtering by level.

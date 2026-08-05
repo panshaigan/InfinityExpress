@@ -68,6 +68,7 @@ export function FiltersStrip({
   const sizeActive = isSizeFilterActive(criteria, sizeBounds)
   const authorActive = isAuthorFilterActive(criteria, authorNames)
   const hiddenActive = criteria.showHidden
+  const uncheckedOnlyActive = criteria.uncheckedOnly
 
   function patch(partial: Partial<FilterCriteria>) {
     onChange({ ...criteria, ...partial })
@@ -357,6 +358,15 @@ export function FiltersStrip({
           onClick={() => patch({ showHidden: !criteria.showHidden })}
         >
           Show hidden components
+        </button>
+
+        <button
+          type="button"
+          className={`filter-chip${uncheckedOnlyActive ? ' active' : ''}`}
+          aria-pressed={uncheckedOnlyActive}
+          onClick={() => patch({ uncheckedOnly: !criteria.uncheckedOnly })}
+        >
+          Unchecked only
         </button>
 
         {active && (

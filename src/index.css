@@ -831,6 +831,7 @@ body {
   border-radius: 4px;
   padding: 0.1rem 0.25rem 0.1rem 0;
   outline: none;
+  user-select: none;
 }
 
 .tree-row-wrap.focused {

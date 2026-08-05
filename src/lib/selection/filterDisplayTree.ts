@@ -7,8 +7,10 @@ import {
 import {
   isComponentNode,
   type InstallSequenceModel,
+  type SelectedGame,
   type TreeNode,
 } from '../xml/schema'
+import { displaySelectionState } from './selectionEngine'
 import type { DisplayNode } from './visibility'
 
 /** Sentinel / normalized token for missing or explicit released stability. */
@@ -28,6 +30,11 @@ export interface FilterCriteria {
    * When true, show both alongside other components.
    */
   showHidden: boolean
+  /**
+   * When true, hide fully checked rows. Entire `<alternatives>` groups stay
+   * visible (including checked options) so the user can still switch choices.
+   */
+  uncheckedOnly: boolean
   /** Allow-list of tag tokens (all discovered tags checked by default). */
   tags: ReadonlySet<string>
   /**
@@ -54,6 +61,12 @@ export interface FilterModContext {
   modsByCodename: ReadonlyMap<string, ModInfo>
 }
 
+/** Selection context for the unchecked-only display filter. */
+export interface FilterSelectionContext {
+  selectedIds: ReadonlySet<string>
+  game: SelectedGame
+}
+
 export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   search: '',
   maxLevel: null,
@@ -61,6 +74,7 @@ export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   includeLowerDifficulty: true,
   includeHigherDifficulty: true,
   showHidden: false,
+  uncheckedOnly: false,
   tags: new Set(),
   tagsOnlyChecked: false,
   sizeMinBytes: null,
@@ -163,6 +177,7 @@ export function isFilterActive(
     criteria.includeLowerDifficulty !== defaults.includeLowerDifficulty ||
     criteria.includeHigherDifficulty !== defaults.includeHigherDifficulty ||
     criteria.showHidden !== defaults.showHidden ||
+    criteria.uncheckedOnly !== defaults.uncheckedOnly ||
     criteria.tagsOnlyChecked !== defaults.tagsOnlyChecked ||
     !setsEqual(criteria.tags, defaults.tags) ||
     isSizeFilterActive(criteria, extras.sizeBounds ?? null) ||
@@ -290,26 +305,61 @@ function leafMatchesCriteria(
 /**
  * Prune display tree by filter criteria. Keep ancestors when any descendant matches.
  * Leaf / collapsed rows must match; containers stay only as scaffolding for matches.
+ *
+ * When `uncheckedOnly` is on, fully checked rows are dropped except under
+ * `<alternatives>`, which stay fully visible (including checked options).
  */
 export function filterDisplayTree(
   nodes: DisplayNode[],
   criteria: FilterCriteria,
   ctx?: FilterModContext,
   seed: Omit<FilterSeedOptions, 'tagOptions'> = {},
+  selection?: FilterSelectionContext,
+  options: { skipSelectionFilter?: boolean } = {},
 ): DisplayNode[] {
   const result: DisplayNode[] = []
+  const applySelection =
+    criteria.uncheckedOnly && !options.skipSelectionFilter && selection != null
 
   for (const display of nodes) {
-    const isLeaf = display.children.length === 0 || Boolean(display.collapsedComponent)
-
-    if (isLeaf) {
-      if (leafMatchesCriteria(display, criteria, ctx, seed)) {
-        result.push({ ...display, children: [] })
+    if (applySelection && display.node.kind === 'alternatives') {
+      const filteredChildren = filterDisplayTree(
+        display.children,
+        criteria,
+        ctx,
+        seed,
+        selection,
+        { skipSelectionFilter: true },
+      )
+      if (filteredChildren.length > 0) {
+        result.push({ ...display, children: filteredChildren })
       }
       continue
     }
 
-    const filteredChildren = filterDisplayTree(display.children, criteria, ctx, seed)
+    const isLeaf = display.children.length === 0 || Boolean(display.collapsedComponent)
+
+    if (isLeaf) {
+      if (!leafMatchesCriteria(display, criteria, ctx, seed)) continue
+      if (
+        applySelection &&
+        displaySelectionState(display, selection.selectedIds, selection.game) ===
+          'checked'
+      ) {
+        continue
+      }
+      result.push({ ...display, children: [] })
+      continue
+    }
+
+    const filteredChildren = filterDisplayTree(
+      display.children,
+      criteria,
+      ctx,
+      seed,
+      selection,
+      options,
+    )
     if (filteredChildren.length > 0) {
       result.push({ ...display, children: filteredChildren })
     }

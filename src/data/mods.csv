@@ -14,21 +14,21 @@
 "Bg2Dorn","NPC","https://github.com/trinit2/Bg2Dorn","BG2",,,"2022-05-01","ece4aad","6595920","trinit",
 "gorgon","QUEST","https://github.com/TotalMilk90/gorgon","BG1",,,"2024-09-28","v4.8","29290545","TotalMilk90",
 "BGEE-Graphics-Enhanced","GFX","https://github.com/TheForgotten69/BGEE-Graphics-Enhanced","BG1",,,"2025-09-29","v0.2.0","1871378741","TheForgotten69",
-"The-Artisan-s-Kitpack","KITS","https://github.com/TheArtisanBG/The-Artisan-s-Kitpack","BG1-BG2-IWD","1",,"2026-05-31","85928f9","117706558","TheArtisan",
-"SoAExtended","QUEST","https://github.com/TheArtisanBG/SoAExtended","BG2","1",,"2026-06-07","6b98641","1377781","TheArtisan",
-"Rasaad-Expansion-BG1","NPC","https://github.com/TheArtisanBG/Rasaad-Expansion-BG1","BG1","1",,"2026-02-27","b71f3d1","1291781","TheArtisan",
-"MinervaNPC","NPC","https://github.com/TheArtisanBG/MinervaNPC","IWD","1",,"2026-04-26","d3d4e57","26476932","TheArtisan",
-"KarihiNPC","NPC","https://github.com/TheArtisanBG/KarihiNPC","IWD","1",,"2026-02-06","7478ae3","8699125","TheArtisan",
-"IWDEE-Frostforged","ITEMS","https://github.com/TheArtisanBG/IWDEE-Frostforged","IWD","1",,"2025-09-25","1652f9d","1988522","TheArtisan",
-"IWD-Nirik-NPC","NPC","https://github.com/TheArtisanBG/IWD-Nirik-NPC","IWD","1",,"2025-04-11","2a1e9a9","3149428","TheArtisan",
-"IWD-Guldruk-NPC","NPC","https://github.com/TheArtisanBG/IWD-Guldruk-NPC","IWD","1",,"2025-04-11","1522ddb","3731955","TheArtisan",
-"IWD-Athanasios-NPC","NPC","https://github.com/TheArtisanBG/IWD-Athanasios-NPC","IWD","1",,"2025-04-11","035784e","3609155","TheArtisan",
-"HoWMod","TWEAKS","https://github.com/TheArtisanBG/HoWMod","IWD","1",,"2024-12-25","7c87f9c","1374305","TheArtisan",
-"House-Rule-Tweaks","TWEAKS","https://github.com/TheArtisanBG/House-Rule-Tweaks","BG1-BG2-IWD","1",,"2026-05-29","2a9bdef","65928556","TheArtisan",
-"Drake","NPC","https://github.com/TheArtisanBG/Drake","BG1","1",,"2026-02-01","9ea5fa1","26557003","TheArtisan",
-"Candlekeep-Revisited","QUEST","https://github.com/TheArtisanBG/Candlekeep-Revisited","BG1",,,"2026-04-07","97bb6d3","7973031","TheArtisan",
-"Bardic-Wonders","KITS","https://github.com/TheArtisanBG/Bardic-Wonders","BG1-BG2-IWD","1",,"2026-05-31","4e72d97","32833478","TheArtisan",
-"Artisans-Shaman-Tweaks","TWEAKS","https://github.com/TheArtisanBG/Artisans-Shaman-Tweaks","BG1-BG2-IWD","1",,"2024-07-17","a442c97","1179864","TheArtisan",
+"The-Artisan-s-Kitpack","KITS","https://github.com/TheArtisanBG/The-Artisan-s-Kitpack","BG1-BG2-IWD","1",,"2026-05-31","85928f9","117706558","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/kitpack"
+"SoAExtended","QUEST","https://github.com/TheArtisanBG/SoAExtended","BG2","1",,"2026-06-07","6b98641","1377781","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/soaextended"
+"Rasaad-Expansion-BG1","NPC","https://github.com/TheArtisanBG/Rasaad-Expansion-BG1","BG1","1",,"2026-02-27","b71f3d1","1291781","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/rasaad-bg1.html"
+"MinervaNPC","NPC","https://github.com/TheArtisanBG/MinervaNPC","IWD","1",,"2026-04-26","d3d4e57","26476932","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/iwdnpcs"
+"KarihiNPC","NPC","https://github.com/TheArtisanBG/KarihiNPC","IWD","1",,"2026-02-06","7478ae3","8699125","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/iwdnpcs"
+"IWDEE-Frostforged","ITEMS","https://github.com/TheArtisanBG/IWDEE-Frostforged","IWD","1",,"2025-09-25","1652f9d","1988522","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/frostforged"
+"IWD-Nirik-NPC","NPC","https://github.com/TheArtisanBG/IWD-Nirik-NPC","IWD","1",,"2025-04-11","2a1e9a9","3149428","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/iwdnpcs"
+"IWD-Guldruk-NPC","NPC","https://github.com/TheArtisanBG/IWD-Guldruk-NPC","IWD","1",,"2025-04-11","1522ddb","3731955","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/iwdnpcs"
+"IWD-Athanasios-NPC","NPC","https://github.com/TheArtisanBG/IWD-Athanasios-NPC","IWD","1",,"2025-04-11","035784e","3609155","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/iwdnpcs"
+"HoWMod","TWEAKS","https://github.com/TheArtisanBG/HoWMod","IWD","1",,"2024-12-25","7c87f9c","1374305","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/minimods"
+"House-Rule-Tweaks","TWEAKS","https://github.com/TheArtisanBG/House-Rule-Tweaks","BG1-BG2-IWD","1",,"2026-05-29","2a9bdef","65928556","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/housetweaks"
+"Drake","NPC","https://github.com/TheArtisanBG/Drake","BG1","1",,"2026-02-01","9ea5fa1","26557003","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/drake-bg1"
+"Candlekeep-Revisited","QUEST","https://github.com/TheArtisanBG/Candlekeep-Revisited","BG1",,,"2026-04-07","97bb6d3","7973031","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/candlere"
+"Bardic-Wonders","KITS","https://github.com/TheArtisanBG/Bardic-Wonders","BG1-BG2-IWD","1",,"2026-05-31","4e72d97","32833478","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/bardic-wonders"
+"Artisans-Shaman-Tweaks","TWEAKS","https://github.com/TheArtisanBG/Artisans-Shaman-Tweaks","BG1-BG2-IWD","1",,"2024-07-17","a442c97","1179864","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/minimods"
 "NeeraBanters","NPC","https://github.com/The-Gate-Project/NeeraBanters","BG1",,,"2024-11-19","v0.9.3","4540570","AstroBryGuy",
 "JaheiraRecast","SOUND","https://github.com/The-Gate-Project/JaheiraRecast","BG1-BG2",,,"2024-07-09","3.2","11831987","AstroBryGuy",
 "IWD2_EET","QUEST","https://github.com/The-Gate-Project/IWD2_EET","BG2",,,"2026-05-09","57a934b","1345415086","tipun",
@@ -80,7 +80,7 @@
 "BGSpawn","TWEAKS","https://github.com/Spellhold-Studios/BGSpawn","BG1",,,"2025-05-19","1.3.4","144700643","melkor_morgoth75",
 "Baldurs-Gate-Graphical-Overhaul","GFX","https://github.com/Spellhold-Studios/Baldurs-Gate-Graphical-Overhaul","BG1-BG2",,,"2026-03-21","v3.6","1554582660","Yovaneth, White Agnus, Weigo",
 "Arnel-Nalia-Romance-Revision","NPC-EXPANSION","https://github.com/Spellhold-Studios/Arnel-Nalia-Romance-Revision","BG2",,,"2024-12-15","v2.0.0","3091834","Arnel ",
-"Almateria-Restoration-Project","QUEST","https://github.com/Spellhold-Studios/Almateria-Restoration-Project","BG2",,,"2024-12-03","v10.1","1830679","Almateria",
+"Almateria-Restoration-Project","QUEST","https://github.com/Spellhold-Studios/Almateria-Restoration-Project","BG2",,,"2024-12-03","v10.1","1830679","Almateria","https://mods.shsforums.net/readmes/almateria-restoration-project/readme-arp-english.html"
 "Adrian-NPC","NPC","https://github.com/Spellhold-Studios/Adrian-NPC","BG2",,,"2023-06-15","v6.1","15071512","Rhaella, Kaeloree",
 "AC-Miscellaneous-Tweaks","TWEAKS/GFX","https://github.com/Spellhold-Studios/AC-Miscellaneous-Tweaks","BG1-BG2",,,"2024-02-02","v1.25","48009673","Andrea C ",
 "Portraits-Portraits-Everywhere","GFX","https://github.com/smeagolheart/Portraits-Portraits-Everywhere","IWD",,,"2018-04-16","54c94e7","496059933","smeagolheart",

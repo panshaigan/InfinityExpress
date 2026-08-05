@@ -182,8 +182,9 @@ export default function App() {
       filters,
       { model, modsByCodename },
       filterSeed,
+      { selectedIds, game },
     )
-  }, [activeStation, filters, game, model, selectedIds])
+  }, [activeStation, filters, game, model, modsByCodename, selectedIds])
 
   const stationDesc = useMemo(() => {
     if (activeStation === 'engine') return undefined

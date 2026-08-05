@@ -15,6 +15,7 @@ import {
 } from '../selection/filterDisplayTree'
 import { parseInstallSequence } from '../xml/parseInstallSequence'
 import type { DisplayNode } from '../selection/visibility'
+import { buildDisplayTree } from '../selection/visibility'
 import type { ComponentNode, InstallSequenceModel, TreeNode } from '../xml/schema'
 import type { ModInfo } from '../mods/loadMods'
 
@@ -554,5 +555,98 @@ describe('filterDisplayTree size and author', () => {
         ),
       ),
     ).toEqual(['s', 'm', 'b', 'orphan'])
+  })
+})
+
+describe('uncheckedOnly filter', () => {
+  const XML = `<?xml version="1.0"?>
+<installSequence>
+  <base label="Base" engine="bg1">
+    <mod id="Plain" label="Plain">
+      <component id="plain:a" label="Alpha" />
+      <component id="plain:b" label="Beta" />
+      <component id="plain:c" label="Gamma" />
+    </mod>
+    <alternatives label="Pick one">
+      <component id="alt:1" label="Option One" default="1" />
+      <component id="alt:2" label="Option Two" />
+      <component id="alt:3" label="Option Three" />
+    </alternatives>
+  </base>
+</installSequence>`
+
+  const { model } = parseInstallSequence(XML)
+  const base = model.stations.find((s) => s.stationId === 'base')!
+  const built = buildDisplayTree(base.children, {
+    game: 'bg1',
+    selectedIds: new Set(),
+  })
+
+  it('hides fully checked leaves and keeps unchecked siblings', () => {
+    const selected = new Set(['plain:a'])
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedOnly: true }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual(['plain:b', 'plain:c', 'alt:1', 'alt:2', 'alt:3'])
+  })
+
+  it('keeps entire alternatives group when one option is checked', () => {
+    const selected = new Set(['alt:1', 'plain:a', 'plain:b', 'plain:c'])
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedOnly: true }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual(['alt:1', 'alt:2', 'alt:3'])
+    const alts = out.find((d) => d.node.kind === 'alternatives')
+    expect(alts?.children.map((c) => (c.node as ComponentNode).componentId)).toEqual([
+      'alt:1',
+      'alt:2',
+      'alt:3',
+    ])
+  })
+
+  it('still applies search inside alternatives when uncheckedOnly is on', () => {
+    const selected = new Set(['alt:1'])
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedOnly: true, search: 'Two' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual(['alt:2'])
+  })
+
+  it('indeterminate parent keeps unchecked siblings', () => {
+    const selected = new Set(['plain:a'])
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedOnly: true }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    const plain = out.find((d) => d.node.attrs.label === 'Plain')
+    expect(plain).toBeDefined()
+    expect(ids([plain!])).toEqual(['plain:b', 'plain:c'])
+  })
+
+  it('off by default: checked leaves remain visible', () => {
+    const selected = new Set(['plain:a', 'alt:1'])
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedOnly: false }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual(['plain:a', 'plain:b', 'plain:c', 'alt:1', 'alt:2', 'alt:3'])
   })
 })
