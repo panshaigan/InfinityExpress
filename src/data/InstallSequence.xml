@@ -1784,6 +1784,10 @@
 		<component id="AutoLoot:0" label="Bubb's Auto Loot" modId="AutoLoot" />
 		<component id="buffbot:0" label="BuffBot: In-Game Buff Automation" modId="bg-eeex-buffbot" />
 		<component id="cd_tweaks_restored_loading_hints" label="Restored Loading Hints" modId="Tweaks-Anthology" />
+		<group label="Savegames tweaks">
+			<component id="cd_tweaks_personalize_savename_opt6" label="Use save filenames scheme: 000000000-[Protagonist] Save-Name" level="vanillaPlus" engine="bg,eet,iwd,pst" />
+			<component id="cd_tweaks_create_interval_four_saves_15" label="Interval saves every 15 minutes" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+		</group>
 		<mod id="A7-HiddenGameplayOptions" label="Reveal Hidden Gameplay Options" engine="bg,eet,iwd,pst">
 			<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU" label="Improved Cheat Menu" />
 			<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU_UPDATE" label="Update resource tables for Improved Cheat Menu" modId="A7-HiddenGameplayOptions" />
@@ -2050,16 +2054,15 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 				<component id="cd_tweaks_shopkeeper_id_lore" label="Identification ability is limited to storekeeper's lore" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" desc="Any storekeeper can identify items up to their personal lore value, regardless of class." />
 				<component id="cd_tweaks_lore_for_gems_potions" label="Gems and Potions Require Identification" modId="Tweaks-Anthology" level="higherDifficulty" engine="bg,eet,iwd" />
 			</group>
-			<component id="cd_tweaks_id_all_items" label="Identify All Items" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_id_all_items" label="Identify All Items" modId="Tweaks-Anthology" level="lowerDifficulty" />
 		</alternatives>
-		<component id="cd_tweaks_no_traps_or_locks" label="Remove traps completely" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
-		<component id="cd_tweaks_stores_buy_all_items" label="Stores Purchase All Item Types" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
-		<component id="cd_tweaks_no_store_depreciation" label="No Depreciation in Stores" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
-		<component id="cd_tweaks_recover_ammo_25_enemy_only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" />
-		<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_no_traps_or_locks" label="Remove traps completely" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
+		<component id="cd_tweaks_stores_buy_all_items" label="Stores Purchase All Item Types" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
+		<component id="cd_tweaks_no_store_depreciation" label="No Depreciation in Stores" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
+		<component id="cd_tweaks_recover_ammo_25_enemy_only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" />
+		<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" />
 
-		<component id="cd_tweaks_personalize_savename_opt6" label="Use save filenames scheme: 000000000-[Protagonist] Save-Name" level="vanillaPlus" engine="bg,eet,iwd,pst" />
-		<component id="cd_tweaks_create_interval_four_saves_15" label="Every 15 minutes (cycle through four saves)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+		
 		<component id="cd_tweaks_force_all_dialogue_to_pause" label="Force All Dialogue to Pause Game" engine="bg,eet,iwd,pst" level="vanillaPlus" />
 		<component id="cd_tweaks_sensible_regeneration_when_traveling" label="Sensible Regeneration When Traveling" engine="bg,eet,iwd,pst" level="extended" />
 		<component id="cd_tweaks_sellable_items" label="Sellable Items" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" level="vanillaPlus" />
