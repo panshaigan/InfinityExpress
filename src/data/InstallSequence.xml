@@ -1028,6 +1028,7 @@
 							<component id="ZSTweaks:1342" label="Make Protector of the Dryads deal +2 damage to orcs, ogres, gnolls, and goblinoids" />
 							<component id="ZSTweaks:1641" label="Make the item creation abilities of vanilla NPCs slightly better" />
 						</mod>
+						<component id="SubtleD_Spell_Tweaks:1351" label="Add Faerie Fire and Slow On Hit to Moonblade" />
 					</group>
 					<component id="stratagems:3010" label="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" modId="SwordCoastStratagems" level="blendWell" />
 					<component id="stratagems:2900" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" modId="SwordCoastStratagems" level="blendWell" />
@@ -1189,10 +1190,10 @@
 				<component id="cd_tweaks_level_locked_scrolls" label="Level-Lock Spell Scrolls" desc="Restrict scrolls possible to use to your caster level+1" level="blendWell" modId="Tweaks-Anthology" />
 				<component id="METweaks:2000" label="Allow cursed scrolls to be used on enemies" modId="Olvyn-Tweaks" />
 				<mod id="TomeAndBlood" label="Tome and Blood: revised specialists and innate metamagic">
-					<component id="TomeAndBlood:40" label="Tome and Blood - Revised Specialists" />
-					<component id="TomeAndBlood:51" label="Tome and Blood - Innate metamagic, learned automatically by everyone" level="vanillaPlus" />
-					<component id="TomeAndBlood:56" label="Tome and Blood - Metamagic: fill sequencers for free" />
-					<component id="TomeAndBlood:66" label="Tome and Blood - Innate Find Familiar" level="vanillaPlus" alwaysIf="TomeAndBlood:51" noDisplay="1"/>
+					<component id="TomeAndBlood:40" label="Revised Specialists" />
+					<component id="TomeAndBlood:51" label="Innate metamagic, learned automatically by everyone" level="vanillaPlus" />
+					<component id="TomeAndBlood:56" label="Metamagic: fill sequencers for free" />
+					<component id="TomeAndBlood:66" label="Innate Find Familiar" level="vanillaPlus" alwaysIf="TomeAndBlood:51" noDisplay="1"/>
 				</mod>
 				<alternatives label="Familiar death consequences">
 					<component id="EET_Tweaks:3020" label="Constitution loss and blocked summoning for 1 week" modId="EET_Tweaks" />
@@ -1236,42 +1237,42 @@
 				<component id="cd_tweaks_ranger_spell_progression_alt" label="BG2-Style Progression (Up To Level Five Spells) for Rangers" modId="Tweaks-Anthology" />
 			</mod>
 			<mod id="Tweaks-Anthology" label="NWN-Style Feats">
-				<component id="cd_tweaks_nwn_disarm" label="Disarm Class Feat for Rogues [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_knockdown" label="Knockdown Class Feat for Fighters and Monks [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_spellcraft_counterspell" label="Spellcaster Skill/Counterspell Class Talent [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_spontaneous_cast" label="Spontaneous Casting for Clerics [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_weapon_finesse" label="Weapon Finesse Class Feat for Thieves [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_dual_wield" label="Dual-Wield Class Feat for Rangers [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn-style_armor_vs_dex" label="NWN-Style Armor vs. Dexterity [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_defensive_roll" label="Defensive Roll Class Feat for Thieves [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_divine_grace_dark_blessing" label="Divine Grace/Dark Blessing Feat for Paladins/Blackguards [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_good_aim" label="Good Aim Racial Feat for Halflings [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_cleave" label="Cleave Class Feat for Fighters and Monks [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_sneakatt_blackguard" label="Sneak Attack Class Feat for Blackguards [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_fearless" label="Fearless Racial Feat for Halflings [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_poison_save" label="Poison Save Class Feat for Assassins [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_planar_turning" label="Planar Turning Class Feat for Clerics/Paladins [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_circle_kick" label="Circle Kick Class Feat for Monks [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_barbarian_rage" label="NWN-style Barbarian Rage [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_revised_archer" label="&quot;Force&quot; the Archer Kit to Use Bows [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_blind_fight" label="Blind Fight Innate Feat for Berserkers [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_dirty_fighting" label="Dirty Fighting Class Feat for Chaotic-Aligned Rogues [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_overwhelming_devastating_critical" label="Overwhelming/Devastating Critical Class Feat for Trueclass Fighters [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_self_concealment" label="Self Concealment Class Feat for Monks [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_parry" label="Parry Mode Kit Feat for Blades and Swashbucklers [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_armored_caster" label="Armored Caster Class Feat for Bards [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_trackless_step" label="Trackless Step Class Feat for Rangers [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_nature_sense" label="Nature Sense Class Feat for Druids [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge Class Feat for Barbarians and Rogues [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_sneakatt_rogue" label="NWN-style Sneak Attack/Crippling Strike Class Feat for Thieves and Stalkers [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_spell_penetration" label="Spell Penetration Class Feat for Spellcasters [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_smite_evil_good" label="Smite Evil/Good Class Feat for Paladins/Blackguards [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_woodland_stride" label="Woodland Stride Class Feat for Druids [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_bane_of_enemies" label="Bane of Enemies Class Feat for Rangers [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_cantrips" label="Cantrips Class Feat for Spellcasters [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion Class Feat for Beastmasters [Luke]" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_opportunist" label="Opportunist Class Feat for Chaotic-Aligned Rogues [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_disarm" label="Disarm Class Feat for Rogues" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_knockdown" label="Knockdown Class Feat for Fighters and Monks" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_spellcraft_counterspell" label="Spellcaster Skill/Counterspell Class Talent" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_spontaneous_cast" label="Spontaneous Casting for Clerics" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_weapon_finesse" label="Weapon Finesse Class Feat for Thieves" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_dual_wield" label="Dual-Wield Class Feat for Rangers" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn-style_armor_vs_dex" label="NWN-Style Armor vs. Dexterity" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_defensive_roll" label="Defensive Roll Class Feat for Thieves" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_divine_grace_dark_blessing" label="Divine Grace/Dark Blessing Feat for Paladins/Blackguards" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_good_aim" label="Good Aim Racial Feat for Halflings" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_cleave" label="Cleave Class Feat for Fighters and Monks" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_sneakatt_blackguard" label="Sneak Attack Class Feat for Blackguards" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_fearless" label="Fearless Racial Feat for Halflings" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_poison_save" label="Poison Save Class Feat for Assassins" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_planar_turning" label="Planar Turning Class Feat for Clerics/Paladins" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_circle_kick" label="Circle Kick Class Feat for Monks" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_barbarian_rage" label="NWN-style Barbarian Rage" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_revised_archer" label="&quot;Force&quot; the Archer Kit to Use Bows" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_blind_fight" label="Blind Fight Innate Feat for Berserkers" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_dirty_fighting" label="Dirty Fighting Class Feat for Chaotic-Aligned Rogues" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_overwhelming_devastating_critical" label="Overwhelming/Devastating Critical Class Feat for Trueclass Fighters" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_self_concealment" label="Self Concealment Class Feat for Monks" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_parry" label="Parry Mode Kit Feat for Blades and Swashbucklers" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_armored_caster" label="Armored Caster Class Feat for Bards" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_trackless_step" label="Trackless Step Class Feat for Rangers" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_nature_sense" label="Nature Sense Class Feat for Druids" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge Class Feat for Barbarians and Rogues" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_sneakatt_rogue" label="NWN-style Sneak Attack/Crippling Strike Class Feat for Thieves and Stalkers" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_spell_penetration" label="Spell Penetration Class Feat for Spellcasters" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_smite_evil_good" label="Smite Evil/Good Class Feat for Paladins/Blackguards" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_woodland_stride" label="Woodland Stride Class Feat for Druids" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_bane_of_enemies" label="Bane of Enemies Class Feat for Rangers" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_cantrips" label="Cantrips Class Feat for Spellcasters" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion Class Feat for Beastmasters" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_opportunist" label="Opportunist Class Feat for Chaotic-Aligned Rogues" modId="Tweaks-Anthology" />
 			</mod>
 		</tweaks>
 	</kits>
@@ -1305,9 +1306,8 @@
 		</add>
 		<update label="Spell corrections" noBranches="1">
 			<!--ac-miscellaneous-breathfix;AC Miscellaneous Tweaks - Dragon Breath Fix-->
-			<component id="cd_iwdification_expanded_polymorph_self" label="Expanded Polymorph Self" modId="iwdification" />
-			<component id="cd_tweaks_make_grease_ignitable" label="Make Grease ignitable [Luke]" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_restoration_no_fatigue" label="Remove Fatigue from Restoration Spells" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_make_grease_ignitable" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" />
+			<component id="cd_tweaks_restoration_no_fatigue" label="Remove Fatigue from Restoration Spells" modId="Tweaks-Anthology" level="lowerDifficulty" />
 			<component id="A7-CHAOSSORCERER-RECREATE_SPELL_LIST" label="Recreate Chaos Weave spell selection lists" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" />
 			<component id="stratagems:2070" label="Spell school adjustements" modId="SwordCoastStratagems" level="blendWell" />
 			<component id="cd_tweaks_0_weight_created_weapons" label="Change Magically Created Weapons to Zero Weight" level="vanillaPlus" modId="Tweaks-Anthology" />
@@ -1319,7 +1319,7 @@
 				<component id="stratagems:2060" label="Rebalancings of slightly-too-powerful spells" />
 				<component id="stratagems:2080" label="Spells increased in power" />
 				<component id="stratagems:3540" label="Inquisitors dispel at 1.5 x their level (not twice their level)" />
-				<component id="stratagems:3551" label="Spells heal or inflict the maximum amount of damage in this range" />
+				<component id="stratagems:3551" label="Spells heal or inflict the maximum amount of damage in this range" level="lowerDifficulty" />
 			</mod>
 			<mod id="SubtleD_Spell_Tweaks" label="SubtleD's Spell Tweaks" level="blendWell">
 				<component id="SubtleD_Spell_Tweaks:36" label="Add a Saving Throw Against Level Drain" />
@@ -1327,24 +1327,22 @@
 				<component id="SubtleD_Spell_Tweaks:81" label="Choose-Your-Own Familiar" />
 				<component id="SubtleD_Spell_Tweaks:1207" label="Make Goodberry an Out-of-Combat Mass Regeneration" />
 				<component id="SubtleD_Spell_Tweaks:1212" label="Tweak Slow Poison" />
-				<component id="SubtleD_Spell_Tweaks:1351" label="Add Faerie Fire and Slow On Hit to Moonblade" />
 				<component id="SubtleD_Spell_Tweaks:2116" label="Allow Targets of Sleep to Wake on Hit" />
 				<component id="SubtleD_Spell_Tweaks:2224" label="Improve Glitterdust" />
 				<component id="SubtleD_Spell_Tweaks:2413" label="Allow Target of Otiluke's Sphere to Use Inventory Screen" />
 			</mod>
 			<mod id="Tweaks-Anthology" level="blendWell">
-				<component id="cd_tweaks_remove_magical_trap_delay" label="Remove Delay for Magical Traps [Ardanis/GeN1e]" />
+				<component id="cd_tweaks_remove_magical_trap_delay" label="Remove Delay for Magical Traps" />
 				<component id="cd_tweaks_summoning_cap_removal" label="Remove Summoning Cap for Regular Summons" />
 				<component id="cd_tweaks_celestial_cap_removal" label="Remove Summoning Cap for Celestials" />
-				<component id="cd_tweaks_nwn_summons" label="NWN-Style Summons [Luke]" displayIf="EEex:1" />
-				<component id="cd_tweaks_more_stoneskin_feedback" label="More Stoneskin Feedback [Luke]" displayIf="EEex:1" />
-				<component id="cd_tweaks_more_sensible_fireshield" label="More Sensible Fireshield [Luke]" displayIf="EEex:1" />
-				<component id="cd_tweaks_more_sensible_blade_barrier" label="More Sensible Blade Barrier [Luke]" displayIf="EEex:1" />
-				<component id="cd_tweaks_more_sensible_morentherene" label="More Sensible Morentherene [Luke]" displayIf="EEex:1" />
+				<component id="cd_tweaks_nwn_summons" label="NWN-Style Summons" displayIf="EEex:1" />
+				<component id="cd_tweaks_more_stoneskin_feedback" label="More Stoneskin Feedback" level="lowerDifficulty" displayIf="EEex:1" />
+				<component id="cd_tweaks_more_sensible_fireshield" label="More Sensible Fireshield" displayIf="EEex:1" />
+				<component id="cd_tweaks_more_sensible_blade_barrier" label="More Sensible Blade Barrier" displayIf="EEex:1" />
+				<component id="cd_tweaks_more_sensible_morentherene" label="More Sensible Morentherene" displayIf="EEex:1" />
 			</mod>
 			<mod id="ZSTweaks" level="blendWell">
 				<component id="ZSTweaks:1559" label="Make Protection From Magic scroll not a cheesy way to dispel all magic from an enemy" />
-				<component id="ZSTweaks:572" label="Make Magic Missiles inflict 1d5+2 magic damage when cast by Invokers" />
 			</mod>
 		</update>
 	</spells>
