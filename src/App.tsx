@@ -206,6 +206,9 @@ export default function App() {
     return contentSubBranches.find((b) => b.node.key === contentSubKey) ?? null
   }, [contentSubBranches, contentSubKey])
   const listNodes = isContentStation ? (selectedSub?.children ?? []) : displayNodes
+  const treeKey = isContentStation
+    ? `${activeStation}:${contentMainKey ?? ''}:${contentSubKey ?? ''}`
+    : activeStation
   const listCheckState = useMemo(() => {
     if (!game) return 'unchecked' as const
     return listSelectionState(listNodes, selectedIds, game)
@@ -699,11 +702,8 @@ export default function App() {
                   </div>
                   <div className="list-pane-scroll">
                     <ComponentTree
-                      key={
-                        isContentStation
-                          ? `${activeStation}:${contentMainKey ?? ''}:${contentSubKey ?? ''}`
-                          : activeStation
-                      }
+                      key={treeKey}
+                      treeKey={treeKey}
                       nodes={listNodes}
                       selectedIds={selectedIds}
                       game={game}

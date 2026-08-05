@@ -191,7 +191,7 @@ Every displayed container with children gets a fold control (chevron).
 | All other containers (`bg1`, `npc`, `quest`, …)                                                                                  | **Expanded** |
 
 
-Fold state is per station (tree remounts on station change; Content also remounts when switching main/sub branch). Checking the parent still works while folded.
+Fold state defaults from `unfolded` / default-folded tags on first visit per station (Content: per main/sub branch). User fold/unfold is kept for the browser session when navigating away and back; a full page reload resets to defaults. Checking the parent still works while folded.
 
 ### Keyboard
 

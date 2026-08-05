@@ -22,6 +22,8 @@ import {
 } from '../lib/ui/treeKeyboard'
 
 interface Props {
+  /** Station (and Content branch) identity; used to restore fold state across remounts. */
+  treeKey: string
   nodes: DisplayNode[]
   selectedIds: ReadonlySet<string>
   game: SelectedGame
@@ -29,6 +31,9 @@ interface Props {
   onFocus: (key: string) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
 }
+
+/** Session-scoped expand/collapse per tree; survives remount, resets on page reload. */
+const expandedKeysCache = new Map<string, Set<string>>()
 
 const DEFAULT_FOLDED_TAGS = new Set([
   'mod',
@@ -245,11 +250,22 @@ function CheckboxRow({
 
 export function ComponentTree(props: Props) {
   const rowRefs = useRef(new Map<string, HTMLDivElement>())
-  const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => {
+  const [expandedKeys, setExpandedKeysState] = useState<Set<string>>(() => {
+    const cached = expandedKeysCache.get(props.treeKey)
+    if (cached) return new Set(cached)
     const initial = new Set<string>()
     collectExpandableKeys(props.nodes, initial)
+    expandedKeysCache.set(props.treeKey, initial)
     return initial
   })
+
+  function setExpandedKeys(updater: (prev: Set<string>) => Set<string>) {
+    setExpandedKeysState((prev) => {
+      const next = updater(prev)
+      expandedKeysCache.set(props.treeKey, next)
+      return next
+    })
+  }
 
   // When the display tree changes (station / engine / displayIf), expand newly visible
   // non-default-folded containers without collapsing user-toggled ones.
