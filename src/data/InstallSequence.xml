@@ -34,10 +34,6 @@
 				<component id="infinity_ui:8" label="Quick save slots: 6" />
 			</alternatives>
 		</mod>
-		<mod id="A7-HiddenGameplayOptions" label="Reveal Hidden Gameplay Options" engine="bg,eet,iwd,pst">
-			<component id="A7-HIDDENGAMEPLAYOPTIONS-INSTALL_ALL" label="Reveal Hidden Gameplay Options" />
-			<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU" label="Improved Cheat Menu" alwaysIf="A7-HIDDENGAMEPLAYOPTIONS-INSTALL_ALL" noDisplay="1" />
-		</mod>
 		<component id="B3-BubbsSpellMenuExtended-Main" label="Bubb's Spell Menu Extended" modId="Bubbs-Spell-Menu-Extended" />
 		<component id="A7-LEVELUPTWEAKS-MAIN" label="Enable Level Up icon activation switch in baldur.lua" core="1" modId="A7-LevelUpTweaks" engine="pst" />
 		<component id="A7-LEVELUPTWEAKS-ICON_IN_PORTRAIT" label="Move Level Up icon into character portrait" modId="A7-LevelUpTweaks" engine="pst" />
@@ -129,20 +125,33 @@
 						<component id="Reflections_of_Destiny:110" label="The Mirror Shard" />
 					</mod>
 				</alternatives>
+				<component id="METweaks:2800" label="Make it possible to enter the Nashkel Mines through the back cave entrance" modId="Olvyn-Tweaks" level="extended" />
+				<component id="METweaks:3000" label="Make it possible to enter the catacombs beneath Candlekeep early" modId="Olvyn-Tweaks" />
+				<alternatives label="Make Cloakwood areas available before completing the Bandit Camp">
+					<component id="cd_tweaks_reveal_cloakwood_1" label="First area only" modId="Tweaks-Anthology" level="blendWell" />
+					<component id="cd_tweaks_reveal_cloakwood_4" label="All of Cloakwood except the mines" modId="Tweaks-Anthology" level="extended" />
+				</alternatives>
+				<component id="cd_tweaks_change_cloakwood_trigger" label="Change Cloakwood Mine Chapter End Change Trigger to Non-TotSC Behavior" modId="Tweaks-Anthology" level="vanillaPlus" />
+				<mod id="Candlekeep-Revisited" label="Candlekeep Revisited" tags="smallQuest">
+					<component id="candlekeep_revisited:0" label="BG1 Prologue Expansion" tags="smallQuest" modId="Candlekeep-Revisited" level="extended" />
+					<component id="candlekeep_revisited:1" label="BG1 Expanded Starting Sequence" tags="smallQuest" modId="Candlekeep-Revisited" />
+				</mod>
 			</restructure>
 			<quest label="Quests and Encounters">
-				<component id="Loretakers:0" label="Loretakers" modId="Loretakers" tags="bigQuest" level="blendWell" />
+				<component id="Loretakers:0" label="Loretakers" modId="Loretakers" tags="bigQuest" level="extended" />
 				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" level="blendWell" tags="smallQuest">
 					<component id="bgqe_slimequest" label="Slime Quest" />
-					<component id="bgqe_fallenpaladin" label="Fallen Paladin Quest" level="vanillaPlus" />
-					<component id="bgqe_undyinglove" label="Undying Love Quest" level="vanillaPlus" />
+					<component id="bgqe_nashkelmonster" label="Nashkel Monster Quest" />
+					<component id="bgqe_fallenpaladin" label="Fallen Paladin Quest" />
+					<component id="bgqe_manypaws" label="Many Little Paws" />
+					<component id="bgqe_undyinglove" label="Undying Love Quest" />
 					<component id="bgqe_orclover" label="Lovesick Half-Orc" />
 					<component id="bgqe_unexpectedhelp" label="Unexpected Help Quest" />
-					<component id="bgqe_drunk" label="Drunk near Beregost Temple" level="vanillaPlus" />
-					<component id="bgqe_bragesword" label="Brage's Sword" level="vanillaPlus" />
+					<component id="bgqe_drunk" label="Drunk near Beregost Temple" />
+					<component id="bgqe_bragesword" label="Brage's Sword" />
 					<component id="bgqe_seacharts" label="Legal Sea Charts Sources" level="vanillaPlus" />
 					<component id="bgqe_waterqueentemple" label="Additions to the Lady's Hall and the Bitch Queen's Temple" level="vanillaPlus" />
-					<component id="bgqe_worriedfarmer" label="A Worried Farmer" level="vanillaPlus" />
+					<component id="bgqe_worriedfarmer" label="A Worried Farmer" />
 					<component id="bgqe_bodiesforgoodcause" label="Bodies for a Good Cause" />
 					<component id="bgqe_cordyrnokillingsil" label="Finish Cordyr's Quest without killing Sil" level="vanillaPlus" />
 					<component id="bgqe_improved_borda" label="Improved Borda"/>
@@ -201,25 +210,24 @@
 					<component id="JA#BGT_AdvPack-Backdoor_Waterqueen" label="Backdoor to Waterqueen's House" level="vanillaPlus" />
 				</mod>
 				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" tags="smallQuest" level="extended">
-					<component id="bg1re-required-teen_skip" label="Core" core="1" />
-					<component id="bg1re_purchased_love" label="Purchased Love, by Thimblerig" />
+					<component id="bg1re-required-teen_skip" label="Core" core="1" level="vanillaPlus" />
 					<component id="bg1re_late_night_jaheira" label="Late Night with Jaheira, by Kulyok" level="vanillaPlus" />
-					<component id="bg1re_mourning_of_centeol" label="The Mourning of Centeol, the Spider Lady, by Lava" level="vanillaPlus" />
+					<component id="bg1re_mourning_of_centeol" label="The Mourning of Centeol, the Spider Lady, by Lava" />
 					<component id="bg1re_the_novellists" label="The Novelists, by Thimblerig" />
-					<component id="bg1re_honest_lies_of_two_riversides" label="The Honest Lies of Two Riversides, By Lava" level="vanillaPlus" />
-					<component id="bg1re_necromancers_trouble" label="Necromancer's Trouble, by jastey" level="vanillaPlus" />
+					<component id="bg1re_honest_lies_of_two_riversides" label="The Honest Lies of Two Riversides, By Lava" level="blendWell" />
+					<component id="bg1re_necromancers_trouble" label="Necromancer's Trouble, by jastey" />
 					<component id="bg1re_gender_girdle_reactions" label="Girdle of Gender Reactions, by Thimblerig, Kulyok, Domi, Lava, Lastknightleft, Twani, Jastey, Daisy Ninja Girl" level="vanillaPlus" />
 					<component id="bg1re_della_may_from_thay" label="Della May from Thay, by Kulyok" />
 					<component id="bg1re_camryn_and_tamah" label="Camryn and Tamah, by tibicina" />
 					<component id="bg1re_cloakwood_lovers" label="Cloakwood Lovers, by tibicina" />
 				</mod>
 				<component id="BS_BalduransSeatower-main" label="Balduran's Seatower" tags="bigQuest" modId="BS_Baldurans_Seatower" level="blendWell" />
-				<mod id="Ascalons_Questpack" label="Ascalon's Questpack" tags="smallQuest" level="extended">
+				<mod id="Ascalons_Questpack" label="Ascalon's Questpack" tags="smallQuest" level="blendWell">
 					<component id="AscalonsQuestpack-FeastforGnolls" label="A Feast for the Gnolls" />
 					<component id="AscalonsQuestpack-LostSon" label="The Lost Son" />
-					<component id="AscalonsQuestpack-WolvesMen_Highhedge" label="Quest uses hut near Thalantyr in High Hedge." />
+					<component id="AscalonsQuestpack-WolvesMen_Highhedge" label="Of Wolves and Men" desc="Quest uses hut near Thalantyr in High Hedge" />
 					<component id="AscalonsQuestpack-GreatKarlini" label="The Great Carlini" />
-					<component id="AscalonsQuestpack-Fans" label="Fangirls" level="vanillaPlus" />
+					<component id="AscalonsQuestpack-Fans" label="Fangirls" />
 					<component id="AscalonsQuestpack-HalflingEyeless" label="A Halfling among the Eyeless" />
 				</mod>
 				<mod id="ExtraExpandedEnhancedEncounters" label="Extra Enhanced Expanded Encounters!" tags="smallQuest" level="vanillaPlus">
@@ -243,22 +251,18 @@
 					<component id="cd_the_calling_thief" label="Thief - The Bargain" />
 					<component id="cd_the_calling_peaceful_kaishas_resolution" label="Peaceful Werewolf Isle Resolution" level="vanillaPlus" />
 				</mod>
-				<component id="Coutelier-AerieBG1" label="Aerie in BG:EE" tags="smallQuest" modId="AerieBG1" />
-				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" label="The Vanishing of Skie Silvershield" desc="Lets Eldoth and Skie join your party sooner" tags="smallQuest" modId="the-vanishing-of-skie-silvershield" />
+				<component id="Coutelier-AerieBG1" label="Aerie in BG:EE" tags="smallQuest" level="extended" modId="AerieBG1" />
+				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" label="The Vanishing of Skie Silvershield" level="extended" desc="Lets Eldoth and Skie join your party sooner" tags="smallQuest" modId="the-vanishing-of-skie-silvershield" />
 				<component id="NQR" label="Necromancers Quest Restored" tags="smallQuest" modId="NecromancersQuestRestored" level="restoration" />
-				<mod id="gorgon" label="Gorgon's Eye" level="extended" tags="bigQuest">
+				<mod id="gorgon" label="Gorgon's Eye" tags="bigQuest">
 					<component id="gorgon:0" label="Gorgon's Eye" core="1" />
 					<component id="gorgon:1" label="Give portraits to all characters added from this mod" alwaysIf="gorgon:0" noDisplay="1" />
 					<component id="gorgon:4" label="Add More Pickpocketable Items"/>
 				</mod>
-				<mod id="Candlekeep-Revisited" label="Candlekeep Revisited" tags="smallQuest">
-					<component id="candlekeep_revisited:0" label="BG1 Prologue Expansion" tags="smallQuest" modId="Candlekeep-Revisited" />
-					<component id="candlekeep_revisited:1" label="BG1 Expanded Starting Sequence" tags="smallQuest" modId="Candlekeep-Revisited" />
-				</mod>
 			</quest>
 			<npc label="Joinable NPCs">
 				<expansions label="Original cast expansions" unfolded="1">
-					<mod id="BG1NPC" label="The BG1NPC Project" desc="Make the original BG1 NPCs talkative as in BG2">
+					<mod id="BG1NPC" label="The BG1NPC Project" desc="Make the original BG1 NPCs talkative as in BG2" level="extended">
 						<component id="bg1npc_project-main" label="Core Modifications" core="1" />
 						<component id="bg1npc_project-banters_quests_interjections" label="Banters, Quests, and Interjections" />
 						<component id="bg1npc_project-pid" label="Player-Initiated Dialogues" />
@@ -294,25 +298,14 @@
 				</romances>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<mod id="BG1NPC">
-						<component id="bg1npc_project-sarevokdiary_sixofspades" label="Extended Sarevok's Diary" displayIf="bg1npc_project-main" />
-						<component id="bg1npc_project-kivanproficiency_spears" label="Kivan uses spears" displayIf="bg1npc_project-main" />
+						<component id="bg1npc_project-sarevokdiary_sixofspades" label="Extended Sarevok's Diary" displayIf="bg1npc_project-main" level="extended" />
 					</mod>
 					<mod id="Tweaks-Anthology" label="The Tweaks Anthology" level="vanillaPlus" >
 						<component id="cd_tweaks_send_bg_npcs_to_inn" label="Send BioWare NPCs to an Inn" />
-						<component id="cd_tweaks_kagain_legal_con" label="Give Kagain a Legal Constitution Score of 19" />
-						<component id="cd_tweaks_coran_legal_dex" label="Give Coran a Legal Dexterity Score of 19" />
 						<component id="cd_tweaks_protect_sharteel" label="Ensure Shar-Teel Doesn't Die in the Original Challenge" />
-						<component id="cd_tweaks_adjust_evil_npc_reactions" label="Adjust Evil Joinable NPC Reaction Rolls" />
+						<component id="cd_tweaks_adjust_evil_npc_reactions" label="Adjust Evil Joinable NPC Reaction Rolls" level="fixes" />
 					</mod>
-					<group label="Use BG2 stats for..." noBranches="1">
-						<mod id="Tweaks-Anthology">
-							<component id="cd_tweaks_consistent_stats_edwin_bg2" label="Edwin" />
-							<component id="cd_tweaks_consistent_stats_jaheira_bg2" label="Jaheira" />
-							<component id="cd_tweaks_consistent_stats_minsc_bg2" label="Minsc" />
-							<component id="cd_tweaks_consistent_stats_viconia_bg2" label="Viconia" />
-						</mod>
-					</group>
-					<group label="Move NPCs to Convenient Locations" noBranches="1">
+					<group label="Move NPCs to Convenient Locations" noBranches="1" level="blendWell">
 						<mod id="Tweaks-Anthology">
 							<component id="cd_tweaks_move_bg_npcs_alora" label="Alora to Gullykin" />
 							<component id="cd_tweaks_move_bg_npcs_quayle" label="Quayle to the Nashkel Carnival" />
@@ -322,6 +315,7 @@
 							<component id="cd_tweaks_move_bg_npcs_eldoth" label="Eldoth to the Coastal Way" displayIfNot="L#-THEVANISHINGOFSKIESILVERSHIELD" />
 						</mod>
 					</group>
+					<component id="cd_tweaks_allow_npc_pairs_to_separate" label="Allow NPC Pairs to Separate" modId="Tweaks-Anthology" />
 				</tweaks>
 			</npc>
 			<items label="Items" unfolded="1">
@@ -330,24 +324,24 @@
 					<component id="ForgottenArmament-Breach" label="Add Breach Scrolls to Sorcerous Sundries" modId="forgotten-armament" />   
 				</add>
 				<update label="Item changes" unfolded="1">
-					<component id="ZSTweaks:1663" label="Make Sandthief Ring consistently grant one use of invisibility per day" modId="ZSTweaks" level="vanillaPlus" /> 
-					<component id="stratagems:3021" label="Replace many +1 items by Fine Weapons which are immune to the iron crisis" modId="SwordCoastStratagems" level="vanillaPlus" />
+					<component id="ZSTweaks:1663" label="Make Sandthief Ring consistently grant one use of invisibility per day" modId="ZSTweaks" level="blendWell" /> 
+					<component id="stratagems:3021" label="Replace many +1 items by Fine Weapons which are immune to the iron crisis" modId="SwordCoastStratagems" level="blendWell" />
 				</update>
 				<upgrade label="Thalantyr Item Upgrade">
-					<component id="ThalantyrItemUpgrade-Main" label="Thalantyr Item Upgrade" desc="Cromwell-like item upgrade in BG1" modId="thalan" />
+					<component id="ThalantyrItemUpgrade-Main" label="Thalantyr Item Upgrade" desc="Cromwell-like item upgrade in BG1" modId="thalan" level="extended" />
 				</upgrade>
 			</items>
 			<tweaks label="Tweaks" noBranches="1">
 				<mod id="Olvyn-Tweaks" label="METweaks">
-					<component id="METweaks:2800" label="Make it possible to enter the Nashkel Mines through the back cave entrance" level="restructure" />
-					<component id="METweaks:3100" label="Make it so the Jacil and Wiven encounters aren't replaced by other quests" level="vanillaPlus" />
+					<component id="METweaks:3100" label="Make it so the Jacil and Wiven encounters aren't replaced by other quests" level="fixes" />
 				</mod>
 				<mod id="House-Rule-Tweaks" label="AionZ's House Rules" level="vanillaPlus">
 					<component id="HouseTweaks:14" label="Improved Dialogues" />
 					<component id="HouseTweaks:15" label="Not-So-Indestructible Rats" />
 				</mod>
-				<component id="cd_tweaks_change_cloakwood_trigger" label="Change Cloakwood Mine Chapter End Change Trigger to Non-TotSC Behavior" modId="Tweaks-Anthology" level="vanillaPlus" />
-				<component id="stratagems:4145" label="Remove the tutorial NPCs from Candlekeep" modId="SwordCoastStratagems" level="vanillaPlus" />    
+				<component id="stratagems:4145" label="Remove the tutorial NPCs from Candlekeep" modId="SwordCoastStratagems" level="blendWell" />
+				<component id="cd_tweaks_bardic_rep_adjustment" label="Bardic Reputation Adjustment" modId="Tweaks-Anthology" level="blendWell" />
+				<component id="cd_tweaks_faster_dearnise_keep_timer" label="Speed Up de'Arnise Keep Stronghold Quests" modId="Tweaks-Anthology" level="vanillaPlus" />
 			</tweaks>
 		</bg1>
 		<sod label="SoD" engine="bg1,eet">
@@ -364,18 +358,17 @@
 					<component id="#L-SOD-AID_IMOEN" label="Allow PC to give aid to Imoen after attack in palace" />
 					<component id="#L-SOD-STAT_BASED_OPTIONS" label="Stat-based observations and quest options" />
 					<component id="#L-SOD-DITCH_CORWIN" label="Ditch Tour-Guide Corwin Schael" />
-					<component id="#L-SOD-COASTWAY_CROSSING_QUEST" label="Quest: Scouting the Coast Way Crossing" />
+					<component id="#L-SOD-COASTWAY_CROSSING_QUEST" label="Quest: Scouting the Coast Way Crossing" level="blendWell" />
 				</mod>
 				<mod id="Jasteys_SoD_Tweakpack" label="Jastey's Tweaks for SoD and EET" level="vanillaPlus">
 					<component id="JasteySodTweaks-DoNotMissDialogues_NPCInParty" label="Do Not Miss Dialogues (For NPCs in Party Only)" />
 					<component id="JasteySodTweaks-MoreDialogueChoices_PreventDeadEnds" label="More Dialogue Choices &amp; Prevent Dead Ends" />
-					<component id="JasteySodTweaks-AdjustStartingXP_161000" label="Set Starting XP to 161,000" />
 					<component id="JasteySoDTweaks_PortalCloseToril" label="Make Portal Close from Dragonspear Castle (Aun Argent survives always)" />
-					<component id="JasteySoDTweaks_HephernaanTakesKey" label="Hephernaan takes Dragonspear Vault Key" />
+					<component id="JasteySoDTweaks_HephernaanTakesKey" label="Hephernaan takes Dragonspear Vault Key" level="blendWell" />
 				</mod>
 			</tweaks>
 			<quest label="Quests and Encounters">
-				<mod id="The_Boareskyr_Bridge_Scene" label="The Boareskyr Bridge Scene" level="vanillaPlus" unfolded="1">
+				<mod id="The_Boareskyr_Bridge_Scene" label="The Boareskyr Bridge Scene" level="blendWell" unfolded="1">
 					<component id="c#sodboabri_AcknowledgeSceneBoareskyrBridge" label="Scene at Boareskyr Bridge will be Acknowledged: Add NPC Reactions" alwaysIf="c#sodboabri_DifferentChoices" noDisplay="1" />
 					<component id="c#sodboabri_TescriptionText" label="Add Description Text to Original Scene at Bridge" alwaysIf="c#sodboabri_DifferentChoices" noDisplay="1" />
 					<component id="c#sodboabri_DifferentChoices" label="Bridge Scene has Different Choices" core="1" />
@@ -383,12 +376,12 @@
 				</mod>
 			</quest>
 			<restructure label="Restructure">
-				<mod id="Another_Fine_Hell" label="Another Fine Hell" level="blendWell" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240"  groupWith="sodRewrite" unfolded="1">
-					<component id="C#AnotherFineHell-Main" label="Another Fine Hell - Optional Ending for SoD and BGII Closure" core="1" />
-					<component id="C#AnotherFineHell-Extended" label="Get the Hells Out - Quest Option with Extended BGII Content" />
+				<mod id="Another_Fine_Hell" label="Another Fine Hell" level="extended" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240"  groupWith="sodRewrite" unfolded="1">
+					<component id="C#AnotherFineHell-Main" label="Another Fine Hell - Optional Ending for SoD" core="1" />
+					<component id="C#AnotherFineHell-Extended" label="Get the Hells Out - Quest Option" />
 					<component id="C#AnotherFineHell-ImoensChest" label="PC's and Imoen's chest in Palace should have their content" alwaysIf="C#AnotherFineHell-Main" noDisplay="1" />
 				</mod>
-				<mod id="Road_To_Discovery_for_SoD" label="Road to Discovery" level="vanillaPlus" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240" groupWith="sodRewrite">
+				<mod id="Road_To_Discovery_for_SoD" label="Road to Discovery" level="blendWell" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240" groupWith="sodRewrite">
 					<component id="SoDRoadToDiscovery-main" label="Road to Discovery for SoD - SoD Story Enhancements" core="1" proposeIf="c#husam-main" />
 					<component id="SoDRoadToDiscovery-consistency" label="Consistency Changes to Game Dialogues" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
 					<component id="SoDRoadToDiscovery-aware_officers" label="Officers Are Aware" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
@@ -398,7 +391,7 @@
 					<component id="SoDRoadToDiscovery-additional_infopoints" label="Additional Info Points" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
 					<component id="SoDRoadToDiscovery-additional_communication_officers" label="Add Additional Communication with Officers" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
 				</mod>
-				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party" level="restructure">
+				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party">
 					<component id="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" label="Imoen 4 Ever - Modify the story to allow Imoen staying in the party" />
 					<component id="Imoen4Ever-SoD-ImoenReturnsCamp" label="Imoen Returns to PC in First Coalition Camp (bd1000)" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" />
 					<component id="Imoen4Ever-SoD-BetterReasonPalace" label="Imoen Gives Better Reason to Stay Behind in Palace" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" />
@@ -436,19 +429,19 @@
 		</sod>
 		<bg2 sectionId="bg2-content" label="BG2" engine="bg2,eet">
 			<restructure label="Restructure">
-				<component id="Reflections_of_Destiny:330" label="Reflections of Destiny BG2: Wherever You Go There You Are (Allows visiting SoD maps in BG2 if they havent been played yet.)" modId="Reflections-of-Destiny" displayIf="Reflections_of_Destiny:100" level="restructure" />
-				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party" level="restructure">
+				<component id="Reflections_of_Destiny:330" label="Reflections of Destiny BG2: Wherever You Go There You Are (Allows visiting SoD maps in BG2 if they havent been played yet.)" modId="Reflections-of-Destiny" displayIf="Reflections_of_Destiny:100" />
+				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party">
 					<component id="Imoen4Ever-BGII-ImoenReturnsChapter2" label="Imoen 4 Ever - Modify the story to allow Imoen staying in the party" />
 					<component id="Imoen4Ever-BGII-DialoguesContentSoA" label="Give Imoen Dialogue Content in SoA" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" />
 					<component id="Imoen4Ever-BGII-YoshimoBrynnlaw" label="Yoshimo Comes to Brynnlaw" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" />
 					<component id="Imoen4Ever-BGII-ImoenProtectionSpellChapter2&amp;3" label="Give Imoen Protection Spell in Chapters 2 &amp; 3" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" />
 					<!--component id="Imoen4Ever-BGII-Compatibility_Saerileth_Alternatives" label="Compatibility with Alternatives and Saerileth" /-->
 				</mod>
-				<alternatives label="Restored Rhynn Lanthorn Quest">
-					<component id="dw_lanthorn:10" label="Classic Version" desc="Faithful restoration of cut content from the original game" modId="Restored-Rhynn-Lanthorn" stability="beta" level="restructure" default="1" />	
-					<component id="dw_lanthorn:20" label="Expanded Version" desc="Adds four new locations where lenses can be found" modId="Restored-Rhynn-Lanthorn" stability="beta" level="restructure" />
+				<alternatives label="Restored Rhynn Lanthorn Quest" stability="beta">
+					<component id="dw_lanthorn:10" label="Classic Version" desc="Faithful restoration of cut content from the original game" modId="Restored-Rhynn-Lanthorn" stability="beta" default="1" />	
+					<component id="dw_lanthorn:20" label="Expanded Version" desc="Adds four new locations where lenses can be found" modId="Restored-Rhynn-Lanthorn" stability="beta" />
 				</alternatives>
-				<mod id="Ascension" label="Ascension" level="restructure">
+				<mod id="Ascension" label="Ascension" level="blendWell" >
 					<component id="Ascension-RewrittenFinalChapterOfToB" label="Rewritten Final Chapter of Throne of Bhaal"/>
 					<component id="Ascension-BalthazarCanBeRedeemed" label="Balthazar can be redeemed" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
 					<component id="Ascension-ImprovedSarevokPlayerInteractions" label="Improved Sarevok-Player Interactions" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
@@ -459,7 +452,8 @@
 					<component id="Ascension-SharperPortraitsAbazigalGromnir" label="Sharper portraits of Abazigal and Gromnir for the Enhanced Edition, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
 					<component id="Ascension-SlightlyImprovedCutscenes" label="Slightly improved cutscenes, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
 				</mod>
-				<component id="SoAExtended:1" label="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" tags="bigQuest" level="restructure" />
+				<component id="SoAExtended:1" label="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" tags="bigQuest" level="blendWell" />
+				<component id="cd_tweaks_reveal_ch6_wilderness" label="Reveal Wilderness Areas Before Chapter Six" level="extended" modId="Tweaks-Anthology" />
 			</restructure>
 			<restorations label="Restorations" level="restoration">
 				<mod id="UnfinishedBusiness" label="Unfinished Business" tags="smallQuest">
@@ -485,50 +479,42 @@
 					<component id="Almaterias_Restoration_Project-Lich_Deril" label="Lich Deril" />
 					<component id="Almaterias_Restoration_Project-Restored_Random_Encounters" label="Restored Random Encounters" />
 					<component id="Almaterias_Restoration_Project-Minor_Restorations" label="Minor Restorations" />
-					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" label="Alternate Slayer Change" />
+					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" label="Alternate Slayer Change" level="difficulty" />
 					<component id="Almaterias_Restoration_Project-Restored_Final_Slayer_Dream" label="Restored Final Slayer Dream" />
 					<component id="Almaterias_Restoration_Project-Restored_Waukeens_Promenade_Cutscene" label="Restored Waukeen's Promenade Cutscene" />
 				</mod>
 			</restorations>
 			<quest label="Quests and Encounters">
 				<component id="AdalonsBlood-main" label="Adalon's Blood" desc="Allows good characters to finish the skinner quest in a good way" modId="Adalons_Blood" tags="smallQuest" level="vanillaPlus" />
-				<mod id="hiddenadventure" label="Hidden Adventures" tags="smallQuest">
-					<component id="hidden_adventures-ladyelgea" label="Lady Elgea's extended plot" />
+				<mod id="hiddenadventure" label="Hidden Adventures" tags="smallQuest" level="extended">
+					<component id="hidden_adventures-ladyelgea" label="Lady Elgea's extended plot" level="blendWell" />
 					<component id="hidden_adventures-anomenplot" label="Anomen's extended plot" />
 					<component id="hidden_adventures-jerliashop" label="Jerlia's Ore Shop" />
-					<component id="hidden_adventures-holywater_lathandertemple" label="Elven holy water in the Temple of Lathander" />
-					<component id="hidden_adventures-waveblade_treasury" label="Wave Blade in Treasury" />
-					<component id="hidden_adventures-silverdagger_ID" label="Silver Dagger in Irenicus Dungeon" />
-					<component id="hidden_adventures-bard_stronghold_resting" label="Bards can spend the night at their stronghold (Five Flagons)" />
-					<component id="hidden_adventures-bard_stronghold_bard" label="A bard for the bard stronghold" />
-					<component id="hidden_adventures-silversword" label="Silver Sword" />
+					<component id="hidden_adventures-waveblade_treasury" label="Wave Blade in Treasury" level="blendWell" />
+					<component id="hidden_adventures-bard_stronghold_resting" label="Bards can spend the night at their stronghold (Five Flagons)" level="fixes" />
 					<component id="hidden_adventures-tunnel_saradush" label="A Tunnel for Saradush" />
 					<component id="hidden_adventures-masktemple_docks" label="Temple of Mask in Docks District" />
 				</mod>
 				<component id="CorthalaRomantique-SphereGuard" label="A Guard for the Sphere" desc="Corthala Romantique's Leonora Content" modId="Corthala_Romantique" tags="smallQuest" />
-				<component id="Assassinations:0" label="Assassinations" modId="Assassinations" tags="bigQuest" />
-				<component id="ts_expanded_thief_stronghold_main" label="Expanded Thief Stronghold" modId="Expanded-Thief-Stronghold" tags="bigQuest" />
-				<component id="Tidings:0" label="Dark Tidings" modId="Dark-Tidings" tags="bigQuest" level="blendWell" />
-				<mod id="Call-of-the-Lost-Goddess" label="Call Of The Lost Goddess" tags="bigQuest" level="blendWell">
+				<component id="Assassinations:0" label="Assassinations" modId="Assassinations" tags="bigQuest" level="extended" />
+				<component id="ts_expanded_thief_stronghold_main" label="Expanded Thief Stronghold" modId="Expanded-Thief-Stronghold" tags="bigQuest" level="extended" />
+				<component id="Tidings:0" label="Dark Tidings" modId="Dark-Tidings" tags="bigQuest" level="extended" />
+				<mod id="Call-of-the-Lost-Goddess" label="Call Of The Lost Goddess" tags="bigQuest" level="extended">
 					<component id="Godcall:0" label="Call Of The Lost Goddess V 2.01" />
-					<component id="Godcall:50" label="Install portraits for the major NPCs of the mod" />
+					<component id="Godcall:50" label="Install portraits for the major NPCs of the mod" alwaysIf="Godcall:0" noDisplay="1" />
 					<component id="Godcall:200" label="Install AI voiceover for major NPCs of the mod (mostly in English)" />
 				</mod>
-				<component id="ThroneoftheMadGod:0" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" tags="bigQuest" level="blendWell" />
-				<component id="Poisoned_pathways:0" label="Poisoned pathways" modId="Poisoned-Pathways" tags="bigQuest" level="blendWell" />
+				<component id="ThroneoftheMadGod:0" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" tags="bigQuest" level="extended" />
+				<component id="Poisoned_pathways:0" label="Poisoned pathways" modId="Poisoned-Pathways" tags="bigQuest" level="extended" />
 				<component id="TangledIsle:0" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" tags="bigQuest" level="extended" />
 				<component id="L#-OOZESLOUNGE" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" tags="bigQuest" level="extended" />
-				<component id="L#-SKIECOST-MAINQUEST" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" tags="bigQuest" />
+				<component id="L#-SKIECOST-MAINQUEST" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" tags="bigQuest" level="extended" />
 				<component id="cowledmenace:1000" label="Cowled Menace" modId="CowledMenace" tags="bigQuest" level="extended" />
-				<component id="AWizardDidIt-Blackhearts_BG2" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="blendWell" displayIfNot="AWizardDidIt-Blackhearts_BG1" />
-				<mod id="crucible" label="Crucible">
-					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" tags="bigQuest" level="blendWell" />
-					<component id="Crucible-FinalAssaultAI" label="Fully Voiced NPCs using AI" modId="crucible" tags="bigQuest" level="blendWell" />
-				</mod>
-				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" tags="bigQuest" level="vanillaPlus"/>
-				<component id="lfgp:0" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" tags="bigQuest" level="vanillaPlus" />
-				<component id="TPoJ:0" label="The Pursuit of Justice" modId="the-pursuit-of-justice" tags="bigQuest" level="vanillaPlus" />
-				<component id="saradas_magic_npc_for_bg2_monk" label="Saradas Magic" desc="SoA content + recruitable NPC (Human Neutral Good Cleric/Mage)" modId="Saradas-Magic-BG2" />
+				<component id="AWizardDidIt-Blackhearts_BG2" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="extended" displayIfNot="AWizardDidIt-Blackhearts_BG1" />
+				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" tags="bigQuest" />
+				<component id="lfgp:0" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" tags="bigQuest" level="blendWell" />
+				<component id="TPoJ:0" label="The Pursuit of Justice" modId="the-pursuit-of-justice" tags="bigQuest" level="blendWell" />
+				<component id="Autumns_Twilight:0" label="Autumn's Twilight" modId="bg2-autumns-twilight-mod" tags="bigQuest" />
 			</quest>
 			<npc label="Joinable NPCs">
 				<expansions label="Original cast expansions">
@@ -578,10 +564,9 @@
 					<component id="haerdalisromance:0" label="Haer'Dalis Romance" modId="Haer-Dalis-Romance" />
 					<component id="Dorn:0" label="Dorn Expanded Romance" modId="Bg2Dorn" tags="beamdog" />
 					<component id="sarevokromance:0" label="Sarevok Romance" modId="Sarevok-Romance" />
-					<component id="SkitiaRomanceTweak:0" label="Skitia's Romance Tweak" desc="Allow short depatures from the party" modId="SkitiaBG2RomanceTweaks" />
-					<component id="LaufeysNewViconiaEnding-Main" label="New ending for Viconia Romance" modId="Edwin-Romance"/>
 					<component id="OWRomanceExpanded-Viconia" label="Viconia Romance Expanded" modId="BG2-Romance-Expanded" />
 					<component id="OWRomanceExpanded-Phaere" label="Phaere Expanded" modId="BG2-Romance-Expanded" />
+					<component id="cd_tweaks_stop_hd_aerie_romance" label="Stop Haer'Dalis-Aerie Romance from Starting" modId="Tweaks-Anthology" />
 				</romances>
 				<bioware label="Returning Original Cast NPCs">
 					<component id="AddKagainDD" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" />
@@ -667,7 +652,7 @@
 				</custom>
 				<banters label="Banters and Crossmods">
 					<component id="mkhiinbg2:20" label="M'Khiin Crossmod with Baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" tags="beamdog" />
-					<component id="adrian_crossmod_content" label="Adrian Crossmod" modId="Adrian-NPC" />
+					<component id="adrian_crossmod_content" label="Adrian Crossmod" modId="Adrian-NPC" alwaysIf="adrian_sorcerer" noDisplay="1" />
 					<!-- component id="c#husam-crossmod" label="Husam Crossmod Content" modId="Husam_NP" stability="beta" /-->
 					<component id="Wings:1" label="Restore missing banters for Aerie" modId="Wings" />
 					<mod id="NeeraBanters" label="Neera Banters" tags="beamdog">
@@ -694,12 +679,14 @@
 				</banters>
 				<tweaks label="Tweaks">
 					<component id="cd_tweaks_disable_romances" label="Disable Bioware Romances" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" />
+					<component id="LaufeysNewViconiaEnding-Main" label="New ending for Viconia Romance" modId="Edwin-Romance"/>
+					<component id="SkitiaRomanceTweak:0" label="Skitia's Romance Tweak" desc="Allow short depatures from the party" modId="SkitiaBG2RomanceTweaks" level="fixes" />
+					<component id="cd_tweaks_improved_fate_spirit_summoning" label="Improved Fate Spirit Summoning" modId="Tweaks-Anthology" level="vanillaPlus"/>
 				</tweaks>
 			</npc>
 			<items label="Items">
 				<add label="New Items" noBranches="1" unfolded="1">
-					<component id="u#_under-represented_items" label="Underrepresented Items From Icewind Dale II" modId="Under-Respresented_Items" />
+					<component id="u#_under-represented_items" label="Underrepresented Items From Icewind Dale II" modId="Under-Respresented_Items" level="blendWell" />
 					<component id="L#-SKIECOST-SHOP" label="Brand new SoD-oriented items" modId="skie-the-cost-of-one-girls-soul" />
 					<component id="A7-IMPROVEDARCHER-BOWS_AND_AMMO" label="+4 arrows, bolts and powerful bows" modId="A7-ImprovedArcher" level="blendWell" />
 					<component id="cowledmenace:2100" label="Appropriate Items for High-Level Spellcasters" modId="CowledMenace" />
@@ -711,12 +698,15 @@
 						<component id="ForgottenArmament-FreedomScroll" label="Freedom Scrolls in Ribald's Store (Pre-Underdark)" />
 					</mod>
 					<component id="k0_iskp:3102" label="Import SoD items" modId="sod-items-to-bg2ee-eet" />
+					<component id="hidden_adventures-silverdagger_ID" label="Silver Dagger in Irenicus Dungeon" level="blendWell" modId="hiddenadventure" />
 				</add>
 				<update label="Item changes">
+					<component id="cd_tweaks_gradual_drow_item_disintegration" label="Gradual Drow Item Disintegration" modId="Tweaks-Anthology" level="blendWell" />
+					<component id="hidden_adventures-silversword" label="Silver Sword against Mind Flayers and Lycanthropes" level="blendWell" modId="hiddenadventure" />
 					<component id="HouseTweaks:19" label="Useful Plot Items" modId="House-Rule-Tweaks" level="blendWell" />
 					<component id="stuffofthemagi:0" label="Nerf Stuff of the Magi condiments and add them to creatures' equipment" modId="Stuff-of-the-Magi" level="blendWell" />
 					<group label="Corrections" noBranches="1">
-						<component id="HouseTweaks:17" label="Cloak of Dragomir only decreases stats in daylight" modId="House-Rule-Tweaks" level="blendWell" />
+						<component id="HouseTweaks:17" label="Cloak of Dragomir only decreases stats in daylight" modId="House-Rule-Tweaks" level="vanillaPlus" />
 						<mod id="ZSTweaks" label="ZSTweaks" level="blendWell">
 							<component id="ZSTweaks:1170" label="Make Shadow Dragon Scale behave less like a Black Dragon Scale" />
 							<component id="ZSTweaks:1171" label="Make Silver Dragon Scale also grant 40% cold resistance" />
@@ -783,13 +773,13 @@
 					</group>
 				</update>
 				<upgrade label="Item upgrades" noBranches="1">
-					<mod id="Item_Upgrade" label="Item Upgrade">
+					<mod id="Item_Upgrade" level="blendWell" label="Item Upgrade">
 						<component id="c2_item_upgrade_soa_seamless" label="Item Upgrade" />
 						<component id="c2_item_upgrade_tob_seamless" label="Item Upgrade - Revised Version ToB" alwaysIf="c2_item_upgrade_soa_seamless" noDisplay="1" />
 					</mod>
 					<component id="randomiser:9000" label="Cespenar can forge SoA items" engine="bg2,eet" level="vanillaPlus" modId="randomiser" />
-					<component id="swordap:0" label="Improved Haer'Dalis' swords" modId="HaerDalis-Swords" />
-					<component id="L#-OfHeirloomsAndClasses" label="Of Heirlooms and Classes" desc="New artifacts forgeable by Cromwell" modId="of-heirlooms-and-classes" />
+					<component id="swordap:0" label="Improved Haer'Dalis' swords" modId="HaerDalis-Swords" level="extended" />
+					<component id="L#-OfHeirloomsAndClasses" label="Of Heirlooms and Classes" desc="New artifacts forgeable by Cromwell" modId="of-heirlooms-and-classes" level="extended" />
 					<mod id="Tweaks-Anthology" label="item upgrade" level="blendWell">
 						<component id="cd_tweaks_cromwell_updates_wk_items" label="Allow Cromwell to Upgrade Watcher's Keep Items" />
 						<component id="cd_tweaks_cespenar_updates_soa_items" label="Allow Cespenar to Use Cromwell Recipes" />
@@ -800,37 +790,42 @@
 				<component id="#L-TRANSITIONS-RESTORE_POWER" label="Use Irenicus in hell movie as dream to restore Bhaalspawn powers" modId="themed_tweaks" level="blendWell" />
 				<component id="HouseTweaks:16" label="Good-Aligned Roleplay Rewards" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="HouseTweaks:44" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" level="blendWell" />
-				<component id="cd_tweaks_yoshimo_better_trapsetting" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" level="vanillaPlus" />
-				<component id="cd_tweaks_disable_malchor" label="Keep Drizzt's Loot, Disable Malchor Harpell" modId="Tweaks-Anthology" level="vanillaPlus" />
-				<component id="cd_tweaks_improved_athkatla_guard" label="Improved Athkatlan City Guard" modId="Tweaks-Anthology" level="vanillaPlus" />
-				<component id="cd_tweaks_more_sensible_cowled_wizards" label="More Sensible Cowled Wizards" modId="Tweaks-Anthology" displayIf="EEex:1" level="vanillaPlus" />
-				<component id="ZSTweaks:3010" label="Make inappropriately aligned creatures in BG2 more correct" modId="ZSTweaks" level="vanillaPlus" />
-				<component id="ForcedSlayerTransform:0" label="Forced Slayer Transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" />
+				<component id="cd_tweaks_disable_malchor" label="Keep Drizzt's Loot, Disable Malchor Harpell" modId="Tweaks-Anthology" level="blendWell" />
+				<component id="cd_tweaks_improved_athkatla_guard" label="Improved Athkatlan City Guard" modId="Tweaks-Anthology" level="difficulty" />
+				<component id="cd_tweaks_more_sensible_cowled_wizards" label="More Sensible Cowled Wizards" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
+				<component id="ZSTweaks:3010" label="Make inappropriately aligned creatures in BG2 more correct" modId="ZSTweaks" level="fixes" />
+				<component id="ForcedSlayerTransform:0" label="Forced Slayer Transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" level="extended" />
+				<component id="randomiser:10210" label="Duergar merchants" engine="bg2,eet" modId="randomiser" level="vanillaPlus" desc="Make it so once you can access the special wares you retain the option of accessing the regular wares" />
+				<component id="cd_tweaks_alter_wounded_triggers" label="Alter HP Triggers for NPC Wounded Dialogues" modId="Tweaks-Anthology" desc="Raise the HP trigger level so that the player has a better chance of seeing wound banters" level="blendWell" />
+				<component id="cd_tweaks_cromwell_forge_time_0" label="Cromwell's Instant forging" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_yoshi_imoen_xp_transfer" label="Yoshimo to Imoen Experience Transfer" modId="Tweaks-Anthology" level="vanillaPlus" displayIfNot="Imoen4Ever-BGII-ImoenReturnsChapter2" />
+				<alternatives label="Multiple Strongholds">
+					<component id="cd_tweaks_multi_stronghold_no_restriction" label="For any class PC" modId="Tweaks-Anthology" level="extended" />
+					<component id="cd_tweaks_multi_stronghold_class_restriction" label="For Multi-Class PC" modId="Tweaks-Anthology" level="blendWell" />
+				</alternatives>
+				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" label="Faster Chapter One and Two Cutscenes and Dreams" modId="Tweaks-Anthology" />
+			</tweaks>
+			<restructure>
+				<alternatives label="License for spellcasting costs..." noBranches="1">
+					<component id="stratagems:4160" label="10,000 gp" level="blendWell" default="1" modId="SwordCoastStratagems" />
+					<component id="stratagems:4161" label="15,000 gp" level="extended" modId="SwordCoastStratagems" />
+					<component id="stratagems:4162" label="20,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4163" label="30,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4164" label="50,000 gp" modId="SwordCoastStratagems" />
+				</alternatives>
+				<alternatives modId="SwordCoastStratagems" label="Gaelan wants..." noBranches="1">
+					<component id="stratagems:4170" label="40,000 gp" level="blendWell" default="1" modId="SwordCoastStratagems" />
+					<component id="stratagems:4171" label="60,000 gp" level="extended" modId="SwordCoastStratagems" />
+					<component id="stratagems:4172" label="80,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4173" label="100,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4174" label="120,000 gp" modId="SwordCoastStratagems" />
+				</alternatives>
 				<mod id="A7-SkipChateauIrenicus" label="Skip Chateau Irenicus">
 					<component id="A7-SKIPCHATEAUIRENICUS-MAIN" label="Skip Chateau Irenicus" />
 					<component id="A7-SKIPCHATEAUIRENICUS-NPCS_ALL" label="All available NPCs" alwaysIf="A7-SKIPCHATEAUIRENICUS-MAIN" noDisplay="1" />
 					<component id="A7-SKIPCHATEAUIRENICUS-REALISTIC_OPENING_CUTSCENE" label="More realistic opening cutscene" alwaysIf="A7-SKIPCHATEAUIRENICUS-MAIN" noDisplay="1" />
 				</mod>
-				<component id="randomiser:10210" label="Duergar merchants" engine="bg2,eet" modId="randomiser" level="vanillaPlus" />
-				<alternatives label="License for spellcasting costs..." level="vanillaPlus" noBranches="1">
-					<mod id="SwordCoastStratagems">
-						<component id="stratagems:4160" label="10,000 gp" default="1" />
-						<component id="stratagems:4161" label="15,000 gp" />
-						<component id="stratagems:4162" label="20,000 gp" />
-						<component id="stratagems:4163" label="30,000 gp" />
-						<component id="stratagems:4164" label="50,000 gp" />
-					</mod>
-				</alternatives>
-				<alternatives modId="SwordCoastStratagems" label="Gaelan wants..." level="vanillaPlus" noBranches="1">
-					<mod id="SwordCoastStratagems">
-						<component id="stratagems:4170" label="40,000 gp" default="1" />
-						<component id="stratagems:4171" label="60,000 gp" />
-						<component id="stratagems:4172" label="80,000 gp" />
-						<component id="stratagems:4173" label="100,000 gp" />
-						<component id="stratagems:4174" label="120,000 gp" />
-					</mod>
-				</alternatives>
-			</tweaks>
+			</restructure>
 		</bg2>
 		<iwd sectionId="iwd-content" label="IWD" engine="iwd">
 			<quest label="Quests and Encounters">
@@ -954,6 +949,8 @@
 				<component id="A7_MISCTWEAKS_GREAT_OAKS_BEACON_IWDEE" label="Add Great Oak's Beacon ability (teleport to Kuldahar)" modId="A7-MiscTweaks" />
 				<component id="cd_tweaks_iwd_to_how_transition_no_change" label="Automatic Transition to the Heart of Winter Expansion after finishing the main campaign" modId="Tweaks-Anthology" />
 				<component id="HoWMod:0" label="HoW Ending Tweak" desc="The expansion does not end immediately after defeating the final boss. You will be able to return to Lonelywood and complete any unfinished business." modId="HoWMod" />
+				<component id="cd_tweaks_restore_iwd_tooltips" label="Restore IWD Tooltips" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_how_accessible_at_l1" label="Make Heart of Winter Accessible at Any Level" modId="Tweaks-Anthology" />
 			</tweaks>
 		</iwd>
 		<pst label="PST" engine="pst">
@@ -974,7 +971,6 @@
 				</add>
 			</items>
 			<tweaks label="Tweaks">
-				<component id="cd_tweaks_add_map_notes" label="Add Map Notes" modId="Tweaks-Anthology" engine="pst"/>
 				<component id="cd_tweaks_reset_undersigil_fow" label="Reset UnderSigil Fog of War" modId="Tweaks-Anthology" engine="pst" />
 			</tweaks>
 		</pst>
@@ -984,13 +980,13 @@
 					<!-- component id="c#husam-main" label="Husam - Human Chaotic Neutral Thief" modId="Husam_NPC" stability="beta" /-->
 				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
-					<mod id="Tweaks-Anthology">
-						<component id="cd_tweaks_more_interjections" label="More Interjections" unfolded="1" />
+					<component id="reflection:0" label="Reflection (new dialogue options)" modId="Reflection" level="blendWell" />
+					<mod id="Tweaks-Anthology" level="blendWell">
+						<component id="cd_tweaks_more_interjections" label="More Interjections" />
 						<component id="cd_tweaks_move_boo_into_inventory" label="Move Boo Into Minsc's Pack" level="vanillaPlus" />
 					</mod>
-					<component id="A7-CONVENIENTEENPCS-APPEARANCE-PASSIVE_ALL" label="Make all new EE NPCs passive" desc="Nalia, Baeloth, Dorn, Rasaad - originally all of them have forced cutscenes when you met them" modId="A7-NoEENPCs" level="vanillaPlus" />
-					<component id="stratagems:3041" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" level="blendWell" />
-					<component id="reflection:0" label="Reflection (new dialogue options)" modId="Reflection" />
+					<component id="A7-CONVENIENTEENPCS-APPEARANCE-PASSIVE_ALL" label="Make all new EE NPCs passive" desc="Neera, Baeloth, Dorn, Rasaad - originally all of them have forced cutscenes when you met them" modId="A7-NoEENPCs" level="blendWell" />
+					<component id="cd_tweaks_npcs_never_fight" label="NPCs Don't Fight" modId="Tweaks-Anthology" />
 				</tweaks>
 			</npc>
 			<items label="Item changes">
@@ -998,7 +994,7 @@
 					<mod id="EET_Tweaks" label="Baldur's Gate: Enhanced Edition Trilogy Tweaks" level="vanillaPlus">
 						<component id="EET_Tweaks:4060" label="Add Wand Cases and Key Rings" />
 						<component id="EET_Tweaks:4070" label="Add Key Rings" alwaysIf="EET_Tweaks:4060" noDisplay="1" />
-						<component id="EET_Tweaks:4050" label="Books/Scrolls categorization" />
+						<component id="EET_Tweaks:4050" label="Books/Scrolls categorization" desc="Allows putting books and scrolls in containers" />
 					</mod>
 					<component id="stratagems:3015" label="Re-introduce potions of extra-healing" modId="SwordCoastStratagems" level="vanillaPlus" />
 					<component id="stratagems:3505" label="Wider selection of random scrolls" modId="SwordCoastStratagems" level="vanillaPlus" />
@@ -1006,6 +1002,7 @@
 					<component id="ForgottenArmament-AddItems" label="Forgotten Armament's New Items" modId="forgotten-armament" />
 				</add>
 				<update label="Item changes">
+					<component id="A7-CONVENIENTEENPCS-APPEARANCE-NPC_ITEMS_FOR_ALL" label="Make NPC-specific items available for everyone" modId="A7-NoEENPCs" />
 					<group label="Corrections" noBranches="1">
 						<mod modId="Tweaks-Anthology" level="blendWell">
 							<component id="cd_iwdification_spear_damage" label="Increase Spear Damage" modId="iwdification" />
@@ -1037,34 +1034,34 @@
 					<component id="cd_tweaks_removable_npc_items" label="Removable NPC Items" modId="Tweaks-Anthology" level="vanillaPlus" />
 				</update>
 				<delete label="Remove" noBranches="1">
-					<mod id="SwordCoastStratagems" level="blendWell">
+					<mod id="SwordCoastStratagems" level="difficulty">
 						<component id="stratagems:4215" label="Remove unrealistically helpful items from certain areas" />
 						<component id="stratagems:4217" label="Remove ammo up to the +2 level from random containers" />
 					</mod>
 				</delete>
 			</items>
 			<tweaks label="Tweaks" noBranches="1">
-				<mod id="DialogueChoiceAdditions" label="Dialogue Choice Additions">
+				<mod id="DialogueChoiceAdditions" label="Dialogue Choice Additions" level="extended">
 					<component id="DialogueChoiceAdditions-Core" label="Dialogue Choice Additions" />
 					<component id="DialogueChoiceAdditions-VVECompatibilityPatch" label="VVE Compatibility Patch" alwaysIf="DialogueChoiceAdditions-Core,vveBG:0" noDisplay="1" />
 				</mod>
-				<mod id="themed_tweaks" label="Themed Tweaks" level="vanillaPlus">
+				<mod id="themed_tweaks" label="Themed Tweaks" level="blendWell">
 					<component id="#L-BG2-SNARK" label="Add a little snark to dialogues (SoD/BG2EE)" />
 					<component id="#L-BG2-CUTSCENES" label="Remove cut scenes that the PC shouldn't be privy to" level="blendWell" />
 				</mod>
-				<component id="stratagems:4051" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="vanillaPlus" />
-				<mod id="AC-Miscellaneous-Tweaks" label="AC Miscellaneous Tweaks" level="blendWell">
-					<component id="ac-miscellaneous-misctweaks" label="AC Miscellaneous Tweaks" />
-					<component id="ac-miscellaneous-random" label="AC Miscellaneous Tweaks - Random Stuff No-one Wants" alwaysIf="ac-miscellaneous-misctweaks" noDisplay="1" />
-				</mod>
+				<component id="stratagems:4051" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="blendWell" />
 				<component id="randomiser:10100" label="Remove Protection from Undead Scrolls from all stores" level="difficulty" engine="bg,eet" modId="randomiser" />
+				<component id="stratagems:3041" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" level="blendWell" />
+				<component id="cd_tweaks_death_cam" label="Death Cam" level="vanillaPlus" />
 			</tweaks>
 		</common>
 		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<npc label="Joinable NPCs">
 				<tweaks label="Tweaks" unfolded="1">
-					<component id="cd_tweaks_happy_neutrals" label="Neutral Characters Make Happy Comments at Mid-Range Reputation" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_happy_neutrals" label="Neutral Characters Make Happy Comments at Mid-Range Reputation" modId="Tweaks-Anthology" level="vanillaPlus" />
+					<component id="cd_tweaks_happy_patch_never_angry" label="NPCs are never angry about reputation" modId="Tweaks-Anthology" />
 					<component id="cd_tweaks_tob_style_npcs" label="ToB-Style NPCs" desc="Alter all joinable NPCs to immediately level-up upon joining, with a caveat: all creature files are moved down to their lowest experience version" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_reduced_party_chunking" label="Make Party Members Less Likely to Die Irreversibly" modId="Tweaks-Anthology" />
 					<alternatives label="Banter Accelerator">
 						<component id="A7-BANTERACCELERATOR-60_10" label="Frequency: 60 seconds, Probability: 10%" modId="A7-BanterAccelerator" />
 						<component id="A7-BANTERACCELERATOR-40_10" label="Frequency: 40 seconds, Probability: 10% (default)" modId="A7-BanterAccelerator" default="1" />
@@ -1075,54 +1072,48 @@
 			<items label="Items">
 				<add noBranches="1">
 					<component id="ForgottenArmament-AcidResist" label="Create Potions of Acid Resistance" modId="forgotten-armament" />
-					<component id="cd_tweaks_add_bags_of_holding" label="Add Bags of Holding" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_add_bags_of_holding" label="Add Bags of Holding" modId="Tweaks-Anthology" level="vanillaPlus" />
 				</add>
 				<update label="Item Changes">
-					<component id="cd_tweaks_protection_items_pnp" label="PnP restrictions for protection items" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_sellable_items" label="Sellable Items" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" />
-					<mod id="Tweaks-Anthology" label="Increase item stacks">
-						<component id="cd_tweaks_increase_ammo_stacks_120" label="Ammo Stacks of 120" engine="bg,eet,iwd,pst" />
-						<component id="cd_tweaks_increase_gem_stacks_120" label="Gem Stacks of 120" engine="bg,eet,iwd,pst" />
-						<component id="cd_tweaks_increase_potion_stacks_120" label="Potion Stacks of 120" engine="bg,eet,iwd,pst" />
-						<component id="cd_tweaks_increase_scroll_stacks_120" label="Scroll Stacks of 120" engine="bg,eet,iwd,pst" />
-					</mod>
-					<component id="HouseTweaks:39" label="Ankheg and Dragonscale Armor Count as Medium Armor" modId="House-Rule-Tweaks" />
+					<component id="cd_tweaks_protection_items_pnp" label="PnP restrictions for protection items" modId="Tweaks-Anthology" level="blendWell" />
+					<alternatives label="Unique Containers">
+						<component id="cd_tweaks_unique_containers_fixes_and_icons" label="Unique icons only" engine="bg,eet,iwd" level="blendWell" modId="Tweaks-Anthology" />
+						<component id="cd_tweaks_unique_containers_full" label="Unique icons and names" engine="bg,eet,iwd" modId="Tweaks-Anthology" level="extended" />
+					</alternatives>
+					<component id="HouseTweaks:39" label="Ankheg and Dragonscale Armor Count as Medium Armor" modId="House-Rule-Tweaks" level="blendWell" />
 					<group label="Updates" noBranches="1">
 						<mod id="ZSTweaks">
 							<component id="ForgottenArmament-ReplaceSpeedBoots" label="Replace Boots of Speed (Paws of the Cheetah)" modId="forgotten-armament" />
 							<component id="ForgottenArmament-StatIncreaseItems" label="Update Items Setting an Ability Score to Increment the Increase" modId="forgotten-armament" />
-							<component id="ZSTweaks:1547" label="Make Protection from Undead more balanced" />
-							<component id="ZSTweaks:1203" label="Make Girdle of Fortitude set Constitution to 18 on equip" />
-							<component id="ZSTweaks:1216" label="Make Ankheg's Plate grant 20% acid resistance" />
-							<component id="ZSTweaks:1317" label="Make the basic arcane robes more remarkable" />
-							<component id="ZSTweaks:1344" label="Arrows of Biting apply poison faster and improve the misleading description" />
-							<component id="ZSTweaks:1345" label="Make Arrows of Fire cause fire damage always, same as Arrows of Ice" />
-							<component id="ZSTweaks:1346" label="Make Arrows of Piercing always cause at least half of the extra piercing damage" />
-							<component id="ZSTweaks:1347" label="Make Bolts of Biting slightly more deadly" />
-							<component id="ZSTweaks:1371" label="Make Arrows of Dispelling force a save vs. Spell at -2 for them to work" />
-							<component id="ZSTweaks:1388" label="Make Acid Arrow's extra damage not subject to magic resistance" />
+							<component id="ZSTweaks:1547" label="Make Protection from Undead more balanced" level="difficulty" />
+							<component id="ZSTweaks:1203" label="Make Girdle of Fortitude set Constitution to 18 on equip" level="blendWell" />
+							<component id="ZSTweaks:1216" label="Make Ankheg's Plate grant 20% acid resistance" level="blendWell"  />
+							<component id="ZSTweaks:1317" label="Make the basic arcane robes more remarkable" level="blendWell"  />
+							<component id="ZSTweaks:1344" label="Arrows of Biting apply poison faster and improve the misleading description" level="blendWell"  />
+							<component id="ZSTweaks:1345" label="Make Arrows of Fire cause fire damage always, same as Arrows of Ice" level="blendWell"  />
+							<component id="ZSTweaks:1346" label="Make Arrows of Piercing always cause at least half of the extra piercing damage" level="blendWell"  />
+							<component id="ZSTweaks:1347" label="Make Bolts of Biting slightly more deadly" level="blendWell"  />
+							<component id="ZSTweaks:1371" label="Make Arrows of Dispelling force a save vs. Spell at -2 for them to work" level="blendWell"  />
+							<component id="ZSTweaks:1388" label="Make Acid Arrow's extra damage not subject to magic resistance" level="blendWell"  />
 						</mod>
 					</group>
 				</update>
 			</items>
 			<tweaks label="Tweaks" noBranches="1">
-				<component id="METweaks:2600" label="No Party Required area transitions" modId="Olvyn-Tweaks" />
+				<component id="METweaks:2600" label="No Party Required area transitions" modId="Olvyn-Tweaks" level="extended" />
 				<mod id="Tweaks-Anthology">
-					<component id="cd_tweaks_noncombat_speed_casting_increase_50" label="Increase movement and casting speed by 50 percent outside of combat" />
-					<component id="cd_tweaks_reveal_city_areas" label="Reveal City Maps When Entering Area" engine="bg,eet,iwd,pst" />
-					<component id="cd_tweaks_sensible_regeneration_when_traveling" label="Sensible Regeneration When Traveling" engine="bg,eet,iwd,pst" />
-					<component id="cd_tweaks_personalize_savename_opt6" label="Use save filenames scheme: 000000000-[Protagonist] Save-Name" />
-					<component id="cd_tweaks_force_all_dialogue_to_pause" label="Force All Dialogue to Pause Game" engine="bg,eet,iwd,pst" />
-					<component id="cd_tweaks_death_cam" label="Death Cam" />
+					<component id="cd_tweaks_noncombat_speed_casting_increase_50" label="Increase movement and casting speed by 50 percent outside of combat" level="blendWell" />
 				</mod>
-				<component id="stratagems:4130" label="Revised handling of death effects like disintegration, petrification and imprisonment" desc="Party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" modId="SwordCoastStratagems" />
-				<mod id="Lore_From_Learning">
-					<component id="cd_lore_from_learning_books" label="Lore From Learning" desc="Prowide lore from books, weapons, party members, defeating monsters and exploring areas" />
-					<component id="cd_lore_from_learning_martial" label="Lore From Learning - Weapon Knowledge Provides Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
-					<component id="cd_lore_from_learning_party" label="Lore From Learning - Party Members Provide Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
-					<component id="cd_lore_from_learning_monster" label="Lore From Learning - Defeating Monsters Provides Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
-					<component id="cd_lore_from_learning_area" label="Lore From Learning - Exploring Areas Provides Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
+				<component id="stratagems:4130" label="Revised handling of death effects like disintegration, petrification and imprisonment" desc="Party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" modId="SwordCoastStratagems" level="vanillaPlus" />
+				<mod id="Lore_From_Learning" level="extended">
+					<component id="cd_lore_from_learning_books" label="Lore From Learning" desc="Provide lore from books, weapons, party members, defeating monsters and exploring areas" />
+					<component id="cd_lore_from_learning_martial" label="Weapon Knowledge Provides Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
+					<component id="cd_lore_from_learning_party" label="Party Members Provide Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
+					<component id="cd_lore_from_learning_monster" label="Defeating Monsters Provides Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
+					<component id="cd_lore_from_learning_area" label="Exploring Areas Provides Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
 				</mod>
+				<component id="cd_tweaks_hide_vfx_from_invisible_enemies" label="Hide Visual Effects from Invisible Enemies" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
+				<component id="cd_tweaks_stores_sell_higher_stacks" label="Stores Sell Higher Stacks of Items" modId="Tweaks-Anthology" />
 			</tweaks>
 		</common>
 	</content>
@@ -1147,15 +1138,23 @@
 			<mod id="rogue_rebalancing" label="Rogue Rebalancing" >
 				<component id="rr:1" label="Thief kit revisions" />
 				<component id="rr:2" label="Thief High Level Ability revisions" alwaysIf="rr:1" noDisplay="1" />
+				<component id="rr:4" label="Bard kit revisions" modId="rogue_rebalancing" />
+				<component id="rr:5" label="Bard High Level Ability revisions" modId="rogue_rebalancing" />
 			</mod>
 			<component id="ArtisansKitpack:1006" label="Wizard Slayer Overhaul" modId="The-Artisan-s-Kitpack" />
+			<component id="cd_tweaks_shapeshifter_armor" label="Allow Shapeshifters to Wear Armor But Prevent Shapeshifting While Worn" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_automatic_ranger_tracking" label="Automatic Use of Ranger Tracking Skill" modId="Tweaks-Anthology" />
 		</update>
 		<tweaks label="Tweaks">
 			<group sectionId="warrior-tweaks" label="Warrior tweaks" noBranches="1">
+				<!--ac-miscellaneous-bgarchery;AC Miscellaneous Tweaks - BG-style archery for SoA/ToB-->
 				<component id="ZSTweaks:2120" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" />
 				<component id="METweaks:400" label="Remove the limit of two proficiency points in a weapon at character creation" modId="Olvyn-Tweaks" />
-				
 				<component id="HouseTweaks:1" label="Expanded Racial Enemies" modId="House-Rule-Tweaks" />
+				<component id="METweaks:1000" label="Give Monks a cooler Deflect Missiles ability" modId="Olvyn-Tweaks" />
+				<component id="METweaks:1600" label="Increase Wizard Slayer Magic Resistance" modId="Olvyn-Tweaks" />
+				<component id="cd_iwdification_paladin_abilities" label="Paladin Class Update: IWD Abilities and Skills" modId="iwdification" />
+				<component id="iwdification:110" label="Change Tracking for all rangers and ranger kits" modId="iwdification" />
 			</group>
 			<group sectionId="rogue-tweaks" label="Rogue tweaks" noBranches="1">
 				<mod id="Epic-Thieving" label="Epic Thieving" level="blendWell">
@@ -1165,6 +1164,8 @@
 					<component id="EpicThieving:300" label="EpicThieving - Epic Pickpocketing" alwaysIf="EpicThieving:0" noDisplay="1" />
 					<component id="EpicThieving:400" label="EpicThieving - Epic Detect Illusions" alwaysIf="EpicThieving:0" noDisplay="1" />
 				</mod>
+				<component id="METweaks:3815" label="Sneak Attack and Crippling Strike: reduce the delay to 1 round, but prevent multiple Crippling Strikes from stacking" modId="Olvyn-Tweaks" />
+				<component id="METweaks:1800" label="Make Assassin backstab multiplier improve faster" modId="Olvyn-Tweaks" />
 				<component id="HouseTweaks:38" label="Backstab With Any Weapon" modId="House-Rule-Tweaks" />
 				<component id="ZSTweaks:1600" label="Make everyone able to perform omnidirectional backstabs" modId="ZSTweaks" />
 				<component id="HouseTweaks:41" label="Trap Activation Tweaks" modId="House-Rule-Tweaks"  />
@@ -1175,7 +1176,10 @@
 					<component id="rr:0" label="Proper dual-wielding implementation for Thieves and Bards" modId="rogue_rebalancing" />
 				</mod>
 				<component id="BardicWonders:2003" label="Armored Casting for Bards" modId="Bardic-Wonders" />
-				
+				<component id="cd_tweaks_thieving_in_heavy_armor" label="Allow Thieving and Stealth in Heavy Armor per PnP" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+				<component id="cd_iwdification_bard_songs" label="Bard Class Update: Add IWD Bard Songs" modId="iwdification" />
+				<component id="cd_iwdification_bard_kit_selectable_songs" label="Bard Class Update: Selectable Bard Songs for Jesters and Skalds" modId="iwdification" />
+				<component id="cd_iwdification_thief_evasion" label="Add evasion to thieves and all thief kits" modId="iwdification" />
 			</group>
 			<group sectionId="spellcaster-tweaks" label="Spellcaster tweaks" noBranches="1">
 				<component id="METweaks:900" label="Let Rangers and Paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
@@ -1194,14 +1198,28 @@
 					<component id="EET_Tweaks:3020" label="Constitution loss and blocked summoning for 1 week" modId="EET_Tweaks" />
 					<component id="EET_Tweaks:3021" label="Constitution loss for 1 week" modId="EET_Tweaks" />
 				</alternatives>
+				<component id="cd_iwdification_druid_abilities" label="Druid Class Update: Use IWD Shapeshifting and Ability Progression" modId="iwdification" />
+				<component id="cd_iwdification_elven_druids" label="Druid Class Update: Allow Elves to be Druids" modId="iwdification" />
 			</group>
 			<group sectionId="universal-tweaks" label="Universal tweaks" noBranches="1">
 				<mod id="Tweaks-Anthology">
-					<component id="cd_tweaks_infravision" label="Make Infravision Useful" level="blendWell" desc="May bring performance problems" displayIf="EEex:1" />
+					<alternatives label="Make Infravision Useful" desc="Creatures without infravision have -4 THAC0 at night or in dark places">
+						<component id="cd_tweaks_infravision" label="Tweaks Anthology (Luke's) Solution" level="blendWell" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" />
+						<component id="METweaks:3200" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" />
+						<component id="METweaks:3205" label="Olvyn's Version (light)" desc="Creatures without infravision have reduced visual range at night or in dark places" modId="Olvyn-Tweaks" />
+						<component id="METweaks:3210" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" modId="Olvyn-Tweaks" />
+					</alternatives>
 					<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" />
 					<component id="cd_tweaks_grandmastery_bonus_true" label="True grandmastery" level="vanillaPlus" engine="bg,eet,iwd,pst" />
 					<component id="cd_tweaks_multiclass_gm" label="Multi-Class Grandmastery" level="vanillaPlus" />
 					<component id="cd_tweaks_specialization_apr_bonus_for_all" label="Everyone Gets Bonus APR from Specialization" />
+					<component id="cd_tweaks_universal_clubs" label="Universal Clubs" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_casting_in_armor" label="Allow Arcane Spellcasting in Heavy Armor" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+					<component id="cd_tweaks_more_dual_classes" label="Expanded Dual-Class Options" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_loosen_shield_restrictions" label="Allow Mages to Use Bucklers and Thieves to Use Small Shields [Angel]" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" label="Tighten equipment restrictions" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_extend_hp_rolls_to_l20" label="Allow HP Rolls Through Level 20 [Angel]" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_universal_four_weapon_slots" label="Give Every Class/Kit Four Weapon Slots" modId="Tweaks-Anthology" />
 				</mod>
 				
 			</group>
@@ -1210,8 +1228,50 @@
 				<component id="cd_tweaks_sorc_spell_progression" label="Un-Nerfed Sorcerer Spell Progression Table" />
 				<component id="cd_tweaks_mage_spell_progression_unnerfed" label="Un-nerfed Mage Spell Progression Table" />
 				<component id="cd_tweaks_bard_spell_progression_unnerfed" label="Un-nerfed Bard Spell Progression Table" />
+				<component id="rr:6" label="Proper spell progression for Bards" modId="rogue_rebalancing" />
+				<component id="cd_tweaks_bard_spell_progression_unnerfed" label="Bard Class Update: Use IWD Spell Progression" modId="iwdification" />
 				<component id="cd_tweaks_cleric_spell_progression_unnerfed" label="Un-nerfed Cleric Spell Progression Table" />
 				<component id="cd_tweaks_druid_spell_progression_unnerfed_druid_level" label="Un-nerfed Druid Spell Progression Table" />
+				<component id="cd_tweaks_paladin_spell_progression_alt" label="BG2-Style Progression (Up To Level Six Spells) for Paladins" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_ranger_spell_progression_alt" label="BG2-Style Progression (Up To Level Five Spells) for Rangers" modId="Tweaks-Anthology" />
+			</mod>
+			<mod id="Tweaks-Anthology" label="NWN-Style Feats">
+				<component id="cd_tweaks_nwn_disarm" label="Disarm Class Feat for Rogues [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_knockdown" label="Knockdown Class Feat for Fighters and Monks [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_spellcraft_counterspell" label="Spellcaster Skill/Counterspell Class Talent [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_spontaneous_cast" label="Spontaneous Casting for Clerics [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_weapon_finesse" label="Weapon Finesse Class Feat for Thieves [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_dual_wield" label="Dual-Wield Class Feat for Rangers [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn-style_armor_vs_dex" label="NWN-Style Armor vs. Dexterity [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_defensive_roll" label="Defensive Roll Class Feat for Thieves [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_divine_grace_dark_blessing" label="Divine Grace/Dark Blessing Feat for Paladins/Blackguards [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_good_aim" label="Good Aim Racial Feat for Halflings [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_cleave" label="Cleave Class Feat for Fighters and Monks [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_sneakatt_blackguard" label="Sneak Attack Class Feat for Blackguards [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_fearless" label="Fearless Racial Feat for Halflings [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_poison_save" label="Poison Save Class Feat for Assassins [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_planar_turning" label="Planar Turning Class Feat for Clerics/Paladins [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_circle_kick" label="Circle Kick Class Feat for Monks [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_barbarian_rage" label="NWN-style Barbarian Rage [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_revised_archer" label="&quot;Force&quot; the Archer Kit to Use Bows [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_blind_fight" label="Blind Fight Innate Feat for Berserkers [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_dirty_fighting" label="Dirty Fighting Class Feat for Chaotic-Aligned Rogues [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_overwhelming_devastating_critical" label="Overwhelming/Devastating Critical Class Feat for Trueclass Fighters [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_self_concealment" label="Self Concealment Class Feat for Monks [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_parry" label="Parry Mode Kit Feat for Blades and Swashbucklers [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_armored_caster" label="Armored Caster Class Feat for Bards [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_trackless_step" label="Trackless Step Class Feat for Rangers [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_nature_sense" label="Nature Sense Class Feat for Druids [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge Class Feat for Barbarians and Rogues [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_sneakatt_rogue" label="NWN-style Sneak Attack/Crippling Strike Class Feat for Thieves and Stalkers [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_spell_penetration" label="Spell Penetration Class Feat for Spellcasters [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_smite_evil_good" label="Smite Evil/Good Class Feat for Paladins/Blackguards [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_woodland_stride" label="Woodland Stride Class Feat for Druids [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_bane_of_enemies" label="Bane of Enemies Class Feat for Rangers [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_cantrips" label="Cantrips Class Feat for Spellcasters [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion Class Feat for Beastmasters [Luke]" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nwn_opportunist" label="Opportunist Class Feat for Chaotic-Aligned Rogues [Luke]" modId="Tweaks-Anthology" />
 			</mod>
 		</tweaks>
 	</kits>
@@ -1220,13 +1280,17 @@
 		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<items>
 				<add>
-					<component id="rr:7" label="Add items for Thieves and Bards" modId="rogue_rebalancing" />
-					<component id="A7-CHAOSSORCERER-PRIMORDIAL_ARTIFACTS" label="Add Primordial Artifacts for Chaos Sorcerers" modId="A7-ChaosSorcerer" displayIf="A7-CHAOSSORCERER-MAIN" />
-					<component id="A7-IMPROVED_SHAMANIC_DANCE-ITEMS" label="Add items for Shamans" modId="A7-ImprovedShamanicDance" />
+					<component id="rr:7" label="Add items for Thieves and Bards" modId="rogue_rebalancing" level="extended" />
+					<component id="A7-CHAOSSORCERER-PRIMORDIAL_ARTIFACTS" label="Add Primordial Artifacts for Chaos Sorcerers" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" />
+					<component id="A7-IMPROVED_SHAMANIC_DANCE-ITEMS" label="Add items for Shamans" modId="A7-ImprovedShamanicDance" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
 					<component id="BardicWonders:2001" label="Add items for Bards" modId="Bardic-Wonders" />
 				</add>
+				<update>
+					<component id="cd_tweaks_2h_bastard_swords" label="Two-Handed Bastard Swords" modId="Tweaks-Anthology" level="extended" />
+					<component id="cd_tweaks_2h_katanas" label="Two-Handed Katanas" modId="Tweaks-Anthology" level="extended" />
+				</update>
 				<upgrade>
-					<component id="rr:8" label="Upgradeable Thieves and Bards Equipment" modId="rogue_rebalancing" />   
+					<component id="rr:8" label="Upgradeable Thieves and Bards Equipment" modId="rogue_rebalancing" level="extended" />   
 				</upgrade>
 			</items>
 		</common>
@@ -1234,12 +1298,16 @@
 
 	<spells engine="bg,eet,iwd">
 		<add label="New spells" unfolded="1">
-			<component id="A7-IMPROVED_SHAMANIC_DANCE-SHAMANIC_PACT" label="Add Shamanic Pact spell for Shamans" modId="A7-ImprovedShamanicDance" displayIf="A7-CHAOSSORCERER-MAIN" />
+			<component id="A7-IMPROVED_SHAMANIC_DANCE-SHAMANIC_PACT" label="Add Shamanic Pact spell for Shamans" modId="A7-ImprovedShamanicDance" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
 			<component id="BardicWonders:2008" label="Add new Bard Spells" modId="Bardic-Wonders" />
 			<component id="stratagems:2500" label="Add 9 new arcane spells" level="blendWell" modId="SwordCoastStratagems" />
 			<component id="stratagems:2510" label="Add 6 new divine spells" level="blendWell" modId="SwordCoastStratagems" />
 		</add>
 		<update label="Spell corrections" noBranches="1">
+			<!--ac-miscellaneous-breathfix;AC Miscellaneous Tweaks - Dragon Breath Fix-->
+			<component id="cd_iwdification_expanded_polymorph_self" label="Expanded Polymorph Self" modId="iwdification" />
+			<component id="cd_tweaks_make_grease_ignitable" label="Make Grease ignitable [Luke]" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_restoration_no_fatigue" label="Remove Fatigue from Restoration Spells" modId="Tweaks-Anthology" />
 			<component id="A7-CHAOSSORCERER-RECREATE_SPELL_LIST" label="Recreate Chaos Weave spell selection lists" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" />
 			<component id="stratagems:2070" label="Spell school adjustements" modId="SwordCoastStratagems" level="blendWell" />
 			<component id="cd_tweaks_0_weight_created_weapons" label="Change Magically Created Weapons to Zero Weight" level="vanillaPlus" modId="Tweaks-Anthology" />
@@ -1267,7 +1335,7 @@
 			<mod id="Tweaks-Anthology" level="blendWell">
 				<component id="cd_tweaks_remove_magical_trap_delay" label="Remove Delay for Magical Traps [Ardanis/GeN1e]" />
 				<component id="cd_tweaks_summoning_cap_removal" label="Remove Summoning Cap for Regular Summons" />
-				<component id="cd_tweaks_celestial_cap_removal" label="Remove Summoning Cap for Celestials [Ardanis/GeN1e]" />
+				<component id="cd_tweaks_celestial_cap_removal" label="Remove Summoning Cap for Celestials" />
 				<component id="cd_tweaks_nwn_summons" label="NWN-Style Summons [Luke]" displayIf="EEex:1" />
 				<component id="cd_tweaks_more_stoneskin_feedback" label="More Stoneskin Feedback [Luke]" displayIf="EEex:1" />
 				<component id="cd_tweaks_more_sensible_fireshield" label="More Sensible Fireshield [Luke]" displayIf="EEex:1" />
@@ -1280,6 +1348,17 @@
 			</mod>
 		</update>
 	</spells>
+
+	<content>
+		<bg2 sectionId="bg2-content" label="BG2" engine="bg2,eet">
+			<restructure>
+				<alternatives label="Crucible">
+					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" tags="bigQuest" level="blendWell" />
+					<component id="Crucible-FinalAssaultAI" label="Fully Voiced NPCs using AI" modId="crucible" tags="bigQuest" level="extended" />
+				</alternatives>
+			</restructure>
+		</bg2>
+	</content>
 
 	<npcClassAdjustements desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
 		<alternatives label="Make Xan a..." unfolded="1">
@@ -1298,8 +1377,31 @@
 		<component id="L#-VIC-REV-ABI" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" alwaysIf="L#-VIC-REV-M-SH-C" noDisplay="1" />
 		<component id="totemiccernd:0" label="Make Cernd A Totemic Druid" modId="Totemic_Cernd" />
 		<component id="p#_kivan_deheriana_wildmage" label="Make Deheriana (F/M/C) a Wild Mage" modId="Kivan_and_Deheriana" displayIf="p#_kivan" />
-		<component id="cd_tweaks_nalia_thief_level_7" label="Upgrade Nalia's Thief class to level 7" modId="Tweaks-Anthology" />
+		<alternatives label="Upgrade Nalia's Thief class to...">
+			<component id="cd_tweaks_nalia_thief_level_5" label="Level 5 (further increases lockpicking)" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_nalia_thief_level_6" label="Level 6 (further increases traps finding, pickpocket)" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_nalia_thief_level_7" label="Level 7 (further increases lockpicking, pickpocket)" modId="Tweaks-Anthology" level="blendWell" default="1" />
+			<component id="cd_tweaks_nalia_thief_level_8" label="Level 8 (further increases pickpocket, adds single weapon style)" modId="Tweaks-Anthology" />
+		</alternatives>
 		<component id="YoshimosRemorse:2" label="Make Yoshimo a Bounty Hunter 13 / Fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" />
+		<component id="bg1npc_project-kivanproficiency_spears" label="Kivan uses spears" displayIf="bg1npc_project-main" />
+		<component id="cd_tweaks_yoshimo_better_trapsetting" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" level="blendWell" />
+		<component id="cd_tweaks_kagain_legal_con" label="Give Kagain a Legal Constitution Score of 19" level="blendWell" />
+		<component id="cd_tweaks_coran_legal_dex" label="Give Coran a Legal Dexterity Score of 19" level="blendWell" />
+		<group label="Use BG2 stats for..." noBranches="1">
+			<mod id="Tweaks-Anthology">
+				<component id="cd_tweaks_consistent_stats_edwin_bg2" label="Edwin" level="blendWell" />
+				<component id="cd_tweaks_consistent_stats_jaheira_bg2" label="Jaheira" level="blendWell" />
+				<component id="cd_tweaks_consistent_stats_minsc_bg2" label="Minsc" level="blendWell" />
+				<component id="cd_tweaks_consistent_stats_viconia_bg2" label="Viconia" level="blendWell" />
+			</mod>
+		</group>
+		<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" level="blendWell" />
+		<component id="cd_tweaks_imoen_avatar_change" label="Change Imoen's Avatar to Mage" modId="Tweaks-Anthology" engine="bg2,eet" />
+		<component id="cd_tweaks_viconia_skin_color" label="Change Viconia's Skin Color to Dark Blue" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_mp_kickout_dialogue" label="Improved Multi-Player Kick-Out Dialogues" modId="Tweaks-Anthology" level="vanillaPlus" />
+		<component id="cd_tweaks_ng_jaheira" label="Change Jaheira to Neutral Good Alignment" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_ne_korgan" label="Change Korgan to Neutral Evil Alignment" modId="Tweaks-Anthology" />
 	</npcClassAdjustements>
 
 	<combat level="difficulty">
@@ -1336,6 +1438,7 @@
 				<component id="ZSTweaks:3130" label="Make minotaurs tougher and more dangerous" level="difficulty" engine="bg,iwd,eet" />
 				<component id="ZSTweaks:3140" label="Make ogre / oni mages regenerating fiends, as per PnP" level="difficulty" engine="bg,iwd,eet" />
 			</mod>
+			<component id="METweaks:2200" label="Make creatures take up less space" modId="Olvyn-Tweaks" />
 		</tweaks>
 		<ai label="AI Enhancements / SwordCoastStratagems (SCS)">
 			<component id="METweaks:2400" label="Make enemies change their attack targets more quickly" level="difficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
@@ -1429,17 +1532,6 @@
 			<component id="ZG-VOICE-IWD2" label="Icewind Dale II Voice Pack" modId="Icewind-Dale-II-Voice-Pack-For-EE-2.6" engine="bg,eet,iwd" />
 			<component id="ZG-VOICE-NWN" label="Neverwinter Nights Voice Pack" modId="Neverwinter-Nights-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" />
 		</group>
-		<component id="HouseTweaks:24" label="NPC Soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" />
-		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" label="High Quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" level="fixes" />
-		<component id="vveBG:0" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
-		<component id="vveSOD:0" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
-		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet" level="restoration">
-			<alternatives label="Choose the way how she should be recasted">
-				<component id="jaheirarecast:0" label="Use new SoD Character Sounds" default="1" />
-				<component id="jaheirarecast:1" label="Use BG1+BG2 Character Sounds" />
-			</alternatives>
-			<component id="jaheirarecast:2" label="Dialog Voiceover" />
-		</mod>
 		<mod id="Infinity-Sounds" label="Infinity Sounds - Improve many sonic aspects of the game" level="restoration" engine="bg2,eet">
 			<component id="s@-IS-BG1-Spell-Voices" label="Restore BG1 Spellcasting Voices" level="vanillaPlus" />
 			<component id="s@-IS-BG1-Spell-Sounds" label="Restore BG1 Spellcasting Sounds" level="vanillaPlus" />
@@ -1457,8 +1549,24 @@
 			<component id="s@-IS-Restore-NPC-Voiceovers" label="Restore NPC Voiceovers" />
 			<component id="s@-IS-Salk-NPC-Voiceovers" label="Additional NPC Voiceovers (by Salk)" level="vanillaPlus" />
 		</mod>
+		<component id="HouseTweaks:24" label="NPC Soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" />
+		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" label="High Quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" level="fixes" />
+		<component id="vveBG:0" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
+		<component id="vveSOD:0" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
+		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet" level="restoration">
+			<alternatives label="Choose the way how she should be recasted">
+				<component id="jaheirarecast:0" label="Use new SoD Character Sounds" default="1" />
+				<component id="jaheirarecast:1" label="Use BG1+BG2 Character Sounds" />
+			</alternatives>
+			<component id="jaheirarecast:2" label="Dialog Voiceover" />
+		</mod>
 		<component id="HouseTweaks:21" label="Restore Reputation Increase Sound Effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" />
-		<component id="HouseTweaks:26" label="Soundset Tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="restoration" engine="bg2,eet"/>
+		<component id="HouseTweaks:26" label="Soundset Tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg2,eet"/>
+		<component id="cd_tweaks_fix_boo_squeak" label="Fix Boo's Squeak" modId="Tweaks" level="fixes" engine="bg2,eet" />
+	</sounds>
+
+	<sounds>
+		<component id="cd_tweaks_remove_you_must_gather" label="Remove &quot;You Must Gather Your Party...&quot; Sound" modId="Tweaks-Anthology" />
 	</sounds>
 
 	<portraits engine="bg,eet">
@@ -1508,7 +1616,7 @@
 		<group label="Mod NPC portraits">
 			<component id="zdbae:10" label="Baeloth - Alternative portrait" modId="BaeBG2" displayIf="zdbae:0" engine="bg2,eet" />
 			<component id="SisterVigilantes_Angelo-Portrait_cassinus_free_fr" label="Angelo - Alternative portrait" modId="Angelo" displayIf="SisterVigilantes_Angelo-main" engine="bg2,eet" />
-			<component id="candlekeep_revisited:3" label="Candlekeep Revisited - New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" displayIf="candlekeep_revisited:0" engine="bg1,eet" />
+			<component id="candlekeep_revisited:3" label="Candlekeep Revisited - New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" engine="bg1,eet" />
 			<mod id="HPS-Portraits-Project-1.0" label="Add lacking portraits" engine="bg,eet">
 				<component id="HPSPP-ModNpcsACQ" label="Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and other stories" />
 				<component id="HPSPP-ModNpcsAdalonsBlood" label="Adalon's Blood" />
@@ -1591,6 +1699,7 @@
 			<component id="cd_icpp_iwd2" label="Install IWD1 and IWD2 portraits" modId="Infinity_Collection_Portrait_Pack" engine="bg,eet,iwd" alwaysIf="IWD_EET_integration:100" />
 		</group>
 		<group label="Special" engine="bg2,eet">
+			<component id="cd_tweaks_no_drow_avatars_in_underdark" label="No Drow Avatars On Party In Underdark [Weimer]" modId="Tweaks-Anthology" />
 			<alternatives label="Add Drow NPC Portraits">
 				<component id="PPE:30" label="PPE version" modId="Portraits-Portraits-Everywhere" />
 				<component id="HPSPP-PartyNPCsDrow" label="HPS version" modId="HPS-Portraits-Project-1.0" />	
@@ -1609,6 +1718,7 @@
 		<component id="ee_cosmetic_enhancements:0" label="BG Cosmetic Enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="bg,eet" />
 		<component id="ee_cosmetic_enhancements:1" label="IWD Cosmetic Enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="iwd" />
 		<component id="cd_iwd_description_icons" label="Description Icons for IWD Items" modId="iwd_description_icons" engine="iwd" stability="beta" />
+		<component id="cd_tweaks_replace_fire_cold_resist_icons" label="Separate Resist Fire/Cold Icon into Separate Icons" modId="Tweaks-Anthology" />
 		<mod id="RemasteredSpellIcons" label="Remastered Spell Icons">
 			<component id="remastered_spell_icons:0" label="Core Component" core="1" />
 			<component id="remastered_spell_icons:1" label="Use IWD:EE Colors" desc="Green icons for summoning spells" />
@@ -1616,10 +1726,35 @@
 		<component id="cd_tweaks_static_pst_npc_portraits_status" label="Static Character Portraits" desc="With health and status changes visualization" engine="pst" modId="Tweaks-Anthology" />
 		<component id="A7_MISCTWEAKS_UPSCALED_PORTRAITS_PSTEE" label="Argent's Miscellaneous Tweaks - High-resolution character portraits" modId="A7-MiscTweaks" engine="pst" />
 		<component id="HouseTweaks:51" label="Remove Unnecessary Persistent Visuals from Long-Duration Spells" modId="House-Rule-Tweaks" />
+		<mod id="AC-Miscellaneous-Tweaks" label="AC Miscellaneous Tweaks" level="blendWell">
+			<component id="ac-miscellaneous-misctweaks" label="AC Miscellaneous Tweaks" />
+			<component id="ac-miscellaneous-random" label="Random Stuff No-one Wants" alwaysIf="ac-miscellaneous-misctweaks" noDisplay="1" />
+		</mod>
+	</gfx>
+
+	<gfx engine="bg,iwd,eet">
+		<component id="cd_tweaks_iwd_casting_graphics" label="Icewind Dale Casting Graphics" modId="Tweaks-Anthology" engine="bg,eet" />
+		<component id="cd_tweaks_bg_casting_graphics" label="Baldur's Gate Casting Graphics" modId="Tweaks-Anthology" engine="iwd" />
+		<component id="cd_tweaks_remove_portrait_icons" label="Disable Portrait Icons Added by Equipped Items" modId="Tweaks-Anthology" engine="bg,iwd,eet,pst" />
+		<component id="cd_tweaks_glowing_magical_shields" label="Make Magic Shields Glow" modId="Tweaks-Anthology" />
+		<alternatives label="Use character colors instead of item colors">
+			<component id="cd_tweaks_char_colors_all_helms_shields" label="For all shields and helmets" modId="Tweaks-Anthology" default="1" />
+			<component id="cd_tweaks_char_colors_normal_helms_shields" label="For non-magical shields and helmets" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_char_colors_all_helms" label="For all helmets" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_char_colors_normal_helms" label="For non-magical helmets" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_char_colors_all_shields" label="For all shields" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_char_colors_normal_shields" label="For non-magical shields" modId="Tweaks-Anthology" />
+		</alternatives>
+		<alternatives label="Remove annoying visual effects from equipped items">
+			<component id="cd_tweaks_remove_equipped_blur_effects" label="Remove blur effect" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_remove_equipped_spell_trap_effects" label="Remove spell trap and reflection effects" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_remove_equipped_blur_spell_trap_effects" label="Remove all of the above" modId="Tweaks-Anthology" default="1" />
+		</alternatives>
+		<component id="METweaks:3600" label="Implement a different kind of chunked death animation" modId="Olvyn-Tweaks" />
 	</gfx>
 
 	<scripts engine="bg,eet,iwd">
-		<mod id="Better-IWD-Pregen" label="Better IWD Pregen scripts" level="vanillaPlus" unfolded="1">
+		<mod id="Better-IWD-Pregen" label="Better IWD Pregen scripts" unfolded="1">
 			<component id="D2-SCRIPT-IWDPGEN" label="Better IWD Pregen (Main)" core="1" />
 			<component id="D2-SCRIPT-NYMPH" label="Use revised script for nymph summon. Compatible with SCS." desc="Cooldown hotkeys, faster movement, AI can cast Barkskin, Mass Cure, Entangle, or Summon Insects once each per combat encounter." />
 			<component id="D2-SCRIPT-NGAUTO" label="Auto-assign Better IWD Pregen (d2scrp) to new characters" />
@@ -1651,11 +1786,30 @@
 	<ui engine="bg,eet,iwd" level="vanillaPlus">
 		<component id="AutoLoot:0" label="Bubb's Auto Loot" modId="AutoLoot" />
 		<component id="buffbot:0" label="BuffBot: In-Game Buff Automation" modId="bg-eeex-buffbot" />
-		<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU_UPDATE" label="Update resource tables for &quot;Improved Cheat Menu&quot;" modId="A7-HiddenGameplayOptions" alwaysIf="A7-HIDDENGAMEPLAYOPTIONS-INSTALL_ALL" noDisplay="1" engine="bg,eet,iwd,pst" />
+		<component id="cd_tweaks_restored_loading_hints" label="Restored Loading Hints" modId="Tweaks-Anthology" />
+		<mod id="A7-HiddenGameplayOptions" label="Reveal Hidden Gameplay Options" engine="bg,eet,iwd,pst">
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU" label="Improved Cheat Menu" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU_UPDATE" label="Update resource tables for Improved Cheat Menu" modId="A7-HiddenGameplayOptions" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_UI-DEATH" label="Improved Death Screen options" modId="A7-HiddenGameplayOptions" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-OPTION_ENABLE_DEBUG_MODE" label="Enable Debug Mode" modId="A7-HiddenGameplayOptions" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-OPTION_HOTKEYS_ON_TOOLTIPS" label="Hotkeys On Tooltips" modId="A7-HiddenGameplayOptions" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-OPTION_ALLOW_SPACEBAR_IN_DIALOGS" label="Allow Spacebar in Dialogs" modId="A7-HiddenGameplayOptions" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-OPTION_CRITICAL_HIT_SCREEN_SHAKE" label="Critical Hit Screen Shake" modId="A7-HiddenGameplayOptions" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-OPTION_ENABLE_FOG" label="Enable Fog" modId="A7-HiddenGameplayOptions" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-OPTION_SHOW_AOE_RADIUS" label="Show Area of Effect Range" modId="A7-HiddenGameplayOptions" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-OPTION_CREATE_INTERVAL_SAVES" label="Add in-game options for Tweak Anthology's Create Interval Saves" modId="A7-HiddenGameplayOptions" />
+			<component id="A7-HIDDENGAMEPLAYOPTIONS-OPTION_RESTORED_LOADING_HINTS" label="Add in-game options for Tweaks Anthology's Restored Loading Hints" modId="A7-HiddenGameplayOptions" />
+		</mod>
 		<mod id="A7-MiscTweaks" label="Tweaks" unfolded="1">
 			<component id="A7_MISCTWEAKS_DUALCLASS_BACK_BUTTON" label="Reactivate 'Back' button in the Dual-Class menu" modId="A7-MiscTweaks" level="fixes" />
 			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" label="Disable creature tooltips" modId="A7-MiscTweaks" level="difficulty" engine="bg,eet,iwd,pst" />
 		</mod>
+		
+	</ui>
+
+	<ui engine="bg,eet,iwd">
+		<component id="cd_tweaks_colorize_npc_names_brightness_normal" label="Colorize NPC names and tooltips" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_colorblind_overlays" label="Enhanced Overlays for Colorblind Players" modId="Tweaks-Anthology" />
 	</ui>
 
 	<base engine="eet">
@@ -1773,7 +1927,7 @@
 				<component id="BGSpawn-VampiricWolfLord" label="New Vampiric Wolf Lord" />
 				<component id="BGSpawn-RandomEncounters" label="Random encounters between areas" />
 			</mod>
-			<mod id="bg_enemy_randomizer" label="BG1/BG2 Enemy Randomiser" engine="bg,eet">
+			<mod id="bg_enemy_randomizer" label="BG1/BG2 Enemy Randomiser" engine="bg,eet" default="1">
 				<component id="gaEnemyRando:1" label="Spawn Point Randomizer" engine="bg1"/>
 				<component id="gaEnemyRando:2" label="Spawn Point Randomizer" engine="bg2"/>
 				<component id="gaEnemyRando:3" label="Spawn Point Randomizer" engine="eet" />
@@ -1819,54 +1973,45 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 
 	-->
 
-	<adjustements engine="bg,eet">
-		<component id="cd_tweaks_remove_xp_cap" label="Remove total experience cap" modId="Tweaks-Anthology" />
-		<alternatives label="Limit XP in BG1" engine="eet">
-			<component id="EET_Tweaks:2011" label="161,000 (default)" modId="EET_Tweaks"/>
-			<component id="EET_Tweaks:2012" label="500,000 (default for SoD)" modId="EET_Tweaks" />
-		</alternatives>
-		<component id="EET_Tweaks:2022" label="Limit XP in SoD to default 500,000" modId="EET_Tweaks" engine="eet" />
-		<alternatives label="Limit XP in BG2" engine="bg2,eet">
-			<component id="EET_Tweaks:2031" label="2,950,000 (default)" modId="EET_Tweaks" />
-			<component id="EET_Tweaks:2032" label="8,000,000 (default for ToB)" modId="EET_Tweaks" />
-		</alternatives>
-		<group label="Adjust received XP">
+	<adjustements engine="bg,eet,iwd">
+		<group label="XP Economy" unfolded="1">
+			<component id="cd_tweaks_remove_xp_cap" label="Remove total experience cap" modId="Tweaks-Anthology" level="blendWell"/>
 			<alternatives label="XP for Traps, Spells, Lockpicking">
 				<component id="EET_Tweaks:2040" label="BG1" modId="EET_Tweaks" />
 				<component id="EET_Tweaks:2041" label="BG2" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2042" label="Vanilla friendly progressive" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2042" label="Vanilla friendly progressive" modId="EET_Tweaks" level="vanillaPlus" default="1" />
 				<component id="EET_Tweaks:2043" label="Disabled" modId="EET_Tweaks" />
 			</alternatives>
 			<alternatives label="XP for killing creatures">
 				<component id="EET_Tweaks:2050" label="Increase to 150%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2051" label="Decrease to 75%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2052" label="Decrease to 50%" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2051" label="Decrease to 75%" modId="EET_Tweaks" level="blendWell" default="1" />
+				<component id="EET_Tweaks:2052" label="Decrease to 50%" modId="EET_Tweaks" level="extended" />
 				<component id="EET_Tweaks:2053" label="Decrease to 25%" modId="EET_Tweaks" />
 				<component id="EET_Tweaks:2054" label="Decrease to 10%" modId="EET_Tweaks" />
 				<component id="EET_Tweaks:2055" label="Disabled" modId="EET_Tweaks" />
 			</alternatives>
 			<alternatives label="XP for quests">
 				<component id="EET_Tweaks:2060" label="Increase to 150%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2061" label="Decrease to 75%" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2061" label="Decrease to 75%" modId="EET_Tweaks" level="extended" default="1" />
 				<component id="EET_Tweaks:2062" label="Decrease to 50%" modId="EET_Tweaks" />
 				<component id="EET_Tweaks:2063" label="Decrease to 25%" modId="EET_Tweaks" />
 				<component id="EET_Tweaks:2064" label="Decrease to 10%" modId="EET_Tweaks" />
 				<component id="EET_Tweaks:2065" label="Disabled" modId="EET_Tweaks" />
 			</alternatives>
-			<alternatives label="XP for quests">
+			<alternatives label="Quest XP distribution">
 				<component id="EET_Tweaks:2070" label="Party XP for quests distributed individually" modId="EET_Tweaks" />
 				<component id="METweaks:200" label="Make quest experience divided among party members" modId="Olvyn-Tweaks" />
 			</alternatives>
-			<component id="EET_Tweaks:2080" label="Party XP for killing creatures distributed individually" modId="EET_Tweaks" />
+			<component id="EET_Tweaks:2080" label="Party XP for killing creatures distributed individually" modId="EET_Tweaks" displayIf="EEex:1" />
 		</group>
-		<mod id="RandomGraionTweaks" label="Economy">
+		<mod id="RandomGraionTweaks" label="Gold Economy" unfolded="1">
 			<alternatives label="Gold carried by creatures">
 				<component id="ZG-GRAION-GOLD-200" label="Increase to 200%" />
 				<component id="ZG-GRAION-GOLD-150" label="Increase to 150%" />
 				<component id="ZG-GRAION-GOLD-83" label="Decrease to 83%" />
-				<component id="ZG-GRAION-GOLD-75" label="Decrease to 75%" />
+				<component id="ZG-GRAION-GOLD-75" label="Decrease to 75%" level="blendWell" default="1" />
 				<component id="ZG-GRAION-GOLD-66" label="Decrease to 66%" />
-				<component id="ZG-GRAION-GOLD-50" label="Decrease to 50%" />
+				<component id="ZG-GRAION-GOLD-50" label="Decrease to 50%" level="extended" />
 				<component id="ZG-GRAION-GOLD-33" label="Decrease to 33%" />
 				<component id="ZG-GRAION-GOLD-25" label="Decrease to 25%" />
 			</alternatives>
@@ -1882,9 +2027,9 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			</alternatives>
 			<alternatives label="Prices in the shops">
 				<component id="ZG-GRAION-STORES-TOPLAYERS-50" label="Decrease to 50%" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-125" label="Increase to 125%" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-125" label="Increase to 125%"  level="blendWell" default="1" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-133" label="Increase to 133%" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-150" label="Increase to 150%" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-150" label="Increase to 150%" level="extended" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-175" label="Increase to 175%" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-200" label="Increase to 200%" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-300" label="Increase to 300%" />
@@ -1901,7 +2046,32 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 				<component id="ZG-GRAION-STORES-FROMPLAYERS-150" label="Increase to 150%" />
 				<component id="ZG-GRAION-STORES-FROMPLAYERS-200" label="Increase to 200%" />
 			</alternatives>
-			<component id="ZG-EQUIP-WHAT-I-CAN" label="Equip items from creatures' inventory to fill empty slots" />
+			<component id="ZG-EQUIP-WHAT-I-CAN" label="Equip items from creatures' inventory to fill empty slots" level="difficulty" />
 		</mod>
+		<alternatives label="Alter identification mechanics" engine="bg,eet,iwd,pst">
+			<group label="Make it more strict" level="difficulty">
+				<component id="cd_tweaks_shopkeeper_id_lore" label="Identification ability is limited to storekeeper's lore" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" desc="Any storekeeper can identify items up to their personal lore value, regardless of class." />
+				<component id="cd_tweaks_lore_for_gems_potions" label="Gems and Potions Require Identification" modId="Tweaks-Anthology" level="difficulty" engine="bg,eet,iwd" />
+			</group>
+			<component id="cd_tweaks_id_all_items" label="Identify All Items" modId="Tweaks-Anthology" />
+		</alternatives>
+		<component id="cd_tweaks_no_traps_or_locks" label="Remove traps completely" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+		<component id="cd_tweaks_stores_buy_all_items" label="Stores Purchase All Item Types" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+		<component id="cd_tweaks_no_store_depreciation" label="No Depreciation in Stores" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+		<component id="cd_tweaks_recover_ammo_25_enemy_only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" />
+
+		<component id="cd_tweaks_personalize_savename_opt6" label="Use save filenames scheme: 000000000-[Protagonist] Save-Name" level="vanillaPlus" engine="bg,eet,iwd,pst" />
+		<component id="cd_tweaks_create_interval_four_saves_15" label="Every 15 minutes (cycle through four saves)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+		<component id="cd_tweaks_force_all_dialogue_to_pause" label="Force All Dialogue to Pause Game" engine="bg,eet,iwd,pst" level="vanillaPlus" />
+		<component id="cd_tweaks_sensible_regeneration_when_traveling" label="Sensible Regeneration When Traveling" engine="bg,eet,iwd,pst" level="extended" />
+		<component id="cd_tweaks_sellable_items" label="Sellable Items" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" level="vanillaPlus" />
+		<mod id="Tweaks-Anthology" label="Increase item stacks">
+			<component id="cd_tweaks_increase_ammo_stacks_120" label="Ammo Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" />
+			<component id="cd_tweaks_increase_gem_stacks_120" label="Gem Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" />
+			<component id="cd_tweaks_increase_potion_stacks_120" label="Potion Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" />
+			<component id="cd_tweaks_increase_scroll_stacks_120" label="Scroll Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" />
+		</mod>
+		<component id="cd_tweaks_reveal_city_areas" label="Reveal City Maps When Entering Area" engine="bg,eet,iwd,pst" level="vanillaPlus" />
 	</adjustements>
 </installSequence>
