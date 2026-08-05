@@ -203,7 +203,7 @@ Fixed-viewport desktop shell (`100vh`, page does not scroll):
 
 1. **Top bar** — brand, current engine badge, selection count, Export
 2. **Station rail** — left edge rail with upright labels stacked top-to-bottom (Engine first, then visible content stations); scrolls vertically if needed
-3. **Level selection strip** — mass-check presets by ladder max + independent Difficulty (writes `selectedIds`; independent of Filters)
+3. **Level selection strip** — mass-check presets by ladder ranks + independent Lower / Higher difficulty (writes `selectedIds`; independent of Filters)
 4. **Filters strip** — search plus Level / Stability / Tags / Size / Author / Hidden / Required controls (display-only; never clears selection)
 5. **Workspace** — dense component list (left) + detail panel (right). On the Engine station the detail column is hidden and the game picker uses full width
 
@@ -218,11 +218,11 @@ Separate from the Filters Level control. Disabled until an engine is chosen. Pre
 
 | Control                                        | Behaviour                                                                                                                                                                                                                                                         |
 | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ladder radios (**None** / Fixes / … / Quality) | Cumulative mass-check: select engine-eligible components with ladder `effectiveLevel` rank ≤ the chosen max; **deselect** higher ladder ranks. **None** clears all non-required ladder-leveled selections. Difficulty and unleveled components are never changed. |
-| **Difficulty** checkbox                        | Selects or clears only `effectiveLevel === 'difficulty'` components. Does not change ladder or unleveled picks.                                                                                                                                                   |
+| Ladder radios (**None** / Fixes / … / Extended) | Cumulative mass-check: select engine-eligible components with ladder `effectiveLevel` rank ≤ the chosen max; **deselect** higher ladder ranks. **None** clears all non-required ladder-leveled selections. Difficulty and unleveled components are never changed. |
+| **Lower difficulty** / **Higher difficulty** checkboxes | Each selects or clears only components with that `effectiveLevel` (`lowerDifficulty` / `higherDifficulty`). Independent of each other and of the ladder. Does not change ladder or unleveled picks. |
 
 
-Shared rules with other selection paths: `required` stays selected; `displayIf` / `displayIfNot` gate eligibility; inside `<alternatives>`, prefer a matching `default` option else the first matching option in document order; `alwaysIf` converges afterward. Core auto-select during these presets only pulls cores that match the same operation (ladder max or difficulty), so a Difficulty toggle cannot pull in ladder cores and vice versa.
+Shared rules with other selection paths: `required` stays selected; `displayIf` / `displayIfNot` gate eligibility; inside `<alternatives>`, prefer a matching `default` option else the first matching option in document order; `alwaysIf` converges afterward. Core auto-select during these presets only pulls cores that match the same operation (ladder max or a difficulty token), so a difficulty toggle cannot pull in ladder cores and vice versa.
 
 ### Filters
 
@@ -232,7 +232,7 @@ Filters run **after** `buildDisplayTree` and only affect what is shown. Checked 
 | Control   | Behaviour                                                                                                                                                                                                                                                                                                                                                     | Default                                 |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
 | Search    | Case-insensitive match on label, component id, `modId`, desc                                                                                                                                                                                                                                                                                                  | empty                                   |
-| Level     | Display filter only — pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Difficulty** shows/hides `difficulty` independently of ladder max (including under All levels; never part of the cumulative ladder). Missing `effectiveLevel` is excluded when a ladder filter is active. Does **not** mass-check selection. | All levels; Include Difficulty on       |
+| Level     | Display filter only — pick a ladder max: show that rank and lower. **This level only** = exact bucket. **Include Lower difficulty** / **Include Higher difficulty** show/hide those tokens independently of ladder max (including under All levels; never part of the cumulative ladder). Missing `effectiveLevel` is excluded when a ladder filter is active. Does **not** mass-check selection. | All levels; both Include Difficulty flags on |
 | Stability | Multi-select allow-list; **Released** = missing/`released`. Other values discovered from data (`beta`, `alpha`, …)                                                                                                                                                                                                                                            | **Released** only                       |
 | Tags      | Allow-list of discovered tags (checked = show that tag). Untagged always shown unless **Only checked tags** is on                                                                                                                                                                                                                                             | all tags checked; Only checked tags off |
 | Size      | Dual-handle range over `mods.csv` Size (bytes); human-readable labels. Inactive when spanning full catalog min/max. Nodes without a resolvable size are hidden when the range is narrowed                                                                                                                                                                     | full catalog range                      |
@@ -286,15 +286,16 @@ Related labels are clickable: switch to the target’s station when needed, focu
 Next to each row label, if the node (or its `collapsedComponent`) has an `effectiveLevel`, show a colored badge:
 
 
-| Level token   | Badge text     |
-| ------------- | -------------- |
-| `fixes`       | Fixes          |
-| `restoration` | Restorations   |
-| `vanillaPlus` | Vanilla+ (QoL) |
-| `blendWell`   | Well blended   |
-| `restructure` | Restructure    |
-| `quality`     | Quality        |
-| `difficulty`  | Difficulty     |
+| Level token         | Badge text         |
+| ------------------- | ------------------ |
+| `fixes`             | Fixes              |
+| `restoration`       | Restorations       |
+| `vanillaPlus`       | Vanilla+ (QoL)     |
+| `blendWell`         | Well blended       |
+| `restructure`       | Restructure        |
+| `extended`          | Extended           |
+| `lowerDifficulty`   | Lower difficulty   |
+| `higherDifficulty`  | Higher difficulty  |
 
 
 Unknown levels still render with a muted badge using the raw token. Non-released `stability` values (e.g. `beta`, `alpha`) show as a separate badge; missing/`released` does not.

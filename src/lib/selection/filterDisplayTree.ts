@@ -21,7 +21,8 @@ export interface FilterCriteria {
   /** Ladder max level, or null for no ladder filter. */
   maxLevel: string | null
   levelExact: boolean
-  includeDifficulty: boolean
+  includeLowerDifficulty: boolean
+  includeHigherDifficulty: boolean
   /**
    * When false (default), exclude noDisplay and required components.
    * When true, show both alongside other components.
@@ -57,7 +58,8 @@ export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   search: '',
   maxLevel: null,
   levelExact: false,
-  includeDifficulty: true,
+  includeLowerDifficulty: true,
+  includeHigherDifficulty: true,
   showHidden: false,
   tags: new Set(),
   tagsOnlyChecked: false,
@@ -158,7 +160,8 @@ export function isFilterActive(
     criteria.search.trim() !== '' ||
     criteria.maxLevel !== null ||
     criteria.levelExact !== defaults.levelExact ||
-    criteria.includeDifficulty !== defaults.includeDifficulty ||
+    criteria.includeLowerDifficulty !== defaults.includeLowerDifficulty ||
+    criteria.includeHigherDifficulty !== defaults.includeHigherDifficulty ||
     criteria.showHidden !== defaults.showHidden ||
     criteria.tagsOnlyChecked !== defaults.tagsOnlyChecked ||
     !setsEqual(criteria.tags, defaults.tags) ||
@@ -241,12 +244,10 @@ function leafMatchesCriteria(
     display.collapsedComponent?.effectiveLevel ?? display.node.effectiveLevel
 
   if (
-    !levelPassesFilter(
-      level,
-      criteria.maxLevel,
-      criteria.levelExact,
-      criteria.includeDifficulty,
-    )
+    !levelPassesFilter(level, criteria.maxLevel, criteria.levelExact, {
+      includeLowerDifficulty: criteria.includeLowerDifficulty,
+      includeHigherDifficulty: criteria.includeHigherDifficulty,
+    })
   ) {
     return false
   }

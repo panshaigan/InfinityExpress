@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ChangeEvent } from 'react'
-import type { LadderLevel } from '../lib/levels'
+import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
@@ -7,10 +7,11 @@ interface Props {
   listNodes: DisplayNode[]
   listState: 'checked' | 'unchecked' | 'indeterminate'
   checkedLadderLevels: ReadonlySet<LadderLevel>
-  difficulty: boolean
+  lowerDifficulty: boolean
+  higherDifficulty: boolean
   onToggleAll: (wantSelected: boolean) => void
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
-  onDifficultyChange: (want: boolean) => void
+  onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
   onClearToGlobal: () => void
 }
 
@@ -18,7 +19,8 @@ export function StationListToolbar({
   listNodes,
   listState,
   checkedLadderLevels,
-  difficulty,
+  lowerDifficulty,
+  higherDifficulty,
   onToggleAll,
   onLadderToggle,
   onDifficultyChange,
@@ -56,7 +58,8 @@ export function StationListToolbar({
           compact
           enabled
           checkedLadderLevels={checkedLadderLevels}
-          difficulty={difficulty}
+          lowerDifficulty={lowerDifficulty}
+          higherDifficulty={higherDifficulty}
           onLadderToggle={onLadderToggle}
           onDifficultyChange={onDifficultyChange}
         />

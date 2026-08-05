@@ -155,10 +155,18 @@ export function FiltersStrip({
         <label className="filter-option">
           <input
             type="checkbox"
-            checked={criteria.includeDifficulty}
-            onChange={(e) => patch({ includeDifficulty: e.target.checked })}
+            checked={criteria.includeLowerDifficulty}
+            onChange={(e) => patch({ includeLowerDifficulty: e.target.checked })}
           />
-          Include {LEVEL_LABELS.difficulty}
+          Include {LEVEL_LABELS.lowerDifficulty}
+        </label>
+        <label className="filter-option">
+          <input
+            type="checkbox"
+            checked={criteria.includeHigherDifficulty}
+            onChange={(e) => patch({ includeHigherDifficulty: e.target.checked })}
+          />
+          Include {LEVEL_LABELS.higherDifficulty}
         </label>
       </>,
     )

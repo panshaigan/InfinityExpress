@@ -1,5 +1,5 @@
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
-import type { LadderLevel } from '../lib/levels'
+import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
 const GAMES: SelectedGame[] = ['bg1', 'bg2', 'eet', 'iwd', 'pst']
@@ -8,9 +8,10 @@ interface Props {
   game: SelectedGame | null
   onChoose: (game: SelectedGame) => void
   checkedLadderLevels: ReadonlySet<LadderLevel>
-  difficulty: boolean
+  lowerDifficulty: boolean
+  higherDifficulty: boolean
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
-  onDifficultyChange: (want: boolean) => void
+  onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
   canGoNext: boolean
   onNext: () => void
 }
@@ -19,7 +20,8 @@ export function EngineStation({
   game,
   onChoose,
   checkedLadderLevels,
-  difficulty,
+  lowerDifficulty,
+  higherDifficulty,
   onLadderToggle,
   onDifficultyChange,
   canGoNext,
@@ -49,7 +51,8 @@ export function EngineStation({
         <LevelSelectStrip
           enabled={!!game}
           checkedLadderLevels={checkedLadderLevels}
-          difficulty={difficulty}
+          lowerDifficulty={lowerDifficulty}
+          higherDifficulty={higherDifficulty}
           onLadderToggle={onLadderToggle}
           onDifficultyChange={onDifficultyChange}
         />

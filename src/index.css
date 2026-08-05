@@ -932,7 +932,12 @@ body {
   border-color: #b89ad4;
 }
 
-.badge-level-difficulty {
+.badge-level-lowerDifficulty {
+  color: #c4a35a;
+  border-color: #c4a35a;
+}
+
+.badge-level-higherDifficulty {
   color: #d48a8a;
   border-color: #d48a8a;
 }

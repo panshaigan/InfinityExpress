@@ -460,7 +460,7 @@
 					<component id="ub:5" label="The Pai'Na/Spider's Bane Quest" level="vanillaPlus" />
 					<component id="ub:6" label="Restored Crooked Crane Inn" level="restoration" />
 					<component id="ub:7" label="Restored Encounters" level="restoration" />
-					<component id="ub:3" label="Unfinished Business - &quot;Cat and Mouse&quot; (Bodhi hunts you in Spellhold) by Ghreyfain" level="difficulty" />
+					<component id="ub:3" label="Unfinished Business - &quot;Cat and Mouse&quot; (Bodhi hunts you in Spellhold) by Ghreyfain" level="higherDifficulty" />
 					<component id="ub:8" label="Artemis Entreri in Bodhi's Lair" level="vanillaPlus" />
 					<component id="ub:12" label="Item Restorations" level="restoration" />
 					<component id="ub:17" label="Corrected Character Names and Biographies" level="fixes" />
@@ -479,7 +479,7 @@
 					<component id="Almaterias_Restoration_Project-Lich_Deril" label="Lich Deril" />
 					<component id="Almaterias_Restoration_Project-Restored_Random_Encounters" label="Restored Random Encounters" />
 					<component id="Almaterias_Restoration_Project-Minor_Restorations" label="Minor Restorations" />
-					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" label="Alternate Slayer Change" level="difficulty" />
+					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" label="Alternate Slayer Change" level="higherDifficulty" />
 					<component id="Almaterias_Restoration_Project-Restored_Final_Slayer_Dream" label="Restored Final Slayer Dream" />
 					<component id="Almaterias_Restoration_Project-Restored_Waukeens_Promenade_Cutscene" label="Restored Waukeen's Promenade Cutscene" />
 				</mod>
@@ -791,7 +791,7 @@
 				<component id="HouseTweaks:16" label="Good-Aligned Roleplay Rewards" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="HouseTweaks:44" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="cd_tweaks_disable_malchor" label="Keep Drizzt's Loot, Disable Malchor Harpell" modId="Tweaks-Anthology" level="blendWell" />
-				<component id="cd_tweaks_improved_athkatla_guard" label="Improved Athkatlan City Guard" modId="Tweaks-Anthology" level="difficulty" />
+				<component id="cd_tweaks_improved_athkatla_guard" label="Improved Athkatlan City Guard" modId="Tweaks-Anthology" level="higherDifficulty" />
 				<component id="cd_tweaks_more_sensible_cowled_wizards" label="More Sensible Cowled Wizards" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
 				<component id="ZSTweaks:3010" label="Make inappropriately aligned creatures in BG2 more correct" modId="ZSTweaks" level="fixes" />
 				<component id="ForcedSlayerTransform:0" label="Forced Slayer Transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" level="extended" />
@@ -1034,7 +1034,7 @@
 					<component id="cd_tweaks_removable_npc_items" label="Removable NPC Items" modId="Tweaks-Anthology" level="vanillaPlus" />
 				</update>
 				<delete label="Remove" noBranches="1">
-					<mod id="SwordCoastStratagems" level="difficulty">
+					<mod id="SwordCoastStratagems" level="higherDifficulty">
 						<component id="stratagems:4215" label="Remove unrealistically helpful items from certain areas" />
 						<component id="stratagems:4217" label="Remove ammo up to the +2 level from random containers" />
 					</mod>
@@ -1050,7 +1050,7 @@
 					<component id="#L-BG2-CUTSCENES" label="Remove cut scenes that the PC shouldn't be privy to" level="blendWell" />
 				</mod>
 				<component id="stratagems:4051" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="blendWell" />
-				<component id="randomiser:10100" label="Remove Protection from Undead Scrolls from all stores" level="difficulty" engine="bg,eet" modId="randomiser" />
+				<component id="randomiser:10100" label="Remove Protection from Undead Scrolls from all stores" level="higherDifficulty" engine="bg,eet" modId="randomiser" />
 				<component id="stratagems:3041" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" level="blendWell" />
 				<component id="cd_tweaks_death_cam" label="Death Cam" level="vanillaPlus" />
 			</tweaks>
@@ -1085,7 +1085,7 @@
 						<mod id="ZSTweaks">
 							<component id="ForgottenArmament-ReplaceSpeedBoots" label="Replace Boots of Speed (Paws of the Cheetah)" modId="forgotten-armament" />
 							<component id="ForgottenArmament-StatIncreaseItems" label="Update Items Setting an Ability Score to Increment the Increase" modId="forgotten-armament" />
-							<component id="ZSTweaks:1547" label="Make Protection from Undead more balanced" level="difficulty" />
+							<component id="ZSTweaks:1547" label="Make Protection from Undead more balanced" level="higherDifficulty" />
 							<component id="ZSTweaks:1203" label="Make Girdle of Fortitude set Constitution to 18 on equip" level="blendWell" />
 							<component id="ZSTweaks:1216" label="Make Ankheg's Plate grant 20% acid resistance" level="blendWell"  />
 							<component id="ZSTweaks:1317" label="Make the basic arcane robes more remarkable" level="blendWell"  />
@@ -1404,8 +1404,8 @@
 		<component id="cd_tweaks_ne_korgan" label="Change Korgan to Neutral Evil Alignment" modId="Tweaks-Anthology" />
 	</npcClassAdjustements>
 
-	<combat level="difficulty">
-		<alternatives label="Remove backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod">
+	<combat level="higherDifficulty">
+		<alternatives label="Remove backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod" level="lowerDifficulty">
 			<component id="ZS_CanIStabYou:99" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd"/>
 			<component id="ZS_CanIStabYou:106" label="Keep reasonable backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" default="1" engine="bg,eet,iwd" level="blendWell" />
 		</alternatives>
@@ -1434,14 +1434,14 @@
 				<component id="ZSTweaks:3050" label="Make the Balor's vorpal attack not guaranteed to succeed but affected by a saving throw" level="blendWell" engine="bg2,eet" />
 				<component id="ZSTweaks:3070" label="Make lions and other cat creatures not slow as molasses" level="fixes" />
 				<component id="ZSTweaks:3080" label="Make creature on-hit effects that should be natural not behave as magical attacks" level="fixes" />
-				<component id="ZSTweaks:3090" label="Make Shadow creatures slightly more dangerous" level="difficulty" engine="bg,iwd,eet" />
-				<component id="ZSTweaks:3130" label="Make minotaurs tougher and more dangerous" level="difficulty" engine="bg,iwd,eet" />
-				<component id="ZSTweaks:3140" label="Make ogre / oni mages regenerating fiends, as per PnP" level="difficulty" engine="bg,iwd,eet" />
+				<component id="ZSTweaks:3090" label="Make Shadow creatures slightly more dangerous" level="higherDifficulty" engine="bg,iwd,eet" />
+				<component id="ZSTweaks:3130" label="Make minotaurs tougher and more dangerous" level="higherDifficulty" engine="bg,iwd,eet" />
+				<component id="ZSTweaks:3140" label="Make ogre / oni mages regenerating fiends, as per PnP" level="higherDifficulty" engine="bg,iwd,eet" />
 			</mod>
 			<component id="METweaks:2200" label="Make creatures take up less space" modId="Olvyn-Tweaks" />
 		</tweaks>
 		<ai label="AI Enhancements / SwordCoastStratagems (SCS)">
-			<component id="METweaks:2400" label="Make enemies change their attack targets more quickly" level="difficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
+			<component id="METweaks:2400" label="Make enemies change their attack targets more quickly" level="higherDifficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
 			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="iwd">
 				<component id="stratagems:6020" label="Smarter general AI and better calls for help" />
 				<component id="stratagems:6700" label="Revised Icewind Dale Undead" />
@@ -1802,7 +1802,7 @@
 		</mod>
 		<mod id="A7-MiscTweaks" label="Tweaks" unfolded="1">
 			<component id="A7_MISCTWEAKS_DUALCLASS_BACK_BUTTON" label="Reactivate 'Back' button in the Dual-Class menu" modId="A7-MiscTweaks" level="fixes" />
-			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" label="Disable creature tooltips" modId="A7-MiscTweaks" level="difficulty" engine="bg,eet,iwd,pst" />
+			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" label="Disable creature tooltips" modId="A7-MiscTweaks" level="higherDifficulty" engine="bg,eet,iwd,pst" />
 		</mod>
 		
 	</ui>
@@ -1910,7 +1910,7 @@
 		</tweaks>
 	</kits>
 
-	<randomisation engine="bg,eet" level="difficulty">
+	<randomisation engine="bg,eet" level="higherDifficulty">
 		<alternatives label="Enemies" unfolded="1">
 			<mod id="BGSpawn" label="BG1 Spawn System" engine="bg1,eet">
 				<component id="BGSpawn-Main" label="BGSpawn system based on levels and party members" core="1" />
@@ -2046,12 +2046,12 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 				<component id="ZG-GRAION-STORES-FROMPLAYERS-150" label="Increase to 150%" />
 				<component id="ZG-GRAION-STORES-FROMPLAYERS-200" label="Increase to 200%" />
 			</alternatives>
-			<component id="ZG-EQUIP-WHAT-I-CAN" label="Equip items from creatures' inventory to fill empty slots" level="difficulty" />
+			<component id="ZG-EQUIP-WHAT-I-CAN" label="Equip items from creatures' inventory to fill empty slots" level="higherDifficulty" />
 		</mod>
 		<alternatives label="Alter identification mechanics" engine="bg,eet,iwd,pst">
-			<group label="Make it more strict" level="difficulty">
+			<group label="Make it more strict" level="higherDifficulty">
 				<component id="cd_tweaks_shopkeeper_id_lore" label="Identification ability is limited to storekeeper's lore" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" desc="Any storekeeper can identify items up to their personal lore value, regardless of class." />
-				<component id="cd_tweaks_lore_for_gems_potions" label="Gems and Potions Require Identification" modId="Tweaks-Anthology" level="difficulty" engine="bg,eet,iwd" />
+				<component id="cd_tweaks_lore_for_gems_potions" label="Gems and Potions Require Identification" modId="Tweaks-Anthology" level="higherDifficulty" engine="bg,eet,iwd" />
 			</group>
 			<component id="cd_tweaks_id_all_items" label="Identify All Items" modId="Tweaks-Anthology" />
 		</alternatives>

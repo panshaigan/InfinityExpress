@@ -9,6 +9,11 @@ export const LADDER_LEVELS = [
 
 export type LadderLevel = (typeof LADDER_LEVELS)[number]
 
+/** Off-ladder difficulty opt-in tokens (independent of the install ladder). */
+export const DIFFICULTY_LEVELS = ['lowerDifficulty', 'higherDifficulty'] as const
+
+export type DifficultyLevel = (typeof DIFFICULTY_LEVELS)[number]
+
 /** Known install-sequence level tokens and user-facing UI labels. */
 export const LEVEL_LABELS: Record<string, string> = {
   fixes: 'Fixes',
@@ -17,11 +22,18 @@ export const LEVEL_LABELS: Record<string, string> = {
   blendWell: 'Well blended',
   restructure: 'Restructure',
   extended: 'Extended',
-  difficulty: 'Difficulty',
+  lowerDifficulty: 'Lower difficulty',
+  higherDifficulty: 'Higher difficulty',
 }
 
 /** Levels shown as filter chips (restructure shares Well blended). */
 export const FILTER_LADDER_LEVELS: LadderLevel[] = [...LADDER_LEVELS]
+
+export function isDifficultyLevel(level: string | undefined): level is DifficultyLevel {
+  return (
+    level === 'lowerDifficulty' || level === 'higherDifficulty'
+  )
+}
 
 export function levelBadgeLabel(level: string): string {
   return LEVEL_LABELS[level] ?? level
@@ -34,19 +46,24 @@ export function levelBadgeClass(level: string): string {
 
 /**
  * Filter rank for cumulative / exact matching.
- * `restructure` shares Well blended. `difficulty` and unknown → null.
+ * `restructure` shares Well blended. Difficulty tokens and unknown → null.
  */
 export function levelFilterRank(level: string | undefined): number | null {
   if (!level) return null
-  if (level === 'difficulty') return null
+  if (isDifficultyLevel(level)) return null
   const token = level === 'restructure' ? 'blendWell' : level
   const idx = LADDER_LEVELS.indexOf(token as LadderLevel)
   return idx >= 0 ? idx : null
 }
 
+export interface DifficultyFilterIncludes {
+  includeLowerDifficulty: boolean
+  includeHigherDifficulty: boolean
+}
+
 /**
  * Whether a node's effectiveLevel passes the level filter.
- * Difficulty only when `includeDifficulty` is on (even with no ladder max).
+ * Difficulty tokens only when their include flag is on (even with no ladder max).
  * No ladder selection → every non-difficulty level passes.
  * Missing level fails when a ladder filter is active (treated as above the ladder).
  */
@@ -54,9 +71,10 @@ export function levelPassesFilter(
   level: string | undefined,
   maxLevel: string | null,
   exact: boolean,
-  includeDifficulty: boolean,
+  difficultyIncludes: DifficultyFilterIncludes,
 ): boolean {
-  if (level === 'difficulty') return includeDifficulty
+  if (level === 'lowerDifficulty') return difficultyIncludes.includeLowerDifficulty
+  if (level === 'higherDifficulty') return difficultyIncludes.includeHigherDifficulty
   if (maxLevel === null) return true
   if (!level) return false
 

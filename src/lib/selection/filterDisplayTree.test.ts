@@ -81,42 +81,69 @@ describe('levelFilterRank', () => {
     expect(levelFilterRank('blendWell')).toBe(3)
     expect(levelFilterRank('restructure')).toBe(3)
     expect(levelFilterRank('extended')).toBe(4)
-    expect(levelFilterRank('difficulty')).toBeNull()
+    expect(levelFilterRank('lowerDifficulty')).toBeNull()
+    expect(levelFilterRank('higherDifficulty')).toBeNull()
     expect(levelFilterRank(undefined)).toBeNull()
   })
 })
 
+const NO_DIFF = {
+  includeLowerDifficulty: false,
+  includeHigherDifficulty: false,
+} as const
+
+const ALL_DIFF = {
+  includeLowerDifficulty: true,
+  includeHigherDifficulty: true,
+} as const
+
 describe('levelPassesFilter', () => {
   it('passes non-difficulty levels when no ladder max is set', () => {
-    expect(levelPassesFilter('extended', null, false, false)).toBe(true)
-    expect(levelPassesFilter(undefined, null, false, false)).toBe(true)
+    expect(levelPassesFilter('extended', null, false, NO_DIFF)).toBe(true)
+    expect(levelPassesFilter(undefined, null, false, NO_DIFF)).toBe(true)
   })
 
   it('is cumulative by default', () => {
-    expect(levelPassesFilter('fixes', 'vanillaPlus', false, false)).toBe(true)
-    expect(levelPassesFilter('restoration', 'vanillaPlus', false, false)).toBe(true)
-    expect(levelPassesFilter('vanillaPlus', 'vanillaPlus', false, false)).toBe(true)
-    expect(levelPassesFilter('blendWell', 'vanillaPlus', false, false)).toBe(false)
-    expect(levelPassesFilter('restructure', 'vanillaPlus', false, false)).toBe(false)
+    expect(levelPassesFilter('fixes', 'vanillaPlus', false, NO_DIFF)).toBe(true)
+    expect(levelPassesFilter('restoration', 'vanillaPlus', false, NO_DIFF)).toBe(true)
+    expect(levelPassesFilter('vanillaPlus', 'vanillaPlus', false, NO_DIFF)).toBe(true)
+    expect(levelPassesFilter('blendWell', 'vanillaPlus', false, NO_DIFF)).toBe(false)
+    expect(levelPassesFilter('restructure', 'vanillaPlus', false, NO_DIFF)).toBe(false)
   })
 
   it('exact mode limits to the bucket (restructure with blendWell)', () => {
-    expect(levelPassesFilter('fixes', 'blendWell', true, false)).toBe(false)
-    expect(levelPassesFilter('blendWell', 'blendWell', true, false)).toBe(true)
-    expect(levelPassesFilter('restructure', 'blendWell', true, false)).toBe(true)
-    expect(levelPassesFilter('extended', 'blendWell', true, false)).toBe(false)
+    expect(levelPassesFilter('fixes', 'blendWell', true, NO_DIFF)).toBe(false)
+    expect(levelPassesFilter('blendWell', 'blendWell', true, NO_DIFF)).toBe(true)
+    expect(levelPassesFilter('restructure', 'blendWell', true, NO_DIFF)).toBe(true)
+    expect(levelPassesFilter('extended', 'blendWell', true, NO_DIFF)).toBe(false)
   })
 
-  it('excludes difficulty unless includeDifficulty', () => {
-    expect(levelPassesFilter('difficulty', 'extended', false, false)).toBe(false)
-    expect(levelPassesFilter('difficulty', 'extended', false, true)).toBe(true)
-    expect(levelPassesFilter('difficulty', null, false, false)).toBe(false)
-    expect(levelPassesFilter('difficulty', null, false, true)).toBe(true)
+  it('excludes difficulty tokens unless their include flag is on', () => {
+    expect(levelPassesFilter('higherDifficulty', 'extended', false, NO_DIFF)).toBe(false)
+    expect(
+      levelPassesFilter('higherDifficulty', 'extended', false, {
+        includeLowerDifficulty: false,
+        includeHigherDifficulty: true,
+      }),
+    ).toBe(true)
+    expect(levelPassesFilter('lowerDifficulty', null, false, NO_DIFF)).toBe(false)
+    expect(
+      levelPassesFilter('lowerDifficulty', null, false, {
+        includeLowerDifficulty: true,
+        includeHigherDifficulty: false,
+      }),
+    ).toBe(true)
+    expect(
+      levelPassesFilter('higherDifficulty', null, false, {
+        includeLowerDifficulty: true,
+        includeHigherDifficulty: false,
+      }),
+    ).toBe(false)
   })
 
   it('excludes unleveled nodes when filtering by level', () => {
-    expect(levelPassesFilter(undefined, 'fixes', true, false)).toBe(false)
-    expect(levelPassesFilter(undefined, 'extended', false, true)).toBe(false)
+    expect(levelPassesFilter(undefined, 'fixes', true, NO_DIFF)).toBe(false)
+    expect(levelPassesFilter(undefined, 'extended', false, ALL_DIFF)).toBe(false)
   })
 })
 
@@ -147,8 +174,12 @@ describe('filterDisplayTree', () => {
       component('b', { label: 'Beta Quest', effectiveLevel: 'blendWell', tags: 'bigQuest' }),
       component('c', {
         label: 'Hard Mode',
-        effectiveLevel: 'difficulty',
+        effectiveLevel: 'higherDifficulty',
         stability: 'beta',
+      }),
+      component('cLow', {
+        label: 'Mild Mode',
+        effectiveLevel: 'lowerDifficulty',
       }),
       component('d', {
         label: 'Hidden Req',
@@ -174,7 +205,11 @@ describe('filterDisplayTree', () => {
   it('filters cumulatively by level (required/hidden excluded by defaults)', () => {
     const out = filterDisplayTree(
       tree,
-      criteria({ maxLevel: 'vanillaPlus', includeDifficulty: false }),
+      criteria({
+        maxLevel: 'vanillaPlus',
+        includeLowerDifficulty: false,
+        includeHigherDifficulty: false,
+      }),
     )
     expect(ids(out)).toEqual(['a'])
   })
@@ -189,31 +224,39 @@ describe('filterDisplayTree', () => {
   it('exact blendWell includes restructure', () => {
     const out = filterDisplayTree(
       tree,
-      criteria({ maxLevel: 'blendWell', levelExact: true, includeDifficulty: false }),
+      criteria({
+        maxLevel: 'blendWell',
+        levelExact: true,
+        includeLowerDifficulty: false,
+        includeHigherDifficulty: false,
+      }),
     )
     expect(ids(out)).toEqual(['b', 'e'])
   })
 
-  it('ORs difficulty when includeDifficulty', () => {
+  it('ORs difficulty tokens when their include flags are on', () => {
     const out = filterDisplayTree(
       tree,
       criteria({
         maxLevel: 'fixes',
-        includeDifficulty: true,
+        includeLowerDifficulty: true,
+        includeHigherDifficulty: true,
       }),
     )
-    expect(ids(out)).toEqual(['a', 'c'])
+    expect(ids(out)).toEqual(['a', 'c', 'cLow'])
   })
 
-  it('hides difficulty under All levels when includeDifficulty is off', () => {
+  it('hides difficulty under All levels when include flags are off', () => {
     const withDiff = filterDisplayTree(
       tree,
       criteria({
         maxLevel: null,
-        includeDifficulty: true,
+        includeLowerDifficulty: true,
+        includeHigherDifficulty: true,
       }),
     )
     expect(ids(withDiff)).toContain('c')
+    expect(ids(withDiff)).toContain('cLow')
     expect(ids(withDiff)).toContain('a')
     expect(ids(withDiff)).toContain('nolevel')
 
@@ -221,10 +264,12 @@ describe('filterDisplayTree', () => {
       tree,
       criteria({
         maxLevel: null,
-        includeDifficulty: false,
+        includeLowerDifficulty: false,
+        includeHigherDifficulty: false,
       }),
     )
     expect(ids(withoutDiff)).not.toContain('c')
+    expect(ids(withoutDiff)).not.toContain('cLow')
     expect(ids(withoutDiff)).toContain('a')
     expect(ids(withoutDiff)).toContain('nolevel')
   })
@@ -232,7 +277,7 @@ describe('filterDisplayTree', () => {
   it('always includes alpha/beta components (no stability filter)', () => {
     const out = filterDisplayTree(tree, criteria())
     expect(ids(out)).toContain('c')
-    expect(ids(out)).toEqual(['a', 'b', 'c', 'e', 'f', 'nolevel'])
+    expect(ids(out)).toEqual(['a', 'b', 'c', 'cLow', 'e', 'f', 'nolevel'])
   })
 
   it('tag allow-list: unchecking hides that tag; untagged still show', () => {
@@ -240,7 +285,7 @@ describe('filterDisplayTree', () => {
       tree,
       criteria({ tags: new Set(['smallQuest']) }),
     )
-    expect(ids(withoutBig)).toEqual(['a', 'c', 'e', 'f', 'nolevel'])
+    expect(ids(withoutBig)).toEqual(['a', 'c', 'cLow', 'e', 'f', 'nolevel'])
   })
 
   it('only checked tags hides untagged', () => {
@@ -259,6 +304,7 @@ describe('filterDisplayTree', () => {
       'a',
       'b',
       'c',
+      'cLow',
       'e',
       'f',
       'nolevel',
@@ -267,6 +313,7 @@ describe('filterDisplayTree', () => {
       'a',
       'b',
       'c',
+      'cLow',
       'd',
       'reqVis',
       'e',
@@ -320,7 +367,12 @@ describe('filterDisplayTree', () => {
   it('keeps ancestor groups for matching leaves', () => {
     const out = filterDisplayTree(
       tree,
-      criteria({ maxLevel: 'fixes', levelExact: true, includeDifficulty: false }),
+      criteria({
+        maxLevel: 'fixes',
+        levelExact: true,
+        includeLowerDifficulty: false,
+        includeHigherDifficulty: false,
+      }),
     )
     expect(out).toHaveLength(1)
     expect(out[0].node.attrs.label).toBe('g1')

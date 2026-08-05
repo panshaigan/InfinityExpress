@@ -1,5 +1,9 @@
 import { engineMatches } from '../engine/matchEngine'
-import { levelFilterRank, type LadderLevel } from '../levels'
+import {
+  levelFilterRank,
+  type DifficultyLevel,
+  type LadderLevel,
+} from '../levels'
 import { evalConditionExpr } from './conditions'
 import type { DisplayNode } from './visibility'
 import {
@@ -403,13 +407,15 @@ export function applyLadderLevelSelection(
 }
 
 /**
- * Select or clear only difficulty-leveled components. Ladder / unleveled untouched.
- * When `scope` is set, only components in that id set are cleared/selected.
+ * Select or clear components for one difficulty token. Ladder / unleveled / other
+ * difficulty tier untouched. When `scope` is set, only components in that id set
+ * are cleared/selected.
  */
 export function setDifficultySelection(
   model: InstallSequenceModel,
   selected: ReadonlySet<string>,
   game: SelectedGame,
+  token: DifficultyLevel,
   wantSelected: boolean,
   scope?: LevelSelectionScope,
 ): SelectionSet {
@@ -418,7 +424,7 @@ export function setDifficultySelection(
   if (!wantSelected) {
     for (const c of model.componentsInOrder) {
       if (!inLevelScope(c.componentId, scope)) continue
-      if (c.effectiveLevel !== 'difficulty') continue
+      if (c.effectiveLevel !== token) continue
       if (!engineMatches(c.effectiveEngine, game)) continue
       if (c.attrs.required) continue
       next.delete(c.componentId)
@@ -428,13 +434,13 @@ export function setDifficultySelection(
   }
 
   const coreFilter = (c: ComponentNode) =>
-    inLevelScope(c.componentId, scope) && c.effectiveLevel === 'difficulty'
+    inLevelScope(c.componentId, scope) && c.effectiveLevel === token
   let guard = 0
   while (guard++ < 50) {
     const candidates: ComponentNode[] = []
     for (const c of model.componentsInOrder) {
       if (!inLevelScope(c.componentId, scope)) continue
-      if (c.effectiveLevel !== 'difficulty') continue
+      if (c.effectiveLevel !== token) continue
       if (!engineMatches(c.effectiveEngine, game)) continue
       if (!passesDisplayGates(c, next)) continue
       candidates.push(c)
@@ -447,17 +453,19 @@ export function setDifficultySelection(
   return next
 }
 
-/** Apply remembered global ladder + difficulty to a station scope (clear extras beyond baseline). */
+/** Apply remembered global ladder + difficulty toggles to a station scope. */
 export function applyGlobalLevelBaseline(
   model: InstallSequenceModel,
   selected: ReadonlySet<string>,
   game: SelectedGame,
   ladder: ReadonlySet<LadderLevel>,
-  difficulty: boolean,
+  lowerDifficulty: boolean,
+  higherDifficulty: boolean,
   scope: ReadonlySet<string>,
 ): SelectionSet {
   let next = applyLadderLevelSelection(model, selected, game, ladder, scope)
-  next = setDifficultySelection(model, next, game, difficulty, scope)
+  next = setDifficultySelection(model, next, game, 'lowerDifficulty', lowerDifficulty, scope)
+  next = setDifficultySelection(model, next, game, 'higherDifficulty', higherDifficulty, scope)
   return next
 }
 

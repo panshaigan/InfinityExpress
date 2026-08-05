@@ -318,8 +318,9 @@ const LEVELED = `<?xml version="1.0"?>
     <component id="bw:a" label="BW A" level="blendWell" />
     <component id="qual:a" label="Extended A" level="extended" />
     <component id="qual:req" label="Extended required" level="extended" required="1" />
-    <component id="diff:a" label="Diff A" level="difficulty" />
-    <component id="diff:b" label="Diff B" level="difficulty" />
+    <component id="diff:a" label="Diff A" level="higherDifficulty" />
+    <component id="diff:b" label="Diff B" level="higherDifficulty" />
+    <component id="diffLow:a" label="Lower Diff A" level="lowerDifficulty" />
     <component id="plain" label="Unleveled" />
     <alternatives label="Level alts">
       <component id="alt:rest" label="Alt rest" level="restoration" />
@@ -379,7 +380,7 @@ describe('level mass-check', () => {
       'bg1',
       new Set(['fixes', 'restoration', 'vanillaPlus', 'blendWell', 'extended']),
     )
-    selected = setDifficultySelection(model, selected, 'bg1', true)
+    selected = setDifficultySelection(model, selected, 'bg1', 'higherDifficulty', true)
     expect(selected.has('qual:a')).toBe(true)
     expect(selected.has('diff:a')).toBe(true)
 
@@ -393,7 +394,7 @@ describe('level mass-check', () => {
     expect(selected.has('diff:b')).toBe(true)
   })
 
-  it('Difficulty toggle only flips difficulty ids', () => {
+  it('Difficulty toggle only flips that difficulty token', () => {
     let selected = createInitialSelection(model, 'bg1')
     selected = applyLadderLevelSelection(
       model,
@@ -401,18 +402,21 @@ describe('level mass-check', () => {
       'bg1',
       new Set(['fixes', 'restoration']),
     )
-    selected = setDifficultySelection(model, selected, 'bg1', true)
+    selected = setDifficultySelection(model, selected, 'bg1', 'higherDifficulty', true)
+    selected = setDifficultySelection(model, selected, 'bg1', 'lowerDifficulty', true)
     expect(selected.has('fix:a')).toBe(true)
     expect(selected.has('rest:a')).toBe(true)
     expect(selected.has('diff:a')).toBe(true)
     expect(selected.has('diff:b')).toBe(true)
+    expect(selected.has('diffLow:a')).toBe(true)
     expect(selected.has('plain')).toBe(false)
 
-    selected = setDifficultySelection(model, selected, 'bg1', false)
+    selected = setDifficultySelection(model, selected, 'bg1', 'higherDifficulty', false)
     expect(selected.has('fix:a')).toBe(true)
     expect(selected.has('rest:a')).toBe(true)
     expect(selected.has('diff:a')).toBe(false)
     expect(selected.has('diff:b')).toBe(false)
+    expect(selected.has('diffLow:a')).toBe(true)
   })
 
   it('required ladder component above max stays selected', () => {
@@ -452,12 +456,12 @@ const SCOPED_LEVELS = `<?xml version="1.0"?>
   <base label="Base" engine="bg1,eet">
     <component id="base:fix" label="Base fix" level="fixes" />
     <component id="base:rest" label="Base rest" level="restoration" />
-    <component id="base:diff" label="Base diff" level="difficulty" />
+    <component id="base:diff" label="Base diff" level="higherDifficulty" />
   </base>
   <ui label="UI" engine="bg1,eet">
     <component id="ui:fix" label="UI fix" level="fixes" />
     <component id="ui:rest" label="UI rest" level="restoration" />
-    <component id="ui:diff" label="UI diff" level="difficulty" />
+    <component id="ui:diff" label="UI diff" level="higherDifficulty" />
   </ui>
 </installSequence>`
 
@@ -489,7 +493,7 @@ describe('scoped level mass-check', () => {
       'bg1',
       new Set(['fixes', 'restoration']),
     )
-    selected = setDifficultySelection(model, selected, 'bg1', true)
+    selected = setDifficultySelection(model, selected, 'bg1', 'higherDifficulty', true)
     expect(selected.has('ui:rest')).toBe(true)
     expect(selected.has('ui:diff')).toBe(true)
 
@@ -498,6 +502,7 @@ describe('scoped level mass-check', () => {
       selected,
       'bg1',
       new Set(['fixes']),
+      false,
       false,
       uiScope,
     )

@@ -1,15 +1,18 @@
 import {
+  DIFFICULTY_LEVELS,
   FILTER_LADDER_LEVELS,
   LEVEL_LABELS,
+  type DifficultyLevel,
   type LadderLevel,
 } from '../lib/levels'
 
 interface Props {
   enabled: boolean
   checkedLadderLevels: ReadonlySet<LadderLevel>
-  difficulty: boolean
+  lowerDifficulty: boolean
+  higherDifficulty: boolean
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
-  onDifficultyChange: (want: boolean) => void
+  onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
   /** Dense chips without title/lede — for station title panel. */
   compact?: boolean
 }
@@ -17,11 +20,17 @@ interface Props {
 export function LevelSelectStrip({
   enabled,
   checkedLadderLevels,
-  difficulty,
+  lowerDifficulty,
+  higherDifficulty,
   onLadderToggle,
   onDifficultyChange,
   compact = false,
 }: Props) {
+  const difficultyChecked: Record<DifficultyLevel, boolean> = {
+    lowerDifficulty,
+    higherDifficulty,
+  }
+
   return (
     <div
       className={`level-preselect${compact ? ' compact' : ''}${!enabled ? ' disabled' : ''}`}
@@ -54,17 +63,23 @@ export function LevelSelectStrip({
             </label>
           )
         })}
-        <label
-          className={`level-card${!enabled ? ' disabled' : ''}${difficulty ? ' active' : ''}`}
-        >
-          <input
-            type="checkbox"
-            checked={difficulty}
-            disabled={!enabled}
-            onChange={(e) => onDifficultyChange(e.target.checked)}
-          />
-          <span className="level-card-label">{LEVEL_LABELS.difficulty}</span>
-        </label>
+        {DIFFICULTY_LEVELS.map((token) => {
+          const checked = difficultyChecked[token]
+          return (
+            <label
+              key={token}
+              className={`level-card${!enabled ? ' disabled' : ''}${checked ? ' active' : ''}`}
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                disabled={!enabled}
+                onChange={(e) => onDifficultyChange(token, e.target.checked)}
+              />
+              <span className="level-card-label">{LEVEL_LABELS[token]}</span>
+            </label>
+          )
+        })}
       </div>
     </div>
   )

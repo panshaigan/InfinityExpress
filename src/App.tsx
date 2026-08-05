@@ -116,11 +116,12 @@ function preferredSub(main: DisplayNode, preferredTag: string | null): DisplayNo
 
 interface StationLevelPreset {
   ladder: Set<LadderLevel>
-  difficulty: boolean
+  lowerDifficulty: boolean
+  higherDifficulty: boolean
 }
 
 function emptyStationPreset(): StationLevelPreset {
-  return { ladder: new Set(), difficulty: false }
+  return { ladder: new Set(), lowerDifficulty: false, higherDifficulty: false }
 }
 
 export default function App() {
@@ -144,10 +145,12 @@ export default function App() {
     ),
   )
   const [ladderChecked, setLadderChecked] = useState<Set<LadderLevel>>(() => new Set())
-  const [difficultyPreset, setDifficultyPreset] = useState(false)
+  const [lowerDifficultyPreset, setLowerDifficultyPreset] = useState(false)
+  const [higherDifficultyPreset, setHigherDifficultyPreset] = useState(false)
   /** Last Engine-applied baseline; used by station “Reset to global”. */
   const [lastGlobalLadder, setLastGlobalLadder] = useState<Set<LadderLevel>>(() => new Set())
-  const [lastGlobalDifficulty, setLastGlobalDifficulty] = useState(false)
+  const [lastGlobalLowerDifficulty, setLastGlobalLowerDifficulty] = useState(false)
+  const [lastGlobalHigherDifficulty, setLastGlobalHigherDifficulty] = useState(false)
   const [stationLevelPresets, setStationLevelPresets] = useState(
     () => new Map<StationId, StationLevelPreset>(),
   )
@@ -312,9 +315,11 @@ export default function App() {
     setGame(next)
     setSelectedIds(createInitialSelection(model, next))
     setLadderChecked(new Set())
-    setDifficultyPreset(false)
+    setLowerDifficultyPreset(false)
+    setHigherDifficultyPreset(false)
     setLastGlobalLadder(new Set())
-    setLastGlobalDifficulty(false)
+    setLastGlobalLowerDifficulty(false)
+    setLastGlobalHigherDifficulty(false)
     setStationLevelPresets(new Map())
     setFinishedStations(new Set())
     setActiveStation('engine')
@@ -344,11 +349,19 @@ export default function App() {
     })
   }
 
-  function onDifficultyPresetChange(want: boolean) {
+  function onDifficultyPresetChange(
+    token: 'lowerDifficulty' | 'higherDifficulty',
+    want: boolean,
+  ) {
     if (!game) return
-    setDifficultyPreset(want)
-    setLastGlobalDifficulty(want)
-    setSelectedIds((prev) => setDifficultySelection(model, prev, game, want))
+    if (token === 'lowerDifficulty') {
+      setLowerDifficultyPreset(want)
+      setLastGlobalLowerDifficulty(want)
+    } else {
+      setHigherDifficultyPreset(want)
+      setLastGlobalHigherDifficulty(want)
+    }
+    setSelectedIds((prev) => setDifficultySelection(model, prev, game, token, want))
   }
 
   function onStationLadderToggle(level: LadderLevel, wantChecked: boolean) {
@@ -366,7 +379,11 @@ export default function App() {
         nextLadder.delete(level)
       }
       const next = new Map(prev)
-      next.set(stationId, { ladder: nextLadder, difficulty: current.difficulty })
+      next.set(stationId, {
+        ladder: nextLadder,
+        lowerDifficulty: current.lowerDifficulty,
+        higherDifficulty: current.higherDifficulty,
+      })
       setSelectedIds((prevSelected) =>
         applyLadderLevelSelection(model, prevSelected, game, nextLadder, scope),
       )
@@ -374,17 +391,26 @@ export default function App() {
     })
   }
 
-  function onStationDifficultyChange(want: boolean) {
+  function onStationDifficultyChange(
+    token: 'lowerDifficulty' | 'higherDifficulty',
+    want: boolean,
+  ) {
     if (!game || activeStation === 'engine') return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setStationLevelPresets((prev) => {
       const current = prev.get(stationId) ?? emptyStationPreset()
       const next = new Map(prev)
-      next.set(stationId, { ladder: current.ladder, difficulty: want })
+      next.set(stationId, {
+        ladder: current.ladder,
+        lowerDifficulty:
+          token === 'lowerDifficulty' ? want : current.lowerDifficulty,
+        higherDifficulty:
+          token === 'higherDifficulty' ? want : current.higherDifficulty,
+      })
       return next
     })
-    setSelectedIds((prev) => setDifficultySelection(model, prev, game, want, scope))
+    setSelectedIds((prev) => setDifficultySelection(model, prev, game, token, want, scope))
   }
 
   function onClearToGlobal() {
@@ -397,7 +423,8 @@ export default function App() {
         prev,
         game,
         lastGlobalLadder,
-        lastGlobalDifficulty,
+        lastGlobalLowerDifficulty,
+        lastGlobalHigherDifficulty,
         scope,
       ),
     )
@@ -405,7 +432,8 @@ export default function App() {
       const next = new Map(prev)
       next.set(stationId, {
         ladder: new Set(lastGlobalLadder),
-        difficulty: lastGlobalDifficulty,
+        lowerDifficulty: lastGlobalLowerDifficulty,
+        higherDifficulty: lastGlobalHigherDifficulty,
       })
       return next
     })
@@ -605,7 +633,8 @@ export default function App() {
                     game={game}
                     onChoose={chooseGame}
                     checkedLadderLevels={ladderChecked}
-                    difficulty={difficultyPreset}
+                    lowerDifficulty={lowerDifficultyPreset}
+                    higherDifficulty={higherDifficultyPreset}
                     onLadderToggle={onLadderToggle}
                     onDifficultyChange={onDifficultyPresetChange}
                     canGoNext={canGoNext}
@@ -650,7 +679,8 @@ export default function App() {
                       listNodes={listNodes}
                       listState={listCheckState}
                       checkedLadderLevels={activeStationPreset.ladder}
-                      difficulty={activeStationPreset.difficulty}
+                      lowerDifficulty={activeStationPreset.lowerDifficulty}
+                      higherDifficulty={activeStationPreset.higherDifficulty}
                       onToggleAll={onToggleAll}
                       onLadderToggle={onStationLadderToggle}
                       onDifficultyChange={onStationDifficultyChange}
