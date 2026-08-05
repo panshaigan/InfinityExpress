@@ -152,6 +152,21 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
                 </dd>
               </>
             )}
+            {mod?.readme && (
+              <>
+                <dt>Readme</dt>
+                <dd>
+                  <a
+                    className="detail-url"
+                    href={mod.readme}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {mod.readme}
+                  </a>
+                </dd>
+              </>
+            )}
             {mod?.release && (
               <>
                 <dt>Release</dt>

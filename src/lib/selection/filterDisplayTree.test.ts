@@ -408,6 +408,7 @@ describe('filterDisplayTree size and author', () => {
       {
         codename: 'small',
         url: '',
+        readme: '',
         release: '',
         version: '',
         sizeBytes: 100,
@@ -419,6 +420,7 @@ describe('filterDisplayTree size and author', () => {
       {
         codename: 'mid',
         url: '',
+        readme: '',
         release: '',
         version: '',
         sizeBytes: 500,
@@ -430,6 +432,7 @@ describe('filterDisplayTree size and author', () => {
       {
         codename: 'big',
         url: '',
+        readme: '',
         release: '',
         version: '',
         sizeBytes: 1000,

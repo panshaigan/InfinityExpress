@@ -126,10 +126,10 @@
 					</mod>
 				</alternatives>
 				<component id="METweaks:2800" label="Make it possible to enter the Nashkel Mines through the back cave entrance" modId="Olvyn-Tweaks" level="extended" />
-				<component id="METweaks:3000" label="Make it possible to enter the catacombs beneath Candlekeep early" modId="Olvyn-Tweaks" />
+				<component id="METweaks:3000" label="Make it possible to enter the catacombs beneath Candlekeep early" modId="Olvyn-Tweaks" level="extended" />
 				<alternatives label="Make Cloakwood areas available before completing the Bandit Camp">
-					<component id="cd_tweaks_reveal_cloakwood_1" label="First area only" modId="Tweaks-Anthology" level="blendWell" />
-					<component id="cd_tweaks_reveal_cloakwood_4" label="All of Cloakwood except the mines" modId="Tweaks-Anthology" level="extended" />
+					<component id="cd_tweaks_reveal_cloakwood_1" label="First area only" modId="Tweaks-Anthology" level="blendWell" default="1" />
+					<component id="cd_tweaks_reveal_cloakwood_4" label="All of Cloakwood except the mines" modId="Tweaks-Anthology" />
 				</alternatives>
 				<component id="cd_tweaks_change_cloakwood_trigger" label="Change Cloakwood Mine Chapter End Change Trigger to Non-TotSC Behavior" modId="Tweaks-Anthology" level="vanillaPlus" />
 				<mod id="Candlekeep-Revisited" label="Candlekeep Revisited" tags="smallQuest">
@@ -238,11 +238,6 @@
 				</mod>
 				<component id="AWizardDidIt-Blackhearts_BG1" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="blendWell" />
 				<component id="SotSC:0" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" level="extended" tags="smallQuest" />
-				<mod id="baldurian-bar-hop" label="Baldurian Bar Hop" tags="smallQuest" stability="beta">
-					<component id="baldurianbarhop:0" label="Thirst Things First" />
-					<component id="baldurianbarhop:10" label="Dress to Distress" />
-					<component id="baldurianbarhop:20" label="Fully Booked and Plot Twist" />
-				</mod>
 				<mod id="The_Calling" label="The Calling" level="extended" tags="bigQuest">
 					<component id="cd_the_calling_mage" label="Mage - The Cursed Bracers" />
 					<component id="cd_the_calling_fighter" label="Fighter - Expanded Gnoll Fortress" />
@@ -258,6 +253,11 @@
 					<component id="gorgon:0" label="Gorgon's Eye" core="1" />
 					<component id="gorgon:1" label="Give portraits to all characters added from this mod" alwaysIf="gorgon:0" noDisplay="1" />
 					<component id="gorgon:4" label="Add More Pickpocketable Items"/>
+				</mod>
+				<mod id="baldurian-bar-hop" label="Baldurian Bar Hop" tags="smallQuest" stability="beta">
+					<component id="baldurianbarhop:0" label="Thirst Things First" />
+					<component id="baldurianbarhop:10" label="Dress to Distress" />
+					<component id="baldurianbarhop:20" label="Fully Booked and Plot Twist" />
 				</mod>
 			</quest>
 			<npc label="Joinable NPCs">
@@ -454,6 +454,7 @@
 				</mod>
 				<component id="SoAExtended:1" label="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" tags="bigQuest" level="blendWell" />
 				<component id="cd_tweaks_reveal_ch6_wilderness" label="Reveal Wilderness Areas Before Chapter Six" level="extended" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" label="Faster Chapter One and Two Cutscenes and Dreams" modId="Tweaks-Anthology" />
 			</restructure>
 			<restorations label="Restorations" level="restoration">
 				<mod id="UnfinishedBusiness" label="Unfinished Business" tags="smallQuest">
@@ -687,17 +688,17 @@
 			<items label="Items">
 				<add label="New Items" noBranches="1" unfolded="1">
 					<component id="u#_under-represented_items" label="Underrepresented Items From Icewind Dale II" modId="Under-Respresented_Items" level="blendWell" />
-					<component id="L#-SKIECOST-SHOP" label="Brand new SoD-oriented items" modId="skie-the-cost-of-one-girls-soul" />
+					<component id="L#-SKIECOST-SHOP" label="Brand new SoD-oriented items" modId="skie-the-cost-of-one-girls-soul" level="extended" />
 					<component id="A7-IMPROVEDARCHER-BOWS_AND_AMMO" label="+4 arrows, bolts and powerful bows" modId="A7-ImprovedArcher" level="blendWell" />
-					<component id="cowledmenace:2100" label="Appropriate Items for High-Level Spellcasters" modId="CowledMenace" />
-					<component id="jarnip:0" label="Jarnip: New Bonus Merchant in the Adventurers Mart" modId="Jarnip" />
+					<component id="cowledmenace:2100" label="Appropriate Items for High-Level Spellcasters" modId="CowledMenace" level="extended" />
+					<component id="jarnip:0" label="Jarnip: New Bonus Merchant in the Adventurers Mart" modId="Jarnip" level="extended" />
 					<component id="PlanarItems:0" label="PlanarItems" modId="PlanarItems" />
 					<component id="cd_spc_creslyn_item_pack" label="Creslyn's Item Pack" modId="SP_Collection" />
 					<mod id="forgotten-armament" label="Forgotten Armament">
 						<component id="ForgottenArmament-RubyRay" label="Ruby Ray Scrolls in Trademeet Store" />
 						<component id="ForgottenArmament-FreedomScroll" label="Freedom Scrolls in Ribald's Store (Pre-Underdark)" />
 					</mod>
-					<component id="k0_iskp:3102" label="Import SoD items" modId="sod-items-to-bg2ee-eet" />
+					<component id="k0_iskp:3102" label="Import SoD items" modId="sod-items-to-bg2ee-eet" level="extended" />
 					<component id="hidden_adventures-silverdagger_ID" label="Silver Dagger in Irenicus Dungeon" level="blendWell" modId="hiddenadventure" />
 				</add>
 				<update label="Item changes">
@@ -797,13 +798,12 @@
 				<component id="ForcedSlayerTransform:0" label="Forced Slayer Transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" level="extended" />
 				<component id="randomiser:10210" label="Duergar merchants" engine="bg2,eet" modId="randomiser" level="vanillaPlus" desc="Make it so once you can access the special wares you retain the option of accessing the regular wares" />
 				<component id="cd_tweaks_alter_wounded_triggers" label="Alter HP Triggers for NPC Wounded Dialogues" modId="Tweaks-Anthology" desc="Raise the HP trigger level so that the player has a better chance of seeing wound banters" level="blendWell" />
-				<component id="cd_tweaks_cromwell_forge_time_0" label="Cromwell's Instant forging" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_cromwell_forge_time_0" label="Cromwell's Instant forging" modId="Tweaks-Anthology" level="lowerDifficulty"/>
 				<component id="cd_tweaks_yoshi_imoen_xp_transfer" label="Yoshimo to Imoen Experience Transfer" modId="Tweaks-Anthology" level="vanillaPlus" displayIfNot="Imoen4Ever-BGII-ImoenReturnsChapter2" />
 				<alternatives label="Multiple Strongholds">
-					<component id="cd_tweaks_multi_stronghold_no_restriction" label="For any class PC" modId="Tweaks-Anthology" level="extended" />
+					<component id="cd_tweaks_multi_stronghold_no_restriction" label="For any class PC" modId="Tweaks-Anthology" />
 					<component id="cd_tweaks_multi_stronghold_class_restriction" label="For Multi-Class PC" modId="Tweaks-Anthology" level="blendWell" />
 				</alternatives>
-				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" label="Faster Chapter One and Two Cutscenes and Dreams" modId="Tweaks-Anthology" />
 			</tweaks>
 			<restructure>
 				<alternatives label="License for spellcasting costs..." noBranches="1">
@@ -1002,7 +1002,7 @@
 					<component id="ForgottenArmament-AddItems" label="Forgotten Armament's New Items" modId="forgotten-armament" />
 				</add>
 				<update label="Item changes">
-					<component id="A7-CONVENIENTEENPCS-APPEARANCE-NPC_ITEMS_FOR_ALL" label="Make NPC-specific items available for everyone" modId="A7-NoEENPCs" />
+					<component id="A7-CONVENIENTEENPCS-APPEARANCE-NPC_ITEMS_FOR_ALL" label="Make Beamdog NPC-specific items available for everyone" modId="A7-NoEENPCs" />
 					<group label="Corrections" noBranches="1">
 						<mod modId="Tweaks-Anthology" level="blendWell">
 							<component id="cd_iwdification_spear_damage" label="Increase Spear Damage" modId="iwdification" />
@@ -1113,7 +1113,7 @@
 					<component id="cd_lore_from_learning_area" label="Exploring Areas Provides Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
 				</mod>
 				<component id="cd_tweaks_hide_vfx_from_invisible_enemies" label="Hide Visual Effects from Invisible Enemies" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
-				<component id="cd_tweaks_stores_sell_higher_stacks" label="Stores Sell Higher Stacks of Items" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_stores_sell_higher_stacks" label="Stores Sell Higher Stacks of Items" modId="Tweaks-Anthology" level="lowerDifficulty" />
 			</tweaks>
 		</common>
 	</content>
@@ -1353,8 +1353,8 @@
 		<bg2 sectionId="bg2-content" label="BG2" engine="bg2,eet">
 			<restructure>
 				<alternatives label="Crucible">
-					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" tags="bigQuest" level="blendWell" />
-					<component id="Crucible-FinalAssaultAI" label="Fully Voiced NPCs using AI" modId="crucible" tags="bigQuest" level="extended" />
+					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" tags="bigQuest" />
+					<component id="Crucible-FinalAssaultAI" label="Fully Voiced NPCs using AI" modId="crucible" tags="bigQuest" />
 				</alternatives>
 			</restructure>
 		</bg2>
@@ -1452,7 +1452,6 @@
 				<component id="stratagems:6010" label="Better calls for help" />
 			</mod>
 			<mod id="SwordCoastStratagems" label="Creatures AI Enhancements" engine="bg,eet,iwd">
-				<component id="stratagems:4000" label="More Appropriate-Speed Bears" engine="bg,eet" />
 				<component id="stratagems:6030" label="Smarter Mages" />
 				<component id="stratagems:6040" label="Smarter Priests" />
 				<component id="stratagems:6100" label="Potions for NPCs" />
