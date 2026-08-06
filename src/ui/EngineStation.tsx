@@ -15,9 +15,11 @@ interface Props {
   onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
   canCycle: boolean
   canOk: boolean
+  finished: boolean
   onPrevious: () => void
   onNext: () => void
   onOk: () => void
+  onCancel: () => void
 }
 
 export function EngineStation({
@@ -30,9 +32,11 @@ export function EngineStation({
   onDifficultyChange,
   canCycle,
   canOk,
+  finished,
   onPrevious,
   onNext,
   onOk,
+  onCancel,
 }: Props) {
   return (
     <section className="engine-station">
@@ -66,9 +70,11 @@ export function EngineStation({
         <ScreenNavButtons
           canCycle={canCycle}
           canOk={canOk}
+          finished={finished}
           onPrevious={onPrevious}
           onNext={onNext}
           onOk={onOk}
+          onCancel={onCancel}
         />
       </div>
     </section>

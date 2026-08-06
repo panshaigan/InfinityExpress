@@ -256,6 +256,7 @@ Station list-pane heading uses `STATION_LABELS`. Under it, the first station roo
 Header (and Engine preselect) controls:
 
 - **OK** — marks the current station finished (✓ in header and rail), then advances to the next unfinished non-empty screen (same cycle as Next, including wrap). Finished stations are skipped by Previous / Next / OK.
+- **Cancel** — when the current station is already finished, the OK control becomes Cancel and clears the finished mark (station re-enters the Previous / Next cycle).
 - **Previous** / **Next** — wrap through non-empty component screens after the active filters, skipping stations already marked finished. Engine is not a cycle stop (from Engine, Next enters the first unfinished screen and Previous the last). Non-content stations are one screen when their filtered list has rows. Content expands as main branch → each subbranch with filtered children (canonical sub order); OK on Content finishes the whole station and skips its remaining tabs.
 
 ### Content branch navigation

@@ -1,18 +1,24 @@
 interface Props {
   canCycle: boolean
+  /** When false and not finished, OK is disabled (e.g. Engine with no game). */
   canOk: boolean
+  /** Current station already marked finished — show Cancel instead of OK. */
+  finished: boolean
   onPrevious: () => void
   onNext: () => void
   onOk: () => void
+  onCancel: () => void
 }
 
-/** Previous / Next / OK cluster for station headers and Engine. */
+/** Previous / Next / OK|Cancel cluster for station headers and Engine. */
 export function ScreenNavButtons({
   canCycle,
   canOk,
+  finished,
   onPrevious,
   onNext,
   onOk,
+  onCancel,
 }: Props) {
   return (
     <div className="screen-nav-buttons">
@@ -27,14 +33,24 @@ export function ScreenNavButtons({
       <button type="button" className="btn" disabled={!canCycle} onClick={onNext}>
         Next
       </button>
-      <button
-        type="button"
-        className="btn screen-nav-ok-btn"
-        disabled={!canOk}
-        onClick={onOk}
-      >
-        OK
-      </button>
+      {finished ? (
+        <button
+          type="button"
+          className="btn screen-nav-ok-btn"
+          onClick={onCancel}
+        >
+          Cancel
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="btn screen-nav-ok-btn"
+          disabled={!canOk}
+          onClick={onOk}
+        >
+          OK
+        </button>
+      )}
     </div>
   )
 }

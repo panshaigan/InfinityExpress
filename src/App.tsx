@@ -640,6 +640,15 @@ export default function App() {
     })
   }
 
+  function unmarkStationFinished() {
+    setFinishedStations((prev) => {
+      if (!prev.has(activeStation)) return prev
+      const next = new Set(prev)
+      next.delete(activeStation)
+      return next
+    })
+  }
+
   function applyNavScreen(screen: NavScreen) {
     setActiveStation(screen.stationId)
     if (screen.stationId === 'content') {
@@ -873,9 +882,11 @@ export default function App() {
                     onDifficultyChange={onDifficultyPresetChange}
                     canCycle={canCycleScreens}
                     canOk={canMarkFinished}
+                    finished={currentFinished}
                     onPrevious={goPrevScreen}
                     onNext={goNextScreen}
                     onOk={onOk}
+                    onCancel={unmarkStationFinished}
                   />
                   {warnings.length > 0 && (
                     <details className="warnings">
@@ -903,9 +914,11 @@ export default function App() {
                       <ScreenNavButtons
                         canCycle={canCycleScreens}
                         canOk={canMarkFinished}
+                        finished={currentFinished}
                         onPrevious={goPrevScreen}
                         onNext={goNextScreen}
                         onOk={onOk}
+                        onCancel={unmarkStationFinished}
                       />
                     </div>
                     <p className="lede">
