@@ -1351,17 +1351,21 @@
 	<npcClassAdjustements desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
 		<group label="Class/Kit">
 			<alternatives label="Make Xan a..." unfolded="1">
-				<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" />
-				<component id="ArtisansKitpack_npc:20002" label="Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />
-				<component id="xan:3" label="Sorcerer" modId="Xan_for_BGII" />
+				<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="" />
+				<component id="xan:3" label="Sorcerer" modId="Xan_for_BGII" displayIfNot="ArtisansKitpack_npc:20002" />
 			</alternatives>
+			<component id="ArtisansKitpack_npc:20002" label="Make Xan an Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />
 			
+			<component id="cd_tweaks_make_montaron_assassin" label="Make Montaron an Assassin" modId="Tweaks-Anthology" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" label="Make Clara a Bard" modId="A7-NoEENPCs" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" label="Make Hexxat a Fighter/Assassin" modId="A7-NoEENPCs" />
 			<component id="sha-tweaks:3" label="Make Dynaheir a Sorcerer" modId="shatweaks" />
 			<component id="sha-tweaks:4" label="Make Faldorn an Avenger" modId="shatweaks" />
 			<component id="sha-tweaks:5" label="Make Skie a Shadowdancer" modId="shatweaks" />
+			<!-- Make Kagain a Dwarven Defender BGEENPC tweaks.-->
+			<!-- Dual Class Friendly Stats -->
+			
 			<component id="ajantisbg2:5" label="Make Ajantis a Cavalier" modId="Ajantis_BG2" />
 			<component id="L#-VIC-REV-M-SH-C" label="Make Vicoania a Shadowdancer/Cleric" modId="viconia-revamped" />
 			<component id="L#-VIC-REV-ABI" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" alwaysIf="L#-VIC-REV-M-SH-C" noDisplay="1" />

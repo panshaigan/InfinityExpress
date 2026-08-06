@@ -363,6 +363,8 @@ describe('curated InstallSequence.xml folding', () => {
       'spellcasters',
       'multi',
       'universal',
+      'stats',
+      'proficiencies',
     ])
 
     const warriors = kits.children.find((c) => c.attrs.sectionId === 'warriors')!
@@ -378,7 +380,22 @@ describe('curated InstallSequence.xml folding', () => {
         (c) => c.kind === 'component' && c.componentId === 'Morpheus562sKitpackShieldBreaker',
       ),
     ).toBe(true)
-    expect(fighter.children.every((c) => c.kind === 'component')).toBe(true)
+    expect(
+      fighter.children.some(
+        (c) => c.kind === 'component' && c.componentId === 'SkillsAndAbilitiesFighter',
+      ),
+    ).toBe(true)
+    const wizardSlayer = fighter.children.find((c) => c.attrs.sectionId === 'wizard-slayer')!
+    expect(
+      wizardSlayer.children.some(
+        (c) => c.kind === 'component' && c.componentId === 'ArtisansKitpack:1006',
+      ),
+    ).toBe(true)
+    expect(
+      wizardSlayer.children.some(
+        (c) => c.kind === 'component' && c.componentId === 'SkillsAndAbilitiesDI1',
+      ),
+    ).toBe(true)
 
     const warriorComponentIds = (() => {
       const ids: string[] = []
