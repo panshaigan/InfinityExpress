@@ -1230,13 +1230,14 @@
 
 			<component id="stratagems:4240" label="Treat mages' and priests' HLAs as innate abilities" level="blendWell" modId="SwordCoastStratagems" />
 		</group>
-		<group sectionId="multi" label="Multi-Class">
+		<group sectionId="multi" label="Multi-Class / Dual-Class">
 			<component id="ArtisansKitpack:20000" label="Add Kit: Eldritch Knight - Fighter/Mage Kit" modId="The-Artisan-s-Kitpack" level="extended" />
 			<!--component id="cd_tweaks_multiclass_gm" label="Multi-Class Grandmastery" level="lowerDifficulty" modId="Tweaks-Anthology" /-->
 			<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" label="Tighten equipment restrictions for  Druid Multi- and Dual-Classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." level="higherDifficulty" />
 			<component id="cd_tweaks_more_dual_classes" label="Expanded Dual-Class Options" modId="Tweaks-Anthology" level="lowerDifficulty" />
 		</group>
-		<group sectionId="universal" label="Universal tweaks">
+		<group sectionId="universal" label="Universal">
+			<component id="cd_tweaks_alter_thac0_table" label="Un-Nerfed THAC0 Table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
 			<alternatives label="Make Infravision Useful" desc="Creatures without infravision have -4 THAC0 at night or in dark places">
 				<component id="cd_tweaks_infravision" label="Tweaks Anthology (Luke's) Solution" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" />
 				<component id="METweaks:3200" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" level="blendWell" />
@@ -1249,18 +1250,16 @@
 				<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" />
 			</group>
 			<group sectionId="weapons" label="Weapon tweaks">
+				<component id="cd_tweaks_universal_four_weapon_slots" label="Give Every Class/Kit Four Weapon Slots" modId="Tweaks-Anthology" level="vanillaPlus" />
 				<component id="cd_tweaks_universal_clubs" label="Universal Clubs" modId="Tweaks-Anthology" level="blendWell" />
 				<component id="cd_tweaks_loosen_shield_restrictions" label="Allow Mages to Use Bucklers and Thieves to Use Small Shields" modId="Tweaks-Anthology" level="lowerDifficulty" />
-				<component id="cd_tweaks_universal_four_weapon_slots" label="Give Every Class/Kit Four Weapon Slots" modId="Tweaks-Anthology" level="vanillaPlus" />
 			</group>
-			
-
-			<component id="cd_tweaks_casting_in_armor" label="Allow Arcane Spellcasting in Heavy Armor" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
 		</group>
 		<group sectionId="stats" label="Stats">
-			<component id="cd_tweaks_alter_thac0_table" label="Un-Nerfed THAC0 Table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
-			<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_extend_hp_rolls_to_l20" label="Allow HP Rolls Through Level 20 [Angel]" modId="Tweaks-Anthology" />
+			<group sectionId="hp" label="HP">
+				<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" level="lowerDifficulty" />
+				<component id="cd_tweaks_extend_hp_rolls_to_l20" label="Allow HP Rolls Through Level 20" modId="Tweaks-Anthology" level="lowerDifficulty" />
+			</group>
 		</group>
 		<group sectionId="proficiencies" label="Proficiencies and Fighting Styles">
 			<component id="cd_tweaks_grandmastery_bonus_true" label="True grandmastery" level="blendWell" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" />
@@ -1350,46 +1349,56 @@
 	</content>
 
 	<npcClassAdjustements desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
-		<alternatives label="Make Xan a..." unfolded="1">
-			<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" />
-		</alternatives>
-		<component id="ArtisansKitpack_npc:20002" label="Specialize Xan's class to Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />
-		<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" />
-		<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" label="Make Clara a Bard" modId="A7-NoEENPCs" />
-		<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" label="Make Hexxat a Fighter/Assassin" modId="A7-NoEENPCs" />
-		<component id="sha-tweaks:3" label="Make Dynaheir a Sorcerer" modId="shatweaks" />
-		<component id="sha-tweaks:4" label="Make Faldorn an Avenger" modId="shatweaks" />
-		<component id="sha-tweaks:5" label="Make Skie a Shadowdancer" modId="shatweaks" />
-		<component id="ajantisbg2:5" label="Make Ajantis a Cavalier" modId="Ajantis_BG2" />
-		<component id="L#-VIC-REV-M-SH-C" label="Make Vicoania a Shadowdancer/Cleric" modId="viconia-revamped" />
-		<component id="L#-VIC-REV-ABI" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" alwaysIf="L#-VIC-REV-M-SH-C" noDisplay="1" />
-		<component id="totemiccernd:0" label="Make Cernd A Totemic Druid" modId="Totemic_Cernd" />
-		<component id="p#_kivan_deheriana_wildmage" label="Make Deheriana (F/M/C) a Wild Mage" modId="Kivan_and_Deheriana" displayIf="p#_kivan" />
-		<alternatives label="Upgrade Nalia's Thief class to...">
-			<component id="cd_tweaks_nalia_thief_level_5" label="Level 5 (further increases lockpicking)" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_nalia_thief_level_6" label="Level 6 (further increases traps finding, pickpocket)" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_nalia_thief_level_7" label="Level 7 (further increases lockpicking, pickpocket)" modId="Tweaks-Anthology" level="blendWell" default="1" />
-			<component id="cd_tweaks_nalia_thief_level_8" label="Level 8 (further increases pickpocket, adds single weapon style)" modId="Tweaks-Anthology" />
-		</alternatives>
-		<component id="YoshimosRemorse:2" label="Make Yoshimo a Bounty Hunter 13 / Fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" />
-		<component id="bg1npc_project-kivanproficiency_spears" label="Kivan uses spears" displayIf="bg1npc_project-main" />
-		<component id="cd_tweaks_yoshimo_better_trapsetting" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" level="blendWell" />
-		<component id="cd_tweaks_kagain_legal_con" label="Give Kagain a Legal Constitution Score of 19" level="blendWell" />
-		<component id="cd_tweaks_coran_legal_dex" label="Give Coran a Legal Dexterity Score of 19" level="blendWell" />
-		<group label="Use BG2 stats for..." noBranches="1">
-			<mod id="Tweaks-Anthology">
-				<component id="cd_tweaks_consistent_stats_edwin_bg2" label="Edwin" level="blendWell" />
-				<component id="cd_tweaks_consistent_stats_jaheira_bg2" label="Jaheira" level="blendWell" />
-				<component id="cd_tweaks_consistent_stats_minsc_bg2" label="Minsc" level="blendWell" />
-				<component id="cd_tweaks_consistent_stats_viconia_bg2" label="Viconia" level="blendWell" />
-			</mod>
+		<group label="Class/Kit">
+			<alternatives label="Make Xan a..." unfolded="1">
+				<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" />
+				<component id="ArtisansKitpack_npc:20002" label="Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />
+				<component id="xan:3" label="Sorcerer" modId="Xan_for_BGII" />
+			</alternatives>
+			
+			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" />
+			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" label="Make Clara a Bard" modId="A7-NoEENPCs" />
+			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" label="Make Hexxat a Fighter/Assassin" modId="A7-NoEENPCs" />
+			<component id="sha-tweaks:3" label="Make Dynaheir a Sorcerer" modId="shatweaks" />
+			<component id="sha-tweaks:4" label="Make Faldorn an Avenger" modId="shatweaks" />
+			<component id="sha-tweaks:5" label="Make Skie a Shadowdancer" modId="shatweaks" />
+			<component id="ajantisbg2:5" label="Make Ajantis a Cavalier" modId="Ajantis_BG2" />
+			<component id="L#-VIC-REV-M-SH-C" label="Make Vicoania a Shadowdancer/Cleric" modId="viconia-revamped" />
+			<component id="L#-VIC-REV-ABI" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" alwaysIf="L#-VIC-REV-M-SH-C" noDisplay="1" />
+			<component id="totemiccernd:0" label="Make Cernd A Totemic Druid" modId="Totemic_Cernd" />
+			<component id="p#_kivan_deheriana_wildmage" label="Make Deheriana (F/M/C) a Wild Mage" modId="Kivan_and_Deheriana" displayIf="p#_kivan" />
+			<alternatives label="Upgrade Nalia's Thief class to...">
+				<component id="cd_tweaks_nalia_thief_level_5" label="Level 5 (further increases lockpicking)" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nalia_thief_level_6" label="Level 6 (further increases traps finding, pickpocket)" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nalia_thief_level_7" label="Level 7 (further increases lockpicking, pickpocket)" modId="Tweaks-Anthology" level="blendWell" default="1" />
+				<component id="cd_tweaks_nalia_thief_level_8" label="Level 8 (further increases pickpocket, adds single weapon style)" modId="Tweaks-Anthology" />
+			</alternatives>
+			<component id="YoshimosRemorse:2" label="Make Yoshimo a Bounty Hunter 13 / Fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" />
 		</group>
-		<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" level="blendWell" />
-		<component id="cd_tweaks_imoen_avatar_change" label="Change Imoen's Avatar to Mage" modId="Tweaks-Anthology" engine="bg2,eet" />
-		<component id="cd_tweaks_viconia_skin_color" label="Change Viconia's Skin Color to Dark Blue" modId="Tweaks-Anthology" />
+		<group label="Skills/abilities">
+			<group label="Use consistent (BG2) stats for..." noBranches="1" engine="bg1,eet">
+				<mod id="Tweaks-Anthology">
+					<component id="cd_tweaks_consistent_stats_edwin_bg2" label="Edwin" level="blendWell" />
+					<component id="cd_tweaks_consistent_stats_jaheira_bg2" label="Jaheira" level="blendWell" />
+					<component id="cd_tweaks_consistent_stats_minsc_bg2" label="Minsc" level="blendWell" />
+					<component id="cd_tweaks_consistent_stats_viconia_bg2" label="Viconia" level="blendWell" />
+				</mod>
+			</group>
+			<component id="cd_tweaks_kagain_legal_con" label="Give Kagain a Legal Constitution Score of 19" level="blendWell" engine="bg1,eet" />
+			<component id="cd_tweaks_coran_legal_dex" label="Give Coran a Legal Dexterity Score of 19" level="blendWell" engine="bg1,eet" />
+			<component id="cd_tweaks_yoshimo_better_trapsetting" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" level="blendWell" />
+			<component id="bg1npc_project-kivanproficiency_spears" label="Kivan uses spears" displayIf="bg1npc_project-main" level="fixes" />
+		</group>
+		<group label="Appearance">
+			<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" level="blendWell" />
+			<component id="cd_tweaks_imoen_avatar_change" label="Change Imoen's Avatar to Mage" modId="Tweaks-Anthology" engine="bg2,eet" />
+			<component id="cd_tweaks_viconia_skin_color" label="Change Viconia's Skin Color to Dark Blue" modId="Tweaks-Anthology" />
+		</group>
+		<group label="Alignment">
+			<component id="cd_tweaks_ng_jaheira" label="Change Jaheira to Neutral Good Alignment" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_ne_korgan" label="Change Korgan to Neutral Evil Alignment" modId="Tweaks-Anthology" />	
+		</group>
 		<component id="cd_tweaks_mp_kickout_dialogue" label="Improved Multi-Player Kick-Out Dialogues" modId="Tweaks-Anthology" level="vanillaPlus" />
-		<component id="cd_tweaks_ng_jaheira" label="Change Jaheira to Neutral Good Alignment" modId="Tweaks-Anthology" />
-		<component id="cd_tweaks_ne_korgan" label="Change Korgan to Neutral Evil Alignment" modId="Tweaks-Anthology" />
 	</npcClassAdjustements>
 
 	<combat level="higherDifficulty">
@@ -1868,33 +1877,48 @@
 				<component id="SkillsAndAbilitiesWeaponProf2" label="High Master (4 pips)" modId="skills-and-abilities" />
 				<component id="SkillsAndAbilitiesWeaponProf3" label="Grand Master (5 pips)" modId="skills-and-abilities" />
 			</alternatives>
+			<component id="cd_tweaks_casting_in_armor" label="Allow Arcane Spellcasting in Heavy Armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="extended" />
+			<component id="SkillsAndAbilitiesClericThief" label="Adjust Cleric/Thief Actionbar" displayIf="EEex:1" modId="skills-and-abilities" />
+			<component id="D5_REVISED_DUAL_CLASS_REQS" label="Lower Dual-Class Requirements" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" />
 		</group>
-		<group sectionId="universal" label="Universal tweaks" noBranches="1">
-			<component id="METweaks:810" label="Both Clerics and Monks can get to level 9 during BG1" modId="Olvyn-Tweaks" />
-			<mod modId="skills-and-abilities">
+		<group sectionId="universal" label="Universal tweaks">
+			<group sectionId="weapons" label="Weapon tweaks">
+				<component id="SkillsAndAbilitiesSTR" label="2H Weapon Additional Strength Bonus" modId="skills-and-abilities" level="lowerDifficulty" />
+			</group>
+			<group label="HLAs">
 				<component id="SkillsAndAbilitiesNewHLA" label="Add New HLAs for ALL Classes and Kits" modId="skills-and-abilities" />
 				<component id="SkillsAndAbilitiesUpdateHLA" label="Update Existing HLAs" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesClericThief" label="Adjust Cleric/Thief Actionbar" displayIf="EEex:1" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesTurnUndead" label="Turn Undead Overhaul" displayIf="EEex:1" modId="skills-and-abilities" />
-				
-			</mod>
-			<group sectionId="weapons" label="Weapon tweaks">
-				<component id="SkillsAndAbilitiesSTR" label="2H Weapon Additional Strength Bonus" modId="skills-and-abilities" />
 			</group>
+			<component id="SkillsAndAbilitiesTurnUndead" label="Turn Undead Overhaul" displayIf="EEex:1" modId="skills-and-abilities" />
 		</group>
 		<group sectionId="stats" label="Stats">
-			<component id="D5_REVISED_ABILITY_SCORES" label="Ability Score Overhaul" modId="SubtleD_Stat_Overhauls" />
-			<component id="HouseTweaks:9" label="Constitution Bonuses for All Classes + Regeneration Changes" modId="House-Rule-Tweaks" />
+			<group sectionId="hp">
+				<alternatives label="Constitution Bonuses/Regeneration">
+					<alternatives label="SubtleD's Hit Dice Overhaul. The new average, comparing to vanilla avarage, is..." modId="SubtleD_Stat_Overhauls" desc="Take some of the randomness out of hit point rolls. Add slow regenration since 19 CON">
+						<component id="D5_HARDCORE_HD" label="Above" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" />
+						<component id="D5_REVISED_HD" label="Similar" modId="SubtleD_Stat_Overhauls" level="blendWell" default="1" />
+						<component id="D5_REDUCED_HD" label="Reduced" modId="SubtleD_Stat_Overhauls" level="higherDifficulty" />
+					</alternatives>
+					<component id="HouseTweaks:9" label="House Tweaks Constitution Bonuses for All Classes + Regeneration Changes" modId="House-Rule-Tweaks" />
+				</alternatives>
+			</group>
 			<alternatives label="Stat-based Bonus Spell slots">
 				<component id="D5_ABILITY_SCORE_SPELL_SLOTS" label="SubtleD Stat Overhauls version" modId="SubtleD_Stat_Overhauls" />
-				<component id="HouseTweaks:12" label="House-Rule-Tweaks version" modId="House-Rule-Tweaks" />
+				<component id="HouseTweaks:12" label="House Tweaks version" modId="House-Rule-Tweaks" />
 			</alternatives>
+			<group label="Level progression">
+				<component id="D5_UNIFORM_XP_TABLES" label="Slower, Standardized XP Tables" modId="SubtleD_Stat_Overhauls" level="extended" />
+				<component id="METweaks:810" label="Speed-up level progression for Clerics and Monks" desc="Both Clerics and Monks will get to level 9 during BG1" modId="Olvyn-Tweaks" level="lowerDifficulty" />
+			</group>
+
+
+
+			<component id="D5_REVISED_ABILITY_SCORES" label="Ability Score Overhaul" desc="Helps to make all stats useful" modId="SubtleD_Stat_Overhauls" />
+			
+			
 			<component id="cd_tweaks_exceptional_strength_weight_limits" label="Exceptional Strength Weight Limit Changes" modId="Tweaks-Anthology" level="vanillaPlus" engine="bg,eet,iwd,pst" />
-			<component id="D5_1_HAND_STR_PENALTY" label="Full Strength for 2-Hand Weapons Only" modId="SubtleD_Stat_Overhauls" />
-			<component id="D5_REVISED_HD" label="Generous (above-average) hit points" modId="SubtleD_Stat_Overhauls" />
-			<component id="D5_HARDCORE_HD" label="Closer to average hit points" modId="SubtleD_Stat_Overhauls" />
-			<component id="D5_REVISED_DUAL_CLASS_REQS" label="Lower Dual-Class Requirements" modId="SubtleD_Stat_Overhauls" />
-			<component id="D5_UNIFORM_XP_TABLES" label="Slower, Standardized XP Tables" modId="SubtleD_Stat_Overhauls" />
+
+
 		</group>
 		<group sectionId="proficiencies">
 			<alternatives label="Proficiency/Fighting Styles tweaks">

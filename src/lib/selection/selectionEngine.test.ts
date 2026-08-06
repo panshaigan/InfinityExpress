@@ -153,6 +153,43 @@ describe('parse + selection', () => {
     expect(selected.has('part:1')).toBe(true)
   })
 
+  it('nested alternatives clear outer sibling branches both ways', () => {
+    const NESTED = `<?xml version="1.0"?>
+<installSequence>
+  <kits>
+    <alternatives label="Constitution Bonuses">
+      <alternatives label="SubtleD HD">
+        <component id="D5_HARDCORE_HD" label="Above" />
+        <component id="D5_REVISED_HD" label="Similar" default="1" />
+        <component id="D5_REDUCED_HD" label="Reduced" />
+      </alternatives>
+      <component id="HouseTweaks:9" label="House Rules" />
+    </alternatives>
+  </kits>
+</installSequence>`
+    const { model: nestedModel } = parseInstallSequence(NESTED)
+    const house = nestedModel.componentsById.get('HouseTweaks:9')!
+    const revised = nestedModel.componentsById.get('D5_REVISED_HD')!
+    const hardcore = nestedModel.componentsById.get('D5_HARDCORE_HD')!
+
+    let selected = createInitialSelection(nestedModel, 'bg1')
+    selected = toggleNode(nestedModel, selected, 'bg1', house, undefined, true)
+    expect(selected.has('HouseTweaks:9')).toBe(true)
+
+    selected = toggleNode(nestedModel, selected, 'bg1', revised, undefined, true)
+    expect(selected.has('D5_REVISED_HD')).toBe(true)
+    expect(selected.has('HouseTweaks:9')).toBe(false)
+
+    selected = toggleNode(nestedModel, selected, 'bg1', house, undefined, true)
+    expect(selected.has('HouseTweaks:9')).toBe(true)
+    expect(selected.has('D5_REVISED_HD')).toBe(false)
+
+    selected = toggleNode(nestedModel, selected, 'bg1', hardcore, undefined, true)
+    expect(selected.has('D5_HARDCORE_HD')).toBe(true)
+    expect(selected.has('HouseTweaks:9')).toBe(false)
+    expect(selected.has('D5_REVISED_HD')).toBe(false)
+  })
+
   it('mod with nested alternatives can check then uncheck via parent', () => {
     let selected = createInitialSelection(model, 'bg1')
     const base = model.stations.find((s) => s.stationId === 'base')!

@@ -390,7 +390,7 @@ Then the engine selects the default-marked option / default branch’s default c
 
 ### Alternatives
 
-Find the enclosing `<alternatives>` for the node being selected.
+Apply exclusion for **every** enclosing `<alternatives>` ancestor of the node being selected (inner group first, then outer).
 
 **Case A — all direct children are components** (radio list):
 
@@ -399,7 +399,7 @@ Find the enclosing `<alternatives>` for the node being selected.
 **Case B — direct children are containers** (or mixed branches):
 
 - Selecting anything under one direct child branch clears all components under the **other** direct child branches.
-- Nested `<alternatives>` apply the same rules locally.
+- Nested `<alternatives>` apply the same rules locally, then outer exclusive groups clear sibling branches too.
 
 When selecting the alternatives **parent**, existing choices under it are cleared, then defaults are applied (if any).
 

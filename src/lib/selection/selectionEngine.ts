@@ -77,27 +77,33 @@ function applyAlternativesExclusion(
   selected: SelectionSet,
   newlySelectedNode: TreeNode,
 ) {
-  const alts = findEnclosingAlternatives(model, newlySelectedNode)
-  if (!alts) return
+  // Walk every enclosing <alternatives> ancestor so nested radios also
+  // clear sibling branches of outer exclusive groups.
+  let scope: TreeNode | undefined = newlySelectedNode
+  while (scope) {
+    const alts = findEnclosingAlternatives(model, scope)
+    if (!alts) return
 
-  const branch = alternativesBranchRoot(model, alts, newlySelectedNode)
-  if (!branch) return
+    const branch = alternativesBranchRoot(model, alts, newlySelectedNode)
+    if (!branch) return
 
-  const directChildren = alts.children
-  const hasOnlyComponents = directChildren.every((c) => isComponentNode(c))
+    const directChildren = alts.children
+    const hasOnlyComponents = directChildren.every((c) => isComponentNode(c))
 
-  if (hasOnlyComponents) {
-    for (const child of directChildren) {
-      if (isComponentNode(child) && child.key !== branch.key) {
-        selected.delete(child.componentId)
+    if (hasOnlyComponents) {
+      for (const child of directChildren) {
+        if (isComponentNode(child) && child.key !== branch.key) {
+          selected.delete(child.componentId)
+        }
+      }
+    } else {
+      for (const child of directChildren) {
+        if (child.key === branch.key) continue
+        clearComponents(selected, allComponentDescendants(child))
       }
     }
-    return
-  }
 
-  for (const child of directChildren) {
-    if (child.key === branch.key) continue
-    clearComponents(selected, allComponentDescendants(child))
+    scope = alts
   }
 }
 
