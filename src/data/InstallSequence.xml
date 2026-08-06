@@ -1351,7 +1351,7 @@
 	<npcClassAdjustements desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
 		<group label="Class/Kit">
 			<alternatives label="Make Xan a..." unfolded="1">
-				<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="" />
+				<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" />
 				<component id="xan:3" label="Sorcerer" modId="Xan_for_BGII" displayIfNot="ArtisansKitpack_npc:20002" />
 			</alternatives>
 			<component id="ArtisansKitpack_npc:20002" label="Make Xan an Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />

@@ -246,7 +246,9 @@ export function applyAlwaysIf(
       if (ok && !selected.has(c.componentId)) {
         selected.add(c.componentId)
         round = true
-      } else if (!ok && selected.has(c.componentId)) {
+      } else if (!ok && c.attrs.noDisplay && selected.has(c.componentId)) {
+        // Hidden companions stay tied to their condition; visible alwaysIf
+        // options may still be chosen manually when the condition is false.
         selected.delete(c.componentId)
         round = true
       }

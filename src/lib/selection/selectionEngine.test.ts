@@ -319,6 +319,42 @@ describe('parse + selection', () => {
     expect(nested!.children.length).toBe(0)
   })
 
+  it('visible alwaysIf auto-selects but stays manually checkable when false', () => {
+    const XML = `<?xml version="1.0"?>
+<installSequence>
+  <npcClassAdjustements label="NPC" engine="bg2,eet">
+    <alternatives label="Make Xan a..." unfolded="1">
+      <component id="xan:1" label="Fighter/Mage" alwaysIf="ek" displayIfNot="ek" />
+      <component id="xan:3" label="Sorcerer" displayIfNot="ek" />
+    </alternatives>
+    <component id="ek" label="Eldritch Knight" />
+  </npcClassAdjustements>
+</installSequence>`
+    const { model: xm } = parseInstallSequence(XML)
+    const fm = xm.componentsById.get('xan:1')!
+    const ek = xm.componentsById.get('ek')!
+
+    let selected = createInitialSelection(xm, 'bg2')
+    selected = toggleNode(xm, selected, 'bg2', fm, undefined, true)
+    expect(selected.has('xan:1')).toBe(true)
+    expect(selected.has('ek')).toBe(false)
+
+    selected = toggleNode(xm, selected, 'bg2', ek, undefined, true)
+    expect(selected.has('ek')).toBe(true)
+    expect(selected.has('xan:1')).toBe(true)
+
+    const hidden = buildDisplayTree(xm.stations[0]!.children, {
+      game: 'bg2',
+      selectedIds: selected,
+    })
+    const alts = hidden[0]?.children.find((c) => c.node.attrs.label === 'Make Xan a...')
+    expect(alts).toBeUndefined()
+
+    selected = toggleNode(xm, selected, 'bg2', ek, undefined, false)
+    expect(selected.has('ek')).toBe(false)
+    expect(selected.has('xan:1')).toBe(true)
+  })
+
   it('displayIfNot hides a component and skips it on parent select-all', () => {
     const base = model.stations.find((s) => s.stationId === 'base')!
     const blockable = base.children.find((c) => c.attrs.label === 'Blockable Mod')!
