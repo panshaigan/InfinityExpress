@@ -361,7 +361,7 @@ Always selected when engine-eligible (including when `noDisplay`). Included in e
 
 ### `alwaysIf`
 
-While the expression is true and the component is engine-eligible → keep selected.  
+While the expression is true and the component is engine-eligible → keep selected (and clear sibling `<alternatives>` options, same as a manual check).  
 When false and `noDisplay` → remove from selection (hidden companion components).  
 When false and visible → leave selection alone so the user can still check it manually (e.g. auto-include Fighter/Mage with Eldritch Knight, but allow Fighter/Mage on its own).
 

@@ -332,6 +332,7 @@ describe('parse + selection', () => {
 </installSequence>`
     const { model: xm } = parseInstallSequence(XML)
     const fm = xm.componentsById.get('xan:1')!
+    const sorcerer = xm.componentsById.get('xan:3')!
     const ek = xm.componentsById.get('ek')!
 
     let selected = createInitialSelection(xm, 'bg2')
@@ -353,6 +354,15 @@ describe('parse + selection', () => {
     selected = toggleNode(xm, selected, 'bg2', ek, undefined, false)
     expect(selected.has('ek')).toBe(false)
     expect(selected.has('xan:1')).toBe(true)
+
+    selected = toggleNode(xm, selected, 'bg2', sorcerer, undefined, true)
+    expect(selected.has('xan:3')).toBe(true)
+    expect(selected.has('xan:1')).toBe(false)
+
+    selected = toggleNode(xm, selected, 'bg2', ek, undefined, true)
+    expect(selected.has('ek')).toBe(true)
+    expect(selected.has('xan:1')).toBe(true)
+    expect(selected.has('xan:3')).toBe(false)
   })
 
   it('displayIfNot hides a component and skips it on parent select-all', () => {

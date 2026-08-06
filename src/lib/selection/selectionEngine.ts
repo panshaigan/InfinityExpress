@@ -245,6 +245,7 @@ export function applyAlwaysIf(
       const ok = evalConditionExpr(c.attrs.alwaysIf, selected)
       if (ok && !selected.has(c.componentId)) {
         selected.add(c.componentId)
+        applyAlternativesExclusion(model, selected, c)
         round = true
       } else if (!ok && c.attrs.noDisplay && selected.has(c.componentId)) {
         // Hidden companions stay tied to their condition; visible alwaysIf
