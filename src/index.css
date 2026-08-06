@@ -80,6 +80,50 @@ body {
   flex-shrink: 0;
 }
 
+.selection-presets-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.selection-presets-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.selection-presets-label-text {
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.selection-presets-select,
+.selection-presets-name {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  max-width: 11rem;
+  min-width: 0;
+}
+
+.selection-presets-name {
+  max-width: 9rem;
+}
+
+.selection-presets-delete {
+  padding-left: 0.55rem;
+  padding-right: 0.55rem;
+  line-height: 1;
+  font-size: 1.1rem;
+}
+
 .engine-badge {
   font-size: 0.8rem;
   color: var(--muted);

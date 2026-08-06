@@ -54,7 +54,19 @@ import { ComponentDetail } from './ui/ComponentDetail'
 import { ContentBranchNav } from './ui/ContentBranchNav'
 import { StationListToolbar } from './ui/StationListToolbar'
 import { FILTERS_SEARCH_ID, FiltersStrip } from './ui/FiltersStrip'
+import { SelectionPresetsBar } from './ui/SelectionPresetsBar'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
+import {
+  applySelectionPreset,
+  autoPresetName,
+  fingerprintFromLive,
+  fingerprintFromPreset,
+  newPresetId,
+  presetsForGame,
+  snapshotSelectionPreset,
+  uniquePresetName,
+  type SelectionPreset,
+} from './lib/presets/selectionPresets'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
@@ -154,6 +166,9 @@ export default function App() {
   const [stationLevelPresets, setStationLevelPresets] = useState(
     () => new Map<StationId, StationLevelPreset>(),
   )
+  const [selectionPresets, setSelectionPresets] = useState<SelectionPreset[]>(() => [])
+  const [activePresetId, setActivePresetId] = useState<string | null>(null)
+  const [presetBaseline, setPresetBaseline] = useState<string | null>(null)
   const [contentMainKey, setContentMainKey] = useState<string | null>(null)
   const [contentSubKey, setContentSubKey] = useState<string | null>(null)
   const [contentSubTag, setContentSubTag] = useState<string | null>(null)
@@ -218,6 +233,47 @@ export default function App() {
     activeStation === 'engine'
       ? emptyStationPreset()
       : (stationLevelPresets.get(activeStation) ?? emptyStationPreset())
+
+  const gamePresets = useMemo(
+    () => (game ? presetsForGame(selectionPresets, game) : []),
+    [game, selectionPresets],
+  )
+  const activePreset = useMemo(
+    () =>
+      activePresetId != null
+        ? selectionPresets.find((p) => p.id === activePresetId) ?? null
+        : null,
+    [activePresetId, selectionPresets],
+  )
+  const liveFingerprint = useMemo(() => {
+    if (!game) return null
+    return fingerprintFromLive({
+      game,
+      selectedIds,
+      ladderChecked,
+      lowerDifficulty: lowerDifficultyPreset,
+      higherDifficulty: higherDifficultyPreset,
+      lastGlobalLadder,
+      lastGlobalLowerDifficulty,
+      lastGlobalHigherDifficulty,
+      stationLevelPresets,
+    })
+  }, [
+    game,
+    selectedIds,
+    ladderChecked,
+    lowerDifficultyPreset,
+    higherDifficultyPreset,
+    lastGlobalLadder,
+    lastGlobalLowerDifficulty,
+    lastGlobalHigherDifficulty,
+    stationLevelPresets,
+  ])
+  const presetDirty =
+    activePresetId != null &&
+    presetBaseline != null &&
+    liveFingerprint != null &&
+    liveFingerprint !== presetBaseline
 
   useEffect(() => {
     if (!isContentStation) return
@@ -325,9 +381,94 @@ export default function App() {
     setLastGlobalLowerDifficulty(false)
     setLastGlobalHigherDifficulty(false)
     setStationLevelPresets(new Map())
+    setActivePresetId(null)
+    setPresetBaseline(null)
     setFinishedStations(new Set())
     setActiveStation('engine')
     clearFocus()
+  }
+
+  function livePresetInput(forGame: SelectedGame) {
+    return {
+      game: forGame,
+      selectedIds,
+      ladderChecked,
+      lowerDifficulty: lowerDifficultyPreset,
+      higherDifficulty: higherDifficultyPreset,
+      lastGlobalLadder,
+      lastGlobalLowerDifficulty,
+      lastGlobalHigherDifficulty,
+      stationLevelPresets,
+    }
+  }
+
+  function saveSelectionPreset() {
+    if (!game) return
+    const input = livePresetInput(game)
+    const active =
+      activePresetId != null
+        ? selectionPresets.find((p) => p.id === activePresetId && p.game === game)
+        : undefined
+    if (active) {
+      const updated = snapshotSelectionPreset(active.id, active.name, input)
+      setSelectionPresets((prev) => prev.map((p) => (p.id === active.id ? updated : p)))
+      setPresetBaseline(fingerprintFromPreset(updated))
+      return
+    }
+    const names = presetsForGame(selectionPresets, game).map((p) => p.name)
+    const name = uniquePresetName(autoPresetName(game, selectedIds.size), names)
+    const created = snapshotSelectionPreset(newPresetId(), name, input)
+    setSelectionPresets((prev) => [...prev, created])
+    setActivePresetId(created.id)
+    setPresetBaseline(fingerprintFromPreset(created))
+  }
+
+  function loadSelectionPreset(id: string | null) {
+    if (id == null) {
+      setActivePresetId(null)
+      setPresetBaseline(null)
+      return
+    }
+    if (!game) return
+    const preset = selectionPresets.find((p) => p.id === id && p.game === game)
+    if (!preset) return
+    const applied = applySelectionPreset(preset)
+    setSelectedIds(applied.selectedIds)
+    setLadderChecked(applied.ladderChecked)
+    setLowerDifficultyPreset(applied.lowerDifficulty)
+    setHigherDifficultyPreset(applied.higherDifficulty)
+    setLastGlobalLadder(applied.lastGlobalLadder)
+    setLastGlobalLowerDifficulty(applied.lastGlobalLowerDifficulty)
+    setLastGlobalHigherDifficulty(applied.lastGlobalHigherDifficulty)
+    setStationLevelPresets(() => {
+      const next = new Map<StationId, StationLevelPreset>()
+      for (const [key, value] of applied.stationLevelPresets) {
+        next.set(key as StationId, value)
+      }
+      return next
+    })
+    setActivePresetId(preset.id)
+    setPresetBaseline(fingerprintFromPreset(preset))
+  }
+
+  function renameSelectionPreset(name: string) {
+    if (!activePresetId || !game) return
+    setSelectionPresets((prev) => {
+      const current = prev.find((p) => p.id === activePresetId)
+      if (!current) return prev
+      const others = presetsForGame(prev, game)
+        .filter((p) => p.id !== activePresetId)
+        .map((p) => p.name)
+      const unique = uniquePresetName(name, others)
+      return prev.map((p) => (p.id === activePresetId ? { ...p, name: unique } : p))
+    })
+  }
+
+  function deleteSelectionPreset() {
+    if (!activePresetId) return
+    setSelectionPresets((prev) => prev.filter((p) => p.id !== activePresetId))
+    setActivePresetId(null)
+    setPresetBaseline(null)
   }
 
   function onLadderToggle(level: LadderLevel, wantChecked: boolean) {
@@ -598,6 +739,21 @@ export default function App() {
             <strong>{game ? GAME_LABELS[game] : 'not set'}</strong>
           </span>
           <span className="stats">{selectedIds.size} selected</span>
+          <SelectionPresetsBar
+            disabled={game == null}
+            presets={gamePresets.map((p) => ({ id: p.id, name: p.name }))}
+            activePresetId={activePreset?.game === game ? activePresetId : null}
+            activePresetName={
+              activePreset?.game === game ? activePreset.name : null
+            }
+            dirty={presetDirty}
+            canSave={game != null && (activePresetId == null || presetDirty)}
+            canDelete={activePreset != null && activePreset.game === game}
+            onSelectPreset={loadSelectionPreset}
+            onSave={saveSelectionPreset}
+            onRename={renameSelectionPreset}
+            onDelete={deleteSelectionPreset}
+          />
           <button
             type="button"
             className="btn"

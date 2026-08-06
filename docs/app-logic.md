@@ -19,6 +19,7 @@ Primary code:
 | What appears in the UI | `src/lib/selection/visibility.ts`      |
 | Tree / chrome hotkeys  | `src/lib/ui/treeKeyboard.ts`, `chromeHotkeys.ts` |
 | Export text file       | `src/lib/export/installOrder.ts`       |
+| Selection presets      | `src/lib/presets/selectionPresets.ts`  |
 | Shell UI               | `src/App.tsx`, `src/ui/*`              |
 
 
@@ -430,6 +431,25 @@ Label fallback: `attrs.label`, else the component id.
 
 
 
+## Selection presets (in-memory)
+
+Top-bar **Preset** controls save and load named selection snapshots for the **current game** only (other games’ presets stay in memory but are hidden).
+
+Stored per preset:
+
+- `game` + selected component ids
+- Level-strip UI: global ladder / difficulty chips, last Engine baseline, and per-station level overrides
+
+Not stored: filters, active station, tree fold state.
+
+**Save** creates a new preset with an auto-name (`BG2:EE · N comps · HH:MM`) when none is active, or updates the active preset when the live selection is dirty (`*`). Duplicate names get a `(2)` / `(3)` suffix. **Load** restores ids and level UI without re-running ladder mass-check. Rename is inline; delete removes the active preset. Switching engine clears the active preset id but keeps all presets in memory.
+
+Persistence is React state only for now; the serializable shape in `src/lib/presets/selectionPresets.ts` is intended for later file / Tauri storage.
+
+---
+
+
+
 ## Out of scope (later milestones)
 
 - Downloading mods  
@@ -463,6 +483,8 @@ Domain logic is kept in pure TypeScript under `src/lib/` so those features can w
 | Station with `desc`                         | Desc shown under station heading in the list pane                                                                                                                                                                                     |
 | Focus a tree row                            | Detail panel shows desc / mod metadata (not inlined in the list)                                                                                                                                                                      |
 | Level on component/container                | Colored level badge next to label                                                                                                                                                                                                     |
+| Save selection preset                       | Top bar Save; auto-name; game-scoped; stores ids + level-strip UI                                                                                                                                                                     |
+| Load selection preset                       | Dropdown restores ids + level chips; does not re-run ladder mass-check                                                                                                                                                                |
 | Export                                      | Document order; first occurrence only for duplicate ids; includes hidden auto-selected                                                                                                                                                |
 
 
