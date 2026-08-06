@@ -1032,7 +1032,7 @@
 							<component id="ZSTweaks:1342" label="Make Protector of the Dryads deal +2 damage to orcs, ogres, gnolls, and goblinoids" />
 							<component id="ZSTweaks:1641" label="Make the item creation abilities of vanilla NPCs slightly better" />
 						</mod>
-						<component id="SubtleD_Spell_Tweaks:1351" label="Add Faerie Fire and Slow On Hit to Moonblade" />
+						<component id="SubtleD_Spell_Tweaks:1351" label="Add Faerie Fire and Slow On Hit to Moonblade" modId="SubtleD_Spell_Tweaks" />
 					</group>
 					<component id="stratagems:3010" label="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" modId="SwordCoastStratagems" level="blendWell" />
 					<component id="stratagems:2900" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" modId="SwordCoastStratagems" level="blendWell" />
@@ -1057,7 +1057,7 @@
 				<component id="stratagems:4051" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="blendWell" />
 				<component id="randomiser:10100" label="Remove Protection from Undead Scrolls from all stores" level="higherDifficulty" engine="bg,eet" modId="randomiser" />
 				<component id="stratagems:3041" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" level="blendWell" />
-				<component id="cd_tweaks_death_cam" label="Death Cam" level="vanillaPlus" />
+				<component id="cd_tweaks_death_cam" label="Death Cam" level="vanillaPlus" modId="Tweaks-Anthology" />
 			</tweaks>
 		</common>
 		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
@@ -1146,7 +1146,7 @@
 			<group sectionId="paladin" label="Paladin">
 				<group sectionId="inquisitor" label="Update Kit: Inquisitor">
 				</group>
-				<component id="BardicWonders:1012" label="Add Kit: Gallant - Bardic Paladin Kit" modId="BardicWonders" displayIf="EEex:1" level="extended" />
+				<component id="BardicWonders:1012" label="Add Kit: Gallant - Bardic Paladin Kit" modId="Bardic-Wonders" displayIf="EEex:1" level="extended" />
 			</group>
 			<group sectionId="monk" label="Monk">
 				<component id="ArtisansKitpack:10001" label="Update Class: Revisions" modId="The-Artisan-s-Kitpack" level="blendWell" />
@@ -1395,10 +1395,10 @@
 					<component id="cd_tweaks_consistent_stats_viconia_bg2" label="Viconia" level="blendWell" />
 				</mod>
 			</group>
-			<component id="cd_tweaks_kagain_legal_con" label="Give Kagain a Legal Constitution Score of 19" level="blendWell" engine="bg1,eet" />
-			<component id="cd_tweaks_coran_legal_dex" label="Give Coran a Legal Dexterity Score of 19" level="blendWell" engine="bg1,eet" />
+			<component id="cd_tweaks_kagain_legal_con" label="Give Kagain a Legal Constitution Score of 19" level="blendWell" engine="bg1,eet" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_coran_legal_dex" label="Give Coran a Legal Dexterity Score of 19" level="blendWell" engine="bg1,eet" modId="Tweaks-Anthology" />
 			<component id="cd_tweaks_yoshimo_better_trapsetting" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" level="blendWell" />
-			<component id="bg1npc_project-kivanproficiency_spears" label="Kivan uses spears" displayIf="bg1npc_project-main" level="fixes" />
+			<component id="bg1npc_project-kivanproficiency_spears" label="Kivan uses spears" displayIf="bg1npc_project-main" level="fixes" modId="BG1NPC" />
 		</group>
 		<group label="Appearance">
 			<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" level="blendWell" />
@@ -1569,7 +1569,7 @@
 		</mod>
 		<component id="HouseTweaks:21" label="Restore Reputation Increase Sound Effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" />
 		<component id="HouseTweaks:26" label="Soundset Tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg2,eet"/>
-		<component id="cd_tweaks_fix_boo_squeak" label="Fix Boo's Squeak" modId="Tweaks" level="fixes" engine="bg2,eet" />
+		<component id="cd_tweaks_fix_boo_squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" level="fixes" engine="bg2,eet" />
 	</sounds>
 
 	<sounds>
@@ -1795,7 +1795,7 @@
 		<component id="buffbot:0" label="BuffBot: In-Game Buff Automation" modId="bg-eeex-buffbot" />
 		<component id="cd_tweaks_restored_loading_hints" label="Restored Loading Hints" modId="Tweaks-Anthology" />
 		<group label="Savegames tweaks">
-			<component id="cd_tweaks_personalize_savename_opt6" label="Use save filenames scheme: 000000000-[Protagonist] Save-Name" level="vanillaPlus" engine="bg,eet,iwd,pst" />
+			<component id="cd_tweaks_personalize_savename_opt6" label="Use save filenames scheme: 000000000-[Protagonist] Save-Name" level="vanillaPlus" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" />
 			<component id="cd_tweaks_create_interval_four_saves_15" label="Interval saves every 15 minutes" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
 		</group>
 		<mod id="A7-HiddenGameplayOptions" label="Reveal Hidden Gameplay Options" engine="bg,eet,iwd,pst">
@@ -2127,9 +2127,9 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 		</group>
 		<component id="cd_tweaks_triple_class_hla_table" label="Triple-Class HLA Tables" modId="Tweaks-Anthology" />
 		<component id="cd_tweaks_no_traps_or_locks" label="Remove all traps" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
-		<component id="cd_tweaks_force_all_dialogue_to_pause" label="Force All Dialogue to Pause Game" engine="bg,eet,iwd,pst" level="vanillaPlus" />
-		<component id="cd_tweaks_sensible_regeneration_when_traveling" label="Sensible Regeneration When Traveling" engine="bg,eet,iwd,pst" level="vanillaPlus" />
-		<component id="cd_tweaks_reveal_city_areas" label="Reveal City Maps When Entering Area" engine="bg,eet,iwd,pst" level="vanillaPlus" />
+		<component id="cd_tweaks_force_all_dialogue_to_pause" label="Force All Dialogue to Pause Game" engine="bg,eet,iwd,pst" level="vanillaPlus" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_sensible_regeneration_when_traveling" label="Sensible Regeneration When Traveling" engine="bg,eet,iwd,pst" level="vanillaPlus" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_reveal_city_areas" label="Reveal City Maps When Entering Area" engine="bg,eet,iwd,pst" level="vanillaPlus" modId="Tweaks-Anthology" />
 		<component id="XGTCumulativeCasterLevels:100" label="Allow Caster Levels Bonuses and Penalties to Accumulate" level="fixes" modId="XGTCumulativeCasterLevels" stability="beta" displayIf="EEex:1" />
 	</adjustements>
 </installSequence>
