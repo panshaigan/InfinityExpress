@@ -240,7 +240,7 @@ Filters run **after** `buildDisplayTree` and only affect what is shown. Checked 
 | Author    | Checklist of authors with more than 2 mods in `mods.csv`, plus **Include selected** / **Exclude selected**. Include + all listed selected = inactive (unlisted authors still shown). Exclude + empty = inactive                                                                                                                                               | all listed authors; Include             |
 | Hidden    | Show / Hide / Only for `noDisplay`                                                                                                                                                                                                                                                                                                                            | **Hide**                                |
 | Required  | Show / Hide / Only for `required`                                                                                                                                                                                                                                                                                                                             | **Hide**                                |
-| Unchecked only | When on, hide fully checked rows. Entire `<alternatives>` groups stay visible (including the checked option) so choices can still be switched. Display-only; selection and export unchanged.                                                                                                                                                                | off                                     |
+| Unchecked | Cycles **off** → **Unchecked + options** → **Unchecked only**. Both modes hide checked regular components. **Unchecked + options** still shows every `<alternatives>` group (even with a choice picked). **Unchecked only** shows `<alternatives>` only when nothing in the group is selected yet. Display-only; selection and export unchanged. | off |
 
 
 Level filter ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `quality`. Token `restructure` shares the Well blended bucket. Unleveled nodes are treated as above the ladder and hidden when filtering by level.
@@ -255,8 +255,8 @@ Station list-pane heading uses `STATION_LABELS`. Under it, the first station roo
 
 Header (and Engine preselect) controls:
 
-- **OK** — marks the current station finished (✓ in header and rail); does not navigate.
-- **Previous** / **Next** — wrap through non-empty component screens after the active filters. Engine is not a cycle stop (from Engine, Next enters the first screen and Previous the last). Non-content stations are one screen when their filtered list has rows. Content expands as main branch → each subbranch with filtered children (canonical sub order).
+- **OK** — marks the current station finished (✓ in header and rail), then advances to the next unfinished non-empty screen (same cycle as Next, including wrap). Finished stations are skipped by Previous / Next / OK.
+- **Previous** / **Next** — wrap through non-empty component screens after the active filters, skipping stations already marked finished. Engine is not a cycle stop (from Engine, Next enters the first unfinished screen and Previous the last). Non-content stations are one screen when their filtered list has rows. Content expands as main branch → each subbranch with filtered children (canonical sub order); OK on Content finishes the whole station and skips its remaining tabs.
 
 ### Content branch navigation
 

@@ -135,6 +135,40 @@ describe('cycleScreen', () => {
   it('returns null when there are no screens', () => {
     expect(cycleScreen([], null, 1)).toBeNull()
   })
+
+  it('skips finished stations and keeps order relative to current', () => {
+    const skip = (s: NavScreen) => s.stationId === 'content'
+    expect(cycleScreen(screens, screens[0]!, 1, skip)).toEqual(screens[2])
+    expect(cycleScreen(screens, screens[2]!, 1, skip)).toEqual(screens[0])
+    expect(cycleScreen(screens, screens[1]!, 1, skip)).toEqual(screens[2])
+  })
+
+  it('OK-style skip of current station jumps past remaining tabs of that station', () => {
+    const contentScreens: NavScreen[] = [
+      { stationId: 'base' },
+      {
+        stationId: 'content',
+        mainKey: 'm1',
+        subKey: 's1',
+        subTag: 'quest',
+      },
+      {
+        stationId: 'content',
+        mainKey: 'm1',
+        subKey: 's2',
+        subTag: 'npc',
+      },
+      { stationId: 'kits' },
+    ]
+    const skip = (s: NavScreen) => s.stationId === 'content'
+    expect(cycleScreen(contentScreens, contentScreens[1]!, 1, skip)).toEqual(
+      contentScreens[3],
+    )
+  })
+
+  it('returns null when every screen is skipped', () => {
+    expect(cycleScreen(screens, screens[0]!, 1, () => true)).toBeNull()
+  })
 })
 
 describe('navScreensEqual', () => {

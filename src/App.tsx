@@ -628,11 +628,11 @@ export default function App() {
     }
     return { stationId: activeStation }
   }, [activeStation, contentMainKey, contentSubKey, contentSubTag, game])
-  const canCycleScreens = !!game && navigableScreens.length > 0
+  const canCycleScreens =
+    !!game && navigableScreens.some((s) => !finishedStations.has(s.stationId))
   const canMarkFinished = activeStation === 'engine' ? !!game : true
 
   function markStationFinished() {
-    if (!canMarkFinished) return
     setFinishedStations((prev) => {
       const next = new Set(prev)
       next.add(activeStation)
@@ -650,13 +650,40 @@ export default function App() {
     clearFocus()
   }
 
+  function skipFinishedScreen(screen: NavScreen): boolean {
+    return finishedStations.has(screen.stationId)
+  }
+
   function goPrevScreen() {
-    const next = cycleScreen(navigableScreens, currentNavScreen, -1)
+    const next = cycleScreen(
+      navigableScreens,
+      currentNavScreen,
+      -1,
+      skipFinishedScreen,
+    )
     if (next) applyNavScreen(next)
   }
 
   function goNextScreen() {
-    const next = cycleScreen(navigableScreens, currentNavScreen, 1)
+    const next = cycleScreen(
+      navigableScreens,
+      currentNavScreen,
+      1,
+      skipFinishedScreen,
+    )
+    if (next) applyNavScreen(next)
+  }
+
+  /** Mark current station finished, then advance past it to the next unfinished screen. */
+  function onOk() {
+    if (!canMarkFinished) return
+    markStationFinished()
+    const next = cycleScreen(
+      navigableScreens,
+      currentNavScreen,
+      1,
+      (s) => finishedStations.has(s.stationId) || s.stationId === activeStation,
+    )
     if (next) applyNavScreen(next)
   }
 
@@ -848,7 +875,7 @@ export default function App() {
                     canOk={canMarkFinished}
                     onPrevious={goPrevScreen}
                     onNext={goNextScreen}
-                    onOk={markStationFinished}
+                    onOk={onOk}
                   />
                   {warnings.length > 0 && (
                     <details className="warnings">
@@ -878,7 +905,7 @@ export default function App() {
                         canOk={canMarkFinished}
                         onPrevious={goPrevScreen}
                         onNext={goNextScreen}
-                        onOk={markStationFinished}
+                        onOk={onOk}
                       />
                     </div>
                     <p className="lede">

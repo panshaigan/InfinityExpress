@@ -18,6 +18,39 @@ export const STABILITY_RELEASED = 'released'
 
 export type AuthorFilterMode = 'include' | 'exclude'
 
+/**
+ * Selection display filter:
+ * - `off` — no selection-based hiding
+ * - `withOptions` — hide checked regular rows; keep every `<alternatives>` group
+ *   (including groups that already have a choice)
+ * - `only` — hide checked regular rows; keep only `<alternatives>` groups where
+ *   nothing is selected yet
+ */
+export type UncheckedFilterMode = 'off' | 'withOptions' | 'only'
+
+export const UNCHECKED_FILTER_CYCLE: readonly UncheckedFilterMode[] = [
+  'off',
+  'withOptions',
+  'only',
+] as const
+
+export function cycleUncheckedFilter(mode: UncheckedFilterMode): UncheckedFilterMode {
+  const i = UNCHECKED_FILTER_CYCLE.indexOf(mode)
+  const idx = i < 0 ? 0 : (i + 1) % UNCHECKED_FILTER_CYCLE.length
+  return UNCHECKED_FILTER_CYCLE[idx]!
+}
+
+export function uncheckedFilterLabel(mode: UncheckedFilterMode): string {
+  switch (mode) {
+    case 'off':
+      return 'Unchecked'
+    case 'withOptions':
+      return 'Unchecked + options'
+    case 'only':
+      return 'Unchecked only'
+  }
+}
+
 export interface FilterCriteria {
   search: string
   /** Ladder max level, or null for no ladder filter. */
@@ -30,11 +63,8 @@ export interface FilterCriteria {
    * When true, show both alongside other components.
    */
   showHidden: boolean
-  /**
-   * When true, hide fully checked rows. Entire `<alternatives>` groups stay
-   * visible (including checked options) so the user can still switch choices.
-   */
-  uncheckedOnly: boolean
+  /** Hide checked rows; see `UncheckedFilterMode`. */
+  uncheckedFilter: UncheckedFilterMode
   /** Allow-list of tag tokens (all discovered tags checked by default). */
   tags: ReadonlySet<string>
   /**
@@ -74,7 +104,7 @@ export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   includeLowerDifficulty: true,
   includeHigherDifficulty: true,
   showHidden: false,
-  uncheckedOnly: false,
+  uncheckedFilter: 'off',
   tags: new Set(),
   tagsOnlyChecked: false,
   sizeMinBytes: null,
@@ -177,7 +207,7 @@ export function isFilterActive(
     criteria.includeLowerDifficulty !== defaults.includeLowerDifficulty ||
     criteria.includeHigherDifficulty !== defaults.includeHigherDifficulty ||
     criteria.showHidden !== defaults.showHidden ||
-    criteria.uncheckedOnly !== defaults.uncheckedOnly ||
+    criteria.uncheckedFilter !== defaults.uncheckedFilter ||
     criteria.tagsOnlyChecked !== defaults.tagsOnlyChecked ||
     !setsEqual(criteria.tags, defaults.tags) ||
     isSizeFilterActive(criteria, extras.sizeBounds ?? null) ||
@@ -306,8 +336,11 @@ function leafMatchesCriteria(
  * Prune display tree by filter criteria. Keep ancestors when any descendant matches.
  * Leaf / collapsed rows must match; containers stay only as scaffolding for matches.
  *
- * When `uncheckedOnly` is on, fully checked rows are dropped except under
- * `<alternatives>`, which stay fully visible (including checked options).
+ * Unchecked filter modes:
+ * - `withOptions` — drop checked regular rows; keep all `<alternatives>` groups
+ *   (full option lists, even when a choice is already selected)
+ * - `only` — drop checked regular rows; keep `<alternatives>` only when nothing
+ *   in the group is selected yet (full option list when kept)
  */
 export function filterDisplayTree(
   nodes: DisplayNode[],
@@ -318,11 +351,19 @@ export function filterDisplayTree(
   options: { skipSelectionFilter?: boolean } = {},
 ): DisplayNode[] {
   const result: DisplayNode[] = []
+  const mode = criteria.uncheckedFilter
   const applySelection =
-    criteria.uncheckedOnly && !options.skipSelectionFilter && selection != null
+    mode !== 'off' && !options.skipSelectionFilter && selection != null
 
   for (const display of nodes) {
     if (applySelection && display.node.kind === 'alternatives') {
+      if (
+        mode === 'only' &&
+        displaySelectionState(display, selection.selectedIds, selection.game) !==
+          'unchecked'
+      ) {
+        continue
+      }
       const filteredChildren = filterDisplayTree(
         display.children,
         criteria,

@@ -11,9 +11,11 @@ import {
 } from '../lib/mods/loadMods'
 import {
   createDefaultFilterCriteria,
+  cycleUncheckedFilter,
   isAuthorFilterActive,
   isFilterActive,
   isSizeFilterActive,
+  uncheckedFilterLabel,
   type AuthorFilterMode,
   type FilterCriteria,
 } from '../lib/selection/filterDisplayTree'
@@ -68,7 +70,7 @@ export function FiltersStrip({
   const sizeActive = isSizeFilterActive(criteria, sizeBounds)
   const authorActive = isAuthorFilterActive(criteria, authorNames)
   const hiddenActive = criteria.showHidden
-  const uncheckedOnlyActive = criteria.uncheckedOnly
+  const uncheckedActive = criteria.uncheckedFilter !== 'off'
 
   function patch(partial: Partial<FilterCriteria>) {
     onChange({ ...criteria, ...partial })
@@ -362,11 +364,13 @@ export function FiltersStrip({
 
         <button
           type="button"
-          className={`filter-chip${uncheckedOnlyActive ? ' active' : ''}`}
-          aria-pressed={uncheckedOnlyActive}
-          onClick={() => patch({ uncheckedOnly: !criteria.uncheckedOnly })}
+          className={`filter-chip${uncheckedActive ? ' active' : ''}`}
+          aria-pressed={uncheckedActive}
+          onClick={() =>
+            patch({ uncheckedFilter: cycleUncheckedFilter(criteria.uncheckedFilter) })
+          }
         >
-          Unchecked only
+          {uncheckedFilterLabel(criteria.uncheckedFilter)}
         </button>
 
         {active && (

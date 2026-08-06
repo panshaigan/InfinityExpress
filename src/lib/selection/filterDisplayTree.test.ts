@@ -7,9 +7,11 @@ import {
   STABILITY_RELEASED,
   capitalizeStabilityLabel,
   createDefaultFilterCriteria,
+  cycleUncheckedFilter,
   filterDisplayTree,
   normalizeStability,
   stabilityBadgeLabel,
+  uncheckedFilterLabel,
   type FilterCriteria,
   type FilterModContext,
 } from '../selection/filterDisplayTree'
@@ -558,7 +560,21 @@ describe('filterDisplayTree size and author', () => {
   })
 })
 
-describe('uncheckedOnly filter', () => {
+describe('cycleUncheckedFilter', () => {
+  it('cycles off → withOptions → only → off', () => {
+    expect(cycleUncheckedFilter('off')).toBe('withOptions')
+    expect(cycleUncheckedFilter('withOptions')).toBe('only')
+    expect(cycleUncheckedFilter('only')).toBe('off')
+  })
+
+  it('labels match chip copy', () => {
+    expect(uncheckedFilterLabel('off')).toBe('Unchecked')
+    expect(uncheckedFilterLabel('withOptions')).toBe('Unchecked + options')
+    expect(uncheckedFilterLabel('only')).toBe('Unchecked only')
+  })
+})
+
+describe('unchecked filter modes', () => {
   const XML = `<?xml version="1.0"?>
 <installSequence>
   <base label="Base" engine="bg1">
@@ -582,11 +598,11 @@ describe('uncheckedOnly filter', () => {
     selectedIds: new Set(),
   })
 
-  it('hides fully checked leaves and keeps unchecked siblings', () => {
+  it('withOptions: hides fully checked leaves and keeps unchecked siblings', () => {
     const selected = new Set(['plain:a'])
     const out = filterDisplayTree(
       built,
-      criteria({ uncheckedOnly: true }),
+      criteria({ uncheckedFilter: 'withOptions' }),
       undefined,
       {},
       { selectedIds: selected, game: 'bg1' },
@@ -594,11 +610,11 @@ describe('uncheckedOnly filter', () => {
     expect(ids(out)).toEqual(['plain:b', 'plain:c', 'alt:1', 'alt:2', 'alt:3'])
   })
 
-  it('keeps entire alternatives group when one option is checked', () => {
+  it('withOptions: keeps entire alternatives group when one option is checked', () => {
     const selected = new Set(['alt:1', 'plain:a', 'plain:b', 'plain:c'])
     const out = filterDisplayTree(
       built,
-      criteria({ uncheckedOnly: true }),
+      criteria({ uncheckedFilter: 'withOptions' }),
       undefined,
       {},
       { selectedIds: selected, game: 'bg1' },
@@ -612,11 +628,59 @@ describe('uncheckedOnly filter', () => {
     ])
   })
 
-  it('still applies search inside alternatives when uncheckedOnly is on', () => {
+  it('only: hides decided alternatives groups; keeps undecided ones whole', () => {
+    const selected = new Set(['alt:1', 'plain:a'])
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'only' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual(['plain:b', 'plain:c'])
+  })
+
+  it('only: keeps undecided alternatives with all options', () => {
+    const selected = new Set(['plain:a'])
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'only' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual(['plain:b', 'plain:c', 'alt:1', 'alt:2', 'alt:3'])
+  })
+
+  it('only: still applies search inside undecided alternatives', () => {
+    const selected = new Set(['plain:a'])
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'only', search: 'Two' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual(['alt:2'])
+  })
+
+  it('only: search does not revive a decided alternatives group', () => {
     const selected = new Set(['alt:1'])
     const out = filterDisplayTree(
       built,
-      criteria({ uncheckedOnly: true, search: 'Two' }),
+      criteria({ uncheckedFilter: 'only', search: 'Two' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual([])
+  })
+
+  it('withOptions: still applies search inside alternatives', () => {
+    const selected = new Set(['alt:1'])
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'withOptions', search: 'Two' }),
       undefined,
       {},
       { selectedIds: selected, game: 'bg1' },
@@ -628,7 +692,7 @@ describe('uncheckedOnly filter', () => {
     const selected = new Set(['plain:a'])
     const out = filterDisplayTree(
       built,
-      criteria({ uncheckedOnly: true }),
+      criteria({ uncheckedFilter: 'withOptions' }),
       undefined,
       {},
       { selectedIds: selected, game: 'bg1' },
@@ -642,7 +706,7 @@ describe('uncheckedOnly filter', () => {
     const selected = new Set(['plain:a', 'alt:1'])
     const out = filterDisplayTree(
       built,
-      criteria({ uncheckedOnly: false }),
+      criteria({ uncheckedFilter: 'off' }),
       undefined,
       {},
       { selectedIds: selected, game: 'bg1' },

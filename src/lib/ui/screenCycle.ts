@@ -55,22 +55,35 @@ export function buildNavigableScreens(
 }
 
 /**
- * Step ±1 through `screens` with wrap.
- * When `current` is null or not in the list (e.g. Engine), Next → first, Previous → last.
+ * Step ±1 through `screens` with wrap, skipping screens for which `skip` is true.
+ * Position is taken from `current` in the full list so skipped neighbours are walked past.
+ * When `current` is null or not in the list (e.g. Engine), Next → first eligible,
+ * Previous → last eligible.
  */
 export function cycleScreen(
   screens: readonly NavScreen[],
   current: NavScreen | null,
   delta: -1 | 1,
+  skip?: (screen: NavScreen) => boolean,
 ): NavScreen | null {
-  if (screens.length === 0) return null
+  const isSkipped = skip ?? (() => false)
+  const eligible = screens.filter((s) => !isSkipped(s))
+  if (eligible.length === 0) return null
+
   if (current == null) {
-    return delta === 1 ? screens[0]! : screens[screens.length - 1]!
+    return delta === 1 ? eligible[0]! : eligible[eligible.length - 1]!
   }
-  const idx = screens.findIndex((s) => navScreensEqual(s, current))
-  if (idx < 0) {
-    return delta === 1 ? screens[0]! : screens[screens.length - 1]!
+
+  const fullIdx = screens.findIndex((s) => navScreensEqual(s, current))
+  if (fullIdx < 0) {
+    return delta === 1 ? eligible[0]! : eligible[eligible.length - 1]!
   }
-  const next = (idx + delta + screens.length) % screens.length
-  return screens[next]!
+
+  for (let step = 1; step <= screens.length; step++) {
+    const idx =
+      (((fullIdx + delta * step) % screens.length) + screens.length) % screens.length
+    const candidate = screens[idx]!
+    if (!isSkipped(candidate)) return candidate
+  }
+  return null
 }
