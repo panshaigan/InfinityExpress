@@ -82,9 +82,9 @@ const SAMPLE = `<?xml version="1.0"?>
     </tweaks>
     <component id="dup:first" label="First" engine="bg1" />
   </content>
-  <kits>
+  <mechanics>
     <component id="dup:first" label="Second occurrence" engine="bg1" />
-  </kits>
+  </mechanics>
 </installSequence>`
 
 describe('parse + selection', () => {
@@ -156,7 +156,7 @@ describe('parse + selection', () => {
   it('nested alternatives clear outer sibling branches both ways', () => {
     const NESTED = `<?xml version="1.0"?>
 <installSequence>
-  <kits>
+  <mechanics>
     <alternatives label="Constitution Bonuses">
       <alternatives label="SubtleD HD">
         <component id="D5_HARDCORE_HD" label="Above" />
@@ -165,7 +165,7 @@ describe('parse + selection', () => {
       </alternatives>
       <component id="HouseTweaks:9" label="House Rules" />
     </alternatives>
-  </kits>
+  </mechanics>
 </installSequence>`
     const { model: nestedModel } = parseInstallSequence(NESTED)
     const house = nestedModel.componentsById.get('HouseTweaks:9')!
@@ -322,13 +322,13 @@ describe('parse + selection', () => {
   it('visible alwaysIf auto-selects but stays manually checkable when false', () => {
     const XML = `<?xml version="1.0"?>
 <installSequence>
-  <npcClassAdjustements label="NPC" engine="bg2,eet">
+  <npcChoices label="NPC" engine="bg2,eet">
     <alternatives label="Make Xan a..." unfolded="1">
       <component id="xan:1" label="Fighter/Mage" alwaysIf="ek" displayIfNot="ek" />
       <component id="xan:3" label="Sorcerer" displayIfNot="ek" />
     </alternatives>
     <component id="ek" label="Eldritch Knight" />
-  </npcClassAdjustements>
+  </npcChoices>
 </installSequence>`
     const { model: xm } = parseInstallSequence(XML)
     const fm = xm.componentsById.get('xan:1')!

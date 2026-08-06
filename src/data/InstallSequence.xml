@@ -1123,7 +1123,7 @@
 		</common>
 	</content>
 
-	<kits engine="bg,eet,iwd">
+	<mechanics engine="bg,eet,iwd">
 		<group sectionId="warriors" label="Warriors" desc="Figher/Ranger/Paladin/Monk">
 			<group sectionId="fighter" label="Fighter">
 				<group sectionId="wizard-slayer" label="Update Kit: Wizard Slayer">
@@ -1265,7 +1265,7 @@
 			<component id="cd_tweaks_grandmastery_bonus_true" label="True grandmastery" level="blendWell" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" />
 			<component id="cd_tweaks_specialization_apr_bonus_for_all" label="Everyone Gets Bonus APR from Specialization" modId="Tweaks-Anthology" level="lowerDifficulty" />
 		</group>
-	</kits>
+	</mechanics>
 
 	<content>
 		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
@@ -1348,7 +1348,7 @@
 		</bg2>
 	</content>
 
-	<npcClassAdjustements desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
+	<npcChoices desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
 		<group label="Class/Kit">
 			<component id="ajantisbg2:5" label="Make Ajantis a Cavalier in BG2" modId="Ajantis_BG2" displayIf="ajantisbg2:0" />
 			<component id="totemiccernd:0" label="Make Cernd a Totemic Druid" modId="Totemic_Cernd" />
@@ -1410,7 +1410,7 @@
 			<component id="cd_tweaks_ne_korgan" label="Change Korgan to Neutral Evil Alignment" modId="Tweaks-Anthology" />	
 		</group>
 		<component id="cd_tweaks_mp_kickout_dialogue" label="Improved Multi-Player Kick-Out Dialogues" modId="Tweaks-Anthology" level="vanillaPlus" />
-	</npcClassAdjustements>
+	</npcChoices>
 
 	<combat level="higherDifficulty">
 		<alternatives label="Remove backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod" level="lowerDifficulty">
@@ -1827,7 +1827,7 @@
 		<component id="EET_end:0" label="Baldur's Gate: Enhanced Edition Trilogy (EET) - End" modId="EET" required="1" noDisplay="1" />
 	</base>
 
-	<kits engine="bg,eet,iwd">
+	<mechanics engine="bg,eet,iwd">
 		<group sectionId="warriors" label="Warriors tweaks" desc="Figher/Ranger/Paladin/Monk">
 			<group sectionId="fighter" label="Fighter">
 				<group sectionId="wizard-slayer" label="Wizard Slayer">
@@ -1963,7 +1963,7 @@
 				</mod>
 			</alternatives>
 		</group>
-	</kits>
+	</mechanics>
 
 	<randomisation engine="bg,eet" level="higherDifficulty">
 		<alternatives label="Enemies" unfolded="1">

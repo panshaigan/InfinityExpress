@@ -76,7 +76,7 @@ Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not i
 4. Each `<component id="…">` also gets:
   - `componentId`
   - `orderIndex` — monotonic counter in **document order** (used for export)
-5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Structural org tags (`add`, `update`, `tweaks`, `items`, `quest`, `npc`, `restorations`, `restructure`, …) reunite by tag; labeled buckets (`group`, `common`, …) reunite only when they share `sectionId`. Kits follows that same rule with a two-level layout: class-group `sectionId`s (`warriors`, `rogues`, …) nest class `sectionId`s (`fighter`, `ranger`, …) so components from a later `<kits>` block land in the matching class bucket. Mods/components/alternatives are never folded. First sibling’s attrs are kept. When a merged sibling has `noBranches`, only **that** sibling’s children are flattened into the survivor at merge time; siblings without the flag keep nested structure (`mod` / `group` rows). If the survivor still has `noBranches` when absorbing a structured sibling, its existing children are materialized flat and the flag is cleared so the incoming structure is preserved. Export still uses each component’s original `orderIndex`.
+5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Structural org tags (`add`, `update`, `tweaks`, `items`, `quest`, `npc`, `restorations`, `restructure`, …) reunite by tag; labeled buckets (`group`, `common`, …) reunite only when they share `sectionId`. Mechanics follows that same rule with a two-level layout: class-group `sectionId`s (`warriors`, `rogues`, …) nest class `sectionId`s (`fighter`, `ranger`, …) so components from a later `<mechanics>` block land in the matching class bucket. Mods/components/alternatives are never folded. First sibling’s attrs are kept. When a merged sibling has `noBranches`, only **that** sibling’s children are flattened into the survivor at merge time; siblings without the flag keep nested structure (`mod` / `group` rows). If the survivor still has `noBranches` when absorbing a structured sibling, its existing children are materialized flat and the flag is cleared so the incoming structure is preserved. Export still uses each component’s original `orderIndex`.
 6. **Content station remount (UI only, after fold):** depending on the selected game, commons are absorbed into a target bucket with the same sibling-fold rules (`npc`/`items`/`tweaks` reunite by tag). `sod` / `pst` stay top-level.
   - `bg1` → fold `universal-bg-content` + `universal-bg-iwd` into `bg1-content`
   - `bg2` → fold both commons into `bg2-content`
@@ -101,9 +101,9 @@ Content stations (nav order):
 3. campaigns
 4. gfx
 5. content
-6. kits (label: Class & Kits mechanics)
+6. mechanics (label: Mechanics)
 7. spells
-8. npcClassAdjustements
+8. npcChoices
 9. combat
 10. sounds
 11. portraits
