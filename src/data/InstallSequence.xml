@@ -1124,29 +1124,89 @@
 	</content>
 
 	<kits engine="bg,eet,iwd">
-		<update label="Class/Kits Modifications" unfolded="1">
-			<group label="Fighter">
-				<component id="Morpheus562sKitpackShieldBreaker" label="Shield Breaker - Fighter Kit" modId="morpheus562s-kitpack" />
-				<component id="ArtisansKitpack:1006" label="Wizard Slayer Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
-				<component id="METweaks:1600" label="Increase Wizard Slayer Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" />
+		<group sectionId="warriors" label="Warriors" desc="Figher/Ranger/Paladin/Monk">
+			<group sectionId="fighter" label="Fighter">
+				<group sectionId="wizard-slayer" label="Update Kit: Wizard Slayer">
+					<component id="ArtisansKitpack:1006" label="Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
+					<component id="METweaks:1600" label="Increase Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" default="Gain 5% Magic Resistance per level rather than 1%" />
+				</group>
+				<component id="Morpheus562sKitpackShieldBreaker" label="Add Kit: Shield Breaker" modId="morpheus562s-kitpack" />
 			</group>
-			<group label="Ranger" level="blendWell">
-				<component id="ArtisansKitpack:2012" label="Beast Master Overhaul" modId="The-Artisan-s-Kitpack" />
-				<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion Class Feat for Beastmasters" modId="Tweaks-Anthology" displayIf="EEex:1" />
-				<component id="iwdification:110" label="Change Tracking for all rangers and ranger kits" modId="iwdification" />
-				<component id="cd_tweaks_nwn_trackless_step" label="Trackless Step Class Feat for Rangers" modId="Tweaks-Anthology" displayIf="EEex:1" />
+			<group sectionId="ranger" label="Ranger">
+				<group sectionId="beastmaster" label="Update Kit: Beast Master" level="blendWell">
+					<component id="ArtisansKitpack:2012" label="Overhaul" modId="The-Artisan-s-Kitpack" />
+					<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion Class Feat" modId="Tweaks-Anthology" displayIf="EEex:1" />
+				</group>
+				<group sectionId="archer" label="Update Kit: Archer - Provide to hit and damage bonuses per the kit description">
+				</group>
+				<component id="iwdification:110" label="Make Tracking an innate ability since level 1" modId="iwdification" engine="bg,eet" level="blendWell" />
+				<component id="cd_tweaks_nwn_trackless_step" label="Add Trackless Step Class Feat for Rangers" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
+				<component id="METweaks:1400" label="Power Up Ranger Charm Animal" modId="Olvyn-Tweaks" level="blendWell" />
 			</group>
-			<group label="Paladin">
-				<component id="BardicWonders:1012" label="Gallant - Bardic Paladin Kit" modId="BardicWonders" displayIf="EEex:1" level="extended" />
+			<group sectionId="paladin" label="Paladin">
+				<group sectionId="inquisitor" label="Update Kit: Inquisitor">
+				</group>
+				<component id="BardicWonders:1012" label="Add Kit: Gallant - Bardic Paladin Kit" modId="BardicWonders" displayIf="EEex:1" level="extended" />
 			</group>
-			<group label="Cleric">
+			<group sectionId="monk" label="Monk">
+				<component id="ArtisansKitpack:10001" label="Update Class: Revisions" modId="The-Artisan-s-Kitpack" level="blendWell" />
+				<component id="METweaks:1000" label="Update Deflect Missiles ability" modId="Olvyn-Tweaks" level="blendWell" />
 			</group>
-			<group label="Druid">
-				<component id="ArtisansKitpack:5100" label="Shapeshifter Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
+			<component id="ZSTweaks:2120" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" />
+			<component id="METweaks:400" label="Remove the limit of two proficiency points in a weapon at character creation" modId="Olvyn-Tweaks" />
+			<component id="cd_tweaks_cleave" label="Add Cleave Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" />
+			<component id="cd_tweaks_nwn_knockdown" label="Add Knockdown Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" />
+			<component id="METweaks:900" label="Let Rangers and Paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
+		</group>
+		<group sectionId="rogues" label="Rogues" desc="Thieve/Bard">
+			<group sectionId="thief" label="Thief">
+				<mod id="rogue_rebalancing" label="Update Kits: Assassin, Swashbuckler, Bounty Hunter revisions" level="blendWell">
+					<component id="rr:1" label="Thief kit revisions" />
+					<component id="rr:2" label="Thief High Level Ability revisions" alwaysIf="rr:1" noDisplay="1" />
+				</mod>
+				<component id="ArtisansKitpack:7008" label="Update Kit: Shadowdancer Overhaul" modId="The-Artisan-s-Kitpack" level="extended" />
+			</group>
+			<group sectionId="bard" label="Bard">
+				<mod id="rogue_rebalancing" label="Update Class and Kits: Blade, Jester, Skald" level="blendWell">
+					<component id="rr:4" label="Bard kit revisions" modId="rogue_rebalancing" />
+					<component id="rr:5" label="Bard High Level Ability revisions" alwaysIf="rr:4" noDisplay="1" modId="rogue_rebalancing" />
+					<component id="rr:6" label="Proper spell progression for Bards" modId="rogue_rebalancing" alwaysIf="rr:4" noDisplay="1" />
+				</mod>
+				<group sectionId="blade" label="Blade Kit Enhancements">
+				</group>
+				<group sectionId="skald" label="Skald Kit Enhancements">
+				</group>
+				<component id="cd_tweaks_nwn_armored_caster" label="Add Armored Caster Class Feat" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
+			</group>
+			<component id="rr:9" label="Revised Thievery: adds dialogue options after failed thievery." desc="Additionally PnP the thievery potions and prevents their effects from stacking" modId="rogue_rebalancing" level="vanillaPlus" />
+			<component id="rr:0" label="Proper dual-wielding implementation for Thieves and Bards" modId="rogue_rebalancing" level="vanillaPlus" />
+			<component id="cd_tweaks_thieving_in_heavy_armor" label="Allow Thieving and Stealth in Heavy Armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="blendWell" desc="" />
+			<mod id="Epic-Thieving" label="Epic Thieving" level="blendWell">
+				<component id="EpicThieving:0" label="EpicThieving - Epic Locks, Traps, Pickpocketing, Illusions"  desc="Gives high valued thieving skills sense by adding difficult locks, traps, pickpocket opportunities and illusions" />
+				<component id="EpicThieving:100" label="EpicThieving - Epic Traps" alwaysIf="EpicThieving:0" noDisplay="1" />
+				<component id="EpicThieving:200" label="EpicThieving - Epic Trap Setting" alwaysIf="EpicThieving:0" noDisplay="1" />
+				<component id="EpicThieving:300" label="EpicThieving - Epic Pickpocketing" alwaysIf="EpicThieving:0" noDisplay="1" />
+				<component id="EpicThieving:400" label="EpicThieving - Epic Detect Illusions" alwaysIf="EpicThieving:0" noDisplay="1" />
+			</mod>
+			<group label="Backstab">
+				<component id="HouseTweaks:38" label="Backstab with any weapon" modId="House-Rule-Tweaks" level="lowerDifficulty" />
+				<component id="ZSTweaks:1600" label="Omnidirectional backstabs" modId="ZSTweaks" level="lowerDifficulty" />
+			</group>
+			<group label="Traps">
+				<component id="HouseTweaks:41" label="Trap Activation Tweaks" modId="House-Rule-Tweaks" level="lowerDifficulty" />
+				<component id="HouseTweaks:43" label="Set Traps in enemy range if invisible, does not break stealth" modId="House-Rule-Tweaks" level="lowerDifficulty" />
+				<component id="cd_tweaks_trap_cap_removal" label="Remove concurrent trap cap" modId="Tweaks-Anthology" level="lowerDifficulty" />
+			</group>
+		</group>
+		<group sectionId="spellcasters" label="Spellcasters" desc="Druid/Cleric/Mage/Sorcerer/Shaman">
+			<group sectionId="cleric" label="Cleric">
+			</group>
+			<group sectionId="druid" label="Druid">
+				<component id="ArtisansKitpack:5100" label="Update Kit: Shapeshifter Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
 				<component id="ArtisansKitpack:5110" label="Change Shapeshifter Werewolf sprite" modId="The-Artisan-s-Kitpack" alwaysIf="ArtisansKitpack:5100" noDisplay="1" />
 				<component id="cd_tweaks_shapeshifter_armor" label="Allow Shapeshifters to Wear Armor But Prevent Shapeshifting While Worn" modId="Tweaks-Anthology" level="blendWell" />
 			</group>
-			<group label="Mage" noBranches="1">
+			<group sectionId="mage" label="Mage" noBranches="1">
 				<mod id="TomeAndBlood" label="Tome and Blood: revised specialists and innate metamagic">
 					<component id="TomeAndBlood:40" label="Revised Specialists" level="extended" />
 					<component id="TomeAndBlood:51" label="Innate metamagic, learned automatically by everyone" level="vanillaPlus" />
@@ -1154,110 +1214,58 @@
 					<component id="TomeAndBlood:66" label="Innate Find Familiar" level="vanillaPlus" alwaysIf="TomeAndBlood:51" noDisplay="1"/>
 				</mod>
 			</group>
-			<group label="Thief">
-				<mod id="rogue_rebalancing" label="Rogue Rebalancing Thief kits and HLAs revisions" level="blendWell">
-					<component id="rr:1" label="Thief kit revisions" />
-					<component id="rr:2" label="Thief High Level Ability revisions" alwaysIf="rr:1" noDisplay="1" />
-				</mod>
-				<component id="ArtisansKitpack:7008" label="Shadowdancer Overhaul" modId="The-Artisan-s-Kitpack" level="extended" />
+			<group sectionId="sorcerer" label="Sorcerer">
+				<component id="A7-CHAOSSORCERER-MAIN" label="Add Kit: Chaos Sorcerer - Wild Magic Sorcerer" modId="A7-ChaosSorcerer" level="extended" />
+				<component id="Morpheus562sKitpackEldritchScionNoXan" label="Add Kit: Eldritch Scion - Warrior Sorcerer" modId="morpheus562s-kitpack" />
+				<component id="cd_tweaks_sorc_spell_progression" label="Un-Nerfed Sorcerer Spell Progression Table" modId="Tweaks-Anthology" level="lowerDifficulty" />
 			</group>
-			<group label="Bard">
-				<mod id="rogue_rebalancing" label="Rogue Rebalancing" level="blendWell">
-					<component id="rr:4" label="Bard kit revisions" modId="rogue_rebalancing" />
-					<component id="rr:5" label="Bard High Level Ability revisions" alwaysIf="rr:4" noDisplay="1" modId="rogue_rebalancing" />
-					<component id="rr:6" label="Proper spell progression for Bards" modId="rogue_rebalancing" alwaysIf="rr:4" noDisplay="1" />
-				</mod>
-				<component id="cd_tweaks_nwn_armored_caster" label="Armored Caster Class Feat for Bards" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
-			</group>
-			<group label="Sorcerer">
-				<component id="A7-CHAOSSORCERER-MAIN" label="Chaos Sorcerer - Wild Magic Sorcerer Kit" modId="A7-ChaosSorcerer" level="extended" />
-				<component id="Morpheus562sKitpackEldritchScionNoXan" label="Eldritch Scion - Warrior Sorcerer Kit" modId="morpheus562s-kitpack" />
-				<component id="cd_tweaks_sorc_spell_progression" label="Un-Nerfed Sorcerer Spell Progression Table" modId="Tweaks-Anthology" level="blendWell" />
-			</group>
-			<group label="Monk">
-				<component id="ArtisansKitpack:10001" label="Monk Revisions" modId="The-Artisan-s-Kitpack" level="blendWell" />
-				<component id="METweaks:1000" label="Give Monks a cooler Deflect Missiles ability" modId="Olvyn-Tweaks" level="blendWell" />
-			</group>
-			<group label="Shaman">
-				<component id="ArtisansKitpack:9001" label="Warhorn Shaman Kit" modId="The-Artisan-s-Kitpack" level="extended" />
-				<mod id="A7-ImprovedShamanicDance" label="Shaman - Improved Shamanic Dance" level="vanillaPlus">
+			<group sectionId="shaman" label="Shaman">
+				<component id="ArtisansKitpack:9001" label="Add Kit: Warhorn Shaman" modId="The-Artisan-s-Kitpack" level="extended" />
+				<mod id="A7-ImprovedShamanicDance" label="Improved Shamanic Dance" level="vanillaPlus">
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-MAIN" label="Improved Shamanic Dance - Improved Shamanic Dance" />
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-EXPANDED_DANCE" label="Improved Shamanic Dance - Expanded Shamanic Dance for high level characters" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-APPLY_TO_KITS" label="Improved Shamanic Dance - Apply Shamanic Dance improvements to Shaman kits" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
 				</mod>
 			</group>
-			<group label="Multi-Class">
-				<component id="ArtisansKitpack:20000" label="Eldritch Knight - Fighter/Mage Kit" modId="The-Artisan-s-Kitpack" level="extended" />
-				<component id="cd_tweaks_multiclass_gm" label="Multi-Class Grandmastery" level="lowerDifficulty" />
-				<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" label="Tighten equipment restrictions for  Druid Multi- and Dual-Classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." level="higherDifficulty" />
-			</group>
-		</update>
 
-		<tweaks label="Tweaks">
-			<group sectionId="warrior-tweaks" label="Warrior tweaks Figher/Ranger/Paladin/Monk" noBranches="1">
-				<!--ac-miscellaneous-bgarchery;AC Miscellaneous Tweaks - BG-style archery for SoA/ToB-->
-				<component id="ZSTweaks:2120" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" />
-				<component id="METweaks:400" label="Remove the limit of two proficiency points in a weapon at character creation" modId="Olvyn-Tweaks" />
-				<component id="cd_tweaks_cleave" label="Cleave Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" />
-				<component id="cd_tweaks_nwn_knockdown" label="Knockdown Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" />
+			<component id="stratagems:4240" label="Treat mages' and priests' HLAs as innate abilities" level="blendWell" modId="SwordCoastStratagems" />
+		</group>
+		<group sectionId="multi" label="Multi-Class">
+			<component id="ArtisansKitpack:20000" label="Add Kit: Eldritch Knight - Fighter/Mage Kit" modId="The-Artisan-s-Kitpack" level="extended" />
+			<!--component id="cd_tweaks_multiclass_gm" label="Multi-Class Grandmastery" level="lowerDifficulty" modId="Tweaks-Anthology" /-->
+			<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" label="Tighten equipment restrictions for  Druid Multi- and Dual-Classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." level="higherDifficulty" />
+			<component id="cd_tweaks_more_dual_classes" label="Expanded Dual-Class Options" modId="Tweaks-Anthology" level="lowerDifficulty" />
+		</group>
+		<group sectionId="universal" label="Universal tweaks">
+			<alternatives label="Make Infravision Useful" desc="Creatures without infravision have -4 THAC0 at night or in dark places">
+				<component id="cd_tweaks_infravision" label="Tweaks Anthology (Luke's) Solution" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" />
+				<component id="METweaks:3200" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" level="blendWell" />
+				<component id="METweaks:3205" label="Olvyn's Version (light)" desc="Creatures without infravision have reduced visual range at night or in dark places" modId="Olvyn-Tweaks" />
+				<component id="METweaks:3210" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" level="higherDifficulty" modId="Olvyn-Tweaks" />
+			</alternatives>
+			<group sectionId="feats" label="Add new feats">
+				<component id="cd_tweaks_planar_turning" label="Planar Turning Class Feat for Clerics/Paladins" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" />
+				<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge Class Feat for Barbarians and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" />
+				<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" />
 			</group>
-			<group sectionId="rogue-tweaks" label="Rogue tweaks Thieves/Bards" noBranches="1">
-				<mod id="Epic-Thieving" label="Epic Thieving" level="blendWell">
-					<component id="EpicThieving:0" label="EpicThieving - Epic Locks, Traps, Pickpocketing, Illusions"  desc="Gives high valued thieving skills sense by adding difficult locks, traps, pickpocket opportunities and illusions" />
-					<component id="EpicThieving:100" label="EpicThieving - Epic Traps" alwaysIf="EpicThieving:0" noDisplay="1" />
-					<component id="EpicThieving:200" label="EpicThieving - Epic Trap Setting" alwaysIf="EpicThieving:0" noDisplay="1" />
-					<component id="EpicThieving:300" label="EpicThieving - Epic Pickpocketing" alwaysIf="EpicThieving:0" noDisplay="1" />
-					<component id="EpicThieving:400" label="EpicThieving - Epic Detect Illusions" alwaysIf="EpicThieving:0" noDisplay="1" />
-				</mod>
-				<component id="METweaks:3815" label="Sneak Attack and Crippling Strike: reduce the delay to 1 round, but prevent multiple Crippling Strikes from stacking" modId="Olvyn-Tweaks" />
-				<component id="HouseTweaks:38" label="Backstab With Any Weapon" modId="House-Rule-Tweaks" />
-				<component id="ZSTweaks:1600" label="Make everyone able to perform omnidirectional backstabs" modId="ZSTweaks" />
-				<component id="HouseTweaks:41" label="Trap Activation Tweaks" modId="House-Rule-Tweaks"  />
-				<component id="HouseTweaks:43" label="Set Traps in enemy range if invisible, does not break stealth" modId="House-Rule-Tweaks" />
-				<component id="cd_tweaks_trap_cap_removal" label="Remove concurrent trap cap" modId="Tweaks-Anthology" />
-				<mod id="rogue_rebalancing" label="Rogue Rebalancing. Adds dialogue options after failed thievery instead of turning everyone enemy and proper dual-wielding." level="vanillaPlus">
-					<component id="rr:9" label="Revised Thievery: Adds dialogue options after failed thievery." desc="Additionally PnP the thievery potions and prevents their effects from stacking" modId="rogue_rebalancing" level="vanillaPlus" />
-					<component id="rr:0" label="Proper dual-wielding implementation for Thieves and Bards" modId="rogue_rebalancing" />
-				</mod>
-				<component id="cd_tweaks_thieving_in_heavy_armor" label="Allow Thieving and Stealth in Heavy Armor per PnP" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+			<group sectionId="weapons" label="Weapon tweaks">
+				<component id="cd_tweaks_universal_clubs" label="Universal Clubs" modId="Tweaks-Anthology" level="blendWell" />
+				<component id="cd_tweaks_loosen_shield_restrictions" label="Allow Mages to Use Bucklers and Thieves to Use Small Shields" modId="Tweaks-Anthology" level="lowerDifficulty" />
+				<component id="cd_tweaks_universal_four_weapon_slots" label="Give Every Class/Kit Four Weapon Slots" modId="Tweaks-Anthology" level="vanillaPlus" />
 			</group>
-			<group sectionId="spellcaster-tweaks" label="Spellcaster tweaks" noBranches="1">
-				<component id="METweaks:900" label="Let Rangers and Paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
-				<component id="XGTCumulativeCasterLevels:100" label="Allow Caster Levels Bonuses and Penalties to Accumulate" level="fixes" modId="XGTCumulativeCasterLevels" stability="beta" displayIf="EEex:1" />
-				<component id="stratagems:4240" label="Treat mages' and priests' High-Level Abilities as innate abilities rather than memorisable spells" level="blendWell" modId="SwordCoastStratagems" />
-				<component id="cd_tweaks_item_spells_at_char_level" label="Cast Spells from Scrolls (and Other Items) at Character Level" level="blendWell" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
-				<component id="cd_tweaks_level_locked_scrolls" label="Level-Lock Spell Scrolls" desc="Restrict scrolls possible to use to your caster level+1" level="blendWell" modId="Tweaks-Anthology" />
-				<component id="METweaks:2000" label="Allow cursed scrolls to be used on enemies" modId="Olvyn-Tweaks" />
-				<alternatives label="Familiar death consequences">
-					<component id="EET_Tweaks:3020" label="Constitution loss and blocked summoning for 1 week" modId="EET_Tweaks" />
-					<component id="EET_Tweaks:3021" label="Constitution loss for 1 week" modId="EET_Tweaks" />
-				</alternatives>
-			</group>
-			<group sectionId="universal-tweaks" label="Universal tweaks" noBranches="1">
-				<mod id="Tweaks-Anthology">
-					<alternatives label="Make Infravision Useful" desc="Creatures without infravision have -4 THAC0 at night or in dark places">
-						<component id="cd_tweaks_infravision" label="Tweaks Anthology (Luke's) Solution" level="blendWell" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" />
-						<component id="METweaks:3200" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" />
-						<component id="METweaks:3205" label="Olvyn's Version (light)" desc="Creatures without infravision have reduced visual range at night or in dark places" modId="Olvyn-Tweaks" />
-						<component id="METweaks:3210" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" modId="Olvyn-Tweaks" />
-					</alternatives>
-					<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" />
-					<component id="cd_tweaks_grandmastery_bonus_true" label="True grandmastery" level="vanillaPlus" engine="bg,eet,iwd,pst" />
-					
-					<component id="cd_tweaks_specialization_apr_bonus_for_all" label="Everyone Gets Bonus APR from Specialization" />
-					<component id="cd_tweaks_universal_clubs" label="Universal Clubs" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_casting_in_armor" label="Allow Arcane Spellcasting in Heavy Armor" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
-					<component id="cd_tweaks_more_dual_classes" label="Expanded Dual-Class Options" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_loosen_shield_restrictions" label="Allow Mages to Use Bucklers and Thieves to Use Small Shields [Angel]" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_extend_hp_rolls_to_l20" label="Allow HP Rolls Through Level 20 [Angel]" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_universal_four_weapon_slots" label="Give Every Class/Kit Four Weapon Slots" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_planar_turning" label="Planar Turning Class Feat for Clerics/Paladins" modId="Tweaks-Anthology" displayIf="EEex:1" />
-					<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge Class Feat for Barbarians and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" />
-					<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" />
-					<component id="cd_tweaks_alter_thac0_table" label="Un-Nerfed THAC0 Table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
-				</mod>
-			</group>
-		</tweaks>
+			
+
+			<component id="cd_tweaks_casting_in_armor" label="Allow Arcane Spellcasting in Heavy Armor" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+		</group>
+		<group sectionId="stats" label="Stats">
+			<component id="cd_tweaks_alter_thac0_table" label="Un-Nerfed THAC0 Table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+			<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_extend_hp_rolls_to_l20" label="Allow HP Rolls Through Level 20 [Angel]" modId="Tweaks-Anthology" />
+		</group>
+		<group sectionId="proficiencies" label="Proficiencies and Fighting Styles">
+			<component id="cd_tweaks_grandmastery_bonus_true" label="True grandmastery" level="blendWell" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_specialization_apr_bonus_for_all" label="Everyone Gets Bonus APR from Specialization" modId="Tweaks-Anthology" level="lowerDifficulty" />
+		</group>
 	</kits>
 
 	<content>
@@ -1800,38 +1808,95 @@
 	</base>
 
 	<kits engine="bg,eet,iwd">
-		<update>
-			<group label="New class/kit abillities">
-				<component id="SkillsAndAbilitiesFighter" label="Add New Fighter Abilities" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesPaladin1" label="Add New Paladin Abilities" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesMonk" label="Update Skills for Monks" modId="skills-and-abilities" displayIf="EEex:1" />
-				<component id="SkillsAndAbilitiesUpdateArcher" label="Update Archer to provide to hit and damage bonuses per the kit description" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesDI2" label="Replace Inquisitor True Seeing for Detect Illusion Skill" displayIf="EEex:1" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesInquisitor1" label="Allow Inquisitor Kit to Cast Divine Spells" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesBlade" label="Blade Kit Enhancements" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesSkald" label="Skald Kit Enhancements" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesDI1" label="Wizard Slayer Kit Enhancements" displayIf="EEex:1" modId="skills-and-abilities" />
-				<component id="METweaks:810" label="Both Clerics and Monks can get to level 9 during BG1" modId="Olvyn-Tweaks" />
-				<component id="METweaks:1200" label="Give Rangers the Tracking ability (from Throne of Bhaal) starting at level 1" modId="Olvyn-Tweaks" />
-				<component id="METweaks:1400" label="Power Up Ranger Charm Animal" modId="Olvyn-Tweaks" />
-				<component id="METweaks:1500" label="Turn Paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" />
+		<group sectionId="warriors" label="Warriors tweaks" desc="Figher/Ranger/Paladin/Monk">
+			<group sectionId="fighter" label="Fighter">
+				<group sectionId="wizard-slayer" label="Wizard Slayer">
+					<component id="SkillsAndAbilitiesDI1" label="Add Detect Illusions, Spell failure and Dispel on hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." level="lowerDifficulty" />
+				</group>
+				<component id="SkillsAndAbilitiesFighter" label="Add New Abilities" modId="skills-and-abilities" desc="1st level - Second Wind (Once per day, heal 1d10 + fighter level); 9th level - Indomitable (increase saving throws). HLA: increase thac0 and damage" />
 			</group>
-		</update>
-		<tweaks>
-			<group label="Stats">
-				<component id="D5_REVISED_ABILITY_SCORES" label="Ability Score Overhaul" modId="SubtleD_Stat_Overhauls" />
-				<component id="HouseTweaks:9" label="Constitution Bonuses for All Classes + Regeneration Changes" modId="House-Rule-Tweaks" />
-				<alternatives label="Stat-based Bonus Spell slots">
-					<component id="D5_ABILITY_SCORE_SPELL_SLOTS" label="SubtleD Stat Overhauls version" modId="SubtleD_Stat_Overhauls" />
-					<component id="HouseTweaks:12" label="House-Rule-Tweaks version" modId="House-Rule-Tweaks" />
+			<group sectionId="ranger" label="Ranger">
+				<group sectionId="archer">
+					<component id="SkillsAndAbilitiesUpdateArcher" label="Provide to hit and damage bonuses per the kit description" modId="skills-and-abilities" />
+				</group>
+			</group>
+			<group sectionId="paladin" label="Paladin">
+				<component id="SkillsAndAbilitiesPaladin1" label="Add New Abilities" modId="skills-and-abilities" desc="Smite, auras and Sanctify Strikes (+2 magic damage)" />
+				<group sectionId="inquisitor">
+					<component id="SkillsAndAbilitiesDI2" label="Replace Inquisitor True Seeing for Detect Illusion Skill" displayIf="EEex:1" modId="skills-and-abilities" />
+					<component id="SkillsAndAbilitiesInquisitor1" label="Allow Inquisitor Kit to Cast Divine Spells" modId="skills-and-abilities" />
+				</group>
+				<component id="METweaks:1500" label="Turn Paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" level="lowerDifficulty" />
+			</group>
+			<group sectionId="monk" label="Monk">
+				<component id="SkillsAndAbilitiesMonk" label="Add Open Locks, Find/Disarm Traps and Detect Illusion" modId="skills-and-abilities" displayIf="EEex:1" desc="1 level - Flurry of Blows (extra APR). New HLA - become immune to Time Stop" />
+			</group>
+		</group>
+		<group sectionId="rogues" label="Rogues" desc="Thieve/Bard">
+			<group sectionId="thief" label="Thief">
+			</group>
+			<group sectionId="bard" label="Bard">
+				<group sectionId="blade" label="Blade Kit Enhancements">
+					<component id="SkillsAndAbilitiesBlade" label="Blade Kit Enhancements" modId="skills-and-abilities" desc="This allows the Bard Blade Kit to master (3 slots) in all bladed weapons and receive a 0.5 APR boost at level 10 and again at level 20. This will also update all non-recruitable Blades within the game to have specialization in the melee weapon(s) of their choice." />
+				</group>
+				<group sectionId="skald" label="Skald Kit Enhancements">
+					<component id="SkillsAndAbilitiesSkald" label="Skald Kit Enhancements" modId="skills-and-abilities" />
+				</group>
+				<component id="SkillsAndAbilitiesSongDuration" label="Bard Songs Last 1 Turn" modId="skills-and-abilities" />
+				<alternatives label="Add Skills" displayIf="EEex:1">
+					<component id="SkillsAndAbilitiesBard1" label="Lockpicking" displayIf="EEex:1" modId="skills-and-abilities" default="1" />
+					<component id="SkillsAndAbilitiesBard2" label="Lockpicking and Find/Disarm Traps" displayIf="EEex:1" modId="skills-and-abilities" />
 				</alternatives>
-				<component id="cd_tweaks_exceptional_strength_weight_limits" label="Exceptional Strength Weight Limit Changes" modId="Tweaks-Anthology" level="vanillaPlus" engine="bg,eet,iwd,pst" />
-				<component id="D5_1_HAND_STR_PENALTY" label="Full Strength for 2-Hand Weapons Only" modId="SubtleD_Stat_Overhauls" />
-				<component id="D5_REVISED_HD" label="Generous (above-average) hit points" modId="SubtleD_Stat_Overhauls" />
-				<component id="D5_HARDCORE_HD" label="Closer to average hit points" modId="SubtleD_Stat_Overhauls" />
-				<component id="D5_REVISED_DUAL_CLASS_REQS" label="Lower Dual-Class Requirements" modId="SubtleD_Stat_Overhauls" />
-				<component id="D5_UNIFORM_XP_TABLES" label="Slower, Standardized XP Tables" modId="SubtleD_Stat_Overhauls" />
 			</group>
+		</group>
+		<group sectionId="spellcasters" label="Spellcasters" desc="Druid/Cleric/Mage/Sorcerer/Shaman">
+			<group sectionId="cleric" label="Cleric">
+			</group>
+			<group sectionId="druid" label="Druid">
+			</group>
+			<group sectionId="mage" label="Mage" noBranches="1">
+			</group>
+			<group sectionId="sorcerer" label="Sorcerer">
+			</group>
+			<group sectionId="shaman" label="Shaman">
+			</group>
+			<component id="SkillsAndAbilitiesConcentration" label="Add Concentration Check to Resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" />
+		</group>
+		<group sectionId="multi" label="Multi-Class">
+			<alternatives label="Allow Fighter Multiclasses to achieve higher Weapon Proficiency" level="lowerDifficulty">
+				<component id="SkillsAndAbilitiesWeaponProf1" label="Master (3 pips)" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesWeaponProf2" label="High Master (4 pips)" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesWeaponProf3" label="Grand Master (5 pips)" modId="skills-and-abilities" />
+			</alternatives>
+		</group>
+		<group sectionId="universal" label="Universal tweaks" noBranches="1">
+			<component id="METweaks:810" label="Both Clerics and Monks can get to level 9 during BG1" modId="Olvyn-Tweaks" />
+			<mod modId="skills-and-abilities">
+				<component id="SkillsAndAbilitiesNewHLA" label="Add New HLAs for ALL Classes and Kits" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesUpdateHLA" label="Update Existing HLAs" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesClericThief" label="Adjust Cleric/Thief Actionbar" displayIf="EEex:1" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesTurnUndead" label="Turn Undead Overhaul" displayIf="EEex:1" modId="skills-and-abilities" />
+				
+			</mod>
+			<group sectionId="weapons" label="Weapon tweaks">
+				<component id="SkillsAndAbilitiesSTR" label="2H Weapon Additional Strength Bonus" modId="skills-and-abilities" />
+			</group>
+		</group>
+		<group sectionId="stats" label="Stats">
+			<component id="D5_REVISED_ABILITY_SCORES" label="Ability Score Overhaul" modId="SubtleD_Stat_Overhauls" />
+			<component id="HouseTweaks:9" label="Constitution Bonuses for All Classes + Regeneration Changes" modId="House-Rule-Tweaks" />
+			<alternatives label="Stat-based Bonus Spell slots">
+				<component id="D5_ABILITY_SCORE_SPELL_SLOTS" label="SubtleD Stat Overhauls version" modId="SubtleD_Stat_Overhauls" />
+				<component id="HouseTweaks:12" label="House-Rule-Tweaks version" modId="House-Rule-Tweaks" />
+			</alternatives>
+			<component id="cd_tweaks_exceptional_strength_weight_limits" label="Exceptional Strength Weight Limit Changes" modId="Tweaks-Anthology" level="vanillaPlus" engine="bg,eet,iwd,pst" />
+			<component id="D5_1_HAND_STR_PENALTY" label="Full Strength for 2-Hand Weapons Only" modId="SubtleD_Stat_Overhauls" />
+			<component id="D5_REVISED_HD" label="Generous (above-average) hit points" modId="SubtleD_Stat_Overhauls" />
+			<component id="D5_HARDCORE_HD" label="Closer to average hit points" modId="SubtleD_Stat_Overhauls" />
+			<component id="D5_REVISED_DUAL_CLASS_REQS" label="Lower Dual-Class Requirements" modId="SubtleD_Stat_Overhauls" />
+			<component id="D5_UNIFORM_XP_TABLES" label="Slower, Standardized XP Tables" modId="SubtleD_Stat_Overhauls" />
+		</group>
+		<group sectionId="proficiencies">
 			<alternatives label="Proficiency/Fighting Styles tweaks">
 				<group label="Tweaks Anthology/House Tweaks">
 					<component id="METweaks:500" label="Fighters get 1 proficiency point per 2 levels" modId="Olvyn-Tweaks" />
@@ -1862,36 +1927,7 @@
 					<component id="D5_EE_WSPATCK_FOR_ALL" label="APR on Spec" />
 				</mod>
 			</alternatives>
-			<group sectionId="universal-tweaks" label="Universal tweaks" noBranches="1">
-				<component id="cd_tweaks_triple_class_hla_table" label="Triple-Class HLA Tables" modId="Tweaks-Anthology" />
-				<mod id="skills-and-abilities">
-					<component id="SkillsAndAbilitiesNewHLA" label="Add New HLAs for ALL Classes and Kits" />
-					<component id="SkillsAndAbilitiesUpdateHLA" label="Update Existing HLAs" />
-					<component id="SkillsAndAbilitiesClericThief" label="Adjust Cleric/Thief Actionbar" displayIf="EEex:1" />
-					<component id="SkillsAndAbilitiesTurnUndead" label="Turn Undead Overhaul" displayIf="EEex:1" />
-					<component id="SkillsAndAbilitiesSTR" label="2H Weapon Additional Strength Bonus" />
-				</mod>
-			</group>
-			<group sectionId="warrior-tweaks" label="Warrior tweaks">
-				<alternatives label="Allow Fighter Multiclasses to achieve higher Weapon Proficiency">
-					<component id="SkillsAndAbilitiesWeaponProf1" label="Master (3 pips)" modId="skills-and-abilities" />
-					<component id="SkillsAndAbilitiesWeaponProf2" label="High Master (4 pips)" modId="skills-and-abilities" />
-					<component id="SkillsAndAbilitiesWeaponProf3" label="Grand Master (5 pips)" modId="skills-and-abilities" />
-				</alternatives>
-			</group>
-			<group sectionId="rogue-tweaks" label="Rogue tweaks" noBranches="1">
-				<mod id="skills-and-abilities">
-					<alternatives label="Bard Skills" displayIf="EEex:1">
-						<component id="SkillsAndAbilitiesBard1" label="Add Lockpicking" displayIf="EEex:1" />
-						<component id="SkillsAndAbilitiesBard2" label="Add Lockpicking and Find/Disarm Traps" displayIf="EEex:1" />
-					</alternatives>
-					<component id="SkillsAndAbilitiesSongDuration" label="Bard Songs Last 1 Turn" />
-				</mod>
-			</group>
-			<group sectionId="spellcaster-tweaks" label="Spellcaster tweaks" noBranches="1">
-				<component id="SkillsAndAbilitiesConcentration" label="Add Concentration Check to Resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" />
-			</group>
-		</tweaks>
+		</group>
 	</kits>
 
 	<randomisation engine="bg,eet" level="higherDifficulty">
@@ -2054,9 +2090,11 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			<component id="cd_tweaks_recover_ammo_25_enemy_only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" />
 			<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" />
 		</group>
+		<component id="cd_tweaks_triple_class_hla_table" label="Triple-Class HLA Tables" modId="Tweaks-Anthology" />
 		<component id="cd_tweaks_no_traps_or_locks" label="Remove all traps" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
 		<component id="cd_tweaks_force_all_dialogue_to_pause" label="Force All Dialogue to Pause Game" engine="bg,eet,iwd,pst" level="vanillaPlus" />
 		<component id="cd_tweaks_sensible_regeneration_when_traveling" label="Sensible Regeneration When Traveling" engine="bg,eet,iwd,pst" level="vanillaPlus" />
 		<component id="cd_tweaks_reveal_city_areas" label="Reveal City Maps When Entering Area" engine="bg,eet,iwd,pst" level="vanillaPlus" />
+		<component id="XGTCumulativeCasterLevels:100" label="Allow Caster Levels Bonuses and Penalties to Accumulate" level="fixes" modId="XGTCumulativeCasterLevels" stability="beta" displayIf="EEex:1" />
 	</adjustements>
 </installSequence>

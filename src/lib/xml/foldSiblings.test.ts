@@ -288,31 +288,111 @@ describe('parseInstallSequence station folding', () => {
   })
 })
 
+const KITS_CLASS_FOLD_SAMPLE = `<?xml version="1.0"?>
+<installSequence>
+  <kits>
+    <group sectionId="warriors" label="Warriors tweaks">
+      <group sectionId="fighter" label="Fighter">
+        <component id="war:early" label="Early fighter" />
+      </group>
+      <group sectionId="ranger" label="Ranger">
+        <component id="ranger:early" label="Early ranger" />
+      </group>
+    </group>
+    <group sectionId="rogues" label="Rogues">
+      <group sectionId="thief" label="Thief">
+        <component id="thief:early" label="Early thief" />
+      </group>
+    </group>
+  </kits>
+  <kits>
+    <group sectionId="warriors" label="Warriors tweaks">
+      <group sectionId="fighter" label="Fighter">
+        <component id="war:late" label="Late fighter" />
+      </group>
+      <group sectionId="ranger" label="Ranger">
+      </group>
+      <group sectionId="paladin" label="Paladin">
+      </group>
+      <group sectionId="monk" label="Monk">
+      </group>
+    </group>
+    <group sectionId="rogues" label="Rogues">
+      <group sectionId="thief" label="Thief">
+      </group>
+      <group sectionId="bard" label="Bard">
+      </group>
+    </group>
+  </kits>
+</installSequence>`
+
+describe('parseInstallSequence kits class-group folding', () => {
+  it('folds nested class groups by sectionId across split kits blocks', () => {
+    const { model } = parseInstallSequence(KITS_CLASS_FOLD_SAMPLE)
+    const kits = model.stations.find((s) => s.stationId === 'kits')!
+    expect(kits.roots.length).toBe(2)
+    expect(kits.children.map((c) => c.attrs.sectionId)).toEqual(['warriors', 'rogues'])
+
+    const warriors = kits.children.find((c) => c.attrs.sectionId === 'warriors')!
+    expect(warriors.children.map((c) => c.attrs.sectionId)).toEqual([
+      'fighter',
+      'ranger',
+      'paladin',
+      'monk',
+    ])
+    const fighter = warriors.children.find((c) => c.attrs.sectionId === 'fighter')!
+    expect(fighter.children.map((c) => (c.kind === 'component' ? c.componentId : '?'))).toEqual([
+      'war:early',
+      'war:late',
+    ])
+    const ranger = warriors.children.find((c) => c.attrs.sectionId === 'ranger')!
+    expect(ranger.children.map((c) => (c.kind === 'component' ? c.componentId : '?'))).toEqual([
+      'ranger:early',
+    ])
+  })
+})
+
 describe('curated InstallSequence.xml folding', () => {
-  it('folds duplicate kits groups and content common', () => {
+  it('folds duplicate kits class groups and content common', () => {
     const { model } = parseInstallSequence(installSequenceXml)
     const kits = model.stations.find((s) => s.stationId === 'kits')!
     expect(kits.roots.length).toBe(2)
-    expect(kits.children.filter((c) => c.tag === 'update')).toHaveLength(1)
-    expect(kits.children.filter((c) => c.tag === 'tweaks')).toHaveLength(1)
+    expect(kits.children.map((c) => c.attrs.sectionId)).toEqual([
+      'warriors',
+      'rogues',
+      'spellcasters',
+      'multi',
+      'universal',
+    ])
 
-    const tweaks = kits.children.find((c) => c.tag === 'tweaks')!
-    const warriorGroups = tweaks.children.filter((c) => c.attrs.sectionId === 'warrior-tweaks')
-    expect(warriorGroups).toHaveLength(1)
+    const warriors = kits.children.find((c) => c.attrs.sectionId === 'warriors')!
+    expect(warriors.children.map((c) => c.attrs.sectionId).filter(Boolean)).toEqual([
+      'fighter',
+      'ranger',
+      'paladin',
+      'monk',
+    ])
+    const fighter = warriors.children.find((c) => c.attrs.sectionId === 'fighter')!
+    expect(
+      fighter.children.some(
+        (c) => c.kind === 'component' && c.componentId === 'Morpheus562sKitpackShieldBreaker',
+      ),
+    ).toBe(true)
+    expect(fighter.children.every((c) => c.kind === 'component')).toBe(true)
+
     const warriorComponentIds = (() => {
       const ids: string[] = []
-      const walk = (n: (typeof warriorGroups)[0]) => {
+      const walk = (n: TreeNode) => {
         if (n.kind === 'component') ids.push(n.componentId)
         else n.children.forEach(walk)
       }
-      walk(warriorGroups[0]!)
+      walk(warriors)
       return ids
     })()
     expect(warriorComponentIds).toContain('ZSTweaks:2120')
-    expect(warriorComponentIds).toContain('SkillsAndAbilitiesWeaponProf1')
 
     const content = model.stations.find((s) => s.stationId === 'content')!
-    expect(content.roots.length).toBe(2)
+    expect(content.roots.length).toBe(3)
     const commons = content.children.filter((c) => c.attrs.sectionId === 'universal-bg-iwd')
     expect(commons).toHaveLength(1)
     const items = commons[0]!.children.filter((c) => c.tag === 'items')
@@ -335,9 +415,7 @@ describe('curated InstallSequence.xml folding', () => {
     expect(sodRestructureIds).toContain('C#AnotherFineHell-Main')
 
     const earlyWarrior = model.componentsById.get('ZSTweaks:2120')!
-    const lateWarrior = model.componentsById.get('SkillsAndAbilitiesWeaponProf1')!
     const lateItem = model.componentsById.get('rr:7')!
     expect(earlyWarrior.orderIndex).toBeLessThan(lateItem.orderIndex)
-    expect(lateItem.orderIndex).toBeLessThan(lateWarrior.orderIndex)
   })
 })
