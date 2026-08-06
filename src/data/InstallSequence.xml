@@ -1350,27 +1350,33 @@
 
 	<npcClassAdjustements desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
 		<group label="Class/Kit">
+			<component id="ajantisbg2:5" label="Make Ajantis a Cavalier in BG2" modId="Ajantis_BG2" displayIf="ajantisbg2:0" />
+			<component id="totemiccernd:0" label="Make Cernd a Totemic Druid" modId="Totemic_Cernd" />
+			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" label="Make Clara a Bard" modId="A7-NoEENPCs" />
+			<component id="sha-tweaks:3" label="Make Dynaheir a Sorcerer" modId="shatweaks" />
+			<component id="sha-tweaks:4" label="Make Faldorn an Avenger" modId="shatweaks" />
+			<alternatives label="Make Hexxat a...">
+				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_ASSASSIN" label="Assassin" modId="A7-NoEENPCs" />
+				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" label="Fighter/Assassin" modId="A7-NoEENPCs" default="1" />
+				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_SHADOWDANCER" label="Shadowdancer" modId="A7-NoEENPCs" />
+				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_NECROMANCER_THIEF" label="Necromancer / Thief" modId="A7-NoEENPCs" />
+				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_SHADOWDANCER" label="Shadowdancer" modId="A7-NoEENPCs" />
+			</alternatives>
+			<!-- Make Kagain a Dwarven Defender BGEENPC tweaks.-->
+			<component id="cd_tweaks_make_montaron_assassin" label="Make Montaron an Assassin" modId="Tweaks-Anthology" />
+			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" />
+			<component id="sha-tweaks:5" label="Make Skie a Shadowdancer" modId="shatweaks" />
+			<group label="Make Viconia...">
+				<component id="L#-VIC-REV-M-SH-C" label="...a Shadowdancer/Cleric" modId="viconia-revamped" />
+				<component id="L#-VIC-REV-ABI" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" />
+			</group>
+			
+			<component id="p#_kivan_deheriana_wildmage" label="Make Deheriana (F/M/C) a Wild Mage" modId="Kivan_and_Deheriana" displayIf="p#_kivan" />
 			<alternatives label="Make Xan a..." unfolded="1">
-				<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" />
+				<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="1" />
 				<component id="xan:3" label="Sorcerer" modId="Xan_for_BGII" displayIfNot="ArtisansKitpack_npc:20002" />
 			</alternatives>
 			<component id="ArtisansKitpack_npc:20002" label="Make Xan an Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />
-			
-			<component id="cd_tweaks_make_montaron_assassin" label="Make Montaron an Assassin" modId="Tweaks-Anthology" />
-			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" />
-			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" label="Make Clara a Bard" modId="A7-NoEENPCs" />
-			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" label="Make Hexxat a Fighter/Assassin" modId="A7-NoEENPCs" />
-			<component id="sha-tweaks:3" label="Make Dynaheir a Sorcerer" modId="shatweaks" />
-			<component id="sha-tweaks:4" label="Make Faldorn an Avenger" modId="shatweaks" />
-			<component id="sha-tweaks:5" label="Make Skie a Shadowdancer" modId="shatweaks" />
-			<!-- Make Kagain a Dwarven Defender BGEENPC tweaks.-->
-			<!-- Dual Class Friendly Stats -->
-			
-			<component id="ajantisbg2:5" label="Make Ajantis a Cavalier" modId="Ajantis_BG2" />
-			<component id="L#-VIC-REV-M-SH-C" label="Make Vicoania a Shadowdancer/Cleric" modId="viconia-revamped" />
-			<component id="L#-VIC-REV-ABI" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" alwaysIf="L#-VIC-REV-M-SH-C" noDisplay="1" />
-			<component id="totemiccernd:0" label="Make Cernd A Totemic Druid" modId="Totemic_Cernd" />
-			<component id="p#_kivan_deheriana_wildmage" label="Make Deheriana (F/M/C) a Wild Mage" modId="Kivan_and_Deheriana" displayIf="p#_kivan" />
 			<alternatives label="Upgrade Nalia's Thief class to...">
 				<component id="cd_tweaks_nalia_thief_level_5" label="Level 5 (further increases lockpicking)" modId="Tweaks-Anthology" />
 				<component id="cd_tweaks_nalia_thief_level_6" label="Level 6 (further increases traps finding, pickpocket)" modId="Tweaks-Anthology" />
@@ -1380,6 +1386,7 @@
 			<component id="YoshimosRemorse:2" label="Make Yoshimo a Bounty Hunter 13 / Fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" />
 		</group>
 		<group label="Skills/abilities">
+			<!-- Dual Class Friendly Stats -->
 			<group label="Use consistent (BG2) stats for..." noBranches="1" engine="bg1,eet">
 				<mod id="Tweaks-Anthology">
 					<component id="cd_tweaks_consistent_stats_edwin_bg2" label="Edwin" level="blendWell" />
