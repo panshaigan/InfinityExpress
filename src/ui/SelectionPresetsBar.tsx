@@ -51,7 +51,7 @@ export function SelectionPresetsBar({
         </span>
         <select
           className="selection-presets-select"
-          value={activePresetId ?? ''}
+          value={dirty ? '' : (activePresetId ?? '')}
           disabled={disabled}
           aria-label="Load selection preset"
           onChange={(e) => {
@@ -65,13 +65,12 @@ export function SelectionPresetsBar({
           {presets.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
-              {p.id === activePresetId && dirty ? ' *' : ''}
             </option>
           ))}
         </select>
       </label>
 
-      {activePresetId != null && activePresetName != null ? (
+      {activePresetId != null && activePresetName != null && !dirty ? (
         <input
           type="text"
           className="selection-presets-name"

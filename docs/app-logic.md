@@ -442,7 +442,7 @@ Stored per preset:
 
 Not stored: filters, active station, tree fold state.
 
-**Save** creates a new preset with an auto-name (`BG2:EE · N comps · HH:MM`) when none is active, or updates the active preset when the live selection is dirty (`*`). Duplicate names get a `(2)` / `(3)` suffix. **Load** restores ids and level UI without re-running ladder mass-check. Rename is inline; delete removes the active preset. Switching engine clears the active preset id but keeps all presets in memory.
+**Save** creates a new preset with an auto-name (`BG2:EE · N comps · HH:MM`) when none is active, or updates the active preset when the live selection is dirty (`*`). Duplicate names get a `(2)` / `(3)` suffix. **Load** restores ids and level UI without re-running ladder mass-check. After any change away from a loaded/saved preset, the dropdown resets to “Select preset…” so choosing that preset again reloads it. Rename is inline (while clean); delete removes the active preset. Switching engine clears the active preset id but keeps all presets in memory.
 
 Persistence is React state only for now; the serializable shape in `src/lib/presets/selectionPresets.ts` is intended for later file / Tauri storage.
 
