@@ -253,6 +253,11 @@ When Hidden is Show or Only, `buildDisplayTree` is called with `includeHidden` s
 
 Station list-pane heading uses `STATION_LABELS`. Under it, the first station root with a `desc` attribute is shown as the lede. If none, a short generic fallback is used.
 
+Header (and Engine preselect) controls:
+
+- **OK** — marks the current station finished (✓ in header and rail); does not navigate.
+- **Previous** / **Next** — wrap through non-empty component screens after the active filters. Engine is not a cycle stop (from Engine, Next enters the first screen and Previous the last). Non-content stations are one screen when their filtered list has rows. Content expands as main branch → each subbranch with filtered children (canonical sub order).
+
 ### Content branch navigation
 
 On the Content station only, two button rows sit under the heading:

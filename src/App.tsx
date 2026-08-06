@@ -47,8 +47,14 @@ import {
   stationCycleOrder,
   type StationSlot,
 } from './lib/ui/chromeHotkeys'
+import {
+  buildNavigableScreens,
+  cycleScreen,
+  type NavScreen,
+} from './lib/ui/screenCycle'
 import { StationNav } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
+import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree } from './ui/ComponentTree'
 import { ComponentDetail } from './ui/ComponentDetail'
 import { ContentBranchNav } from './ui/ContentBranchNav'
@@ -200,6 +206,25 @@ export default function App() {
       { selectedIds, game },
     )
   }, [activeStation, filters, game, model, modsByCodename, selectedIds])
+
+  const navigableScreens = useMemo(() => {
+    if (!game) return [] as NavScreen[]
+    const includeHidden = filtersNeedIncludeHidden(filters)
+    return buildNavigableScreens(visibleStations, (id) => {
+      const block = model.stations.find((s) => s.stationId === id)
+      if (!block) return []
+      const stationChildren =
+        id === 'content' ? remapContentForGame(block.children, game) : block.children
+      const built = buildDisplayTree(stationChildren, { game, selectedIds, includeHidden })
+      return filterDisplayTree(
+        built,
+        filters,
+        { model, modsByCodename },
+        filterSeed,
+        { selectedIds, game },
+      )
+    })
+  }, [filters, game, model, modsByCodename, selectedIds, visibleStations])
 
   const stationDesc = useMemo(() => {
     if (activeStation === 'engine') return undefined
@@ -589,28 +614,50 @@ export default function App() {
     setSelectedIds((prev) => toggleListSelection(model, prev, game, listNodes, wantSelected))
   }
 
-  const stationOrder = useMemo(
-    () => stationCycleOrder(visibleStations),
-    [visibleStations],
-  )
-  const activeIndex = stationOrder.indexOf(activeStation)
-  const nextStationSlot =
-    activeIndex >= 0 && activeIndex < stationOrder.length - 1
-      ? (stationOrder[activeIndex + 1] ?? null)
-      : null
-  const canGoNext =
-    nextStationSlot != null && (activeStation !== 'engine' || !!game)
   const currentFinished = finishedStations.has(activeStation)
+  const currentNavScreen = useMemo((): NavScreen | null => {
+    if (activeStation === 'engine' || !game) return null
+    if (activeStation === 'content') {
+      if (contentMainKey == null || contentSubKey == null) return null
+      return {
+        stationId: 'content',
+        mainKey: contentMainKey,
+        subKey: contentSubKey,
+        subTag: contentSubTag ?? '',
+      }
+    }
+    return { stationId: activeStation }
+  }, [activeStation, contentMainKey, contentSubKey, contentSubTag, game])
+  const canCycleScreens = !!game && navigableScreens.length > 0
+  const canMarkFinished = activeStation === 'engine' ? !!game : true
 
-  function goNextStation() {
-    if (!canGoNext || !nextStationSlot) return
+  function markStationFinished() {
+    if (!canMarkFinished) return
     setFinishedStations((prev) => {
       const next = new Set(prev)
       next.add(activeStation)
       return next
     })
-    setActiveStation(nextStationSlot)
+  }
+
+  function applyNavScreen(screen: NavScreen) {
+    setActiveStation(screen.stationId)
+    if (screen.stationId === 'content') {
+      setContentMainKey(screen.mainKey)
+      setContentSubKey(screen.subKey)
+      setContentSubTag(screen.subTag)
+    }
     clearFocus()
+  }
+
+  function goPrevScreen() {
+    const next = cycleScreen(navigableScreens, currentNavScreen, -1)
+    if (next) applyNavScreen(next)
+  }
+
+  function goNextScreen() {
+    const next = cycleScreen(navigableScreens, currentNavScreen, 1)
+    if (next) applyNavScreen(next)
   }
 
   function selectEngine() {
@@ -797,8 +844,11 @@ export default function App() {
                     higherDifficulty={higherDifficultyPreset}
                     onLadderToggle={onLadderToggle}
                     onDifficultyChange={onDifficultyPresetChange}
-                    canGoNext={canGoNext}
-                    onNext={goNextStation}
+                    canCycle={canCycleScreens}
+                    canOk={canMarkFinished}
+                    onPrevious={goPrevScreen}
+                    onNext={goNextScreen}
+                    onOk={markStationFinished}
                   />
                   {warnings.length > 0 && (
                     <details className="warnings">
@@ -823,14 +873,13 @@ export default function App() {
                           </span>
                         )}
                       </h2>
-                      <button
-                        type="button"
-                        className="btn next-station-btn"
-                        disabled={!canGoNext}
-                        onClick={goNextStation}
-                      >
-                        Next {'>>'}
-                      </button>
+                      <ScreenNavButtons
+                        canCycle={canCycleScreens}
+                        canOk={canMarkFinished}
+                        onPrevious={goPrevScreen}
+                        onNext={goNextScreen}
+                        onOk={markStationFinished}
+                      />
                     </div>
                     <p className="lede">
                       {stationDesc ?? 'Tick what you want on this stop. Switch stations anytime.'}

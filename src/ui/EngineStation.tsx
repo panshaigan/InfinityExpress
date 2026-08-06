@@ -1,6 +1,7 @@
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import { LevelSelectStrip } from './LevelSelectStrip'
+import { ScreenNavButtons } from './ScreenNavButtons'
 
 const GAMES: SelectedGame[] = ['bg1', 'bg2', 'eet', 'iwd', 'pst']
 
@@ -12,8 +13,11 @@ interface Props {
   higherDifficulty: boolean
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
   onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
-  canGoNext: boolean
+  canCycle: boolean
+  canOk: boolean
+  onPrevious: () => void
   onNext: () => void
+  onOk: () => void
 }
 
 export function EngineStation({
@@ -24,8 +28,11 @@ export function EngineStation({
   higherDifficulty,
   onLadderToggle,
   onDifficultyChange,
-  canGoNext,
+  canCycle,
+  canOk,
+  onPrevious,
   onNext,
+  onOk,
 }: Props) {
   return (
     <section className="engine-station">
@@ -56,14 +63,13 @@ export function EngineStation({
           onLadderToggle={onLadderToggle}
           onDifficultyChange={onDifficultyChange}
         />
-        <button
-          type="button"
-          className="btn next-station-btn"
-          disabled={!canGoNext}
-          onClick={onNext}
-        >
-          Next {'>>'}
-        </button>
+        <ScreenNavButtons
+          canCycle={canCycle}
+          canOk={canOk}
+          onPrevious={onPrevious}
+          onNext={onNext}
+          onOk={onOk}
+        />
       </div>
     </section>
   )

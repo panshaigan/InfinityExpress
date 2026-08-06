@@ -576,9 +576,30 @@ body {
   min-width: 0;
 }
 
-.list-pane-header-title .next-station-btn {
+.list-pane-header-title .screen-nav-buttons {
   margin-left: auto;
   flex-shrink: 0;
+}
+
+.screen-nav-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.engine-preselect .screen-nav-buttons {
+  align-self: flex-end;
+}
+
+.engine-preselect .screen-nav-buttons .btn {
+  min-width: 6.5rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 1rem;
+}
+
+.engine-preselect .screen-nav-ok-btn {
+  min-width: 5rem;
 }
 
 .list-pane-header .lede {
@@ -742,13 +763,6 @@ body {
   flex-direction: column;
   gap: 1.5rem;
   align-items: stretch;
-}
-
-.engine-preselect .next-station-btn {
-  align-self: flex-end;
-  min-width: 10rem;
-  padding: 0.7rem 1.25rem;
-  font-size: 1rem;
 }
 
 .level-preselect {
