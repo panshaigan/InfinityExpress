@@ -296,6 +296,10 @@
 						<component id="rasaad_romanceable_by_men" label="Make Rasaad romanceable by men" />
 					</mod>
 				</romances>
+				<custom label="Custom NPCs">
+					<component id="valerie:0" label="Valerie - Human Lawful Good Sorcerer" modId="Valerie-NPC" />
+					<component id="Drake:0" label="Drake - Human Neutral Good Priest of Tyr" modId="Drake" />
+				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<mod id="BG1NPC">
 						<component id="bg1npc_project-sarevokdiary_sixofspades" label="Extended Sarevok's Diary" displayIf="bg1npc_project-main" level="extended" />
@@ -536,7 +540,7 @@
 					<component id="korgan:0" label="Korgan's Redemption" desc="Provides the possibility of redeeming Korgan if Mazzy is in your party." modId="Korgan-Redemption" />
 					<component id="Wings:0" label="Wings - Aerie Expansion" modId="Wings" />
 				</expansions>
-				<romances label="Romances" displayIfNot="cd_tweaks_disable_romances">
+				<romances label="Romances">
 					<mod id="Imoen-Romance-Mod" label="Imoen Romance">
 						<component id="ImoenRomance:0" label="Imoen Romance" />
 						<component id="ImoenRomance:2" label="Don't Allow multiple Romance (Only valid for Vanilla romances)" alwaysIf="ImoenRomance:0" noDisplay="1" />
@@ -1120,44 +1124,84 @@
 	</content>
 
 	<kits engine="bg,eet,iwd">
-		<add label="New kits" level="extended" noBranches="1" unfolded="1">
-			<component id="A7-CHAOSSORCERER-MAIN" label="The Chaos Sorcerer: A Wild Magic Kit for Sorcerers" modId="A7-ChaosSorcerer" />
-			<component id="ArtisansKitpack:20000" label="Eldritch Knight (Fighter / Mage Kit)" modId="The-Artisan-s-Kitpack" />
-			<component id="Morpheus562sKitpackShieldBreaker" label="Shield Breaker Fighter Kit" modId="morpheus562s-kitpack" />
-			<component id="ArtisansKitpack:9001" label="Warhorn Shaman Kit" modId="The-Artisan-s-Kitpack" />
-		</add>
-		<update label="Kits Overhaul" level="extended" unfolded="1">
-			<component id="ArtisansKitpack:2012" label="Beast Master Overhaul" modId="The-Artisan-s-Kitpack" />
-			<component id="ArtisansKitpack:7008" label="Shadowdancer Overhaul" modId="The-Artisan-s-Kitpack" />
-			<component id="ArtisansKitpack:5100" label="Shapeshifter Overhaul" modId="The-Artisan-s-Kitpack" />
-			<component id="ArtisansKitpack:5110" label="Change Shapeshifter Werewolf sprite" modId="The-Artisan-s-Kitpack" alwaysIf="ArtisansKitpack:5100" noDisplay="1" />
-			<mod id="A7-ImprovedShamanicDance" label="Improved Shamanic Dance" level="vanillaPlus">
-				<component id="A7-IMPROVED_SHAMANIC_DANCE-MAIN" label="Improved Shamanic Dance - Improved Shamanic Dance" />
-				<component id="A7-IMPROVED_SHAMANIC_DANCE-EXPANDED_DANCE" label="Improved Shamanic Dance - Expanded Shamanic Dance for high level characters" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
-				<component id="A7-IMPROVED_SHAMANIC_DANCE-APPLY_TO_KITS" label="Improved Shamanic Dance - Apply Shamanic Dance improvements to Shaman kits" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
-			</mod>
-			<mod id="rogue_rebalancing" label="Rogue Rebalancing" >
-				<component id="rr:1" label="Thief kit revisions" />
-				<component id="rr:2" label="Thief High Level Ability revisions" alwaysIf="rr:1" noDisplay="1" />
-				<component id="rr:4" label="Bard kit revisions" modId="rogue_rebalancing" />
-				<component id="rr:5" label="Bard High Level Ability revisions" modId="rogue_rebalancing" />
-			</mod>
-			<component id="ArtisansKitpack:1006" label="Wizard Slayer Overhaul" modId="The-Artisan-s-Kitpack" />
-			<component id="cd_tweaks_shapeshifter_armor" label="Allow Shapeshifters to Wear Armor But Prevent Shapeshifting While Worn" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_automatic_ranger_tracking" label="Automatic Use of Ranger Tracking Skill" modId="Tweaks-Anthology" />
+		<update label="Class/Kits Modifications" unfolded="1">
+			<group label="Fighter">
+				<component id="Morpheus562sKitpackShieldBreaker" label="Shield Breaker - Fighter Kit" modId="morpheus562s-kitpack" />
+				<component id="ArtisansKitpack:1006" label="Wizard Slayer Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
+				<component id="METweaks:1600" label="Increase Wizard Slayer Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" />
+			</group>
+			<group label="Ranger" level="blendWell">
+				<component id="ArtisansKitpack:2012" label="Beast Master Overhaul" modId="The-Artisan-s-Kitpack" />
+				<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion Class Feat for Beastmasters" modId="Tweaks-Anthology" displayIf="EEex:1" />
+				<component id="iwdification:110" label="Change Tracking for all rangers and ranger kits" modId="iwdification" />
+				<component id="cd_tweaks_nwn_trackless_step" label="Trackless Step Class Feat for Rangers" modId="Tweaks-Anthology" displayIf="EEex:1" />
+			</group>
+			<group label="Paladin">
+				<component id="BardicWonders:1012" label="Gallant - Bardic Paladin Kit" modId="BardicWonders" displayIf="EEex:1" level="extended" />
+			</group>
+			<group label="Cleric">
+			</group>
+			<group label="Druid">
+				<component id="ArtisansKitpack:5100" label="Shapeshifter Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
+				<component id="ArtisansKitpack:5110" label="Change Shapeshifter Werewolf sprite" modId="The-Artisan-s-Kitpack" alwaysIf="ArtisansKitpack:5100" noDisplay="1" />
+				<component id="cd_tweaks_shapeshifter_armor" label="Allow Shapeshifters to Wear Armor But Prevent Shapeshifting While Worn" modId="Tweaks-Anthology" level="blendWell" />
+			</group>
+			<group label="Mage" noBranches="1">
+				<mod id="TomeAndBlood" label="Tome and Blood: revised specialists and innate metamagic">
+					<component id="TomeAndBlood:40" label="Revised Specialists" level="extended" />
+					<component id="TomeAndBlood:51" label="Innate metamagic, learned automatically by everyone" level="vanillaPlus" />
+					<component id="TomeAndBlood:56" label="Metamagic: fill sequencers for free" level="lowerDifficulty" />
+					<component id="TomeAndBlood:66" label="Innate Find Familiar" level="vanillaPlus" alwaysIf="TomeAndBlood:51" noDisplay="1"/>
+				</mod>
+			</group>
+			<group label="Thief">
+				<mod id="rogue_rebalancing" label="Rogue Rebalancing Thief kits and HLAs revisions" level="blendWell">
+					<component id="rr:1" label="Thief kit revisions" />
+					<component id="rr:2" label="Thief High Level Ability revisions" alwaysIf="rr:1" noDisplay="1" />
+				</mod>
+				<component id="ArtisansKitpack:7008" label="Shadowdancer Overhaul" modId="The-Artisan-s-Kitpack" level="extended" />
+			</group>
+			<group label="Bard">
+				<mod id="rogue_rebalancing" label="Rogue Rebalancing" level="blendWell">
+					<component id="rr:4" label="Bard kit revisions" modId="rogue_rebalancing" />
+					<component id="rr:5" label="Bard High Level Ability revisions" alwaysIf="rr:4" noDisplay="1" modId="rogue_rebalancing" />
+					<component id="rr:6" label="Proper spell progression for Bards" modId="rogue_rebalancing" alwaysIf="rr:4" noDisplay="1" />
+				</mod>
+				<component id="cd_tweaks_nwn_armored_caster" label="Armored Caster Class Feat for Bards" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
+			</group>
+			<group label="Sorcerer">
+				<component id="A7-CHAOSSORCERER-MAIN" label="Chaos Sorcerer - Wild Magic Sorcerer Kit" modId="A7-ChaosSorcerer" level="extended" />
+				<component id="Morpheus562sKitpackEldritchScionNoXan" label="Eldritch Scion - Warrior Sorcerer Kit" modId="morpheus562s-kitpack" />
+				<component id="cd_tweaks_sorc_spell_progression" label="Un-Nerfed Sorcerer Spell Progression Table" modId="Tweaks-Anthology" level="blendWell" />
+			</group>
+			<group label="Monk">
+				<component id="ArtisansKitpack:10001" label="Monk Revisions" modId="The-Artisan-s-Kitpack" level="blendWell" />
+				<component id="METweaks:1000" label="Give Monks a cooler Deflect Missiles ability" modId="Olvyn-Tweaks" level="blendWell" />
+			</group>
+			<group label="Shaman">
+				<component id="ArtisansKitpack:9001" label="Warhorn Shaman Kit" modId="The-Artisan-s-Kitpack" level="extended" />
+				<mod id="A7-ImprovedShamanicDance" label="Shaman - Improved Shamanic Dance" level="vanillaPlus">
+					<component id="A7-IMPROVED_SHAMANIC_DANCE-MAIN" label="Improved Shamanic Dance - Improved Shamanic Dance" />
+					<component id="A7-IMPROVED_SHAMANIC_DANCE-EXPANDED_DANCE" label="Improved Shamanic Dance - Expanded Shamanic Dance for high level characters" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
+					<component id="A7-IMPROVED_SHAMANIC_DANCE-APPLY_TO_KITS" label="Improved Shamanic Dance - Apply Shamanic Dance improvements to Shaman kits" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
+				</mod>
+			</group>
+			<group label="Multi-Class">
+				<component id="ArtisansKitpack:20000" label="Eldritch Knight - Fighter/Mage Kit" modId="The-Artisan-s-Kitpack" level="extended" />
+				<component id="cd_tweaks_multiclass_gm" label="Multi-Class Grandmastery" level="lowerDifficulty" />
+				<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" label="Tighten equipment restrictions for  Druid Multi- and Dual-Classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." level="higherDifficulty" />
+			</group>
 		</update>
+
 		<tweaks label="Tweaks">
-			<group sectionId="warrior-tweaks" label="Warrior tweaks" noBranches="1">
+			<group sectionId="warrior-tweaks" label="Warrior tweaks Figher/Ranger/Paladin/Monk" noBranches="1">
 				<!--ac-miscellaneous-bgarchery;AC Miscellaneous Tweaks - BG-style archery for SoA/ToB-->
 				<component id="ZSTweaks:2120" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" />
 				<component id="METweaks:400" label="Remove the limit of two proficiency points in a weapon at character creation" modId="Olvyn-Tweaks" />
-				<component id="HouseTweaks:1" label="Expanded Racial Enemies" modId="House-Rule-Tweaks" />
-				<component id="METweaks:1000" label="Give Monks a cooler Deflect Missiles ability" modId="Olvyn-Tweaks" />
-				<component id="METweaks:1600" label="Increase Wizard Slayer Magic Resistance" modId="Olvyn-Tweaks" />
-				<component id="cd_iwdification_paladin_abilities" label="Paladin Class Update: IWD Abilities and Skills" modId="iwdification" />
-				<component id="iwdification:110" label="Change Tracking for all rangers and ranger kits" modId="iwdification" />
+				<component id="cd_tweaks_cleave" label="Cleave Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" />
+				<component id="cd_tweaks_nwn_knockdown" label="Knockdown Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" />
 			</group>
-			<group sectionId="rogue-tweaks" label="Rogue tweaks" noBranches="1">
+			<group sectionId="rogue-tweaks" label="Rogue tweaks Thieves/Bards" noBranches="1">
 				<mod id="Epic-Thieving" label="Epic Thieving" level="blendWell">
 					<component id="EpicThieving:0" label="EpicThieving - Epic Locks, Traps, Pickpocketing, Illusions"  desc="Gives high valued thieving skills sense by adding difficult locks, traps, pickpocket opportunities and illusions" />
 					<component id="EpicThieving:100" label="EpicThieving - Epic Traps" alwaysIf="EpicThieving:0" noDisplay="1" />
@@ -1166,7 +1210,6 @@
 					<component id="EpicThieving:400" label="EpicThieving - Epic Detect Illusions" alwaysIf="EpicThieving:0" noDisplay="1" />
 				</mod>
 				<component id="METweaks:3815" label="Sneak Attack and Crippling Strike: reduce the delay to 1 round, but prevent multiple Crippling Strikes from stacking" modId="Olvyn-Tweaks" />
-				<component id="METweaks:1800" label="Make Assassin backstab multiplier improve faster" modId="Olvyn-Tweaks" />
 				<component id="HouseTweaks:38" label="Backstab With Any Weapon" modId="House-Rule-Tweaks" />
 				<component id="ZSTweaks:1600" label="Make everyone able to perform omnidirectional backstabs" modId="ZSTweaks" />
 				<component id="HouseTweaks:41" label="Trap Activation Tweaks" modId="House-Rule-Tweaks"  />
@@ -1176,11 +1219,7 @@
 					<component id="rr:9" label="Revised Thievery: Adds dialogue options after failed thievery." desc="Additionally PnP the thievery potions and prevents their effects from stacking" modId="rogue_rebalancing" level="vanillaPlus" />
 					<component id="rr:0" label="Proper dual-wielding implementation for Thieves and Bards" modId="rogue_rebalancing" />
 				</mod>
-				<component id="BardicWonders:2003" label="Armored Casting for Bards" modId="Bardic-Wonders" />
 				<component id="cd_tweaks_thieving_in_heavy_armor" label="Allow Thieving and Stealth in Heavy Armor per PnP" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
-				<component id="cd_iwdification_bard_songs" label="Bard Class Update: Add IWD Bard Songs" modId="iwdification" />
-				<component id="cd_iwdification_bard_kit_selectable_songs" label="Bard Class Update: Selectable Bard Songs for Jesters and Skalds" modId="iwdification" />
-				<component id="cd_iwdification_thief_evasion" label="Add evasion to thieves and all thief kits" modId="iwdification" />
 			</group>
 			<group sectionId="spellcaster-tweaks" label="Spellcaster tweaks" noBranches="1">
 				<component id="METweaks:900" label="Let Rangers and Paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
@@ -1189,18 +1228,10 @@
 				<component id="cd_tweaks_item_spells_at_char_level" label="Cast Spells from Scrolls (and Other Items) at Character Level" level="blendWell" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
 				<component id="cd_tweaks_level_locked_scrolls" label="Level-Lock Spell Scrolls" desc="Restrict scrolls possible to use to your caster level+1" level="blendWell" modId="Tweaks-Anthology" />
 				<component id="METweaks:2000" label="Allow cursed scrolls to be used on enemies" modId="Olvyn-Tweaks" />
-				<mod id="TomeAndBlood" label="Tome and Blood: revised specialists and innate metamagic">
-					<component id="TomeAndBlood:40" label="Revised Specialists" />
-					<component id="TomeAndBlood:51" label="Innate metamagic, learned automatically by everyone" level="vanillaPlus" />
-					<component id="TomeAndBlood:56" label="Metamagic: fill sequencers for free" />
-					<component id="TomeAndBlood:66" label="Innate Find Familiar" level="vanillaPlus" alwaysIf="TomeAndBlood:51" noDisplay="1"/>
-				</mod>
 				<alternatives label="Familiar death consequences">
 					<component id="EET_Tweaks:3020" label="Constitution loss and blocked summoning for 1 week" modId="EET_Tweaks" />
 					<component id="EET_Tweaks:3021" label="Constitution loss for 1 week" modId="EET_Tweaks" />
 				</alternatives>
-				<component id="cd_iwdification_druid_abilities" label="Druid Class Update: Use IWD Shapeshifting and Ability Progression" modId="iwdification" />
-				<component id="cd_iwdification_elven_druids" label="Druid Class Update: Allow Elves to be Druids" modId="iwdification" />
 			</group>
 			<group sectionId="universal-tweaks" label="Universal tweaks" noBranches="1">
 				<mod id="Tweaks-Anthology">
@@ -1212,68 +1243,20 @@
 					</alternatives>
 					<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" />
 					<component id="cd_tweaks_grandmastery_bonus_true" label="True grandmastery" level="vanillaPlus" engine="bg,eet,iwd,pst" />
-					<component id="cd_tweaks_multiclass_gm" label="Multi-Class Grandmastery" level="vanillaPlus" />
+					
 					<component id="cd_tweaks_specialization_apr_bonus_for_all" label="Everyone Gets Bonus APR from Specialization" />
 					<component id="cd_tweaks_universal_clubs" label="Universal Clubs" modId="Tweaks-Anthology" />
 					<component id="cd_tweaks_casting_in_armor" label="Allow Arcane Spellcasting in Heavy Armor" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
 					<component id="cd_tweaks_more_dual_classes" label="Expanded Dual-Class Options" modId="Tweaks-Anthology" />
 					<component id="cd_tweaks_loosen_shield_restrictions" label="Allow Mages to Use Bucklers and Thieves to Use Small Shields [Angel]" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" label="Tighten equipment restrictions" modId="Tweaks-Anthology" />
 					<component id="cd_tweaks_extend_hp_rolls_to_l20" label="Allow HP Rolls Through Level 20 [Angel]" modId="Tweaks-Anthology" />
 					<component id="cd_tweaks_universal_four_weapon_slots" label="Give Every Class/Kit Four Weapon Slots" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_planar_turning" label="Planar Turning Class Feat for Clerics/Paladins" modId="Tweaks-Anthology" displayIf="EEex:1" />
+					<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge Class Feat for Barbarians and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" />
+					<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" />
+					<component id="cd_tweaks_alter_thac0_table" label="Un-Nerfed THAC0 Table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
 				</mod>
-				
 			</group>
-			<mod id="Tweaks-Anthology" label="Unnerfing spell progression and THAC0 tables" engine="bg,eet,iwd,pst">
-				<component id="cd_tweaks_alter_thac0_table" label="Un-Nerfed THAC0 Table"/>
-				<component id="cd_tweaks_sorc_spell_progression" label="Un-Nerfed Sorcerer Spell Progression Table" />
-				<component id="cd_tweaks_mage_spell_progression_unnerfed" label="Un-nerfed Mage Spell Progression Table" />
-				<component id="cd_tweaks_bard_spell_progression_unnerfed" label="Un-nerfed Bard Spell Progression Table" />
-				<component id="rr:6" label="Proper spell progression for Bards" modId="rogue_rebalancing" />
-				<component id="cd_tweaks_bard_spell_progression_unnerfed" label="Bard Class Update: Use IWD Spell Progression" modId="iwdification" />
-				<component id="cd_tweaks_cleric_spell_progression_unnerfed" label="Un-nerfed Cleric Spell Progression Table" />
-				<component id="cd_tweaks_druid_spell_progression_unnerfed_druid_level" label="Un-nerfed Druid Spell Progression Table" />
-				<component id="cd_tweaks_paladin_spell_progression_alt" label="BG2-Style Progression (Up To Level Six Spells) for Paladins" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_ranger_spell_progression_alt" label="BG2-Style Progression (Up To Level Five Spells) for Rangers" modId="Tweaks-Anthology" />
-			</mod>
-			<mod id="Tweaks-Anthology" label="NWN-Style Feats">
-				<component id="cd_tweaks_nwn_disarm" label="Disarm Class Feat for Rogues" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_knockdown" label="Knockdown Class Feat for Fighters and Monks" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_spellcraft_counterspell" label="Spellcaster Skill/Counterspell Class Talent" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_spontaneous_cast" label="Spontaneous Casting for Clerics" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_weapon_finesse" label="Weapon Finesse Class Feat for Thieves" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_dual_wield" label="Dual-Wield Class Feat for Rangers" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn-style_armor_vs_dex" label="NWN-Style Armor vs. Dexterity" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_defensive_roll" label="Defensive Roll Class Feat for Thieves" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_divine_grace_dark_blessing" label="Divine Grace/Dark Blessing Feat for Paladins/Blackguards" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_good_aim" label="Good Aim Racial Feat for Halflings" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_cleave" label="Cleave Class Feat for Fighters and Monks" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_sneakatt_blackguard" label="Sneak Attack Class Feat for Blackguards" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_fearless" label="Fearless Racial Feat for Halflings" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_poison_save" label="Poison Save Class Feat for Assassins" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_planar_turning" label="Planar Turning Class Feat for Clerics/Paladins" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_circle_kick" label="Circle Kick Class Feat for Monks" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_barbarian_rage" label="NWN-style Barbarian Rage" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_revised_archer" label="&quot;Force&quot; the Archer Kit to Use Bows" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_blind_fight" label="Blind Fight Innate Feat for Berserkers" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_dirty_fighting" label="Dirty Fighting Class Feat for Chaotic-Aligned Rogues" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_overwhelming_devastating_critical" label="Overwhelming/Devastating Critical Class Feat for Trueclass Fighters" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_self_concealment" label="Self Concealment Class Feat for Monks" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_parry" label="Parry Mode Kit Feat for Blades and Swashbucklers" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_armored_caster" label="Armored Caster Class Feat for Bards" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_trackless_step" label="Trackless Step Class Feat for Rangers" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_nature_sense" label="Nature Sense Class Feat for Druids" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge Class Feat for Barbarians and Rogues" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_sneakatt_rogue" label="NWN-style Sneak Attack/Crippling Strike Class Feat for Thieves and Stalkers" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_spell_penetration" label="Spell Penetration Class Feat for Spellcasters" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_smite_evil_good" label="Smite Evil/Good Class Feat for Paladins/Blackguards" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_woodland_stride" label="Woodland Stride Class Feat for Druids" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_bane_of_enemies" label="Bane of Enemies Class Feat for Rangers" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_cantrips" label="Cantrips Class Feat for Spellcasters" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion Class Feat for Beastmasters" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nwn_opportunist" label="Opportunist Class Feat for Chaotic-Aligned Rogues" modId="Tweaks-Anthology" />
-			</mod>
 		</tweaks>
 	</kits>
 
@@ -1306,7 +1289,7 @@
 		</add>
 		<update label="Spell corrections" noBranches="1">
 			<!--ac-miscellaneous-breathfix;AC Miscellaneous Tweaks - Dragon Breath Fix-->
-			<component id="cd_tweaks_make_grease_ignitable" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" />
+			<component id="cd_tweaks_make_grease_ignitable" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" />
 			<component id="cd_tweaks_restoration_no_fatigue" label="Remove Fatigue from Restoration Spells" modId="Tweaks-Anthology" level="lowerDifficulty" />
 			<component id="A7-CHAOSSORCERER-RECREATE_SPELL_LIST" label="Recreate Chaos Weave spell selection lists" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" />
 			<component id="stratagems:2070" label="Spell school adjustements" modId="SwordCoastStratagems" level="blendWell" />
@@ -1361,7 +1344,6 @@
 	<npcClassAdjustements desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
 		<alternatives label="Make Xan a..." unfolded="1">
 			<component id="xan:1" label="Fighter/Mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" />
-			<component id="xan:3" label="Sorcerer" modId="Xan_for_BGII" />
 		</alternatives>
 		<component id="ArtisansKitpack_npc:20002" label="Specialize Xan's class to Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />
 		<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" />
@@ -1611,6 +1593,7 @@
 		</group>
 		<group label="Mod NPC portraits">
 			<component id="zdbae:10" label="Baeloth - Alternative portrait" modId="BaeBG2" displayIf="zdbae:0" engine="bg2,eet" />
+			<component id="Drake:1" label="Default Portrait (The Artisan)" modId="Drake" alwaysIf="Drake:0" />
 			<component id="SisterVigilantes_Angelo-Portrait_cassinus_free_fr" label="Angelo - Alternative portrait" modId="Angelo" displayIf="SisterVigilantes_Angelo-main" engine="bg2,eet" />
 			<mod id="HPS-Portraits-Project-1.0" label="Add lacking portraits" engine="bg,eet">
 				<component id="HPSPP-ModNpcsACQ" label="Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and other stories" />
@@ -1861,6 +1844,7 @@
 						<component id="METweaks:4000" label="Modify Fighting Styles" modId="Olvyn-Tweaks" />
 						<component id="HouseTweaks:5" label="Rebalanced Weapon Styles" modId="House-Rule-Tweaks" />
 					</alternatives>
+					<component id="cd_tweaks_weapon_styles_for_all" label="Weapon Styles for All" modId="Tweaks-Anthology" />
 				</group>
 				<mod id="skills-and-abilities" label="Skills And Abilities">
 					<component id="SkillsAndAbilitiesWeapStyle" label="Update Weapon Fighting Styles" />
