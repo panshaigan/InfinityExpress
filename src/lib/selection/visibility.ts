@@ -148,3 +148,11 @@ export function buildDisplayTree(nodes: TreeNode[], ctx: VisibilityContext): Dis
 export function displayTreeHasVisible(nodes: TreeNode[], ctx: VisibilityContext): boolean {
   return buildDisplayTree(nodes, { ...ctx, includeHidden: false }).length > 0
 }
+
+/** True when at least one station root passes engine + displayIf / displayIfNot. */
+export function stationRootsAllowDisplay(
+  roots: readonly TreeNode[],
+  ctx: VisibilityContext,
+): boolean {
+  return roots.some((root) => isEngineAndDisplayEligible(root, ctx))
+}

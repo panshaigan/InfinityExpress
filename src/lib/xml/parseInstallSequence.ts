@@ -29,6 +29,7 @@ function readAttrs(el: Element): NodeAttrs {
     level: g('level'),
     required: truthyAttr(el.getAttribute('required')),
     noDisplay: truthyAttr(el.getAttribute('noDisplay')),
+    noExport: truthyAttr(el.getAttribute('noExport')),
     alwaysIf: g('alwaysIf'),
     displayIf: g('displayIf'),
     displayIfNot: g('displayIfNot'),

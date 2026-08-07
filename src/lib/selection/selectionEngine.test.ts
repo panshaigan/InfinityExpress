@@ -12,7 +12,11 @@ import {
   toggleDisplayNode,
   toggleNode,
 } from '../selection/selectionEngine'
-import { buildDisplayTree } from '../selection/visibility'
+import {
+  buildDisplayTree,
+  displayTreeHasVisible,
+  stationRootsAllowDisplay,
+} from '../selection/visibility'
 import {
   createDefaultFilterCriteria,
   filterDisplayTree,
@@ -774,5 +778,146 @@ describe('randomizeDisplaySubtree', () => {
     )
     expect(selected.has('r:alt-a')).toBe(false)
     expect(selected.has('r:alt-b')).toBe(true)
+  })
+})
+
+const FOCUS_XML = `<?xml version="1.0"?>
+<installSequence>
+  <campaigns engine="eet">
+    <component id="IWD_EET_integration:100" label="Dedicated IWD" />
+    <component id="NWN_MainComponent" label="NWN main" />
+    <component id="NWN_WorldmapDedicatedCampaign" label="Dedicated NWN" displayIf="NWN_MainComponent" />
+    <component
+      id="IE_focus_dedicated_campaigns"
+      label="Focus on dedicated campaigns"
+      displayIf="IWD_EET_integration:100|NWN_WorldmapDedicatedCampaign"
+      noExport="1"
+    />
+  </campaigns>
+  <content displayIfNot="IE_focus_dedicated_campaigns">
+    <component id="saga:quest" label="Saga quest" />
+  </content>
+  <npcChoices engine="eet" displayIfNot="IE_focus_dedicated_campaigns">
+    <component id="npc:kit" label="NPC kit" />
+  </npcChoices>
+  <combat>
+    <mod id="SCS" label="BG1 Encounters" displayIfNot="IE_focus_dedicated_campaigns">
+      <component id="enc:bg1" label="BG1 encounter" />
+    </mod>
+    <component id="ai:keep" label="Keep AI" />
+  </combat>
+  <sounds>
+    <group label="Voicesets">
+      <component id="voice:1" label="Voice pack" />
+    </group>
+    <component id="sound:hide" label="Hide me" displayIfNot="IE_focus_dedicated_campaigns" />
+    <component id="sound:keep" label="Keep sound" />
+  </sounds>
+  <portraits engine="eet">
+    <group label="NPC portraits" displayIfNot="IE_focus_dedicated_campaigns">
+      <component id="port:npc" label="NPC port" />
+    </group>
+    <group label="PC Portraits">
+      <component id="port:pc" label="PC port" />
+    </group>
+  </portraits>
+  <randomisation engine="eet" displayIfNot="IE_focus_dedicated_campaigns">
+    <component id="rand:1" label="Random" />
+  </randomisation>
+</installSequence>`
+
+describe('dedicated campaign focus', () => {
+  const { model: focusModel } = parseInstallSequence(FOCUS_XML)
+
+  function ctx(selectedIds: ReadonlySet<string>) {
+    return { game: 'eet' as const, selectedIds }
+  }
+
+  it('shows focus only when a dedicated campaign option is selected', () => {
+    const campaigns = focusModel.stations.find((s) => s.stationId === 'campaigns')!
+    const empty = buildDisplayTree(campaigns.children, ctx(new Set()))
+    expect(empty.some((d) => d.node.attrs.id === 'IE_focus_dedicated_campaigns')).toBe(false)
+
+    const withIwd = buildDisplayTree(
+      campaigns.children,
+      ctx(new Set(['IWD_EET_integration:100'])),
+    )
+    expect(withIwd.some((d) => d.node.attrs.id === 'IE_focus_dedicated_campaigns')).toBe(true)
+
+    const withNwn = buildDisplayTree(
+      campaigns.children,
+      ctx(new Set(['NWN_MainComponent', 'NWN_WorldmapDedicatedCampaign'])),
+    )
+    expect(withNwn.some((d) => d.node.attrs.id === 'IE_focus_dedicated_campaigns')).toBe(true)
+  })
+
+  it('hides gated stations and keeps sounds/portraits keepers when focus is on', () => {
+    const selected = new Set(['IWD_EET_integration:100', 'IE_focus_dedicated_campaigns'])
+    const visibility = ctx(selected)
+
+    for (const id of ['content', 'npcChoices', 'randomisation'] as const) {
+      const block = focusModel.stations.find((s) => s.stationId === id)!
+      expect(stationRootsAllowDisplay(block.roots, visibility)).toBe(false)
+    }
+
+    const combat = focusModel.stations.find((s) => s.stationId === 'combat')!
+    const combatTree = buildDisplayTree(combat.children, visibility)
+    expect(combatTree.some((d) => d.node.attrs.label === 'BG1 Encounters')).toBe(false)
+    expect(combatTree.some((d) => d.node.attrs.id === 'ai:keep')).toBe(true)
+
+    const sounds = focusModel.stations.find((s) => s.stationId === 'sounds')!
+    const soundsTree = buildDisplayTree(sounds.children, visibility)
+    expect(soundsTree.some((d) => d.node.attrs.label === 'Voicesets')).toBe(true)
+    expect(soundsTree.some((d) => d.node.attrs.id === 'sound:keep')).toBe(true)
+    expect(soundsTree.some((d) => d.node.attrs.id === 'sound:hide')).toBe(false)
+
+    const portraits = focusModel.stations.find((s) => s.stationId === 'portraits')!
+    const portraitTree = buildDisplayTree(portraits.children, visibility)
+    expect(portraitTree.some((d) => d.node.attrs.label === 'PC Portraits')).toBe(true)
+    expect(portraitTree.some((d) => d.node.attrs.label === 'NPC portraits')).toBe(false)
+    expect(displayTreeHasVisible(portraits.children, visibility)).toBe(true)
+  })
+
+  it('omits noExport focus id from install order', () => {
+    const lines = buildInstallOrderLines(
+      focusModel,
+      new Set(['IWD_EET_integration:100', 'IE_focus_dedicated_campaigns', 'voice:1']),
+    )
+    expect(lines.some((l) => l.startsWith('IE_focus_dedicated_campaigns;'))).toBe(false)
+    expect(lines.some((l) => l.startsWith('IWD_EET_integration:100;'))).toBe(true)
+    expect(lines.some((l) => l.startsWith('voice:1;'))).toBe(true)
+  })
+
+  it('selecting focus prunes prior picks under gated ancestors and does not restore them', () => {
+    const saga = focusModel.componentsById.get('saga:quest')!
+    const focus = focusModel.componentsById.get('IE_focus_dedicated_campaigns')!
+    const iwd = focusModel.componentsById.get('IWD_EET_integration:100')!
+
+    let selected = createInitialSelection(focusModel, 'eet')
+    selected = toggleNode(focusModel, selected, 'eet', iwd, undefined, true)
+    selected = toggleNode(focusModel, selected, 'eet', saga, undefined, true)
+    expect(selected.has('saga:quest')).toBe(true)
+
+    selected = toggleNode(focusModel, selected, 'eet', focus, undefined, true)
+    expect(selected.has('IE_focus_dedicated_campaigns')).toBe(true)
+    expect(selected.has('saga:quest')).toBe(false)
+
+    selected = toggleNode(focusModel, selected, 'eet', focus, undefined, false)
+    expect(selected.has('IE_focus_dedicated_campaigns')).toBe(false)
+    expect(selected.has('saga:quest')).toBe(false)
+  })
+
+  it('keeps xan-style alwaysIf companions despite their own displayIfNot', () => {
+    const XML = `<?xml version="1.0"?>
+<installSequence>
+  <npcChoices engine="bg2,eet">
+    <component id="xan:1" label="Fighter/Mage" alwaysIf="ek" displayIfNot="ek" />
+    <component id="ek" label="Eldritch Knight" />
+  </npcChoices>
+</installSequence>`
+    const { model: xm } = parseInstallSequence(XML)
+    let selected = createInitialSelection(xm, 'bg2')
+    selected = toggleNode(xm, selected, 'bg2', xm.componentsById.get('ek')!, undefined, true)
+    expect(selected.has('xan:1')).toBe(true)
   })
 })

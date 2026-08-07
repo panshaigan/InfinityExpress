@@ -79,7 +79,7 @@
 		</mod>
 	</gfx>
 
-	<content>
+	<content displayIfNot="IE_focus_dedicated_campaigns">
 		<bg1 label="BG1" engine="bg1,eet">
 			<restorations label="Restorations" unfolded="1">
 				<mod id="bg1ub" label="Unfinished Business" level="restoration" engine="bg1,eet1" unfolded="1">
@@ -1263,7 +1263,7 @@
 		</proficiencies>
 	</mechanics>
 
-	<content>
+	<content displayIfNot="IE_focus_dedicated_campaigns">
 		<universalBgIwd label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<items>
 				<add>
@@ -1333,7 +1333,7 @@
 		</update>
 	</spells>
 
-	<content>
+	<content displayIfNot="IE_focus_dedicated_campaigns">
 		<bg2 label="BG2" engine="bg2,eet">
 			<restructure>
 				<alternatives label="Crucible">
@@ -1344,7 +1344,7 @@
 		</bg2>
 	</content>
 
-	<npcChoices desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
+	<npcChoices desc="Make some NPC more useful, especially in BG2" engine="bg,eet" displayIfNot="IE_focus_dedicated_campaigns">
 		<group label="Class/kit">
 			<component id="ajantisbg2:5" name="Ajantis kit choice: make Ajantis Cavalier" label="Make Ajantis a Cavalier in BG2" modId="Ajantis_BG2" displayIf="ajantisbg2:0" />
 			<component id="totemiccernd:0" name="Totemic Cernd" label="Make Cernd a Totemic Druid" modId="Totemic_Cernd" />
@@ -1464,7 +1464,7 @@
 				<component id="stratagems:6540" name="Smarter dragons" label="Smarter dragons" />
 				<component id="stratagems:6550" name="Smarter beholders" label="Smarter beholders" />
 			</mod>
-			<mod id="SwordCoastStratagems" label="BG1 Encounters" engine="bg1,eet">
+			<mod id="SwordCoastStratagems" label="BG1 Encounters" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns">
 				<component id="stratagems:6300" name="Smarter sirines and dryads" label="Smarter sirines and dryads" />
 				<component id="stratagems:6310" name="Slightly smarter carrion crawlers" label="Slightly smarter carrion crawlers" />
 				<component id="stratagems:6320" name="Smarter basilisks" label="Smarter basilisks" />
@@ -1490,7 +1490,7 @@
 				<component id="stratagems:7250" name="Improved final battle" label="Improved final battle" />
 				<component id="stratagems:7900" name="Improved minor encounters" label="Improved minor encounters" />
 			</mod>
-			<mod id="SwordCoastStratagems" label="BG2 Encounters" engine="bg2,eet">
+			<mod id="SwordCoastStratagems" label="BG2 Encounters" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns">
 				<component id="stratagems:6500" name="Improved golems" label="Improved golems" />
 				<component id="stratagems:4150" name="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" label="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" />
 				<component id="stratagems:6520" name="Smarter genies" label="Smarter genies" />
@@ -1552,11 +1552,11 @@
 			<component id="s@-IS-Restore-NPC-Voiceovers" name="Restore NPC Voiceovers" label="Restore NPC voiceovers" />
 			<component id="s@-IS-Salk-NPC-Voiceovers" name="Additional NPC Voiceovers (by Salk)" label="Additional NPC voiceovers (by salk)" level="vanillaPlus" />
 		</mod>
-		<component id="HouseTweaks:24" name="House Tweaks: NPC Soundsets for Icewind Dale" label="NPC soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" />
-		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" name="Install high quality soundclips for new BG2EE content" label="High quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" level="fixes" />
-		<component id="vveBG:0" name="Add Character Sounds for BG" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
-		<component id="vveSOD:0" name="Add Character Sounds for BG: SOD" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
-		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet" level="restoration">
+		<component id="HouseTweaks:24" name="House Tweaks: NPC Soundsets for Icewind Dale" label="NPC soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" displayIfNot="IE_focus_dedicated_campaigns" />
+		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" name="Install high quality soundclips for new BG2EE content" label="High quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" level="fixes" displayIfNot="IE_focus_dedicated_campaigns" />
+		<component id="vveBG:0" name="Add Character Sounds for BG" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns" />
+		<component id="vveSOD:0" name="Add Character Sounds for BG: SOD" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns" />
+		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet" level="restoration" displayIfNot="IE_focus_dedicated_campaigns">
 			<alternatives label="Choose how she should be recast">
 				<component id="jaheirarecast:0" name="[Choose how she should be recast] Use new SoD Character Sounds" label="Use new SoD character sounds" default="1" />
 				<component id="jaheirarecast:1" name="[Choose how she should be recast] Use BG1+BG2 Character Sounds" label="Use BG1+BG2 character sounds" />
@@ -1564,8 +1564,8 @@
 			<component id="jaheirarecast:2" name="Jaheira Recast: Dialog Voiceover" label="Dialog voiceover" />
 		</mod>
 		<component id="HouseTweaks:21" name="House Tweaks: Restore Reputation Increase Sound Effect for BG2" label="Restore reputation increase sound effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" />
-		<component id="HouseTweaks:26" name="House Tweaks: Soundset Tweaks for Anomen and Sarevok (BG2:EE)" label="Soundset tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg2,eet" />
-		<component id="cd_tweaks_fix_boo_squeak" name="Fix Boo's Squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" level="fixes" engine="bg2,eet" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_140" />
+		<component id="HouseTweaks:26" name="House Tweaks: Soundset Tweaks for Anomen and Sarevok (BG2:EE)" label="Soundset tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" />
+		<component id="cd_tweaks_fix_boo_squeak" name="Fix Boo's Squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" level="fixes" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_140" />
 	</sounds>
 
 	<sounds>
@@ -1573,7 +1573,7 @@
 	</sounds>
 
 	<portraits engine="bg,eet">
-		<group label="Original Non-joinable NPCs" unfolded="1">
+		<group label="Original Non-joinable NPCs" unfolded="1" displayIfNot="IE_focus_dedicated_campaigns">
 			<component id="EET_Tweaks:1050" name="Cameo NPCs appearance" label="Cameo NPCs from BG1" desc="Coran, Tiax, etc" modId="EET_Tweaks" engine="bg2,eet" level="vanillaPlus" />
 			<mod id="HPS-Portraits-Project-1.0" label="HPS Portraits Project" engine="bg,eet">
 				<component id="HPSPP-Core" name="Add missing Portraits to Base Game Unique NPCs" label="Base game unique NPCs" />
@@ -1590,7 +1590,7 @@
 			<component id="JasteysSolaufeinRescue-Give_Ust_Natha_Solaufein_Portrait" name="Give Solaufein in Ust Natha the Mod's Portrait" label="Give original Solaufein the mod's portrait" modId="Solaufeins_Rescue_NPC"  alwaysIf="JasteysSolaufeinRescue-Main" noDisplay="1" />
 			
 		</group>
-		<group label="Original Joinable NPCs" unfolded="1">
+		<group label="Original Joinable NPCs" unfolded="1" displayIfNot="IE_focus_dedicated_campaigns">
 			<component id="HPSPP-PartyNPCs" name="Add new portraits to original party NPCs" label="HPS portraits project: Original party NPCs" modId="HPS-Portraits-Project-1.0" />
 			<mod id="EET_Tweaks" label="Choose consistent appearance for returning NPCs">
 				<alternatives label="Edwin">
@@ -1615,7 +1615,7 @@
 				</alternatives>
 			</mod>
 		</group>
-		<group label="Mod NPC Portraits">
+		<group label="Mod NPC Portraits" displayIfNot="IE_focus_dedicated_campaigns">
 			<component id="zdbae:10" name="altportrait" label="Baeloth - alternative portrait" modId="BaeBG2" displayIf="zdbae:0" engine="bg2,eet" />
 			<component id="Drake:1" name="BG2-style (The Artisan)" label="Default portrait (the artisan)" modId="Drake" alwaysIf="Drake:0" />
 			<component id="SisterVigilantes_Angelo-Portrait_cassinus_free_fr" name="Angelo's alternative portrait from http://cassinus.free.fr" label="Angelo - alternative portrait" modId="Angelo" displayIf="SisterVigilantes_Angelo-main" engine="bg2,eet" />
@@ -1701,7 +1701,7 @@
 			<component id="sha-tweaks:1" name="Add Extended Isandir's Portrait Pack" label="Add Extended Isandir's Portrait Pack" modId="shatweaks" engine="bg,eet" />
 			<component id="cd_icpp_iwd2" name="Icewind Dale AND Icewind Dale II Portraits" label="Install IWD1 and IWD2 portraits" modId="Infinity_Collection_Portrait_Pack" engine="bg,eet,iwd" alwaysIf="IWD_EET_integration:100" />
 		</group>
-		<group label="Special" engine="bg2,eet">
+		<group label="Special" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns">
 			<alternatives label="Drow NPC Portraits">
 				<component id="cd_tweaks_no_drow_avatars_in_underdark" name="No Drow Avatars On Party In Underdark [Weimer]" label="No drow avatars on party in Underdark" modId="Tweaks-Anthology" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3170" />
 				<component id="PPE:30" name="Ust Natha Drow NPCs" label="PPE version" modId="Portraits-Portraits-Everywhere" />
@@ -1784,6 +1784,13 @@
 			<component id="IWD_EET_integration:180" name="Play NWN after the IWD1 Campaign" label="Play NWN after the IWD1 campaign" displayIf="NWN_MainComponent" />
 		</mod>
 		<component id="NWN_WorldmapDedicatedCampaign" name="Install NWN as a dedicated campaign" label="Install NWN as a dedicated campaign" modId="NWNForBG" displayIf="NWN_MainComponent" engine="eet" />
+		<component
+			id="IE_focus_dedicated_campaigns"
+			label="Focus on dedicated campaigns"
+			desc="Hide Baldur's Gate saga options that do not apply when you mainly play IWD/NWN as dedicated campaigns. Leave unchecked to keep the full component list."
+			displayIf="IWD_EET_integration:100|NWN_WorldmapDedicatedCampaign"
+			noExport="1"
+		/>
 	</campaigns>
 
 	<ui engine="bg,eet,iwd" level="vanillaPlus">
@@ -1954,7 +1961,7 @@
 		</proficiencies>
 	</mechanics>
 
-	<randomisation engine="bg,eet" level="higherDifficulty">
+	<randomisation engine="bg,eet" level="higherDifficulty" displayIfNot="IE_focus_dedicated_campaigns">
 		<alternatives label="Enemies" unfolded="1">
 			<mod id="BGSpawn" label="BG1 Spawn System" engine="bg1,eet">
 				<component id="BGSpawn-Main" name="BGSpawn system based on levels &amp; party members" label="BGSpawn system based on levels and party members" core="1" />

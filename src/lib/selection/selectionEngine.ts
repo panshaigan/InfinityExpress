@@ -225,6 +225,25 @@ function clearableDescendants(node: TreeNode, game: SelectedGame): ComponentNode
   )
 }
 
+/** True when an ancestor fails displayIf / displayIfNot (not the node itself). */
+function ancestorFailsDisplayGates(
+  model: InstallSequenceModel,
+  node: TreeNode,
+  selected: ReadonlySet<string>,
+): boolean {
+  let cur: TreeNode | undefined = parentOf(model, node)
+  while (cur) {
+    if (cur.attrs.displayIf && !evalConditionExpr(cur.attrs.displayIf, selected)) {
+      return true
+    }
+    if (cur.attrs.displayIfNot && evalConditionExpr(cur.attrs.displayIfNot, selected)) {
+      return true
+    }
+    cur = parentOf(model, cur)
+  }
+  return false
+}
+
 export function applyAlwaysIf(
   model: InstallSequenceModel,
   selected: SelectionSet,
@@ -244,6 +263,8 @@ export function applyAlwaysIf(
       }
       const ok = evalConditionExpr(c.attrs.alwaysIf, selected)
       if (ok && !selected.has(c.componentId)) {
+        // Do not pull companions under containers hidden by display gates.
+        if (ancestorFailsDisplayGates(model, c, selected)) continue
         selected.add(c.componentId)
         applyAlternativesExclusion(model, selected, c)
         round = true
@@ -258,6 +279,60 @@ export function applyAlwaysIf(
   }
 }
 
+/**
+ * True when this node or an ancestor fails displayIf / displayIfNot.
+ * Components held by a currently-true alwaysIf are not considered gated by
+ * their own display attrs (xan-style hidden companions), but ancestor gates
+ * still prune them (e.g. dedicated-campaign focus hiding Content).
+ */
+function isDisplayGatedOut(
+  model: InstallSequenceModel,
+  node: TreeNode,
+  selected: ReadonlySet<string>,
+): boolean {
+  if (ancestorFailsDisplayGates(model, node, selected)) return true
+
+  const heldByAlwaysIf =
+    Boolean(node.attrs.alwaysIf) && evalConditionExpr(node.attrs.alwaysIf!, selected)
+  if (heldByAlwaysIf) return false
+
+  if (node.attrs.displayIf && !evalConditionExpr(node.attrs.displayIf, selected)) {
+    return true
+  }
+  if (node.attrs.displayIfNot && evalConditionExpr(node.attrs.displayIfNot, selected)) {
+    return true
+  }
+  return false
+}
+
+/** Deselect non-required components gated out by displayIf / displayIfNot. */
+export function pruneDisplayGatedSelections(
+  model: InstallSequenceModel,
+  selected: SelectionSet,
+): void {
+  let guard = 0
+  while (guard++ < 50) {
+    let changed = false
+    for (const c of model.componentsInOrder) {
+      if (!selected.has(c.componentId)) continue
+      if (c.attrs.required) continue
+      if (!isDisplayGatedOut(model, c, selected)) continue
+      selected.delete(c.componentId)
+      changed = true
+    }
+    if (!changed) break
+  }
+}
+
+function finalizeSelection(
+  model: InstallSequenceModel,
+  selected: SelectionSet,
+  game: SelectedGame,
+): void {
+  applyAlwaysIf(model, selected, game)
+  pruneDisplayGatedSelections(model, selected)
+}
+
 export function createInitialSelection(
   model: InstallSequenceModel,
   game: SelectedGame,
@@ -268,7 +343,7 @@ export function createInitialSelection(
       selected.add(c.componentId)
     }
   }
-  applyAlwaysIf(model, selected, game)
+  finalizeSelection(model, selected, game)
   return selected
 }
 
@@ -411,7 +486,7 @@ export function applyLadderLevelSelection(
     }
   }
 
-  applyAlwaysIf(model, next, game)
+  finalizeSelection(model, next, game)
   return next
 }
 
@@ -438,7 +513,7 @@ export function setDifficultySelection(
       if (c.attrs.required) continue
       next.delete(c.componentId)
     }
-    applyAlwaysIf(model, next, game)
+    finalizeSelection(model, next, game)
     return next
   }
 
@@ -458,7 +533,7 @@ export function setDifficultySelection(
     if (!selectMassCheckComponents(model, next, game, toSelect, coreFilter)) break
   }
 
-  applyAlwaysIf(model, next, game)
+  finalizeSelection(model, next, game)
   return next
 }
 
@@ -515,7 +590,7 @@ export function toggleNode(
     clearComponents(next, clearableDescendants(node, game))
   }
 
-  applyAlwaysIf(model, next, game)
+  finalizeSelection(model, next, game)
   return next
 }
 
@@ -556,7 +631,7 @@ export function toggleDisplayNode(
     clearComponents(next, collectDisplayClearTargets(display, game))
   }
 
-  applyAlwaysIf(model, next, game)
+  finalizeSelection(model, next, game)
   return next
 }
 
@@ -578,7 +653,7 @@ function toggleComponent(
   } else {
     selected.delete(component.componentId)
   }
-  applyAlwaysIf(model, selected, game)
+  finalizeSelection(model, selected, game)
   return selected
 }
 
@@ -960,6 +1035,6 @@ export function randomizeDisplaySubtree(
     }
   }
 
-  applyAlwaysIf(model, next, game)
+  finalizeSelection(model, next, game)
   return next
 }

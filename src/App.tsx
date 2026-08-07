@@ -24,6 +24,7 @@ import { LADDER_LEVELS, type LadderLevel } from './lib/levels'
 import {
   buildDisplayTree,
   displayTreeHasVisible,
+  stationRootsAllowDisplay,
   type DisplayNode,
 } from './lib/selection/visibility'
 import { remapContentForGame } from './lib/xml/remapContentForGame'
@@ -190,9 +191,11 @@ export default function App() {
     return STATION_ORDER.filter((id) => {
       const block = model.stations.find((s) => s.stationId === id)
       if (!block) return false
+      const ctx = { game, selectedIds }
+      if (!stationRootsAllowDisplay(block.roots, ctx)) return false
       const stationChildren =
         block.stationId === 'content' ? remapContentForGame(block.children, game) : block.children
-      return displayTreeHasVisible(stationChildren, { game, selectedIds })
+      return displayTreeHasVisible(stationChildren, ctx)
     })
   }, [game, model.stations, selectedIds])
 

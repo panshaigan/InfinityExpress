@@ -8,6 +8,7 @@ export function buildInstallOrderLines(
   const lines: string[] = []
   for (const c of model.componentsInOrder) {
     if (!selectedIds.has(c.componentId)) continue
+    if (c.attrs.noExport) continue
     if (seen.has(c.componentId)) continue
     seen.add(c.componentId)
     lines.push(`${c.componentId};${c.attrs.label ?? c.componentId}`)

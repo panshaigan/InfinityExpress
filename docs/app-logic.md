@@ -376,12 +376,18 @@ Applied after every toggle until stable (bounded loop).
 
 ### `displayIf` / `displayIfNot`
 
-Affect **visibility** only (and whether parent “select all” walks into that subtree). Do not by themselves select the component.
+Affect **visibility** (and whether parent “select all” walks into that subtree). Do not by themselves select the component.
 
 - `displayIf` — show only when the expression is true.
 - `displayIfNot` — hide when the expression is true (same expression language).
 
+Station-root attrs count: if **no** root of a station passes engine + display gates (`stationRootsAllowDisplay`), the station is omitted from the nav (needed because the display tree is built from folded `children`, which ignore station-element attrs otherwise).
 
+After every selection mutation (following `alwaysIf`), **prune** deselects non-`required` components that are display-gated out — either by an ancestor gate, or by their own `displayIf` / `displayIfNot` unless a currently-true `alwaysIf` is holding them (xan-style hidden companions). Turning a gate off does **not** restore pruned ids.
+
+### Dedicated campaign focus
+
+Synthetic UI marker `IE_focus_dedicated_campaigns` (`noExport="1"`) appears under Campaigns when dedicated IWD and/or NWN is selected (`displayIf="IWD_EET_integration:100|NWN_WorldmapDedicatedCampaign"`). Default off. When checked, curated `displayIfNot` gates hide saga-redundant stations/groups (Content, NPC Choices, Randomisation, BG encounters, most Sounds/Portraits extras). Leave unchecked to keep the full list while still installing dedicated campaigns.
 
 ### `default` (on alternatives)
 
@@ -425,7 +431,7 @@ componentId;componentLabel
 
 Rules:
 
-- Include every id currently in the selection set (UI-visible **and** hidden required / alwaysIf / core).
+- Include every id currently in the selection set (UI-visible **and** hidden required / alwaysIf / core), except `noExport="1"` markers (omitted even when selected).
 - Sort by `orderIndex` (XML document order), **not** by station visit order.
 - If the same component id appears more than once in the sequence and is selected, emit it **only once** — the **first** document-order occurrence.
 - Merged duplicate stations do not reorder export; late XML blocks keep higher `orderIndex`.

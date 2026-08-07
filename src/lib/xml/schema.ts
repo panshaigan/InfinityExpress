@@ -63,6 +63,8 @@ export interface NodeAttrs {
   level?: string
   required?: boolean
   noDisplay?: boolean
+  /** When true, selected component is kept out of install-order export (UI-only marker). */
+  noExport?: boolean
   alwaysIf?: string
   displayIf?: string
   displayIfNot?: string
