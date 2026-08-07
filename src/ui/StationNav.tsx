@@ -171,20 +171,3 @@ export function StationNav({
   )
 }
 
-const RAIL_STORAGE_KEY = 'infinity-express.rail-collapsed'
-
-export function readRailCollapsed(): boolean {
-  try {
-    return window.localStorage.getItem(RAIL_STORAGE_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-
-export function writeRailCollapsed(collapsed: boolean): void {
-  try {
-    window.localStorage.setItem(RAIL_STORAGE_KEY, collapsed ? '1' : '0')
-  } catch {
-    /* private mode / blocked storage */
-  }
-}

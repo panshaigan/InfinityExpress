@@ -10,13 +10,11 @@ import {
   type StationId,
   type TreeNode,
 } from '../xml/schema'
-import { remapContentForGame } from '../xml/remapContentForGame'
 import {
   normalizeSearchQuery,
   searchFieldsFromAttrs,
   searchRelevanceScore,
 } from './componentSearch'
-import { evalConditionExpr } from './conditions'
 import {
   leafMatchesCriteria,
   type FilterCriteria,
@@ -24,6 +22,11 @@ import {
   type FilterSeedOptions,
   type FilterSelectionContext,
 } from './filterDisplayTree'
+import { stationChildrenForGame } from './stationDisplayTree'
+import {
+  findEnclosingAlternatives,
+  passesDisplayGates,
+} from './treeAncestry'
 import { isEngineAndDisplayEligible } from './visibility'
 
 export interface GlobalSearchHit {
@@ -42,22 +45,6 @@ function pathLabel(node: TreeNode): string {
   return node.attrs.label ?? node.tag
 }
 
-function parentOf(model: InstallSequenceModel, node: TreeNode): TreeNode | undefined {
-  return node.parentKey ? model.nodesByKey.get(node.parentKey) : undefined
-}
-
-function findEnclosingAlternatives(
-  model: InstallSequenceModel,
-  node: TreeNode,
-): TreeNode | undefined {
-  let cur: TreeNode | undefined = parentOf(model, node)
-  while (cur) {
-    if (cur.kind === 'alternatives') return cur
-    cur = parentOf(model, cur)
-  }
-  return undefined
-}
-
 function alternativesHasSelection(
   alts: TreeNode,
   selectedIds: ReadonlySet<string>,
@@ -67,19 +54,6 @@ function alternativesHasSelection(
     return n.children.some(walk)
   }
   return walk(alts)
-}
-
-function passesDisplayGates(
-  node: TreeNode,
-  selectedIds: ReadonlySet<string>,
-): boolean {
-  if (node.attrs.displayIf && !evalConditionExpr(node.attrs.displayIf, selectedIds)) {
-    return false
-  }
-  if (node.attrs.displayIfNot && evalConditionExpr(node.attrs.displayIfNot, selectedIds)) {
-    return false
-  }
-  return true
 }
 
 function passesUncheckedFilter(
@@ -168,7 +142,7 @@ function collectUniverse(
     const ctx: WalkCtx = { game, selectedIds, stationId, out }
 
     if (stationId === 'content') {
-      const children = remapContentForGame(block.children, game)
+      const children = stationChildrenForGame(block, game)
       for (const main of children) {
         if (!engineMatches(main.effectiveEngine, game)) continue
         if (isComponentNode(main)) {

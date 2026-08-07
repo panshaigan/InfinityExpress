@@ -1,5 +1,4 @@
 import { useState, type ReactNode } from 'react'
-import modsCsv from '../data/mods.csv?raw'
 import {
   isComponentNode,
   type ComponentNode,
@@ -22,16 +21,14 @@ import {
   formatBytes,
   hasModField,
   isModTypeBranchDisplay,
-  parseModsCsv,
   resolveModLookupKey,
   resolveModStability,
   resolveModType,
+  type ModInfo,
 } from '../lib/mods/loadMods'
 import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
 import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { isHttpUrl } from '../lib/url'
-
-const modsByCodename = parseModsCsv(modsCsv)
 
 export type DetailSelectionState = 'checked' | 'unchecked' | 'indeterminate'
 
@@ -39,6 +36,7 @@ interface Props {
   display: DisplayNode | null
   model: InstallSequenceModel
   relationIndex: RelationIndex
+  modsByCodename: ReadonlyMap<string, ModInfo>
   selectionState?: DetailSelectionState | null
   onNavigateToComponent?: (componentId: string) => void
 }
@@ -192,6 +190,7 @@ export function ComponentDetail({
   display,
   model,
   relationIndex,
+  modsByCodename,
   selectionState = null,
   onNavigateToComponent,
 }: Props) {

@@ -28,6 +28,14 @@ export interface LiveStationLevelPreset {
   higherDifficulty: boolean
 }
 
+export function emptyLiveStationPreset(): {
+  ladder: Set<LadderLevel>
+  lowerDifficulty: boolean
+  higherDifficulty: boolean
+} {
+  return { ladder: new Set(), lowerDifficulty: false, higherDifficulty: false }
+}
+
 export interface SelectionLiveSnapshotInput {
   game: SelectedGame
   selectedIds: ReadonlySet<string>

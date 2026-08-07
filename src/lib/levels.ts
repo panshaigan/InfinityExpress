@@ -98,3 +98,23 @@ export function levelPassesFilter(
   if (exact) return nodeRank === maxRank
   return nodeRank <= maxRank
 }
+
+/**
+ * When checking a ladder rank, enable all lower ranks too (prefix).
+ * Unchecking removes only that rank.
+ */
+export function toggleLadderPrefix(
+  ladder: ReadonlySet<LadderLevel>,
+  level: LadderLevel,
+  wantChecked: boolean,
+): Set<LadderLevel> | null {
+  const idx = LADDER_LEVELS.indexOf(level)
+  if (idx === -1) return null
+  const next = new Set(ladder)
+  if (wantChecked) {
+    for (let i = 0; i <= idx; i++) next.add(LADDER_LEVELS[i]!)
+  } else {
+    next.delete(level)
+  }
+  return next
+}

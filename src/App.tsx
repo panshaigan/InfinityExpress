@@ -1,66 +1,43 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import installSequenceXml from './data/InstallSequence.xml?raw'
-import modsCsv from './data/mods.csv?raw'
 import { parseInstallSequence } from './lib/xml/parseInstallSequence'
 import {
   GAME_LABELS,
   STATION_LABELS,
-  STATION_ORDER,
   type SelectedGame,
   type StationId,
 } from './lib/xml/schema'
 import {
-  applyGlobalLevelBaseline,
-  applyLadderLevelSelection,
   createInitialSelection,
   displaySelectionState,
   listSelectionState,
   randomizeDisplaySubtree,
-  setDifficultySelection,
   toggleDisplayNode,
   toggleListSelection,
   type RandomizeOptions,
 } from './lib/selection/selectionEngine'
-import { LADDER_LEVELS, type LadderLevel } from './lib/levels'
-import {
-  buildDisplayTree,
-  displayTreeHasVisible,
-  stationRootsAllowDisplay,
-  type DisplayNode,
-} from './lib/selection/visibility'
-import { remapContentForGame } from './lib/xml/remapContentForGame'
+import { type DisplayNode } from './lib/selection/visibility'
 import {
   collectFilterOptions,
   createDefaultFilterCriteria,
-  filterDisplayTree,
-  filtersNeedIncludeHidden,
   isFilterActive,
   type FilterCriteria,
 } from './lib/selection/filterDisplayTree'
 import {
-  collectAuthorOptions,
-  modSizeBounds,
-  parseModsCsv,
-} from './lib/mods/loadMods'
-import { buildRelationIndex, componentIdsForStation } from './lib/selection/relations'
+  catalogAuthorOptions,
+  filterSeed,
+  modsByCodename,
+} from './lib/mods/catalog'
+import { buildRelationIndex } from './lib/selection/relations'
 import { downloadInstallOrder, buildInstallOrderLines } from './lib/export/installOrder'
+import { type StationSlot } from './lib/ui/chromeHotkeys'
+import { cycleScreen, type NavScreen } from './lib/ui/screenCycle'
 import {
-  cycleStation,
-  cycleTabIndex,
-  isTypingTarget,
-  resolveChromeHotkey,
-  stationCycleOrder,
-  type StationSlot,
-} from './lib/ui/chromeHotkeys'
-import {
-  buildNavigableScreens,
-  cycleScreen,
-  type NavScreen,
-} from './lib/ui/screenCycle'
-import {
-  buildGlobalSearchResults,
-} from './lib/selection/globalSearch'
-import { StationNav, type AppNavSlot, readRailCollapsed, writeRailCollapsed } from './ui/StationNav'
+  findDisplayByComponentId,
+  findDisplayNode,
+  findPathToComponent,
+} from './lib/selection/displayTreeQuery'
+import { StationNav, type AppNavSlot } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
@@ -69,14 +46,10 @@ import { ContentBranchNav } from './ui/ContentBranchNav'
 import { StationListToolbar } from './ui/StationListToolbar'
 import { GlobalSearchList } from './ui/GlobalSearchList'
 import { GlobalSearchToolbar } from './ui/GlobalSearchToolbar'
-import { FILTERS_SEARCH_ID, FiltersStrip } from './ui/FiltersStrip'
+import { FiltersStrip } from './ui/FiltersStrip'
 import { SelectionPresetsBar } from './ui/SelectionPresetsBar'
 import { KeyboardHelp } from './ui/KeyboardHelp'
-import {
-  RouteGuideTip,
-  readRouteTipDismissed,
-  writeRouteTipDismissed,
-} from './ui/RouteGuideTip'
+import { RouteGuideTip } from './ui/RouteGuideTip'
 import { RouteCaughtUp } from './ui/RouteCaughtUp'
 import { ExportNotice } from './ui/ExportNotice'
 import {
@@ -84,89 +57,23 @@ import {
   writeDetailCollapsed,
   readDetailWidth,
 } from './lib/ui/detailPanePrefs'
-import { diffSelectedIds } from './lib/presets/diffSelectedIds'
+import {
+  readRailCollapsed,
+  writeRailCollapsed,
+  readRouteTipDismissed,
+  writeRouteTipDismissed,
+} from './lib/ui/chromePrefs'
 import { DetailResizeHandle } from './ui/DetailResizeHandle'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
-import { sortContentSubBranches } from './lib/contentBranchOrder'
-import {
-  applySelectionPreset,
-  autoPresetName,
-  fingerprintFromLive,
-  fingerprintFromPreset,
-  newPresetId,
-  presetsForGame,
-  snapshotSelectionPreset,
-  uniquePresetName,
-  type SelectionPreset,
-} from './lib/presets/selectionPresets'
+import { useStationTrees } from './hooks/useStationTrees'
+import { useContentBranchNav, preferredSub } from './hooks/useContentBranchNav'
+import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
+import { useLevelPresets } from './hooks/useLevelPresets'
+import { useChromeHotkeys } from './hooks/useChromeHotkeys'
+import { useAutoDismiss } from './hooks/useAutoDismiss'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
-const modsByCodename = parseModsCsv(modsCsv)
-const catalogSizeBounds = modSizeBounds(modsByCodename)
-const catalogAuthorOptions = collectAuthorOptions(modsByCodename, 3)
-const catalogAuthorNames = catalogAuthorOptions.map((a) => a.name)
-const filterSeed = {
-  authorOptions: catalogAuthorNames,
-  sizeBounds: catalogSizeBounds,
-}
-
-function findDisplayNode(nodes: DisplayNode[], key: string): DisplayNode | null {
-  for (const n of nodes) {
-    if (n.node.key === key) return n
-    const found = findDisplayNode(n.children, key)
-    if (found) return found
-  }
-  return null
-}
-
-function findDisplayByComponentId(
-  nodes: DisplayNode[],
-  componentId: string,
-): DisplayNode | null {
-  for (const n of nodes) {
-    if (n.collapsedComponent?.componentId === componentId) return n
-    if (n.node.kind === 'component' && n.node.componentId === componentId) return n
-    const found = findDisplayByComponentId(n.children, componentId)
-    if (found) return found
-  }
-  return null
-}
-
-/** Path from a content main branch down to the node that owns `componentId`. */
-function findPathToComponent(
-  nodes: DisplayNode[],
-  componentId: string,
-  path: DisplayNode[] = [],
-): DisplayNode[] | null {
-  for (const n of nodes) {
-    const next = [...path, n]
-    if (n.collapsedComponent?.componentId === componentId) return next
-    if (n.node.kind === 'component' && n.node.componentId === componentId) return next
-    const found = findPathToComponent(n.children, componentId, next)
-    if (found) return found
-  }
-  return null
-}
-
-function preferredSub(main: DisplayNode, preferredTag: string | null): DisplayNode | null {
-  const ordered = sortContentSubBranches(main.children)
-  if (preferredTag) {
-    const match = ordered.find((c) => c.node.tag === preferredTag)
-    if (match) return match
-  }
-  return ordered[0] ?? null
-}
-
-interface StationLevelPreset {
-  ladder: Set<LadderLevel>
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
-}
-
-function emptyStationPreset(): StationLevelPreset {
-  return { ladder: new Set(), lowerDifficulty: false, higherDifficulty: false }
-}
 
 export default function App() {
   const { model, warnings } = parsed
@@ -188,22 +95,6 @@ export default function App() {
       filterSeed,
     ),
   )
-  const [ladderChecked, setLadderChecked] = useState<Set<LadderLevel>>(() => new Set())
-  const [lowerDifficultyPreset, setLowerDifficultyPreset] = useState(false)
-  const [higherDifficultyPreset, setHigherDifficultyPreset] = useState(false)
-  /** Last Engine-applied baseline; used by station “Reset to global”. */
-  const [lastGlobalLadder, setLastGlobalLadder] = useState<Set<LadderLevel>>(() => new Set())
-  const [lastGlobalLowerDifficulty, setLastGlobalLowerDifficulty] = useState(false)
-  const [lastGlobalHigherDifficulty, setLastGlobalHigherDifficulty] = useState(false)
-  const [stationLevelPresets, setStationLevelPresets] = useState(
-    () => new Map<StationId, StationLevelPreset>(),
-  )
-  const [selectionPresets, setSelectionPresets] = useState<SelectionPreset[]>(() => [])
-  const [activePresetId, setActivePresetId] = useState<string | null>(null)
-  const [presetBaseline, setPresetBaseline] = useState<string | null>(null)
-  const [contentMainKey, setContentMainKey] = useState<string | null>(null)
-  const [contentSubKey, setContentSubKey] = useState<string | null>(null)
-  const [contentSubTag, setContentSubTag] = useState<string | null>(null)
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false)
   const [showRouteTip, setShowRouteTip] = useState(() => !readRouteTipDismissed())
   const [railCollapsed, setRailCollapsed] = useState(() => readRailCollapsed())
@@ -213,77 +104,61 @@ export default function App() {
   const [exportNotice, setExportNotice] = useState<{ lineCount: number } | null>(
     null,
   )
-  const [presetNotice, setPresetNotice] = useState<{
-    name: string
-    added: number
-    removed: number
-  } | null>(null)
   const foldApiRef = useRef<TreeFoldApi | null>(null)
   const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
     foldApiRef.current = api
   }, [])
 
-  const visibleStations = useMemo(() => {
-    if (!game) return [] as StationId[]
-    return STATION_ORDER.filter((id) => {
-      const block = model.stations.find((s) => s.stationId === id)
-      if (!block) return false
-      const ctx = { game, selectedIds }
-      if (!stationRootsAllowDisplay(block.roots, ctx)) return false
-      const stationChildren =
-        block.stationId === 'content' ? remapContentForGame(block.children, game) : block.children
-      return displayTreeHasVisible(stationChildren, ctx)
-    })
-  }, [game, model.stations, selectedIds])
+  const clearFocus = useCallback(() => {
+    setFocusedKey(null)
+    setFocusedComponentId(null)
+    setPendingFocusId(null)
+  }, [])
 
-  const displayNodes = useMemo(() => {
-    if (!game || activeStation === 'engine' || activeStation === 'search') return []
-    const block = model.stations.find((s) => s.stationId === activeStation)
-    if (!block) return []
-    const includeHidden = filtersNeedIncludeHidden(filters)
-    const stationChildren =
-      block.stationId === 'content' ? remapContentForGame(block.children, game) : block.children
-    const built = buildDisplayTree(stationChildren, { game, selectedIds, includeHidden })
-    return filterDisplayTree(
-      built,
-      filters,
-      { model, modsByCodename },
-      filterSeed,
-      { selectedIds, game },
-    )
-  }, [activeStation, filters, game, model, modsByCodename, selectedIds])
+  const levels = useLevelPresets({
+    model,
+    game,
+    activeStation,
+    relationIndex,
+    setSelectedIds,
+  })
 
-  const globalSearchHits = useMemo(() => {
-    if (!game || activeStation !== 'search') return []
-    return buildGlobalSearchResults(
+  const presets = useSelectionPresetsState({
+    game,
+    selectedIds,
+    setSelectedIds,
+    ladderChecked: levels.ladderChecked,
+    setLadderChecked: levels.setLadderChecked,
+    lowerDifficultyPreset: levels.lowerDifficultyPreset,
+    setLowerDifficultyPreset: levels.setLowerDifficultyPreset,
+    higherDifficultyPreset: levels.higherDifficultyPreset,
+    setHigherDifficultyPreset: levels.setHigherDifficultyPreset,
+    lastGlobalLadder: levels.lastGlobalLadder,
+    setLastGlobalLadder: levels.setLastGlobalLadder,
+    lastGlobalLowerDifficulty: levels.lastGlobalLowerDifficulty,
+    setLastGlobalLowerDifficulty: levels.setLastGlobalLowerDifficulty,
+    lastGlobalHigherDifficulty: levels.lastGlobalHigherDifficulty,
+    setLastGlobalHigherDifficulty: levels.setLastGlobalHigherDifficulty,
+    stationLevelPresets: levels.stationLevelPresets,
+    setStationLevelPresets: levels.setStationLevelPresets,
+  })
+
+  const { visibleStations, displayNodes, globalSearchHits, navigableScreens } =
+    useStationTrees({
       model,
       game,
       selectedIds,
+      activeStation,
       filters,
-      { model, modsByCodename },
+      modsByCodename,
       filterSeed,
-      { selectedIds, game },
-    )
-  }, [activeStation, filters, game, model, modsByCodename, selectedIds])
-
-  const navigableScreens = useMemo(() => {
-    if (!game) return [] as NavScreen[]
-    const includeHidden = filtersNeedIncludeHidden(filters)
-    return buildNavigableScreens(visibleStations, (id) => {
-      const block = model.stations.find((s) => s.stationId === id)
-      if (!block) return []
-      const stationChildren =
-        id === 'content' ? remapContentForGame(block.children, game) : block.children
-      const built = buildDisplayTree(stationChildren, { game, selectedIds, includeHidden })
-      return filterDisplayTree(
-        built,
-        filters,
-        { model, modsByCodename },
-        filterSeed,
-        { selectedIds, game },
-      )
     })
-  }, [filters, game, model, modsByCodename, selectedIds, visibleStations])
+
+  const content = useContentBranchNav({
+    activeStation,
+    displayNodes,
+    onClearFocus: clearFocus,
+  })
 
   const routeProgress = useMemo(() => {
     const slots: StationSlot[] = ['engine', ...visibleStations]
@@ -307,24 +182,22 @@ export default function App() {
   }, [activeStation, model.stations])
 
   const isSearchStation = activeStation === 'search'
-  const isContentStation = activeStation === 'content'
-  const contentMainBranches = isContentStation ? displayNodes : []
-  const selectedMain = useMemo(() => {
-    if (!contentMainKey) return null
-    return contentMainBranches.find((b) => b.node.key === contentMainKey) ?? null
-  }, [contentMainBranches, contentMainKey])
-  const contentSubBranches = useMemo(
-    () => sortContentSubBranches(selectedMain?.children ?? []),
-    [selectedMain],
-  )
-  const selectedSub = useMemo(() => {
-    if (!contentSubKey) return null
-    return contentSubBranches.find((b) => b.node.key === contentSubKey) ?? null
-  }, [contentSubBranches, contentSubKey])
-  const listNodes = isContentStation ? (selectedSub?.children ?? []) : displayNodes
-  const treeKey = isContentStation
-    ? `${activeStation}:${contentMainKey ?? ''}:${contentSubKey ?? ''}`
-    : activeStation
+  const {
+    isContentStation,
+    contentMainKey,
+    contentSubKey,
+    contentSubTag,
+    setContentMainKey,
+    setContentSubKey,
+    setContentSubTag,
+    contentMainBranches,
+    contentSubBranches,
+    selectedSub,
+    listNodes,
+    treeKey,
+    selectContentMain,
+    selectContentSub,
+  } = content
 
   const filtersActive = useMemo(
     () => isFilterActive(filters, filterOptions.tags, filterSeed),
@@ -380,82 +253,6 @@ export default function App() {
     return listSelectionState(nodes, selectedIds, game)
   }, [game, globalSearchHits, selectedIds])
 
-  const activeStationPreset =
-    activeStation === 'engine' || activeStation === 'search'
-      ? emptyStationPreset()
-      : (stationLevelPresets.get(activeStation) ?? emptyStationPreset())
-
-  const gamePresets = useMemo(
-    () => (game ? presetsForGame(selectionPresets, game) : []),
-    [game, selectionPresets],
-  )
-  const activePreset = useMemo(
-    () =>
-      activePresetId != null
-        ? selectionPresets.find((p) => p.id === activePresetId) ?? null
-        : null,
-    [activePresetId, selectionPresets],
-  )
-  const liveFingerprint = useMemo(() => {
-    if (!game) return null
-    return fingerprintFromLive({
-      game,
-      selectedIds,
-      ladderChecked,
-      lowerDifficulty: lowerDifficultyPreset,
-      higherDifficulty: higherDifficultyPreset,
-      lastGlobalLadder,
-      lastGlobalLowerDifficulty,
-      lastGlobalHigherDifficulty,
-      stationLevelPresets,
-    })
-  }, [
-    game,
-    selectedIds,
-    ladderChecked,
-    lowerDifficultyPreset,
-    higherDifficultyPreset,
-    lastGlobalLadder,
-    lastGlobalLowerDifficulty,
-    lastGlobalHigherDifficulty,
-    stationLevelPresets,
-  ])
-  const presetDirty =
-    activePresetId != null &&
-    presetBaseline != null &&
-    liveFingerprint != null &&
-    liveFingerprint !== presetBaseline
-
-  useEffect(() => {
-    if (!isContentStation) return
-    const mainValid =
-      contentMainKey != null &&
-      contentMainBranches.some((b) => b.node.key === contentMainKey)
-    const main = mainValid
-      ? contentMainBranches.find((b) => b.node.key === contentMainKey)!
-      : contentMainBranches[0]
-    if (!main) {
-      if (contentMainKey != null) setContentMainKey(null)
-      if (contentSubKey != null) setContentSubKey(null)
-      return
-    }
-    if (!mainValid) {
-      const sub = preferredSub(main, contentSubTag)
-      setContentMainKey(main.node.key)
-      setContentSubKey(sub?.node.key ?? null)
-      if (!contentSubTag && sub) setContentSubTag(sub.node.tag)
-      return
-    }
-    const subValid =
-      contentSubKey != null &&
-      main.children.some((b) => b.node.key === contentSubKey)
-    if (!subValid) {
-      const sub = preferredSub(main, contentSubTag)
-      setContentSubKey(sub?.node.key ?? null)
-      if (!contentSubTag && sub) setContentSubTag(sub.node.tag)
-    }
-  }, [isContentStation, contentMainBranches, contentMainKey, contentSubKey, contentSubTag])
-
   useEffect(() => {
     if (!pendingFocusId) return
     if (isContentStation) {
@@ -483,7 +280,15 @@ export default function App() {
       setFocusedComponentId(null)
     }
     setPendingFocusId(null)
-  }, [displayNodes, pendingFocusId, isContentStation, contentSubTag])
+  }, [
+    displayNodes,
+    pendingFocusId,
+    isContentStation,
+    contentSubTag,
+    setContentMainKey,
+    setContentSubKey,
+    setContentSubTag,
+  ])
 
   const focusedDisplay = useMemo(() => {
     if (focusedKey) {
@@ -506,245 +311,14 @@ export default function App() {
 
   const showDetail = activeStation !== 'engine' && !!game
 
-  function clearFocus() {
-    setFocusedKey(null)
-    setFocusedComponentId(null)
-    setPendingFocusId(null)
-  }
-
-  function selectContentMain(key: string) {
-    const main = contentMainBranches.find((b) => b.node.key === key)
-    const sub = main ? preferredSub(main, contentSubTag) : null
-    setContentMainKey(key)
-    setContentSubKey(sub?.node.key ?? null)
-    clearFocus()
-  }
-
-  function selectContentSub(key: string) {
-    const sub = contentSubBranches.find((b) => b.node.key === key)
-    setContentSubKey(key)
-    if (sub) setContentSubTag(sub.node.tag)
-    clearFocus()
-  }
-
   function chooseGame(next: SelectedGame) {
     setGame(next)
     setSelectedIds(createInitialSelection(model, next))
-    setLadderChecked(new Set())
-    setLowerDifficultyPreset(false)
-    setHigherDifficultyPreset(false)
-    setLastGlobalLadder(new Set())
-    setLastGlobalLowerDifficulty(false)
-    setLastGlobalHigherDifficulty(false)
-    setStationLevelPresets(new Map())
-    setActivePresetId(null)
-    setPresetBaseline(null)
+    levels.resetLevelPresets()
+    presets.resetPresetSelection()
     setFinishedStations(new Set())
     setActiveStation('engine')
     clearFocus()
-  }
-
-  function livePresetInput(forGame: SelectedGame) {
-    return {
-      game: forGame,
-      selectedIds,
-      ladderChecked,
-      lowerDifficulty: lowerDifficultyPreset,
-      higherDifficulty: higherDifficultyPreset,
-      lastGlobalLadder,
-      lastGlobalLowerDifficulty,
-      lastGlobalHigherDifficulty,
-      stationLevelPresets,
-    }
-  }
-
-  function saveSelectionPreset() {
-    if (!game) return
-    const input = livePresetInput(game)
-    const active =
-      activePresetId != null
-        ? selectionPresets.find((p) => p.id === activePresetId && p.game === game)
-        : undefined
-    if (active) {
-      const updated = snapshotSelectionPreset(active.id, active.name, input)
-      setSelectionPresets((prev) => prev.map((p) => (p.id === active.id ? updated : p)))
-      setPresetBaseline(fingerprintFromPreset(updated))
-      return
-    }
-    const names = presetsForGame(selectionPresets, game).map((p) => p.name)
-    const name = uniquePresetName(autoPresetName(game, selectedIds.size), names)
-    const created = snapshotSelectionPreset(newPresetId(), name, input)
-    setSelectionPresets((prev) => [...prev, created])
-    setActivePresetId(created.id)
-    setPresetBaseline(fingerprintFromPreset(created))
-  }
-
-  function loadSelectionPreset(id: string | null) {
-    if (id == null) {
-      setActivePresetId(null)
-      setPresetBaseline(null)
-      return
-    }
-    if (!game) return
-    const preset = selectionPresets.find((p) => p.id === id && p.game === game)
-    if (!preset) return
-    const before = selectedIds
-    const applied = applySelectionPreset(preset)
-    const delta = diffSelectedIds(before, applied.selectedIds)
-    setSelectedIds(applied.selectedIds)
-    setLadderChecked(applied.ladderChecked)
-    setLowerDifficultyPreset(applied.lowerDifficulty)
-    setHigherDifficultyPreset(applied.higherDifficulty)
-    setLastGlobalLadder(applied.lastGlobalLadder)
-    setLastGlobalLowerDifficulty(applied.lastGlobalLowerDifficulty)
-    setLastGlobalHigherDifficulty(applied.lastGlobalHigherDifficulty)
-    setStationLevelPresets(() => {
-      const next = new Map<StationId, StationLevelPreset>()
-      for (const [key, value] of applied.stationLevelPresets) {
-        next.set(key as StationId, value)
-      }
-      return next
-    })
-    setActivePresetId(preset.id)
-    setPresetBaseline(fingerprintFromPreset(preset))
-    setPresetNotice({
-      name: preset.name,
-      added: delta.added,
-      removed: delta.removed,
-    })
-  }
-
-  function renameSelectionPreset(name: string) {
-    if (!activePresetId || !game) return
-    setSelectionPresets((prev) => {
-      const current = prev.find((p) => p.id === activePresetId)
-      if (!current) return prev
-      const others = presetsForGame(prev, game)
-        .filter((p) => p.id !== activePresetId)
-        .map((p) => p.name)
-      const unique = uniquePresetName(name, others)
-      return prev.map((p) => (p.id === activePresetId ? { ...p, name: unique } : p))
-    })
-  }
-
-  function deleteSelectionPreset() {
-    if (!activePresetId) return
-    setSelectionPresets((prev) => prev.filter((p) => p.id !== activePresetId))
-    setActivePresetId(null)
-    setPresetBaseline(null)
-  }
-
-  function onLadderToggle(level: LadderLevel, wantChecked: boolean) {
-    if (!game) return
-    setLadderChecked((prev) => {
-      const next = new Set(prev)
-
-      const idx = LADDER_LEVELS.indexOf(level)
-      if (idx === -1) return prev
-
-      if (wantChecked) {
-        // Enable the previous ladder ranks too (prefix), but allow unchecking later.
-        for (let i = 0; i <= idx; i++) next.add(LADDER_LEVELS[i]!)
-      } else {
-        next.delete(level)
-      }
-
-      setLastGlobalLadder(new Set(next))
-      setSelectedIds((prevSelected) =>
-        applyLadderLevelSelection(model, prevSelected, game, next),
-      )
-      return next
-    })
-  }
-
-  function onDifficultyPresetChange(
-    token: 'lowerDifficulty' | 'higherDifficulty',
-    want: boolean,
-  ) {
-    if (!game) return
-    if (token === 'lowerDifficulty') {
-      setLowerDifficultyPreset(want)
-      setLastGlobalLowerDifficulty(want)
-    } else {
-      setHigherDifficultyPreset(want)
-      setLastGlobalHigherDifficulty(want)
-    }
-    setSelectedIds((prev) => setDifficultySelection(model, prev, game, token, want))
-  }
-
-  function onStationLadderToggle(level: LadderLevel, wantChecked: boolean) {
-    if (!game || activeStation === 'engine' || activeStation === 'search') return
-    const stationId = activeStation
-    const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
-    setStationLevelPresets((prev) => {
-      const current = prev.get(stationId) ?? emptyStationPreset()
-      const nextLadder = new Set(current.ladder)
-      const idx = LADDER_LEVELS.indexOf(level)
-      if (idx === -1) return prev
-      if (wantChecked) {
-        for (let i = 0; i <= idx; i++) nextLadder.add(LADDER_LEVELS[i]!)
-      } else {
-        nextLadder.delete(level)
-      }
-      const next = new Map(prev)
-      next.set(stationId, {
-        ladder: nextLadder,
-        lowerDifficulty: current.lowerDifficulty,
-        higherDifficulty: current.higherDifficulty,
-      })
-      setSelectedIds((prevSelected) =>
-        applyLadderLevelSelection(model, prevSelected, game, nextLadder, scope),
-      )
-      return next
-    })
-  }
-
-  function onStationDifficultyChange(
-    token: 'lowerDifficulty' | 'higherDifficulty',
-    want: boolean,
-  ) {
-    if (!game || activeStation === 'engine' || activeStation === 'search') return
-    const stationId = activeStation
-    const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
-    setStationLevelPresets((prev) => {
-      const current = prev.get(stationId) ?? emptyStationPreset()
-      const next = new Map(prev)
-      next.set(stationId, {
-        ladder: current.ladder,
-        lowerDifficulty:
-          token === 'lowerDifficulty' ? want : current.lowerDifficulty,
-        higherDifficulty:
-          token === 'higherDifficulty' ? want : current.higherDifficulty,
-      })
-      return next
-    })
-    setSelectedIds((prev) => setDifficultySelection(model, prev, game, token, want, scope))
-  }
-
-  function onClearToGlobal() {
-    if (!game || activeStation === 'engine' || activeStation === 'search') return
-    const stationId = activeStation
-    const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
-    setSelectedIds((prev) =>
-      applyGlobalLevelBaseline(
-        model,
-        prev,
-        game,
-        lastGlobalLadder,
-        lastGlobalLowerDifficulty,
-        lastGlobalHigherDifficulty,
-        scope,
-      ),
-    )
-    setStationLevelPresets((prev) => {
-      const next = new Map(prev)
-      next.set(stationId, {
-        ladder: new Set(lastGlobalLadder),
-        lowerDifficulty: lastGlobalLowerDifficulty,
-        higherDifficulty: lastGlobalHigherDifficulty,
-      })
-      return next
-    })
   }
 
   function onToggleAll(wantSelected: boolean) {
@@ -842,21 +416,21 @@ export default function App() {
     writeRouteTipDismissed()
   }
 
-  function toggleRailCollapsed() {
+  const toggleRailCollapsed = useCallback(() => {
     setRailCollapsed((prev) => {
       const next = !prev
       writeRailCollapsed(next)
       return next
     })
-  }
+  }, [])
 
-  function toggleDetailCollapsed() {
+  const toggleDetailCollapsed = useCallback(() => {
     setDetailCollapsed((prev) => {
       const next = !prev
       writeDetailCollapsed(next)
       return next
     })
-  }
+  }, [])
 
   function handleExport() {
     const lineCount = buildInstallOrderLines(model, selectedIds).length
@@ -878,17 +452,8 @@ export default function App() {
     if (next) applyNavScreen(next)
   }
 
-  useEffect(() => {
-    if (!exportNotice) return
-    const id = window.setTimeout(() => setExportNotice(null), 4500)
-    return () => window.clearTimeout(id)
-  }, [exportNotice])
-
-  useEffect(() => {
-    if (!presetNotice) return
-    const id = window.setTimeout(() => setPresetNotice(null), 4500)
-    return () => window.clearTimeout(id)
-  }, [presetNotice])
+  const clearExportNotice = useCallback(() => setExportNotice(null), [])
+  useAutoDismiss(exportNotice, clearExportNotice)
 
   function selectEngine() {
     setActiveStation('engine')
@@ -960,112 +525,37 @@ export default function App() {
     foldApiRef.current?.unfoldAll()
   }
 
-  function focusFiltersSearch() {
-    const el = document.getElementById(FILTERS_SEARCH_ID) as HTMLInputElement | null
-    if (!el) return
-    el.focus()
-    el.select()
-  }
-
-  function applyStationSlot(slot: StationSlot) {
-    if (slot === 'engine') selectEngine()
-    else selectStation(slot)
-  }
-
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.altKey || e.ctrlKey || e.metaKey) return
-      if (
-        !isTypingTarget(e.target) &&
-        !keyboardHelpOpen &&
-        e.key === '\\'
-      ) {
-        e.preventDefault()
-        toggleRailCollapsed()
-        return
+  const applyStationSlot = useCallback(
+    (slot: StationSlot) => {
+      if (slot === 'engine') {
+        setActiveStation('engine')
+        clearFocus()
+      } else {
+        setActiveStation(slot)
+        clearFocus()
       }
-      if (
-        !isTypingTarget(e.target) &&
-        !keyboardHelpOpen &&
-        e.key === ';' &&
-        showDetail
-      ) {
-        e.preventDefault()
-        toggleDetailCollapsed()
-        return
-      }
-      if (
-        !isTypingTarget(e.target) &&
-        !keyboardHelpOpen &&
-        (e.key === '?' || (e.shiftKey && e.key === '/'))
-      ) {
-        e.preventDefault()
-        setKeyboardHelpOpen(true)
-        return
-      }
-      const searchEl = document.getElementById(FILTERS_SEARCH_ID)
-      const cmd = resolveChromeHotkey(e.key, {
-        isTypingTarget: isTypingTarget(e.target),
-        filterPanelOpen: false,
-        searchFocused: searchEl != null && document.activeElement === searchEl,
-        contentStationActive: activeStation === 'content',
-        shiftKey: e.shiftKey,
-      })
-      if (!cmd) return
-      if (cmd.type === 'escapeChrome') return
+    },
+    [clearFocus],
+  )
 
-      if (cmd.type === 'focusSearch') {
-        e.preventDefault()
-        focusFiltersSearch()
-        return
-      }
+  const openKeyboardHelp = useCallback(() => setKeyboardHelpOpen(true), [])
 
-      if (cmd.type === 'cycleStation') {
-        e.preventDefault()
-        const order = stationCycleOrder(visibleStations)
-        const cycleFrom: StationSlot =
-          activeStation === 'search' ? 'engine' : activeStation
-        const next = cycleStation(order, cycleFrom, cmd.direction)
-        if (next) applyStationSlot(next)
-        return
-      }
-
-      if (cmd.type === 'cycleContentMain') {
-        if (contentMainBranches.length === 0) return
-        e.preventDefault()
-        const keys = contentMainBranches.map((b) => b.node.key)
-        const currentIndex = contentMainKey != null ? keys.indexOf(contentMainKey) : 0
-        const next = cycleTabIndex(keys.length, currentIndex, cmd.direction)
-        const nextKey = keys[next]
-        if (nextKey) selectContentMain(nextKey)
-        return
-      }
-
-      if (cmd.type === 'cycleContentSub') {
-        if (contentSubBranches.length === 0) return
-        e.preventDefault()
-        const keys = contentSubBranches.map((b) => b.node.key)
-        const currentIndex = contentSubKey != null ? keys.indexOf(contentSubKey) : 0
-        const next = cycleTabIndex(keys.length, currentIndex, cmd.direction)
-        const nextKey = keys[next]
-        if (nextKey) selectContentSub(nextKey)
-      }
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [
-    activeStation,
+  useChromeHotkeys({
     keyboardHelpOpen,
-    railCollapsed,
     showDetail,
+    activeStation,
     visibleStations,
     contentMainBranches,
     contentSubBranches,
     contentMainKey,
     contentSubKey,
-    contentSubTag,
-  ])
+    onToggleRailCollapsed: toggleRailCollapsed,
+    onToggleDetailCollapsed: toggleDetailCollapsed,
+    onOpenKeyboardHelp: openKeyboardHelp,
+    onSelectContentMain: selectContentMain,
+    onSelectContentSub: selectContentSub,
+    onApplyStationSlot: applyStationSlot,
+  })
 
   return (
     <div className="app">
@@ -1082,18 +572,20 @@ export default function App() {
           <span className="stats">{selectedIds.size} selected</span>
           <SelectionPresetsBar
             disabled={game == null}
-            presets={gamePresets.map((p) => ({ id: p.id, name: p.name }))}
-            activePresetId={activePreset?.game === game ? activePresetId : null}
-            activePresetName={
-              activePreset?.game === game ? activePreset.name : null
+            presets={presets.gamePresets.map((p) => ({ id: p.id, name: p.name }))}
+            activePresetId={
+              presets.activePreset?.game === game ? presets.activePresetId : null
             }
-            dirty={presetDirty}
-            canSave={game != null && (activePresetId == null || presetDirty)}
-            canDelete={activePreset != null && activePreset.game === game}
-            onSelectPreset={loadSelectionPreset}
-            onSave={saveSelectionPreset}
-            onRename={renameSelectionPreset}
-            onDelete={deleteSelectionPreset}
+            activePresetName={
+              presets.activePreset?.game === game ? presets.activePreset.name : null
+            }
+            dirty={presets.presetDirty}
+            canSave={game != null && (presets.activePresetId == null || presets.presetDirty)}
+            canDelete={presets.activePreset != null && presets.activePreset.game === game}
+            onSelectPreset={presets.loadSelectionPreset}
+            onSave={presets.saveSelectionPreset}
+            onRename={presets.renameSelectionPreset}
+            onDelete={presets.deleteSelectionPreset}
           />
           <button
             type="button"
@@ -1139,7 +631,7 @@ export default function App() {
               onChange={setFilters}
               tagOptions={filterOptions.tags}
               authorOptions={catalogAuthorOptions}
-              sizeBounds={catalogSizeBounds}
+              sizeBounds={filterSeed.sizeBounds}
               onRequestTreeFocus={focusComponentTree}
               searchScope={isSearchStation ? 'global' : 'station'}
               searchPlaceholder={
@@ -1163,11 +655,11 @@ export default function App() {
             onDismiss={() => setExportNotice(null)}
           />
           <PresetLoadNotice
-            visible={presetNotice != null && !showRouteTip}
-            presetName={presetNotice?.name ?? ''}
-            added={presetNotice?.added ?? 0}
-            removed={presetNotice?.removed ?? 0}
-            onDismiss={() => setPresetNotice(null)}
+            visible={presets.presetNotice != null && !showRouteTip}
+            presetName={presets.presetNotice?.name ?? ''}
+            added={presets.presetNotice?.added ?? 0}
+            removed={presets.presetNotice?.removed ?? 0}
+            onDismiss={() => presets.setPresetNotice(null)}
           />
           <div
             className={`workspace${showDetail ? '' : ' engine-only'}${
@@ -1185,11 +677,11 @@ export default function App() {
                   <EngineStation
                     game={game}
                     onChoose={chooseGame}
-                    checkedLadderLevels={ladderChecked}
-                    lowerDifficulty={lowerDifficultyPreset}
-                    higherDifficulty={higherDifficultyPreset}
-                    onLadderToggle={onLadderToggle}
-                    onDifficultyChange={onDifficultyPresetChange}
+                    checkedLadderLevels={levels.ladderChecked}
+                    lowerDifficulty={levels.lowerDifficultyPreset}
+                    higherDifficulty={levels.higherDifficultyPreset}
+                    onLadderToggle={levels.onLadderToggle}
+                    onDifficultyChange={levels.onDifficultyPresetChange}
                     canCycle={canCycleScreens}
                     canOk={canMarkFinished}
                     finished={currentFinished}
@@ -1266,13 +758,13 @@ export default function App() {
                     <StationListToolbar
                       listNodes={listNodes}
                       listState={listCheckState}
-                      checkedLadderLevels={activeStationPreset.ladder}
-                      lowerDifficulty={activeStationPreset.lowerDifficulty}
-                      higherDifficulty={activeStationPreset.higherDifficulty}
+                      checkedLadderLevels={levels.activeStationPreset.ladder}
+                      lowerDifficulty={levels.activeStationPreset.lowerDifficulty}
+                      higherDifficulty={levels.activeStationPreset.higherDifficulty}
                       onToggleAll={onToggleAll}
-                      onLadderToggle={onStationLadderToggle}
-                      onDifficultyChange={onStationDifficultyChange}
-                      onClearToGlobal={onClearToGlobal}
+                      onLadderToggle={levels.onStationLadderToggle}
+                      onDifficultyChange={levels.onStationDifficultyChange}
+                      onClearToGlobal={levels.onClearToGlobal}
                       onFoldAll={onFoldAll}
                       onUnfoldAll={onUnfoldAll}
                     />
@@ -1361,6 +853,7 @@ export default function App() {
                         display={focusedDisplay}
                         model={model}
                         relationIndex={relationIndex}
+                        modsByCodename={modsByCodename}
                         selectionState={focusedSelectionState}
                         onNavigateToComponent={onNavigateToComponent}
                       />

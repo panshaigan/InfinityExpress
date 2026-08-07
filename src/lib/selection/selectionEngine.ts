@@ -7,6 +7,12 @@ import {
 import { evalConditionExpr } from './conditions'
 import type { DisplayNode } from './visibility'
 import {
+  findEnclosingAlternatives,
+  findEnclosingMod,
+  parentOf,
+  passesDisplayGates,
+} from './treeAncestry'
+import {
   type ComponentNode,
   type InstallSequenceModel,
   type SelectedGame,
@@ -16,30 +22,6 @@ import {
 
 export type SelectionSet = Set<string>
 
-function parentOf(model: InstallSequenceModel, node: TreeNode): TreeNode | undefined {
-  return node.parentKey ? model.nodesByKey.get(node.parentKey) : undefined
-}
-
-function findEnclosingMod(model: InstallSequenceModel, node: TreeNode): TreeNode | undefined {
-  let cur: TreeNode | undefined = node
-  while (cur) {
-    if (cur.tag === 'mod') return cur
-    cur = parentOf(model, cur)
-  }
-  return undefined
-}
-
-function findEnclosingAlternatives(
-  model: InstallSequenceModel,
-  node: TreeNode,
-): TreeNode | undefined {
-  let cur: TreeNode | undefined = parentOf(model, node)
-  while (cur) {
-    if (cur.kind === 'alternatives') return cur
-    cur = parentOf(model, cur)
-  }
-  return undefined
-}
 
 function alternativesBranchRoot(
   model: InstallSequenceModel,
@@ -345,19 +327,6 @@ export function createInitialSelection(
   }
   finalizeSelection(model, selected, game)
   return selected
-}
-
-function passesDisplayGates(
-  node: TreeNode,
-  selected: ReadonlySet<string>,
-): boolean {
-  if (node.attrs.displayIf && !evalConditionExpr(node.attrs.displayIf, selected)) {
-    return false
-  }
-  if (node.attrs.displayIfNot && evalConditionExpr(node.attrs.displayIfNot, selected)) {
-    return false
-  }
-  return true
 }
 
 function isLadderLeveled(component: ComponentNode): boolean {

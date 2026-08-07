@@ -10,6 +10,7 @@ import {
 } from 'react'
 import type { TreeNode } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
+import { findDisplayNode } from '../lib/selection/displayTreeQuery'
 import {
   displaySelectionState,
   type RandomizeOptions,
@@ -144,14 +145,6 @@ function collectExpandableKeys(nodes: DisplayNode[], into: Set<string>) {
   }
 }
 
-function findDisplayInTree(nodes: DisplayNode[], key: string): DisplayNode | null {
-  for (const d of nodes) {
-    if (d.node.key === key) return d
-    const found = findDisplayInTree(d.children, key)
-    if (found) return found
-  }
-  return null
-}
 
 function CheckboxRow({
   display,
@@ -553,7 +546,7 @@ export function ComponentTree(props: Props) {
   }
 
   function expandSubtree(key: string) {
-    const display = findDisplayInTree(props.nodes, key)
+    const display = findDisplayNode(props.nodes, key)
     if (!display) return
     const keys = collectExpandableDescendantKeys(display)
     setExpandedKeys((prev) => {
@@ -564,7 +557,7 @@ export function ComponentTree(props: Props) {
   }
 
   function collapseSubtree(key: string) {
-    const display = findDisplayInTree(props.nodes, key)
+    const display = findDisplayNode(props.nodes, key)
     if (!display) return
     const keys = collectExpandableDescendantKeys(display)
     setExpandedKeys((prev) => {
@@ -623,7 +616,7 @@ export function ComponentTree(props: Props) {
         const state = displaySelectionState(row.display, props.selectedIds, props.game)
         const isExclusive =
           row.parentKey != null &&
-          findDisplayInTree(props.nodes, row.parentKey)?.node.kind === 'alternatives'
+          findDisplayNode(props.nodes, row.parentKey)?.node.kind === 'alternatives'
         const checked = isExclusive ? state !== 'unchecked' : state === 'checked'
         props.onFocus(cmd.key)
         props.onToggle(row.display, !checked)

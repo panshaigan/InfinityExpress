@@ -24,20 +24,3 @@ export function RouteGuideTip({ visible, onDismiss }: Props) {
   )
 }
 
-const STORAGE_KEY = 'infinity-express.route-tip-dismissed'
-
-export function readRouteTipDismissed(): boolean {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-
-export function writeRouteTipDismissed(): void {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, '1')
-  } catch {
-    /* private mode / blocked storage */
-  }
-}
