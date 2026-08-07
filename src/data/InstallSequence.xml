@@ -40,7 +40,7 @@
 		<component id="A7-RESIZEABLECOMBATLOG-MAIN" label="Freely resizeable combat log"  modId="A7-ResizeableCombatLog" engine="pst" />
 		<component id="A7_MISCTWEAKS_CUSTOMIZED_CIRCLE_PSTEE_TRANSLUCENT" label="Make selection circles translucent"  modId="A7-MiscTweaks" engine="pst" />
 		<component id="A7_MISCTWEAKS_BREAKABLE_CUTSCENES_PSTEE" label="Breakable cutscenes" modId="A7-MiscTweaks" engine="pst" />
-		<component id="cd_tweaks_chapter_saves_in_pstee" label="Automatic Chapter Saves" modId="Tweaks-Anthology" engine="pst" />
+		<component id="cd_tweaks_chapter_saves_in_pstee" label="Automatic Chapter Saves" modId="Tweaks-Anthology" engine="pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3370" />
 	</ui>
 
 	<campaigns>
@@ -128,10 +128,10 @@
 				<component id="METweaks:2800" label="Make it possible to enter the Nashkel Mines through the back cave entrance" modId="Olvyn-Tweaks" level="extended" />
 				<component id="METweaks:3000" label="Make it possible to enter the catacombs beneath Candlekeep early" modId="Olvyn-Tweaks" level="extended" />
 				<alternatives label="Make Cloakwood areas available before completing the Bandit Camp">
-					<component id="cd_tweaks_reveal_cloakwood_1" label="First area only" modId="Tweaks-Anthology" level="blendWell" default="1" />
-					<component id="cd_tweaks_reveal_cloakwood_4" label="All of Cloakwood except the mines" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_reveal_cloakwood_1" label="First area only" modId="Tweaks-Anthology" level="blendWell" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1035" />
+					<component id="cd_tweaks_reveal_cloakwood_4" label="All of Cloakwood except the mines" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1036" />
 				</alternatives>
-				<component id="cd_tweaks_change_cloakwood_trigger" label="Change Cloakwood Mine Chapter End Change Trigger to Non-TotSC Behavior" modId="Tweaks-Anthology" level="vanillaPlus" />
+				<component id="cd_tweaks_change_cloakwood_trigger" label="Change Cloakwood Mine Chapter End Change Trigger to Non-TotSC Behavior" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1270" />
 				<mod id="Candlekeep-Revisited" label="Candlekeep Revisited" tags="compilation">
 					<component id="candlekeep_revisited:0" label="BG1 Prologue Expansion" tags="compilation" modId="Candlekeep-Revisited" level="extended" />
 					<component id="candlekeep_revisited:1" label="BG1 Expanded Starting Sequence" tags="compilation" modId="Candlekeep-Revisited" />
@@ -305,26 +305,26 @@
 						<component id="bg1npc_project-sarevokdiary_sixofspades" label="Extended Sarevok's Diary" displayIf="bg1npc_project-main" level="extended" />
 					</mod>
 					<mod id="Tweaks-Anthology" label="The Tweaks Anthology" level="vanillaPlus" >
-						<component id="cd_tweaks_send_bg_npcs_to_inn" label="Send BioWare NPCs to an Inn" />
-						<component id="cd_tweaks_protect_sharteel" label="Ensure Shar-Teel Doesn't Die in the Original Challenge" />
-						<component id="cd_tweaks_adjust_evil_npc_reactions" label="Adjust Evil Joinable NPC Reaction Rolls" level="fixes" />
+						<component id="cd_tweaks_send_bg_npcs_to_inn" label="Send BioWare NPCs to an Inn" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1075" />
+						<component id="cd_tweaks_protect_sharteel" label="Ensure Shar-Teel Doesn't Die in the Original Challenge" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4170" />
+						<component id="cd_tweaks_adjust_evil_npc_reactions" label="Adjust Evil Joinable NPC Reaction Rolls" level="fixes" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4000" />
 					</mod>
 					<group label="Move NPCs to Convenient Locations" noBranches="1" level="blendWell">
 						<mod id="Tweaks-Anthology">
-							<component id="cd_tweaks_move_bg_npcs_alora" label="Alora to Gullykin" />
-							<component id="cd_tweaks_move_bg_npcs_quayle" label="Quayle to the Nashkel Carnival" />
-							<component id="cd_tweaks_move_bg_npcs_sharteel" label="Shar-Teel to North Nashkel Road" />
-							<component id="cd_tweaks_move_bg_npcs_tiax" label="Tiax to Beregost" />
-							<component id="cd_tweaks_move_bg_npcs_viconia" label="Viconia to South Beregost Road" />
-							<component id="cd_tweaks_move_bg_npcs_eldoth" label="Eldoth to the Coastal Way" displayIfNot="L#-THEVANISHINGOFSKIESILVERSHIELD" />
+							<component id="cd_tweaks_move_bg_npcs_alora" label="Alora to Gullykin" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1251" />
+							<component id="cd_tweaks_move_bg_npcs_quayle" label="Quayle to the Nashkel Carnival" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1253" />
+							<component id="cd_tweaks_move_bg_npcs_sharteel" label="Shar-Teel to North Nashkel Road" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1254" />
+							<component id="cd_tweaks_move_bg_npcs_tiax" label="Tiax to Beregost" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1255" />
+							<component id="cd_tweaks_move_bg_npcs_viconia" label="Viconia to South Beregost Road" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1256" />
+							<component id="cd_tweaks_move_bg_npcs_eldoth" label="Eldoth to the Coastal Way" displayIfNot="L#-THEVANISHINGOFSKIESILVERSHIELD" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1252" />
 						</mod>
 					</group>
-					<component id="cd_tweaks_allow_npc_pairs_to_separate" label="Allow NPC Pairs to Separate" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_allow_npc_pairs_to_separate" label="Allow NPC Pairs to Separate" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4025" />
 				</tweaks>
 			</npc>
 			<items label="Items" unfolded="1">
 				<add label="New items">
-					<component id="cd_tweaks_taerom_makes_multiple_ankheg_armor" label="Taerom Makes Additional Ankheg Armor" modId="Tweaks-Anthology" level="vanillaPlus" />
+					<component id="cd_tweaks_taerom_makes_multiple_ankheg_armor" label="Taerom Makes Additional Ankheg Armor" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3230" />
 					<component id="ForgottenArmament-Breach" label="Add Breach Scrolls to Sorcerous Sundries" modId="forgotten-armament" />   
 				</add>
 				<update label="Item changes" unfolded="1">
@@ -344,8 +344,8 @@
 					<component id="HouseTweaks:15" label="Not-So-Indestructible Rats" />
 				</mod>
 				<component id="stratagems:4145" label="Remove the tutorial NPCs from Candlekeep" modId="SwordCoastStratagems" level="blendWell" />
-				<component id="cd_tweaks_bardic_rep_adjustment" label="Bardic Reputation Adjustment" modId="Tweaks-Anthology" level="blendWell" />
-				<component id="cd_tweaks_faster_dearnise_keep_timer" label="Speed Up de'Arnise Keep Stronghold Quests" modId="Tweaks-Anthology" level="vanillaPlus" />
+				<component id="cd_tweaks_bardic_rep_adjustment" label="Bardic Reputation Adjustment" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1260" />
+				<component id="cd_tweaks_faster_dearnise_keep_timer" label="Speed Up de'Arnise Keep Stronghold Quests" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2540" />
 			</tweaks>
 		</bg1>
 		<sod label="SoD" engine="bg1,eet">
@@ -457,8 +457,8 @@
 					<component id="Ascension-SlightlyImprovedCutscenes" label="Slightly improved cutscenes, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
 				</mod>
 				<component id="SoAExtended:1" label="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" tags="bigQuest" level="blendWell" />
-				<component id="cd_tweaks_reveal_ch6_wilderness" label="Reveal Wilderness Areas Before Chapter Six" level="extended" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" label="Faster Chapter One and Two Cutscenes and Dreams" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_reveal_ch6_wilderness" label="Reveal Wilderness Areas Before Chapter Six" level="extended" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1030" />
+				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" label="Faster Chapter One and Two Cutscenes and Dreams" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3141" />
 			</restructure>
 			<restorations label="Restorations" level="restoration">
 				<mod id="UnfinishedBusiness" label="Unfinished Business" tags="compilation">
@@ -571,7 +571,7 @@
 					<component id="sarevokromance:0" label="Sarevok Romance" modId="Sarevok-Romance" />
 					<component id="OWRomanceExpanded-Viconia" label="Viconia Romance Expanded" modId="BG2-Romance-Expanded" />
 					<component id="OWRomanceExpanded-Phaere" label="Phaere Expanded" modId="BG2-Romance-Expanded" />
-					<component id="cd_tweaks_stop_hd_aerie_romance" label="Stop Haer'Dalis-Aerie Romance from Starting" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_stop_hd_aerie_romance" label="Stop Haer'Dalis-Aerie Romance from Starting" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3124" />
 				</romances>
 				<bioware label="Returning Original Cast NPCs">
 					<component id="AddKagainDD" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" />
@@ -683,10 +683,10 @@
 					</mod>
 				</banters>
 				<tweaks label="Tweaks">
-					<component id="cd_tweaks_disable_romances" label="Disable Bioware Romances" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_disable_romances" label="Disable Bioware Romances" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3175" />
 					<component id="LaufeysNewViconiaEnding-Main" label="New ending for Viconia Romance" modId="Edwin-Romance"/>
 					<component id="SkitiaRomanceTweak:0" label="Skitia's Romance Tweak" desc="Allow short depatures from the party" modId="SkitiaBG2RomanceTweaks" level="fixes" />
-					<component id="cd_tweaks_improved_fate_spirit_summoning" label="Improved Fate Spirit Summoning" modId="Tweaks-Anthology" level="vanillaPlus"/>
+					<component id="cd_tweaks_improved_fate_spirit_summoning" label="Improved Fate Spirit Summoning" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4010" />
 				</tweaks>
 			</npc>
 			<items label="Items">
@@ -706,7 +706,7 @@
 					<component id="hidden_adventures-silverdagger_ID" label="Silver Dagger in Irenicus Dungeon" level="blendWell" modId="hiddenadventure" />
 				</add>
 				<update label="Item changes">
-					<component id="cd_tweaks_gradual_drow_item_disintegration" label="Gradual Drow Item Disintegration" modId="Tweaks-Anthology" level="blendWell" />
+					<component id="cd_tweaks_gradual_drow_item_disintegration" label="Gradual Drow Item Disintegration" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1050" />
 					<component id="hidden_adventures-silversword" label="Silver Sword against Mind Flayers and Lycanthropes" level="blendWell" modId="hiddenadventure" />
 					<component id="HouseTweaks:19" label="Useful Plot Items" modId="House-Rule-Tweaks" level="blendWell" />
 					<component id="stuffofthemagi:0" label="Nerf Stuff of the Magi condiments and add them to creatures' equipment" modId="Stuff-of-the-Magi" level="blendWell" />
@@ -786,8 +786,8 @@
 					<component id="swordap:0" label="Improved Haer'Dalis' swords" modId="HaerDalis-Swords" level="extended" />
 					<component id="L#-OfHeirloomsAndClasses" label="Of Heirlooms and Classes" desc="New artifacts forgeable by Cromwell" modId="of-heirlooms-and-classes" level="extended" />
 					<mod id="Tweaks-Anthology" label="item upgrade" level="blendWell">
-						<component id="cd_tweaks_cromwell_updates_wk_items" label="Allow Cromwell to Upgrade Watcher's Keep Items" />
-						<component id="cd_tweaks_cespenar_updates_soa_items" label="Allow Cespenar to Use Cromwell Recipes" />
+						<component id="cd_tweaks_cromwell_updates_wk_items" label="Allow Cromwell to Upgrade Watcher's Keep Items" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1220" />
+						<component id="cd_tweaks_cespenar_updates_soa_items" label="Allow Cespenar to Use Cromwell Recipes" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1230" />
 					</mod>
 				</upgrade>
 			</items>
@@ -795,18 +795,18 @@
 				<component id="#L-TRANSITIONS-RESTORE_POWER" label="Use Irenicus in hell movie as dream to restore Bhaalspawn powers" modId="themed_tweaks" level="blendWell" />
 				<component id="HouseTweaks:16" label="Good-Aligned Roleplay Rewards" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="HouseTweaks:44" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" level="blendWell" />
-				<component id="cd_tweaks_disable_malchor" label="Keep Drizzt's Loot, Disable Malchor Harpell" modId="Tweaks-Anthology" level="blendWell" />
-				<component id="cd_tweaks_improved_athkatla_guard" label="Improved Athkatlan City Guard" modId="Tweaks-Anthology" level="higherDifficulty" />
-				<component id="cd_tweaks_more_sensible_cowled_wizards" label="More Sensible Cowled Wizards" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
+				<component id="cd_tweaks_disable_malchor" label="Keep Drizzt's Loot, Disable Malchor Harpell" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3160" />
+				<component id="cd_tweaks_improved_athkatla_guard" label="Improved Athkatlan City Guard" modId="Tweaks-Anthology" level="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1040" />
+				<component id="cd_tweaks_more_sensible_cowled_wizards" label="More Sensible Cowled Wizards" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3420" />
 				<component id="ZSTweaks:3010" label="Make inappropriately aligned creatures in BG2 more correct" modId="ZSTweaks" level="fixes" />
 				<component id="ForcedSlayerTransform:0" label="Forced Slayer Transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" level="extended" />
 				<component id="randomiser:10210" label="Duergar merchants" engine="bg2,eet" modId="randomiser" level="vanillaPlus" desc="Make it so once you can access the special wares you retain the option of accessing the regular wares" />
-				<component id="cd_tweaks_alter_wounded_triggers" label="Alter HP Triggers for NPC Wounded Dialogues" modId="Tweaks-Anthology" desc="Raise the HP trigger level so that the player has a better chance of seeing wound banters" level="blendWell" />
-				<component id="cd_tweaks_cromwell_forge_time_0" label="Cromwell's Instant forging" modId="Tweaks-Anthology" level="lowerDifficulty"/>
-				<component id="cd_tweaks_yoshi_imoen_xp_transfer" label="Yoshimo to Imoen Experience Transfer" modId="Tweaks-Anthology" level="vanillaPlus" displayIfNot="Imoen4Ever-BGII-ImoenReturnsChapter2" />
+				<component id="cd_tweaks_alter_wounded_triggers" label="Alter HP Triggers for NPC Wounded Dialogues" modId="Tweaks-Anthology" desc="Raise the HP trigger level so that the player has a better chance of seeing wound banters" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1020" />
+				<component id="cd_tweaks_cromwell_forge_time_0" label="Cromwell's Instant forging" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1125" />
+				<component id="cd_tweaks_yoshi_imoen_xp_transfer" label="Yoshimo to Imoen Experience Transfer" modId="Tweaks-Anthology" level="vanillaPlus" displayIfNot="Imoen4Ever-BGII-ImoenReturnsChapter2" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2720" />
 				<alternatives label="Multiple Strongholds">
-					<component id="cd_tweaks_multi_stronghold_no_restriction" label="For any class PC" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_multi_stronghold_class_restriction" label="For Multi-Class PC" modId="Tweaks-Anthology" level="blendWell" />
+					<component id="cd_tweaks_multi_stronghold_no_restriction" label="For any class PC" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1160" />
+					<component id="cd_tweaks_multi_stronghold_class_restriction" label="For Multi-Class PC" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1161" />
 				</alternatives>
 			</tweaks>
 			<restructure>
@@ -951,10 +951,10 @@
 			</items>
 			<tweaks label="Tweaks">
 				<component id="A7_MISCTWEAKS_GREAT_OAKS_BEACON_IWDEE" label="Add Great Oak's Beacon ability (teleport to Kuldahar)" modId="A7-MiscTweaks" />
-				<component id="cd_tweaks_iwd_to_how_transition_no_change" label="Automatic Transition to the Heart of Winter Expansion after finishing the main campaign" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_iwd_to_how_transition_no_change" label="Automatic Transition to the Heart of Winter Expansion after finishing the main campaign" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1360" />
 				<component id="HoWMod:0" label="HoW Ending Tweak" desc="The expansion does not end immediately after defeating the final boss. You will be able to return to Lonelywood and complete any unfinished business." modId="HoWMod" />
-				<component id="cd_tweaks_restore_iwd_tooltips" label="Restore IWD Tooltips" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_how_accessible_at_l1" label="Make Heart of Winter Accessible at Any Level" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_restore_iwd_tooltips" label="Restore IWD Tooltips" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_230" />
+				<component id="cd_tweaks_how_accessible_at_l1" label="Make Heart of Winter Accessible at Any Level" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1300" />
 			</tweaks>
 		</iwd>
 		<pst label="PST" engine="pst">
@@ -975,7 +975,7 @@
 				</add>
 			</items>
 			<tweaks label="Tweaks">
-				<component id="cd_tweaks_reset_undersigil_fow" label="Reset UnderSigil Fog of War" modId="Tweaks-Anthology" engine="pst" />
+				<component id="cd_tweaks_reset_undersigil_fow" label="Reset UnderSigil Fog of War" modId="Tweaks-Anthology" engine="pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3360" />
 			</tweaks>
 		</pst>
 		<common sectionId="universal-bg-content" label="Common BG1/BG2" engine="bg,eet">
@@ -986,11 +986,11 @@
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<component id="reflection:0" label="Reflection (new dialogue options)" modId="Reflection" level="blendWell" />
 					<mod id="Tweaks-Anthology" level="blendWell">
-						<component id="cd_tweaks_more_interjections" label="More Interjections" />
-						<component id="cd_tweaks_move_boo_into_inventory" label="Move Boo Into Minsc's Pack" level="vanillaPlus" />
+						<component id="cd_tweaks_more_interjections" label="More Interjections" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1010" />
+						<component id="cd_tweaks_move_boo_into_inventory" label="Move Boo Into Minsc's Pack" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4150" />
 					</mod>
 					<component id="A7-CONVENIENTEENPCS-APPEARANCE-PASSIVE_ALL" label="Make all new EE NPCs passive" desc="Neera, Baeloth, Dorn, Rasaad - originally all of them have forced cutscenes when you met them" modId="A7-NoEENPCs" level="blendWell" />
-					<component id="cd_tweaks_npcs_never_fight" label="NPCs Don't Fight" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_npcs_never_fight" label="NPCs Don't Fight" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3123" />
 				</tweaks>
 			</npc>
 			<items label="Item changes">
@@ -1010,8 +1010,8 @@
 					<group label="Corrections" noBranches="1">
 						<mod modId="Tweaks-Anthology" level="blendWell">
 							<component id="cd_iwdification_spear_damage" label="Increase Spear Damage" modId="iwdification" />
-							<component id="cd_tweaks_dorns_sword" label="Make Rancor +1 a Bit More Reliable" displayIf="EEex:1" modId="Tweaks-Anthology" />
-							<component id="cdtweaks:150" label="Remove &quot;+x&quot; From Unique Item Names" modId="Tweaks-Anthology" />
+							<component id="cd_tweaks_dorns_sword" label="Make Rancor +1 a Bit More Reliable" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4200" />
+							<component id="cdtweaks:150" label="Remove &quot;+x&quot; From Unique Item Names" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_150" />
 						</mod>
 						<component id="ForgottenArmament-SetBonus" label="Add Set Bonuses to PlanarItems" modId="forgotten-armament" />
 						<component id="ForgottenArmament-UpdateItems" label="Forgotten Armament: Update Existing In-Game Items" modId="forgotten-armament" />
@@ -1036,7 +1036,7 @@
 					</group>
 					<component id="stratagems:3010" label="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" modId="SwordCoastStratagems" level="blendWell" />
 					<component id="stratagems:2900" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" modId="SwordCoastStratagems" level="blendWell" />
-					<component id="cd_tweaks_removable_npc_items" label="Removable NPC Items" modId="Tweaks-Anthology" level="vanillaPlus" />
+					<component id="cd_tweaks_removable_npc_items" label="Removable NPC Items" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4180" />
 				</update>
 				<delete label="Remove" noBranches="1">
 					<mod id="SwordCoastStratagems" level="higherDifficulty">
@@ -1057,16 +1057,16 @@
 				<component id="stratagems:4051" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="blendWell" />
 				<component id="randomiser:10100" label="Remove Protection from Undead Scrolls from all stores" level="higherDifficulty" engine="bg,eet" modId="randomiser" />
 				<component id="stratagems:3041" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" level="blendWell" />
-				<component id="cd_tweaks_death_cam" label="Death Cam" level="vanillaPlus" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_death_cam" label="Death Cam" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3300" />
 			</tweaks>
 		</common>
 		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<npc label="Joinable NPCs">
 				<tweaks label="Tweaks" unfolded="1">
-					<component id="cd_tweaks_happy_neutrals" label="Neutral Characters Make Happy Comments at Mid-Range Reputation" modId="Tweaks-Anthology" level="vanillaPlus" />
-					<component id="cd_tweaks_happy_patch_never_angry" label="NPCs are never angry about reputation" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_tob_style_npcs" label="ToB-Style NPCs" desc="Alter all joinable NPCs to immediately level-up upon joining, with a caveat: all creature files are moved down to their lowest experience version" modId="Tweaks-Anthology" />
-					<component id="cd_tweaks_reduced_party_chunking" label="Make Party Members Less Likely to Die Irreversibly" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_happy_neutrals" label="Neutral Characters Make Happy Comments at Mid-Range Reputation" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3125" />
+					<component id="cd_tweaks_happy_patch_never_angry" label="NPCs are never angry about reputation" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3120" />
+					<component id="cd_tweaks_tob_style_npcs" label="ToB-Style NPCs" desc="Alter all joinable NPCs to immediately level-up upon joining, with a caveat: all creature files are moved down to their lowest experience version" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4020" />
+					<component id="cd_tweaks_reduced_party_chunking" label="Make Party Members Less Likely to Die Irreversibly" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3330" />
 					<alternatives label="Banter Accelerator">
 						<component id="A7-BANTERACCELERATOR-60_10" label="Frequency: 60 seconds, Probability: 10%" modId="A7-BanterAccelerator" />
 						<component id="A7-BANTERACCELERATOR-40_10" label="Frequency: 40 seconds, Probability: 10% (default)" modId="A7-BanterAccelerator" default="1" />
@@ -1077,13 +1077,13 @@
 			<items label="Items">
 				<add noBranches="1">
 					<component id="ForgottenArmament-AcidResist" label="Create Potions of Acid Resistance" modId="forgotten-armament" />
-					<component id="cd_tweaks_add_bags_of_holding" label="Add Bags of Holding" modId="Tweaks-Anthology" level="vanillaPlus" />
+					<component id="cd_tweaks_add_bags_of_holding" label="Add Bags of Holding" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1080" />
 				</add>
 				<update label="Item Changes">
-					<component id="cd_tweaks_protection_items_pnp" label="PnP restrictions for protection items" modId="Tweaks-Anthology" level="blendWell" />
+					<component id="cd_tweaks_protection_items_pnp" label="PnP restrictions for protection items" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2150" />
 					<alternatives label="Unique Containers">
-						<component id="cd_tweaks_unique_containers_fixes_and_icons" label="Unique icons only" engine="bg,eet,iwd" level="blendWell" modId="Tweaks-Anthology" />
-						<component id="cd_tweaks_unique_containers_full" label="Unique icons and names" engine="bg,eet,iwd" modId="Tweaks-Anthology" level="extended" />
+						<component id="cd_tweaks_unique_containers_fixes_and_icons" label="Unique icons only" engine="bg,eet,iwd" level="blendWell" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_181" />
+						<component id="cd_tweaks_unique_containers_full" label="Unique icons and names" engine="bg,eet,iwd" modId="Tweaks-Anthology" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_182" />
 					</alternatives>
 					<component id="HouseTweaks:39" label="Ankheg and Dragonscale Armor Count as Medium Armor" modId="House-Rule-Tweaks" level="blendWell" />
 					<group label="Updates" noBranches="1">
@@ -1107,7 +1107,7 @@
 			<tweaks label="Tweaks" noBranches="1">
 				<component id="METweaks:2600" label="No Party Required area transitions" modId="Olvyn-Tweaks" level="extended" />
 				<mod id="Tweaks-Anthology">
-					<component id="cd_tweaks_noncombat_speed_casting_increase_50" label="Increase movement and casting speed by 50 percent outside of combat" level="blendWell" />
+					<component id="cd_tweaks_noncombat_speed_casting_increase_50" label="Increase movement and casting speed by 50 percent outside of combat" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3343" />
 				</mod>
 				<component id="stratagems:4130" label="Revised handling of death effects like disintegration, petrification and imprisonment" desc="Party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" modId="SwordCoastStratagems" level="vanillaPlus" />
 				<mod id="Lore_From_Learning" level="extended">
@@ -1117,8 +1117,8 @@
 					<component id="cd_lore_from_learning_monster" label="Defeating Monsters Provides Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
 					<component id="cd_lore_from_learning_area" label="Exploring Areas Provides Lore Bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
 				</mod>
-				<component id="cd_tweaks_hide_vfx_from_invisible_enemies" label="Hide Visual Effects from Invisible Enemies" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
-				<component id="cd_tweaks_stores_sell_higher_stacks" label="Stores Sell Higher Stacks of Items" modId="Tweaks-Anthology" level="lowerDifficulty" />
+				<component id="cd_tweaks_hide_vfx_from_invisible_enemies" label="Hide Visual Effects from Invisible Enemies" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_260" />
+				<component id="cd_tweaks_stores_sell_higher_stacks" label="Stores Sell Higher Stacks of Items" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1120" />
 			</tweaks>
 		</common>
 	</content>
@@ -1135,12 +1135,12 @@
 			<group sectionId="ranger" label="Ranger">
 				<group sectionId="beastmaster" label="Update Kit: Beast Master" level="blendWell">
 					<component id="ArtisansKitpack:2012" label="Overhaul" modId="The-Artisan-s-Kitpack" />
-					<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion Class Feat" modId="Tweaks-Anthology" displayIf="EEex:1" />
+					<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion Class Feat" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6340" />
 				</group>
 				<group sectionId="archer" label="Update Kit: Archer - Provide to hit and damage bonuses per the kit description">
 				</group>
 				<component id="iwdification:110" label="Make Tracking an innate ability since level 1" modId="iwdification" engine="bg,eet" level="blendWell" />
-				<component id="cd_tweaks_nwn_trackless_step" label="Add Trackless Step Class Feat for Rangers" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
+				<component id="cd_tweaks_nwn_trackless_step" label="Add Trackless Step Class Feat for Rangers" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6240" />
 				<component id="METweaks:1400" label="Power Up Ranger Charm Animal" modId="Olvyn-Tweaks" level="blendWell" />
 			</group>
 			<group sectionId="paladin" label="Paladin">
@@ -1154,8 +1154,8 @@
 			</group>
 			<component id="ZSTweaks:2120" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" />
 			<component id="METweaks:400" label="Remove the limit of two proficiency points in a weapon at character creation" modId="Olvyn-Tweaks" />
-			<component id="cd_tweaks_cleave" label="Add Cleave Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" />
-			<component id="cd_tweaks_nwn_knockdown" label="Add Knockdown Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" />
+			<component id="cd_tweaks_cleave" label="Add Cleave Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6100" />
+			<component id="cd_tweaks_nwn_knockdown" label="Add Knockdown Class Feat for Fighters and Monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6010" />
 			<component id="METweaks:900" label="Let Rangers and Paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
 		</group>
 		<group sectionId="rogues" label="Rogues" desc="Thieve/Bard">
@@ -1176,11 +1176,11 @@
 				</group>
 				<group sectionId="skald" label="Skald Kit Enhancements">
 				</group>
-				<component id="cd_tweaks_nwn_armored_caster" label="Add Armored Caster Class Feat" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" />
+				<component id="cd_tweaks_nwn_armored_caster" label="Add Armored Caster Class Feat" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6230" />
 			</group>
 			<component id="rr:9" label="Revised Thievery: adds dialogue options after failed thievery." desc="Additionally PnP the thievery potions and prevents their effects from stacking" modId="rogue_rebalancing" level="vanillaPlus" />
 			<component id="rr:0" label="Proper dual-wielding implementation for Thieves and Bards" modId="rogue_rebalancing" level="vanillaPlus" />
-			<component id="cd_tweaks_thieving_in_heavy_armor" label="Allow Thieving and Stealth in Heavy Armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="blendWell" desc="" />
+			<component id="cd_tweaks_thieving_in_heavy_armor" label="Allow Thieving and Stealth in Heavy Armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="blendWell" desc="" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2100" />
 			<mod id="Epic-Thieving" label="Epic Thieving" level="blendWell">
 				<component id="EpicThieving:0" label="EpicThieving - Epic Locks, Traps, Pickpocketing, Illusions"  desc="Gives high valued thieving skills sense by adding difficult locks, traps, pickpocket opportunities and illusions" />
 				<component id="EpicThieving:100" label="EpicThieving - Epic Traps" alwaysIf="EpicThieving:0" noDisplay="1" />
@@ -1195,7 +1195,7 @@
 			<group label="Traps">
 				<component id="HouseTweaks:41" label="Trap Activation Tweaks" modId="House-Rule-Tweaks" level="lowerDifficulty" />
 				<component id="HouseTweaks:43" label="Set Traps in enemy range if invisible, does not break stealth" modId="House-Rule-Tweaks" level="lowerDifficulty" />
-				<component id="cd_tweaks_trap_cap_removal" label="Remove concurrent trap cap" modId="Tweaks-Anthology" level="lowerDifficulty" />
+				<component id="cd_tweaks_trap_cap_removal" label="Remove concurrent trap cap" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2320" />
 			</group>
 		</group>
 		<group sectionId="spellcasters" label="Spellcasters" desc="Druid/Cleric/Mage/Sorcerer/Shaman">
@@ -1204,7 +1204,7 @@
 			<group sectionId="druid" label="Druid">
 				<component id="ArtisansKitpack:5100" label="Update Kit: Shapeshifter Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
 				<component id="ArtisansKitpack:5110" label="Change Shapeshifter Werewolf sprite" modId="The-Artisan-s-Kitpack" alwaysIf="ArtisansKitpack:5100" noDisplay="1" />
-				<component id="cd_tweaks_shapeshifter_armor" label="Allow Shapeshifters to Wear Armor But Prevent Shapeshifting While Worn" modId="Tweaks-Anthology" level="blendWell" />
+				<component id="cd_tweaks_shapeshifter_armor" label="Allow Shapeshifters to Wear Armor But Prevent Shapeshifting While Worn" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2740" />
 			</group>
 			<group sectionId="mage" label="Mage" noBranches="1">
 				<mod id="TomeAndBlood" label="Tome and Blood: revised specialists and innate metamagic">
@@ -1217,7 +1217,7 @@
 			<group sectionId="sorcerer" label="Sorcerer">
 				<component id="A7-CHAOSSORCERER-MAIN" label="Add Kit: Chaos Sorcerer - Wild Magic Sorcerer" modId="A7-ChaosSorcerer" level="extended" />
 				<component id="Morpheus562sKitpackEldritchScionNoXan" label="Add Kit: Eldritch Scion - Warrior Sorcerer" modId="morpheus562s-kitpack" />
-				<component id="cd_tweaks_sorc_spell_progression" label="Un-Nerfed Sorcerer Spell Progression Table" modId="Tweaks-Anthology" level="lowerDifficulty" />
+				<component id="cd_tweaks_sorc_spell_progression" label="Un-Nerfed Sorcerer Spell Progression Table" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2250" />
 			</group>
 			<group sectionId="shaman" label="Shaman">
 				<component id="ArtisansKitpack:9001" label="Add Kit: Warhorn Shaman" modId="The-Artisan-s-Kitpack" level="extended" />
@@ -1233,37 +1233,37 @@
 		<group sectionId="multi" label="Multi-Class / Dual-Class">
 			<component id="ArtisansKitpack:20000" label="Add Kit: Eldritch Knight - Fighter/Mage Kit" modId="The-Artisan-s-Kitpack" level="extended" />
 			<!--component id="cd_tweaks_multiclass_gm" label="Multi-Class Grandmastery" level="lowerDifficulty" modId="Tweaks-Anthology" /-->
-			<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" label="Tighten equipment restrictions for  Druid Multi- and Dual-Classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." level="higherDifficulty" />
-			<component id="cd_tweaks_more_dual_classes" label="Expanded Dual-Class Options" modId="Tweaks-Anthology" level="lowerDifficulty" />
+			<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" label="Tighten equipment restrictions for  Druid Multi- and Dual-Classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." level="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2431" />
+			<component id="cd_tweaks_more_dual_classes" label="Expanded Dual-Class Options" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2140" />
 		</group>
 		<group sectionId="universal" label="Universal">
-			<component id="cd_tweaks_alter_thac0_table" label="Un-Nerfed THAC0 Table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
+			<component id="cd_tweaks_alter_thac0_table" label="Un-Nerfed THAC0 Table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2240" />
 			<alternatives label="Make Infravision Useful" desc="Creatures without infravision have -4 THAC0 at night or in dark places">
-				<component id="cd_tweaks_infravision" label="Tweaks Anthology (Luke's) Solution" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_infravision" label="Tweaks Anthology (Luke's) Solution" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2680" />
 				<component id="METweaks:3200" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" level="blendWell" />
 				<component id="METweaks:3205" label="Olvyn's Version (light)" desc="Creatures without infravision have reduced visual range at night or in dark places" modId="Olvyn-Tweaks" />
 				<component id="METweaks:3210" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" level="higherDifficulty" modId="Olvyn-Tweaks" />
 			</alternatives>
 			<group sectionId="feats" label="Add new feats">
-				<component id="cd_tweaks_planar_turning" label="Planar Turning Class Feat for Clerics/Paladins" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" />
-				<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge Class Feat for Barbarians and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" />
-				<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" />
+				<component id="cd_tweaks_planar_turning" label="Planar Turning Class Feat for Clerics/Paladins" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6140" />
+				<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge Class Feat for Barbarians and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6260" />
+				<component id="cd_tweaks_nwn_evasion" label="Evasion Class Feat for Monks and Rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6280" />
 			</group>
 			<group sectionId="weapons" label="Weapon tweaks">
-				<component id="cd_tweaks_universal_four_weapon_slots" label="Give Every Class/Kit Four Weapon Slots" modId="Tweaks-Anthology" level="vanillaPlus" />
-				<component id="cd_tweaks_universal_clubs" label="Universal Clubs" modId="Tweaks-Anthology" level="blendWell" />
-				<component id="cd_tweaks_loosen_shield_restrictions" label="Allow Mages to Use Bucklers and Thieves to Use Small Shields" modId="Tweaks-Anthology" level="lowerDifficulty" />
+				<component id="cd_tweaks_universal_four_weapon_slots" label="Give Every Class/Kit Four Weapon Slots" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3280" />
+				<component id="cd_tweaks_universal_clubs" label="Universal Clubs" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2040" />
+				<component id="cd_tweaks_loosen_shield_restrictions" label="Allow Mages to Use Bucklers and Thieves to Use Small Shields" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2520" />
 			</group>
 		</group>
 		<group sectionId="stats" label="Stats">
 			<group sectionId="hp" label="HP">
-				<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" level="lowerDifficulty" />
-				<component id="cd_tweaks_extend_hp_rolls_to_l20" label="Allow HP Rolls Through Level 20" modId="Tweaks-Anthology" level="lowerDifficulty" />
+				<component id="cd_tweaks_max_hp_at_l1" label="Max HP at Level One" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2999" />
+				<component id="cd_tweaks_extend_hp_rolls_to_l20" label="Allow HP Rolls Through Level 20" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3008" />
 			</group>
 		</group>
 		<group sectionId="proficiencies" label="Proficiencies and Fighting Styles">
-			<component id="cd_tweaks_grandmastery_bonus_true" label="True grandmastery" level="blendWell" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_specialization_apr_bonus_for_all" label="Everyone Gets Bonus APR from Specialization" modId="Tweaks-Anthology" level="lowerDifficulty" />
+			<component id="cd_tweaks_grandmastery_bonus_true" label="True grandmastery" level="blendWell" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2210" />
+			<component id="cd_tweaks_specialization_apr_bonus_for_all" label="Everyone Gets Bonus APR from Specialization" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2440" />
 		</group>
 	</mechanics>
 
@@ -1277,8 +1277,8 @@
 					<component id="BardicWonders:2001" label="Add items for Bards" modId="Bardic-Wonders" />
 				</add>
 				<update>
-					<component id="cd_tweaks_2h_bastard_swords" label="Two-Handed Bastard Swords" modId="Tweaks-Anthology" level="extended" />
-					<component id="cd_tweaks_2h_katanas" label="Two-Handed Katanas" modId="Tweaks-Anthology" level="extended" />
+					<component id="cd_tweaks_2h_bastard_swords" label="Two-Handed Bastard Swords" modId="Tweaks-Anthology" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2020" />
+					<component id="cd_tweaks_2h_katanas" label="Two-Handed Katanas" modId="Tweaks-Anthology" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2030" />
 				</update>
 				<upgrade>
 					<component id="rr:8" label="Upgradeable Thieves and Bards Equipment" modId="rogue_rebalancing" level="extended" />   
@@ -1296,11 +1296,11 @@
 		</add>
 		<update label="Spell corrections" noBranches="1">
 			<!--ac-miscellaneous-breathfix;AC Miscellaneous Tweaks - Dragon Breath Fix-->
-			<component id="cd_tweaks_make_grease_ignitable" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" />
-			<component id="cd_tweaks_restoration_no_fatigue" label="Remove Fatigue from Restoration Spells" modId="Tweaks-Anthology" level="lowerDifficulty" />
+			<component id="cd_tweaks_make_grease_ignitable" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2650" />
+			<component id="cd_tweaks_restoration_no_fatigue" label="Remove Fatigue from Restoration Spells" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3050" />
 			<component id="A7-CHAOSSORCERER-RECREATE_SPELL_LIST" label="Recreate Chaos Weave spell selection lists" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" />
 			<component id="stratagems:2070" label="Spell school adjustements" modId="SwordCoastStratagems" level="blendWell" />
-			<component id="cd_tweaks_0_weight_created_weapons" label="Change Magically Created Weapons to Zero Weight" level="vanillaPlus" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_0_weight_created_weapons" label="Change Magically Created Weapons to Zero Weight" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2220" />
 			<component id="EET_Tweaks:3000" label="Disable hostile reaction after charm" level="vanillaPlus" modId="EET_Tweaks" />
 			<mod id="SwordCoastStratagems" level="blendWell">
 				<component id="stratagems:2010" label="Core Stratagems spell-system changes" />
@@ -1322,14 +1322,14 @@
 				<component id="SubtleD_Spell_Tweaks:2413" label="Allow Target of Otiluke's Sphere to Use Inventory Screen" />
 			</mod>
 			<mod id="Tweaks-Anthology" level="blendWell">
-				<component id="cd_tweaks_remove_magical_trap_delay" label="Remove Delay for Magical Traps" />
-				<component id="cd_tweaks_summoning_cap_removal" label="Remove Summoning Cap for Regular Summons" />
-				<component id="cd_tweaks_celestial_cap_removal" label="Remove Summoning Cap for Celestials" />
-				<component id="cd_tweaks_nwn_summons" label="NWN-Style Summons" displayIf="EEex:1" />
-				<component id="cd_tweaks_more_stoneskin_feedback" label="More Stoneskin Feedback" level="lowerDifficulty" displayIf="EEex:1" />
-				<component id="cd_tweaks_more_sensible_fireshield" label="More Sensible Fireshield" displayIf="EEex:1" />
-				<component id="cd_tweaks_more_sensible_blade_barrier" label="More Sensible Blade Barrier" displayIf="EEex:1" />
-				<component id="cd_tweaks_more_sensible_morentherene" label="More Sensible Morentherene" displayIf="EEex:1" />
+				<component id="cd_tweaks_remove_magical_trap_delay" label="Remove Delay for Magical Traps" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2330" />
+				<component id="cd_tweaks_summoning_cap_removal" label="Remove Summoning Cap for Regular Summons" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2339" />
+				<component id="cd_tweaks_celestial_cap_removal" label="Remove Summoning Cap for Celestials" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2340" />
+				<component id="cd_tweaks_nwn_summons" label="NWN-Style Summons" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2710" />
+				<component id="cd_tweaks_more_stoneskin_feedback" label="More Stoneskin Feedback" level="lowerDifficulty" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3430" />
+				<component id="cd_tweaks_more_sensible_fireshield" label="More Sensible Fireshield" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3450" />
+				<component id="cd_tweaks_more_sensible_blade_barrier" label="More Sensible Blade Barrier" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3460" />
+				<component id="cd_tweaks_more_sensible_morentherene" label="More Sensible Morentherene" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3480" />
 			</mod>
 			<mod id="ZSTweaks" level="blendWell">
 				<component id="ZSTweaks:1559" label="Make Protection From Magic scroll not a cheesy way to dispel all magic from an enemy" />
@@ -1363,7 +1363,7 @@
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_SHADOWDANCER" label="Shadowdancer" modId="A7-NoEENPCs" />
 			</alternatives>
 			<!-- Make Kagain a Dwarven Defender BGEENPC tweaks.-->
-			<component id="cd_tweaks_make_montaron_assassin" label="Make Montaron an Assassin" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_make_montaron_assassin" label="Make Montaron an Assassin" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4090" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" />
 			<component id="sha-tweaks:5" label="Make Skie a Shadowdancer" modId="shatweaks" />
 			<group label="Make Viconia...">
@@ -1378,10 +1378,10 @@
 			</alternatives>
 			<component id="ArtisansKitpack_npc:20002" label="Make Xan an Eldrith Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />
 			<alternatives label="Upgrade Nalia's Thief class to...">
-				<component id="cd_tweaks_nalia_thief_level_5" label="Level 5 (further increases lockpicking)" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nalia_thief_level_6" label="Level 6 (further increases traps finding, pickpocket)" modId="Tweaks-Anthology" />
-				<component id="cd_tweaks_nalia_thief_level_7" label="Level 7 (further increases lockpicking, pickpocket)" modId="Tweaks-Anthology" level="blendWell" default="1" />
-				<component id="cd_tweaks_nalia_thief_level_8" label="Level 8 (further increases pickpocket, adds single weapon style)" modId="Tweaks-Anthology" />
+				<component id="cd_tweaks_nalia_thief_level_5" label="Level 5 (further increases lockpicking)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4210" />
+				<component id="cd_tweaks_nalia_thief_level_6" label="Level 6 (further increases traps finding, pickpocket)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4211" />
+				<component id="cd_tweaks_nalia_thief_level_7" label="Level 7 (further increases lockpicking, pickpocket)" modId="Tweaks-Anthology" level="blendWell" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4212" />
+				<component id="cd_tweaks_nalia_thief_level_8" label="Level 8 (further increases pickpocket, adds single weapon style)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4213" />
 			</alternatives>
 			<component id="YoshimosRemorse:2" label="Make Yoshimo a Bounty Hunter 13 / Fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" />
 		</group>
@@ -1389,27 +1389,27 @@
 			<!-- Dual Class Friendly Stats -->
 			<group label="Use consistent (BG2) stats for..." noBranches="1" engine="bg1,eet">
 				<mod id="Tweaks-Anthology">
-					<component id="cd_tweaks_consistent_stats_edwin_bg2" label="Edwin" level="blendWell" />
-					<component id="cd_tweaks_consistent_stats_jaheira_bg2" label="Jaheira" level="blendWell" />
-					<component id="cd_tweaks_consistent_stats_minsc_bg2" label="Minsc" level="blendWell" />
-					<component id="cd_tweaks_consistent_stats_viconia_bg2" label="Viconia" level="blendWell" />
+					<component id="cd_tweaks_consistent_stats_edwin_bg2" label="Edwin" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4031" />
+					<component id="cd_tweaks_consistent_stats_jaheira_bg2" label="Jaheira" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4041" />
+					<component id="cd_tweaks_consistent_stats_minsc_bg2" label="Minsc" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4061" />
+					<component id="cd_tweaks_consistent_stats_viconia_bg2" label="Viconia" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4071" />
 				</mod>
 			</group>
-			<component id="cd_tweaks_kagain_legal_con" label="Give Kagain a Legal Constitution Score of 19" level="blendWell" engine="bg1,eet" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_coran_legal_dex" label="Give Coran a Legal Dexterity Score of 19" level="blendWell" engine="bg1,eet" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_yoshimo_better_trapsetting" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" level="blendWell" />
+			<component id="cd_tweaks_kagain_legal_con" label="Give Kagain a Legal Constitution Score of 19" level="blendWell" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4110" />
+			<component id="cd_tweaks_coran_legal_dex" label="Give Coran a Legal Dexterity Score of 19" level="blendWell" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4120" />
+			<component id="cd_tweaks_yoshimo_better_trapsetting" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4230" />
 			<component id="bg1npc_project-kivanproficiency_spears" label="Kivan uses spears" displayIf="bg1npc_project-main" level="fixes" modId="BG1NPC" />
 		</group>
 		<group label="Appearance">
-			<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" level="blendWell" />
-			<component id="cd_tweaks_imoen_avatar_change" label="Change Imoen's Avatar to Mage" modId="Tweaks-Anthology" engine="bg2,eet" />
-			<component id="cd_tweaks_viconia_skin_color" label="Change Viconia's Skin Color to Dark Blue" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_nalia_avatar_change" label="Change Nalia's Avatar to Thief" modId="Tweaks-Anthology" engine="bg2,eet" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_30" />
+			<component id="cd_tweaks_imoen_avatar_change" label="Change Imoen's Avatar to Mage" modId="Tweaks-Anthology" engine="bg2,eet" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_20" />
+			<component id="cd_tweaks_viconia_skin_color" label="Change Viconia's Skin Color to Dark Blue" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_40" />
 		</group>
 		<group label="Alignment">
-			<component id="cd_tweaks_ng_jaheira" label="Change Jaheira to Neutral Good Alignment" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_ne_korgan" label="Change Korgan to Neutral Evil Alignment" modId="Tweaks-Anthology" />	
+			<component id="cd_tweaks_ng_jaheira" label="Change Jaheira to Neutral Good Alignment" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4050" />
+			<component id="cd_tweaks_ne_korgan" label="Change Korgan to Neutral Evil Alignment" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4100" />	
 		</group>
-		<component id="cd_tweaks_mp_kickout_dialogue" label="Improved Multi-Player Kick-Out Dialogues" modId="Tweaks-Anthology" level="vanillaPlus" />
+		<component id="cd_tweaks_mp_kickout_dialogue" label="Improved Multi-Player Kick-Out Dialogues" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1070" />
 	</npcChoices>
 
 	<combat level="higherDifficulty">
@@ -1569,11 +1569,11 @@
 		</mod>
 		<component id="HouseTweaks:21" label="Restore Reputation Increase Sound Effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" />
 		<component id="HouseTweaks:26" label="Soundset Tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg2,eet"/>
-		<component id="cd_tweaks_fix_boo_squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" level="fixes" engine="bg2,eet" />
+		<component id="cd_tweaks_fix_boo_squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" level="fixes" engine="bg2,eet" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_140" />
 	</sounds>
 
 	<sounds>
-		<component id="cd_tweaks_remove_you_must_gather" label="Remove &quot;You Must Gather Your Party...&quot; Sound" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_remove_you_must_gather" label="Remove &quot;You Must Gather Your Party...&quot; Sound" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3060" />
 	</sounds>
 
 	<portraits engine="bg,eet">
@@ -1707,30 +1707,30 @@
 		</group>
 		<group label="Special" engine="bg2,eet">
 			<alternatives label="Drow NPC Portraits">
-				<component id="cd_tweaks_no_drow_avatars_in_underdark" label="No Drow Avatars On Party In Underdark" modId="Tweaks-Anthology" default="1" />
+				<component id="cd_tweaks_no_drow_avatars_in_underdark" label="No Drow Avatars On Party In Underdark" modId="Tweaks-Anthology" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3170" />
 				<component id="PPE:30" label="PPE version" modId="Portraits-Portraits-Everywhere" />
 				<component id="HPSPP-PartyNPCsDrow" label="HPS version" modId="HPS-Portraits-Project-1.0" />	
 			</alternatives>
 			<component id="PPE:40" label="PPE Vampire NPCs" engine="bg,eet,iwd" modId="Portraits-Portraits-Everywhere" />
-			<component id="cd_tweaks_edwina" label="Female Edwina" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_edwina" label="Female Edwina" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1180" />
 			<component id="SPC:0" label="Slayer Portrait Change" desc="Changes the PC portrait during the Slayer transformation" modId="BG2EE-Slayer-Portrait-Change" />
 		</group>
 	</portraits>
 
 	<gfx engine="bg,iwd,eet" level="vanillaPlus">
-		<component id="cd_tweaks_weapon_animation_tweaks" label="Weapon Animation Tweaks" modId="Tweaks-Anthology" />
-		<component id="cd_tweaks_icon_improvements" label="Icon Improvements" desc="Uses a combination of BG, IWD, and BG2 icons to better differentiate armor when it is on the ground" modId="Tweaks-Anthology" />
-		<component id="cd_tweaks_unique_icons" label="Unique icons for special items" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_weapon_animation_tweaks" label="Weapon Animation Tweaks" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_60" />
+		<component id="cd_tweaks_icon_improvements" label="Icon Improvements" desc="Uses a combination of BG, IWD, and BG2 icons to better differentiate armor when it is on the ground" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_110" />
+		<component id="cd_tweaks_unique_icons" label="Unique icons for special items" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_170" />
 		<component id="BG1_IPM_MainComponent" label="Unique icons for the BG1 quest items" modId="bg1_icons_pack_mod" engine="bg1,eet"/>
 		<component id="ee_cosmetic_enhancements:0" label="BG Cosmetic Enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="bg,eet" />
 		<component id="ee_cosmetic_enhancements:1" label="IWD Cosmetic Enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="iwd" />
 		<component id="cd_iwd_description_icons" label="Description Icons for IWD Items" modId="iwd_description_icons" engine="iwd" stability="beta" />
-		<component id="cd_tweaks_replace_fire_cold_resist_icons" label="Separate Resist Fire/Cold Icon into Separate Icons" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_replace_fire_cold_resist_icons" label="Separate Resist Fire/Cold Icon into Separate Icons" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2010" />
 		<mod id="RemasteredSpellIcons" label="Remastered Spell Icons">
 			<component id="remastered_spell_icons:0" label="Core Component" core="1" />
 			<component id="remastered_spell_icons:1" label="Use IWD:EE Colors" desc="Green icons for summoning spells" />
 		</mod>
-		<component id="cd_tweaks_static_pst_npc_portraits_status" label="Static Character Portraits" desc="With health and status changes visualization" engine="pst" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_static_pst_npc_portraits_status" label="Static Character Portraits" desc="With health and status changes visualization" engine="pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_270" />
 		<component id="A7_MISCTWEAKS_UPSCALED_PORTRAITS_PSTEE" label="Argent's Miscellaneous Tweaks - High-resolution character portraits" modId="A7-MiscTweaks" engine="pst" />
 		<component id="HouseTweaks:51" label="Remove Unnecessary Persistent Visuals from Long-Duration Spells" modId="House-Rule-Tweaks" />
 		<mod id="AC-Miscellaneous-Tweaks" label="AC Miscellaneous Tweaks" level="blendWell">
@@ -1740,22 +1740,22 @@
 	</gfx>
 
 	<gfx engine="bg,iwd,eet">
-		<component id="cd_tweaks_iwd_casting_graphics" label="Icewind Dale Casting Graphics" modId="Tweaks-Anthology" engine="bg,eet" />
-		<component id="cd_tweaks_bg_casting_graphics" label="Baldur's Gate Casting Graphics" modId="Tweaks-Anthology" engine="iwd" />
-		<component id="cd_tweaks_remove_portrait_icons" label="Disable Portrait Icons Added by Equipped Items" modId="Tweaks-Anthology" engine="bg,iwd,eet,pst" />
-		<component id="cd_tweaks_glowing_magical_shields" label="Make Magic Shields Glow" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_iwd_casting_graphics" label="Icewind Dale Casting Graphics" modId="Tweaks-Anthology" engine="bg,eet" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_70" />
+		<component id="cd_tweaks_bg_casting_graphics" label="Baldur's Gate Casting Graphics" modId="Tweaks-Anthology" engine="iwd" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_72" />
+		<component id="cd_tweaks_remove_portrait_icons" label="Disable Portrait Icons Added by Equipped Items" modId="Tweaks-Anthology" engine="bg,iwd,eet,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_90" />
+		<component id="cd_tweaks_glowing_magical_shields" label="Make Magic Shields Glow" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_160" />
 		<alternatives label="Use character colors instead of item colors">
-			<component id="cd_tweaks_char_colors_all_helms_shields" label="For all shields and helmets" modId="Tweaks-Anthology" default="1" />
-			<component id="cd_tweaks_char_colors_normal_helms_shields" label="For non-magical shields and helmets" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_char_colors_all_helms" label="For all helmets" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_char_colors_normal_helms" label="For non-magical helmets" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_char_colors_all_shields" label="For all shields" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_char_colors_normal_shields" label="For non-magical shields" modId="Tweaks-Anthology" />
+			<component id="cd_tweaks_char_colors_all_helms_shields" label="For all shields and helmets" modId="Tweaks-Anthology" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_190" />
+			<component id="cd_tweaks_char_colors_normal_helms_shields" label="For non-magical shields and helmets" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_191" />
+			<component id="cd_tweaks_char_colors_all_helms" label="For all helmets" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_192" />
+			<component id="cd_tweaks_char_colors_normal_helms" label="For non-magical helmets" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_193" />
+			<component id="cd_tweaks_char_colors_all_shields" label="For all shields" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_194" />
+			<component id="cd_tweaks_char_colors_normal_shields" label="For non-magical shields" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_195" />
 		</alternatives>
 		<alternatives label="Remove annoying visual effects from equipped items">
-			<component id="cd_tweaks_remove_equipped_blur_effects" label="Remove blur effect" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_remove_equipped_spell_trap_effects" label="Remove spell trap and reflection effects" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_remove_equipped_blur_spell_trap_effects" label="Remove all of the above" modId="Tweaks-Anthology" default="1" />
+			<component id="cd_tweaks_remove_equipped_blur_effects" label="Remove blur effect" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_200" />
+			<component id="cd_tweaks_remove_equipped_spell_trap_effects" label="Remove spell trap and reflection effects" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3150" />
+			<component id="cd_tweaks_remove_equipped_blur_spell_trap_effects" label="Remove all of the above" modId="Tweaks-Anthology" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3151" />
 		</alternatives>
 		<component id="METweaks:3600" label="Implement a different kind of chunked death animation" modId="Olvyn-Tweaks" />
 	</gfx>
@@ -1793,10 +1793,10 @@
 	<ui engine="bg,eet,iwd" level="vanillaPlus">
 		<component id="AutoLoot:0" label="Bubb's Auto Loot" modId="AutoLoot" />
 		<component id="buffbot:0" label="BuffBot: In-Game Buff Automation" modId="bg-eeex-buffbot" />
-		<component id="cd_tweaks_restored_loading_hints" label="Restored Loading Hints" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_restored_loading_hints" label="Restored Loading Hints" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3400" />
 		<group label="Savegames tweaks">
-			<component id="cd_tweaks_personalize_savename_opt6" label="Use save filenames scheme: 000000000-[Protagonist] Save-Name" level="vanillaPlus" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" />
-			<component id="cd_tweaks_create_interval_four_saves_15" label="Interval saves every 15 minutes" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" />
+			<component id="cd_tweaks_personalize_savename_opt6" label="Use save filenames scheme: 000000000-[Protagonist] Save-Name" level="vanillaPlus" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3295" />
+			<component id="cd_tweaks_create_interval_four_saves_15" label="Interval saves every 15 minutes" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3354" />
 		</group>
 		<mod id="A7-HiddenGameplayOptions" label="Reveal Hidden Gameplay Options" engine="bg,eet,iwd,pst">
 			<component id="A7-HIDDENGAMEPLAYOPTIONS-IMPROVED_CHEAT_MENU" label="Improved Cheat Menu" />
@@ -1819,8 +1819,8 @@
 	</ui>
 
 	<ui engine="bg,eet,iwd">
-		<component id="cd_tweaks_colorize_npc_names_brightness_normal" label="Colorize NPC names and tooltips" modId="Tweaks-Anthology" />
-		<component id="cd_tweaks_colorblind_overlays" label="Enhanced Overlays for Colorblind Players" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_colorize_npc_names_brightness_normal" label="Colorize NPC names and tooltips" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_250" />
+		<component id="cd_tweaks_colorblind_overlays" label="Enhanced Overlays for Colorblind Players" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_220" />
 	</ui>
 
 	<base engine="eet">
@@ -1888,7 +1888,7 @@
 				<component id="SkillsAndAbilitiesWeaponProf2" label="High Master (4 pips)" modId="skills-and-abilities" />
 				<component id="SkillsAndAbilitiesWeaponProf3" label="Grand Master (5 pips)" modId="skills-and-abilities" />
 			</alternatives>
-			<component id="cd_tweaks_casting_in_armor" label="Allow Arcane Spellcasting in Heavy Armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="extended" />
+			<component id="cd_tweaks_casting_in_armor" label="Allow Arcane Spellcasting in Heavy Armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2120" />
 			<component id="SkillsAndAbilitiesClericThief" label="Adjust Cleric/Thief Actionbar" displayIf="EEex:1" modId="skills-and-abilities" />
 			<component id="D5_REVISED_DUAL_CLASS_REQS" label="Lower Dual-Class Requirements" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" />
 		</group>
@@ -1927,7 +1927,7 @@
 			<component id="D5_REVISED_ABILITY_SCORES" label="Ability Score Overhaul" desc="Helps to make all stats useful" modId="SubtleD_Stat_Overhauls" />
 			
 			
-			<component id="cd_tweaks_exceptional_strength_weight_limits" label="Exceptional Strength Weight Limit Changes" modId="Tweaks-Anthology" level="vanillaPlus" engine="bg,eet,iwd,pst" />
+			<component id="cd_tweaks_exceptional_strength_weight_limits" label="Exceptional Strength Weight Limit Changes" modId="Tweaks-Anthology" level="vanillaPlus" engine="bg,eet,iwd,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2500" />
 
 
 		</group>
@@ -1936,15 +1936,15 @@
 				<group label="Tweaks Anthology/House Tweaks">
 					<component id="METweaks:500" label="Fighters get 1 proficiency point per 2 levels" modId="Olvyn-Tweaks" />
 					<alternatives label="Proficiency system">
-						<component id="cd_tweaks_alter_prof_rebalanced" label="Rebalanced weapon proficiencies" modId="Tweaks-Anthology" />
-						<component id="cd_tweaks_alter_prof_bg_with_styles" label="BG-style weapon proficiencies, with weapon styles" modId="Tweaks-Anthology" />
-						<component id="cd_tweaks_alter_prof_iwd_with_styles" label="IWD-style proficiencies with weapon styles" modId="Tweaks-Anthology" />
+						<component id="cd_tweaks_alter_prof_rebalanced" label="Rebalanced weapon proficiencies" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2160" />
+						<component id="cd_tweaks_alter_prof_bg_with_styles" label="BG-style weapon proficiencies, with weapon styles" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2161" />
+						<component id="cd_tweaks_alter_prof_iwd_with_styles" label="IWD-style proficiencies with weapon styles" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2163" />
 					</alternatives>
 					<alternatives label="Fighting styles">
 						<component id="METweaks:4000" label="Modify Fighting Styles" modId="Olvyn-Tweaks" />
 						<component id="HouseTweaks:5" label="Rebalanced Weapon Styles" modId="House-Rule-Tweaks" />
 					</alternatives>
-					<component id="cd_tweaks_weapon_styles_for_all" label="Weapon Styles for All" modId="Tweaks-Anthology" />
+					<component id="cd_tweaks_weapon_styles_for_all" label="Weapon Styles for All" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2060" />
 				</group>
 				<mod id="skills-and-abilities" label="Skills And Abilities">
 					<component id="SkillsAndAbilitiesWeapStyle" label="Update Weapon Fighting Styles" />
@@ -2030,7 +2030,7 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 
 	<adjustements engine="bg,eet,iwd">
 		<group label="XP Economy" unfolded="1">
-			<component id="cd_tweaks_remove_xp_cap" label="Remove total experience cap" modId="Tweaks-Anthology" level="blendWell"/>
+			<component id="cd_tweaks_remove_xp_cap" label="Remove total experience cap" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2090" />
 			<alternatives label="XP for Traps, Spells, Lockpicking">
 				<component id="EET_Tweaks:2040" label="BG1" modId="EET_Tweaks" />
 				<component id="EET_Tweaks:2041" label="BG2" modId="EET_Tweaks" />
@@ -2105,31 +2105,31 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 		</mod>
 		<alternatives label="Alter identification mechanics" engine="bg,eet,iwd,pst">
 			<group label="Make it more strict" level="higherDifficulty">
-				<component id="cd_tweaks_shopkeeper_id_lore" label="Identification ability is limited to storekeeper's lore" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" desc="Any storekeeper can identify items up to their personal lore value, regardless of class." />
-				<component id="cd_tweaks_lore_for_gems_potions" label="Gems and Potions Require Identification" modId="Tweaks-Anthology" level="higherDifficulty" engine="bg,eet,iwd" />
+				<component id="cd_tweaks_shopkeeper_id_lore" label="Identification ability is limited to storekeeper's lore" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" desc="Any storekeeper can identify items up to their personal lore value, regardless of class." readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2191" />
+				<component id="cd_tweaks_lore_for_gems_potions" label="Gems and Potions Require Identification" modId="Tweaks-Anthology" level="higherDifficulty" engine="bg,eet,iwd" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1140" />
 			</group>
-			<component id="cd_tweaks_id_all_items" label="Identify All Items" modId="Tweaks-Anthology" level="lowerDifficulty" />
+			<component id="cd_tweaks_id_all_items" label="Identify All Items" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3020" />
 		</alternatives>
 		<mod id="Tweaks-Anthology" label="Increase item stacks">
-			<component id="cd_tweaks_increase_ammo_stacks_120" label="Ammo Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" />
-			<component id="cd_tweaks_increase_gem_stacks_120" label="Gem Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" />
-			<component id="cd_tweaks_increase_potion_stacks_120" label="Potion Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" />
-			<component id="cd_tweaks_increase_scroll_stacks_120" label="Scroll Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" />
+			<component id="cd_tweaks_increase_ammo_stacks_120" label="Ammo Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3083" />
+			<component id="cd_tweaks_increase_gem_stacks_120" label="Gem Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3093" />
+			<component id="cd_tweaks_increase_potion_stacks_120" label="Potion Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3103" />
+			<component id="cd_tweaks_increase_scroll_stacks_120" label="Scroll Stacks of 120" engine="bg,eet,iwd,pst" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3113" />
 		</mod>
 		<group label="Stores">
-			<component id="cd_tweaks_stores_buy_all_items" label="Stores Purchase All Item Types" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
-			<component id="cd_tweaks_no_store_depreciation" label="No Depreciation in Stores" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
-			<component id="cd_tweaks_sellable_items" label="Sellable Items" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" level="vanillaPlus" />
+			<component id="cd_tweaks_stores_buy_all_items" label="Stores Purchase All Item Types" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3205" />
+			<component id="cd_tweaks_no_store_depreciation" label="No Depreciation in Stores" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3320" />
+			<component id="cd_tweaks_sellable_items" label="Sellable Items" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3200" />
 		</group>
 		<group label="Ammo recovery">
-			<component id="cd_tweaks_recover_ammo_25_enemy_only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" />
-			<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" />
+			<component id="cd_tweaks_recover_ammo_25_enemy_only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3264" />
+			<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3275" />
 		</group>
-		<component id="cd_tweaks_triple_class_hla_table" label="Triple-Class HLA Tables" modId="Tweaks-Anthology" />
-		<component id="cd_tweaks_no_traps_or_locks" label="Remove all traps" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" />
-		<component id="cd_tweaks_force_all_dialogue_to_pause" label="Force All Dialogue to Pause Game" engine="bg,eet,iwd,pst" level="vanillaPlus" modId="Tweaks-Anthology" />
-		<component id="cd_tweaks_sensible_regeneration_when_traveling" label="Sensible Regeneration When Traveling" engine="bg,eet,iwd,pst" level="vanillaPlus" modId="Tweaks-Anthology" />
-		<component id="cd_tweaks_reveal_city_areas" label="Reveal City Maps When Entering Area" engine="bg,eet,iwd,pst" level="vanillaPlus" modId="Tweaks-Anthology" />
+		<component id="cd_tweaks_triple_class_hla_table" label="Triple-Class HLA Tables" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2300" />
+		<component id="cd_tweaks_no_traps_or_locks" label="Remove all traps" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3130" />
+		<component id="cd_tweaks_force_all_dialogue_to_pause" label="Force All Dialogue to Pause Game" engine="bg,eet,iwd,pst" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_130" />
+		<component id="cd_tweaks_sensible_regeneration_when_traveling" label="Sensible Regeneration When Traveling" engine="bg,eet,iwd,pst" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3380" />
+		<component id="cd_tweaks_reveal_city_areas" label="Reveal City Maps When Entering Area" engine="bg,eet,iwd,pst" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1100" />
 		<component id="XGTCumulativeCasterLevels:100" label="Allow Caster Levels Bonuses and Penalties to Accumulate" level="fixes" modId="XGTCumulativeCasterLevels" stability="beta" displayIf="EEex:1" />
 	</adjustements>
 </installSequence>
