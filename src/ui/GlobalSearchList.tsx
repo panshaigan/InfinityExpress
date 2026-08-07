@@ -209,15 +209,18 @@ export function GlobalSearchList({
             />
             <div className="global-search-text">
               <span className="global-search-label">{label}</span>
-              <span className="global-search-path">{path}</span>
+              <span className="global-search-path">
+                {!hit.checkable ? 'Locked until requirements are met · ' : ''}
+                {path}
+              </span>
             </div>
-            {hit.component.attrs.required && (
+            {hit.checkable && hit.component.attrs.required && (
               <span className="badge">required</span>
             )}
-            {hit.component.attrs.noDisplay && (
+            {hit.checkable && hit.component.attrs.noDisplay && (
               <span className="badge">hidden</span>
             )}
-            {!hit.eligible && (
+            {!hit.checkable && (
               <span
                 className="badge badge-gated"
                 title="Needs another component first"
@@ -225,7 +228,7 @@ export function GlobalSearchList({
                 locked
               </span>
             )}
-            {hit.eligible && (
+            {hit.checkable && (
               <button
                 type="button"
                 className="global-search-jump"

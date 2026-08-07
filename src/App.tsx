@@ -42,7 +42,7 @@ import {
   parseModsCsv,
 } from './lib/mods/loadMods'
 import { buildRelationIndex, componentIdsForStation } from './lib/selection/relations'
-import { downloadInstallOrder } from './lib/export/installOrder'
+import { downloadInstallOrder, buildInstallOrderLines } from './lib/export/installOrder'
 import {
   cycleStation,
   cycleTabIndex,
@@ -77,7 +77,12 @@ import {
   writeRouteTipDismissed,
 } from './ui/RouteGuideTip'
 import { RouteCaughtUp } from './ui/RouteCaughtUp'
+import { ExportNotice } from './ui/ExportNotice'
 import { useScrolled } from './lib/ui/useScrolled'
+import {
+  readDetailCollapsed,
+  writeDetailCollapsed,
+} from './lib/ui/detailPanePrefs'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
 import {
   applySelectionPreset,
@@ -199,7 +204,10 @@ export default function App() {
   const [showRouteTip, setShowRouteTip] = useState(() => !readRouteTipDismissed())
   const [railCollapsed, setRailCollapsed] = useState(() => readRailCollapsed())
   const [hideCaughtUp, setHideCaughtUp] = useState(false)
-  const [exportFlash, setExportFlash] = useState<string | null>(null)
+  const [detailCollapsed, setDetailCollapsed] = useState(() => readDetailCollapsed())
+  const [exportNotice, setExportNotice] = useState<{ lineCount: number } | null>(
+    null,
+  )
   const {
     scrolled: listScrolled,
     onScroll: onListScroll,
@@ -825,9 +833,18 @@ export default function App() {
     })
   }
 
+  function toggleDetailCollapsed() {
+    setDetailCollapsed((prev) => {
+      const next = !prev
+      writeDetailCollapsed(next)
+      return next
+    })
+  }
+
   function handleExport() {
+    const lineCount = buildInstallOrderLines(model, selectedIds).length
     downloadInstallOrder(model, selectedIds)
-    setExportFlash('Downloaded install-order.txt')
+    setExportNotice({ lineCount })
   }
 
   /** Mark current station finished, then advance past it to the next unfinished screen. */
@@ -849,10 +866,10 @@ export default function App() {
   }, [activeStation, contentMainKey, contentSubKey, resetListScroll])
 
   useEffect(() => {
-    if (!exportFlash) return
-    const id = window.setTimeout(() => setExportFlash(null), 2200)
+    if (!exportNotice) return
+    const id = window.setTimeout(() => setExportNotice(null), 4500)
     return () => window.clearTimeout(id)
-  }, [exportFlash])
+  }, [exportNotice])
 
   function selectEngine() {
     setActiveStation('engine')
@@ -951,6 +968,16 @@ export default function App() {
       if (
         !isTypingTarget(e.target) &&
         !keyboardHelpOpen &&
+        e.key === ';' &&
+        showDetail
+      ) {
+        e.preventDefault()
+        toggleDetailCollapsed()
+        return
+      }
+      if (
+        !isTypingTarget(e.target) &&
+        !keyboardHelpOpen &&
         (e.key === '?' || (e.shiftKey && e.key === '/'))
       ) {
         e.preventDefault()
@@ -1012,6 +1039,7 @@ export default function App() {
     activeStation,
     keyboardHelpOpen,
     railCollapsed,
+    showDetail,
     visibleStations,
     contentMainBranches,
     contentSubBranches,
@@ -1067,11 +1095,6 @@ export default function App() {
           >
             Export
           </button>
-          {exportFlash && (
-            <span className="export-flash" role="status">
-              {exportFlash}
-            </span>
-          )}
         </div>
       </header>
 
@@ -1115,7 +1138,16 @@ export default function App() {
             onExport={handleExport}
             onDismiss={() => setHideCaughtUp(true)}
           />
-          <div className={`workspace${showDetail ? '' : ' engine-only'}`}>
+          <ExportNotice
+            visible={exportNotice != null && !showRouteTip}
+            lineCount={exportNotice?.lineCount ?? 0}
+            onDismiss={() => setExportNotice(null)}
+          />
+          <div
+            className={`workspace${showDetail ? '' : ' engine-only'}${
+              showDetail && detailCollapsed ? ' detail-collapsed' : ''
+            }`}
+          >
             <div className={`list-pane${listScrolled ? ' is-scrolled' : ''}`}>
               {activeStation === 'engine' || !game ? (
                 <div className="list-pane-scroll engine-pane-scroll" onScroll={onListScroll}>
@@ -1257,14 +1289,44 @@ export default function App() {
             </div>
 
             {showDetail && (
-              <aside className="detail-pane" aria-label="Component details">
-                <div className="detail-pane-scroll">
-                  <ComponentDetail
-                    display={focusedDisplay}
-                    model={model}
-                    onNavigateToComponent={onNavigateToComponent}
-                  />
-                </div>
+              <aside
+                className={`detail-pane${detailCollapsed ? ' collapsed' : ''}`}
+                aria-label="Component details"
+              >
+                {detailCollapsed ? (
+                  <button
+                    type="button"
+                    className="detail-pane-expand"
+                    onClick={toggleDetailCollapsed}
+                    title="Show details (;)"
+                    aria-expanded={false}
+                  >
+                    <span className="detail-pane-expand-label">Details</span>
+                  </button>
+                ) : (
+                  <>
+                    <div className="detail-pane-chrome">
+                      <span className="detail-pane-chrome-label">Details</span>
+                      <button
+                        type="button"
+                        className="detail-pane-collapse"
+                        onClick={toggleDetailCollapsed}
+                        title="Hide details (;)"
+                        aria-expanded={true}
+                        aria-label="Hide details"
+                      >
+                        »
+                      </button>
+                    </div>
+                    <div className="detail-pane-scroll">
+                      <ComponentDetail
+                        display={focusedDisplay}
+                        model={model}
+                        onNavigateToComponent={onNavigateToComponent}
+                      />
+                    </div>
+                  </>
+                )}
               </aside>
             )}
           </div>
