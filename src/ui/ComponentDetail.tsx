@@ -15,6 +15,7 @@ import {
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import {
   splitTags,
+  stabilityBadgeClass,
   stabilityBadgeLabel,
 } from '../lib/selection/filterDisplayTree'
 import {
@@ -27,6 +28,7 @@ import {
   resolveModType,
 } from '../lib/mods/loadMods'
 import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
+import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { isHttpUrl } from '../lib/url'
 
 const modsByCodename = parseModsCsv(modsCsv)
@@ -163,9 +165,9 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
   const attrs = source.attrs
 
   const codename = resolveModLookupKey(model, source)
-  const stabilityLabel = stabilityBadgeLabel(
-    resolveModStability(model, modsByCodename, source),
-  )
+  const stability = resolveModStability(model, modsByCodename, source)
+  const stabilityLabel = stabilityBadgeLabel(stability)
+  const stabilityClass = stabilityBadgeClass(stability)
   const mod = codename ? modsByCodename.get(codename) : undefined
   const modType = resolveModType(model, modsByCodename, source, {
     asBranch: isModTypeBranchDisplay(model, node, {
@@ -190,17 +192,23 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
         {modType && (
           <span className={modTypeBadgeClass(modType)}>{modTypeBadgeLabel(modType)}</span>
         )}
-        {stabilityLabel && <span className="badge">{stabilityLabel}</span>}
-        {attrs.required && <span className="badge">required</span>}
-        {attrs.noDisplay && <span className="badge">hidden</span>}
+        {stabilityLabel && stabilityClass && (
+          <span className={stabilityClass}>{stabilityLabel}</span>
+        )}
+        {attrs.required && (
+          <span className={statusBadgeClass('required')}>required</span>
+        )}
+        {attrs.noDisplay && (
+          <span className={statusBadgeClass('hidden')}>hidden</span>
+        )}
         {!collapsedComponent && attrs.core && (
-          <span className="badge">core</span>
+          <span className={statusBadgeClass('core')}>core</span>
         )}
         {!collapsedComponent && attrs.default && (
-          <span className="badge">default</span>
+          <span className={statusBadgeClass('default')}>default</span>
         )}
         {tagList.map((tag) => (
-          <span key={tag} className="badge">
+          <span key={tag} className={statusBadgeClass('tag')}>
             {tag}
           </span>
         ))}

@@ -1195,12 +1195,14 @@ body {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--accent);
-  border: 1px solid var(--accent);
+  color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--muted) 55%, var(--line));
   border-radius: 3px;
   padding: 0 0.3rem;
   white-space: nowrap;
 }
+
+/* —— Level badges (cool ladder; difficulty off-ladder) —— */
 
 .badge-level {
   text-transform: none;
@@ -1209,18 +1211,23 @@ body {
 }
 
 .badge-level-fixes {
-  color: #8eb4d4;
-  border-color: #8eb4d4;
-}
-
-.badge-level-vanillaPlus {
-  color: #9bc48a;
-  border-color: #9bc48a;
+  color: #7ba3c9;
+  border-color: #7ba3c9;
 }
 
 .badge-level-restoration {
-  color: #c4a86a;
-  border-color: #c4a86a;
+  color: #d0b06a;
+  border-color: #d0b06a;
+}
+
+.badge-level-vanillaPlus {
+  color: #7cb87a;
+  border-color: #7cb87a;
+}
+
+.badge-level-blendWell {
+  color: #5faea4;
+  border-color: #5faea4;
 }
 
 .badge-level-restructure {
@@ -1228,34 +1235,115 @@ body {
   border-color: #c47a6a;
 }
 
-.badge-level-blendWell {
-  color: #8ab8b0;
-  border-color: #8ab8b0;
-}
-
 .badge-level-extended {
-  color: #b89ad4;
-  border-color: #b89ad4;
-}
-
-.badge-level-quality {
-  color: #b89ad4;
-  border-color: #b89ad4;
+  color: #a78bdb;
+  border-color: #a78bdb;
 }
 
 .badge-level-lowerDifficulty {
-  color: #c4a35a;
-  border-color: #c4a35a;
+  color: #7bc9a8;
+  border-color: #7bc9a8;
 }
 
 .badge-level-higherDifficulty {
-  color: #d48a8a;
-  border-color: #d48a8a;
+  color: #e07070;
+  border-color: #e07070;
 }
 
 .badge-level-unknown {
   color: var(--muted);
   border-color: var(--muted);
+}
+
+/* —— Mod type (slate family, weight steps) —— */
+
+.badge-mod-type {
+  font-weight: 600;
+}
+
+.badge-mod-type-major {
+  color: #9bb0d4;
+  border-color: #9bb0d4;
+  background: color-mix(in srgb, #9bb0d4 16%, transparent);
+}
+
+.badge-mod-type-medium {
+  color: #8a9cb8;
+  border-color: #8a9cb8;
+}
+
+.badge-mod-type-minor {
+  color: #6f7f96;
+  border-color: #6f7f96;
+}
+
+.badge-mod-type-compilation {
+  color: #7a8fba;
+  border-color: #7a8fba;
+}
+
+.badge-mod-type-unknown {
+  color: #6f7f96;
+  border-color: #6f7f96;
+}
+
+/* —— Stability warnings (filled) —— */
+
+.badge-stability {
+  font-weight: 700;
+  border-style: solid;
+}
+
+.badge-stability-beta {
+  color: #1a1510;
+  border-color: #d4a84b;
+  background: #d4a84b;
+}
+
+.badge-stability-alpha {
+  color: #1a1510;
+  border-color: #c96b3a;
+  background: #c96b3a;
+}
+
+.badge-stability-other {
+  color: #1a1510;
+  border-color: #c4a35a;
+  background: #c4a35a;
+}
+
+/* —— Status / structure —— */
+
+.badge-status-required {
+  color: #d47a6a;
+  border-color: #d47a6a;
+  font-weight: 600;
+}
+
+.badge-status-chooseOne {
+  color: #7b8fd4;
+  border-color: #7b8fd4;
+}
+
+.badge-status-core,
+.badge-status-default {
+  color: #a89880;
+  border-color: color-mix(in srgb, #a89880 70%, var(--line));
+}
+
+.badge-status-hidden {
+  color: var(--muted);
+  border-color: color-mix(in srgb, var(--muted) 45%, var(--line));
+}
+
+/* —— Freeform tags (quietest) —— */
+
+.badge-tag {
+  color: var(--muted);
+  border-color: color-mix(in srgb, var(--muted) 40%, var(--line));
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.02em;
 }
 
 .empty {

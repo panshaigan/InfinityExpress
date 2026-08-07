@@ -10,6 +10,7 @@ import {
   cycleUncheckedFilter,
   filterDisplayTree,
   normalizeStability,
+  stabilityBadgeClass,
   stabilityBadgeLabel,
   uncheckedFilterLabel,
   type FilterCriteria,
@@ -167,6 +168,20 @@ describe('stability labels', () => {
     expect(stabilityBadgeLabel('beta')).toBe('Beta')
     expect(stabilityBadgeLabel(undefined)).toBeNull()
     expect(stabilityBadgeLabel('released')).toBeNull()
+  })
+
+  it('maps non-released tokens to stability badge classes', () => {
+    expect(stabilityBadgeClass('beta')).toBe(
+      'badge badge-stability badge-stability-beta',
+    )
+    expect(stabilityBadgeClass('alpha')).toBe(
+      'badge badge-stability badge-stability-alpha',
+    )
+    expect(stabilityBadgeClass('wip')).toBe(
+      'badge badge-stability badge-stability-other',
+    )
+    expect(stabilityBadgeClass(undefined)).toBeNull()
+    expect(stabilityBadgeClass('released')).toBeNull()
   })
 })
 

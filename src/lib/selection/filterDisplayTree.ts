@@ -171,6 +171,17 @@ export function stabilityBadgeLabel(stability: string | undefined): string | nul
   return capitalizeStabilityLabel(n)
 }
 
+/**
+ * CSS classes for a non-released stability badge; null when released/missing.
+ * Known tokens: alpha, beta; anything else uses `other`.
+ */
+export function stabilityBadgeClass(stability: string | undefined): string | null {
+  const n = normalizeStability(stability)
+  if (n === STABILITY_RELEASED) return null
+  const key = n === 'alpha' || n === 'beta' ? n : 'other'
+  return `badge badge-stability badge-stability-${key}`
+}
+
 export function filtersNeedIncludeHidden(criteria: FilterCriteria): boolean {
   return criteria.showHidden
 }

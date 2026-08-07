@@ -19,6 +19,7 @@ import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import {
   splitTags,
+  stabilityBadgeClass,
   stabilityBadgeLabel,
 } from '../lib/selection/filterDisplayTree'
 import {
@@ -29,6 +30,7 @@ import {
   shouldShowModTypeBadge,
 } from '../lib/mods/loadMods'
 import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
+import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { isTypingTarget } from '../lib/ui/chromeHotkeys'
 import {
   buildTreeKeyboardContext,
@@ -244,9 +246,9 @@ function CheckboxRow({
     (collapsedComponent ? collapsedComponent.attrs.label : undefined) ??
     node.tag
   const level = collapsedComponent?.effectiveLevel ?? node.effectiveLevel
-  const stabilityLabel = stabilityBadgeLabel(
-    resolveModStability(model, modsByCodename, source),
-  )
+  const stability = resolveModStability(model, modsByCodename, source)
+  const stabilityLabel = stabilityBadgeLabel(stability)
+  const stabilityClass = stabilityBadgeClass(stability)
   const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
   const collapsedToSingle = Boolean(collapsedComponent)
   const branchOpts = { collapsedToSingleComponent: collapsedToSingle }
@@ -436,24 +438,32 @@ function CheckboxRow({
               </button>
             </span>
           )}
-          {isAlternatives && <span className="badge">choose one</span>}
+          {isAlternatives && (
+            <span className={statusBadgeClass('chooseOne')}>choose one</span>
+          )}
           {level && (
             <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
           {modType && (
             <span className={modTypeBadgeClass(modType)}>{modTypeBadgeLabel(modType)}</span>
           )}
-          {stabilityLabel && <span className="badge">{stabilityLabel}</span>}
-          {attrs.required && <span className="badge">required</span>}
-          {attrs.noDisplay && <span className="badge">hidden</span>}
+          {stabilityLabel && stabilityClass && (
+            <span className={stabilityClass}>{stabilityLabel}</span>
+          )}
+          {attrs.required && (
+            <span className={statusBadgeClass('required')}>required</span>
+          )}
+          {attrs.noDisplay && (
+            <span className={statusBadgeClass('hidden')}>hidden</span>
+          )}
           {!collapsedComponent && attrs.core && (
-            <span className="badge">core</span>
+            <span className={statusBadgeClass('core')}>core</span>
           )}
           {!collapsedComponent && attrs.default && (
-            <span className="badge">default</span>
+            <span className={statusBadgeClass('default')}>default</span>
           )}
           {tagList.map((tag) => (
-            <span key={tag} className="badge">
+            <span key={tag} className={statusBadgeClass('tag')}>
               {tag}
             </span>
           ))}
