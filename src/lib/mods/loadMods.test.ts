@@ -355,6 +355,8 @@ describe('resolveModType', () => {
     [
       HEADER,
       'MyMod,QUEST,"https://x",BG2,,,2020-01-01,"v1",100,Author,,major',
+      'MedMod,QUEST,"https://x",BG2,,,2020-01-01,"v1",100,Author,,medium',
+      'MinMod,QUEST,"https://x",BG2,,,2020-01-01,"v1",100,Author,,minor',
       'CompMod,QUEST,"https://x",BG2,,,2020-01-01,"v1",100,Author,,compilation',
       'NoType,NPC,"https://x",BG2,,,2020-01-01,"v1",100,Author,,-',
       'EmptyType,NPC,"https://x",BG2,,,2020-01-01,"v1",100,Author,,',
@@ -371,29 +373,74 @@ describe('resolveModType', () => {
     expect(resolveModType(modelWith(mod), modsByCodename, mod)).toBe('major')
   })
 
-  it('keeps compilation on mod rows', () => {
-    const mod = node({
+  it('keeps catalog types on mod rows', () => {
+    const major = node({
       key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'MyMod' },
+    })
+    const medium = node({
+      key: 'm2',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'MedMod' },
+    })
+    const compilation = node({
+      key: 'm3',
       tag: 'mod',
       kind: 'container',
       attrs: { id: 'CompMod' },
     })
-    expect(resolveModType(modelWith(mod), modsByCodename, mod)).toBe('compilation')
+    expect(resolveModType(modelWith(major), modsByCodename, major)).toBe('major')
+    expect(resolveModType(modelWith(medium), modsByCodename, medium)).toBe('medium')
+    expect(resolveModType(modelWith(compilation), modsByCodename, compilation)).toBe(
+      'compilation',
+    )
   })
 
-  it('remaps compilation to minor for component rows', () => {
-    const comp = node({
+  it('degrades types for component rows', () => {
+    const fromMajor = node({
       key: 'c1',
       tag: 'component',
       kind: 'component',
       componentId: '0',
       orderIndex: 0,
+      attrs: { modId: 'MyMod' },
+    } as TreeNode)
+    const fromMedium = node({
+      key: 'c2',
+      tag: 'component',
+      kind: 'component',
+      componentId: '1',
+      orderIndex: 1,
+      attrs: { modId: 'MedMod' },
+    } as TreeNode)
+    const fromCompilation = node({
+      key: 'c3',
+      tag: 'component',
+      kind: 'component',
+      componentId: '2',
+      orderIndex: 2,
       attrs: { modId: 'CompMod' },
     } as TreeNode)
-    expect(resolveModType(modelWith(comp), modsByCodename, comp)).toBe('minor')
+    const fromMinor = node({
+      key: 'c4',
+      tag: 'component',
+      kind: 'component',
+      componentId: '3',
+      orderIndex: 3,
+      attrs: { modId: 'MinMod' },
+    } as TreeNode)
+    expect(resolveModType(modelWith(fromMajor), modsByCodename, fromMajor)).toBe('medium')
+    expect(resolveModType(modelWith(fromMedium), modsByCodename, fromMedium)).toBe('minor')
+    expect(resolveModType(modelWith(fromCompilation), modsByCodename, fromCompilation)).toBe(
+      'minor',
+    )
+    expect(resolveModType(modelWith(fromMinor), modsByCodename, fromMinor)).toBe('minor')
   })
 
-  it('keeps compilation when lookup is a component but display is a mod', () => {
+  it('keeps catalog type when lookup is a component but display is a mod', () => {
     const comp = node({
       key: 'c1',
       tag: 'component',

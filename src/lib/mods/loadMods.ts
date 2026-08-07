@@ -206,10 +206,17 @@ export function resolveModLookupKey(
   return undefined
 }
 
+/** Type shown for non-`<mod>` rows (one step down from the catalog value). */
+const COMPONENT_TYPE_DEGRADE: ReadonlyMap<string, string> = new Map([
+  ['compilation', 'minor'],
+  ['major', 'medium'],
+  ['medium', 'minor'],
+])
+
 /**
  * Resolve mods.csv Type for display.
  * `lookupNode` supplies the codename; `displayNode` (defaults to lookup) controls
- * remapping: `compilation` is only shown on `<mod>` rows, otherwise as `minor`.
+ * remapping: on non-`<mod>` rows, degrade compilation→minor, major→medium, medium→minor.
  */
 export function resolveModType(
   model: InstallSequenceModel,
@@ -221,6 +228,6 @@ export function resolveModType(
   if (!codename) return undefined
   const type = modsByCodename.get(codename)?.type
   if (!hasModField(type)) return undefined
-  if (type === 'compilation' && displayNode.tag !== 'mod') return 'minor'
-  return type
+  if (displayNode.tag === 'mod') return type
+  return COMPONENT_TYPE_DEGRADE.get(type) ?? type
 }
