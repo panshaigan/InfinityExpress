@@ -615,7 +615,7 @@
 						<component id="L#-SHARTEELBG2EE-PIDS" label="Player Initiated Dialogues (PIDs)" />
 					</mod>
 					<component id="zdbae:0" label="Baeloth" modId="BaeBG2" tags="beamdog" />
-					<mod id="mkhiinbg2" label="M'Khiin" tags="beamdog">
+					<mod id="mkhiinbg2" label="M'Khiin" tags="beamdog" stability="beta">
 						<component id="mkhiinbg2:0" label="M'Khiin" core="1" />
 						<component id="mkhiinbg2:10" label="Artastrophe Portrait" alwaysIf="mkhiinbg2:0" noDisplay="1" />
 					</mod>
