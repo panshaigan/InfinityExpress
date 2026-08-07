@@ -206,14 +206,21 @@ export function resolveModLookupKey(
   return undefined
 }
 
-/** Resolve mods.csv Type for a tree node, or undefined when absent. */
+/**
+ * Resolve mods.csv Type for display.
+ * `lookupNode` supplies the codename; `displayNode` (defaults to lookup) controls
+ * remapping: `compilation` is only shown on `<mod>` rows, otherwise as `minor`.
+ */
 export function resolveModType(
   model: InstallSequenceModel,
   modsByCodename: ReadonlyMap<string, ModInfo>,
-  node: TreeNode,
+  lookupNode: TreeNode,
+  displayNode: TreeNode = lookupNode,
 ): string | undefined {
-  const codename = resolveModLookupKey(model, node)
+  const codename = resolveModLookupKey(model, lookupNode)
   if (!codename) return undefined
   const type = modsByCodename.get(codename)?.type
-  return hasModField(type) ? type : undefined
+  if (!hasModField(type)) return undefined
+  if (type === 'compilation' && displayNode.tag !== 'mod') return 'minor'
+  return type
 }

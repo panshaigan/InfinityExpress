@@ -355,6 +355,7 @@ describe('resolveModType', () => {
     [
       HEADER,
       'MyMod,QUEST,"https://x",BG2,,,2020-01-01,"v1",100,Author,,major',
+      'CompMod,QUEST,"https://x",BG2,,,2020-01-01,"v1",100,Author,,compilation',
       'NoType,NPC,"https://x",BG2,,,2020-01-01,"v1",100,Author,,-',
       'EmptyType,NPC,"https://x",BG2,,,2020-01-01,"v1",100,Author,,',
     ].join('\n'),
@@ -368,6 +369,49 @@ describe('resolveModType', () => {
       attrs: { id: 'MyMod' },
     })
     expect(resolveModType(modelWith(mod), modsByCodename, mod)).toBe('major')
+  })
+
+  it('keeps compilation on mod rows', () => {
+    const mod = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'CompMod' },
+    })
+    expect(resolveModType(modelWith(mod), modsByCodename, mod)).toBe('compilation')
+  })
+
+  it('remaps compilation to minor for component rows', () => {
+    const comp = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+      attrs: { modId: 'CompMod' },
+    } as TreeNode)
+    expect(resolveModType(modelWith(comp), modsByCodename, comp)).toBe('minor')
+  })
+
+  it('keeps compilation when lookup is a component but display is a mod', () => {
+    const comp = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+      parentKey: 'm1',
+    } as TreeNode)
+    const mod = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'CompMod' },
+      children: [comp],
+    })
+    expect(
+      resolveModType(modelWith(mod, comp), modsByCodename, comp, mod),
+    ).toBe('compilation')
   })
 
   it('returns undefined when codename is missing', () => {

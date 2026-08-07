@@ -109,7 +109,7 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
 
   const codename = resolveModLookupKey(model, source)
   const mod = codename ? modsByCodename.get(codename) : undefined
-  const modType = resolveModType(model, modsByCodename, source)
+  const modType = resolveModType(model, modsByCodename, source, node)
   const componentReadme = attrs.readme
   const modReadme = mod?.readme
 

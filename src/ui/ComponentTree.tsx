@@ -226,7 +226,7 @@ function CheckboxRow({
     modTypeBadgeSection &&
     MOD_TYPE_BADGE_SECTIONS.has(modTypeBadgeSection) &&
     shouldShowModTypeBadge(model, node)
-      ? resolveModType(model, modsByCodename, source)
+      ? resolveModType(model, modsByCodename, source, node)
       : undefined
 
   function handleFoldClick(e: MouseEvent) {
