@@ -284,11 +284,38 @@ function authorPasses(
   return Boolean(author) && criteria.authors.has(author)
 }
 
+/** Display label used for search (attrs.label, else tag name). */
+function displaySearchLabel(display: DisplayNode): string {
+  return (display.node.attrs.label ?? display.node.tag).toLowerCase()
+}
+
+/** True when the leaf's own label/id/modId/desc contains `q` (already lowercased). */
+function leafOwnSearchMatches(display: DisplayNode, q: string): boolean {
+  const source = displaySource(display)
+  const attrs = source.attrs
+  const label = (
+    attrs.label ??
+    display.node.attrs.label ??
+    display.node.tag
+  ).toLowerCase()
+  const id = isComponentNode(source) ? source.componentId.toLowerCase() : ''
+  const modId = (attrs.modId ?? '').toLowerCase()
+  const desc = (attrs.desc ?? display.node.attrs.desc ?? '').toLowerCase()
+  return (
+    label.includes(q) ||
+    id.includes(q) ||
+    modId.includes(q) ||
+    desc.includes(q)
+  )
+}
+
 function leafMatchesCriteria(
   display: DisplayNode,
   criteria: FilterCriteria,
   ctx: FilterModContext | undefined,
   seed: Omit<FilterSeedOptions, 'tagOptions'>,
+  /** True when an ancestor container label already matched the search query. */
+  searchHitFromAncestor = false,
 ): boolean {
   const source = displaySource(display)
   const attrs = source.attrs
@@ -317,23 +344,8 @@ function leafMatchesCriteria(
   if (!authorPasses(mod, criteria, seed.authorOptions ?? [])) return false
 
   const q = criteria.search.trim().toLowerCase()
-  if (q) {
-    const label = (
-      attrs.label ??
-      display.node.attrs.label ??
-      display.node.tag
-    ).toLowerCase()
-    const id = isComponentNode(source) ? source.componentId.toLowerCase() : ''
-    const modId = (attrs.modId ?? '').toLowerCase()
-    const desc = (attrs.desc ?? display.node.attrs.desc ?? '').toLowerCase()
-    if (
-      !label.includes(q) &&
-      !id.includes(q) &&
-      !modId.includes(q) &&
-      !desc.includes(q)
-    ) {
-      return false
-    }
+  if (q && !searchHitFromAncestor && !leafOwnSearchMatches(display, q)) {
+    return false
   }
 
   return true
@@ -359,6 +371,7 @@ function alternativesHasUncheckedDisplayIfOption(
 /**
  * Prune display tree by filter criteria. Keep ancestors when any descendant matches.
  * Leaf / collapsed rows must match; containers stay only as scaffolding for matches.
+ * Search matches leaf label/id/modId/desc, or any ancestor container label.
  *
  * Unchecked filter modes:
  * - `withOptions` — drop checked regular rows; keep all `<alternatives>` groups
@@ -376,17 +389,26 @@ export function filterDisplayTree(
   ctx?: FilterModContext,
   seed: Omit<FilterSeedOptions, 'tagOptions'> = {},
   selection?: FilterSelectionContext,
-  options: { skipSelectionFilter?: boolean; underDisplayIf?: boolean } = {},
+  options: {
+    skipSelectionFilter?: boolean
+    underDisplayIf?: boolean
+    /** Ancestor container label already matched the search query. */
+    searchHitFromAncestor?: boolean
+  } = {},
 ): DisplayNode[] {
   const result: DisplayNode[] = []
   const mode = criteria.uncheckedFilter
   const applySelection =
     mode !== 'off' && !options.skipSelectionFilter && selection != null
   const underDisplayIf = Boolean(options.underDisplayIf)
+  const q = criteria.search.trim().toLowerCase()
 
   for (const display of nodes) {
     const gatedHere =
       underDisplayIf || Boolean(display.node.attrs.displayIf?.trim())
+    const searchHitFromAncestor =
+      Boolean(options.searchHitFromAncestor) ||
+      (q !== '' && displaySearchLabel(display).includes(q))
 
     if (applySelection && display.node.kind === 'alternatives') {
       if (
@@ -409,7 +431,11 @@ export function filterDisplayTree(
         ctx,
         seed,
         selection,
-        { skipSelectionFilter: true, underDisplayIf: gatedHere },
+        {
+          skipSelectionFilter: true,
+          underDisplayIf: gatedHere,
+          searchHitFromAncestor,
+        },
       )
       if (filteredChildren.length > 0) {
         result.push({ ...display, children: filteredChildren })
@@ -420,7 +446,17 @@ export function filterDisplayTree(
     const isLeaf = display.children.length === 0 || Boolean(display.collapsedComponent)
 
     if (isLeaf) {
-      if (!leafMatchesCriteria(display, criteria, ctx, seed)) continue
+      if (
+        !leafMatchesCriteria(
+          display,
+          criteria,
+          ctx,
+          seed,
+          Boolean(options.searchHitFromAncestor),
+        )
+      ) {
+        continue
+      }
       if (
         applySelection &&
         displaySelectionState(display, selection.selectedIds, selection.game) ===
@@ -441,7 +477,11 @@ export function filterDisplayTree(
       ctx,
       seed,
       selection,
-      { ...options, underDisplayIf: gatedHere },
+      {
+        ...options,
+        underDisplayIf: gatedHere,
+        searchHitFromAncestor,
+      },
     )
     if (filteredChildren.length > 0) {
       result.push({ ...display, children: filteredChildren })

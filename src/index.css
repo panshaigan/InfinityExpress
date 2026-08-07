@@ -1212,6 +1212,16 @@ body {
   word-break: break-word;
 }
 
+.detail-meta dd.detail-name-value {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.detail-meta dd.detail-name-value .detail-copy-name {
+  margin-top: 0;
+}
+
 .detail-meta dd.placeholder {
   color: var(--muted);
   font-style: italic;

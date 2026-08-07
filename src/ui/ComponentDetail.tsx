@@ -37,14 +37,12 @@ interface Props {
   onNavigateToComponent?: (componentId: string) => void
 }
 
-type TitleSource = 'name' | 'label' | 'tag'
+type TitleSource = 'label' | 'tag'
 
 function resolveDetailTitle(
   node: TreeNode,
   collapsed?: ComponentNode,
 ): { text: string; source: TitleSource } {
-  const name = node.attrs.name ?? collapsed?.attrs.name
-  if (name) return { text: name, source: 'name' }
   const label = node.attrs.label ?? collapsed?.attrs.label
   if (label) return { text: label, source: 'label' }
   return { text: node.tag, source: 'tag' }
@@ -184,7 +182,6 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
     <article className="component-detail">
       <div className="detail-title-row">
         <h3 className="detail-title">{title.text}</h3>
-        {title.source === 'name' && <CopyNameButton value={title.text} />}
       </div>
       <div className="detail-badges">
         {level && (
@@ -303,6 +300,15 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
             <dt>Component id</dt>
             <dd>
               <code>{componentId}</code>
+            </dd>
+          </>
+        )}
+        {attrs.name && (
+          <>
+            <dt>Name</dt>
+            <dd className="detail-name-value">
+              <span>{attrs.name}</span>
+              <CopyNameButton value={attrs.name} />
             </dd>
           </>
         )}

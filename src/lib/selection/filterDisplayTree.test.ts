@@ -339,6 +339,56 @@ describe('filterDisplayTree', () => {
     ).toEqual(['reqVis'])
   })
 
+  it('searches parent node labels and keeps matching descendants', () => {
+    expect(ids(filterDisplayTree(tree, criteria({ search: 'g1' })))).toEqual([
+      'a',
+      'b',
+      'c',
+      'cLow',
+      'e',
+      'f',
+      'nolevel',
+    ])
+    expect(
+      ids(
+        filterDisplayTree(
+          tree,
+          criteria({
+            search: 'g1',
+            maxLevel: 'fixes',
+            levelExact: true,
+            includeLowerDifficulty: false,
+            includeHigherDifficulty: false,
+          }),
+        ),
+      ),
+    ).toEqual(['a'])
+
+    const nested: DisplayNode[] = [
+      group(
+        'outer',
+        [
+          group(
+            'inner-mod',
+            [
+              component('x', { label: 'Leaf One', effectiveLevel: 'fixes' }),
+              component('y', { label: 'Leaf Two', effectiveLevel: 'extended' }),
+            ],
+            'Reflections of Destiny',
+          ),
+          component('z', { label: 'Sibling', effectiveLevel: 'fixes' }),
+        ],
+        'Content',
+      ),
+    ]
+    expect(
+      ids(filterDisplayTree(nested, criteria({ search: 'destiny' }))),
+    ).toEqual(['x', 'y'])
+    expect(
+      ids(filterDisplayTree(nested, criteria({ search: 'content' }))),
+    ).toEqual(['x', 'y', 'z'])
+  })
+
   it('keeps beta and released components visible (no stability filter)', () => {
     const { model } = parseInstallSequence(`<?xml version="1.0"?>
 <installSequence>
