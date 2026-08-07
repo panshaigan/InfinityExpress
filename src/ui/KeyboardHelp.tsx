@@ -7,6 +7,7 @@ interface Props {
 
 const ROWS: { keys: string; action: string }[] = [
   { keys: '?', action: 'Open this keys guide' },
+  { keys: '\\', action: 'Collapse / expand the station rail' },
   { keys: '[ ]', action: 'Previous / next station (rail order)' },
   { keys: '/', action: 'Jump to search in this window' },
   { keys: 'Esc', action: 'Close filter panel or leave search' },

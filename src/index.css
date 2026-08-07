@@ -240,6 +240,49 @@ body {
   flex-shrink: 0;
   min-width: 8rem;
   width: 8.75rem;
+  transition: width var(--ease), min-width var(--ease);
+}
+
+.station-nav.collapsed {
+  width: 3.35rem;
+  min-width: 3.35rem;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+}
+
+.station-nav-chrome {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.2rem;
+  flex-shrink: 0;
+}
+
+.station-nav.collapsed .station-nav-chrome {
+  justify-content: center;
+}
+
+.station-nav-collapse {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.station-nav-collapse:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+  border-color: var(--line);
+}
+
+.station-nav-collapse:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .station-nav-scroll {
@@ -272,6 +315,26 @@ body {
   transition: background var(--ease), border-color var(--ease), color var(--ease);
 }
 
+.station-nav.collapsed button:not(.station-nav-collapse) {
+  justify-content: center;
+  padding: 0.4rem 0.15rem;
+  border-right-width: 2px;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+}
+
+.station-nav.collapsed .station-nav-label {
+  overflow: visible;
+  text-overflow: clip;
+  max-width: none;
+}
+
+.station-nav.collapsed .station-finished-mark {
+  font-size: 0.7em;
+}
+
 .station-nav button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
@@ -287,11 +350,30 @@ body {
   flex-shrink: 0;
 }
 
+.station-nav.collapsed .station-nav-progress {
+  padding-left: 0.15rem;
+  padding-right: 0.15rem;
+  align-items: center;
+}
+
+.station-nav-progress.complete .station-nav-progress-fill {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ok) 70%, var(--accent)),
+    var(--ok)
+  );
+}
+
+.station-nav-progress.complete .station-nav-progress-label {
+  color: color-mix(in srgb, var(--ok) 70%, var(--ink));
+}
+
 .station-nav-progress-bar {
   height: 3px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--line) 80%, transparent);
   overflow: hidden;
+  width: 100%;
 }
 
 .station-nav-progress-fill {
@@ -309,6 +391,11 @@ body {
   font-size: 0.7rem;
   color: var(--muted);
   letter-spacing: 0.03em;
+}
+
+.station-nav.collapsed .station-nav-progress-label {
+  font-size: 0.62rem;
+  text-align: center;
 }
 
 .station-nav-label {
@@ -824,6 +911,48 @@ body {
   border-color: var(--accent);
 }
 
+.route-caught-up {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-shrink: 0;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ok) 18%, transparent),
+      color-mix(in srgb, var(--panel) 75%, transparent) 60%
+    );
+}
+
+.route-caught-up-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.route-caught-up-title {
+  margin: 0 0 0.15rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--ink) 85%, var(--ok));
+}
+
+.route-caught-up-body {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.route-caught-up-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
 .export-flash {
   position: absolute;
   right: 1rem;
@@ -1116,7 +1245,10 @@ body {
 
 .branch-nav-row button:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 1px;
+  outline-offset: 2px;
+  background: var(--accent-soft);
+  border-bottom-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 .list-pane-scroll {
@@ -2181,9 +2313,23 @@ body {
     padding: 0.3rem 0.25rem;
   }
 
-  .station-nav button {
+  .station-nav.collapsed {
+    width: 3.1rem;
+    min-width: 3.1rem;
+  }
+
+  .station-nav button:not(.station-nav-collapse) {
     padding: 0.35rem 0.4rem;
     font-size: 0.78rem;
+  }
+
+  .station-nav.collapsed button:not(.station-nav-collapse) {
+    padding: 0.35rem 0.1rem;
+    font-size: 0.64rem;
+  }
+
+  .route-caught-up {
+    flex-wrap: wrap;
   }
 
   .top-bar {

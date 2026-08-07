@@ -59,7 +59,7 @@ import {
 import {
   buildGlobalSearchResults,
 } from './lib/selection/globalSearch'
-import { StationNav, type AppNavSlot } from './ui/StationNav'
+import { StationNav, type AppNavSlot, readRailCollapsed, writeRailCollapsed } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
@@ -76,6 +76,7 @@ import {
   readRouteTipDismissed,
   writeRouteTipDismissed,
 } from './ui/RouteGuideTip'
+import { RouteCaughtUp } from './ui/RouteCaughtUp'
 import { useScrolled } from './lib/ui/useScrolled'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
 import {
@@ -196,6 +197,8 @@ export default function App() {
   const [contentSubTag, setContentSubTag] = useState<string | null>(null)
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false)
   const [showRouteTip, setShowRouteTip] = useState(() => !readRouteTipDismissed())
+  const [railCollapsed, setRailCollapsed] = useState(() => readRailCollapsed())
+  const [hideCaughtUp, setHideCaughtUp] = useState(false)
   const [exportFlash, setExportFlash] = useState<string | null>(null)
   const {
     scrolled: listScrolled,
@@ -274,6 +277,15 @@ export default function App() {
     const finishedCount = slots.filter((id) => finishedStations.has(id)).length
     return { finishedCount, totalCount: slots.length }
   }, [finishedStations, visibleStations])
+
+  const routeComplete =
+    !!game &&
+    routeProgress.totalCount > 0 &&
+    routeProgress.finishedCount === routeProgress.totalCount
+
+  useEffect(() => {
+    if (!routeComplete) setHideCaughtUp(false)
+  }, [routeComplete])
 
   const stationDesc = useMemo(() => {
     if (activeStation === 'engine' || activeStation === 'search') return undefined
@@ -805,6 +817,14 @@ export default function App() {
     writeRouteTipDismissed()
   }
 
+  function toggleRailCollapsed() {
+    setRailCollapsed((prev) => {
+      const next = !prev
+      writeRailCollapsed(next)
+      return next
+    })
+  }
+
   function handleExport() {
     downloadInstallOrder(model, selectedIds)
     setExportFlash('Downloaded install-order.txt')
@@ -922,6 +942,15 @@ export default function App() {
       if (
         !isTypingTarget(e.target) &&
         !keyboardHelpOpen &&
+        e.key === '\\'
+      ) {
+        e.preventDefault()
+        toggleRailCollapsed()
+        return
+      }
+      if (
+        !isTypingTarget(e.target) &&
+        !keyboardHelpOpen &&
         (e.key === '?' || (e.shiftKey && e.key === '/'))
       ) {
         e.preventDefault()
@@ -982,6 +1011,7 @@ export default function App() {
   }, [
     activeStation,
     keyboardHelpOpen,
+    railCollapsed,
     visibleStations,
     contentMainBranches,
     contentSubBranches,
@@ -1053,6 +1083,8 @@ export default function App() {
           finishedStations={finishedStations}
           finishedCount={routeProgress.finishedCount}
           totalCount={routeProgress.totalCount}
+          collapsed={railCollapsed}
+          onToggleCollapsed={toggleRailCollapsed}
           onSelectEngine={selectEngine}
           onSelectStation={selectStation}
           onSelectSearch={selectSearch}
@@ -1077,7 +1109,12 @@ export default function App() {
           )}
 
           <RouteGuideTip visible={showRouteTip && !!game} onDismiss={dismissRouteTip} />
-
+          <RouteCaughtUp
+            visible={routeComplete && !hideCaughtUp && !showRouteTip}
+            selectedCount={selectedIds.size}
+            onExport={handleExport}
+            onDismiss={() => setHideCaughtUp(true)}
+          />
           <div className={`workspace${showDetail ? '' : ' engine-only'}`}>
             <div className={`list-pane${listScrolled ? ' is-scrolled' : ''}`}>
               {activeStation === 'engine' || !game ? (
