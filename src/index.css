@@ -102,23 +102,69 @@ body {
 }
 
 .selection-presets-bar {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
   min-width: 0;
 }
 
-.selection-presets-label {
-  display: flex;
+.selection-presets-trigger {
+  display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  max-width: 11rem;
+  min-width: 0;
+  padding: 0.35rem 0.55rem;
+}
+
+.selection-presets-trigger.open,
+.selection-presets-trigger.dirty {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+
+.selection-presets-trigger-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   min-width: 0;
 }
 
-.selection-presets-label-text {
-  font-size: 0.8rem;
+.selection-presets-caret {
+  flex-shrink: 0;
+  font-size: 0.7rem;
   color: var(--muted);
-  white-space: nowrap;
+}
+
+.selection-presets-popover {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 30;
+  width: min(18rem, 80vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  background:
+    radial-gradient(ellipse at top left, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 28px color-mix(in srgb, #000 40%, transparent);
+}
+
+.selection-presets-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.selection-presets-field-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
 }
 
 .selection-presets-select,
@@ -128,21 +174,21 @@ body {
   color: var(--ink);
   background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 0.35rem 0.5rem;
-  max-width: 11rem;
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.5rem;
+  width: 100%;
   min-width: 0;
 }
 
-.selection-presets-name {
-  max-width: 9rem;
+.selection-presets-actions {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
 }
 
-.selection-presets-delete {
-  padding-left: 0.55rem;
-  padding-right: 0.55rem;
-  line-height: 1;
-  font-size: 1.1rem;
+.selection-presets-actions .btn {
+  flex: 1;
+  min-width: 5rem;
 }
 
 .engine-badge {
@@ -331,7 +377,7 @@ body {
   flex-shrink: 0;
   overflow: visible;
   position: relative;
-  z-index: 5;
+  z-index: 8;
 }
 
 .filters-row {
@@ -339,7 +385,62 @@ body {
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
-  overflow-x: auto;
+  overflow: visible;
+}
+
+.filter-chip-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.filter-popover {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 20;
+  min-width: min(22rem, 78vw);
+  max-width: min(28rem, 90vw);
+  max-height: min(18rem, 55vh);
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.65rem 0.7rem;
+  background:
+    radial-gradient(ellipse at top left, color-mix(in srgb, var(--accent) 10%, transparent), transparent 50%),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 28px color-mix(in srgb, #000 40%, transparent);
+}
+
+.filter-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-panel-hide {
+  font-size: 0.75rem;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 0.2rem 0.55rem;
+  white-space: nowrap;
+  font: inherit;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+}
+
+.filter-panel-hide:hover {
+  color: var(--ink);
+  border-color: var(--accent);
 }
 
 .filters-label {
@@ -423,41 +524,6 @@ body {
   border-color: var(--accent);
   background: var(--accent-soft);
   opacity: 1;
-}
-
-.filter-panel {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.15rem 0.75rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.filter-panel-wrap {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.35rem 0.15rem 0.15rem;
-  border-top: 1px solid var(--line);
-}
-
-.filter-panel-hide {
-  font-size: 0.75rem;
-  color: var(--muted);
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  cursor: pointer;
-  padding: 0.2rem 0.55rem;
-  white-space: nowrap;
-  font: inherit;
-  flex-shrink: 0;
-}
-
-.filter-panel-hide:hover {
-  color: var(--ink);
-  border-color: var(--accent);
 }
 
 .filter-option {
@@ -825,8 +891,35 @@ body {
 .branch-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.65rem;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.branch-nav-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.branch-nav-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.branch-nav-heading {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.branch-nav-keys {
+  font: inherit;
+  font-size: 0.68rem;
+  color: color-mix(in srgb, var(--muted) 75%, var(--accent));
+  letter-spacing: 0.04em;
 }
 
 .branch-nav-row {
@@ -834,7 +927,7 @@ body {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: stretch;
-  gap: 0.15rem;
+  gap: 0.12rem;
 }
 
 .branch-nav-row button {
@@ -843,12 +936,13 @@ body {
   border: 1px solid transparent;
   border-bottom: 2px solid transparent;
   color: var(--ink);
-  padding: 0.3rem 0.55rem;
-  border-radius: 4px 4px 0 0;
+  padding: 0.22rem 0.45rem;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   cursor: pointer;
   font: inherit;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   white-space: nowrap;
+  transition: background var(--ease), border-color var(--ease);
 }
 
 .branch-nav-row button:hover {
@@ -860,6 +954,11 @@ body {
   border-bottom-color: var(--accent);
   background: var(--accent-soft);
   color: var(--ink);
+}
+
+.branch-nav-row button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .list-pane-scroll {
@@ -1356,14 +1455,26 @@ body {
 }
 
 .badge {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--muted);
-  border: 1px solid color-mix(in srgb, var(--muted) 55%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--muted) 45%, var(--line));
   border-radius: 3px;
-  padding: 0 0.3rem;
+  padding: 0 0.28rem;
   white-space: nowrap;
+  opacity: 0.92;
+}
+
+.tree-row .badge-level,
+.tree-row .badge-status-chooseOne,
+.tree-row .badge-status-required,
+.tree-row .badge-status-hidden {
+  opacity: 0.88;
+}
+
+.tree-row .badge-stability {
+  opacity: 1;
 }
 
 /* —— Level badges (cool ladder; difficulty off-ladder) —— */
@@ -1883,7 +1994,11 @@ body {
 
   .filters-row {
     flex-wrap: wrap;
-    overflow-x: visible;
+  }
+
+  .filter-popover {
+    left: auto;
+    right: 0;
   }
 
   .engine-brand-mark {

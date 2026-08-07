@@ -1,4 +1,4 @@
-import { useId, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import {
   FILTER_LADDER_LEVELS,
   LEVEL_LABELS,
@@ -68,6 +68,7 @@ export function FiltersStrip({
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null)
   const baseId = useId()
   const searchRef = useRef<HTMLInputElement>(null)
+  const stripRef = useRef<HTMLDivElement>(null)
 
   const authorNames = authorOptions.map((a) => a.name)
   const seed = { authorOptions: authorNames, sizeBounds }
@@ -77,6 +78,17 @@ export function FiltersStrip({
   const authorActive = isAuthorFilterActive(criteria, authorNames)
   const hiddenActive = criteria.showHidden
   const uncheckedActive = criteria.uncheckedFilter !== 'off'
+
+  useEffect(() => {
+    if (!openPanel) return
+    function onPointerDown(e: PointerEvent) {
+      if (!stripRef.current?.contains(e.target as Node)) {
+        setOpenPanel(null)
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [openPanel])
 
   function patch(partial: Partial<FilterCriteria>) {
     onChange({ ...criteria, ...partial })
@@ -109,177 +121,20 @@ export function FiltersStrip({
     patch({ sizeMaxBytes: Math.max(value, min) })
   }
 
-  function wrapPanel(id: string, label: string, body: ReactNode) {
+  function renderPopover(id: PanelId, label: string, body: ReactNode) {
+    if (openPanel !== id) return null
+    const panelId = `${baseId}-${id}`
     return (
-      <div className="filter-panel-wrap">
-        <div className="filter-panel" id={id} role="group" aria-label={label}>
-          {body}
-        </div>
+      <div className="filter-popover" id={panelId} role="group" aria-label={label}>
+        <div className="filter-panel">{body}</div>
         <button
           type="button"
           className="filter-panel-hide"
           onClick={() => setOpenPanel(null)}
         >
-          Hide
+          Close
         </button>
       </div>
-    )
-  }
-
-  let panelBody: ReactNode = null
-  if (openPanel === 'level') {
-    panelBody = wrapPanel(
-      `${baseId}-level`,
-      'Level',
-      <>
-        <label className="filter-option">
-          <input
-            type="radio"
-            name={`${baseId}-ladder`}
-            checked={criteria.maxLevel === null}
-            onChange={() => selectLadder(null)}
-          />
-          All levels
-        </label>
-        {FILTER_LADDER_LEVELS.map((level) => (
-          <label key={level} className="filter-option">
-            <input
-              type="radio"
-              name={`${baseId}-ladder`}
-              checked={criteria.maxLevel === level}
-              onChange={() => selectLadder(level)}
-            />
-            {LEVEL_LABELS[level]}
-          </label>
-        ))}
-        <label className={`filter-option${criteria.maxLevel ? '' : ' disabled'}`}>
-          <input
-            type="checkbox"
-            checked={criteria.levelExact}
-            disabled={!criteria.maxLevel}
-            onChange={(e) => patch({ levelExact: e.target.checked })}
-          />
-          This level only
-        </label>
-        <label className="filter-option">
-          <input
-            type="checkbox"
-            checked={criteria.includeLowerDifficulty}
-            onChange={(e) => patch({ includeLowerDifficulty: e.target.checked })}
-          />
-          Include {LEVEL_LABELS.lowerDifficulty}
-        </label>
-        <label className="filter-option">
-          <input
-            type="checkbox"
-            checked={criteria.includeHigherDifficulty}
-            onChange={(e) => patch({ includeHigherDifficulty: e.target.checked })}
-          />
-          Include {LEVEL_LABELS.higherDifficulty}
-        </label>
-      </>,
-    )
-  } else if (openPanel === 'size') {
-    const min = criteria.sizeMinBytes ?? sizeBounds?.min ?? 0
-    const max = criteria.sizeMaxBytes ?? sizeBounds?.max ?? 0
-    panelBody = wrapPanel(
-      `${baseId}-size`,
-      'Size',
-      sizeBounds ? (
-        <div className="filter-size">
-          <div className="filter-size-labels">
-            <span>{formatBytes(min)}</span>
-            <span>—</span>
-            <span>{formatBytes(max)}</span>
-          </div>
-          <div className="filter-size-slider">
-            <input
-              type="range"
-              className="filter-size-range filter-size-range-min"
-              min={sizeBounds.min}
-              max={sizeBounds.max}
-              value={min}
-              aria-label="Minimum size"
-              onChange={(e) => setSizeMin(Number(e.target.value))}
-            />
-            <input
-              type="range"
-              className="filter-size-range filter-size-range-max"
-              min={sizeBounds.min}
-              max={sizeBounds.max}
-              value={max}
-              aria-label="Maximum size"
-              onChange={(e) => setSizeMax(Number(e.target.value))}
-            />
-          </div>
-          <div className="filter-size-bounds">
-            <span>{formatBytes(sizeBounds.min)}</span>
-            <span>{formatBytes(sizeBounds.max)}</span>
-          </div>
-        </div>
-      ) : (
-        <p className="filter-panel-empty">No size data in mods.csv.</p>
-      ),
-    )
-  } else if (openPanel === 'author') {
-    panelBody = wrapPanel(
-      `${baseId}-author`,
-      'Author',
-      authorOptions.length === 0 ? (
-        <p className="filter-panel-empty">No frequent authors in mods.csv.</p>
-      ) : (
-        <>
-          {AUTHOR_MODE_OPTIONS.map((opt) => (
-            <label key={opt.value} className="filter-option">
-              <input
-                type="radio"
-                name={`${baseId}-author-mode`}
-                checked={criteria.authorMode === opt.value}
-                onChange={() => patch({ authorMode: opt.value })}
-              />
-              {opt.label}
-            </label>
-          ))}
-          <button
-            type="button"
-            className="filter-inline-action"
-            onClick={() => patch({ authors: new Set(authorNames) })}
-          >
-            Select all
-          </button>
-          <button
-            type="button"
-            className="filter-inline-action"
-            onClick={() => patch({ authors: new Set() })}
-          >
-            Clear
-          </button>
-          {authorOptions.map((opt) => (
-            <label key={opt.name} className="filter-option">
-              <input
-                type="checkbox"
-                checked={criteria.authors.has(opt.name)}
-                onChange={() =>
-                  patch({ authors: toggleInSet(criteria.authors, opt.name) })
-                }
-              />
-              <span className="filter-author-name">
-                {opt.name}
-                {opt.name === 'Morpheus562' && (
-                  <span
-                    className="filter-author-warning"
-                    title={MORPHEUS_WARNING}
-                    aria-label={MORPHEUS_WARNING}
-                  >
-                    !
-                  </span>
-                )}
-              </span>
-              <span className="filter-author-count">({opt.count})</span>
-            </label>
-          ))}
-        </>
-      ),
     )
   }
 
@@ -290,8 +145,12 @@ export function FiltersStrip({
       ? `: ${formatBytes(criteria.sizeMinBytes)}–${formatBytes(criteria.sizeMaxBytes)}`
       : ''
 
+  const min = criteria.sizeMinBytes ?? sizeBounds?.min ?? 0
+  const max = criteria.sizeMaxBytes ?? sizeBounds?.max ?? 0
+
   return (
     <div
+      ref={stripRef}
       className="filters-strip"
       aria-label="Filters"
       onKeyDown={(e) => {
@@ -331,43 +190,202 @@ export function FiltersStrip({
           aria-label={searchPlaceholder}
         />
 
-        <button
-          type="button"
-          className={`filter-chip${levelActive ? ' active' : ''}${openPanel === 'level' ? ' open' : ''}`}
-          aria-expanded={openPanel === 'level'}
-          aria-controls={`${baseId}-level`}
-          onClick={() => togglePanel('level')}
-        >
-          Level
-          {levelActive && criteria.maxLevel
-            ? `: ${LEVEL_LABELS[criteria.maxLevel] ?? criteria.maxLevel}`
-            : ''}
-        </button>
+        <div className="filter-chip-wrap">
+          <button
+            type="button"
+            className={`filter-chip${levelActive ? ' active' : ''}${openPanel === 'level' ? ' open' : ''}`}
+            aria-expanded={openPanel === 'level'}
+            aria-controls={`${baseId}-level`}
+            onClick={() => togglePanel('level')}
+          >
+            Level
+            {levelActive && criteria.maxLevel
+              ? `: ${LEVEL_LABELS[criteria.maxLevel] ?? criteria.maxLevel}`
+              : ''}
+          </button>
+          {renderPopover(
+            'level',
+            'Level',
+            <>
+              <label className="filter-option">
+                <input
+                  type="radio"
+                  name={`${baseId}-ladder`}
+                  checked={criteria.maxLevel === null}
+                  onChange={() => selectLadder(null)}
+                />
+                All levels
+              </label>
+              {FILTER_LADDER_LEVELS.map((level) => (
+                <label key={level} className="filter-option">
+                  <input
+                    type="radio"
+                    name={`${baseId}-ladder`}
+                    checked={criteria.maxLevel === level}
+                    onChange={() => selectLadder(level)}
+                  />
+                  {LEVEL_LABELS[level]}
+                </label>
+              ))}
+              <label className={`filter-option${criteria.maxLevel ? '' : ' disabled'}`}>
+                <input
+                  type="checkbox"
+                  checked={criteria.levelExact}
+                  disabled={!criteria.maxLevel}
+                  onChange={(e) => patch({ levelExact: e.target.checked })}
+                />
+                This level only
+              </label>
+              <label className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={criteria.includeLowerDifficulty}
+                  onChange={(e) =>
+                    patch({ includeLowerDifficulty: e.target.checked })
+                  }
+                />
+                Include {LEVEL_LABELS.lowerDifficulty}
+              </label>
+              <label className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={criteria.includeHigherDifficulty}
+                  onChange={(e) =>
+                    patch({ includeHigherDifficulty: e.target.checked })
+                  }
+                />
+                Include {LEVEL_LABELS.higherDifficulty}
+              </label>
+            </>,
+          )}
+        </div>
 
-        <button
-          type="button"
-          className={`filter-chip${sizeActive ? ' active' : ''}${openPanel === 'size' ? ' open' : ''}`}
-          aria-expanded={openPanel === 'size'}
-          aria-controls={`${baseId}-size`}
-          onClick={() => togglePanel('size')}
-          disabled={!sizeBounds}
-        >
-          Size{sizeChipLabel}
-        </button>
+        <div className="filter-chip-wrap">
+          <button
+            type="button"
+            className={`filter-chip${sizeActive ? ' active' : ''}${openPanel === 'size' ? ' open' : ''}`}
+            aria-expanded={openPanel === 'size'}
+            aria-controls={`${baseId}-size`}
+            onClick={() => togglePanel('size')}
+            disabled={!sizeBounds}
+          >
+            Size{sizeChipLabel}
+          </button>
+          {renderPopover(
+            'size',
+            'Size',
+            sizeBounds ? (
+              <div className="filter-size">
+                <div className="filter-size-labels">
+                  <span>{formatBytes(min)}</span>
+                  <span>—</span>
+                  <span>{formatBytes(max)}</span>
+                </div>
+                <div className="filter-size-slider">
+                  <input
+                    type="range"
+                    className="filter-size-range filter-size-range-min"
+                    min={sizeBounds.min}
+                    max={sizeBounds.max}
+                    value={min}
+                    aria-label="Minimum size"
+                    onChange={(e) => setSizeMin(Number(e.target.value))}
+                  />
+                  <input
+                    type="range"
+                    className="filter-size-range filter-size-range-max"
+                    min={sizeBounds.min}
+                    max={sizeBounds.max}
+                    value={max}
+                    aria-label="Maximum size"
+                    onChange={(e) => setSizeMax(Number(e.target.value))}
+                  />
+                </div>
+                <div className="filter-size-bounds">
+                  <span>{formatBytes(sizeBounds.min)}</span>
+                  <span>{formatBytes(sizeBounds.max)}</span>
+                </div>
+              </div>
+            ) : (
+              <p className="filter-panel-empty">No size data in mods.csv.</p>
+            ),
+          )}
+        </div>
 
-        <button
-          type="button"
-          className={`filter-chip${authorActive ? ' active' : ''}${openPanel === 'author' ? ' open' : ''}`}
-          aria-expanded={openPanel === 'author'}
-          aria-controls={`${baseId}-author`}
-          onClick={() => togglePanel('author')}
-          disabled={authorOptions.length === 0}
-        >
-          Author
-          {authorActive
-            ? ` ${criteria.authorMode === 'exclude' ? 'excl.' : ''}(${criteria.authors.size})`
-            : ''}
-        </button>
+        <div className="filter-chip-wrap">
+          <button
+            type="button"
+            className={`filter-chip${authorActive ? ' active' : ''}${openPanel === 'author' ? ' open' : ''}`}
+            aria-expanded={openPanel === 'author'}
+            aria-controls={`${baseId}-author`}
+            onClick={() => togglePanel('author')}
+            disabled={authorOptions.length === 0}
+          >
+            Author
+            {authorActive
+              ? ` ${criteria.authorMode === 'exclude' ? 'excl.' : ''}(${criteria.authors.size})`
+              : ''}
+          </button>
+          {renderPopover(
+            'author',
+            'Author',
+            authorOptions.length === 0 ? (
+              <p className="filter-panel-empty">No frequent authors in mods.csv.</p>
+            ) : (
+              <>
+                {AUTHOR_MODE_OPTIONS.map((opt) => (
+                  <label key={opt.value} className="filter-option">
+                    <input
+                      type="radio"
+                      name={`${baseId}-author-mode`}
+                      checked={criteria.authorMode === opt.value}
+                      onChange={() => patch({ authorMode: opt.value })}
+                    />
+                    {opt.label}
+                  </label>
+                ))}
+                <button
+                  type="button"
+                  className="filter-inline-action"
+                  onClick={() => patch({ authors: new Set(authorNames) })}
+                >
+                  Select all
+                </button>
+                <button
+                  type="button"
+                  className="filter-inline-action"
+                  onClick={() => patch({ authors: new Set() })}
+                >
+                  Clear
+                </button>
+                {authorOptions.map((opt) => (
+                  <label key={opt.name} className="filter-option">
+                    <input
+                      type="checkbox"
+                      checked={criteria.authors.has(opt.name)}
+                      onChange={() =>
+                        patch({ authors: toggleInSet(criteria.authors, opt.name) })
+                      }
+                    />
+                    <span className="filter-author-name">
+                      {opt.name}
+                      {opt.name === 'Morpheus562' && (
+                        <span
+                          className="filter-author-warning"
+                          title={MORPHEUS_WARNING}
+                          aria-label={MORPHEUS_WARNING}
+                        >
+                          !
+                        </span>
+                      )}
+                    </span>
+                    <span className="filter-author-count">({opt.count})</span>
+                  </label>
+                ))}
+              </>
+            ),
+          )}
+        </div>
 
         <button
           type="button"
@@ -395,8 +413,6 @@ export function FiltersStrip({
           </button>
         )}
       </div>
-
-      {panelBody}
     </div>
   )
 }

@@ -18,18 +18,13 @@ import {
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import {
-  splitTags,
   stabilityBadgeClass,
   stabilityBadgeLabel,
 } from '../lib/selection/filterDisplayTree'
 import {
   type ModInfo,
-  isModTypeBranchDisplay,
   resolveModStability,
-  resolveModType,
-  shouldShowModTypeBadge,
 } from '../lib/mods/loadMods'
-import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
 import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { isTypingTarget } from '../lib/ui/chromeHotkeys'
 import {
@@ -249,14 +244,6 @@ function CheckboxRow({
   const stability = resolveModStability(model, modsByCodename, source)
   const stabilityLabel = stabilityBadgeLabel(stability)
   const stabilityClass = stabilityBadgeClass(stability)
-  const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
-  const collapsedToSingle = Boolean(collapsedComponent)
-  const branchOpts = { collapsedToSingleComponent: collapsedToSingle }
-  const modType = shouldShowModTypeBadge(model, node, branchOpts)
-    ? resolveModType(model, modsByCodename, source, {
-        asBranch: isModTypeBranchDisplay(model, node, branchOpts),
-      })
-    : undefined
 
   function handleFoldClick(e: MouseEvent) {
     e.preventDefault()
@@ -444,9 +431,6 @@ function CheckboxRow({
           {level && (
             <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
-          {modType && (
-            <span className={modTypeBadgeClass(modType)}>{modTypeBadgeLabel(modType)}</span>
-          )}
           {stabilityLabel && stabilityClass && (
             <span className={stabilityClass}>{stabilityLabel}</span>
           )}
@@ -456,17 +440,6 @@ function CheckboxRow({
           {attrs.noDisplay && (
             <span className={statusBadgeClass('hidden')}>hidden</span>
           )}
-          {!collapsedComponent && attrs.core && (
-            <span className={statusBadgeClass('core')}>core</span>
-          )}
-          {!collapsedComponent && attrs.default && (
-            <span className={statusBadgeClass('default')}>default</span>
-          )}
-          {tagList.map((tag) => (
-            <span key={tag} className={statusBadgeClass('tag')}>
-              {tag}
-            </span>
-          ))}
         </div>
       </div>
       {expanded &&

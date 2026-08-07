@@ -54,48 +54,64 @@ export function ContentBranchNav({
 
   return (
     <div className="branch-nav">
-      <div
-        className="branch-nav-row"
-        role="tablist"
-        aria-label="Content main branches"
-        onKeyDown={(e) => handleTabListKeyDown(e, mainKeys, mainKey, onSelectMain)}
-      >
-        {mainBranches.map((branch) => (
-          <button
-            key={branch.node.key}
-            type="button"
-            role="tab"
-            data-branch-key={branch.node.key}
-            tabIndex={mainKey === branch.node.key ? 0 : -1}
-            aria-selected={mainKey === branch.node.key}
-            className={mainKey === branch.node.key ? 'active' : ''}
-            onClick={() => onSelectMain(branch.node.key)}
-          >
-            {branchLabel(branch)}
-          </button>
-        ))}
-      </div>
-      {subBranches.length > 0 && (
+      <div className="branch-nav-block">
+        <div className="branch-nav-meta">
+          <span className="branch-nav-heading">Game</span>
+          <kbd className="branch-nav-keys" title="Previous / next main branch">
+            , .
+          </kbd>
+        </div>
         <div
           className="branch-nav-row"
           role="tablist"
-          aria-label="Content subbranches"
-          onKeyDown={(e) => handleTabListKeyDown(e, subKeys, subKey, onSelectSub)}
+          aria-label="Content main branches"
+          onKeyDown={(e) => handleTabListKeyDown(e, mainKeys, mainKey, onSelectMain)}
         >
-          {subBranches.map((branch) => (
+          {mainBranches.map((branch) => (
             <button
               key={branch.node.key}
               type="button"
               role="tab"
               data-branch-key={branch.node.key}
-              tabIndex={subKey === branch.node.key ? 0 : -1}
-              aria-selected={subKey === branch.node.key}
-              className={subKey === branch.node.key ? 'active' : ''}
-              onClick={() => onSelectSub(branch.node.key)}
+              tabIndex={mainKey === branch.node.key ? 0 : -1}
+              aria-selected={mainKey === branch.node.key}
+              className={mainKey === branch.node.key ? 'active' : ''}
+              onClick={() => onSelectMain(branch.node.key)}
             >
               {branchLabel(branch)}
             </button>
           ))}
+        </div>
+      </div>
+      {subBranches.length > 0 && (
+        <div className="branch-nav-block">
+          <div className="branch-nav-meta">
+            <span className="branch-nav-heading">Type</span>
+            <kbd className="branch-nav-keys" title="Previous / next subbranch">
+              &lt; &gt;
+            </kbd>
+          </div>
+          <div
+            className="branch-nav-row"
+            role="tablist"
+            aria-label="Content subbranches"
+            onKeyDown={(e) => handleTabListKeyDown(e, subKeys, subKey, onSelectSub)}
+          >
+            {subBranches.map((branch) => (
+              <button
+                key={branch.node.key}
+                type="button"
+                role="tab"
+                data-branch-key={branch.node.key}
+                tabIndex={subKey === branch.node.key ? 0 : -1}
+                aria-selected={subKey === branch.node.key}
+                className={subKey === branch.node.key ? 'active' : ''}
+                onClick={() => onSelectSub(branch.node.key)}
+              >
+                {branchLabel(branch)}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
