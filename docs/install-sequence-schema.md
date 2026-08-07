@@ -44,7 +44,7 @@ Any non-station element may nest further. Common ones:
 - `mod` — named mod grouping components
 - `group`, `alternatives` — grouping / exclusive choice (`group` never merges; use a named tag when a bucket must reunite across split stations)
 - `bg1`, `sod`, `bg2`, `iwd`, `pst`, `universalBg`, `universalBgIwd` — content subsections (main branches in the Content UI)
-- Named mechanics sections — e.g. `warriors`, `fighter`, `wizardSlayer`, `rogues`, `spellcasters`, `multi`, `universal`, `stats`, `proficiencies` (camelCase tags; merge by tag across split `<mechanics>` blocks)
+- Named mechanics sections — e.g. `warriors`, `fighter`, `wizardSlayer`, `beastMaster`, `rogues`, `spellcasters`, `multi`, `universal`, `stats`, `proficiencies` (camelCase tags; merge by tag across split `<mechanics>` blocks)
 - `add`, `update`, `upgrade`, `delete`, `tweaks`, `items`, `npc`, `romances`, `quest`, `restorations`, `restructure` — organizational folders (Content subbranches are typically `restorations`, `restructure`, `quest`, `npc`, `items`, `tweaks`; `restorations` / `restructure` also default-folded in the tree like `group`)
 
 Unknown nesting tags are still rendered as tree nodes. Same-tag siblings merge unless the tag is `group`, `mod`, `component`, or `alternatives`.

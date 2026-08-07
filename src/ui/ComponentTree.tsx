@@ -103,7 +103,7 @@ const DEFAULT_FOLDED_TAGS = new Set([
   'fighter',
   'wizardSlayer',
   'ranger',
-  'beastmaster',
+  'beastMaster',
   'archer',
   'paladin',
   'inquisitor',

@@ -979,9 +979,6 @@
 		</pst>
 		<universalBg label="Common BG1/BG2" engine="bg,eet">
 			<npc label="Joinable NPCs">
-				<custom>
-					<!-- component id="c#husam-main" label="Husam - human CN thief" modId="Husam_NPC" /-->
-				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<component id="reflection:0" label="Reflection (new dialogue options)" modId="Reflection" />
 					<mod id="Tweaks-Anthology" level="blendWell">
@@ -1123,27 +1120,27 @@
 	</content>
 
 	<mechanics engine="bg,eet,iwd">
-		<warriors label="Warriors" desc="Figher/ranger/paladin/monk">
+		<warriors label="Warriors" desc="Fighter/ranger/paladin/monk">
 			<fighter label="Fighter">
-				<wizardSlayer label="Update kit: Wizard Slayer">
+				<wizardSlayer label="Wizard Slayer">
 					<component id="ArtisansKitpack:1006" label="Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
-					<component id="METweaks:1600" label="Increase Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" default="Gain 5% Magic Resistance per level rather than 1%" />
+					<component id="METweaks:1600" label="Increase Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" desc="Gain 5% Magic Resistance per level rather than 1%" />
 				</wizardSlayer>
 				<component id="Morpheus562sKitpackShieldBreaker" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" />
 			</fighter>
 			<ranger label="Ranger">
-				<beastmaster label="Update kit: Beast Master" level="blendWell">
+				<beastMaster label="Beast Master" level="blendWell">
 					<component id="ArtisansKitpack:2012" label="Overhaul" modId="The-Artisan-s-Kitpack" />
 					<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion class feat" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6340" />
-				</beastmaster>
-				<archer label="Update kit: Archer — provide to-hit and damage bonuses per the kit description">
+				</beastMaster>
+				<archer label="Archer">
 				</archer>
 				<component id="iwdification:110" label="Make Tracking an innate ability since level 1" modId="iwdification" engine="bg,eet" level="blendWell" />
 				<component id="cd_tweaks_nwn_trackless_step" label="Add Trackless Step class feat for rangers" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6240" />
 				<component id="METweaks:1400" label="Power up ranger Charm Animal" modId="Olvyn-Tweaks" level="blendWell" />
 			</ranger>
 			<paladin label="Paladin">
-				<inquisitor label="Update kit: Inquisitor">
+				<inquisitor label="Inquisitor">
 				</inquisitor>
 				<component id="BardicWonders:1012" label="Add kit: Gallant — Bardic paladin kit" modId="Bardic-Wonders" displayIf="EEex:1" level="extended" />
 			</paladin>
@@ -1157,7 +1154,7 @@
 			<component id="cd_tweaks_nwn_knockdown" label="Add Knockdown class feat for fighters and monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6010" />
 			<component id="METweaks:900" label="Let rangers and paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
 		</warriors>
-		<rogues label="Rogues" desc="Thieve/bard">
+		<rogues label="Rogues" desc="Thief/bard">
 			<thief label="Thief">
 				<mod id="rogue_rebalancing" label="Update kits: Assassin, Swashbuckler, Bounty Hunter revisions" level="blendWell">
 					<component id="rr:1" label="Thief kit revisions" />
@@ -1171,15 +1168,15 @@
 					<component id="rr:5" label="Bard High Level Ability revisions" alwaysIf="rr:4" noDisplay="1" modId="rogue_rebalancing" />
 					<component id="rr:6" label="Proper spell progression for bards" modId="rogue_rebalancing" alwaysIf="rr:4" noDisplay="1" />
 				</mod>
-				<blade label="Blade kit enhancements">
+				<blade label="Blade">
 				</blade>
-				<skald label="Skald kit enhancements">
+				<skald label="Skald">
 				</skald>
 				<component id="cd_tweaks_nwn_armored_caster" label="Add Armored Caster class feat" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6230" />
 			</bard>
 			<component id="rr:9" label="Revised Thievery: Adds dialogue options after failed thievery." desc="Additionally PnP the thievery potions and prevents their effects from stacking" modId="rogue_rebalancing" level="vanillaPlus" />
 			<component id="rr:0" label="Proper Dual-Wielding implementation for thieves and bards" modId="rogue_rebalancing" level="vanillaPlus" />
-			<component id="cd_tweaks_thieving_in_heavy_armor" label="Allow Thieving and Stealth in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="blendWell" desc="" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2100" />
+			<component id="cd_tweaks_thieving_in_heavy_armor" label="Allow Thieving and Stealth in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2100" />
 			<mod id="Epic-Thieving" label="Epic Thieving" level="blendWell">
 				<component id="EpicThieving:0" label="EpicThieving — Epic Locks, Traps, Pickpocketing, Illusions"  desc="Gives high valued Thieving skills sense by adding difficult locks, traps, pickpocket opportunities and illusions" />
 				<component id="EpicThieving:100" label="EpicThieving — Epic Traps" alwaysIf="EpicThieving:0" noDisplay="1" />
@@ -1827,7 +1824,7 @@
 	</base>
 
 	<mechanics engine="bg,eet,iwd">
-		<warriors label="Warriors Tweaks" desc="Figher/ranger/paladin/monk">
+		<warriors label="Warriors" desc="Fighter/ranger/paladin/monk">
 			<fighter label="Fighter">
 				<wizardSlayer label="Wizard Slayer">
 					<component id="SkillsAndAbilitiesDI1" label="Add Detect Illusions, Spell Failure and Dispel on Hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." level="lowerDifficulty" />
@@ -1835,13 +1832,13 @@
 				<component id="SkillsAndAbilitiesFighter" label="Add new abilities" modId="skills-and-abilities" desc="1st level - Second Wind (Once per day, heal 1d10 + fighter level); 9th level - Indomitable (increase saving throws). HLA: increase thac0 and damage" />
 			</fighter>
 			<ranger label="Ranger">
-				<archer>
+				<archer label="Archer">
 					<component id="SkillsAndAbilitiesUpdateArcher" label="Provide to-hit and damage bonuses per the kit description" modId="skills-and-abilities" />
 				</archer>
 			</ranger>
 			<paladin label="Paladin">
 				<component id="SkillsAndAbilitiesPaladin1" label="Add new abilities" modId="skills-and-abilities" desc="Smite, auras and Sanctify Strikes (+2 magic damage)" />
-				<inquisitor>
+				<inquisitor label="Inquisitor">
 					<component id="SkillsAndAbilitiesDI2" label="Replace Inquisitor True Seeing with Detect Illusion skill" displayIf="EEex:1" modId="skills-and-abilities" />
 					<component id="SkillsAndAbilitiesInquisitor1" label="Allow Inquisitor kit to cast divine spells" modId="skills-and-abilities" />
 				</inquisitor>
@@ -1851,14 +1848,14 @@
 				<component id="SkillsAndAbilitiesMonk" label="Add Open Locks, Find/Disarm Traps and Detect Illusion" modId="skills-and-abilities" displayIf="EEex:1" desc="1 level - Flurry of Blows (extra APR). New HLA - become immune to Time Stop" />
 			</monk>
 		</warriors>
-		<rogues label="Rogues" desc="Thieve/bard">
+		<rogues label="Rogues" desc="Thief/bard">
 			<thief label="Thief">
 			</thief>
 			<bard label="Bard">
-				<blade label="Blade kit enhancements">
+				<blade label="Blade">
 					<component id="SkillsAndAbilitiesBlade" label="Blade kit enhancements" modId="skills-and-abilities" desc="This allows the bard Blade kit to master (3 slots) in all bladed weapons and receive a 0.5 APR boost at level 10 and again at level 20. This will also update all non-recruitable Blades within the game to have specialization in the melee weapon(s) of their choice." />
 				</blade>
-				<skald label="Skald kit enhancements">
+				<skald label="Skald">
 					<component id="SkillsAndAbilitiesSkald" label="Skald kit enhancements" modId="skills-and-abilities" />
 				</skald>
 				<component id="SkillsAndAbilitiesSongDuration" label="Bard Songs last 1 turn" modId="skills-and-abilities" />
@@ -1881,7 +1878,7 @@
 			</shaman>
 			<component id="SkillsAndAbilitiesConcentration" label="Add Concentration Check to resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" />
 		</spellcasters>
-		<multi label="Multi-class">
+		<multi label="Multi-class / dual-class">
 			<alternatives label="Allow fighter multiclasses to achieve higher Weapon Proficiency" level="lowerDifficulty">
 				<component id="SkillsAndAbilitiesWeaponProf1" label="Master (3 pips)" modId="skills-and-abilities" />
 				<component id="SkillsAndAbilitiesWeaponProf2" label="High master (4 pips)" modId="skills-and-abilities" />
@@ -1891,7 +1888,7 @@
 			<component id="SkillsAndAbilitiesClericThief" label="Adjust cleric/thief action bar" displayIf="EEex:1" modId="skills-and-abilities" />
 			<component id="D5_REVISED_DUAL_CLASS_REQS" label="Lower dual-class requirements" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" />
 		</multi>
-		<universal label="Universal Tweaks">
+		<universal label="Universal">
 			<weapons label="Weapon Tweaks">
 				<component id="SkillsAndAbilitiesSTR" label="2H weapon additional STR bonus" modId="skills-and-abilities" level="lowerDifficulty" />
 			</weapons>
@@ -1904,7 +1901,7 @@
 		<stats label="Stats">
 			<hp>
 				<alternatives label="CON Bonuses/Regeneration">
-					<alternatives label="SubtleD's Hit Dice Overhaul — the new average, compared to vanilla average, is..." modId="SubtleD_Stat_Overhauls" desc="Take some of the randomness out of hit point rolls. Add slow regenration since 19 CON">
+					<alternatives label="SubtleD's Hit Dice Overhaul — the new average, compared to vanilla average, is..." modId="SubtleD_Stat_Overhauls" desc="Take some of the randomness out of hit point rolls. Add slow regeneration since 19 CON">
 						<component id="D5_HARDCORE_HD" label="Above" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" />
 						<component id="D5_REVISED_HD" label="Similar" modId="SubtleD_Stat_Overhauls" level="blendWell" default="1" />
 						<component id="D5_REDUCED_HD" label="Reduced" modId="SubtleD_Stat_Overhauls" level="higherDifficulty" />
