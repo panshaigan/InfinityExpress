@@ -1,30 +1,30 @@
 "Codename","Category","URL","Game","UseMaster","UseAssets","Release","Version","Size","Author","Readme","Type"
-"tactics-remix","AI","https://www.morpheus-mart.com/tactics-remix","BG1-BG2-IWD",,,"2026-04-07","7.3","1000808525","Morpheus562","-","major"
-"enhanced-powergaming-scripts","AI","https://www.morpheus-mart.com/enhanced-powergaming-scripts","BG1-BG2-IWD",,,"2026-07-26","17.1","8684728","Morpheus562","-","minor"
+"tactics-remix","AI","https://www.morpheus-mart.com/tactics-remix","BG1-BG2-IWD",,,"2026-04-07","7.3","1000808525","Morpheus562","-",
+"enhanced-powergaming-scripts","SCRIPT","https://www.morpheus-mart.com/enhanced-powergaming-scripts","BG1-BG2-IWD",,,"2026-07-26","17.1","8684728","Morpheus562","-",
 "AutoLoot","BASE","https://github.com/LCA-EET/AutoLoot","BG1-BG2-IWD",,,"2026-06-20","v1.3","171049","LCAMod ",,
 "EET","BASE","https://github.com/Gibberlings3/EET","BG1-BG2",,,"2025-04-07","v14.1","242152031","K4thos",,
 "IE-Snippets","BASE","https://github.com/Bubb13/IE-Snippets","BG1-BG2-IWD",,,"2023-03-04","files","27512826","Bubb",,
 "EEex","BASE","https://github.com/Bubb13/EEex","BG1-BG2-IWD",,,"2026-07-31","v1.1.6","110015180","Bubb",,
 "A7-DlcMerger","BASE","https://github.com/Argent77/A7-DlcMerger","BG1",,,"2026-07-03","v2.1","265993","Argent77",,
-"bg-eeex-buffbot","ENGINE","https://github.com/Chrizhermann/bg-eeex-buffbot","BG1-BG2-IWD",,,"2026-07-19","v1.6.1-alpha","11926479","Chrizhermann",,
-"EE_Fixpack","FIX","https://github.com/Gibberlings3/EE_Fixpack","BG1-BG2-IWD-PST","1",,"2026-07-20","e422b3f","139376523","Multiple ",,
-"BGEE-Graphics-Enhanced","GFX","https://github.com/TheForgotten69/BGEE-Graphics-Enhanced","BG1",,,"2025-09-29","v0.2.0","1871378741","TheForgotten69",,
-"Icewind-Dale-Graphical-Overhaul","GFX","https://github.com/Spellhold-Studios/Icewind-Dale-Graphical-Overhaul","IWD",,,"2026-03-22","v1,1","492732782","Yovaneth, Weigo ",,
-"Baldurs-Gate-Graphical-Overhaul","GFX","https://github.com/Spellhold-Studios/Baldurs-Gate-Graphical-Overhaul","BG1-BG2",,,"2026-03-21","v3.6","1554582660","Yovaneth, White Agnus, Weigo",,
-"Portraits-Portraits-Everywhere","GFX","https://github.com/smeagolheart/Portraits-Portraits-Everywhere","IWD",,,"2018-04-16","54c94e7","496059933","smeagolheart",,
-"RemasteredSpellIcons","GFX","https://github.com/Renegade0/RemasteredSpellIcons","BG1-BG2-IWD",,,"2024-02-21","v1.2","16036039","Pecca",,
-"InfinityUI","GFX","https://github.com/Renegade0/InfinityUI","BG1-BG2-IWD",,,"2026-07-06","v1.27","302445150","Pecca",,
-"LeUI-SoD","GFX","https://github.com/r-e-d/LeUI-SoD","BG1-BG2-IWD",,,"2025-01-18","v4.9.1","19974652","lefreut",,
-"LeUI-IWDEE","GFX","https://github.com/r-e-d/LeUI-IWDEE","BG1-BG2-IWD",,,"2022-08-11","v2.0","2020631","lefreut",,
-"LeUI-BG1EE","GFX","https://github.com/r-e-d/LeUI-BG1EE","BG1-BG2-IWD",,,"2025-01-18","v4.9.1","22472897","lefreut",,
-"LeUI","GFX","https://github.com/r-e-d/LeUI","BG1-BG2-IWD",,,"2025-01-18","v4.9.1","19973077","lefreut",,
-"EEUITweaks","GFX","https://github.com/r-e-d/EEUITweaks","BG1-BG2-IWD",,,"2024-09-15","v4.0.7","27665862","lefreut",,
-"HPS-Portraits-Project-1.0","GFX","https://github.com/HoldenBG/HPS-Portraits-Project-1.0","BG1-BG2",,"1","2026-06-01","v1.2","1006595617","Holden",,
-"iwd_description_icons","GFX","https://github.com/Gibberlings3/iwd_description_icons","IWD",,,"2026-05-29","925cd31","7385089","Parys",,
-"Infinity_Collection_Portrait_Pack","GFX","https://github.com/Gibberlings3/Infinity_Collection_Portrait_Pack","BG1-BG2-IWD",,,"2022-03-07","v2","44496778","CamDawg ",,
-"Bubbs-Spell-Menu-Extended","GFX","https://github.com/Bubb13/Bubbs-Spell-Menu-Extended","BG1-BG2-IWD",,,"2026-05-11","v5.2","1832164","Bubb",,
-"A7-ResizeableCombatLog","GFX","https://github.com/Argent77/A7-ResizeableCombatLog","PST",,,"2023-09-08","v1.4","27162","Argent77",,
-"bg1_icons_pack_mod","GFX","https://github.com/Alexander12-creator/bg1_icons_pack_mod","BG1",,,"2024-12-02","1.0","6929857","Alexander12",,
+"bg-eeex-buffbot","UI","https://github.com/Chrizhermann/bg-eeex-buffbot","BG1-BG2-IWD",,,"2026-07-19","v1.6.1-alpha","11926479","Chrizhermann",,
+"EE_Fixpack","FIX","https://github.com/Gibberlings3/EE_Fixpack","BG1-BG2-IWD-PST","1",,"2026-07-20","e422b3f","139376523","Multiple ",,"major"
+"BGEE-Graphics-Enhanced","GFX","https://github.com/TheForgotten69/BGEE-Graphics-Enhanced","BG1",,,"2025-09-29","v0.2.0","1871378741","TheForgotten69",,"major"
+"Icewind-Dale-Graphical-Overhaul","GFX","https://github.com/Spellhold-Studios/Icewind-Dale-Graphical-Overhaul","IWD",,,"2026-03-22","v1,1","492732782","Yovaneth, Weigo ",,"major"
+"Baldurs-Gate-Graphical-Overhaul","GFX","https://github.com/Spellhold-Studios/Baldurs-Gate-Graphical-Overhaul","BG1-BG2",,,"2026-03-21","v3.6","1554582660","Yovaneth, White Agnus, Weigo",,"major"
+"Portraits-Portraits-Everywhere","PORTRAITS","https://github.com/smeagolheart/Portraits-Portraits-Everywhere","IWD",,,"2018-04-16","54c94e7","496059933","smeagolheart",,"major"
+"RemasteredSpellIcons","GFX","https://github.com/Renegade0/RemasteredSpellIcons","BG1-BG2-IWD",,,"2024-02-21","v1.2","16036039","Pecca",,"medium"
+"InfinityUI","UI","https://github.com/Renegade0/InfinityUI","BG1-BG2-IWD",,,"2026-07-06","v1.27","302445150","Pecca",,"major"
+"LeUI-SoD","UI","https://github.com/r-e-d/LeUI-SoD","BG1-BG2-IWD",,,"2025-01-18","v4.9.1","19974652","lefreut",,"major"
+"LeUI-IWDEE","UI","https://github.com/r-e-d/LeUI-IWDEE","BG1-BG2-IWD",,,"2022-08-11","v2.0","2020631","lefreut",,"major"
+"LeUI-BG1EE","UI","https://github.com/r-e-d/LeUI-BG1EE","BG1-BG2-IWD",,,"2025-01-18","v4.9.1","22472897","lefreut",,"major"
+"LeUI","UI","https://github.com/r-e-d/LeUI","BG1-BG2-IWD",,,"2025-01-18","v4.9.1","19973077","lefreut",,"major"
+"EEUITweaks","UI","https://github.com/r-e-d/EEUITweaks","BG1-BG2-IWD",,,"2024-09-15","v4.0.7","27665862","lefreut",,"compilation"
+"HPS-Portraits-Project-1.0","PORTRAITS","https://github.com/HoldenBG/HPS-Portraits-Project-1.0","BG1-BG2",,"1","2026-06-01","v1.2","1006595617","Holden",,"major"
+"iwd_description_icons","GFX","https://github.com/Gibberlings3/iwd_description_icons","IWD",,,"2026-05-29","925cd31","7385089","Parys",,"major"
+"Infinity_Collection_Portrait_Pack","PORTRAITS","https://github.com/Gibberlings3/Infinity_Collection_Portrait_Pack","BG1-BG2-IWD",,,"2022-03-07","v2","44496778","CamDawg ",,"medium"
+"Bubbs-Spell-Menu-Extended","UI","https://github.com/Bubb13/Bubbs-Spell-Menu-Extended","BG1-BG2-IWD",,,"2026-05-11","v5.2","1832164","Bubb",,"medium"
+"A7-ResizeableCombatLog","UI","https://github.com/Argent77/A7-ResizeableCombatLog","PST",,,"2023-09-08","v1.4","27162","Argent77",,
+"bg1_icons_pack_mod","GFX","https://github.com/Alexander12-creator/bg1_icons_pack_mod","BG1",,,"2024-12-02","1.0","6929857","Alexander12",,"minor"
 "forgotten-armament","ITEMS","https://www.morpheus-mart.com/forgotten-armament","BG1-BG2-IWD",,,"2026-03-15","6.0","1636005","Morpheus562","-","compilation"
 "IWDEE-Frostforged","ITEMS","https://github.com/TheArtisanBG/IWDEE-Frostforged","IWD","1",,"2025-09-25","1652f9d","1988522","TheArtisan","https://theartisanbg.github.io/The-Artisans-Corner/frostforged",
 "Stuff-of-the-Magi","ITEMS","https://github.com/Spellhold-Studios/Stuff-of-the-Magi","BG2",,,"2024-12-15","v6.0.0","3124025","Victor Straffe ",,

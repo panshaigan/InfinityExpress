@@ -960,6 +960,87 @@ body {
   color: var(--accent);
 }
 
+.tree-randomize {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.tree-randomize-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+  vertical-align: baseline;
+}
+
+.tree-randomize-btn:hover,
+.tree-randomize-btn.open {
+  color: var(--accent);
+}
+
+.tree-randomize-icon {
+  display: block;
+}
+
+.tree-randomize-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.15rem);
+  left: 0;
+  min-width: 9.5rem;
+  padding: 0.35rem 0.4rem;
+  background: var(--panel);
+  border: 1px solid color-mix(in srgb, var(--muted) 35%, transparent);
+  border-radius: 4px;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--ink) 12%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tree-randomize-percents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+
+.tree-randomize-pct {
+  font: inherit;
+  font-size: 0.75rem;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--muted) 40%, transparent);
+  border-radius: 3px;
+  padding: 0.1rem 0.35rem;
+  cursor: pointer;
+}
+
+.tree-randomize-pct:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.tree-randomize-keep {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.tree-randomize-keep input {
+  margin: 0;
+}
+
 .tree-row {
   display: flex;
   flex-wrap: wrap;

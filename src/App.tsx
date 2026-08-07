@@ -14,9 +14,11 @@ import {
   applyLadderLevelSelection,
   createInitialSelection,
   listSelectionState,
+  randomizeDisplaySubtree,
   setDifficultySelection,
   toggleDisplayNode,
   toggleListSelection,
+  type RandomizeOptions,
 } from './lib/selection/selectionEngine'
 import { LADDER_LEVELS, type LadderLevel } from './lib/levels'
 import {
@@ -732,6 +734,11 @@ export default function App() {
     setSelectedIds((prev) => toggleDisplayNode(model, prev, game, display, wantSelected))
   }
 
+  function onRandomize(display: DisplayNode, options: RandomizeOptions) {
+    if (!game) return
+    setSelectedIds((prev) => randomizeDisplaySubtree(model, prev, game, display, options))
+  }
+
   function focusComponentTree() {
     const row = document.querySelector<HTMLElement>(
       '.component-tree [role="treeitem"][tabindex="0"]',
@@ -970,6 +977,7 @@ export default function App() {
                       focusedKey={focusedKey}
                       onFocus={onFocus}
                       onToggle={onToggle}
+                      onRandomize={onRandomize}
                       onFoldApiReady={onFoldApiReady}
                     />
                     {warnings.length > 0 && (

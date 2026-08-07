@@ -3,9 +3,11 @@ import { parseInstallSequence } from '../xml/parseInstallSequence'
 import {
   applyGlobalLevelBaseline,
   applyLadderLevelSelection,
+  collectRandomUnits,
   createInitialSelection,
   displaySelectionState,
   nodeSelectionState,
+  randomizeDisplaySubtree,
   setDifficultySelection,
   toggleDisplayNode,
   toggleNode,
@@ -595,5 +597,182 @@ describe('scoped level mass-check', () => {
     // Other station still has the earlier global apply.
     expect(selected.has('base:rest')).toBe(true)
     expect(selected.has('base:diff')).toBe(true)
+  })
+})
+
+describe('randomizeDisplaySubtree', () => {
+  const RAND_XML = `<?xml version="1.0"?>
+<installSequence>
+  <content>
+    <npc label="Joinable NPCs">
+      <romances label="Romances" noBranches="1">
+        <mod id="R1" label="Romance 1">
+          <component id="r:1" label="R1" />
+        </mod>
+        <mod id="R2" label="Romance 2">
+          <component id="r:2" label="R2" />
+        </mod>
+        <mod id="R3" label="Romance 3">
+          <component id="r:3" label="R3" />
+        </mod>
+        <mod id="R4" label="Romance 4">
+          <component id="r:4" label="R4" />
+        </mod>
+        <alternatives label="Pick face">
+          <component id="r:alt-a" label="Face A" />
+          <component id="r:alt-b" label="Face B" />
+        </alternatives>
+      </romances>
+    </npc>
+  </content>
+</installSequence>`
+
+  const { model } = parseInstallSequence(RAND_XML)
+
+  function romancesDisplay() {
+    const content = model.stations.find((s) => s.stationId === 'content')!
+    const tree = buildDisplayTree(content.children, {
+      game: 'bg1',
+      selectedIds: new Set(),
+    })
+    const npc = tree.find((d) => d.node.tag === 'npc')!
+    return npc.children.find((d) => d.node.tag === 'romances')!
+  }
+
+  it('replace 50% clears prior checks and selects half the units', () => {
+    const romances = romancesDisplay()
+    const units = collectRandomUnits(romances, 'bg1')
+    // 4 components + 1 alternatives = 5 units
+    expect(units.length).toBe(5)
+
+    let selected = createInitialSelection(model, 'bg1')
+    selected = toggleNode(
+      model,
+      selected,
+      'bg1',
+      model.componentsById.get('r:1')!,
+      undefined,
+      true,
+    )
+    selected = toggleNode(
+      model,
+      selected,
+      'bg1',
+      model.componentsById.get('r:2')!,
+      undefined,
+      true,
+    )
+    expect(selected.has('r:1')).toBe(true)
+    expect(selected.has('r:2')).toBe(true)
+
+    // wantCount = round(5 * 0.5) = 3
+    // Fisher–Yates with random=0 yields indices [1,2,3,4,0] → first 3 = units 1,2,3
+    selected = randomizeDisplaySubtree(model, selected, 'bg1', romances, {
+      percent: 50,
+      keepSelected: false,
+      random: () => 0,
+    })
+
+    const picked = ['r:1', 'r:2', 'r:3', 'r:4'].filter((id) => selected.has(id))
+    const altOn =
+      selected.has('r:alt-a') || selected.has('r:alt-b') ? 1 : 0
+    expect(picked.length + altOn).toBe(3)
+    expect(selected.has('r:1')).toBe(false)
+    expect(selected.has('r:2')).toBe(true)
+    expect(selected.has('r:3')).toBe(true)
+    expect(selected.has('r:4')).toBe(true)
+    expect(selected.has('r:alt-a')).toBe(false)
+    expect(selected.has('r:alt-b')).toBe(false)
+  })
+
+  it('keep/target grows when under percentage', () => {
+    const romances = romancesDisplay()
+    let selected = createInitialSelection(model, 'bg1')
+    selected = toggleNode(
+      model,
+      selected,
+      'bg1',
+      model.componentsById.get('r:1')!,
+      undefined,
+      true,
+    )
+    // 1 selected, want 3 → add 2 from off [r:2,r:3,r:4,alts]
+    // sampleIndices(4,2) with random=0 → [1,2] → r:3, r:4
+    selected = randomizeDisplaySubtree(model, selected, 'bg1', romances, {
+      percent: 50,
+      keepSelected: true,
+      random: () => 0,
+    })
+    expect(selected.has('r:1')).toBe(true)
+    expect(selected.has('r:2')).toBe(false)
+    expect(selected.has('r:3')).toBe(true)
+    expect(selected.has('r:4')).toBe(true)
+  })
+
+  it('keep/target trims when over percentage', () => {
+    const romances = romancesDisplay()
+    let selected = createInitialSelection(model, 'bg1')
+    for (const id of ['r:1', 'r:2', 'r:3', 'r:4']) {
+      selected = toggleNode(
+        model,
+        selected,
+        'bg1',
+        model.componentsById.get(id)!,
+        undefined,
+        true,
+      )
+    }
+    // 4 selected, want 3 → drop 1; sampleIndices(4,1) with random=0 → [1] → drop r:2
+    selected = randomizeDisplaySubtree(model, selected, 'bg1', romances, {
+      percent: 50,
+      keepSelected: true,
+      random: () => 0,
+    })
+    expect(selected.has('r:1')).toBe(true)
+    expect(selected.has('r:2')).toBe(false)
+    expect(selected.has('r:3')).toBe(true)
+    expect(selected.has('r:4')).toBe(true)
+  })
+
+  it('alternatives unit selects exactly one option', () => {
+    const romances = romancesDisplay()
+    const selected = randomizeDisplaySubtree(
+      model,
+      createInitialSelection(model, 'bg1'),
+      'bg1',
+      romances,
+      {
+        percent: 100,
+        keepSelected: false,
+        random: () => 0,
+      },
+    )
+    expect(selected.has('r:1')).toBe(true)
+    expect(selected.has('r:2')).toBe(true)
+    expect(selected.has('r:3')).toBe(true)
+    expect(selected.has('r:4')).toBe(true)
+    expect(selected.has('r:alt-a')).toBe(true)
+    expect(selected.has('r:alt-b')).toBe(false)
+  })
+
+  it('alternatives can pick the second option with different RNG', () => {
+    const romances = romancesDisplay()
+    // Only the alternatives unit (100% of 1 unit under a synthetic parent):
+    // Build a display that is just the alts child for a focused pick test.
+    const alts = romances.children.find((d) => d.node.kind === 'alternatives')!
+    const selected = randomizeDisplaySubtree(
+      model,
+      createInitialSelection(model, 'bg1'),
+      'bg1',
+      alts,
+      {
+        percent: 100,
+        keepSelected: false,
+        // sampleIndices(1,1) needs no random; selectRandomUnit calls random once for option
+        random: () => 0.9,
+      },
+    )
+    expect(selected.has('r:alt-a')).toBe(false)
+    expect(selected.has('r:alt-b')).toBe(true)
   })
 })

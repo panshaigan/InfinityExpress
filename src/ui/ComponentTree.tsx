@@ -10,7 +10,11 @@ import {
 } from 'react'
 import type { TreeNode } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
-import { displaySelectionState } from '../lib/selection/selectionEngine'
+import {
+  displaySelectionState,
+  type RandomizeOptions,
+  type RandomizePercent,
+} from '../lib/selection/selectionEngine'
 import type { SelectedGame } from '../lib/xml/schema'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import {
@@ -31,6 +35,8 @@ export interface TreeFoldApi {
   unfoldAll: () => void
 }
 
+const RANDOMIZE_PERCENTS: RandomizePercent[] = [25, 50, 75, 100]
+
 interface Props {
   /** Station (and Content branch) identity; used to restore fold state across remounts. */
   treeKey: string
@@ -40,8 +46,27 @@ interface Props {
   focusedKey: string | null
   onFocus: (key: string) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
+  onRandomize: (display: DisplayNode, options: RandomizeOptions) => void
   /** Registers fold/unfold-all for the current list; cleared on unmount. */
   onFoldApiReady?: (api: TreeFoldApi | null) => void
+}
+
+function ShuffleIcon() {
+  return (
+    <svg
+      className="tree-randomize-icon"
+      width="11"
+      height="11"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M11.5 1.5 13 3H9.5a4 4 0 0 0-3.5 2l1.1.7A2.5 2.5 0 0 1 9.5 4.5H13l-1.5 1.5L13 7.5 16 4.5 13 1.5l-1.5 0zM4.5 14.5 3 13h3.5a4 4 0 0 0 3.5-2l-1.1-.7A2.5 2.5 0 0 1 6.5 11.5H3l1.5-1.5L3 8.5 0 11.5 3 14.5l1.5 0zM1.5 4h4v1.25h-4zm9 6.75h4V12h-4z"
+      />
+    </svg>
+  )
 }
 
 /** Session-scoped expand/collapse per tree; survives remount, resets on page reload. */
@@ -96,6 +121,9 @@ function CheckboxRow({
   tabbableKey,
   onFocus,
   onToggle,
+  onRandomize,
+  randomizeMenuKey,
+  onRandomizeMenuKeyChange,
   depth,
   expandedKeys,
   onToggleExpand,
@@ -112,6 +140,9 @@ function CheckboxRow({
   tabbableKey: string | null
   onFocus: (key: string) => void
   onToggle: Props['onToggle']
+  onRandomize: Props['onRandomize']
+  randomizeMenuKey: string | null
+  onRandomizeMenuKeyChange: (key: string | null) => void
   depth: number
   expandedKeys: ReadonlySet<string>
   onToggleExpand: (key: string) => void
@@ -124,9 +155,12 @@ function CheckboxRow({
   const { node, collapsedComponent, children } = display
   const state = displaySelectionState(display, selectedIds, game)
   const inputRef = useRef<HTMLInputElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const foldable = children.length > 0
   const expanded = foldable && expandedKeys.has(node.key)
   const showSubtreeFold = foldable && hasNestedFoldable(display)
+  const menuOpen = foldable && randomizeMenuKey === node.key
+  const [keepSelected, setKeepSelected] = useState(false)
   const focused = focusedKey === node.key
   const isAlternatives = node.kind === 'alternatives'
   const isExclusiveOption = exclusiveGroupKey != null
@@ -138,6 +172,27 @@ function CheckboxRow({
       inputRef.current.indeterminate = state === 'indeterminate'
     }
   }, [state, isExclusiveOption])
+
+  useEffect(() => {
+    if (!menuOpen) {
+      setKeepSelected(false)
+      return
+    }
+    function onDocPointerDown(e: PointerEvent) {
+      const target = e.target as Node | null
+      if (menuRef.current?.contains(target)) return
+      onRandomizeMenuKeyChange(null)
+    }
+    function onDocKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onRandomizeMenuKeyChange(null)
+    }
+    document.addEventListener('pointerdown', onDocPointerDown)
+    document.addEventListener('keydown', onDocKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onDocPointerDown)
+      document.removeEventListener('keydown', onDocKeyDown)
+    }
+  }, [menuOpen, onRandomizeMenuKeyChange])
 
   const source = collapsedComponent ?? node
   const attrs = source.attrs
@@ -169,6 +224,20 @@ function CheckboxRow({
     if (action === 'expand') onExpandSubtree(node.key)
     else onCollapseSubtree(node.key)
     onFocus(node.key)
+  }
+
+  function handleRandomizeToggle(e: MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    onFocus(node.key)
+    onRandomizeMenuKeyChange(menuOpen ? null : node.key)
+  }
+
+  function handlePercentClick(e: MouseEvent, percent: RandomizePercent) {
+    e.preventDefault()
+    e.stopPropagation()
+    onRandomize(display, { percent, keepSelected })
+    onRandomizeMenuKeyChange(null)
   }
 
   function handleRowActivate() {
@@ -247,6 +316,52 @@ function CheckboxRow({
             onClick={handleInputClick}
           />
           <span className="tree-label">{label}</span>
+          {foldable && (
+            <span className="tree-randomize" ref={menuRef}>
+              <button
+                type="button"
+                className={`tree-randomize-btn${menuOpen ? ' open' : ''}`}
+                tabIndex={-1}
+                aria-expanded={menuOpen}
+                aria-haspopup="true"
+                aria-label={`Randomise selection under ${label}`}
+                onClick={handleRandomizeToggle}
+                onDoubleClick={handleFoldDoubleClick}
+              >
+                <ShuffleIcon />
+              </button>
+              {menuOpen && (
+                <div
+                  className="tree-randomize-menu"
+                  role="group"
+                  aria-label={`Randomise ${label}`}
+                  onClick={(e) => e.stopPropagation()}
+                  onDoubleClick={handleFoldDoubleClick}
+                >
+                  <div className="tree-randomize-percents">
+                    {RANDOMIZE_PERCENTS.map((pct) => (
+                      <button
+                        key={pct}
+                        type="button"
+                        className="tree-randomize-pct"
+                        onClick={(e) => handlePercentClick(e, pct)}
+                      >
+                        {pct}%
+                      </button>
+                    ))}
+                  </div>
+                  <label className="tree-randomize-keep">
+                    <input
+                      type="checkbox"
+                      checked={keepSelected}
+                      onChange={(e) => setKeepSelected(e.target.checked)}
+                    />
+                    Keep currently selected
+                  </label>
+                </div>
+              )}
+            </span>
+          )}
           {showSubtreeFold && (
             <span className="tree-fold-all">
               <button
@@ -302,6 +417,9 @@ function CheckboxRow({
             tabbableKey={tabbableKey}
             onFocus={onFocus}
             onToggle={onToggle}
+            onRandomize={onRandomize}
+            randomizeMenuKey={randomizeMenuKey}
+            onRandomizeMenuKeyChange={onRandomizeMenuKeyChange}
             depth={depth + 1}
             expandedKeys={expandedKeys}
             onToggleExpand={onToggleExpand}
@@ -317,6 +435,7 @@ function CheckboxRow({
 
 export function ComponentTree(props: Props) {
   const rowRefs = useRef(new Map<string, HTMLDivElement>())
+  const [randomizeMenuKey, setRandomizeMenuKey] = useState<string | null>(null)
   const [expandedKeys, setExpandedKeysState] = useState<Set<string>>(() => {
     const cached = expandedKeysCache.get(props.treeKey)
     if (cached) return new Set(cached)
@@ -497,6 +616,9 @@ export function ComponentTree(props: Props) {
           tabbableKey={tabbableKey}
           onFocus={props.onFocus}
           onToggle={props.onToggle}
+          onRandomize={props.onRandomize}
+          randomizeMenuKey={randomizeMenuKey}
+          onRandomizeMenuKeyChange={setRandomizeMenuKey}
           depth={0}
           expandedKeys={expandedKeys}
           onToggleExpand={onToggleExpand}
