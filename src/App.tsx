@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import installSequenceXml from './data/InstallSequence.xml?raw'
 import modsCsv from './data/mods.csv?raw'
 import { parseInstallSequence } from './lib/xml/parseInstallSequence'
@@ -82,7 +82,11 @@ import { useScrolled } from './lib/ui/useScrolled'
 import {
   readDetailCollapsed,
   writeDetailCollapsed,
+  readDetailWidth,
 } from './lib/ui/detailPanePrefs'
+import { diffSelectedIds } from './lib/presets/diffSelectedIds'
+import { DetailResizeHandle } from './ui/DetailResizeHandle'
+import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
 import {
   applySelectionPreset,
@@ -205,9 +209,15 @@ export default function App() {
   const [railCollapsed, setRailCollapsed] = useState(() => readRailCollapsed())
   const [hideCaughtUp, setHideCaughtUp] = useState(false)
   const [detailCollapsed, setDetailCollapsed] = useState(() => readDetailCollapsed())
+  const [detailWidth, setDetailWidth] = useState(() => readDetailWidth())
   const [exportNotice, setExportNotice] = useState<{ lineCount: number } | null>(
     null,
   )
+  const [presetNotice, setPresetNotice] = useState<{
+    name: string
+    added: number
+    removed: number
+  } | null>(null)
   const {
     scrolled: listScrolled,
     onScroll: onListScroll,
@@ -578,7 +588,9 @@ export default function App() {
     if (!game) return
     const preset = selectionPresets.find((p) => p.id === id && p.game === game)
     if (!preset) return
+    const before = selectedIds
     const applied = applySelectionPreset(preset)
+    const delta = diffSelectedIds(before, applied.selectedIds)
     setSelectedIds(applied.selectedIds)
     setLadderChecked(applied.ladderChecked)
     setLowerDifficultyPreset(applied.lowerDifficulty)
@@ -595,6 +607,11 @@ export default function App() {
     })
     setActivePresetId(preset.id)
     setPresetBaseline(fingerprintFromPreset(preset))
+    setPresetNotice({
+      name: preset.name,
+      added: delta.added,
+      removed: delta.removed,
+    })
   }
 
   function renameSelectionPreset(name: string) {
@@ -871,6 +888,12 @@ export default function App() {
     return () => window.clearTimeout(id)
   }, [exportNotice])
 
+  useEffect(() => {
+    if (!presetNotice) return
+    const id = window.setTimeout(() => setPresetNotice(null), 4500)
+    return () => window.clearTimeout(id)
+  }, [presetNotice])
+
   function selectEngine() {
     setActiveStation('engine')
     clearFocus()
@@ -1143,10 +1166,22 @@ export default function App() {
             lineCount={exportNotice?.lineCount ?? 0}
             onDismiss={() => setExportNotice(null)}
           />
+          <PresetLoadNotice
+            visible={presetNotice != null && !showRouteTip}
+            presetName={presetNotice?.name ?? ''}
+            added={presetNotice?.added ?? 0}
+            removed={presetNotice?.removed ?? 0}
+            onDismiss={() => setPresetNotice(null)}
+          />
           <div
             className={`workspace${showDetail ? '' : ' engine-only'}${
               showDetail && detailCollapsed ? ' detail-collapsed' : ''
             }`}
+            style={
+              showDetail
+                ? ({ '--detail-width': `${detailWidth}px` } as CSSProperties)
+                : undefined
+            }
           >
             <div className={`list-pane${listScrolled ? ' is-scrolled' : ''}`}>
               {activeStation === 'engine' || !game ? (
@@ -1287,6 +1322,13 @@ export default function App() {
                 </details>
               )}
             </div>
+
+            {showDetail && !detailCollapsed && (
+              <DetailResizeHandle
+                width={detailWidth}
+                onWidthChange={setDetailWidth}
+              />
+            )}
 
             {showDetail && (
               <aside

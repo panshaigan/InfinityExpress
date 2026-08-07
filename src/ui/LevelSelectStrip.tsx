@@ -1,6 +1,7 @@
 import {
   DIFFICULTY_LEVELS,
   FILTER_LADDER_LEVELS,
+  LEVEL_HINTS,
   LEVEL_LABELS,
   type DifficultyLevel,
   type LadderLevel,
@@ -48,6 +49,7 @@ export function LevelSelectStrip({
       <div className="level-preselect-grid" role="group" aria-label="Ladder levels">
         {FILTER_LADDER_LEVELS.map((level) => {
           const checked = checkedLadderLevels.has(level)
+          const hint = LEVEL_HINTS[level]
           return (
             <label
               key={level}
@@ -59,12 +61,18 @@ export function LevelSelectStrip({
                 disabled={!enabled}
                 onChange={(e) => onLadderToggle(level, e.target.checked)}
               />
-              <span className="level-card-label">{LEVEL_LABELS[level]}</span>
+              <span className="level-card-copy">
+                <span className="level-card-label">{LEVEL_LABELS[level]}</span>
+                {!compact && hint ? (
+                  <span className="level-card-hint">{hint}</span>
+                ) : null}
+              </span>
             </label>
           )
         })}
         {DIFFICULTY_LEVELS.map((token) => {
           const checked = difficultyChecked[token]
+          const hint = LEVEL_HINTS[token]
           return (
             <label
               key={token}
@@ -76,7 +84,12 @@ export function LevelSelectStrip({
                 disabled={!enabled}
                 onChange={(e) => onDifficultyChange(token, e.target.checked)}
               />
-              <span className="level-card-label">{LEVEL_LABELS[token]}</span>
+              <span className="level-card-copy">
+                <span className="level-card-label">{LEVEL_LABELS[token]}</span>
+                {!compact && hint ? (
+                  <span className="level-card-hint">{hint}</span>
+                ) : null}
+              </span>
             </label>
           )
         })}

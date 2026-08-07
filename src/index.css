@@ -816,6 +816,50 @@ body {
   grid-template-columns: 1fr 2.65rem;
 }
 
+.workspace:not(.engine-only):not(.detail-collapsed) {
+  grid-template-columns: 1fr 0.35rem var(--detail-width);
+}
+
+.detail-resize-handle {
+  width: 0.35rem;
+  margin: 0 -0.05rem;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  z-index: 4;
+  touch-action: none;
+}
+
+.detail-resize-handle::after {
+  content: "";
+  position: absolute;
+  inset: 0.75rem 0.05rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 80%, transparent);
+  opacity: 0;
+  transition: opacity var(--ease), background var(--ease);
+}
+
+.detail-resize-handle:hover::after,
+.detail-resize-handle:focus-visible::after,
+body.is-resizing-detail .detail-resize-handle::after {
+  opacity: 1;
+  background: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+.detail-resize-handle:focus-visible {
+  outline: none;
+}
+
+body.is-resizing-detail {
+  cursor: col-resize;
+  user-select: none;
+}
+
+body.is-resizing-detail * {
+  cursor: col-resize !important;
+}
+
 .list-pane {
   display: flex;
   flex-direction: column;
@@ -997,8 +1041,48 @@ body {
   flex-shrink: 0;
 }
 
+.preset-load-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-shrink: 0;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 14%, transparent),
+      color-mix(in srgb, var(--panel) 72%, transparent) 55%
+    );
+}
+
+.preset-load-notice-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.preset-load-notice-title {
+  margin: 0 0 0.12rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--ink) 88%, var(--accent));
+}
+
+.preset-load-notice-body {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.preset-load-notice-dismiss {
+  flex-shrink: 0;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .export-notice {
+  .export-notice,
+  .preset-load-notice {
     animation: export-flash-in 0.22s ease;
   }
 }
@@ -1433,24 +1517,44 @@ body {
 }
 
 .engine-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
   background: color-mix(in srgb, var(--panel) 88%, #000);
   border: 1px solid var(--line);
+  border-left: 3px solid color-mix(in srgb, var(--line) 70%, transparent);
   color: var(--ink);
-  padding: 1.35rem 1rem;
+  padding: 1.15rem 1rem 1.2rem;
   border-radius: var(--radius-lg);
   font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--ease), background var(--ease), transform var(--ease);
+}
+
+.engine-card-title {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  cursor: pointer;
-  transition: border-color var(--ease), background var(--ease), transform var(--ease);
+}
+
+.engine-card-blurb {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.3;
 }
 
 .engine-card:hover,
 .engine-card.active {
   border-color: var(--accent);
+  border-left-color: var(--accent);
   background: var(--accent-soft);
+}
+
+.engine-card.active .engine-card-blurb {
+  color: color-mix(in srgb, var(--ink) 70%, var(--muted));
 }
 
 .engine-card:focus-visible {
@@ -1506,16 +1610,16 @@ body {
 
 .level-card {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.85rem;
-  min-height: 4.75rem;
-  background: var(--panel);
+  gap: 0.65rem;
+  min-height: 4.5rem;
+  background: color-mix(in srgb, var(--panel) 90%, #000);
   border: 1px solid var(--line);
+  border-left: 3px solid color-mix(in srgb, var(--line) 70%, transparent);
   color: var(--ink);
-  padding: 1rem 1rem 1.1rem;
-  border-radius: 8px;
+  padding: 0.85rem 0.9rem 0.95rem;
+  border-radius: var(--radius-lg);
   font: inherit;
   cursor: pointer;
   transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
@@ -1528,6 +1632,7 @@ body {
 
 .level-card.active {
   border-color: var(--accent);
+  border-left-color: var(--accent);
   background: var(--accent-soft);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
 }
@@ -1540,14 +1645,28 @@ body {
   accent-color: var(--accent);
   width: 1.1rem;
   height: 1.1rem;
-  margin: 0;
+  margin: 0.15rem 0 0;
   flex-shrink: 0;
 }
 
+.level-card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
 .level-card-label {
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 600;
   line-height: 1.25;
+}
+
+.level-card-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.3;
+  font-weight: 400;
 }
 
 .level-preselect.compact {
@@ -1570,11 +1689,13 @@ body {
   min-height: 0;
   padding: 0.25rem 0.45rem;
   border-radius: 4px;
+  border-left-width: 1px;
 }
 
 .level-preselect.compact .level-card input {
   width: 0.85rem;
   height: 0.85rem;
+  margin: 0;
 }
 
 .level-preselect.compact .level-card-label {
@@ -2427,6 +2548,11 @@ body {
     grid-template-rows: 1fr minmax(180px, 40%);
   }
 
+  .workspace:not(.engine-only):not(.detail-collapsed) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr minmax(180px, 40%);
+  }
+
   .workspace.engine-only {
     grid-template-rows: 1fr;
   }
@@ -2434,6 +2560,10 @@ body {
   .workspace.detail-collapsed {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr minmax(2.5rem, auto);
+  }
+
+  .detail-resize-handle {
+    display: none;
   }
 
   .detail-pane.collapsed {

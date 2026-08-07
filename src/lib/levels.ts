@@ -26,6 +26,17 @@ export const LEVEL_LABELS: Record<string, string> = {
   higherDifficulty: 'Higher difficulty',
 }
 
+/** One-line hints for Engine / station level cards (optional). */
+export const LEVEL_HINTS: Record<string, string> = {
+  fixes: 'Stability first',
+  restoration: 'Cut content returned',
+  vanillaPlus: 'Familiar, plus polish',
+  blendWell: 'Fits the base game',
+  extended: 'Bigger departures',
+  lowerDifficulty: 'Easier encounters',
+  higherDifficulty: 'Harder encounters',
+}
+
 /** Levels shown as filter chips (restructure shares Well blended). */
 export const FILTER_LADDER_LEVELS: LadderLevel[] = [...LADDER_LEVELS]
 

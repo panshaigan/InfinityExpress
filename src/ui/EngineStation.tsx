@@ -5,6 +5,14 @@ import { ScreenNavButtons } from './ScreenNavButtons'
 
 const GAMES: SelectedGame[] = ['bg1', 'bg2', 'eet', 'iwd', 'pst']
 
+const GAME_BLURBS: Record<SelectedGame, string> = {
+  bg1: "Baldur's Gate",
+  bg2: 'Shadows of Amn',
+  eet: 'The full saga',
+  iwd: 'Icewind Dale',
+  pst: 'Torment',
+}
+
 interface Props {
   game: SelectedGame | null
   onChoose: (game: SelectedGame) => void
@@ -54,7 +62,8 @@ export function EngineStation({
             className={game === g ? 'engine-card active' : 'engine-card'}
             onClick={() => onChoose(g)}
           >
-            {GAME_LABELS[g]}
+            <span className="engine-card-title">{GAME_LABELS[g]}</span>
+            <span className="engine-card-blurb">{GAME_BLURBS[g]}</span>
           </button>
         ))}
       </div>
