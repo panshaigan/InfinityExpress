@@ -32,6 +32,8 @@ interface Props {
   sizeBounds: SizeBounds | null
   /** Called when Esc blurs search so focus can return to the component tree. */
   onRequestTreeFocus?: () => void
+  /** Override search field placeholder / aria-label (e.g. global search). */
+  searchPlaceholder?: string
 }
 
 type PanelId = 'level' | 'size' | 'author'
@@ -58,6 +60,7 @@ export function FiltersStrip({
   authorOptions,
   sizeBounds,
   onRequestTreeFocus,
+  searchPlaceholder = 'Search in this window...',
 }: Props) {
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null)
   const baseId = useId()
@@ -309,10 +312,10 @@ export function FiltersStrip({
           id={FILTERS_SEARCH_ID}
           type="search"
           className="filters-search"
-          placeholder="Search in this window..."
+          placeholder={searchPlaceholder}
           value={criteria.search}
           onChange={(e) => patch({ search: e.target.value })}
-          aria-label="Search in this window"
+          aria-label={searchPlaceholder}
         />
 
         <button

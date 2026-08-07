@@ -6,23 +6,28 @@ import {
 } from '../lib/xml/schema'
 import type { StationSlot } from '../lib/ui/chromeHotkeys'
 
+export type AppNavSlot = 'engine' | 'search' | StationId
+
 interface Props {
   game: SelectedGame | null
-  activeStation: 'engine' | StationId
+  activeStation: AppNavSlot
   visibleStations: StationId[]
   finishedStations: ReadonlySet<StationSlot>
   onSelectEngine: () => void
+  onSelectSearch: () => void
   onSelectStation: (id: StationId) => void
 }
 
 function stationClass(
-  id: StationSlot,
-  activeStation: StationSlot,
+  id: AppNavSlot,
+  activeStation: AppNavSlot,
   finishedStations: ReadonlySet<StationSlot>,
 ): string {
   const parts: string[] = []
   if (activeStation === id) parts.push('active')
-  if (finishedStations.has(id)) parts.push('finished')
+  if (id !== 'search' && finishedStations.has(id as StationSlot)) {
+    parts.push('finished')
+  }
   return parts.join(' ')
 }
 
@@ -32,6 +37,7 @@ export function StationNav({
   visibleStations,
   finishedStations,
   onSelectEngine,
+  onSelectSearch,
   onSelectStation,
 }: Props) {
   return (
@@ -47,6 +53,14 @@ export function StationNav({
             ✓
           </span>
         )}
+      </button>
+      <button
+        type="button"
+        className={stationClass('search', activeStation, finishedStations)}
+        disabled={!game}
+        onClick={onSelectSearch}
+      >
+        <span className="station-nav-label">Search</span>
       </button>
       {STATION_ORDER.filter((id) => visibleStations.includes(id)).map((id) => (
         <button

@@ -339,6 +339,23 @@ describe('filterDisplayTree', () => {
     ).toEqual(['reqVis'])
   })
 
+  it('matches component id exactly, not as substring', () => {
+    const withId: DisplayNode[] = [
+      group('g', [
+        component('uniqueCompId:99', {
+          label: 'Plain Leaf',
+          effectiveLevel: 'fixes',
+        }),
+      ]),
+    ]
+    expect(
+      ids(filterDisplayTree(withId, criteria({ search: 'uniqueCompId' }))),
+    ).toEqual([])
+    expect(
+      ids(filterDisplayTree(withId, criteria({ search: 'uniqueCompId:99' }))),
+    ).toEqual(['uniqueCompId:99'])
+  })
+
   it('searches parent node labels and keeps matching descendants', () => {
     expect(ids(filterDisplayTree(tree, criteria({ search: 'g1' })))).toEqual([
       'a',

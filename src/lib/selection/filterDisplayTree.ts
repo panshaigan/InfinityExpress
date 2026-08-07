@@ -10,6 +10,12 @@ import {
   type SelectedGame,
   type TreeNode,
 } from '../xml/schema'
+import {
+  ancestorLabelsMatchSearch,
+  componentTextMatchesSearch,
+  normalizeSearchQuery,
+  searchFieldsFromAttrs,
+} from './componentSearch'
 import { displaySelectionState } from './selectionEngine'
 import type { DisplayNode } from './visibility'
 
@@ -289,33 +295,46 @@ function displaySearchLabel(display: DisplayNode): string {
   return (display.node.attrs.label ?? display.node.tag).toLowerCase()
 }
 
-/** True when the leaf's own label/id/modId/desc contains `q` (already lowercased). */
-function leafOwnSearchMatches(display: DisplayNode, q: string): boolean {
+function leafSearchFields(
+  display: DisplayNode,
+  mod: ModInfo | undefined,
+): ReturnType<typeof searchFieldsFromAttrs> {
   const source = displaySource(display)
   const attrs = source.attrs
-  const label = (
-    attrs.label ??
-    display.node.attrs.label ??
-    display.node.tag
-  ).toLowerCase()
-  const id = isComponentNode(source) ? source.componentId.toLowerCase() : ''
-  const modId = (attrs.modId ?? '').toLowerCase()
-  const desc = (attrs.desc ?? display.node.attrs.desc ?? '').toLowerCase()
-  return (
-    label.includes(q) ||
-    id.includes(q) ||
-    modId.includes(q) ||
-    desc.includes(q)
+  return searchFieldsFromAttrs(
+    {
+      label: attrs.label ?? display.node.attrs.label,
+      name: attrs.name ?? display.node.attrs.name,
+      modId: attrs.modId,
+      desc: attrs.desc ?? display.node.attrs.desc,
+    },
+    {
+      componentId: isComponentNode(source) ? source.componentId : undefined,
+      fallbackLabel: display.node.tag,
+      mod,
+    },
   )
 }
 
-function leafMatchesCriteria(
+export interface LeafFilterOptions {
+  /** When true, ignore `criteria.showHidden` and always include hidden/required. */
+  forceShowHidden?: boolean
+  /** Ancestor container label already matched the search query. */
+  searchHitFromAncestor?: boolean
+  /** Explicit ancestor labels for search (global path); optional with flag above. */
+  ancestorLabels?: readonly string[]
+}
+
+/**
+ * Whether a leaf display row passes filter criteria (level, hidden, tags, size,
+ * author, search). Shared by station tree filtering and global search.
+ */
+export function leafMatchesCriteria(
   display: DisplayNode,
   criteria: FilterCriteria,
   ctx: FilterModContext | undefined,
-  seed: Omit<FilterSeedOptions, 'tagOptions'>,
-  /** True when an ancestor container label already matched the search query. */
-  searchHitFromAncestor = false,
+  seed: Omit<FilterSeedOptions, 'tagOptions'> = {},
+  options: LeafFilterOptions = {},
 ): boolean {
   const source = displaySource(display)
   const attrs = source.attrs
@@ -331,9 +350,10 @@ function leafMatchesCriteria(
     return false
   }
 
+  const showHidden = options.forceShowHidden || criteria.showHidden
   const isHidden = Boolean(attrs.noDisplay)
   const isRequired = Boolean(attrs.required)
-  if (!criteria.showHidden && (isHidden || isRequired)) return false
+  if (!showHidden && (isHidden || isRequired)) return false
 
   if (!tagsPass(splitTags(attrs.tags), criteria.tags, criteria.tagsOnlyChecked)) {
     return false
@@ -343,9 +363,15 @@ function leafMatchesCriteria(
   if (!sizePasses(mod, criteria, seed.sizeBounds ?? null)) return false
   if (!authorPasses(mod, criteria, seed.authorOptions ?? [])) return false
 
-  const q = criteria.search.trim().toLowerCase()
-  if (q && !searchHitFromAncestor && !leafOwnSearchMatches(display, q)) {
-    return false
+  const q = normalizeSearchQuery(criteria.search)
+  if (q) {
+    const hitAncestor =
+      Boolean(options.searchHitFromAncestor) ||
+      ancestorLabelsMatchSearch(options.ancestorLabels, q)
+    if (!hitAncestor) {
+      const fields = leafSearchFields(display, mod)
+      if (!componentTextMatchesSearch(fields, q)) return false
+    }
   }
 
   return true
@@ -371,7 +397,8 @@ function alternativesHasUncheckedDisplayIfOption(
 /**
  * Prune display tree by filter criteria. Keep ancestors when any descendant matches.
  * Leaf / collapsed rows must match; containers stay only as scaffolding for matches.
- * Search matches leaf label/id/modId/desc, or any ancestor container label.
+ * Search matches leaf label / exact component id / modId / desc / WeiDU name /
+ * catalog mod name, or any ancestor container label.
  *
  * Unchecked filter modes:
  * - `withOptions` — drop checked regular rows; keep all `<alternatives>` groups
@@ -401,7 +428,7 @@ export function filterDisplayTree(
   const applySelection =
     mode !== 'off' && !options.skipSelectionFilter && selection != null
   const underDisplayIf = Boolean(options.underDisplayIf)
-  const q = criteria.search.trim().toLowerCase()
+  const q = normalizeSearchQuery(criteria.search)
 
   for (const display of nodes) {
     const gatedHere =
@@ -447,13 +474,9 @@ export function filterDisplayTree(
 
     if (isLeaf) {
       if (
-        !leafMatchesCriteria(
-          display,
-          criteria,
-          ctx,
-          seed,
-          Boolean(options.searchHitFromAncestor),
-        )
+        !leafMatchesCriteria(display, criteria, ctx, seed, {
+          searchHitFromAncestor: Boolean(options.searchHitFromAncestor),
+        })
       ) {
         continue
       }

@@ -55,13 +55,18 @@ import {
   cycleScreen,
   type NavScreen,
 } from './lib/ui/screenCycle'
-import { StationNav } from './ui/StationNav'
+import {
+  buildGlobalSearchResults,
+} from './lib/selection/globalSearch'
+import { StationNav, type AppNavSlot } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
 import { ComponentDetail } from './ui/ComponentDetail'
 import { ContentBranchNav } from './ui/ContentBranchNav'
 import { StationListToolbar } from './ui/StationListToolbar'
+import { GlobalSearchList } from './ui/GlobalSearchList'
+import { GlobalSearchToolbar } from './ui/GlobalSearchToolbar'
 import { FILTERS_SEARCH_ID, FiltersStrip } from './ui/FiltersStrip'
 import { SelectionPresetsBar } from './ui/SelectionPresetsBar'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
@@ -150,7 +155,7 @@ export default function App() {
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
   const [game, setGame] = useState<SelectedGame | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
-  const [activeStation, setActiveStation] = useState<'engine' | StationId>('engine')
+  const [activeStation, setActiveStation] = useState<AppNavSlot>('engine')
   const [finishedStations, setFinishedStations] = useState<Set<StationSlot>>(
     () => new Set(),
   )
@@ -200,7 +205,7 @@ export default function App() {
   }, [game, model.stations, selectedIds])
 
   const displayNodes = useMemo(() => {
-    if (!game || activeStation === 'engine') return []
+    if (!game || activeStation === 'engine' || activeStation === 'search') return []
     const block = model.stations.find((s) => s.stationId === activeStation)
     if (!block) return []
     const includeHidden = filtersNeedIncludeHidden(filters)
@@ -209,6 +214,19 @@ export default function App() {
     const built = buildDisplayTree(stationChildren, { game, selectedIds, includeHidden })
     return filterDisplayTree(
       built,
+      filters,
+      { model, modsByCodename },
+      filterSeed,
+      { selectedIds, game },
+    )
+  }, [activeStation, filters, game, model, modsByCodename, selectedIds])
+
+  const globalSearchHits = useMemo(() => {
+    if (!game || activeStation !== 'search') return []
+    return buildGlobalSearchResults(
+      model,
+      game,
+      selectedIds,
       filters,
       { model, modsByCodename },
       filterSeed,
@@ -236,11 +254,12 @@ export default function App() {
   }, [filters, game, model, modsByCodename, selectedIds, visibleStations])
 
   const stationDesc = useMemo(() => {
-    if (activeStation === 'engine') return undefined
+    if (activeStation === 'engine' || activeStation === 'search') return undefined
     const block = model.stations.find((s) => s.stationId === activeStation)
     return block?.roots.find((r) => r.attrs.desc)?.attrs.desc
   }, [activeStation, model.stations])
 
+  const isSearchStation = activeStation === 'search'
   const isContentStation = activeStation === 'content'
   const contentMainBranches = isContentStation ? displayNodes : []
   const selectedMain = useMemo(() => {
@@ -263,8 +282,19 @@ export default function App() {
     if (!game) return 'unchecked' as const
     return listSelectionState(listNodes, selectedIds, game)
   }, [game, listNodes, selectedIds])
+
+  const globalSearchCheckState = useMemo(() => {
+    if (!game) return 'unchecked' as const
+    const checkable = globalSearchHits.filter((h) => h.checkable)
+    if (checkable.length === 0) return 'unchecked' as const
+    const nodes = checkable.map(
+      (h) => ({ node: h.component, children: [] }) as DisplayNode,
+    )
+    return listSelectionState(nodes, selectedIds, game)
+  }, [game, globalSearchHits, selectedIds])
+
   const activeStationPreset =
-    activeStation === 'engine'
+    activeStation === 'engine' || activeStation === 'search'
       ? emptyStationPreset()
       : (stationLevelPresets.get(activeStation) ?? emptyStationPreset())
 
@@ -544,7 +574,7 @@ export default function App() {
   }
 
   function onStationLadderToggle(level: LadderLevel, wantChecked: boolean) {
-    if (!game || activeStation === 'engine') return
+    if (!game || activeStation === 'engine' || activeStation === 'search') return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setStationLevelPresets((prev) => {
@@ -574,7 +604,7 @@ export default function App() {
     token: 'lowerDifficulty' | 'higherDifficulty',
     want: boolean,
   ) {
-    if (!game || activeStation === 'engine') return
+    if (!game || activeStation === 'engine' || activeStation === 'search') return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setStationLevelPresets((prev) => {
@@ -593,7 +623,7 @@ export default function App() {
   }
 
   function onClearToGlobal() {
-    if (!game || activeStation === 'engine') return
+    if (!game || activeStation === 'engine' || activeStation === 'search') return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setSelectedIds((prev) =>
@@ -623,9 +653,18 @@ export default function App() {
     setSelectedIds((prev) => toggleListSelection(model, prev, game, listNodes, wantSelected))
   }
 
-  const currentFinished = finishedStations.has(activeStation)
+  function onToggleAllSearch(wantSelected: boolean) {
+    if (!game) return
+    const nodes = globalSearchHits
+      .filter((h) => h.checkable)
+      .map((h) => ({ node: h.component, children: [] }) as DisplayNode)
+    setSelectedIds((prev) => toggleListSelection(model, prev, game, nodes, wantSelected))
+  }
+
+  const currentFinished =
+    activeStation !== 'search' && finishedStations.has(activeStation)
   const currentNavScreen = useMemo((): NavScreen | null => {
-    if (activeStation === 'engine' || !game) return null
+    if (activeStation === 'engine' || activeStation === 'search' || !game) return null
     if (activeStation === 'content') {
       if (contentMainKey == null || contentSubKey == null) return null
       return {
@@ -639,9 +678,15 @@ export default function App() {
   }, [activeStation, contentMainKey, contentSubKey, contentSubTag, game])
   const canCycleScreens =
     !!game && navigableScreens.some((s) => !finishedStations.has(s.stationId))
-  const canMarkFinished = activeStation === 'engine' ? !!game : true
+  const canMarkFinished =
+    activeStation === 'search'
+      ? false
+      : activeStation === 'engine'
+        ? !!game
+        : true
 
   function markStationFinished() {
+    if (activeStation === 'search') return
     setFinishedStations((prev) => {
       const next = new Set(prev)
       next.add(activeStation)
@@ -650,6 +695,7 @@ export default function App() {
   }
 
   function unmarkStationFinished() {
+    if (activeStation === 'search') return
     setFinishedStations((prev) => {
       if (!prev.has(activeStation)) return prev
       const next = new Set(prev)
@@ -710,6 +756,11 @@ export default function App() {
     clearFocus()
   }
 
+  function selectSearch() {
+    setActiveStation('search')
+    clearFocus()
+  }
+
   function selectStation(id: StationId) {
     setActiveStation(id)
     clearFocus()
@@ -718,6 +769,12 @@ export default function App() {
   function onFocus(key: string) {
     setFocusedKey(key)
     setFocusedComponentId(null)
+    setPendingFocusId(null)
+  }
+
+  function onFocusSearchResult(componentId: string) {
+    setFocusedKey(null)
+    setFocusedComponentId(componentId)
     setPendingFocusId(null)
   }
 
@@ -743,6 +800,13 @@ export default function App() {
   }
 
   function focusComponentTree() {
+    const searchRow = document.querySelector<HTMLElement>(
+      '.global-search-list [role="option"][tabindex="0"]',
+    )
+    if (searchRow) {
+      searchRow.focus()
+      return
+    }
     const row = document.querySelector<HTMLElement>(
       '.component-tree [role="treeitem"][tabindex="0"]',
     )
@@ -792,7 +856,9 @@ export default function App() {
       if (cmd.type === 'cycleStation') {
         e.preventDefault()
         const order = stationCycleOrder(visibleStations)
-        const next = cycleStation(order, activeStation, cmd.direction)
+        const cycleFrom: StationSlot =
+          activeStation === 'search' ? 'engine' : activeStation
+        const next = cycleStation(order, cycleFrom, cmd.direction)
         if (next) applyStationSlot(next)
         return
       }
@@ -877,6 +943,7 @@ export default function App() {
           visibleStations={visibleStations}
           finishedStations={finishedStations}
           onSelectEngine={selectEngine}
+          onSelectSearch={selectSearch}
           onSelectStation={selectStation}
         />
 
@@ -888,6 +955,11 @@ export default function App() {
             authorOptions={catalogAuthorOptions}
             sizeBounds={catalogSizeBounds}
             onRequestTreeFocus={focusComponentTree}
+            searchPlaceholder={
+              isSearchStation
+                ? 'Search all components...'
+                : 'Search in this window...'
+            }
           />
 
           <div className={`workspace${showDetail ? '' : ' engine-only'}`}>
@@ -921,6 +993,37 @@ export default function App() {
                     </details>
                   )}
                 </div>
+              ) : isSearchStation ? (
+                <>
+                  <div className="list-pane-header">
+                    <div className="list-pane-header-title">
+                      <h2>Search</h2>
+                    </div>
+                    <p className="lede">
+                      Find any eligible component across stations. Gated options
+                      stay listed but cannot be checked until unlocked.
+                    </p>
+                    <GlobalSearchToolbar
+                      resultCount={globalSearchHits.length}
+                      checkableCount={
+                        globalSearchHits.filter((h) => h.checkable).length
+                      }
+                      listState={globalSearchCheckState}
+                      onToggleAll={onToggleAllSearch}
+                    />
+                  </div>
+                  <div className="list-pane-scroll">
+                    <GlobalSearchList
+                      hits={globalSearchHits}
+                      selectedIds={selectedIds}
+                      game={game}
+                      focusedComponentId={focusedComponentId}
+                      onFocus={onFocusSearchResult}
+                      onToggle={onToggle}
+                      onJump={onNavigateToComponent}
+                    />
+                  </div>
+                </>
               ) : (
                 <>
                   <div className="list-pane-header">
