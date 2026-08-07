@@ -25,13 +25,16 @@ export type AuthorFilterMode = 'include' | 'exclude'
  *   (including groups that already have a choice)
  * - `only` — hide checked regular rows; keep only `<alternatives>` groups where
  *   nothing is selected yet
+ * - `dependencies` — hide checked rows and always-visible rows; keep only
+ *   unchecked rows gated by `displayIf` on themselves or an ancestor
  */
-export type UncheckedFilterMode = 'off' | 'withOptions' | 'only'
+export type UncheckedFilterMode = 'off' | 'withOptions' | 'only' | 'dependencies'
 
 export const UNCHECKED_FILTER_CYCLE: readonly UncheckedFilterMode[] = [
   'off',
   'withOptions',
   'only',
+  'dependencies',
 ] as const
 
 export function cycleUncheckedFilter(mode: UncheckedFilterMode): UncheckedFilterMode {
@@ -48,6 +51,8 @@ export function uncheckedFilterLabel(mode: UncheckedFilterMode): string {
       return 'Unchecked + options'
     case 'only':
       return 'Unchecked only'
+    case 'dependencies':
+      return 'Unchecked dependencies'
   }
 }
 
@@ -341,6 +346,8 @@ function leafMatchesCriteria(
  *   (full option lists, even when a choice is already selected)
  * - `only` — drop checked regular rows; keep `<alternatives>` only when nothing
  *   in the group is selected yet (full option list when kept)
+ * - `dependencies` — drop checked and always-visible rows; keep unchecked rows
+ *   gated by `displayIf` on themselves or an ancestor (no alternatives special-case)
  */
 export function filterDisplayTree(
   nodes: DisplayNode[],
@@ -348,15 +355,19 @@ export function filterDisplayTree(
   ctx?: FilterModContext,
   seed: Omit<FilterSeedOptions, 'tagOptions'> = {},
   selection?: FilterSelectionContext,
-  options: { skipSelectionFilter?: boolean } = {},
+  options: { skipSelectionFilter?: boolean; underDisplayIf?: boolean } = {},
 ): DisplayNode[] {
   const result: DisplayNode[] = []
   const mode = criteria.uncheckedFilter
   const applySelection =
     mode !== 'off' && !options.skipSelectionFilter && selection != null
+  const underDisplayIf = Boolean(options.underDisplayIf)
 
   for (const display of nodes) {
-    if (applySelection && display.node.kind === 'alternatives') {
+    const gatedHere =
+      underDisplayIf || Boolean(display.node.attrs.displayIf?.trim())
+
+    if (applySelection && mode !== 'dependencies' && display.node.kind === 'alternatives') {
       if (
         mode === 'only' &&
         displaySelectionState(display, selection.selectedIds, selection.game) !==
@@ -370,7 +381,7 @@ export function filterDisplayTree(
         ctx,
         seed,
         selection,
-        { skipSelectionFilter: true },
+        { skipSelectionFilter: true, underDisplayIf: gatedHere },
       )
       if (filteredChildren.length > 0) {
         result.push({ ...display, children: filteredChildren })
@@ -389,6 +400,9 @@ export function filterDisplayTree(
       ) {
         continue
       }
+      if (applySelection && mode === 'dependencies' && !gatedHere) {
+        continue
+      }
       result.push({ ...display, children: [] })
       continue
     }
@@ -399,7 +413,7 @@ export function filterDisplayTree(
       ctx,
       seed,
       selection,
-      options,
+      { ...options, underDisplayIf: gatedHere },
     )
     if (filteredChildren.length > 0) {
       result.push({ ...display, children: filteredChildren })

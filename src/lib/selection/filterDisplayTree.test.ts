@@ -561,16 +561,18 @@ describe('filterDisplayTree size and author', () => {
 })
 
 describe('cycleUncheckedFilter', () => {
-  it('cycles off → withOptions → only → off', () => {
+  it('cycles off → withOptions → only → dependencies → off', () => {
     expect(cycleUncheckedFilter('off')).toBe('withOptions')
     expect(cycleUncheckedFilter('withOptions')).toBe('only')
-    expect(cycleUncheckedFilter('only')).toBe('off')
+    expect(cycleUncheckedFilter('only')).toBe('dependencies')
+    expect(cycleUncheckedFilter('dependencies')).toBe('off')
   })
 
   it('labels match chip copy', () => {
     expect(uncheckedFilterLabel('off')).toBe('Unchecked')
     expect(uncheckedFilterLabel('withOptions')).toBe('Unchecked + options')
     expect(uncheckedFilterLabel('only')).toBe('Unchecked only')
+    expect(uncheckedFilterLabel('dependencies')).toBe('Unchecked dependencies')
   })
 })
 
@@ -712,5 +714,123 @@ describe('unchecked filter modes', () => {
       { selectedIds: selected, game: 'bg1' },
     )
     expect(ids(out)).toEqual(['plain:a', 'plain:b', 'plain:c', 'alt:1', 'alt:2', 'alt:3'])
+  })
+})
+
+describe('unchecked dependencies filter', () => {
+  const XML = `<?xml version="1.0"?>
+<installSequence>
+  <base label="Base" engine="bg1">
+    <mod id="Gate" label="Gate">
+      <component id="gate:1" label="Gate Component" />
+    </mod>
+    <mod id="Plain" label="Plain">
+      <component id="plain:a" label="Always Visible" />
+    </mod>
+    <mod id="Gated" label="Gated">
+      <component id="gated:a" label="Direct Gated" displayIf="gate:1" />
+      <component id="gated:b" label="Direct Gated Checked" displayIf="gate:1" />
+    </mod>
+    <group label="Gated Group" displayIf="gate:1">
+      <component id="child:a" label="Ancestor Gated Child A" />
+      <component id="child:b" label="Ancestor Gated Child B" />
+    </group>
+    <alternatives label="Gated Alts" displayIf="gate:1">
+      <component id="alt:1" label="Option One" default="1" />
+      <component id="alt:2" label="Option Two" />
+      <component id="alt:3" label="Option Three" />
+    </alternatives>
+  </base>
+</installSequence>`
+
+  const { model } = parseInstallSequence(XML)
+  const base = model.stations.find((s) => s.stationId === 'base')!
+
+  it('hides always-visible unchecked leaves; keeps unchecked displayIf-gated leaves', () => {
+    const selected = new Set(['gate:1'])
+    const built = buildDisplayTree(base.children, {
+      game: 'bg1',
+      selectedIds: selected,
+    })
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'dependencies' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual([
+      'gated:a',
+      'gated:b',
+      'child:a',
+      'child:b',
+      'alt:1',
+      'alt:2',
+      'alt:3',
+    ])
+  })
+
+  it('hides checked gated leaves', () => {
+    const selected = new Set(['gate:1', 'gated:b'])
+    const built = buildDisplayTree(base.children, {
+      game: 'bg1',
+      selectedIds: selected,
+    })
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'dependencies' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual([
+      'gated:a',
+      'child:a',
+      'child:b',
+      'alt:1',
+      'alt:2',
+      'alt:3',
+    ])
+  })
+
+  it('keeps unchecked options in gated alternatives; drops the selected option', () => {
+    const selected = new Set(['gate:1', 'alt:1'])
+    const built = buildDisplayTree(base.children, {
+      game: 'bg1',
+      selectedIds: selected,
+    })
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'dependencies' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual([
+      'gated:a',
+      'gated:b',
+      'child:a',
+      'child:b',
+      'alt:2',
+      'alt:3',
+    ])
+  })
+
+  it('keeps child without its own displayIf under a gated parent', () => {
+    const selected = new Set(['gate:1'])
+    const built = buildDisplayTree(base.children, {
+      game: 'bg1',
+      selectedIds: selected,
+    })
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'dependencies' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toContain('child:a')
+    expect(ids(out)).toContain('child:b')
+    expect(ids(out)).not.toContain('plain:a')
   })
 })
