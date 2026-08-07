@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import modsCsv from '../data/mods.csv?raw'
 import {
   isComponentNode,
@@ -8,9 +8,9 @@ import {
 } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
 import {
-  buildRelationIndex,
   resolveRelations,
   type RelatedRef,
+  type RelationIndex,
 } from '../lib/selection/relations'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import {
@@ -33,24 +33,40 @@ import { isHttpUrl } from '../lib/url'
 
 const modsByCodename = parseModsCsv(modsCsv)
 
+export type DetailSelectionState = 'checked' | 'unchecked' | 'indeterminate'
+
 interface Props {
   display: DisplayNode | null
   model: InstallSequenceModel
+  relationIndex: RelationIndex
+  selectionState?: DetailSelectionState | null
   onNavigateToComponent?: (componentId: string) => void
 }
 
-type TitleSource = 'label' | 'tag'
-
-function resolveDetailTitle(
-  node: TreeNode,
-  collapsed?: ComponentNode,
-): { text: string; source: TitleSource } {
-  const label = node.attrs.label ?? collapsed?.attrs.label
-  if (label) return { text: label, source: 'label' }
-  return { text: node.tag, source: 'tag' }
+function resolveDetailTitle(node: TreeNode, collapsed?: ComponentNode): string {
+  return node.attrs.label ?? collapsed?.attrs.label ?? node.tag
 }
 
-function CopyNameButton({ value }: { value: string }) {
+function resolveDetailKind(display: DisplayNode): 'Component' | 'Group' | 'Alternatives' {
+  if (display.collapsedComponent || isComponentNode(display.node)) return 'Component'
+  if (display.node.kind === 'alternatives') return 'Alternatives'
+  return 'Group'
+}
+
+function countDisplayComponents(display: DisplayNode): number {
+  if (display.collapsedComponent || isComponentNode(display.node)) return 1
+  let total = 0
+  for (const child of display.children) total += countDisplayComponents(child)
+  return total
+}
+
+function selectionLabel(state: DetailSelectionState): string {
+  if (state === 'checked') return 'Checked'
+  if (state === 'indeterminate') return 'Partial'
+  return 'Unchecked'
+}
+
+function CopyButton({ value, label }: { value: string; label: string }) {
   const [copied, setCopied] = useState(false)
 
   async function onCopy() {
@@ -68,8 +84,8 @@ function CopyNameButton({ value }: { value: string }) {
       type="button"
       className="detail-copy-name"
       onClick={() => void onCopy()}
-      aria-label={copied ? 'Copied' : 'Copy name'}
-      title={copied ? 'Copied' : 'Copy name'}
+      aria-label={copied ? 'Copied' : label}
+      title={copied ? 'Copied' : label}
     >
       {copied ? (
         <svg
@@ -102,55 +118,87 @@ function CopyNameButton({ value }: { value: string }) {
   )
 }
 
-function RelationSection({
-  label,
-  refs,
-  onNavigate,
+function DetailSection({
+  title,
+  children,
 }: {
-  label: string
-  refs: RelatedRef[]
-  onNavigate?: (componentId: string) => void
+  title: string
+  children: ReactNode
 }) {
   return (
-    <section className="detail-relation-section">
-      <h4 className="detail-relation-heading">{label}</h4>
-      <ul className="detail-relation-list">
-        {refs.map((ref) => (
-          <li key={ref.id} className="detail-relation-item">
-            {ref.navigable && onNavigate ? (
-              <button
-                type="button"
-                className="detail-relation-link"
-                onClick={() => onNavigate(ref.id)}
-              >
-                {ref.label}
-              </button>
-            ) : (
-              <span>{ref.label}</span>
-            )}
-          </li>
-        ))}
-      </ul>
+    <section className="detail-section">
+      <h4 className="detail-section-label">{title}</h4>
+      <div className="detail-section-body">{children}</div>
     </section>
   )
 }
 
-const RELATION_ROWS: { key: keyof ReturnType<typeof resolveRelations>; label: string }[] = [
-  { key: 'autoIncludedWhen', label: 'Auto-included when' },
-  { key: 'autoIncludes', label: 'Auto-includes' },
-  { key: 'shownWhen', label: 'Shown when' },
-  { key: 'unlocks', label: 'Unlocks' },
-  { key: 'hiddenWhen', label: 'Hidden when' },
-  { key: 'hides', label: 'Hides' },
+function RelationList({
+  refs,
+  onNavigate,
+}: {
+  refs: RelatedRef[]
+  onNavigate?: (componentId: string) => void
+}) {
+  return (
+    <ul className="detail-relation-list">
+      {refs.map((ref) => (
+        <li key={ref.id} className="detail-relation-item">
+          {ref.navigable && onNavigate ? (
+            <button
+              type="button"
+              className="detail-relation-link"
+              onClick={() => onNavigate(ref.id)}
+            >
+              {ref.label}
+            </button>
+          ) : (
+            <span>{ref.label}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+const RELATION_GROUPS: {
+  title: string
+  rows: { key: keyof ReturnType<typeof resolveRelations>; label: string }[]
+}[] = [
+  {
+    title: 'Auto-include',
+    rows: [
+      { key: 'autoIncludedWhen', label: 'Included when' },
+      { key: 'autoIncludes', label: 'Includes' },
+    ],
+  },
+  {
+    title: 'Visibility',
+    rows: [
+      { key: 'shownWhen', label: 'Shown when' },
+      { key: 'unlocks', label: 'Unlocks' },
+    ],
+  },
+  {
+    title: 'Hide',
+    rows: [
+      { key: 'hiddenWhen', label: 'Hidden when' },
+      { key: 'hides', label: 'Hides' },
+    ],
+  },
 ]
 
-export function ComponentDetail({ display, model, onNavigateToComponent }: Props) {
-  const relationIndex = useMemo(() => buildRelationIndex(model), [model])
-
+export function ComponentDetail({
+  display,
+  model,
+  relationIndex,
+  selectionState = null,
+  onNavigateToComponent,
+}: Props) {
   if (!display) {
     return (
       <div className="detail-empty-state">
-        <p className="detail-empty-title">Nothing selected</p>
+        <p className="detail-empty-title">Nothing focused</p>
         <p className="detail-empty">
           Click a row for notes, links, and relations. Double-click or press Space to
           check it.
@@ -162,6 +210,7 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
   const { node, collapsedComponent } = display
   const source = collapsedComponent ?? node
   const title = resolveDetailTitle(node, collapsedComponent)
+  const kind = resolveDetailKind(display)
   const desc = node.attrs.desc ?? collapsedComponent?.attrs.desc
   const level = collapsedComponent?.effectiveLevel ?? node.effectiveLevel
   const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
@@ -171,6 +220,7 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
       ? node.componentId
       : undefined
   const attrs = source.attrs
+  const componentCount = countDisplayComponents(display)
 
   const codename = resolveModLookupKey(model, source)
   const stability = resolveModStability(model, modsByCodename, source)
@@ -186,52 +236,105 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
   const modReadme = mod?.readme
 
   const relations = resolveRelations(model, relationIndex, attrs, componentId)
-  const hasRelations = RELATION_ROWS.some((row) => relations[row.key].length > 0)
+  const relationGroups = RELATION_GROUPS.map((group) => ({
+    ...group,
+    rows: group.rows
+      .map((row) => ({ ...row, refs: relations[row.key] }))
+      .filter((row) => row.refs.length > 0),
+  })).filter((group) => group.rows.length > 0)
+
+  const links: { href: string; label: string }[] = []
+  if (mod?.url) links.push({ href: mod.url, label: 'Page' })
+  if (isHttpUrl(modReadme)) links.push({ href: modReadme, label: 'Mod readme' })
+  if (isHttpUrl(componentReadme)) {
+    links.push({ href: componentReadme, label: 'Component readme' })
+  }
+
+  const hasModSection = Boolean(codename)
+
+  const hasComponentSection = Boolean(componentId || attrs.name)
+
+  const aboutSummary =
+    kind === 'Component'
+      ? null
+      : kind === 'Alternatives'
+        ? `Alternatives · ${componentCount} option${componentCount === 1 ? '' : 's'}`
+        : `Group · ${componentCount} component${componentCount === 1 ? '' : 's'}`
 
   return (
     <article className="component-detail">
-      <div className="detail-title-row">
-        <h3 className="detail-title">{title.text}</h3>
+      <div className="detail-sticky">
+        <div className="detail-title-row">
+          <h3 className="detail-title">{title}</h3>
+        </div>
+        <div className="detail-badges">
+          {selectionState && (
+            <span
+              className={`badge badge-selection badge-selection-${selectionState}`}
+            >
+              {selectionLabel(selectionState)}
+            </span>
+          )}
+          {level && (
+            <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
+          )}
+          {modType && (
+            <span className={modTypeBadgeClass(modType)}>{modTypeBadgeLabel(modType)}</span>
+          )}
+          {stabilityLabel && stabilityClass && (
+            <span className={stabilityClass}>{stabilityLabel}</span>
+          )}
+          {attrs.required && (
+            <span className={statusBadgeClass('required')}>required</span>
+          )}
+          {attrs.noDisplay && (
+            <span className={statusBadgeClass('hidden')}>hidden</span>
+          )}
+          {!collapsedComponent && attrs.core && (
+            <span className={statusBadgeClass('core')}>core</span>
+          )}
+          {!collapsedComponent && attrs.default && (
+            <span className={statusBadgeClass('default')}>default</span>
+          )}
+        </div>
       </div>
-      <div className="detail-badges">
-        {level && (
-          <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
+
+      <DetailSection title="About">
+        {desc ? (
+          <p className="detail-desc">{desc}</p>
+        ) : aboutSummary ? (
+          <p className="detail-empty">{aboutSummary}</p>
+        ) : (
+          <p className="detail-empty">No description.</p>
         )}
-        {modType && (
-          <span className={modTypeBadgeClass(modType)}>{modTypeBadgeLabel(modType)}</span>
-        )}
-        {stabilityLabel && stabilityClass && (
-          <span className={stabilityClass}>{stabilityLabel}</span>
-        )}
-        {attrs.required && (
-          <span className={statusBadgeClass('required')}>required</span>
-        )}
-        {attrs.noDisplay && (
-          <span className={statusBadgeClass('hidden')}>hidden</span>
-        )}
-        {!collapsedComponent && attrs.core && (
-          <span className={statusBadgeClass('core')}>core</span>
-        )}
-        {!collapsedComponent && attrs.default && (
-          <span className={statusBadgeClass('default')}>default</span>
-        )}
-        {tagList.map((tag) => (
-          <span key={tag} className={statusBadgeClass('tag')}>
-            {tag}
-          </span>
-        ))}
-      </div>
-      {desc ? (
-        <p className="detail-desc">{desc}</p>
-      ) : (
-        <p className="detail-empty">No description.</p>
+      </DetailSection>
+
+      {links.length > 0 && (
+        <DetailSection title="Links">
+          <ul className="detail-links">
+            {links.map((link) => (
+              <li key={link.href + link.label}>
+                <a
+                  className="detail-url"
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={link.href}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </DetailSection>
       )}
-      <dl className="detail-meta">
-        {codename && (
-          <>
+
+      {hasModSection && (
+        <DetailSection title="Mod">
+          <dl className="detail-meta">
             {hasModField(mod?.name) && (
               <>
-                <dt>Mod</dt>
+                <dt>Name</dt>
                 <dd>
                   {mod.name}
                   {hasModField(mod.abbreviation) &&
@@ -241,48 +344,18 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
                 </dd>
               </>
             )}
-            <dt>Download Id</dt>
-            <dd>{codename}</dd>
+            {codename && (
+              <>
+                <dt>Download id</dt>
+                <dd>
+                  <code>{codename}</code>
+                </dd>
+              </>
+            )}
             {hasModField(mod?.category) && (
               <>
                 <dt>Category</dt>
                 <dd>{mod.category}</dd>
-              </>
-            )}
-            {modType && (
-              <>
-                <dt>Type</dt>
-                <dd>{modType}</dd>
-              </>
-            )}
-            {mod?.url && (
-              <>
-                <dt>URL</dt>
-                <dd>
-                  <a
-                    className="detail-url"
-                    href={mod.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {mod.url}
-                  </a>
-                </dd>
-              </>
-            )}
-            {isHttpUrl(modReadme) && (
-              <>
-                <dt>Mod Readme</dt>
-                <dd>
-                  <a
-                    className="detail-url"
-                    href={modReadme}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {modReadme}
-                  </a>
-                </dd>
               </>
             )}
             {mod?.release && (
@@ -309,56 +382,66 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
                 <dd>{mod.author}</dd>
               </>
             )}
-          </>
-        )}
-        {componentId && (
-          <>
-            <dt>Component id</dt>
-            <dd>
-              <code>{componentId}</code>
-            </dd>
-          </>
-        )}
-        {attrs.name && (
-          <>
-            <dt>Name</dt>
-            <dd className="detail-name-value">
-              <span>{attrs.name}</span>
-              <CopyNameButton value={attrs.name} />
-            </dd>
-          </>
-        )}
-        {isHttpUrl(componentReadme) && (
-          <>
-            <dt>Component readme</dt>
-            <dd>
-              <a
-                className="detail-url"
-                href={componentReadme}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {componentReadme}
-              </a>
-            </dd>
-          </>
-        )}
-      </dl>
-      {hasRelations && (
-        <div className="detail-relations">
-          {RELATION_ROWS.map(({ key, label: rowLabel }) => {
-            const refs = relations[key]
-            if (refs.length === 0) return null
-            return (
-              <RelationSection
-                key={key}
-                label={rowLabel}
-                refs={refs}
-                onNavigate={onNavigateToComponent}
-              />
-            )
-          })}
-        </div>
+          </dl>
+        </DetailSection>
+      )}
+
+      {hasComponentSection && (
+        <DetailSection title="Component">
+          <dl className="detail-meta">
+            {componentId && (
+              <>
+                <dt>Id</dt>
+                <dd className="detail-name-value">
+                  <code>{componentId}</code>
+                  <CopyButton value={componentId} label="Copy id" />
+                </dd>
+              </>
+            )}
+            {attrs.name && (
+              <>
+                <dt>Name</dt>
+                <dd className="detail-name-value">
+                  <span>{attrs.name}</span>
+                  <CopyButton value={attrs.name} label="Copy name" />
+                </dd>
+              </>
+            )}
+          </dl>
+        </DetailSection>
+      )}
+
+      {tagList.length > 0 && (
+        <DetailSection title="Tags">
+          <ul className="detail-tags">
+            {tagList.map((tag) => (
+              <li key={tag} className="detail-tag">
+                {tag}
+              </li>
+            ))}
+          </ul>
+        </DetailSection>
+      )}
+
+      {relationGroups.length > 0 && (
+        <DetailSection title="Relations">
+          <div className="detail-relations">
+            {relationGroups.map((group) => (
+              <div key={group.title} className="detail-relation-group">
+                <h5 className="detail-relation-group-title">{group.title}</h5>
+                {group.rows.map((row) => (
+                  <div key={row.key} className="detail-relation-section">
+                    <p className="detail-relation-heading">{row.label}</p>
+                    <RelationList
+                      refs={row.refs}
+                      onNavigate={onNavigateToComponent}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </DetailSection>
       )}
     </article>
   )

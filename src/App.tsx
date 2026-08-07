@@ -13,6 +13,7 @@ import {
   applyGlobalLevelBaseline,
   applyLadderLevelSelection,
   createInitialSelection,
+  displaySelectionState,
   listSelectionState,
   randomizeDisplaySubtree,
   setDifficultySelection,
@@ -503,6 +504,11 @@ export default function App() {
     }
     return null
   }, [displayNodes, focusedKey, focusedComponentId, model.componentsById])
+
+  const focusedSelectionState = useMemo(() => {
+    if (!focusedDisplay || !game) return null
+    return displaySelectionState(focusedDisplay, selectedIds, game)
+  }, [focusedDisplay, game, selectedIds])
 
   const showDetail = activeStation !== 'engine' && !!game
 
@@ -1364,6 +1370,8 @@ export default function App() {
                       <ComponentDetail
                         display={focusedDisplay}
                         model={model}
+                        relationIndex={relationIndex}
+                        selectionState={focusedSelectionState}
                         onNavigateToComponent={onNavigateToComponent}
                       />
                     </div>
