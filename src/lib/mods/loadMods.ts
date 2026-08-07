@@ -2,6 +2,8 @@ import type { InstallSequenceModel, TreeNode } from '../xml/schema'
 
 export interface ModInfo {
   codename: string
+  name: string
+  abbreviation: string
   category: string
   url: string
   readme: string
@@ -74,6 +76,8 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
   const header = parseCsvLine(lines[0]).map((h) => h.trim())
   const idx = (name: string) => header.indexOf(name)
   const iCodename = idx('Codename')
+  const iName = idx('Name')
+  const iAbbreviation = idx('Abbreviation')
   const iCategory = idx('Category')
   const iUrl = idx('URL')
   const iReadme = idx('Readme')
@@ -90,6 +94,8 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
     if (!codename || map.has(codename)) continue
     map.set(codename, {
       codename,
+      name: (iName >= 0 ? cols[iName] ?? '' : '').trim(),
+      abbreviation: (iAbbreviation >= 0 ? cols[iAbbreviation] ?? '' : '').trim(),
       category: (iCategory >= 0 ? cols[iCategory] ?? '' : '').trim(),
       url: (iUrl >= 0 ? cols[iUrl] ?? '' : '').trim(),
       readme: (iReadme >= 0 ? cols[iReadme] ?? '' : '').trim(),

@@ -410,6 +410,8 @@ describe('filterDisplayTree size and author', () => {
       'small',
       {
         codename: 'small',
+        name: '',
+        abbreviation: '',
         category: '',
         url: '',
         readme: '',
@@ -424,6 +426,8 @@ describe('filterDisplayTree size and author', () => {
       'mid',
       {
         codename: 'mid',
+        name: '',
+        abbreviation: '',
         category: '',
         url: '',
         readme: '',
@@ -438,6 +442,8 @@ describe('filterDisplayTree size and author', () => {
       'big',
       {
         codename: 'big',
+        name: '',
+        abbreviation: '',
         category: '',
         url: '',
         readme: '',

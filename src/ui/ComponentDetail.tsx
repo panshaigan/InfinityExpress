@@ -154,7 +154,19 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
       <dl className="detail-meta">
         {codename && (
           <>
-            <dt>Mod</dt>
+            {hasModField(mod?.name) && (
+              <>
+                <dt>Mod</dt>
+                <dd>
+                  {mod.name}
+                  {hasModField(mod.abbreviation) &&
+                  mod.abbreviation !== mod.name
+                    ? ` (${mod.abbreviation})`
+                    : ''}
+                </dd>
+              </>
+            )}
+            <dt>Download Id</dt>
             <dd>{codename}</dd>
             {hasModField(mod?.category) && (
               <>

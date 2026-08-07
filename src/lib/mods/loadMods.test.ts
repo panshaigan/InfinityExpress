@@ -27,6 +27,8 @@ describe('parseModsCsv', () => {
     expect(map.size).toBe(2)
     expect(map.get('Totemic_Cernd')).toEqual({
       codename: 'Totemic_Cernd',
+      name: '',
+      abbreviation: '',
       category: 'NPC',
       url: 'https://github.com/Gibberlings3/Totemic_Cernd',
       readme: '',
@@ -42,6 +44,29 @@ describe('parseModsCsv', () => {
     expect(map.get('aTweaks')?.sizeBytes).toBe(1000808525)
     expect(map.get('aTweaks')?.author).toBe('Morpheus562')
     expect(map.get('aTweaks')?.type).toBe('major')
+  })
+
+  it('parses Name and Abbreviation when present', () => {
+    const raw = [
+      'Codename,Name,Abbreviation,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme,Type',
+      'SotSC,"Shades of the Sword Coast",SotSC,QUEST,"https://x",BG1,,,2026-01-01,"v1",10,Lava,,compilation',
+      'NoName,,,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA,,',
+    ].join('\n')
+    const map = parseModsCsv(raw)
+    expect(map.get('SotSC')?.name).toBe('Shades of the Sword Coast')
+    expect(map.get('SotSC')?.abbreviation).toBe('SotSC')
+    expect(map.get('NoName')?.name).toBe('')
+    expect(map.get('NoName')?.abbreviation).toBe('')
+  })
+
+  it('treats missing Name and Abbreviation columns as empty string', () => {
+    const raw = [
+      'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme,Type',
+      'Bare,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA,,',
+    ].join('\n')
+    const map = parseModsCsv(raw)
+    expect(map.get('Bare')?.name).toBe('')
+    expect(map.get('Bare')?.abbreviation).toBe('')
   })
 
   it('keeps first row on duplicate Codename', () => {
