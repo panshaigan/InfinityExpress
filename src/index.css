@@ -879,34 +879,7 @@ body.is-resizing-detail * {
   flex-shrink: 0;
   border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 78%, var(--bg));
-  transition: padding var(--ease), box-shadow var(--ease);
   z-index: 3;
-}
-
-.list-pane.is-scrolled .list-pane-header {
-  padding: 0.35rem 0.9rem 0.3rem;
-  box-shadow: 0 8px 16px color-mix(in srgb, #000 22%, transparent);
-}
-
-.list-pane.is-scrolled .list-pane-header .lede,
-.list-pane.is-scrolled .list-pane-header .list-pane-hint {
-  display: none;
-}
-
-.list-pane.is-scrolled .station-list-toolbar {
-  margin-top: 0.3rem;
-}
-
-.list-pane.is-scrolled .station-levels-fold:not([open]) {
-  display: none;
-}
-
-.list-pane.is-scrolled .branch-nav {
-  margin-top: 0.3rem;
-}
-
-.list-pane.is-scrolled .branch-nav-meta {
-  display: none;
 }
 
 .list-pane-hint {
@@ -1276,13 +1249,6 @@ body.is-resizing-detail * {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
-}
-
-.branch-nav-keys {
-  font: inherit;
-  font-size: 0.68rem;
-  color: color-mix(in srgb, var(--muted) 75%, var(--accent));
-  letter-spacing: 0.04em;
 }
 
 .branch-nav-scroll {

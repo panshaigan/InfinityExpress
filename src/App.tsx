@@ -79,7 +79,6 @@ import {
 } from './ui/RouteGuideTip'
 import { RouteCaughtUp } from './ui/RouteCaughtUp'
 import { ExportNotice } from './ui/ExportNotice'
-import { useScrolled } from './lib/ui/useScrolled'
 import {
   readDetailCollapsed,
   writeDetailCollapsed,
@@ -219,11 +218,6 @@ export default function App() {
     added: number
     removed: number
   } | null>(null)
-  const {
-    scrolled: listScrolled,
-    onScroll: onListScroll,
-    reset: resetListScroll,
-  } = useScrolled()
   const foldApiRef = useRef<TreeFoldApi | null>(null)
   const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
     foldApiRef.current = api
@@ -885,10 +879,6 @@ export default function App() {
   }
 
   useEffect(() => {
-    resetListScroll()
-  }, [activeStation, contentMainKey, contentSubKey, resetListScroll])
-
-  useEffect(() => {
     if (!exportNotice) return
     const id = window.setTimeout(() => setExportNotice(null), 4500)
     return () => window.clearTimeout(id)
@@ -1189,9 +1179,9 @@ export default function App() {
                 : undefined
             }
           >
-            <div className={`list-pane${listScrolled ? ' is-scrolled' : ''}`}>
+            <div className="list-pane">
               {activeStation === 'engine' || !game ? (
-                <div className="list-pane-scroll engine-pane-scroll" onScroll={onListScroll}>
+                <div className="list-pane-scroll engine-pane-scroll">
                   <EngineStation
                     game={game}
                     onChoose={chooseGame}
@@ -1229,7 +1219,7 @@ export default function App() {
                       searchQuery={filters.search}
                     />
                   </div>
-                  <div className="list-pane-scroll" onScroll={onListScroll}>
+                  <div className="list-pane-scroll">
                     <GlobalSearchList
                       hits={globalSearchHits}
                       selectedIds={selectedIds}
@@ -1297,7 +1287,7 @@ export default function App() {
                       />
                     )}
                   </div>
-                  <div className="list-pane-scroll" onScroll={onListScroll}>
+                  <div className="list-pane-scroll">
                     <ComponentTree
                       key={treeKey}
                       treeKey={treeKey}

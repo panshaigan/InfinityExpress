@@ -43,16 +43,12 @@ function handleTabListKeyDown(
 
 function BranchTabRow({
   label,
-  keysHint,
-  keysTitle,
   ariaLabel,
   branches,
   activeKey,
   onSelect,
 }: {
   label: string
-  keysHint: string
-  keysTitle: string
   ariaLabel: string
   branches: DisplayNode[]
   activeKey: string | null
@@ -99,9 +95,6 @@ function BranchTabRow({
     <div className="branch-nav-block">
       <div className="branch-nav-meta">
         <span className="branch-nav-heading">{label}</span>
-        <kbd className="branch-nav-keys" title={keysTitle}>
-          {keysHint}
-        </kbd>
       </div>
       <div
         className={`branch-nav-scroll${fadeLeft ? ' fade-left' : ''}${fadeRight ? ' fade-right' : ''}`}
@@ -148,8 +141,6 @@ export function ContentBranchNav({
     <div className="branch-nav">
       <BranchTabRow
         label="Game"
-        keysHint=", ."
-        keysTitle="Previous / next main branch"
         ariaLabel="Content main branches"
         branches={mainBranches}
         activeKey={mainKey}
@@ -158,8 +149,6 @@ export function ContentBranchNav({
       {subBranches.length > 0 && (
         <BranchTabRow
           label="Type"
-          keysHint="< >"
-          keysTitle="Previous / next subbranch"
           ariaLabel="Content subbranches"
           branches={subBranches}
           activeKey={subKey}
