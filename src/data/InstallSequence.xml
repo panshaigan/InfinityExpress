@@ -457,8 +457,11 @@
 					<component id="Ascension-SlightlyImprovedCutscenes" label="Slightly improved cutscenes, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
 				</mod>
 				<component id="SoAExtended:1" label="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" tags="bigQuest" level="blendWell" />
+				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" tags="bigQuest" />
 				<component id="cd_tweaks_reveal_ch6_wilderness" label="Reveal Wilderness Areas Before Chapter Six" level="extended" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1030" />
 				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" label="Faster Chapter One and Two Cutscenes and Dreams" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3141" />
+				<component id="lfgp:0" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" tags="bigQuest" level="blendWell" />
+				<component id="TPoJ:0" label="The Pursuit of Justice" modId="the-pursuit-of-justice" tags="bigQuest" level="blendWell" />
 			</restructure>
 			<restorations label="Restorations" level="restoration">
 				<mod id="UnfinishedBusiness" label="Unfinished Business" tags="compilation">
@@ -516,9 +519,6 @@
 				<component id="L#-SKIECOST-MAINQUEST" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" tags="bigQuest" level="extended" />
 				<component id="cowledmenace:1000" label="Cowled Menace" modId="CowledMenace" tags="bigQuest" level="extended" />
 				<component id="AWizardDidIt-Blackhearts_BG2" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="extended" displayIfNot="AWizardDidIt-Blackhearts_BG1" />
-				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" tags="bigQuest" />
-				<component id="lfgp:0" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" tags="bigQuest" level="blendWell" />
-				<component id="TPoJ:0" label="The Pursuit of Justice" modId="the-pursuit-of-justice" tags="bigQuest" level="blendWell" />
 				<component id="Autumns_Twilight:0" label="Autumn's Twilight" modId="bg2-autumns-twilight-mod" tags="bigQuest" />
 			</quest>
 			<npc label="Joinable NPCs">
