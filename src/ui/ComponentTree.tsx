@@ -15,12 +15,19 @@ import {
   type RandomizeOptions,
   type RandomizePercent,
 } from '../lib/selection/selectionEngine'
-import type { SelectedGame } from '../lib/xml/schema'
+import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import {
   splitTags,
   stabilityBadgeLabel,
 } from '../lib/selection/filterDisplayTree'
+import { MOD_TYPE_BADGE_SECTIONS } from '../lib/contentBranchOrder'
+import {
+  type ModInfo,
+  resolveModType,
+  shouldShowModTypeBadge,
+} from '../lib/mods/loadMods'
+import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
 import {
   buildTreeKeyboardContext,
   collectAllExpandableKeys,
@@ -43,6 +50,10 @@ interface Props {
   nodes: DisplayNode[]
   selectedIds: ReadonlySet<string>
   game: SelectedGame
+  model: InstallSequenceModel
+  modsByCodename: ReadonlyMap<string, ModInfo>
+  /** Active Content subbranch tag; null outside Content station. */
+  modTypeBadgeSection: string | null
   focusedKey: string | null
   onFocus: (key: string) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
@@ -117,6 +128,9 @@ function CheckboxRow({
   display,
   selectedIds,
   game,
+  model,
+  modsByCodename,
+  modTypeBadgeSection,
   focusedKey,
   tabbableKey,
   onFocus,
@@ -135,6 +149,9 @@ function CheckboxRow({
   display: DisplayNode
   selectedIds: ReadonlySet<string>
   game: SelectedGame
+  model: InstallSequenceModel
+  modsByCodename: ReadonlyMap<string, ModInfo>
+  modTypeBadgeSection: string | null
   focusedKey: string | null
   /** Row that holds tabIndex={0} (roving tabindex). */
   tabbableKey: string | null
@@ -205,6 +222,12 @@ function CheckboxRow({
     collapsedComponent?.attrs.stability ?? node.attrs.stability
   const stabilityLabel = stabilityBadgeLabel(stability)
   const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
+  const modType =
+    modTypeBadgeSection &&
+    MOD_TYPE_BADGE_SECTIONS.has(modTypeBadgeSection) &&
+    shouldShowModTypeBadge(model, node)
+      ? resolveModType(model, modsByCodename, source)
+      : undefined
 
   function handleFoldClick(e: MouseEvent) {
     e.preventDefault()
@@ -390,6 +413,9 @@ function CheckboxRow({
           {level && (
             <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
+          {modType && (
+            <span className={modTypeBadgeClass(modType)}>{modTypeBadgeLabel(modType)}</span>
+          )}
           {stabilityLabel && <span className="badge">{stabilityLabel}</span>}
           {attrs.required && <span className="badge">required</span>}
           {attrs.noDisplay && <span className="badge">hidden</span>}
@@ -413,6 +439,9 @@ function CheckboxRow({
             display={child}
             selectedIds={selectedIds}
             game={game}
+            model={model}
+            modsByCodename={modsByCodename}
+            modTypeBadgeSection={modTypeBadgeSection}
             focusedKey={focusedKey}
             tabbableKey={tabbableKey}
             onFocus={onFocus}
@@ -612,6 +641,9 @@ export function ComponentTree(props: Props) {
           display={n}
           selectedIds={props.selectedIds}
           game={props.game}
+          model={props.model}
+          modsByCodename={props.modsByCodename}
+          modTypeBadgeSection={props.modTypeBadgeSection}
           focusedKey={props.focusedKey}
           tabbableKey={tabbableKey}
           onFocus={props.onFocus}

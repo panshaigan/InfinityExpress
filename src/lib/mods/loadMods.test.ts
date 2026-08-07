@@ -2,9 +2,12 @@ import { describe, expect, it } from 'vitest'
 import {
   collectAuthorOptions,
   formatBytes,
+  hasModField,
   modSizeBounds,
   parseModsCsv,
   resolveModLookupKey,
+  resolveModType,
+  shouldShowModTypeBadge,
 } from './loadMods'
 import type { InstallSequenceModel, TreeNode } from '../xml/schema'
 
@@ -237,5 +240,161 @@ describe('resolveModLookupKey', () => {
       orderIndex: 0,
     } as TreeNode)
     expect(resolveModLookupKey(modelWith(comp), comp)).toBeUndefined()
+  })
+})
+
+describe('hasModField', () => {
+  it('accepts non-empty values other than dash', () => {
+    expect(hasModField('major')).toBe(true)
+    expect(hasModField('minor')).toBe(true)
+  })
+
+  it('rejects empty and dash placeholders', () => {
+    expect(hasModField('')).toBe(false)
+    expect(hasModField('-')).toBe(false)
+    expect(hasModField(undefined)).toBe(false)
+  })
+})
+
+describe('shouldShowModTypeBadge', () => {
+  function node(
+    partial: Partial<TreeNode> & Pick<TreeNode, 'key' | 'tag' | 'kind'>,
+  ): TreeNode {
+    return {
+      attrs: {},
+      effectiveEngine: '',
+      children: [],
+      ...partial,
+    } as TreeNode
+  }
+
+  function modelWith(...nodes: TreeNode[]): InstallSequenceModel {
+    const nodesByKey = new Map(nodes.map((n) => [n.key, n]))
+    return {
+      stations: [],
+      componentsById: new Map(),
+      componentsInOrder: [],
+      nodesByKey,
+    }
+  }
+
+  it('returns true for mod rows', () => {
+    const mod = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'MyMod' },
+    })
+    expect(shouldShowModTypeBadge(modelWith(mod), mod)).toBe(true)
+  })
+
+  it('returns false for components under a mod', () => {
+    const comp = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+      parentKey: 'm1',
+    } as TreeNode)
+    const mod = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'MyMod' },
+      children: [comp],
+    })
+    expect(shouldShowModTypeBadge(modelWith(mod, comp), comp)).toBe(false)
+  })
+
+  it('returns true for standalone components', () => {
+    const comp = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+      attrs: { modId: 'Loretakers' },
+    } as TreeNode)
+    expect(shouldShowModTypeBadge(modelWith(comp), comp)).toBe(true)
+  })
+
+  it('returns false for non-mod non-component tags', () => {
+    const alt = node({
+      key: 'a1',
+      tag: 'alternatives',
+      kind: 'alternatives',
+    })
+    expect(shouldShowModTypeBadge(modelWith(alt), alt)).toBe(false)
+  })
+})
+
+describe('resolveModType', () => {
+  function node(
+    partial: Partial<TreeNode> & Pick<TreeNode, 'key' | 'tag' | 'kind'>,
+  ): TreeNode {
+    return {
+      attrs: {},
+      effectiveEngine: '',
+      children: [],
+      ...partial,
+    } as TreeNode
+  }
+
+  function modelWith(...nodes: TreeNode[]): InstallSequenceModel {
+    const nodesByKey = new Map(nodes.map((n) => [n.key, n]))
+    return {
+      stations: [],
+      componentsById: new Map(),
+      componentsInOrder: [],
+      nodesByKey,
+    }
+  }
+
+  const modsByCodename = parseModsCsv(
+    [
+      HEADER,
+      'MyMod,QUEST,"https://x",BG2,,,2020-01-01,"v1",100,Author,,major',
+      'NoType,NPC,"https://x",BG2,,,2020-01-01,"v1",100,Author,,-',
+      'EmptyType,NPC,"https://x",BG2,,,2020-01-01,"v1",100,Author,,',
+    ].join('\n'),
+  )
+
+  it('returns mods.csv Type for a resolvable codename', () => {
+    const mod = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'MyMod' },
+    })
+    expect(resolveModType(modelWith(mod), modsByCodename, mod)).toBe('major')
+  })
+
+  it('returns undefined when codename is missing', () => {
+    const comp = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+    } as TreeNode)
+    expect(resolveModType(modelWith(comp), modsByCodename, comp)).toBeUndefined()
+  })
+
+  it('returns undefined for dash or empty Type', () => {
+    const dashMod = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'NoType' },
+    })
+    const emptyMod = node({
+      key: 'm2',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'EmptyType' },
+    })
+    expect(resolveModType(modelWith(dashMod), modsByCodename, dashMod)).toBeUndefined()
+    expect(resolveModType(modelWith(emptyMod), modsByCodename, emptyMod)).toBeUndefined()
   })
 })

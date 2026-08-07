@@ -974,6 +974,9 @@ export default function App() {
                       nodes={listNodes}
                       selectedIds={selectedIds}
                       game={game}
+                      model={model}
+                      modsByCodename={modsByCodename}
+                      modTypeBadgeSection={isContentStation ? contentSubTag : null}
                       focusedKey={focusedKey}
                       onFocus={onFocus}
                       onToggle={onToggle}

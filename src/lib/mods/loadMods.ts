@@ -154,6 +154,37 @@ function parentOf(model: InstallSequenceModel, node: TreeNode): TreeNode | undef
   return node.parentKey ? model.nodesByKey.get(node.parentKey) : undefined
 }
 
+/** True when a mods.csv field has a displayable value. */
+export function hasModField(value: string | undefined): value is string {
+  return !!value && value !== '-'
+}
+
+/** Walk ancestors for the nearest enclosing `<mod>` node. */
+export function findEnclosingMod(
+  model: InstallSequenceModel,
+  node: TreeNode,
+): TreeNode | undefined {
+  let cur: TreeNode | undefined = node
+  while (cur) {
+    if (cur.tag === 'mod') return cur
+    cur = parentOf(model, cur)
+  }
+  return undefined
+}
+
+/**
+ * Whether a tree row should show a mods.csv Type badge:
+ * always for `<mod>`, for `<component>` only when not nested under a `<mod>`.
+ */
+export function shouldShowModTypeBadge(
+  model: InstallSequenceModel,
+  node: TreeNode,
+): boolean {
+  if (node.tag === 'mod') return true
+  if (node.tag === 'component') return findEnclosingMod(model, node) === undefined
+  return false
+}
+
 /**
  * Resolve the mods.csv Codename lookup key for a tree node:
  * 1. node's attrs.modId
@@ -173,4 +204,16 @@ export function resolveModLookupKey(
     cur = parentOf(model, cur)
   }
   return undefined
+}
+
+/** Resolve mods.csv Type for a tree node, or undefined when absent. */
+export function resolveModType(
+  model: InstallSequenceModel,
+  modsByCodename: ReadonlyMap<string, ModInfo>,
+  node: TreeNode,
+): string | undefined {
+  const codename = resolveModLookupKey(model, node)
+  if (!codename) return undefined
+  const type = modsByCodename.get(codename)?.type
+  return hasModField(type) ? type : undefined
 }

@@ -19,17 +19,15 @@ import {
 } from '../lib/selection/filterDisplayTree'
 import {
   formatBytes,
+  hasModField,
   parseModsCsv,
   resolveModLookupKey,
+  resolveModType,
 } from '../lib/mods/loadMods'
 import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
 import { isHttpUrl } from '../lib/url'
 
 const modsByCodename = parseModsCsv(modsCsv)
-
-function hasModField(value: string | undefined): value is string {
-  return !!value && value !== '-'
-}
 
 interface Props {
   display: DisplayNode | null
@@ -111,7 +109,7 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
 
   const codename = resolveModLookupKey(model, source)
   const mod = codename ? modsByCodename.get(codename) : undefined
-  const modType = hasModField(mod?.type) ? mod.type : undefined
+  const modType = resolveModType(model, modsByCodename, source)
   const componentReadme = attrs.readme
   const modReadme = mod?.readme
 
