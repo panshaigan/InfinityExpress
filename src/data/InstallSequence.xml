@@ -125,8 +125,8 @@
 						<component id="Reflections_of_Destiny:110" label="The Mirror Shard" />
 					</mod>
 				</alternatives>
-				<component id="METweaks:2800" label="Allow early entry to the Nashkel Mines through the back cave entrance" modId="Olvyn-Tweaks" level="extended" />
-				<component id="METweaks:3000" label="Allow early entry to the catacombs beneath Candlekeep" modId="Olvyn-Tweaks" level="extended" />
+				<component id="METweaks:2800" name="Make it possible to enter the Nashkel Mines through the back cave entrance" label="Allow early entry to the Nashkel Mines through the back cave entrance" modId="Olvyn-Tweaks" level="extended" />
+				<component id="METweaks:3000" name="Make it possible to enter the catacombs beneath Candlekeep early" label="Allow early entry to the catacombs beneath Candlekeep" modId="Olvyn-Tweaks" level="extended" />
 				<alternatives label="Make Cloakwood areas available before completing the Bandit Camp">
 					<component id="cd_tweaks_reveal_cloakwood_1" name="First area only" label="First area only" modId="Tweaks-Anthology" level="blendWell" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1035" />
 					<component id="cd_tweaks_reveal_cloakwood_4" name="All of Cloakwood except the mines" label="All of Cloakwood except the mines" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1036" />
@@ -328,8 +328,8 @@
 					<component id="ForgottenArmament-Breach" label="Add Breach scrolls to Sorcerous Sundries" modId="forgotten-armament" />   
 				</add>
 				<update label="Item Changes" unfolded="1">
-					<component id="ZSTweaks:1663" label="Make Sandthief Ring consistently grant one use of Invisibility per day" modId="ZSTweaks" level="blendWell" /> 
-					<component id="stratagems:3021" label="Replace many +1 items by fine weapons which are immune to the iron crisis" modId="SwordCoastStratagems" level="blendWell" />
+					<component id="ZSTweaks:1663" name="Make Sandthief Ring consistently grant one use of invisibility per day" label="Make Sandthief Ring consistently grant one use of Invisibility per day" modId="ZSTweaks" level="blendWell" /> 
+					<component id="stratagems:3021" name="Fine weapons are immune to the iron crisis" label="Replace many +1 items by fine weapons which are immune to the iron crisis" modId="SwordCoastStratagems" level="blendWell" />
 				</update>
 				<upgrade label="Thalantyr Item Upgrade">
 					<component id="ThalantyrItemUpgrade-Main" label="Thalantyr Item Upgrade" desc="Cromwell-like item upgrade in BG1" modId="thalan" level="extended" />
@@ -337,13 +337,13 @@
 			</items>
 			<tweaks label="Tweaks" noBranches="1">
 				<mod id="Olvyn-Tweaks" label="METweaks">
-					<component id="METweaks:3100" label="Keep the Jacil and Wiven encounters from being replaced by other quests" level="fixes" />
+					<component id="METweaks:3100" name="Make it so the Jacil and Wiven encounters aren't replaced by other quests" label="Keep the Jacil and Wiven encounters from being replaced by other quests" level="fixes" />
 				</mod>
 				<mod id="House-Rule-Tweaks" label="AionZ's House Rules" level="vanillaPlus">
-					<component id="HouseTweaks:14" label="Improved dialogues" />
-					<component id="HouseTweaks:15" label="Not-so-indestructible rats" />
+					<component id="HouseTweaks:14" name="House Tweaks: Improved Dialogues (BG:EE)" label="Improved dialogues" />
+					<component id="HouseTweaks:15" name="House Tweaks: Not-So-Indestructible Rats" label="Not-so-indestructible rats" />
 				</mod>
-				<component id="stratagems:4145" label="Remove the tutorial NPCs from Candlekeep" modId="SwordCoastStratagems" level="blendWell" />
+				<component id="stratagems:4145" name="Remove the tutorial NPCs from Candlekeep" label="Remove the tutorial NPCs from Candlekeep" modId="SwordCoastStratagems" level="blendWell" />
 				<component id="cd_tweaks_bardic_rep_adjustment" name="Bardic Reputation Adjustment" label="Bardic reputation adjustment" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1260" />
 				<component id="cd_tweaks_faster_dearnise_keep_timer" name="Speed Up de'Arnise Keep Stronghold Quests" label="Speed up de'Arnise Keep Stronghold quests" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2540" />
 			</tweaks>
@@ -708,71 +708,71 @@
 				<update label="Item Changes">
 					<component id="cd_tweaks_gradual_drow_item_disintegration" name="Gradual Drow Item Disintegration" label="Gradual drow Item Disintegration" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1050" />
 					<component id="hidden_adventures-silversword" label="Silver Sword against mind flayers and lycanthropes" level="blendWell" modId="hiddenadventure" />
-					<component id="HouseTweaks:19" label="Useful Plot Items" modId="House-Rule-Tweaks" level="blendWell" />
+					<component id="HouseTweaks:19" name="House Tweaks: Useful Plot Items" label="Useful Plot Items" modId="House-Rule-Tweaks" level="blendWell" />
 					<component id="stuffofthemagi:0" label="Nerf Stuff of the Magi condiments and add them to creatures' equipment" modId="Stuff-of-the-Magi" level="blendWell" />
 					<group label="Corrections" noBranches="1">
-						<component id="HouseTweaks:17" label="Cloak of Dragomir only decreases stats in daylight" modId="House-Rule-Tweaks" level="vanillaPlus" />
+						<component id="HouseTweaks:17" name="House Tweaks: Cloak of Dragomir only decreases stats in daylight" label="Cloak of Dragomir only decreases stats in daylight" modId="House-Rule-Tweaks" level="vanillaPlus" />
 						<mod id="ZSTweaks" label="ZSTweaks" level="blendWell">
-							<component id="ZSTweaks:1170" label="Make Shadow Dragon Scale behave less like a Black Dragon Scale" />
-							<component id="ZSTweaks:1171" label="Make Silver Dragon Scale also grant 40% cold resistance" />
-							<component id="ZSTweaks:1174" label="Make Heartwood Ring grant spell slots and regeneration" />
-							<component id="ZSTweaks:1197" label="Make a number of quest items functionally useful" />
-							<component id="ZSTweaks:1560" label="Make Belt of Skillful Blade also improve piercing damage" />
-							<component id="ZSTweaks:1561" label="Make Cloak of the Stars more useful" />
-							<component id="ZSTweaks:1652" label="Make Grandmaster's Armor better and grant perks to backstabbers" />
-							<component id="ZSTweaks:1661" label="Make Cloak of the Sewers also protect vs. poison" />
-							<component id="ZSTweaks:1662" label="Make Montolio's Cloak grant a damage and THAC0 bonus to rangers" />
-							<component id="ZSTweaks:1677" label="Make Wondrous Gloves wondrous" />
-							<component id="ZSTweaks:1195" label="Make Gloves of Healing worth more than what you get by selling them" />
-							<component id="ZSTweaks:1211" label="Make Orc Leathers grant special bonuses to half-orc wearers" />
-							<component id="ZSTweaks:1212" label="Make Skin of the Ghoul +4 protect against all kinds of paralysis" />
-							<component id="ZSTweaks:1214" label="Make Armor of the Viper more interesting" />
-							<component id="ZSTweaks:1217" label="Make Hayes' Robe grant +1 to Armor Class and casting speed to Wild Mages" />
-							<component id="ZSTweaks:1334" label="Make Ashen Scales more unique beyond enchantment level" />
-							<component id="ZSTweaks:1351" label="Make Tzu-Zan's Bracers a better competitor to Gauntlets of Crushing" />
-							<component id="ZSTweaks:1365" label="Make Shield of Balduran less of an auto-win item" />
-							<component id="ZSTweaks:1335" label="Make Crimson Chain more unique beyond enchantment level" />
-							<component id="ZSTweaks:1490" label="Make Neb's Nasty Cutter never run out of poison" />
-							<component id="ZSTweaks:1200" label="Make Ixil's Spike allow Haste and Improved Haste and improve it slightly" />
-							<component id="ZSTweaks:1300" label="Make Silver Sword more unique" />
-							<component id="ZSTweaks:1318" label="Make Flame of the North able to kill trolls and affect all evil" />
-							<component id="ZSTweaks:1390" label="Make Staff of the Magi more balanced" />
-							<component id="ZSTweaks:1587" label="Make Rod of Terror inspire less terror by not just being awful" />
-							<component id="ZSTweaks:1591" label="Make Soul Reaver more balanced and deal 1d12 damage" />
-							<component id="ZSTweaks:1594" label="Make Cleric's Staff more unique and benefit clerics" />
-							<component id="ZSTweaks:1599" label="Make Psion's Blade more powerful vs. illithids" />
-							<component id="ZSTweaks:1602" label="Make Dragon's Bane act as a +6 weapon vs. dragons and wyverns" />
-							<component id="ZSTweaks:1603" label="Make Dragon's Breath act damage-wise as a +4 weapon" />
-							<component id="ZSTweaks:1606" label="Make the Ravager halberd more balanced" />
-							<component id="ZSTweaks:1126" label="Make Blackrazor able to-hit targets immune to +3" />
-							<component id="ZSTweaks:1210" label="Make the Equalizer slightly more powerful" />
-							<component id="ZSTweaks:1270" label="Make Spectral Brand slightly better" />
-							<component id="ZSTweaks:1315" label="Make Dak'kon's Zerth Blade behave as a +3 weapon" />
-							<component id="ZSTweaks:1319" label="Make Holy Sword of Tyr affect all evil" />
-							<component id="ZSTweaks:1341" label="Make Hindo's Doom a +4 and +5 weapon and inflict extra damage to undead" />
-							<component id="ZSTweaks:1550" label="Make Drizzt's weapons slightly more worth stealing in BG2" />
-							<component id="ZSTweaks:1583" label="Make Kachiko's Wakizashi more unique with an upgrade path for Cespenar" />
-							<component id="ZSTweaks:1588" label="Make Water's Edge unique in function" />
-							<component id="ZSTweaks:1598" label="Make Cutthroat unique in function" />
-							<component id="ZSTweaks:1310" label="Make Defender of Easthaven damage reduction a little more moderate" />
-							<component id="ZSTweaks:1311" label="Make Krotan's Skullcrusher slightly less generic" />
-							<component id="ZSTweaks:1312" label="Make Krotan's Skullcrusher slightly more crushy" />
-							<component id="ZSTweaks:1314" label="Make Jerrod's Mace behave as a +3 weapon" />
-							<component id="ZSTweaks:1325" label="Make Borok's Fist different from Ashideena" />
-							<component id="ZSTweaks:1320" label="Make Flail of Ages +5 allow Haste and Improved Haste and improve it slightly" />
-							<component id="ZSTweaks:1330" label="Make Darkfire Bow slightly more remarkable" />
-							<component id="ZSTweaks:1343" label="Make Mana Bow more magical and more deadly against arcane casters" />
-							<component id="ZSTweaks:1348" label="Make projectiles from Shortbow of Gesen as fast as regular arrows" />
-							<component id="ZSTweaks:1340" label="Taralash slightly more remarkable" />
-							<component id="ZSTweaks:1510" label="Make Delryn's Family Shield become a +2 shield" />
-							<component id="ZSTweaks:1520" label="Make Keldorn's Unique Gear a bit more effective and convenient" />
-							<component id="ZSTweaks:1642" label="Make Nalia's Ring more powerful" />
-							<component id="ZSTweaks:1643" label="Make Corthala Family Blade more powerful and more effective against wizards" />
-							<component id="ZSTweaks:1644" label="Make NPC gear no longer bound to unnecessary stat restrictions" />
-							<component id="ZSTweaks:1646" label="Make Sarevok's Deathbringer Assault a bit more balanced" />
-							<component id="ZSTweaks:2240" label="Make Hexxat's Blood Drain have a cooldown instead of being usable once per day" />
-							<component id="ZSTweaks:2250" label="Make Edwin's Amulet nuanced in the privileges it grants to that snake" />
-							<component id="ZSTweaks:1556" label="Make minor improvements to Jaheira-specific items" />
+							<component id="ZSTweaks:1170" name="Make Shadow Dragon Scale behave less like a Black Dragon Scale" label="Make Shadow Dragon Scale behave less like a Black Dragon Scale" />
+							<component id="ZSTweaks:1171" name="Make Silver Dragon Scale also grant 40% cold resistance" label="Make Silver Dragon Scale also grant 40% cold resistance" />
+							<component id="ZSTweaks:1174" name="Make Heartwood Ring grant spell slots and regeneration" label="Make Heartwood Ring grant spell slots and regeneration" />
+							<component id="ZSTweaks:1197" name="Make a number of quest items functionally useful" label="Make a number of quest items functionally useful" />
+							<component id="ZSTweaks:1560" name="Make Belt of Skillful Blade also improve piercing damage" label="Make Belt of Skillful Blade also improve piercing damage" />
+							<component id="ZSTweaks:1561" name="Make Cloak of the Stars more useful" label="Make Cloak of the Stars more useful" />
+							<component id="ZSTweaks:1652" name="Make Grandmaster's Armor better and grant perks to backstabbers" label="Make Grandmaster's Armor better and grant perks to backstabbers" />
+							<component id="ZSTweaks:1661" name="Make Cloak of the Sewers also protect vs. poison" label="Make Cloak of the Sewers also protect vs. poison" />
+							<component id="ZSTweaks:1662" name="Make Montolio's Cloak grant a damage and THAC0 bonus to rangers" label="Make Montolio's Cloak grant a damage and THAC0 bonus to rangers" />
+							<component id="ZSTweaks:1677" name="Make Wondrous Gloves Wondrous" label="Make Wondrous Gloves wondrous" />
+							<component id="ZSTweaks:1195" name="Make Gloves of Healing worth more than what you get by selling them" label="Make Gloves of Healing worth more than what you get by selling them" />
+							<component id="ZSTweaks:1211" name="Make Orc Leathers grant special bonuses to half-orc wearers" label="Make Orc Leathers grant special bonuses to half-orc wearers" />
+							<component id="ZSTweaks:1212" name="Make Skin of the Ghoul +4 protect against all kinds of paralysis" label="Make Skin of the Ghoul +4 protect against all kinds of paralysis" />
+							<component id="ZSTweaks:1214" name="Make Armor of the Viper more interesting" label="Make Armor of the Viper more interesting" />
+							<component id="ZSTweaks:1217" name="Make Hayes' Robe grant +1 to Armor Class and casting speed to wild mages" label="Make Hayes' Robe grant +1 to Armor Class and casting speed to Wild Mages" />
+							<component id="ZSTweaks:1334" name="Make Ashen Scales more unique beyond enchantment level" label="Make Ashen Scales more unique beyond enchantment level" />
+							<component id="ZSTweaks:1351" name="Make Tzu-Zan's bracers a better competitor to Gauntlets of Crushing" label="Make Tzu-Zan's Bracers a better competitor to Gauntlets of Crushing" />
+							<component id="ZSTweaks:1365" name="Make Shield of Balduran less of an auto-win item" label="Make Shield of Balduran less of an auto-win item" />
+							<component id="ZSTweaks:1335" name="Make Crimson Chain more unique beyond enchantment level" label="Make Crimson Chain more unique beyond enchantment level" />
+							<component id="ZSTweaks:1490" name="Make Neb's Nasty Cutter never run out of poison" label="Make Neb's Nasty Cutter never run out of poison" />
+							<component id="ZSTweaks:1200" name="Make Ixil's Spike allow Haste and Improved Haste and improve it slightly" label="Make Ixil's Spike allow Haste and Improved Haste and improve it slightly" />
+							<component id="ZSTweaks:1300" name="Make Silver Sword more unique" label="Make Silver Sword more unique" />
+							<component id="ZSTweaks:1318" name="Make Flame of the North able to kill trolls and affect all evil" label="Make Flame of the North able to kill trolls and affect all evil" />
+							<component id="ZSTweaks:1390" name="Make Staff of the Magi more balanced" label="Make Staff of the Magi more balanced" />
+							<component id="ZSTweaks:1587" name="Make Rod of Terror inspire less Terror by not just being awful" label="Make Rod of Terror inspire less terror by not just being awful" />
+							<component id="ZSTweaks:1591" name="Make Soul Reaver more balanced and deal 1d12 damage" label="Make Soul Reaver more balanced and deal 1d12 damage" />
+							<component id="ZSTweaks:1594" name="Make Cleric's staff more unique and benefit clerics" label="Make Cleric's Staff more unique and benefit clerics" />
+							<component id="ZSTweaks:1599" name="Make Psion's Blade more powerful vs. illithids" label="Make Psion's Blade more powerful vs. illithids" />
+							<component id="ZSTweaks:1602" name="Make Dragon's Bane act as a +6 weapon vs. dragons and wyverns" label="Make Dragon's Bane act as a +6 weapon vs. dragons and wyverns" />
+							<component id="ZSTweaks:1603" name="Make Dragon's Breath act damage-wise as a +4 weapon" label="Make Dragon's Breath act damage-wise as a +4 weapon" />
+							<component id="ZSTweaks:1606" name="Make the Ravager halberd more balanced" label="Make the Ravager halberd more balanced" />
+							<component id="ZSTweaks:1126" name="Make Blackrazor able to hit targets immune to +3" label="Make Blackrazor able to-hit targets immune to +3" />
+							<component id="ZSTweaks:1210" name="Make The Equalizer slightly more powerful" label="Make the Equalizer slightly more powerful" />
+							<component id="ZSTweaks:1270" name="Make Spectral Brand slightly better" label="Make Spectral Brand slightly better" />
+							<component id="ZSTweaks:1315" name="Make Dak'kon's Zerth Blade behave as a +3 weapon" label="Make Dak'kon's Zerth Blade behave as a +3 weapon" />
+							<component id="ZSTweaks:1319" name="Make Holy Sword of Tyr affect all evil" label="Make Holy Sword of Tyr affect all evil" />
+							<component id="ZSTweaks:1341" name="Make Hindo's Doom a +4 and +5 weapon and inflict extra damage to undead" label="Make Hindo's Doom a +4 and +5 weapon and inflict extra damage to undead" />
+							<component id="ZSTweaks:1550" name="Make Drizzt's weapons slightly more worth stealing in BG2" label="Make Drizzt's weapons slightly more worth stealing in BG2" />
+							<component id="ZSTweaks:1583" name="Make Kachiko's Wakizashi more unique with an upgrade path for Cespenar" label="Make Kachiko's Wakizashi more unique with an upgrade path for Cespenar" />
+							<component id="ZSTweaks:1588" name="Make Water's Edge unique in function" label="Make Water's Edge unique in function" />
+							<component id="ZSTweaks:1598" name="Make Cutthroat unique in function" label="Make Cutthroat unique in function" />
+							<component id="ZSTweaks:1310" name="Make Defender of Easthaven damage reduction a little more moderate" label="Make Defender of Easthaven damage reduction a little more moderate" />
+							<component id="ZSTweaks:1311" name="Make Krotan's Skullcrusher slightly less generic" label="Make Krotan's Skullcrusher slightly less generic" />
+							<component id="ZSTweaks:1312" name="Make Skullcrusher slightly more crushy" label="Make Krotan's Skullcrusher slightly more crushy" />
+							<component id="ZSTweaks:1314" name="Make Jerrod's Mace behave as a +3 weapon" label="Make Jerrod's Mace behave as a +3 weapon" />
+							<component id="ZSTweaks:1325" name="Make Borok's Fist different from Ashideena" label="Make Borok's Fist different from Ashideena" />
+							<component id="ZSTweaks:1320" name="Make Flail of Ages +5 allow Haste and Improved Haste and improve it slightly" label="Make Flail of Ages +5 allow Haste and Improved Haste and improve it slightly" />
+							<component id="ZSTweaks:1330" name="Make Darkfire Bow slightly more remarkable" label="Make Darkfire Bow slightly more remarkable" />
+							<component id="ZSTweaks:1343" name="Make Mana bow more magical and more deadly against arcane casters" label="Make Mana Bow more magical and more deadly against arcane casters" />
+							<component id="ZSTweaks:1348" name="Make projectiles from Shortbow of Gesen as fast as regular arrows" label="Make projectiles from Shortbow of Gesen as fast as regular arrows" />
+							<component id="ZSTweaks:1340" name="Make Taralash slightly more remarkable" label="Taralash slightly more remarkable" />
+							<component id="ZSTweaks:1510" name="Make Delryn's family shield become a +2 shield" label="Make Delryn's Family Shield become a +2 shield" />
+							<component id="ZSTweaks:1520" name="Make Keldorn's unique gear a bit more effective and convenient" label="Make Keldorn's Unique Gear a bit more effective and convenient" />
+							<component id="ZSTweaks:1642" name="Make Nalia's ring more powerful" label="Make Nalia's Ring more powerful" />
+							<component id="ZSTweaks:1643" name="Make Corthala family blade more powerful and more effective against wizards" label="Make Corthala Family Blade more powerful and more effective against wizards" />
+							<component id="ZSTweaks:1644" name="Make NPC gear no longer bound to unnecessary stat restrictions" label="Make NPC gear no longer bound to unnecessary stat restrictions" />
+							<component id="ZSTweaks:1646" name="Make Sarevok's Deathbringer assault a bit more balanced" label="Make Sarevok's Deathbringer Assault a bit more balanced" />
+							<component id="ZSTweaks:2240" name="Make Hexxat's Blood Drain have a cooldown instead of being usable once per day" label="Make Hexxat's Blood Drain have a cooldown instead of being usable once per day" />
+							<component id="ZSTweaks:2250" name="Make Edwin's amulet nuanced in the privileges it grants to that snake" label="Make Edwin's Amulet nuanced in the privileges it grants to that snake" />
+							<component id="ZSTweaks:1556" name="Make minor improvements to Jaheira-specific items" label="Make minor improvements to Jaheira-specific items" />
 						</mod>
 						<component id="ForgottenArmament-NerfAPR" label="Nerf APR increasing one-handed melee weapons" modId="forgotten-armament" />
 					</group>
@@ -782,7 +782,7 @@
 						<component id="c2_item_upgrade_soa_seamless" label="Item Upgrade" />
 						<component id="c2_item_upgrade_tob_seamless" label="Item Upgrade - revised version ToB" alwaysIf="c2_item_upgrade_soa_seamless" noDisplay="1" />
 					</mod>
-					<component id="randomiser:9000" label="Cespenar can forge SoA items" engine="bg2,eet" level="vanillaPlus" modId="randomiser" />
+					<component id="randomiser:9000" name="Cespenar can forge SoA items" label="Cespenar can forge SoA items" engine="bg2,eet" level="vanillaPlus" modId="randomiser" />
 					<component id="swordap:0" label="Improved Haer'Dalis' Swords" modId="HaerDalis-Swords" level="extended" />
 					<component id="L#-OfHeirloomsAndClasses" label="Of Heirlooms and Classes" desc="New artifacts forgeable by Cromwell" modId="of-heirlooms-and-classes" level="extended" />
 					<mod id="Tweaks-Anthology" label="Item Upgrade" level="blendWell">
@@ -793,14 +793,14 @@
 			</items>
 			<tweaks label="Tweaks">
 				<component id="#L-TRANSITIONS-RESTORE_POWER" label="Use Irenicus in Hell movie as dream to restore Bhaalspawn powers" modId="themed_tweaks" level="blendWell" />
-				<component id="HouseTweaks:16" label="Good-aligned roleplay rewards" modId="House-Rule-Tweaks" level="blendWell" />
-				<component id="HouseTweaks:44" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" level="blendWell" />
+				<component id="HouseTweaks:16" name="House Tweaks: Good-Aligned Roleplay Rewards (BG2:EE)" label="Good-aligned roleplay rewards" modId="House-Rule-Tweaks" level="blendWell" />
+				<component id="HouseTweaks:44" name="House Tweaks: Thief Stronghold—Ask Jariel to pay your quota in your stead" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="cd_tweaks_disable_malchor" name="Keep Drizzt's Loot, Disable Malchor Harpell [Weimer]" label="Keep Drizzt's Loot, disable Malchor Harpell" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3160" />
 				<component id="cd_tweaks_improved_athkatla_guard" name="Improved Athkatlan City Guard" label="Improved Athkatlan city guard" modId="Tweaks-Anthology" level="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1040" />
 				<component id="cd_tweaks_more_sensible_cowled_wizards" name="More Sensible Cowled Wizards [Luke]" label="More sensible Cowled Wizards" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3420" />
-				<component id="ZSTweaks:3010" label="Make inappropriately aligned creatures in BG2 more correct" modId="ZSTweaks" level="fixes" />
+				<component id="ZSTweaks:3010" name="Make inappropriately aligned creatures in BG2 more correct" label="Make inappropriately aligned creatures in BG2 more correct" modId="ZSTweaks" level="fixes" />
 				<component id="ForcedSlayerTransform:0" label="Forced Slayer transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" level="extended" />
-				<component id="randomiser:10210" label="Duergar merchants" engine="bg2,eet" modId="randomiser" level="vanillaPlus" desc="Make it so once you can access the special wares you retain the option of accessing the regular wares" />
+				<component id="randomiser:10210" name="Duergar merchants" label="Duergar merchants" engine="bg2,eet" modId="randomiser" level="vanillaPlus" desc="Make it so once you can access the special wares you retain the option of accessing the regular wares" />
 				<component id="cd_tweaks_alter_wounded_triggers" name="Alter HP Triggers for NPC Wounded Dialogues" label="Alter HP triggers for NPC wounded dialogues" modId="Tweaks-Anthology" desc="Raise the HP trigger level so that the player has a better chance of seeing wound banters" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1020" />
 				<component id="cd_tweaks_cromwell_forge_time_0" name="Instant forging (original BG2 default)" label="Cromwell's Instant Forging" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1125" />
 				<component id="cd_tweaks_yoshi_imoen_xp_transfer" name="Yoshimo to Imoen Experience Transfer [dark0dave]" label="Yoshimo to Imoen experience transfer" modId="Tweaks-Anthology" level="vanillaPlus" displayIfNot="Imoen4Ever-BGII-ImoenReturnsChapter2" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2720" />
@@ -811,18 +811,18 @@
 			</tweaks>
 			<restructure>
 				<alternatives label="License for spellcasting costs..." noBranches="1">
-					<component id="stratagems:4160" label="10,000 gp" level="blendWell" default="1" modId="SwordCoastStratagems" />
-					<component id="stratagems:4161" label="15,000 gp" level="extended" modId="SwordCoastStratagems" />
-					<component id="stratagems:4162" label="20,000 gp" modId="SwordCoastStratagems" />
-					<component id="stratagems:4163" label="30,000 gp" modId="SwordCoastStratagems" />
-					<component id="stratagems:4164" label="50,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4160" name="License costs 10,000 gp" label="10,000 gp" level="blendWell" default="1" modId="SwordCoastStratagems" />
+					<component id="stratagems:4161" name="License costs 15,000 gp" label="15,000 gp" level="extended" modId="SwordCoastStratagems" />
+					<component id="stratagems:4162" name="License costs 20,000 gp" label="20,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4163" name="License costs 30,000 gp" label="30,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4164" name="License costs 50,000 gp" label="50,000 gp" modId="SwordCoastStratagems" />
 				</alternatives>
 				<alternatives modId="SwordCoastStratagems" label="Gaelan Wants..." noBranches="1">
-					<component id="stratagems:4170" label="40,000 gp" level="blendWell" default="1" modId="SwordCoastStratagems" />
-					<component id="stratagems:4171" label="60,000 gp" level="extended" modId="SwordCoastStratagems" />
-					<component id="stratagems:4172" label="80,000 gp" modId="SwordCoastStratagems" />
-					<component id="stratagems:4173" label="100,000 gp" modId="SwordCoastStratagems" />
-					<component id="stratagems:4174" label="120,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4170" name="Telekinesis (Alteration) Level: 5 Range: Visual range of the caster Duration: 3 seconds Casting Time: 5 Area of Effect: All enemies within 5ft. of target creature Saving Throw: Neg. By means of this spell, the caster can telekinetically hurl all hostile creatures within a small region directly away from &lt;PRO_HIMHER&gt;self at high speed, inflicting 3d8 points of crushing damage and knocking the creatures unconscious for a few seconds, unless they save vs. spells at a -2 penalty. The spell is ineffective against any creature of ogre size or larger, and - due to the interaction of the telekinetic field with surrounding solid matter - cannot be used to propel creatures off cliffs or into impassable terrain." label="40,000 gp" level="blendWell" default="1" modId="SwordCoastStratagems" />
+					<component id="stratagems:4171" name="2 levels of experience" label="60,000 gp" level="extended" modId="SwordCoastStratagems" />
+					<component id="stratagems:4172" name="5 levels of experience" label="80,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4173" name="Five Levels Drained" label="100,000 gp" modId="SwordCoastStratagems" />
+					<component id="stratagems:4174" name="Iron Body (Alteration) Level: 8 Range: 0 Duration: 2 turns Casting Time: 8 Area of Effect: The caster Saving Throw: None This spell transforms the caster's body into living iron, granting &lt;PRO_HIMHER&gt; several powerful resistances and abilities. While the spell is in effect, the caster is 100% resistant to electricity and poison, 50% resistant to fire and acid, and 75% resistant to physical damage (though the latter cannot be further improved by other effects). Spells that affect respiration or the physiology of the caster are ignored. In addition, the caster's Strength is raised to 25, and the caster can attack twice per round with iron fists for 2d4 points of damage plus appropriate Strength bonuses. Unfortunately, the caster's movement becomes slow and awkward, setting &lt;PRO_HISHER&gt; movement rate to 25% of &lt;PRO_HISHER&gt; normal, and &lt;PRO_HISHER&gt; spellcasting becomes more sluggish, imposing a -2 penalty on casting times. The spell ends immediately if the caster is affected by any kind of polymorph effect." label="120,000 gp" modId="SwordCoastStratagems" />
 				</alternatives>
 				<mod id="A7-SkipChateauIrenicus" label="Skip Chateau Irenicus">
 					<component id="A7-SKIPCHATEAUIRENICUS-MAIN" label="Skip Chateau Irenicus" />
@@ -925,12 +925,12 @@
 				</banters>
 			</npc>
 			<tweaks label="Tweaks">
-				<component id="HouseTweaks:25" label="Reputation bonuses" modId="House-Rule-Tweaks" level="blendWell" />
+				<component id="HouseTweaks:25" name="House Tweaks: Reputation Bonuses for Icewind Dale" label="Reputation bonuses" modId="House-Rule-Tweaks" level="blendWell" />
 			</tweaks>
 			<items label="Items">
 				<add label="New Items" noBranches="1">
 					<component id="L#-FINDIT-IWD" label="Findit item pack" modId="findit-iwd" />
-					<component id="stratagems:3510" label="Wider availability of wizard spell scrolls in Icewind Dale" modId="SwordCoastStratagems" />
+					<component id="stratagems:3510" name="Wider availability of wizard spell scrolls in Icewind Dale" label="Wider availability of wizard spell scrolls in Icewind Dale" modId="SwordCoastStratagems" />
 					<component id="ee_cosmetic_enhancements:2" label="Add Bhaal's Fire and Benorg's Truth into loot tables" modId="EE_Cosmetic_Item_Enhancement" />
 					<mod id="forgotten-armament">
 						<component id="ForgottenArmament-Orrick" label="Add more items and scrolls to Orrick's Store" />
@@ -992,12 +992,12 @@
 			<items label="Item Changes">
 				<add noBranches="1" label="New Items" unfolded="1">
 					<mod id="EET_Tweaks" label="Baldur's Gate: Enhanced Edition Trilogy Tweaks" level="vanillaPlus">
-						<component id="EET_Tweaks:4060" label="Add Wand Cases and Key Rings" />
-						<component id="EET_Tweaks:4070" label="Add Key Rings" alwaysIf="EET_Tweaks:4060" noDisplay="1" />
-						<component id="EET_Tweaks:4050" label="Books/scrolls categorization" desc="Allows putting books and scrolls in containers" />
+						<component id="EET_Tweaks:4060" name="Wand Case" label="Add Wand Cases and Key Rings" />
+						<component id="EET_Tweaks:4070" name="Key Ring" label="Add Key Rings" alwaysIf="EET_Tweaks:4060" noDisplay="1" />
+						<component id="EET_Tweaks:4050" name="Books/Scrolls categorization" label="Books/scrolls categorization" desc="Allows putting books and scrolls in containers" />
 					</mod>
-					<component id="stratagems:3015" label="Re-introduce Potions of Extra-Healing" modId="SwordCoastStratagems" level="vanillaPlus" />
-					<component id="stratagems:3505" label="Wider selection of random scrolls" modId="SwordCoastStratagems" level="vanillaPlus" />
+					<component id="stratagems:3015" name="Re-introduce potions of extra-healing" label="Re-introduce Potions of Extra-Healing" modId="SwordCoastStratagems" level="vanillaPlus" />
+					<component id="stratagems:3505" name="Wider selection of random scrolls" label="Wider selection of random scrolls" modId="SwordCoastStratagems" level="vanillaPlus" />
 					<component id="cd_iwdification_2h_axes" label="Two-Handed Axe Item Pack" modId="iwdification" level="blendWell" />
 					<component id="ForgottenArmament-AddItems" label="Forgotten Armament's New Items" modId="forgotten-armament" />
 				</add>
@@ -1012,32 +1012,32 @@
 						<component id="ForgottenArmament-SetBonus" label="Add set bonuses to Planar Items" modId="forgotten-armament" />
 						<component id="ForgottenArmament-UpdateItems" label="Forgotten Armament: Update existing in-game items" modId="forgotten-armament" />
 						<mod id="ZSTweaks" level="blendWell">
-							<component id="ZSTweaks:1548" label="Make Void-Weapons slightly more effective and logical" />
-							<component id="ZSTweaks:1532" label="Make bracers, belts and boots grant +1 HP, so even unenchanted variants have an actual use" />
-							<component id="ZSTweaks:1180" label="Make Ring of Danger Sense grant defensive traits" />
-							<component id="ZSTweaks:1000" label="Make Throwing Poisoned Daggers less rare and more likely to poison enemies" />
-							<component id="ZSTweaks:1670" label="Make Werebane more effective vs. lycanthropes" />
-							<component id="ZSTweaks:1672" label="Make Stalker Gauntlets also benefit Bounty Hunters and Shadowdancers" />
-							<component id="ZSTweaks:1665" label="Make Ioun Stones and circlets a bit more interesting or powerful" />
-							<component id="ZSTweaks:1198" label="Make Ring of the Crusade grant combat bonuses vs. demons and devils" />
-							<component id="ZSTweaks:1608" label="Make Aule's Staff more effective for non-fighter wizards and sorcerers" />
-							<component id="ZSTweaks:1589" label="Make Rashad's Talon unique in function" />
-							<component id="ZSTweaks:1207" label="Make Protector of the Second more powerful when used by rangers" />
-							<component id="ZSTweaks:1208" label="Make Karajah's Life and Death more unique inspired by the description" />
-							<component id="ZSTweaks:1010" label="Make Asp's Nest Darts more dangerous" />
-							<component id="ZSTweaks:1342" label="Make Protector of the Dryads deal +2 damage to orcs, ogres, gnolls, and goblinoids" />
-							<component id="ZSTweaks:1641" label="Make the item creation abilities of vanilla NPCs slightly better" />
+							<component id="ZSTweaks:1548" name="Make Void-weapons slightly more effective and logical" label="Make Void-Weapons slightly more effective and logical" />
+							<component id="ZSTweaks:1532" name="Make bracers, belts and boots grant +1 HP, so even unenchanted variants have an actual use" label="Make bracers, belts and boots grant +1 HP, so even unenchanted variants have an actual use" />
+							<component id="ZSTweaks:1180" name="Make Ring of Danger Sense grant defensive traits" label="Make Ring of Danger Sense grant defensive traits" />
+							<component id="ZSTweaks:1000" name="Make throwing poisoned daggers less rare and more likely to poison enemies" label="Make Throwing Poisoned Daggers less rare and more likely to poison enemies" />
+							<component id="ZSTweaks:1670" name="Make Werebane more effective vs. lycanthropes" label="Make Werebane more effective vs. lycanthropes" />
+							<component id="ZSTweaks:1672" name="Make Stalker Gauntlets also benefit Bounty Hunters and Shadowdancers" label="Make Stalker Gauntlets also benefit Bounty Hunters and Shadowdancers" />
+							<component id="ZSTweaks:1665" name="Make ioun stones and circlets a bit more interesting or powerful" label="Make Ioun Stones and circlets a bit more interesting or powerful" />
+							<component id="ZSTweaks:1198" name="Make Ring of the Crusade grant combat bonuses vs. demons and devils" label="Make Ring of the Crusade grant combat bonuses vs. demons and devils" />
+							<component id="ZSTweaks:1608" name="Make Aule's Staff more effective for non-fighter wizards and sorcerers" label="Make Aule's Staff more effective for non-fighter wizards and sorcerers" />
+							<component id="ZSTweaks:1589" name="Make Rashad's Talon unique in function" label="Make Rashad's Talon unique in function" />
+							<component id="ZSTweaks:1207" name="Make Protector of the Second more powerful when used by rangers" label="Make Protector of the Second more powerful when used by rangers" />
+							<component id="ZSTweaks:1208" name="Make Karajah's Life and Death more unique inspired by the description" label="Make Karajah's Life and Death more unique inspired by the description" />
+							<component id="ZSTweaks:1010" name="Make Asp's Nest darts more dangerous" label="Make Asp's Nest Darts more dangerous" />
+							<component id="ZSTweaks:1342" name="Make Protector of the Dryads deal +2 damage to orcs, ogres, gnolls, and goblinoids" label="Make Protector of the Dryads deal +2 damage to orcs, ogres, gnolls, and goblinoids" />
+							<component id="ZSTweaks:1641" name="Make the item creation abilities of vanilla NPCs slightly better" label="Make the item creation abilities of vanilla NPCs slightly better" />
 						</mod>
 						<component id="SubtleD_Spell_Tweaks:1351" label="Add Faerie Fire and Slow on Hit to Moonblade" modId="SubtleD_Spell_Tweaks" />
 					</group>
-					<component id="stratagems:3010" label="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" modId="SwordCoastStratagems" level="blendWell" />
-					<component id="stratagems:2900" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" modId="SwordCoastStratagems" level="blendWell" />
+					<component id="stratagems:3010" name="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" label="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" modId="SwordCoastStratagems" level="blendWell" />
+					<component id="stratagems:2900" name="Move or modify some overpowered magic items" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" modId="SwordCoastStratagems" level="blendWell" />
 					<component id="cd_tweaks_removable_npc_items" name="Removable NPC Items" label="Removable NPC items" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4180" />
 				</update>
 				<delete label="Remove" noBranches="1">
 					<mod id="SwordCoastStratagems" level="higherDifficulty">
-						<component id="stratagems:4215" label="Remove unrealistically helpful items from certain areas" />
-						<component id="stratagems:4217" label="Remove ammo up to the +2 level from random containers" />
+						<component id="stratagems:4215" name="1 turn/level" label="Remove unrealistically helpful items from certain areas" />
+						<component id="stratagems:4217" name="Remove ammo up to the +2 level from random containers" label="Remove ammo up to the +2 level from random containers" />
 					</mod>
 				</delete>
 			</items>
@@ -1050,9 +1050,9 @@
 					<component id="#L-BG2-SNARK" label="Add a little snark to dialogues (SoD/BG2EE)" />
 					<component id="#L-BG2-CUTSCENES" label="Remove cut scenes that the PC shouldn't be privy to" level="blendWell" />
 				</mod>
-				<component id="stratagems:4051" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="blendWell" />
-				<component id="randomiser:10100" label="Remove Protection from Undead scrolls from all stores" level="higherDifficulty" engine="bg,eet" modId="randomiser" />
-				<component id="stratagems:3041" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" level="blendWell" />
+				<component id="stratagems:4051" name="Reputation increases at about 1/2 the normal rate" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="blendWell" />
+				<component id="randomiser:10100" name="All scrolls from all stores" label="Remove Protection from Undead scrolls from all stores" level="higherDifficulty" engine="bg,eet" modId="randomiser" />
+				<component id="stratagems:3041" name="Stores sell a maximum of 5 Arrows of Dispelling" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" level="blendWell" />
 				<component id="cd_tweaks_death_cam" name="Death Cam" label="Death cam" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3300" />
 			</tweaks>
 		</universalBg>
@@ -1081,31 +1081,31 @@
 						<component id="cd_tweaks_unique_containers_fixes_and_icons" name="Unique icons only" label="Unique icons only" engine="bg,eet,iwd" level="blendWell" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_181" />
 						<component id="cd_tweaks_unique_containers_full" name="Unique icons and names" label="Unique icons and names" engine="bg,eet,iwd" modId="Tweaks-Anthology" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_182" />
 					</alternatives>
-					<component id="HouseTweaks:39" label="Ankheg and dragonscale armor count as medium armor" modId="House-Rule-Tweaks" level="blendWell" />
+					<component id="HouseTweaks:39" name="House Tweaks: Ankheg and Dragonscale Armor Count as Medium Armor" label="Ankheg and dragonscale armor count as medium armor" modId="House-Rule-Tweaks" level="blendWell" />
 					<group label="Updates" noBranches="1">
 						<mod id="ZSTweaks">
 							<component id="ForgottenArmament-ReplaceSpeedBoots" label="Replace Boots of Speed (Paws of the Cheetah)" modId="forgotten-armament" />
 							<component id="ForgottenArmament-StatIncreaseItems" label="Update items setting an ability score to increment the increase" modId="forgotten-armament" />
-							<component id="ZSTweaks:1547" label="Make Protection from Undead more balanced" level="higherDifficulty" />
-							<component id="ZSTweaks:1203" label="Make Girdle of Fortitude set CON to 18 on equip" level="blendWell" />
-							<component id="ZSTweaks:1216" label="Make Ankheg's Plate grant 20% acid resistance" level="blendWell"  />
-							<component id="ZSTweaks:1317" label="Make the basic Arcane Robes more remarkable" level="blendWell"  />
-							<component id="ZSTweaks:1344" label="Arrows of Biting apply poison faster and improve the misleading description" level="blendWell"  />
-							<component id="ZSTweaks:1345" label="Make Arrows of Fire cause fire damage always, same as Arrows of Ice" level="blendWell"  />
-							<component id="ZSTweaks:1346" label="Make Arrows of Piercing always cause at least half of the extra piercing damage" level="blendWell"  />
-							<component id="ZSTweaks:1347" label="Make Bolts of Biting slightly more deadly" level="blendWell"  />
-							<component id="ZSTweaks:1371" label="Make Arrows of Dispelling force a save vs. spell at -2 for them to work" level="blendWell"  />
-							<component id="ZSTweaks:1388" label="Make Acid Arrow's extra damage not subject to Magic Resistance" level="blendWell"  />
+							<component id="ZSTweaks:1547" name="Make Protection from Undead more balanced" label="Make Protection from Undead more balanced" level="higherDifficulty" />
+							<component id="ZSTweaks:1203" name="Make Girdle of Fortitude set Constitution to 18 on equip" label="Make Girdle of Fortitude set CON to 18 on equip" level="blendWell" />
+							<component id="ZSTweaks:1216" name="Make Ankheg's Plate grant 20% acid resistance" label="Make Ankheg's Plate grant 20% acid resistance" level="blendWell"  />
+							<component id="ZSTweaks:1317" name="Make the basic arcane robes more remarkable" label="Make the basic Arcane Robes more remarkable" level="blendWell"  />
+							<component id="ZSTweaks:1344" name="Make Arrows of Biting apply poison faster and improve the misleading description" label="Arrows of Biting apply poison faster and improve the misleading description" level="blendWell"  />
+							<component id="ZSTweaks:1345" name="Make Arrows of Fire cause fire damage always, same as Arrows of Ice" label="Make Arrows of Fire cause fire damage always, same as Arrows of Ice" level="blendWell"  />
+							<component id="ZSTweaks:1346" name="Make Arrows of Piercing always cause at least half of the extra piercing damage" label="Make Arrows of Piercing always cause at least half of the extra piercing damage" level="blendWell"  />
+							<component id="ZSTweaks:1347" name="Make Bolts of Biting slightly more deadly" label="Make Bolts of Biting slightly more deadly" level="blendWell"  />
+							<component id="ZSTweaks:1371" name="Make Arrows of Dispelling force a save vs. Spell at -2 for them to work" label="Make Arrows of Dispelling force a save vs. spell at -2 for them to work" level="blendWell"  />
+							<component id="ZSTweaks:1388" name="Make Acid Arrow's extra damage not subject to magic resistance" label="Make Acid Arrow's extra damage not subject to Magic Resistance" level="blendWell"  />
 						</mod>
 					</group>
 				</update>
 			</items>
 			<tweaks label="Tweaks" noBranches="1">
-				<component id="METweaks:2600" label="No party required area transitions" modId="Olvyn-Tweaks" level="extended" />
+				<component id="METweaks:2600" name="No Party Required area transitions" label="No party required area transitions" modId="Olvyn-Tweaks" level="extended" />
 				<mod id="Tweaks-Anthology">
 					<component id="cd_tweaks_noncombat_speed_casting_increase_50" name="Movement speed by 50 percent and casting speed" label="Increase movement and casting speed by 50% outside of combat" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3343" />
 				</mod>
-				<component id="stratagems:4130" label="Revised handling of death effects like disintegration, petrification and imprisonment" desc="Party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" modId="SwordCoastStratagems" level="vanillaPlus" />
+				<component id="stratagems:4130" name="Revised handling of death effects like disintegration, petrification and imprisonment (party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" label="Revised handling of death effects like disintegration, petrification and imprisonment" desc="Party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" modId="SwordCoastStratagems" level="vanillaPlus" />
 				<mod id="Lore_From_Learning" level="extended">
 					<component id="cd_lore_from_learning_books" label="Lore From Learning" desc="Provide Lore from books, weapons, party members, defeating monsters and exploring areas" />
 					<component id="cd_lore_from_learning_martial" label="Weapon knowledge provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
@@ -1124,7 +1124,7 @@
 			<fighter label="Fighter">
 				<wizardSlayer label="Wizard Slayer">
 					<component id="ArtisansKitpack:1006" label="Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
-					<component id="METweaks:1600" label="Increase Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" desc="Gain 5% Magic Resistance per level rather than 1%" />
+					<component id="METweaks:1600" name="Increase Wizard Slayer Magic Resistance" label="Increase Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" desc="Gain 5% Magic Resistance per level rather than 1%" />
 				</wizardSlayer>
 				<component id="Morpheus562sKitpackShieldBreaker" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" />
 			</fighter>
@@ -1137,7 +1137,7 @@
 				</archer>
 				<component id="iwdification:110" label="Make Tracking an innate ability since level 1" modId="iwdification" engine="bg,eet" level="blendWell" />
 				<component id="cd_tweaks_nwn_trackless_step" name="Trackless Step Class Feat for Rangers [Luke]" label="Add Trackless Step class feat for rangers" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6240" />
-				<component id="METweaks:1400" label="Power up ranger Charm Animal" modId="Olvyn-Tweaks" level="blendWell" />
+				<component id="METweaks:1400" name="Power Up Ranger Charm Animal" label="Power up ranger Charm Animal" modId="Olvyn-Tweaks" level="blendWell" />
 			</ranger>
 			<paladin label="Paladin">
 				<inquisitor label="Inquisitor">
@@ -1146,13 +1146,13 @@
 			</paladin>
 			<monk label="Monk">
 				<component id="ArtisansKitpack:10001" label="Update class: Revisions" modId="The-Artisan-s-Kitpack" level="blendWell" />
-				<component id="METweaks:1000" label="Update Deflect Missiles ability" modId="Olvyn-Tweaks" level="blendWell" />
+				<component id="METweaks:1000" name="Give Monks a cooler Deflect Missiles ability" label="Update Deflect Missiles ability" modId="Olvyn-Tweaks" level="blendWell" />
 			</monk>
-			<component id="ZSTweaks:2120" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" />
-			<component id="METweaks:400" label="Remove the limit of two Proficiency Points in a weapon at character creation" modId="Olvyn-Tweaks" />
+			<component id="ZSTweaks:2120" name="Make War Cry significantly more useful" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" />
+			<component id="METweaks:400" name="Remove the limit of two proficiency points in a weapon at character creation" label="Remove the limit of two Proficiency Points in a weapon at character creation" modId="Olvyn-Tweaks" />
 			<component id="cd_tweaks_cleave" name="Cleave Class Feat for Fighters and Monks [Luke]" label="Add Cleave class feat for fighters and monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6100" />
 			<component id="cd_tweaks_nwn_knockdown" name="Knockdown Class Feat for Fighters and Monks [Luke]" label="Add Knockdown class feat for fighters and monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6010" />
-			<component id="METweaks:900" label="Let rangers and paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
+			<component id="METweaks:900" name="Let Rangers and Paladins cast spells at their full caster level" label="Let rangers and paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
 		</warriors>
 		<rogues label="Rogues" desc="Thief/bard">
 			<thief label="Thief">
@@ -1185,12 +1185,12 @@
 				<component id="EpicThieving:400" label="EpicThieving — Epic Detect Illusions" alwaysIf="EpicThieving:0" noDisplay="1" />
 			</mod>
 			<group label="Backstab">
-				<component id="HouseTweaks:38" label="Backstab with any weapon" modId="House-Rule-Tweaks" level="lowerDifficulty" />
-				<component id="ZSTweaks:1600" label="Omnidirectional Backstabs" modId="ZSTweaks" level="lowerDifficulty" />
+				<component id="HouseTweaks:38" name="House Tweaks: Backstab With Any Weapon" label="Backstab with any weapon" modId="House-Rule-Tweaks" level="lowerDifficulty" />
+				<component id="ZSTweaks:1600" name="Make everyone able to perform omnidirectional backstabs" label="Omnidirectional Backstabs" modId="ZSTweaks" level="lowerDifficulty" />
 			</group>
 			<group label="Traps">
-				<component id="HouseTweaks:41" label="Trap activation tweaks" modId="House-Rule-Tweaks" level="lowerDifficulty" />
-				<component id="HouseTweaks:43" label="Set Traps in enemy range if invisible, does not break Stealth" modId="House-Rule-Tweaks" level="lowerDifficulty" />
+				<component id="HouseTweaks:41" name="House Tweaks: Trap Activation Tweaks" label="Trap activation tweaks" modId="House-Rule-Tweaks" level="lowerDifficulty" />
+				<component id="HouseTweaks:43" name="Set Traps in enemy range if invisible, does not break stealth" label="Set Traps in enemy range if invisible, does not break Stealth" modId="House-Rule-Tweaks" level="lowerDifficulty" />
 				<component id="cd_tweaks_trap_cap_removal" name="Trap Cap Removal [Ardanis/GeN1e]" label="Remove concurrent trap cap" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2320" />
 			</group>
 		</rogues>
@@ -1224,7 +1224,7 @@
 				</mod>
 			</shaman>
 
-			<component id="stratagems:4240" label="Treat mages' and priests' HLAs as innate abilities" level="blendWell" modId="SwordCoastStratagems" />
+			<component id="stratagems:4240" name="Treat mages' and priests' High-Level Abilities as innate abilities rather than memorisable spells (each may be taken only once)" label="Treat mages' and priests' HLAs as innate abilities" level="blendWell" modId="SwordCoastStratagems" />
 		</spellcasters>
 		<multi label="Multi-class / dual-class">
 			<component id="ArtisansKitpack:20000" label="Add kit: Eldritch Knight — fighter/mage kit" modId="The-Artisan-s-Kitpack" level="extended" />
@@ -1236,9 +1236,9 @@
 			<component id="cd_tweaks_alter_thac0_table" name="Un-Nerfed THAC0 Table" label="Un-nerfed THAC0 table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2240" />
 			<alternatives label="Make Infravision useful" desc="Creatures without infravision have -4 THAC0 at night or in dark places">
 				<component id="cd_tweaks_infravision" name="Make Infravision Useful [Luke]" label="Tweaks Anthology (Luke's) solution" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2680" />
-				<component id="METweaks:3200" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" level="blendWell" />
-				<component id="METweaks:3205" label="Olvyn's Version (light)" desc="Creatures without infravision have reduced visual range at night or in dark places" modId="Olvyn-Tweaks" />
-				<component id="METweaks:3210" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" level="higherDifficulty" modId="Olvyn-Tweaks" />
+				<component id="METweaks:3200" name="Creatures without infravision have -4 THAC0 at night or in dark places" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" level="blendWell" />
+				<component id="METweaks:3205" name="Creatures without infravision have reduced visual range at night or in dark places" label="Olvyn's Version (light)" desc="Creatures without infravision have reduced visual range at night or in dark places" modId="Olvyn-Tweaks" />
+				<component id="METweaks:3210" name="Both 1 and 2" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" level="higherDifficulty" modId="Olvyn-Tweaks" />
 			</alternatives>
 			<feats label="Add new feats">
 				<component id="cd_tweaks_planar_turning" name="Planar Turning Class Feat for Clerics/Paladins [Luke]" label="Planar Turning class feat for clerics/paladins" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6140" />
@@ -1287,25 +1287,25 @@
 		<add label="New Spells" unfolded="1">
 			<component id="A7-IMPROVED_SHAMANIC_DANCE-SHAMANIC_PACT" label="Add Shamanic Pact spell for shamans" modId="A7-ImprovedShamanicDance" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
 			<component id="BardicWonders:2008" label="Add new bard spells" modId="Bardic-Wonders" />
-			<component id="stratagems:2500" label="Add 9 new arcane spells" level="blendWell" modId="SwordCoastStratagems" />
-			<component id="stratagems:2510" label="Add 6 new divine spells" level="blendWell" modId="SwordCoastStratagems" />
+			<component id="stratagems:2500" name="+1/level (maximum" label="Add 9 new arcane spells" level="blendWell" modId="SwordCoastStratagems" />
+			<component id="stratagems:2510" name="d" label="Add 6 new divine spells" level="blendWell" modId="SwordCoastStratagems" />
 		</add>
 		<update label="Spell Corrections" noBranches="1">
 			<!--ac-miscellaneous-breathfix;AC Miscellaneous Tweaks - Dragon Breath Fix-->
 			<component id="cd_tweaks_make_grease_ignitable" name="Make Grease ignitable [Luke]" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2650" />
 			<component id="cd_tweaks_restoration_no_fatigue" name="Remove Fatigue from Restoration Spells" label="Remove fatigue from Restoration Spells" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3050" />
 			<component id="A7-CHAOSSORCERER-RECREATE_SPELL_LIST" label="Recreate Chaos Weave spell selection lists" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" />
-			<component id="stratagems:2070" label="Spell school adjustements" modId="SwordCoastStratagems" level="blendWell" />
+			<component id="stratagems:2070" name="Spell school changes" label="Spell school adjustements" modId="SwordCoastStratagems" level="blendWell" />
 			<component id="cd_tweaks_0_weight_created_weapons" name="Change Magically Created Weapons to Zero Weight" label="Change magically created weapons to zero weight" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2220" />
-			<component id="EET_Tweaks:3000" label="Disable hostile reaction after Charm" level="vanillaPlus" modId="EET_Tweaks" />
+			<component id="EET_Tweaks:3000" name="Disable hostile reaction after charm" label="Disable hostile reaction after Charm" level="vanillaPlus" modId="EET_Tweaks" />
 			<mod id="SwordCoastStratagems" level="blendWell">
-				<component id="stratagems:2010" label="Core stratagems spell-system changes" />
-				<component id="stratagems:2030" label="Changes to Restoration" />
-				<component id="stratagems:2040" label="Changes to Shapeshift Spells" />
-				<component id="stratagems:2060" label="Rebalancings of slightly-too-powerful spells" />
-				<component id="stratagems:2080" label="Spells increased in power" />
-				<component id="stratagems:3540" label="Inquisitors dispel at 1.5 x their level (not twice their level)" />
-				<component id="stratagems:3551" label="Spells heal or inflict the maximum amount of damage in this range" level="lowerDifficulty" />
+				<component id="stratagems:2010" name="Core Stratagems spell-system changes (installed by default by any AI component)" label="Core stratagems spell-system changes" />
+				<component id="stratagems:2030" name="Changes to Restoration" label="Changes to Restoration" />
+				<component id="stratagems:2040" name="The combat protection spells dispelled by Breach are" label="Changes to Shapeshift Spells" />
+				<component id="stratagems:2060" name="Rebalancings of slightly-too-powerful spells" label="Rebalancings of slightly-too-powerful spells" />
+				<component id="stratagems:2080" name="Spells increased in power" label="Spells increased in power" />
+				<component id="stratagems:3540" name="Inquisitors dispel at 1.5 x their level (not twice their level)" label="Inquisitors dispel at 1.5 x their level (not twice their level)" />
+				<component id="stratagems:3551" name="Spells heal or inflict the maximum amount of damage in this range" label="Spells heal or inflict the maximum amount of damage in this range" level="lowerDifficulty" />
 			</mod>
 			<mod id="SubtleD_Spell_Tweaks" label="SubtleD's Spell Tweaks" level="blendWell">
 				<component id="SubtleD_Spell_Tweaks:36" label="Add a Saving Throw against Level Drain" />
@@ -1328,7 +1328,7 @@
 				<component id="cd_tweaks_more_sensible_morentherene" name="More Sensible Morentherene [Luke]" label="More sensible Morentherene" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3480" />
 			</mod>
 			<mod id="ZSTweaks" level="blendWell">
-				<component id="ZSTweaks:1559" label="Make Protection from Magic Scroll not a cheesy way to dispel all magic from an enemy" />
+				<component id="ZSTweaks:1559" name="Make Protection From Magic scroll not a cheesy way to dispel all magic from an enemy" label="Make Protection from Magic Scroll not a cheesy way to dispel all magic from an enemy" />
 			</mod>
 		</update>
 	</spells>
@@ -1410,119 +1410,119 @@
 
 	<combat level="higherDifficulty">
 		<alternatives label="Remove Backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod" level="lowerDifficulty">
-			<component id="ZS_CanIStabYou:99" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd"/>
-			<component id="ZS_CanIStabYou:106" label="Keep reasonable Backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" default="1" engine="bg,eet,iwd" level="blendWell" />
+			<component id="ZS_CanIStabYou:99" name="Everything can be backstabbed" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:106" name="All humanoids can be backstabbed, except humanoid ToB bosses" label="Keep reasonable Backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" default="1" engine="bg,eet,iwd" level="blendWell" />
 		</alternatives>
 		<mod id="ZS_CanIStabYou-Mod" label="ZS_CanIStabYou" engine="bg,eet">
-			<component id="ZS_CanIStabYou:102" label="Humanoid ToB bosses can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-			<component id="ZS_CanIStabYou:103" label="Yaga-Shura can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-			<component id="ZS_CanIStabYou:113" label="Abazigal can be backstabbed (human form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-			<component id="ZS_CanIStabYou:114" label="Abazigal can be backstabbed (dragon form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-			<component id="ZS_CanIStabYou:100" label="Beholders can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd"/>
-			<component id="ZS_CanIStabYou:104" label="Minotaurs can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd"/>
-			<component id="ZS_CanIStabYou:201" label="All spectral creatures are immune to Backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
-			<component id="ZS_CanIStabYou:205" label="All golems are immune to Backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
-			<component id="ZS_CanIStabYou:300" label="Every creature marked as able to see through Invisibility is automatically immune to Backstabs (version 2.6+)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
-			<component id="ZS_CanIStabYou:302" label="Dragons cannot see through Invisibility, except Abazigal" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
-			<component id="ZS_CanIStabYou:308" label="Sendai cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-			<component id="ZS_CanIStabYou:309" label="Balthazar cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-			<component id="ZS_CanIStabYou:310" label="Yaga-Shura cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
-			<component id="ZS_CanIStabYou:311" label="Amelyssan cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:102" name="Humanoid ToB bosses can be backstabbed" label="Humanoid ToB bosses can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:103" name="Yaga-Shura can be backstabbed" label="Yaga-Shura can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:113" name="Abazigal can be backstabbed (human form)" label="Abazigal can be backstabbed (human form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:114" name="Abazigal can be backstabbed (dragon form)" label="Abazigal can be backstabbed (dragon form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:100" name="Beholders can be backstabbed" label="Beholders can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:104" name="Minotaurs can be backstabbed" label="Minotaurs can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:201" name="All spectral creatures are immune to backstab" label="All spectral creatures are immune to Backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:205" name="All golems are immune to backstab" label="All golems are immune to Backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:300" name="Every creature marked as able to see through invisibility is automatically immune to backstabs (version 2.6+)" label="Every creature marked as able to see through Invisibility is automatically immune to Backstabs (version 2.6+)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:302" name="Dragons cannot see through invisibility, except Abazigal" label="Dragons cannot see through Invisibility, except Abazigal" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" />
+			<component id="ZS_CanIStabYou:308" name="Sendai cannot see through invisibility" label="Sendai cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:309" name="Balthazar cannot see through invisibility" label="Balthazar cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:310" name="Yaga-Shura cannot see through invisibility" label="Yaga-Shura cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
+			<component id="ZS_CanIStabYou:311" name="Amelyssan cannot see through invisibility" label="Amelyssan cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
 		</mod>
 		<component id="ForgottenArmament-CritImmunity2" label="Allow difficult enemies to remain immune to critical hits" modId="forgotten-armament" />
 		<tweaks label="Creature Tweaks" noBranches="1">
-			<component id="HouseTweaks:20" label="Faster troll unconsciousness" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg,iwd,eet" />
-			<component id="METweaks:3150" label="Give belhifet more reasonable immunities" level="vanillaPlus" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
+			<component id="HouseTweaks:20" name="House Tweaks: Faster Troll Unconsciousness" label="Faster troll unconsciousness" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg,iwd,eet" />
+			<component id="METweaks:3150" name="Give Belhifet more reasonable immunities" label="Give belhifet more reasonable immunities" level="vanillaPlus" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
 			<mod id="ZSTweaks" engine="bg,eet">
-				<component id="ZSTweaks:3030" label="Make celestial summons more powerful or balanced" level="blendWell" engine="bg2,eet" />
-				<component id="ZSTweaks:3050" label="Make the Balor's Vorpal Attack not guaranteed to succeed but affected by a Saving Throw" level="blendWell" engine="bg2,eet" />
-				<component id="ZSTweaks:3070" label="Make lions and other cat creatures not slow as molasses" level="fixes" />
-				<component id="ZSTweaks:3080" label="Make creature on-hit effects that should be natural not behave as magical attacks" level="fixes" />
-				<component id="ZSTweaks:3090" label="Make shadow creatures slightly more dangerous" level="higherDifficulty" engine="bg,iwd,eet" />
-				<component id="ZSTweaks:3130" label="Make minotaurs tougher and more dangerous" level="higherDifficulty" engine="bg,iwd,eet" />
-				<component id="ZSTweaks:3140" label="Make ogre / oni mages regenerating fiends, as per PnP" level="higherDifficulty" engine="bg,iwd,eet" />
+				<component id="ZSTweaks:3030" name="Make celestial summons more powerful or balanced" label="Make celestial summons more powerful or balanced" level="blendWell" engine="bg2,eet" />
+				<component id="ZSTweaks:3050" name="Make the Balor's vorpal attack not guaranteed to succeed but affected by a saving throw" label="Make the Balor's Vorpal Attack not guaranteed to succeed but affected by a Saving Throw" level="blendWell" engine="bg2,eet" />
+				<component id="ZSTweaks:3070" name="Make lions and other cat creatures not slow as molasses" label="Make lions and other cat creatures not slow as molasses" level="fixes" />
+				<component id="ZSTweaks:3080" name="Make creature on-hit effects that should be natural not behave as magical attacks" label="Make creature on-hit effects that should be natural not behave as magical attacks" level="fixes" />
+				<component id="ZSTweaks:3090" name="Make Shadow creatures slightly more dangerous" label="Make shadow creatures slightly more dangerous" level="higherDifficulty" engine="bg,iwd,eet" />
+				<component id="ZSTweaks:3130" name="Make minotaurs tougher and more dangerous" label="Make minotaurs tougher and more dangerous" level="higherDifficulty" engine="bg,iwd,eet" />
+				<component id="ZSTweaks:3140" name="Make ogre / oni mages regenerating fiends, as per PnP" label="Make ogre / oni mages regenerating fiends, as per PnP" level="higherDifficulty" engine="bg,iwd,eet" />
 			</mod>
-			<component id="METweaks:2200" label="Make creatures take up less space" modId="Olvyn-Tweaks" />
+			<component id="METweaks:2200" name="Make creatures take up less space" label="Make creatures take up less space" modId="Olvyn-Tweaks" />
 		</tweaks>
 		<ai label="AI enhancements / Sword Coast Stratagems (SCS)">
-			<component id="METweaks:2400" label="Make enemies change their attack targets more quickly" level="higherDifficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
+			<component id="METweaks:2400" name="Make enemies change their attack targets more quickly" label="Make enemies change their attack targets more quickly" level="higherDifficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
 			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="iwd">
-				<component id="stratagems:6020" label="Smarter general AI and better calls for help" />
-				<component id="stratagems:6700" label="Revised Icewind Dale undead" />
+				<component id="stratagems:6020" name="Smarter general AI and better calls for help" label="Smarter general AI and better calls for help" />
+				<component id="stratagems:6700" name="Revised Icewind Dale Undead" label="Revised Icewind Dale undead" />
 			</mod>
 			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="bg,eet">
-				<component id="stratagems:5900" label="Initialise AI components (required for all tactical and AI components)" />
-				<component id="stratagems:6000" label="Smarter general AI" />
-				<component id="stratagems:6010" label="Better calls for help" />
+				<component id="stratagems:5900" name="Initialise AI components (required for all tactical and AI components)" label="Initialise AI components (required for all tactical and AI components)" />
+				<component id="stratagems:6000" name="Smarter general AI" label="Smarter general AI" />
+				<component id="stratagems:6010" name="Better calls for help" label="Better calls for help" />
 			</mod>
 			<mod id="SwordCoastStratagems" label="Creatures AI Enhancements" engine="bg,eet,iwd">
-				<component id="stratagems:6030" label="Smarter mages" />
-				<component id="stratagems:6040" label="Smarter priests" />
-				<component id="stratagems:6100" label="Potions for NPCs" />
-				<component id="stratagems:6200" label="Improved spiders" engine="bg,eet" />
-				<component id="stratagems:6510" label="Improved fiends and celestials" />
-				<component id="stratagems:6540" label="Smarter dragons" />
-				<component id="stratagems:6550" label="Smarter beholders" />
+				<component id="stratagems:6030" name="Smarter Mages" label="Smarter mages" />
+				<component id="stratagems:6040" name="Smarter Priests" label="Smarter priests" />
+				<component id="stratagems:6100" name="Potions for NPCs" label="Potions for NPCs" />
+				<component id="stratagems:6200" name="Improved Spiders" label="Improved spiders" engine="bg,eet" />
+				<component id="stratagems:6510" name="Improved fiends and celestials" label="Improved fiends and celestials" />
+				<component id="stratagems:6540" name="Smarter dragons" label="Smarter dragons" />
+				<component id="stratagems:6550" name="Smarter beholders" label="Smarter beholders" />
 			</mod>
 			<mod id="SwordCoastStratagems" label="BG1 Encounters" engine="bg1,eet">
-				<component id="stratagems:6300" label="Smarter sirines and dryads" />
-				<component id="stratagems:6310" label="Slightly smarter carrion crawlers" />
-				<component id="stratagems:6320" label="Smarter basilisks" />
-				<component id="stratagems:7000" label="Improved doppelgangers" />
-				<component id="stratagems:7010" label="Tougher Black Talons and Iron Throne guards" />
-				<component id="stratagems:7020" label="Improved deployment for parties of assassins" />
-				<component id="stratagems:7030" label="Improved kobolds" />
-				<component id="stratagems:7040" label="Relocated Bounty Hunters" />
-				<component id="stratagems:7050" label="Improved Ulcaster" />
-				<component id="stratagems:7060" label="Improved Balduran's Isle" />
-				<component id="stratagems:7070" label="Improved Durlag's Tower" />
-				<component id="stratagems:7080" label="Improved Demon Cultists" />
-				<component id="stratagems:7090" label="Improved Cloakwood Druids" />
-				<component id="stratagems:7100" label="Improved Bassilus" />
-				<component id="stratagems:7110" label="Improved Drasus party" />
-				<component id="stratagems:7130" label="Improved Red Wizards" />
-				<component id="stratagems:7140" label="Improved Undercity Assassins" />
-				<component id="stratagems:7150" label="Improved Carsa/Kahrk interaction" />
-				<component id="stratagems:7200" label="Tougher chapter-two end battle" />
-				<component id="stratagems:7210" label="Tougher chapter-three end battle" />
-				<component id="stratagems:7220" label="Tougher chapter-four end battle" />
-				<component id="stratagems:7230" label="Tougher chapter-five end battle" />
-				<component id="stratagems:7250" label="Improved final battle" />
-				<component id="stratagems:7900" label="Improved minor encounters" />
+				<component id="stratagems:6300" name="Smarter sirines and dryads" label="Smarter sirines and dryads" />
+				<component id="stratagems:6310" name="Slightly smarter carrion crawlers" label="Slightly smarter carrion crawlers" />
+				<component id="stratagems:6320" name="Smarter basilisks" label="Smarter basilisks" />
+				<component id="stratagems:7000" name="Improved doppelgangers" label="Improved doppelgangers" />
+				<component id="stratagems:7010" name="Tougher Black Talons and Iron Throne guards" label="Tougher Black Talons and Iron Throne guards" />
+				<component id="stratagems:7020" name="Improved deployment for parties of assassins" label="Improved deployment for parties of assassins" />
+				<component id="stratagems:7030" name="Improved kobolds" label="Improved kobolds" />
+				<component id="stratagems:7040" name="Relocated bounty hunters" label="Relocated Bounty Hunters" />
+				<component id="stratagems:7050" name="Improved Ulcaster" label="Improved Ulcaster" />
+				<component id="stratagems:7060" name="Improved Balduran's Isle" label="Improved Balduran's Isle" />
+				<component id="stratagems:7070" name="Improved Durlag's Tower" label="Improved Durlag's Tower" />
+				<component id="stratagems:7080" name="Improved Demon Cultists" label="Improved Demon Cultists" />
+				<component id="stratagems:7090" name="Improved Cloakwood Druids" label="Improved Cloakwood Druids" />
+				<component id="stratagems:7100" name="Improved Bassilus" label="Improved Bassilus" />
+				<component id="stratagems:7110" name="Improved Drasus party" label="Improved Drasus party" />
+				<component id="stratagems:7130" name="Improved Red Wizards" label="Improved Red Wizards" />
+				<component id="stratagems:7140" name="Improved Undercity assassins" label="Improved Undercity Assassins" />
+				<component id="stratagems:7150" name="Improved Carsa/Kahrk interaction" label="Improved Carsa/Kahrk interaction" />
+				<component id="stratagems:7200" name="Tougher chapter-two end battle" label="Tougher chapter-two end battle" />
+				<component id="stratagems:7210" name="Tougher chapter-three end battle" label="Tougher chapter-three end battle" />
+				<component id="stratagems:7220" name="Tougher chapter-four end battle" label="Tougher chapter-four end battle" />
+				<component id="stratagems:7230" name="Tougher chapter-five end battle" label="Tougher chapter-five end battle" />
+				<component id="stratagems:7250" name="Improved final battle" label="Improved final battle" />
+				<component id="stratagems:7900" name="Improved minor encounters" label="Improved minor encounters" />
 			</mod>
 			<mod id="SwordCoastStratagems" label="BG2 Encounters" engine="bg2,eet">
-				<component id="stratagems:6500" label="Improved golems" />
-				<component id="stratagems:4150" label="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" />
-				<component id="stratagems:6520" label="Smarter genies" />
-				<component id="stratagems:6560" label="Smarter mind flayers" />
-				<component id="stratagems:6570" label="Smarter githyanki" />
-				<component id="stratagems:6580" label="Improved vampires" />
-				<component id="stratagems:6590" label="Smarter Throne of Bhaal final villain" />
-				<component id="stratagems:6800" label="Smarter Illasera" />
-				<component id="stratagems:6810" label="Smarter Gromnir" />
-				<component id="stratagems:6820" label="Smarter Yaga-Shura" />
-				<component id="stratagems:6830" label="Smarter Abazigal" />
-				<component id="stratagems:6840" label="Ascension versions of Irenicus and Sendai use SCS abilities and AI" />
-				<component id="stratagems:6850" label="Ascension demons use SCS abilities and AI" />
-				<component id="stratagems:8000" label="Make the starting dungeon slightly harder" />
-				<component id="stratagems:8010" label="Improved Shade lord" />
-				<component id="stratagems:8020" label="Spellcasting demiliches" />
-				<component id="stratagems:8040" label="Tie difficulty of level-dependent monster groupings to the difficulty slider" />
-				<component id="stratagems:8050" label="Improved random encounters" />
-				<component id="stratagems:8060" label="Improved De'Arnise Keep (&quot;tactics remix&quot;)" />
-				<component id="stratagems:8070" label="Improved Unseeing Eye" />
-				<component id="stratagems:8080" label="Improved Bodhi" />
-				<component id="stratagems:8085" label="Ascension version of Bodhi uses improved-Bodhi abilities" />
-				<component id="stratagems:8090" label="Party's Items are taken from them in Spellhold" />
-				<component id="stratagems:8100" label="Improved battle with Irenicus in Spellhold" />
-				<component id="stratagems:8110" label="Improved Sahuagin" />
-				<component id="stratagems:8120" label="Improved Beholder Hive" />
-				<component id="stratagems:8140" label="Improved drow" />
-				<component id="stratagems:8150" label="Improved Watcher's Keep" />
-				<component id="stratagems:8160" label="Improved Fire Giant Temple" />
-				<component id="stratagems:8170" label="Improved Sendai's Enclave" />
-				<component id="stratagems:8180" label="Improved Abazigal's Lair" />
-				<component id="stratagems:8190" label="Improved minor encounters" />
+				<component id="stratagems:6500" name="Improved golems" label="Improved golems" />
+				<component id="stratagems:4150" name="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" label="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" />
+				<component id="stratagems:6520" name="Smarter genies" label="Smarter genies" />
+				<component id="stratagems:6560" name="Smarter mind flayers" label="Smarter mind flayers" />
+				<component id="stratagems:6570" name="Smarter githyanki" label="Smarter githyanki" />
+				<component id="stratagems:6580" name="Improved Vampires" label="Improved vampires" />
+				<component id="stratagems:6590" name="Smarter Throne of Bhaal final villain" label="Smarter Throne of Bhaal final villain" />
+				<component id="stratagems:6800" name="Smarter Illasera" label="Smarter Illasera" />
+				<component id="stratagems:6810" name="Smarter Gromnir" label="Smarter Gromnir" />
+				<component id="stratagems:6820" name="Smarter Yaga-Shura" label="Smarter Yaga-Shura" />
+				<component id="stratagems:6830" name="Smarter Abazigal" label="Smarter Abazigal" />
+				<component id="stratagems:6840" name="Ascension versions of Irenicus and Sendai use SCS abilities and AI" label="Ascension versions of Irenicus and Sendai use SCS abilities and AI" />
+				<component id="stratagems:6850" name="Ascension demons use SCS abilities and AI" label="Ascension demons use SCS abilities and AI" />
+				<component id="stratagems:8000" name="Make the starting dungeon slightly harder" label="Make the starting dungeon slightly harder" />
+				<component id="stratagems:8010" name="Improved Shade Lord" label="Improved Shade lord" />
+				<component id="stratagems:8020" name="Spellcasting Demiliches" label="Spellcasting demiliches" />
+				<component id="stratagems:8040" name="Tie difficulty of level-dependent monster groupings to the difficulty slider" label="Tie difficulty of level-dependent monster groupings to the difficulty slider" />
+				<component id="stratagems:8050" name="Improved Random Encounters" label="Improved random encounters" />
+				<component id="stratagems:8060" name="Improved de'Arnise Keep (&quot;Tactics Remix&quot;)" label="Improved De'Arnise Keep (&quot;tactics remix&quot;)" />
+				<component id="stratagems:8070" name="Improved Unseeing Eye" label="Improved Unseeing Eye" />
+				<component id="stratagems:8080" name="Improved Bodhi" label="Improved Bodhi" />
+				<component id="stratagems:8085" name="Ascension version of Bodhi uses Improved-Bodhi abilities" label="Ascension version of Bodhi uses improved-Bodhi abilities" />
+				<component id="stratagems:8090" name="Party's items are taken from them in Spellhold" label="Party's Items are taken from them in Spellhold" />
+				<component id="stratagems:8100" name="Improved battle with Irenicus in Spellhold" label="Improved battle with Irenicus in Spellhold" />
+				<component id="stratagems:8110" name="Detect Good" label="Improved Sahuagin" />
+				<component id="stratagems:8120" name="Improved Beholder hive" label="Improved Beholder Hive" />
+				<component id="stratagems:8140" name="Protection From Good 10' Radius (Abjuration) Level: 4 Sphere: Protection Range: Touch Duration: 1 turn/level Casting Time: 7 Area of Effect: 10-ft. radius Saving Throw: None When this spell is cast, all creatures within a 10' radius are affected individually by 'protection from good'. It creates a magical barrier around the recipients at a distance of one foot. The barrier moves with the recipient and has two major effects: First, all attacks made by good or good-enchanted creatures against the protected creature receive a penalty of - 2 to each attack roll, and second, any saving throws caused by such attacks are made by the protected creature with a +2 bonus." label="Improved drow" />
+				<component id="stratagems:8150" name="Improved Watcher's Keep" label="Improved Watcher's Keep" />
+				<component id="stratagems:8160" name="Improved Fire Giant temple" label="Improved Fire Giant Temple" />
+				<component id="stratagems:8170" name="Improved Sendai's Enclave" label="Improved Sendai's Enclave" />
+				<component id="stratagems:8180" name="Resist Acid and Corrosion" label="Improved Abazigal's Lair" />
+				<component id="stratagems:8190" name="Improved Minor Encounters" label="Improved minor encounters" />
 			</mod>
 		</ai>
 	</combat>
@@ -1552,7 +1552,7 @@
 			<component id="s@-IS-Restore-NPC-Voiceovers" label="Restore NPC voiceovers" />
 			<component id="s@-IS-Salk-NPC-Voiceovers" label="Additional NPC voiceovers (by salk)" level="vanillaPlus" />
 		</mod>
-		<component id="HouseTweaks:24" label="NPC soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" />
+		<component id="HouseTweaks:24" name="House Tweaks: NPC Soundsets for Icewind Dale" label="NPC soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" />
 		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" label="High quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" level="fixes" />
 		<component id="vveBG:0" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
 		<component id="vveSOD:0" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
@@ -1563,8 +1563,8 @@
 			</alternatives>
 			<component id="jaheirarecast:2" label="Dialog voiceover" />
 		</mod>
-		<component id="HouseTweaks:21" label="Restore reputation increase sound effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" />
-		<component id="HouseTweaks:26" label="Soundset tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg2,eet"/>
+		<component id="HouseTweaks:21" name="House Tweaks: Restore Reputation Increase Sound Effect for BG2" label="Restore reputation increase sound effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" />
+		<component id="HouseTweaks:26" name="House Tweaks: Soundset Tweaks for Anomen and Sarevok (BG2:EE)" label="Soundset tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg2,eet" />
 		<component id="cd_tweaks_fix_boo_squeak" name="Fix Boo's Squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" level="fixes" engine="bg2,eet" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_140" />
 	</sounds>
 
@@ -1574,13 +1574,13 @@
 
 	<portraits engine="bg,eet">
 		<group label="Original Non-joinable NPCs" unfolded="1">
-			<component id="EET_Tweaks:1050" label="Cameo NPCs from BG1" desc="Coran, Tiax, etc" modId="EET_Tweaks" engine="bg2,eet" level="vanillaPlus" />
+			<component id="EET_Tweaks:1050" name="Cameo NPCs appearance" label="Cameo NPCs from BG1" desc="Coran, Tiax, etc" modId="EET_Tweaks" engine="bg2,eet" level="vanillaPlus" />
 			<mod id="HPS-Portraits-Project-1.0" label="HPS Portraits Project" engine="bg,eet">
-				<component id="HPSPP-Core" label="Base game unique NPCs" />
-				<component id="HPSPP-MinorNpcs" label="Minor and common NPCs" />
-				<component id="HPSPP-MonsterSpecialNpcs" label="Monsters and other special NPCs" />
-				<component id="HPSPP-DecloneAreasNPCs" label="De-clone area's common NPCs and add unique portraits to them" />
-				<component id="HPSPP-ToBNPCs" label="Add new portraits to Throne of Bhaal NPCs" />
+				<component id="HPSPP-Core" name="Add missing Portraits to Base Game Unique NPCs" label="Base game unique NPCs" />
+				<component id="HPSPP-MinorNpcs" name="Add missing Portraits to Minor and Common NPCs" label="Minor and common NPCs" />
+				<component id="HPSPP-MonsterSpecialNpcs" name="Add missing Portraits to Monsters and other Special NPCs" label="Monsters and other special NPCs" />
+				<component id="HPSPP-DecloneAreasNPCs" name="De-clone area's common NPCs and add unique portraits to them" label="De-clone area's common NPCs and add unique portraits to them" />
+				<component id="HPSPP-ToBNPCs" name="Add new Portraits to Throne of Bhaal NPCs" label="Add new portraits to Throne of Bhaal NPCs" />
 			</mod>
 			<mod id="Portraits-Portraits-Everywhere" label="Portraits Portraits Everywhere (PPE)">
 				<component id="PPE:0" label="Portraits portraits everywhere (PPE)" engine="bg,eet,iwd" />
@@ -1591,27 +1591,27 @@
 			
 		</group>
 		<group label="Original Joinable NPCs" unfolded="1">
-			<component id="HPSPP-PartyNPCs" label="HPS portraits project: Original party NPCs" modId="HPS-Portraits-Project-1.0" />
+			<component id="HPSPP-PartyNPCs" name="Add new portraits to original party NPCs" label="HPS portraits project: Original party NPCs" modId="HPS-Portraits-Project-1.0" />
 			<mod id="EET_Tweaks" label="Choose consistent appearance for returning NPCs">
 				<alternatives label="Edwin">
-					<component id="EET_Tweaks:1000" label="BG1" />
-					<component id="EET_Tweaks:1001" label="BG2" />
+					<component id="EET_Tweaks:1000" name="BG1" label="BG1" />
+					<component id="EET_Tweaks:1001" name="BG2" label="BG2" />
 				</alternatives>
 				<alternatives label="Imoen">
-					<component id="EET_Tweaks:1010" label="BG1" />
-					<component id="EET_Tweaks:1011" label="BG2" />
+					<component id="EET_Tweaks:1010" name="BG1" label="BG1" />
+					<component id="EET_Tweaks:1011" name="BG2" label="BG2" />
 				</alternatives>
 				<alternatives label="Jaheira">
-					<component id="EET_Tweaks:1020" label="BG1" />
-					<component id="EET_Tweaks:1021" label="BG2" />
+					<component id="EET_Tweaks:1020" name="BG1" label="BG1" />
+					<component id="EET_Tweaks:1021" name="BG2" label="BG2" />
 				</alternatives>
 				<alternatives label="Minsc">
-					<component id="EET_Tweaks:1030" label="BG1" />
-					<component id="EET_Tweaks:1031" label="BG2" />
+					<component id="EET_Tweaks:1030" name="BG1" label="BG1" />
+					<component id="EET_Tweaks:1031" name="BG2" label="BG2" />
 				</alternatives>
 				<alternatives label="Viconia">
-					<component id="EET_Tweaks:1040" label="BG1" />
-					<component id="EET_Tweaks:1041" label="BG2" />
+					<component id="EET_Tweaks:1040" name="BG1" label="BG1" />
+					<component id="EET_Tweaks:1041" name="BG2" label="BG2" />
 				</alternatives>
 			</mod>
 		</group>
@@ -1620,78 +1620,78 @@
 			<component id="Drake:1" label="Default portrait (the artisan)" modId="Drake" alwaysIf="Drake:0" />
 			<component id="SisterVigilantes_Angelo-Portrait_cassinus_free_fr" label="Angelo - alternative portrait" modId="Angelo" displayIf="SisterVigilantes_Angelo-main" engine="bg2,eet" />
 			<mod id="HPS-Portraits-Project-1.0" label="Add lacking portraits" engine="bg,eet">
-				<component id="HPSPP-ModNpcsACQ" label="Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and Other Stories" />
-				<component id="HPSPP-ModNpcsAdalonsBlood" label="Adalon's Blood" />
-				<component id="HPSPP-ModNpcsAerieWings" label="Aerie Wings" />
-				<component id="HPSPP-ModNpcsAerieBG1" label="Aerie in Baldur's Gate: Enhanced Edition" />
-				<component id="HPSPP-ModNpcsAjantisBG2" label="Jastey's Sir Ajantis NPC for BGII" />
-				<component id="HPSPP-ModNpcsARestorationP" label="Almateria's Restoration Project" />
-				<component id="HPSPP-ModNpcsAscension" label="Ascension" />
-				<component id="HPSPP-ModNpcsAssassinations" label="Assassinations MOD for Baldur's Gate II" />
-				<component id="HPSPP-ModNpcsBST" label="Balduran's Seatower" />
-				<component id="HPSPP-ModNpcsBG1NPC" label="The BG1NPC Project" />
-				<component id="HPSPP-ModNpcsBG1UB" label="BG1 Unfinished Business" />
-				<component id="HPSPP-ModNpcsBGQE" label="Baldur's Gate Mini Quests and Encounters Modification" />
-				<component id="HPSPP-ModNpcsGodCall" label="Call of the Lost Goddess" />
-				<component id="HPSPP-ModNpcsCandlekeepRevisited" label="Candlekeep revisited" />
-				<component id="HPSPP-ModNpcsCrucible" label="Crucible" />
-				<component id="HPSPP-ModNpcsDarkTidings" label="Dark tidings" />
-				<component id="HPSPP-ModNpcsEilistraeesSong" label="Eilistraee's Song" />
-				<component id="HPSPP-ModNpcsEndlessBG1" label="Endless BG1 mod" />
-				<component id="HPSPP-ModNpcsEEEE" label="Extra Enhanced Expanded Encounters!" />
-				<component id="HPSPP-ModNpcsHiddenAdventures" label="Hidden Adventures" />
-				<component id="HPSPP-ModNpcsImoen4Ever" label="Imoen 4 Ever" />
-				<component id="HPSPP-ModNpcsJA-AdvPack" label="Jarl's Adventure Pack" />
-				<component id="HPSPP-ModNpcsLoretakers" label="Loretakers" />
-				<component id="HPSPP-ModNpcsSoDRtD" label="Road to Discovery for SoD" />
-				<component id="HPSPP-ModNpcsREBG1" label="Baldur's Gate Romantic Encounters Modification (BG1RE)" />
-				<component id="HPSPP-ModNpcsSotSC" label="Shades of the Sword Coast" />
-				<component id="HPSPP-ModNpcsSharteelNPC" label="Shar-Teel NPC" />
-				<component id="HPSPP-ModNpcsSkipChateauIrenicus" label="Skip Chateau Irenicus" />
-				<component id="HPSPP-ModNpcsTangledOakIsle" label="Athkatlan Grounds: The Tangled Oak Isle" />
-				<component id="HPSPP-ModNpcsTheCalling" label="The Calling" />
-				<component id="HPSPP-ModNpcsTheVanishingOfSkieSilvershield" label="The Vanishing of Skie Silvershield" />
+				<component id="HPSPP-ModNpcsACQ" name="Add new portraits to NPCs from mod: Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and other stories" label="Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and Other Stories" />
+				<component id="HPSPP-ModNpcsAdalonsBlood" name="Add new portraits to NPCs from mod: Adalon's Blood" label="Adalon's Blood" />
+				<component id="HPSPP-ModNpcsAerieWings" name="Add new portraits to NPCs from mod: Aerie Wings" label="Aerie Wings" />
+				<component id="HPSPP-ModNpcsAerieBG1" name="Add new portraits to NPCs from mod: Aerie in Baldur's Gate: Enhanced Edition" label="Aerie in Baldur's Gate: Enhanced Edition" />
+				<component id="HPSPP-ModNpcsAjantisBG2" name="Add new portraits to NPCs from mod: jastey's Sir Ajantis NPC for BGII modification" label="Jastey's Sir Ajantis NPC for BGII" />
+				<component id="HPSPP-ModNpcsARestorationP" name="Add new portraits to NPCs from mod: Almateria's Restoration Project" label="Almateria's Restoration Project" />
+				<component id="HPSPP-ModNpcsAscension" name="Add new portraits to NPCs from mod: Ascension" label="Ascension" />
+				<component id="HPSPP-ModNpcsAssassinations" name="Add new portraits to NPCs from mod: Assassinations MOD for Baldur's Gate II" label="Assassinations MOD for Baldur's Gate II" />
+				<component id="HPSPP-ModNpcsBST" name="Add new portraits to NPCs from mod: Balduran's Seatower" label="Balduran's Seatower" />
+				<component id="HPSPP-ModNpcsBG1NPC" name="Add new portraits to NPCs from mod: The BG1NPC Project" label="The BG1NPC Project" />
+				<component id="HPSPP-ModNpcsBG1UB" name="Add new portraits to NPCs from mod: BG1 Unfinished Business" label="BG1 Unfinished Business" />
+				<component id="HPSPP-ModNpcsBGQE" name="Add new portraits to NPCs from mod: Baldur's Gate Mini Quests and Encounters Modification" label="Baldur's Gate Mini Quests and Encounters Modification" />
+				<component id="HPSPP-ModNpcsGodCall" name="Add new portraits to NPCs from mod: Call Of The Lost Goddess" label="Call of the Lost Goddess" />
+				<component id="HPSPP-ModNpcsCandlekeepRevisited" name="Add new portraits to NPCs from mod: Candlekeep Revisited" label="Candlekeep revisited" />
+				<component id="HPSPP-ModNpcsCrucible" name="Add new portraits to NPCs from mod: Crucible" label="Crucible" />
+				<component id="HPSPP-ModNpcsDarkTidings" name="Add new portraits to NPCs from mod: Dark Tidings" label="Dark tidings" />
+				<component id="HPSPP-ModNpcsEilistraeesSong" name="Add new portraits to NPCs from mod: Eilistraee's Song" label="Eilistraee's Song" />
+				<component id="HPSPP-ModNpcsEndlessBG1" name="Add new portraits to NPCs from mod: Endless BG1 Mod" label="Endless BG1 mod" />
+				<component id="HPSPP-ModNpcsEEEE" name="Add new portraits to NPCs from mod: Extra Enhanced Expanded Encounters!" label="Extra Enhanced Expanded Encounters!" />
+				<component id="HPSPP-ModNpcsHiddenAdventures" name="Add new portraits to NPCs from mod: Hidden Adventures" label="Hidden Adventures" />
+				<component id="HPSPP-ModNpcsImoen4Ever" name="Add new portraits to NPCs from mod: Imoen 4 Ever" label="Imoen 4 Ever" />
+				<component id="HPSPP-ModNpcsJA-AdvPack" name="Add new portraits to NPCs from mod: Jarl's Adventure Pack" label="Jarl's Adventure Pack" />
+				<component id="HPSPP-ModNpcsLoretakers" name="Add new portraits to NPCs from mod: Loretakers" label="Loretakers" />
+				<component id="HPSPP-ModNpcsSoDRtD" name="Add new portraits to NPCs from mod: Road to Discovery for SoD" label="Road to Discovery for SoD" />
+				<component id="HPSPP-ModNpcsREBG1" name="Add new portraits to NPCs from mod: Baldur's Gate Romantic Encounters Modification (BG1RE)" label="Baldur's Gate Romantic Encounters Modification (BG1RE)" />
+				<component id="HPSPP-ModNpcsSotSC" name="Add new portraits to NPCs from mod: Shades of the Sword Coast" label="Shades of the Sword Coast" />
+				<component id="HPSPP-ModNpcsSharteelNPC" name="Add new portraits to NPCs from mod: Shar-Teel NPC" label="Shar-Teel NPC" />
+				<component id="HPSPP-ModNpcsSkipChateauIrenicus" name="Add new portraits to NPCs from mod: Skip Chateau Irenicus" label="Skip Chateau Irenicus" />
+				<component id="HPSPP-ModNpcsTangledOakIsle" name="Add new portraits to NPCs from mod: Athkatlan Grounds: The Tangled Oak Isle" label="Athkatlan Grounds: The Tangled Oak Isle" />
+				<component id="HPSPP-ModNpcsTheCalling" name="Add new portraits to NPCs from mod: The Calling" label="The Calling" />
+				<component id="HPSPP-ModNpcsTheVanishingOfSkieSilvershield" name="Add new portraits to NPCs from mod: The Vanishing of Skie Silvershield" label="The Vanishing of Skie Silvershield" />
 			</mod>
 			<mod id="HPS-Portraits-Project-1.0" label="Add just lacking portraits or add and replace all">
 				<alternatives label="BG2 Unfinished Business">
-					<component id="HPSPP-ModNpcsBG2UB_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsBG2UB_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsBG2UB_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsBG2UB_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" />
 				</alternatives>
 				<alternatives label="Solaufein's Rescue">
-					<component id="HPSPP-ModNpcsSolaufeinRescue_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsSolaufeinRescue_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsSolaufeinRescue_opt1" name="Add portraits for all NPCs including replacing Solaufein's portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsSolaufeinRescue_opt2" name="Add portraits for all NPCs but do not replace Solaufein's portraits" label="Just add lacking ones" />
 				</alternatives>
 				<alternatives label="Blackhearts">
-					<component id="HPSPP-ModNpcsBlackhearts_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsBlackhearts_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsBlackhearts_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsBlackhearts_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" />
 				</alternatives>
 				<alternatives label="Rogue Rebalancing">
-					<component id="HPSPP-ModNpcsRR_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsRR_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsRR_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsRR_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" />
 				</alternatives>
 				<alternatives label="Skie: The Cost of One Girl's Soul">
-					<component id="HPSPP-ModNpcsSkieCost_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsSkieCost_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsSkieCost_opt1" name="Add portraits for all NPCs including replacing Skie's portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsSkieCost_opt2" name="Add portraits for all NPCs but do not replace Skie's portraits" label="Just add lacking ones" />
 				</alternatives>
 				<alternatives label="Yoshimo's Remorse">
-					<component id="HPSPP-ModNpcsYosh_Remorse_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsYosh_Remorse_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsYosh_Remorse_opt1" name="Add portraits for all NPCs including replacing Yoshimo's portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsYosh_Remorse_opt2" name="Add portraits for all NPCs but do not replace Yoshimo's portraits" label="Just add lacking ones" />
 				</alternatives>
 				<alternatives label="Adrian NPC">
-					<component id="HPSPP-ModNpcsAdrianBG2_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsAdrianBG2_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsAdrianBG2_opt1" name="Add portraits for all NPCs including replacing Adrian's portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsAdrianBG2_opt2" name="Add portraits for all NPCs but do not replace Adrian's portraits" label="Just add lacking ones" />
 				</alternatives>
 				<alternatives label="Angelo NPC">
-					<component id="HPSPP-ModNpcsAngelo_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsAngelo_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsAngelo_opt1" name="Add portraits for all NPCs including replacing Angelo's portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsAngelo_opt2" name="Add portraits for all NPCs but do not replace Angelo's portraits" label="Just add lacking ones" />
 				</alternatives>
 				<alternatives label="Cowled Menace">
-					<component id="HPSPP-ModNpcsCowledMenace_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsCowledMenace_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsCowledMenace_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsCowledMenace_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" />
 				</alternatives>
 				<alternatives label="Ooze's Lounge">
-					<component id="HPSPP-ModNpcsOozeLounge_opt1" label="Add and replace" />
-					<component id="HPSPP-ModNpcsOozeLounge_opt2" label="Just add lacking ones" />
+					<component id="HPSPP-ModNpcsOozeLounge_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" />
+					<component id="HPSPP-ModNpcsOozeLounge_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" />
 				</alternatives>
 			</mod>
 			<component id="candlekeep_revisited:3" label="Candlekeep Revisited - new portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" engine="bg1,eet" level="vanillaPlus" />
@@ -1705,7 +1705,7 @@
 			<alternatives label="Drow NPC Portraits">
 				<component id="cd_tweaks_no_drow_avatars_in_underdark" name="No Drow Avatars On Party In Underdark [Weimer]" label="No drow avatars on party in Underdark" modId="Tweaks-Anthology" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3170" />
 				<component id="PPE:30" label="PPE version" modId="Portraits-Portraits-Everywhere" />
-				<component id="HPSPP-PartyNPCsDrow" label="HPS version" modId="HPS-Portraits-Project-1.0" />	
+				<component id="HPSPP-PartyNPCsDrow" name="Add drow portraits to original party NPCs" label="HPS version" modId="HPS-Portraits-Project-1.0" />	
 			</alternatives>
 			<component id="PPE:40" label="PPE vampire NPCs" engine="bg,eet,iwd" modId="Portraits-Portraits-Everywhere" />
 			<component id="cd_tweaks_edwina" name="Female Edwina [Davide Carte, Wendy Yung, Weimer]" label="Female Edwina" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1180" />
@@ -1728,7 +1728,7 @@
 		</mod>
 		<component id="cd_tweaks_static_pst_npc_portraits_status" name="Visualize health and status changes" label="Static character portraits" desc="With health and status changes visualization" engine="pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_270" />
 		<component id="A7_MISCTWEAKS_UPSCALED_PORTRAITS_PSTEE" label="Argent's Miscellaneous Tweaks - High-Resolution Character Portraits" modId="A7-MiscTweaks" engine="pst" />
-		<component id="HouseTweaks:51" label="Remove unnecessary persistent visuals from long-duration spells" modId="House-Rule-Tweaks" />
+		<component id="HouseTweaks:51" name="House Tweaks: Remove Unnecessary Persistent Visuals from Long-Duration Spells" label="Remove unnecessary persistent visuals from long-duration spells" modId="House-Rule-Tweaks" />
 		<mod id="AC-Miscellaneous-Tweaks" label="AC Miscellaneous Tweaks" level="blendWell">
 			<component id="ac-miscellaneous-misctweaks" label="AC miscellaneous tweaks" />
 			<component id="ac-miscellaneous-random" label="Random stuff no-one wants" alwaysIf="ac-miscellaneous-misctweaks" noDisplay="1" />
@@ -1753,7 +1753,7 @@
 			<component id="cd_tweaks_remove_equipped_spell_trap_effects" name="Remove spell trap and reflection effects" label="Remove spell trap and reflection effects" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3150" />
 			<component id="cd_tweaks_remove_equipped_blur_spell_trap_effects" name="Remove all of the above" label="Remove all of the above" modId="Tweaks-Anthology" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3151" />
 		</alternatives>
-		<component id="METweaks:3600" label="Implement a different kind of chunked death animation" modId="Olvyn-Tweaks" />
+		<component id="METweaks:3600" name="Implement a different kind of chunked death animation" label="Implement a different kind of chunked death animation" modId="Olvyn-Tweaks" />
 	</gfx>
 
 	<scripts engine="bg,eet,iwd">
@@ -1766,7 +1766,7 @@
 			<component id="EnhancedPowergamingScripts-MainAccelerated" label="Enhanced Powergaming Script - accelerated pre-buffing speed" />
 			<component id="EnhancedPowergamingScripts-Simulacrum" label="Install enhanced scripts for Simulacrum" alwaysIf="EnhancedPowergamingScripts-MainAccelerated" noDisplay="1" />
 		</mod>
-		<component id="stratagems:5000" label="Ease-of-Use Party AI" modId="SwordCoastStratagems" level="vanillaPlus" />
+		<component id="stratagems:5000" name="Specialist Type" label="Ease-of-Use Party AI" modId="SwordCoastStratagems" level="vanillaPlus" />
 	</scripts>
 
 	<campaigns engine="eet">
@@ -1842,7 +1842,7 @@
 					<component id="SkillsAndAbilitiesDI2" label="Replace Inquisitor True Seeing with Detect Illusion skill" displayIf="EEex:1" modId="skills-and-abilities" />
 					<component id="SkillsAndAbilitiesInquisitor1" label="Allow Inquisitor kit to cast divine spells" modId="skills-and-abilities" />
 				</inquisitor>
-				<component id="METweaks:1500" label="Turn paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" level="lowerDifficulty" />
+				<component id="METweaks:1500" name="Turn Paladin Detect Evil into a passive ability that can be toggled on and off" label="Turn paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" level="lowerDifficulty" />
 			</paladin>
 			<monk label="Monk">
 				<component id="SkillsAndAbilitiesMonk" label="Add Open Locks, Find/Disarm Traps and Detect Illusion" modId="skills-and-abilities" displayIf="EEex:1" desc="1 level - Flurry of Blows (extra APR). New HLA - become immune to Time Stop" />
@@ -1906,16 +1906,16 @@
 						<component id="D5_REVISED_HD" label="Similar" modId="SubtleD_Stat_Overhauls" level="blendWell" default="1" />
 						<component id="D5_REDUCED_HD" label="Reduced" modId="SubtleD_Stat_Overhauls" level="higherDifficulty" />
 					</alternatives>
-					<component id="HouseTweaks:9" label="House tweaks CON bonuses for all classes + regeneration changes" modId="House-Rule-Tweaks" />
+					<component id="HouseTweaks:9" name="Constitution Bonuses for All Classes + Regeneration Changes" label="House tweaks CON bonuses for all classes + regeneration changes" modId="House-Rule-Tweaks" />
 				</alternatives>
 			</hp>
 			<alternatives label="Stat-based bonus spell slots">
 				<component id="D5_ABILITY_SCORE_SPELL_SLOTS" label="SubtleD Stat Overhauls version" modId="SubtleD_Stat_Overhauls" />
-				<component id="HouseTweaks:12" label="House Tweaks version" modId="House-Rule-Tweaks" />
+				<component id="HouseTweaks:12" name="House Tweaks: INT/WIS/CHA-based Bonus Spell Slots" label="House Tweaks version" modId="House-Rule-Tweaks" />
 			</alternatives>
 			<group label="Level Progression">
 				<component id="D5_UNIFORM_XP_TABLES" label="Slower, standardized XP tables" modId="SubtleD_Stat_Overhauls" level="extended" />
-				<component id="METweaks:810" label="Speed-up level progression for clerics and monks" desc="Both clerics and monks will get to level 9 during BG1" modId="Olvyn-Tweaks" level="lowerDifficulty" />
+				<component id="METweaks:810" name="Both Clerics and Monks" label="Speed-up level progression for clerics and monks" desc="Both clerics and monks will get to level 9 during BG1" modId="Olvyn-Tweaks" level="lowerDifficulty" />
 			</group>
 			<component id="D5_REVISED_ABILITY_SCORES" label="Ability score overhaul" desc="Helps to make all stats useful" modId="SubtleD_Stat_Overhauls" />
 			<component id="cd_tweaks_exceptional_strength_weight_limits" name="Exceptional Strength Weight Limit Changes [sarevok57]" label="Exceptional STR weight limit changes" modId="Tweaks-Anthology" level="vanillaPlus" engine="bg,eet,iwd,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2500" />
@@ -1923,15 +1923,15 @@
 		<proficiencies>
 			<alternatives label="Proficiency/Fighting Styles Tweaks">
 				<group label="Tweaks Anthology/house Tweaks">
-					<component id="METweaks:500" label="Fighters get 1 Proficiency Point per 2 levels" modId="Olvyn-Tweaks" />
+					<component id="METweaks:500" name="Fighters get 1 point per 2 levels; Rangers and Paladins still get 1 point per 3 levels" label="Fighters get 1 Proficiency Point per 2 levels" modId="Olvyn-Tweaks" />
 					<alternatives label="Proficiency System">
 						<component id="cd_tweaks_alter_prof_rebalanced" name="Rebalanced weapon proficiencies" label="Rebalanced Weapon Proficiencies" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2160" />
 						<component id="cd_tweaks_alter_prof_bg_with_styles" name="BG-style weapon proficiencies, with weapon styles [the bigg]" label="BG-style Weapon Proficiencies, with Weapon Styles" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2161" />
 						<component id="cd_tweaks_alter_prof_iwd_with_styles" name="IWD-style proficiencies with weapon styles" label="IWD-style Proficiencies with Weapon Styles" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2163" />
 					</alternatives>
 					<alternatives label="Fighting Styles">
-						<component id="METweaks:4000" label="Modify Fighting Styles" modId="Olvyn-Tweaks" />
-						<component id="HouseTweaks:5" label="Rebalanced Weapon Styles" modId="House-Rule-Tweaks" />
+						<component id="METweaks:4000" name="Modify Fighting Styles" label="Modify Fighting Styles" modId="Olvyn-Tweaks" />
+						<component id="HouseTweaks:5" name="House Tweaks: Rebalanced Weapon Styles" label="Rebalanced Weapon Styles" modId="House-Rule-Tweaks" />
 					</alternatives>
 					<component id="cd_tweaks_weapon_styles_for_all" name="Weapon Styles for All" label="Weapon Styles for all" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2060" />
 				</group>
@@ -1984,26 +1984,26 @@
 			</mod>
 		</alternatives>
 		<mod id="randomiser" label="Items" engine="bg,eet" unfolded="1">
-			<component id="randomiser:500" label="Randomly replace the WIS tome normally found in TotSC with one of the 6 available types" engine="bg1,eet"/>
-			<component id="randomiser:520" label="Kangaxx further sealed away" engine="bg2,eet" />
-			<component id="randomiser:530" label="Randomise scrolls" />
-			<component id="randomiser:540" label="Randomise the heads of the Flail of Ages" engine="bg2,eet" />
-			<component id="randomiser:560" label="More spell shield scrolls" engine="bg2,eet" />
-			<component id="randomiser:570" label="Randomise the appearance of cursed items" engine="bg1,eet" />
+			<component id="randomiser:500" name="Randomly replace the WIS tome normally found in TotSC with one of the 6 available types" label="Randomly replace the WIS tome normally found in TotSC with one of the 6 available types" engine="bg1,eet" />
+			<component id="randomiser:520" name="Kangaxx further sealed away" label="Kangaxx further sealed away" engine="bg2,eet" />
+			<component id="randomiser:530" name="Randomise scrolls" label="Randomise scrolls" />
+			<component id="randomiser:540" name="Randomise the heads of the Flail of Ages" label="Randomise the heads of the Flail of Ages" engine="bg2,eet" />
+			<component id="randomiser:560" name="More Spell Shield scrolls" label="More spell shield scrolls" engine="bg2,eet" />
+			<component id="randomiser:570" name="Randomise the appearance of cursed items" label="Randomise the appearance of cursed items" engine="bg1,eet" />
 			<alternatives label="Randomisation Mode" unfolded="1">
-				<component id="randomiser:1100" label="Mode 1: Randomise at starting new game." desc="Less items can be randomized. If you leave the initial area before the termination sound (rat or squirell), some items will be lost" />
-				<component id="randomiser:1300" label="Mode 2: Randomise at mod installation." desc="More items can be randomized. If the randomized weapon are better, they are auto equipped by the enemies." />
+				<component id="randomiser:1100" name="Mode 1: Randomise with in-game scripts. No items are lost" label="Mode 1: Randomise at starting new game." desc="Less items can be randomized. If you leave the initial area before the termination sound (rat or squirell), some items will be lost" />
+				<component id="randomiser:1300" name="Mode 2: Randomise with WeiDU. No items are lost" label="Mode 2: Randomise at mod installation." desc="More items can be randomized. If the randomized weapon are better, they are auto equipped by the enemies." />
 			</alternatives>
-			<component id="randomiser:5005" label="Beholders have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-			<component id="randomiser:5015" label="Demi-liches have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-			<component id="randomiser:5025" label="Dragons have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-			<component id="randomiser:5035" label="Elementals have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-			<component id="randomiser:5045" label="Fiends have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-			<component id="randomiser:5055" label="Golems have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-			<component id="randomiser:5065" label="Master brains have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-			<component id="randomiser:5075" label="Slimes have no items equipped" engine="bg1,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-			<component id="randomiser:5085" label="Trolls have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
-			<component id="randomiser:10300" label="Prevent Watcher's Keep statues from disappearing" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" engine="bg2,eet" />
+			<component id="randomiser:5005" name="Beholders have no items equipped" label="Beholders have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5015" name="Demi-liches have no items equipped" label="Demi-liches have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5025" name="Dragons have no items equipped" label="Dragons have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5035" name="Elementals have no items equipped" label="Elementals have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5045" name="Fiends have no items equipped" label="Fiends have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5055" name="Golems have no items equipped" label="Golems have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5065" name="Master Brains have no items equipped" label="Master brains have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5075" name="Slimes have no items equipped" label="Slimes have no items equipped" engine="bg1,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:5085" name="Trolls have no items equipped" label="Trolls have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" />
+			<component id="randomiser:10300" name="Prevent Watcher's Keep statues from disappearing" label="Prevent Watcher's Keep statues from disappearing" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" engine="bg2,eet" />
 		</mod>
 	</randomisation>
 
@@ -2021,32 +2021,32 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 		<group label="XP Economy" unfolded="1">
 			<component id="cd_tweaks_remove_xp_cap" name="Remove experience cap" label="Remove total experience cap" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2090" />
 			<alternatives label="XP for Traps, Spells, Open Locks">
-				<component id="EET_Tweaks:2040" label="BG1" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2041" label="BG2" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2042" label="Vanilla friendly progressive" modId="EET_Tweaks" level="vanillaPlus" default="1" />
-				<component id="EET_Tweaks:2043" label="Disabled" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2040" name="BG1 values (default)" label="BG1" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2041" name="BG2 values" label="BG2" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2042" name="Vanilla friendly progressive" label="Vanilla friendly progressive" modId="EET_Tweaks" level="vanillaPlus" default="1" />
+				<component id="EET_Tweaks:2043" name="Disabled" label="Disabled" modId="EET_Tweaks" />
 			</alternatives>
 			<alternatives label="XP for killing creatures">
-				<component id="EET_Tweaks:2050" label="Increase to 150%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2051" label="Decrease to 75%" modId="EET_Tweaks" level="blendWell" default="1" />
-				<component id="EET_Tweaks:2052" label="Decrease to 50%" modId="EET_Tweaks" level="extended" />
-				<component id="EET_Tweaks:2053" label="Decrease to 25%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2054" label="Decrease to 10%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2055" label="Disabled" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2050" name="Increase to 150%" label="Increase to 150%" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2051" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" level="blendWell" default="1" />
+				<component id="EET_Tweaks:2052" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" level="extended" />
+				<component id="EET_Tweaks:2053" name="Decrease to 25%" label="Decrease to 25%" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2054" name="Decrease to 10%" label="Decrease to 10%" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2055" name="Disable" label="Disabled" modId="EET_Tweaks" />
 			</alternatives>
 			<alternatives label="XP for quests">
-				<component id="EET_Tweaks:2060" label="Increase to 150%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2061" label="Decrease to 75%" modId="EET_Tweaks" level="extended" default="1" />
-				<component id="EET_Tweaks:2062" label="Decrease to 50%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2063" label="Decrease to 25%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2064" label="Decrease to 10%" modId="EET_Tweaks" />
-				<component id="EET_Tweaks:2065" label="Disabled" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2060" name="Increase to 150%" label="Increase to 150%" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2061" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" level="extended" default="1" />
+				<component id="EET_Tweaks:2062" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2063" name="Decrease to 25%" label="Decrease to 25%" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2064" name="Decrease to 10%" label="Decrease to 10%" modId="EET_Tweaks" />
+				<component id="EET_Tweaks:2065" name="Disable" label="Disabled" modId="EET_Tweaks" />
 			</alternatives>
 			<alternatives label="Quest XP distribution">
-				<component id="EET_Tweaks:2070" label="Party XP for quests distributed individually" modId="EET_Tweaks" />
-				<component id="METweaks:200" label="Make quest experience divided among party members" modId="Olvyn-Tweaks" />
+				<component id="EET_Tweaks:2070" name="Party XP for quests distributed individually" label="Party XP for quests distributed individually" modId="EET_Tweaks" />
+				<component id="METweaks:200" name="Make quest experience divided among party members" label="Make quest experience divided among party members" modId="Olvyn-Tweaks" />
 			</alternatives>
-			<component id="EET_Tweaks:2080" label="Party XP for killing creatures distributed individually" modId="EET_Tweaks" displayIf="EEex:1" />
+			<component id="EET_Tweaks:2080" name="Party XP for killing creatures distributed individually" label="Party XP for killing creatures distributed individually" modId="EET_Tweaks" displayIf="EEex:1" />
 		</group>
 		<mod id="RandomGraionTweaks" label="Gold Economy" unfolded="1">
 			<alternatives label="Gold carried by creatures">
