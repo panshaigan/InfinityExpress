@@ -13,7 +13,10 @@ import type { DisplayNode } from '../lib/selection/visibility'
 import { displaySelectionState } from '../lib/selection/selectionEngine'
 import type { SelectedGame } from '../lib/xml/schema'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
-import { stabilityBadgeLabel } from '../lib/selection/filterDisplayTree'
+import {
+  splitTags,
+  stabilityBadgeLabel,
+} from '../lib/selection/filterDisplayTree'
 import {
   buildTreeKeyboardContext,
   collectExpandableDescendantKeys,
@@ -122,6 +125,8 @@ function CheckboxRow({
     }
   }, [state, isExclusiveOption])
 
+  const source = collapsedComponent ?? node
+  const attrs = source.attrs
   const label =
     node.attrs.label ??
     (collapsedComponent ? collapsedComponent.attrs.label : undefined) ??
@@ -130,6 +135,7 @@ function CheckboxRow({
   const stability =
     collapsedComponent?.attrs.stability ?? node.attrs.stability
   const stabilityLabel = stabilityBadgeLabel(stability)
+  const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
 
   function handleFoldClick(e: MouseEvent) {
     e.preventDefault()
@@ -224,6 +230,15 @@ function CheckboxRow({
             <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
           {stabilityLabel && <span className="badge">{stabilityLabel}</span>}
+          {attrs.required && <span className="badge">required</span>}
+          {attrs.noDisplay && <span className="badge">hidden</span>}
+          {attrs.core && <span className="badge">core</span>}
+          {attrs.default && <span className="badge">default</span>}
+          {tagList.map((tag) => (
+            <span key={tag} className="badge">
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
       {expanded &&
