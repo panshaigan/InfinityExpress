@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { cycleTabIndex } from '../lib/ui/chromeHotkeys'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
@@ -36,7 +37,101 @@ function handleTabListKeyDown(
   queueMicrotask(() => {
     const btn = list.querySelector<HTMLElement>(`[data-branch-key="${CSS.escape(nextKey)}"]`)
     btn?.focus()
+    btn?.scrollIntoView({ inline: 'nearest', block: 'nearest' })
   })
+}
+
+function BranchTabRow({
+  label,
+  keysHint,
+  keysTitle,
+  ariaLabel,
+  branches,
+  activeKey,
+  onSelect,
+}: {
+  label: string
+  keysHint: string
+  keysTitle: string
+  ariaLabel: string
+  branches: DisplayNode[]
+  activeKey: string | null
+  onSelect: (key: string) => void
+}) {
+  const rowRef = useRef<HTMLDivElement>(null)
+  const [fadeLeft, setFadeLeft] = useState(false)
+  const [fadeRight, setFadeRight] = useState(false)
+  const keys = branches.map((b) => b.node.key)
+
+  function updateFades() {
+    const el = rowRef.current
+    if (!el) return
+    const max = el.scrollWidth - el.clientWidth
+    setFadeLeft(el.scrollLeft > 4)
+    setFadeRight(max - el.scrollLeft > 4)
+  }
+
+  useLayoutEffect(() => {
+    updateFades()
+    const el = rowRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => updateFades())
+    ro.observe(el)
+    window.addEventListener('resize', updateFades)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', updateFades)
+    }
+  }, [branches])
+
+  useLayoutEffect(() => {
+    if (!activeKey) return
+    const el = rowRef.current
+    if (!el) return
+    const btn = el.querySelector<HTMLElement>(
+      `[data-branch-key="${CSS.escape(activeKey)}"]`,
+    )
+    btn?.scrollIntoView({ inline: 'nearest', block: 'nearest' })
+    updateFades()
+  }, [activeKey])
+
+  return (
+    <div className="branch-nav-block">
+      <div className="branch-nav-meta">
+        <span className="branch-nav-heading">{label}</span>
+        <kbd className="branch-nav-keys" title={keysTitle}>
+          {keysHint}
+        </kbd>
+      </div>
+      <div
+        className={`branch-nav-scroll${fadeLeft ? ' fade-left' : ''}${fadeRight ? ' fade-right' : ''}`}
+      >
+        <div
+          ref={rowRef}
+          className="branch-nav-row"
+          role="tablist"
+          aria-label={ariaLabel}
+          onScroll={updateFades}
+          onKeyDown={(e) => handleTabListKeyDown(e, keys, activeKey, onSelect)}
+        >
+          {branches.map((branch) => (
+            <button
+              key={branch.node.key}
+              type="button"
+              role="tab"
+              data-branch-key={branch.node.key}
+              tabIndex={activeKey === branch.node.key ? 0 : -1}
+              aria-selected={activeKey === branch.node.key}
+              className={activeKey === branch.node.key ? 'active' : ''}
+              onClick={() => onSelect(branch.node.key)}
+            >
+              {branchLabel(branch)}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function ContentBranchNav({
@@ -49,70 +144,27 @@ export function ContentBranchNav({
 }: Props) {
   if (mainBranches.length === 0) return null
 
-  const mainKeys = mainBranches.map((b) => b.node.key)
-  const subKeys = subBranches.map((b) => b.node.key)
-
   return (
     <div className="branch-nav">
-      <div className="branch-nav-block">
-        <div className="branch-nav-meta">
-          <span className="branch-nav-heading">Game</span>
-          <kbd className="branch-nav-keys" title="Previous / next main branch">
-            , .
-          </kbd>
-        </div>
-        <div
-          className="branch-nav-row"
-          role="tablist"
-          aria-label="Content main branches"
-          onKeyDown={(e) => handleTabListKeyDown(e, mainKeys, mainKey, onSelectMain)}
-        >
-          {mainBranches.map((branch) => (
-            <button
-              key={branch.node.key}
-              type="button"
-              role="tab"
-              data-branch-key={branch.node.key}
-              tabIndex={mainKey === branch.node.key ? 0 : -1}
-              aria-selected={mainKey === branch.node.key}
-              className={mainKey === branch.node.key ? 'active' : ''}
-              onClick={() => onSelectMain(branch.node.key)}
-            >
-              {branchLabel(branch)}
-            </button>
-          ))}
-        </div>
-      </div>
+      <BranchTabRow
+        label="Game"
+        keysHint=", ."
+        keysTitle="Previous / next main branch"
+        ariaLabel="Content main branches"
+        branches={mainBranches}
+        activeKey={mainKey}
+        onSelect={onSelectMain}
+      />
       {subBranches.length > 0 && (
-        <div className="branch-nav-block">
-          <div className="branch-nav-meta">
-            <span className="branch-nav-heading">Type</span>
-            <kbd className="branch-nav-keys" title="Previous / next subbranch">
-              &lt; &gt;
-            </kbd>
-          </div>
-          <div
-            className="branch-nav-row"
-            role="tablist"
-            aria-label="Content subbranches"
-            onKeyDown={(e) => handleTabListKeyDown(e, subKeys, subKey, onSelectSub)}
-          >
-            {subBranches.map((branch) => (
-              <button
-                key={branch.node.key}
-                type="button"
-                role="tab"
-                data-branch-key={branch.node.key}
-                tabIndex={subKey === branch.node.key ? 0 : -1}
-                aria-selected={subKey === branch.node.key}
-                className={subKey === branch.node.key ? 'active' : ''}
-                onClick={() => onSelectSub(branch.node.key)}
-              >
-                {branchLabel(branch)}
-              </button>
-            ))}
-          </div>
-        </div>
+        <BranchTabRow
+          label="Type"
+          keysHint="< >"
+          keysTitle="Previous / next subbranch"
+          ariaLabel="Content subbranches"
+          branches={subBranches}
+          activeKey={subKey}
+          onSelect={onSelectSub}
+        />
       )}
     </div>
   )

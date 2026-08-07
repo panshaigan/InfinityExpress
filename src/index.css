@@ -1035,12 +1035,56 @@ body {
   letter-spacing: 0.04em;
 }
 
+.branch-nav-scroll {
+  position: relative;
+  min-width: 0;
+}
+
+.branch-nav-scroll::before,
+.branch-nav-scroll::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1.4rem;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--ease);
+}
+
+.branch-nav-scroll::before {
+  left: 0;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--panel) 92%, var(--bg)),
+    transparent
+  );
+}
+
+.branch-nav-scroll::after {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--panel) 92%, var(--bg)),
+    transparent
+  );
+}
+
+.branch-nav-scroll.fade-left::before,
+.branch-nav-scroll.fade-right::after {
+  opacity: 1;
+}
+
 .branch-nav-row {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: stretch;
   gap: 0.12rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 0.05rem;
 }
 
 .branch-nav-row button {
@@ -1055,6 +1099,7 @@ body {
   font: inherit;
   font-size: 0.78rem;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: background var(--ease), border-color var(--ease);
 }
 
@@ -1736,6 +1781,43 @@ body {
 
 .empty {
   color: var(--muted);
+}
+
+.empty-panel {
+  max-width: 28rem;
+  margin: 1.25rem 0.35rem 1.5rem;
+  padding: 1rem 1.05rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--line) 85%, var(--accent));
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(ellipse at top left, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%),
+    color-mix(in srgb, var(--panel) 55%, transparent);
+}
+
+.empty-panel-title {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  color: color-mix(in srgb, var(--ink) 88%, var(--accent));
+}
+
+.empty-panel-body {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.empty-panel-search {
+  margin-top: 1.75rem;
+}
+
+.badge-gated {
+  color: color-mix(in srgb, var(--muted) 70%, #c4a35a);
+  border-color: color-mix(in srgb, var(--muted) 40%, #c4a35a);
+  text-transform: none;
+  letter-spacing: 0.02em;
 }
 
 /* —— Detail panel —— */

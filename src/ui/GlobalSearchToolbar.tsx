@@ -5,6 +5,7 @@ interface Props {
   checkableCount: number
   listState: 'checked' | 'unchecked' | 'indeterminate'
   onToggleAll: (wantSelected: boolean) => void
+  searchQuery?: string
 }
 
 /** Select-all / clear for the current global search result set. */
@@ -13,10 +14,12 @@ export function GlobalSearchToolbar({
   checkableCount,
   listState,
   onToggleAll,
+  searchQuery = '',
 }: Props) {
   const selectAllRef = useRef<HTMLInputElement>(null)
   const empty = checkableCount === 0
   const checked = listState === 'checked'
+  const q = searchQuery.trim()
 
   useEffect(() => {
     if (selectAllRef.current) {
@@ -26,6 +29,16 @@ export function GlobalSearchToolbar({
 
   function handleSelectAllChange(e: ChangeEvent<HTMLInputElement>) {
     onToggleAll(e.target.checked)
+  }
+
+  let countLabel: string
+  if (resultCount === 0) {
+    countLabel = q ? 'No matches' : 'Ready to search'
+  } else {
+    countLabel = `${resultCount} component${resultCount === 1 ? '' : 's'}`
+    if (checkableCount < resultCount) {
+      countLabel += ` · ${checkableCount} selectable`
+    }
   }
 
   return (
@@ -42,12 +55,7 @@ export function GlobalSearchToolbar({
         <span>Select all</span>
       </label>
       <span className="global-search-count" aria-live="polite">
-        {resultCount === 0
-          ? 'No matches'
-          : `${resultCount} component${resultCount === 1 ? '' : 's'}`}
-        {checkableCount < resultCount && resultCount > 0
-          ? ` · ${checkableCount} selectable`
-          : ''}
+        {countLabel}
       </span>
     </div>
   )

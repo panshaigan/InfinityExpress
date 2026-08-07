@@ -12,6 +12,7 @@ import {
 } from '../lib/selection/globalSearch'
 import { displaySelectionState } from '../lib/selection/selectionEngine'
 import type { DisplayNode } from '../lib/selection/visibility'
+import { EmptyPanel } from './EmptyPanel'
 
 interface Props {
   hits: GlobalSearchHit[]
@@ -21,6 +22,10 @@ interface Props {
   onFocus: (componentId: string) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
   onJump: (componentId: string) => void
+  /** Current search box text (may be empty). */
+  searchQuery: string
+  /** True when Level / Size / Author / hidden / unchecked filters change results. */
+  filtersActive: boolean
 }
 
 function JumpIcon() {
@@ -34,6 +39,35 @@ function JumpIcon() {
   )
 }
 
+function emptyCopy(searchQuery: string, filtersActive: boolean): {
+  title: string
+  body: string
+} {
+  const q = searchQuery.trim()
+  if (!q && !filtersActive) {
+    return {
+      title: 'Search the whole route',
+      body: 'Type a mod or component name above. Locked options stay listed until their requirements are met — then jump to their station when you are ready.',
+    }
+  }
+  if (q && filtersActive) {
+    return {
+      title: 'No matches in this net',
+      body: 'Nothing fits that search with the current filters. Try fewer words, or clear filters to widen the hunt.',
+    }
+  }
+  if (q) {
+    return {
+      title: 'No matches',
+      body: 'Nothing fits that search. Try a shorter phrase, or browse from the rail instead.',
+    }
+  }
+  return {
+    title: 'Filters hid every match',
+    body: 'Clear Level, Size, Author, or the other filter chips to see components again.',
+  }
+}
+
 export function GlobalSearchList({
   hits,
   selectedIds,
@@ -42,6 +76,8 @@ export function GlobalSearchList({
   onFocus,
   onToggle,
   onJump,
+  searchQuery,
+  filtersActive,
 }: Props) {
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const tabbableId =
@@ -101,6 +137,15 @@ export function GlobalSearchList({
     }
   }
 
+  if (hits.length === 0) {
+    const copy = emptyCopy(searchQuery, filtersActive)
+    return (
+      <EmptyPanel title={copy.title} className="empty-panel-search">
+        {copy.body}
+      </EmptyPanel>
+    )
+  }
+
   return (
     <div
       className="global-search-list"
@@ -108,90 +153,93 @@ export function GlobalSearchList({
       aria-label="Search results"
       onKeyDown={handleListKeyDown}
     >
-      {hits.length === 0 ? (
-        <p className="global-search-empty">No components match the current filters.</p>
-      ) : (
-        hits.map((hit) => {
-          const id = hit.component.componentId
-          const display: DisplayNode = { node: hit.component, children: [] }
-          const state = displaySelectionState(display, selectedIds, game)
-          const checked = state === 'checked'
-          const focused = focusedComponentId === id
-          const label =
-            hit.component.attrs.label ?? hit.component.attrs.name ?? id
-          const path = formatSearchPath(hit.pathLabels)
+      {hits.map((hit) => {
+        const id = hit.component.componentId
+        const display: DisplayNode = { node: hit.component, children: [] }
+        const state = displaySelectionState(display, selectedIds, game)
+        const checked = state === 'checked'
+        const focused = focusedComponentId === id
+        const label =
+          hit.component.attrs.label ?? hit.component.attrs.name ?? id
+        const path = formatSearchPath(hit.pathLabels)
 
-          function handleRowClick() {
-            onFocus(id)
-          }
+        function handleRowClick() {
+          onFocus(id)
+        }
 
-          function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
-            if (!hit.checkable) return
-            onToggle(display, e.target.checked)
-          }
+        function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
+          if (!hit.checkable) return
+          onToggle(display, e.target.checked)
+        }
 
-          function handleInputClick(e: MouseEvent) {
-            e.stopPropagation()
-          }
+        function handleInputClick(e: MouseEvent) {
+          e.stopPropagation()
+        }
 
-          function handleJump(e: MouseEvent) {
-            e.stopPropagation()
-            onJump(id)
-          }
+        function handleJump(e: MouseEvent) {
+          e.stopPropagation()
+          onJump(id)
+        }
 
-          return (
-            <div
-              key={id}
-              role="option"
-              aria-selected={focused}
-              aria-disabled={!hit.checkable}
-              tabIndex={tabbableId === id ? 0 : -1}
-              className={`global-search-row${focused ? ' focused' : ''}${
-                !hit.checkable ? ' gated' : ''
-              }`}
-              onClick={handleRowClick}
-              onFocus={handleRowClick}
-              ref={(el) => {
-                if (el) rowRefs.current.set(id, el)
-                else rowRefs.current.delete(id)
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={checked}
-                disabled={!hit.checkable}
-                tabIndex={-1}
-                aria-label={label}
-                onChange={handleInputChange}
-                onClick={handleInputClick}
-              />
-              <div className="global-search-text">
-                <span className="global-search-label">{label}</span>
-                <span className="global-search-path">{path}</span>
-              </div>
-              {hit.component.attrs.required && (
-                <span className="badge">required</span>
-              )}
-              {hit.component.attrs.noDisplay && (
-                <span className="badge">hidden</span>
-              )}
-              {!hit.eligible && <span className="badge">gated</span>}
-              {hit.eligible && (
-                <button
-                  type="button"
-                  className="global-search-jump"
-                  tabIndex={-1}
-                  aria-label={`Jump to ${label} in its station`}
-                  title="Jump to station"
-                  onClick={handleJump}
-                >
-                  <JumpIcon />
-                </button>
-              )}
+        return (
+          <div
+            key={id}
+            role="option"
+            aria-selected={focused}
+            aria-disabled={!hit.checkable}
+            tabIndex={tabbableId === id ? 0 : -1}
+            className={`global-search-row${focused ? ' focused' : ''}${
+              !hit.checkable ? ' gated' : ''
+            }`}
+            onClick={handleRowClick}
+            onFocus={handleRowClick}
+            ref={(el) => {
+              if (el) rowRefs.current.set(id, el)
+              else rowRefs.current.delete(id)
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={checked}
+              disabled={!hit.checkable}
+              tabIndex={-1}
+              aria-label={label}
+              onChange={handleInputChange}
+              onClick={handleInputClick}
+            />
+            <div className="global-search-text">
+              <span className="global-search-label">{label}</span>
+              <span className="global-search-path">{path}</span>
             </div>
-          )
-        })
-      )}
+            {hit.component.attrs.required && (
+              <span className="badge">required</span>
+            )}
+            {hit.component.attrs.noDisplay && (
+              <span className="badge">hidden</span>
+            )}
+            {!hit.eligible && (
+              <span
+                className="badge badge-gated"
+                title="Needs another component first"
+              >
+                locked
+              </span>
+            )}
+            {hit.eligible && (
+              <button
+                type="button"
+                className="global-search-jump"
+                tabIndex={-1}
+                aria-label={`Jump to ${label} in its station`}
+                title="Jump to station"
+                onClick={handleJump}
+              >
+                <JumpIcon />
+              </button>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }

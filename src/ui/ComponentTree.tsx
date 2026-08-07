@@ -35,6 +35,7 @@ import {
   resolveTreeKey,
   type TreeCommand,
 } from '../lib/ui/treeKeyboard'
+import { EmptyPanel } from './EmptyPanel'
 
 export interface TreeFoldApi {
   foldAll: () => void
@@ -57,6 +58,9 @@ interface Props {
   onRandomize: (display: DisplayNode, options: RandomizeOptions) => void
   /** Registers fold/unfold-all for the current list; cleared on unmount. */
   onFoldApiReady?: (api: TreeFoldApi | null) => void
+  /** Optional explanation when the list is empty. */
+  emptyTitle?: string
+  emptyBody?: string
 }
 
 function ShuffleIcon() {
@@ -637,7 +641,12 @@ export function ComponentTree(props: Props) {
   }
 
   if (props.nodes.length === 0) {
-    return <p className="empty">Nothing to show for this engine at this station.</p>
+    return (
+      <EmptyPanel title={props.emptyTitle ?? 'Nothing on this stop'}>
+        {props.emptyBody ??
+          'Try clearing filters, or jump to another station from the rail.'}
+      </EmptyPanel>
+    )
   }
 
   const tabbableKey = props.focusedKey ?? keyboardCtx.visibleRows[0]?.key ?? null

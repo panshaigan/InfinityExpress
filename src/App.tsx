@@ -33,6 +33,7 @@ import {
   createDefaultFilterCriteria,
   filterDisplayTree,
   filtersNeedIncludeHidden,
+  isFilterActive,
   type FilterCriteria,
 } from './lib/selection/filterDisplayTree'
 import {
@@ -299,6 +300,46 @@ export default function App() {
   const treeKey = isContentStation
     ? `${activeStation}:${contentMainKey ?? ''}:${contentSubKey ?? ''}`
     : activeStation
+
+  const filtersActive = useMemo(
+    () => isFilterActive(filters, filterOptions.tags, filterSeed),
+    [filters, filterOptions.tags],
+  )
+
+  const listEmptyCopy = useMemo(() => {
+    if (listNodes.length > 0) return null
+    if (isContentStation && contentSubBranches.length === 0) {
+      return {
+        title: 'No types in this bucket',
+        body: 'This game branch has nothing left after filters. Clear filters or pick another Game tab.',
+      }
+    }
+    if (isContentStation && selectedSub && listNodes.length === 0) {
+      return {
+        title: filtersActive ? 'Filters emptied this type' : 'Nothing in this type',
+        body: filtersActive
+          ? 'Clear Level, Size, or Author to reveal components here.'
+          : 'This content type has no components for your engine. Try another Type tab.',
+      }
+    }
+    if (filtersActive) {
+      return {
+        title: 'Filters emptied this stop',
+        body: 'Clear filters, or broaden Level / Size / Author to bring components back.',
+      }
+    }
+    return {
+      title: 'Nothing on this stop',
+      body: 'This station has no visible components for your engine yet — some unlock after other picks.',
+    }
+  }, [
+    contentSubBranches.length,
+    filtersActive,
+    isContentStation,
+    listNodes.length,
+    selectedSub,
+  ])
+
   const listCheckState = useMemo(() => {
     if (!game) return 'unchecked' as const
     return listSelectionState(listNodes, selectedIds, game)
@@ -1075,6 +1116,7 @@ export default function App() {
                       }
                       listState={globalSearchCheckState}
                       onToggleAll={onToggleAllSearch}
+                      searchQuery={filters.search}
                     />
                   </div>
                   <div className="list-pane-scroll" onScroll={onListScroll}>
@@ -1086,6 +1128,8 @@ export default function App() {
                       onFocus={onFocusSearchResult}
                       onToggle={onToggle}
                       onJump={onNavigateToComponent}
+                      searchQuery={filters.search}
+                      filtersActive={filtersActive}
                     />
                   </div>
                 </>
@@ -1157,6 +1201,8 @@ export default function App() {
                       onToggle={onToggle}
                       onRandomize={onRandomize}
                       onFoldApiReady={onFoldApiReady}
+                      emptyTitle={listEmptyCopy?.title}
+                      emptyBody={listEmptyCopy?.body}
                     />
                   </div>
                 </>
