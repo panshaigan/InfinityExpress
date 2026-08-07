@@ -638,6 +638,18 @@ body {
   margin: 0;
 }
 
+.station-fold-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.station-fold-all .filter-inline-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .station-list-toolbar-levels {
   display: flex;
   flex-wrap: wrap;
@@ -923,6 +935,29 @@ body {
 
 .tree-fold:hover {
   color: var(--ink);
+}
+
+.tree-fold-all {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  margin-left: 0.15rem;
+}
+
+.tree-fold-all-btn {
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  font: inherit;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.tree-fold-all-btn:hover {
+  color: var(--accent);
 }
 
 .tree-row {

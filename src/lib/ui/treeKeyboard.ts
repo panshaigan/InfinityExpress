@@ -62,6 +62,25 @@ export function collectExpandableDescendantKeys(display: DisplayNode): string[] 
   return keys
 }
 
+/** Union of expandable keys under a forest of display roots (fold/unfold all). */
+export function collectAllExpandableKeys(nodes: readonly DisplayNode[]): string[] {
+  const keys: string[] = []
+  for (const d of nodes) {
+    keys.push(...collectExpandableDescendantKeys(d))
+  }
+  return keys
+}
+
+/** True when a foldable node has at least one nested foldable descendant. */
+export function hasNestedFoldable(display: DisplayNode): boolean {
+  if (display.children.length === 0) return false
+  for (const child of display.children) {
+    if (child.children.length > 0) return true
+    if (hasNestedFoldable(child)) return true
+  }
+  return false
+}
+
 export function buildTreeKeyboardContext(
   nodes: readonly DisplayNode[],
   expandedKeys: ReadonlySet<string>,

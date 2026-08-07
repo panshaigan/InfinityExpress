@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import installSequenceXml from './data/InstallSequence.xml?raw'
 import modsCsv from './data/mods.csv?raw'
 import { parseInstallSequence } from './lib/xml/parseInstallSequence'
@@ -55,7 +55,7 @@ import {
 import { StationNav } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
-import { ComponentTree } from './ui/ComponentTree'
+import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
 import { ComponentDetail } from './ui/ComponentDetail'
 import { ContentBranchNav } from './ui/ContentBranchNav'
 import { StationListToolbar } from './ui/StationListToolbar'
@@ -178,6 +178,10 @@ export default function App() {
   const [contentMainKey, setContentMainKey] = useState<string | null>(null)
   const [contentSubKey, setContentSubKey] = useState<string | null>(null)
   const [contentSubTag, setContentSubTag] = useState<string | null>(null)
+  const foldApiRef = useRef<TreeFoldApi | null>(null)
+  const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
+    foldApiRef.current = api
+  }, [])
 
   const visibleStations = useMemo(() => {
     if (!game) return [] as StationId[]
@@ -735,6 +739,14 @@ export default function App() {
     row?.focus()
   }
 
+  function onFoldAll() {
+    foldApiRef.current?.foldAll()
+  }
+
+  function onUnfoldAll() {
+    foldApiRef.current?.unfoldAll()
+  }
+
   function focusFiltersSearch() {
     const el = document.getElementById(FILTERS_SEARCH_ID) as HTMLInputElement | null
     if (!el) return
@@ -934,6 +946,8 @@ export default function App() {
                       onLadderToggle={onStationLadderToggle}
                       onDifficultyChange={onStationDifficultyChange}
                       onClearToGlobal={onClearToGlobal}
+                      onFoldAll={onFoldAll}
+                      onUnfoldAll={onUnfoldAll}
                     />
                     {isContentStation && (
                       <ContentBranchNav
@@ -956,6 +970,7 @@ export default function App() {
                       focusedKey={focusedKey}
                       onFocus={onFocus}
                       onToggle={onToggle}
+                      onFoldApiReady={onFoldApiReady}
                     />
                     {warnings.length > 0 && (
                       <details className="warnings">

@@ -19,10 +19,17 @@ import {
 } from '../lib/selection/filterDisplayTree'
 import {
   buildTreeKeyboardContext,
+  collectAllExpandableKeys,
   collectExpandableDescendantKeys,
+  hasNestedFoldable,
   resolveTreeKey,
   type TreeCommand,
 } from '../lib/ui/treeKeyboard'
+
+export interface TreeFoldApi {
+  foldAll: () => void
+  unfoldAll: () => void
+}
 
 interface Props {
   /** Station (and Content branch) identity; used to restore fold state across remounts. */
@@ -33,6 +40,8 @@ interface Props {
   focusedKey: string | null
   onFocus: (key: string) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
+  /** Registers fold/unfold-all for the current list; cleared on unmount. */
+  onFoldApiReady?: (api: TreeFoldApi | null) => void
 }
 
 /** Session-scoped expand/collapse per tree; survives remount, resets on page reload. */
@@ -90,6 +99,8 @@ function CheckboxRow({
   depth,
   expandedKeys,
   onToggleExpand,
+  onExpandSubtree,
+  onCollapseSubtree,
   exclusiveGroupKey,
   rowRefs,
 }: {
@@ -104,6 +115,8 @@ function CheckboxRow({
   depth: number
   expandedKeys: ReadonlySet<string>
   onToggleExpand: (key: string) => void
+  onExpandSubtree: (key: string) => void
+  onCollapseSubtree: (key: string) => void
   /** When set, this row is a mutually exclusive option under an alternatives parent. */
   exclusiveGroupKey?: string
   rowRefs: MutableRefObject<Map<string, HTMLDivElement>>
@@ -113,6 +126,7 @@ function CheckboxRow({
   const inputRef = useRef<HTMLInputElement>(null)
   const foldable = children.length > 0
   const expanded = foldable && expandedKeys.has(node.key)
+  const showSubtreeFold = foldable && hasNestedFoldable(display)
   const focused = focusedKey === node.key
   const isAlternatives = node.kind === 'alternatives'
   const isExclusiveOption = exclusiveGroupKey != null
@@ -147,6 +161,14 @@ function CheckboxRow({
   function handleFoldDoubleClick(e: MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
+  }
+
+  function handleSubtreeFoldClick(e: MouseEvent, action: 'expand' | 'collapse') {
+    e.preventDefault()
+    e.stopPropagation()
+    if (action === 'expand') onExpandSubtree(node.key)
+    else onCollapseSubtree(node.key)
+    onFocus(node.key)
   }
 
   function handleRowActivate() {
@@ -225,6 +247,30 @@ function CheckboxRow({
             onClick={handleInputClick}
           />
           <span className="tree-label">{label}</span>
+          {showSubtreeFold && (
+            <span className="tree-fold-all">
+              <button
+                type="button"
+                className="tree-fold-all-btn"
+                tabIndex={-1}
+                aria-label={`Unfold all under ${label}`}
+                onClick={(e) => handleSubtreeFoldClick(e, 'expand')}
+                onDoubleClick={handleFoldDoubleClick}
+              >
+                Unfold all
+              </button>
+              <button
+                type="button"
+                className="tree-fold-all-btn"
+                tabIndex={-1}
+                aria-label={`Fold all under ${label}`}
+                onClick={(e) => handleSubtreeFoldClick(e, 'collapse')}
+                onDoubleClick={handleFoldDoubleClick}
+              >
+                Fold all
+              </button>
+            </span>
+          )}
           {isAlternatives && <span className="badge">choose one</span>}
           {level && (
             <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
@@ -259,6 +305,8 @@ function CheckboxRow({
             depth={depth + 1}
             expandedKeys={expandedKeys}
             onToggleExpand={onToggleExpand}
+            onExpandSubtree={onExpandSubtree}
+            onCollapseSubtree={onCollapseSubtree}
             exclusiveGroupKey={childExclusiveKey}
             rowRefs={rowRefs}
           />
@@ -338,6 +386,52 @@ export function ComponentTree(props: Props) {
     })
   }
 
+  function expandSubtree(key: string) {
+    const display = findDisplayInTree(props.nodes, key)
+    if (!display) return
+    const keys = collectExpandableDescendantKeys(display)
+    setExpandedKeys((prev) => {
+      const next = new Set(prev)
+      for (const k of keys) next.add(k)
+      return next
+    })
+  }
+
+  function collapseSubtree(key: string) {
+    const display = findDisplayInTree(props.nodes, key)
+    if (!display) return
+    const keys = collectExpandableDescendantKeys(display)
+    setExpandedKeys((prev) => {
+      const next = new Set(prev)
+      for (const k of keys) next.delete(k)
+      return next
+    })
+  }
+
+  useEffect(() => {
+    const ready = props.onFoldApiReady
+    if (!ready) return
+    ready({
+      foldAll: () => {
+        const keys = collectAllExpandableKeys(props.nodes)
+        setExpandedKeys((prev) => {
+          const next = new Set(prev)
+          for (const k of keys) next.delete(k)
+          return next
+        })
+      },
+      unfoldAll: () => {
+        const keys = collectAllExpandableKeys(props.nodes)
+        setExpandedKeys((prev) => {
+          const next = new Set(prev)
+          for (const k of keys) next.add(k)
+          return next
+        })
+      },
+    })
+    return () => ready(null)
+  }, [props.nodes, props.onFoldApiReady, props.treeKey])
+
   function applyCommand(cmd: TreeCommand) {
     switch (cmd.type) {
       case 'move':
@@ -353,15 +447,7 @@ export function ComponentTree(props: Props) {
         props.onFocus(cmd.key)
         break
       case 'expandSubtree': {
-        const display = findDisplayInTree(props.nodes, cmd.key)
-        if (display) {
-          const keys = collectExpandableDescendantKeys(display)
-          setExpandedKeys((prev) => {
-            const next = new Set(prev)
-            for (const k of keys) next.add(k)
-            return next
-          })
-        }
+        expandSubtree(cmd.key)
         props.onFocus(cmd.key)
         break
       }
@@ -414,6 +500,8 @@ export function ComponentTree(props: Props) {
           depth={0}
           expandedKeys={expandedKeys}
           onToggleExpand={onToggleExpand}
+          onExpandSubtree={expandSubtree}
+          onCollapseSubtree={collapseSubtree}
           rowRefs={rowRefs}
         />
       ))}

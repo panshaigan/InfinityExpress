@@ -3,8 +3,10 @@ import type { DisplayNode } from '../selection/visibility'
 import type { ContainerNode } from '../xml/schema'
 import {
   buildTreeKeyboardContext,
+  collectAllExpandableKeys,
   collectExpandableDescendantKeys,
   flattenVisibleRows,
+  hasNestedFoldable,
   resolveTreeKey,
 } from './treeKeyboard'
 
@@ -69,6 +71,32 @@ describe('flattenVisibleRows', () => {
 describe('collectExpandableDescendantKeys', () => {
   it('collects foldable keys under a subtree', () => {
     expect(collectExpandableDescendantKeys(sampleTree[0]!)).toEqual(['a', 'a2'])
+  })
+})
+
+describe('collectAllExpandableKeys', () => {
+  it('unions foldable keys across roots', () => {
+    expect(collectAllExpandableKeys(sampleTree)).toEqual(['a', 'a2'])
+  })
+
+  it('returns empty for leaf-only forests', () => {
+    expect(collectAllExpandableKeys([leaf('x'), leaf('y')])).toEqual([])
+  })
+})
+
+describe('hasNestedFoldable', () => {
+  it('is true when a child container exists', () => {
+    expect(hasNestedFoldable(sampleTree[0]!)).toBe(true)
+  })
+
+  it('is false for a container of only leaves', () => {
+    expect(hasNestedFoldable(container('c', 'group', [leaf('c1'), leaf('c2')]))).toBe(
+      false,
+    )
+  })
+
+  it('is false for a leaf', () => {
+    expect(hasNestedFoldable(leaf('z'))).toBe(false)
   })
 })
 

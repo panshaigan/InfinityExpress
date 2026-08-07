@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ChangeEvent } from 'react'
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import type { DisplayNode } from '../lib/selection/visibility'
+import { collectAllExpandableKeys } from '../lib/ui/treeKeyboard'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
 interface Props {
@@ -13,6 +14,8 @@ interface Props {
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
   onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
   onClearToGlobal: () => void
+  onFoldAll: () => void
+  onUnfoldAll: () => void
 }
 
 export function StationListToolbar({
@@ -25,10 +28,13 @@ export function StationListToolbar({
   onLadderToggle,
   onDifficultyChange,
   onClearToGlobal,
+  onFoldAll,
+  onUnfoldAll,
 }: Props) {
   const selectAllRef = useRef<HTMLInputElement>(null)
   const checked = listState === 'checked'
   const empty = listNodes.length === 0
+  const foldDisabled = empty || collectAllExpandableKeys(listNodes).length === 0
 
   useEffect(() => {
     if (selectAllRef.current) {
@@ -53,6 +59,26 @@ export function StationListToolbar({
         />
         <span>Select all</span>
       </label>
+      <span className="station-fold-all">
+        <button
+          type="button"
+          className="filter-inline-action"
+          disabled={foldDisabled}
+          aria-label="Unfold all on this list"
+          onClick={onUnfoldAll}
+        >
+          Unfold all
+        </button>
+        <button
+          type="button"
+          className="filter-inline-action"
+          disabled={foldDisabled}
+          aria-label="Fold all on this list"
+          onClick={onFoldAll}
+        >
+          Fold all
+        </button>
+      </span>
       <div className="station-list-toolbar-levels">
         <LevelSelectStrip
           compact
