@@ -143,7 +143,7 @@
 					<component id="bgqe_slimequest" name="Slime Quest" label="Slime Quest" />
 					<component id="bgqe_nashkelmonster" name="Nashkel Monster Quest" label="Nashkel Monster Quest" />
 					<component id="bgqe_fallenpaladin" name="Fallen Paladin Quest" label="Fallen Paladin Quest" />
-					<component id="bgqe_manypaws" label="Many Little Paws" />
+					<component id="bgqe_manypaws" name="Unexpected Help Quest" label="Many Little Paws" />
 					<component id="bgqe_undyinglove" name="Undying Love Quest" label="Undying Love Quest" />
 					<component id="bgqe_orclover" name="Lovesick Half-Orc" label="Lovesick Half-Orc" />
 					<component id="bgqe_unexpectedhelp" name="Unexpected Help Quest" label="Unexpected Help Quest" />
@@ -268,12 +268,12 @@
 						<component id="bg1npc_project-pid" name="The BG1 NPC Project: Player-Initiated Dialogues" label="Player-initiated dialogues" />
 					</mod>
 					<mod id="ChattyImoen" label="Chatty Imoen" desc="Expands Imoen's voice set and adds interaction banters with other NPCs." level="vanillaPlus">
-						<component id="AY-ChattyImoen-CharSnds" label="Expanded character sounds" />
-						<component id="AY-ChattyImoen-NPCInteractions" label="Add NPC interactions" />
+						<component id="AY-ChattyImoen-CharSnds" name="Chatty Imoen: Expanded Character Sounds" label="Expanded character sounds" />
+						<component id="AY-ChattyImoen-NPCInteractions" name="Chatty Imoen: Add NPC Interactions" label="Add NPC interactions" />
 					</mod>
 					<component id="garrick-mirandir" name="Garrick: Tales of a Troubadour" label="Garrick: Tales of a Troubadour" modId="Garrick_Tales-of-a-Troubadour" />
 					<component id="XanBG1Friend:0" name="Xan's friendship path for BG1" label="Xan Friendship" modId="Xan_BG1_Friendship" />
-					<component id="Domi-CoranBGFriend-Main" label="Coran Friendship" modId="CoranBGFriend" />
+					<component id="Domi-CoranBGFriend-Main" name="Coran's Extended BG Friendship Talks" label="Coran Friendship" modId="CoranBGFriend" />
 					<component id="neera_expansion" name="Neera Expansion" label="Neera Expansion" modId="Neera-Expansion" tags="beamdog" />
 					<mod id="Ajantis_BG1_Expansion" label="Ajantis Expansion">
 						<component id="AjantisBG1Expansion-main" name="Installs Ajantis BG1 Expansion Modification" label="Installs Ajantis BG1 expansion modification" core="1" />
@@ -414,11 +414,11 @@
 					<component id="L#-ELDOTH-SOD" name="Eldoth for the Siege of Dragonspear" label="Eldoth" modId="eldoth-for-sod" />
 					<component id="L#-Faldorn-SOD" name="Faldorn for Siege of Dragonspear" label="Faldorn" modId="faldorn-for-sod" />
 					<component id="k9SHarteel-SoD" name="Install Shar-Teel NPC Mod" label="Shar-Teel" modId="Sharteel-NPC-SoD" />
-					<component id="AddKagainDD" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" engine="bg1" />
+					<component id="AddKagainDD" name="Assign Dwarven Defender kit to Kagain" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" engine="bg1" />
 					<component id="AddXan" name="[Xan] Add Xan to SoD and BG2" label="Continuous Xan" desc="Continuous, but mute" modId="continuous-npcs" engine="bg1" />
 					<component id="AddYeslick" name="[Yeslick] Add Yeslick to SoD and BG2" label="Continuous Yeslick" desc="Continuous, but mute" modId="continuous-npcs" engine="bg1" />
 					<group label="Continuous Kivan (Archer)" engine="bg1">
-						<component id="AddKivanArcher" label="Core" desc="Continuous, but mute" modId="continuous-npcs" core="1" />
+						<component id="AddKivanArcher" name="[Kivan] Assign Archer kit to Kivan" label="Core" desc="Continuous, but mute" modId="continuous-npcs" core="1" />
 						<component id="KivanTimedQuest" name="[Kivan] Removed Kivan's timed quest" label="Removed Kivan's Timed Quest" modId="continuous-npcs" />
 						<component id="KivanAbilityScores" name="[Kivan] Slightly Boost Kivan's Ability Scores" label="Slightly boost Kivan's Ability Scores" modId="continuous-npcs" />
 					</group>
@@ -457,7 +457,7 @@
 					<component id="Ascension-SlightlyImprovedCutscenes" name="Slightly improved cutscenes, by DavidW" label="Slightly improved cutscenes, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
 				</mod>
 				<component id="SoAExtended:1" name="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" label="Shadows of Amn extended: Book 1 - Quiet Before The Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" level="blendWell" />
-				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" />
+				<component id="FightHeaven-Main" name="Main Component" label="Fight the Heavens" modId="fight-the-heavens" />
 				<component id="cd_tweaks_reveal_ch6_wilderness" name="Reveal Wilderness Areas Before Chapter Six" label="Reveal wilderness areas before chapter six" level="extended" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1030" />
 				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" name="Non-silly version" label="Faster chapter one and two cutscenes and dreams" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3141" />
 				<component id="lfgp:0" name="Lunia for Good Parties" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" level="blendWell" />
@@ -487,7 +487,7 @@
 					<component id="Almaterias_Restoration_Project-Lich_Deril" name="Lich Deril" label="Lich Deril" />
 					<component id="Almaterias_Restoration_Project-Restored_Random_Encounters" name="Restored Random Encounters" label="Restored random encounters" />
 					<component id="Almaterias_Restoration_Project-Minor_Restorations" name="Minor Restorations" label="Minor restorations" />
-					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" label="Alternate Slayer change" level="higherDifficulty" />
+					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" name="Alternate Slayer Change" label="Alternate Slayer change" level="higherDifficulty" />
 					<component id="Almaterias_Restoration_Project-Restored_Final_Slayer_Dream" name="Restored Final Slayer Dream" label="Restored final Slayer dream" />
 					<component id="Almaterias_Restoration_Project-Restored_Waukeens_Promenade_Cutscene" name="Restored Final Slayer Dream" label="Restored Waukeen's Promenade Cutscene" />
 				</mod>
@@ -517,7 +517,7 @@
 				<component id="TangledIsle:0" name="Yes, but don't patch existing save games" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" level="extended" />
 				<component id="L#-OOZESLOUNGE" name="Athkatlan Grounds: The Ooze's Lounge - a new area under Athkatlan Slums" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" level="extended" />
 				<component id="L#-SKIECOST-MAINQUEST" name="Skie: The Cost of One Girl's Soul - New quest for Baldur's Gate 2 EE" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" level="extended" />
-				<component id="cowledmenace:1000" label="Cowled Menace" modId="CowledMenace" level="extended" />
+				<component id="cowledmenace:1000" name="Main Component" label="Cowled Menace" modId="CowledMenace" level="extended" />
 				<component id="AWizardDidIt-Blackhearts_BG2" name="Install Blackhearts for &quot;BG2EE only&quot;" label="Blackhearts" modId="Black-Hearts" level="extended" displayIfNot="AWizardDidIt-Blackhearts_BG1" />
 				<component id="Autumns_Twilight:0" name="Autumn's Twilight MOD" label="Autumn's Twilight" modId="bg2-autumns-twilight-mod" />
 			</quest>
@@ -552,7 +552,7 @@
 					<component id="luvnalia:0" name="Arnel's Nalia Romance Revision" label="Nalia Romance" modId="Arnel-Nalia-Romance-Revision" />
 					<mod id="Nalia_At_Last" label="Nalia at Last (ToB Romance)">
 						<component id="Nalia_at_Last:0" name="[Nalia at Last (ToB Romance)] Bring me my wife, Nalia, the thief/mage." label="Nalia at Last (ToB Romance)" />
-						<component id="Nalia_at_Last:1" label="Romance Theme Music" alwaysIf="Nalia_at_Last:0" noDisplay="1" />
+						<component id="Nalia_at_Last:1" name="[Nalia At Last: Romance Theme Soundtrack] Romance Theme Music" label="Romance Theme Music" alwaysIf="Nalia_at_Last:0" noDisplay="1" />
 					</mod>
 					<mod id="yoshimo-romance" label="Yoshimo Romance">
 						<component id="L#-YOSHIMO-ROMANCE" name="Yoshimo Romance and additional friendship talks for BG2 / BG2EE" label="Yoshimo Romance" />
@@ -574,7 +574,7 @@
 					<component id="cd_tweaks_stop_hd_aerie_romance" name="Stop Haer'Dalis-Aerie Romance from Starting" label="Stop Haer'Dalis-Aerie Romance from starting" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3124" />
 				</romances>
 				<bioware label="Returning Original Cast NPCs">
-					<component id="AddKagainDD" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" />
+					<component id="AddKagainDD" name="Assign Dwarven Defender kit to Kagain" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" />
 					<alternatives label="Xan">
 						<component id="AddXan" name="[Xan] Add Xan to SoD and BG2" label="Continuous Xan" desc="Continuous, but mute" modId="continuous-npcs" />
 						<component id="xan:0" name="[Xan] Xan NPC MOD for Baldur's Gate II" label="Kulyok's Xan" modId="Xan_for_BGII" />
@@ -585,7 +585,7 @@
 					</alternatives>
 					<alternatives label="Kivan">
 						<group label="Continuous Kivan (Archer)">
-							<component id="AddKivanArcher" label="Core" desc="Continuous, but mute" modId="continuous-npcs" core="1" />
+							<component id="AddKivanArcher" name="[Kivan] Assign Archer kit to Kivan" label="Core" desc="Continuous, but mute" modId="continuous-npcs" core="1" />
 							<component id="KivanTimedQuest" name="[Kivan] Removed Kivan's timed quest" label="Removed Kivan's Timed Quest" modId="continuous-npcs" />
 							<component id="KivanAbilityScores" name="[Kivan] Slightly Boost Kivan's Ability Scores" label="Slightly boost Kivan's Ability Scores" modId="continuous-npcs" />
 						</group>
@@ -619,7 +619,7 @@
 						<component id="mkhiinbg2:0" name="M'Khiin NPC for BG2EE" label="M'Khiin" core="1" />
 						<component id="mkhiinbg2:10" name="Artastrophe" label="Artastrophe portrait" alwaysIf="mkhiinbg2:0" noDisplay="1" />
 					</mod>
-					<component id="YF-LivingClara" label="Clara instead of Hexxat &amp; darkside Anomen" modId="LivingClara" tags="beamdog" />
+					<component id="YF-LivingClara" name="Living Clara" label="Clara instead of Hexxat &amp; darkside Anomen" modId="LivingClara" tags="beamdog" />
 					<group label="Returning NPCs swapping the existing ones">
 						<mod id="khalid-bg2" label="Khalid instead of Jaheira">
 							<component id="L#-KHALIDBG2EE" name="Khalid for BG2EE" label="Core" core="1" />
@@ -799,7 +799,7 @@
 				<component id="cd_tweaks_improved_athkatla_guard" name="Improved Athkatlan City Guard" label="Improved Athkatlan city guard" modId="Tweaks-Anthology" level="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1040" />
 				<component id="cd_tweaks_more_sensible_cowled_wizards" name="More Sensible Cowled Wizards [Luke]" label="More sensible Cowled Wizards" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3420" />
 				<component id="ZSTweaks:3010" name="Make inappropriately aligned creatures in BG2 more correct" label="Make inappropriately aligned creatures in BG2 more correct" modId="ZSTweaks" level="fixes" />
-				<component id="ForcedSlayerTransform:0" label="Forced Slayer transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" level="extended" />
+				<component id="ForcedSlayerTransform:0" name="BG2EE Forced Slayer Transform" label="Forced Slayer transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" level="extended" />
 				<component id="randomiser:10210" name="Duergar merchants" label="Duergar merchants" engine="bg2,eet" modId="randomiser" level="vanillaPlus" desc="Make it so once you can access the special wares you retain the option of accessing the regular wares" />
 				<component id="cd_tweaks_alter_wounded_triggers" name="Alter HP Triggers for NPC Wounded Dialogues" label="Alter HP triggers for NPC wounded dialogues" modId="Tweaks-Anthology" desc="Raise the HP trigger level so that the player has a better chance of seeing wound banters" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1020" />
 				<component id="cd_tweaks_cromwell_forge_time_0" name="Instant forging (original BG2 default)" label="Cromwell's Instant Forging" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1125" />
@@ -889,7 +889,7 @@
 							<component id="IWDNPC:34" name="Teri, multiclass thief/mage" label="Thief/mage" />
 						</alternatives>
 					</mod>
-					<component id="druidsor:0" label="Geomantic Sorcerer kit" desc="This is needed for Tipps NPC" modId="Geomantic_Sorcerer" alwaysIf="L#-TIPPS-IWD" noDisplay="1" />
+					<component id="druidsor:0" name="Start with displaying mod component Geomantic Sorcerer Remake" label="Geomantic Sorcerer kit" desc="This is needed for Tipps NPC" modId="Geomantic_Sorcerer" alwaysIf="L#-TIPPS-IWD" noDisplay="1" />
 					<component id="L#-OAKMAW-IWD" name="Oak-Maw NPC for IWD:EE" label="Oak-maw — half-orc NE Priest of Talos" modId="oak-maw" />
 					<component id="L#-LANNA-IWD" name="L'anna - a new IWD EE companion" label="L'anna — elf NG Archer" modId="lanna" />
 					<component id="Tviy:0" name="T'viy NPC for IWD:EE" label="T'viy — gnome CE cleric/thief" modId="tviy" />
@@ -999,7 +999,7 @@
 					<component id="stratagems:3015" name="Re-introduce potions of extra-healing" label="Re-introduce Potions of Extra-Healing" modId="SwordCoastStratagems" level="vanillaPlus" />
 					<component id="stratagems:3505" name="Wider selection of random scrolls" label="Wider selection of random scrolls" modId="SwordCoastStratagems" level="vanillaPlus" />
 					<component id="cd_iwdification_2h_axes" name="Two-Handed Axe Item Pack" label="Two-Handed Axe Item Pack" modId="iwdification" level="blendWell" />
-					<component id="ForgottenArmament-AddItems" label="Forgotten Armament's New Items" modId="forgotten-armament" />
+					<component id="ForgottenArmament-AddItems" name="Add New Items to the Game" label="Forgotten Armament's New Items" modId="forgotten-armament" />
 				</add>
 				<update label="Item Changes">
 					<component id="A7-CONVENIENTEENPCS-APPEARANCE-NPC_ITEMS_FOR_ALL" name="Make NPC-specific items available for everyone" label="Make Beamdog NPC-specific items available for everyone" modId="A7-NoEENPCs" />
@@ -1126,7 +1126,7 @@
 					<component id="ArtisansKitpack:1006" name="Artisan's Kitpack: Wizard Slayer Overhaul" label="Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
 					<component id="METweaks:1600" name="Increase Wizard Slayer Magic Resistance" label="Increase Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" desc="Gain 5% Magic Resistance per level rather than 1%" />
 				</wizardSlayer>
-				<component id="Morpheus562sKitpackShieldBreaker" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" />
+				<component id="Morpheus562sKitpackShieldBreaker" name="Install Shield Breaker Kit" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" />
 			</fighter>
 			<ranger label="Ranger">
 				<beastMaster label="Beast Master" level="blendWell">
@@ -1212,7 +1212,7 @@
 			</mage>
 			<sorcerer label="Sorcerer">
 				<component id="A7-CHAOSSORCERER-MAIN" name="&quot;Chaos Sorcerer&quot; kit" label="Add kit: Chaos Sorcerer — Wild Magic sorcerer" modId="A7-ChaosSorcerer" level="extended" />
-				<component id="Morpheus562sKitpackEldritchScionNoXan" label="Add kit: Eldritch Scion — Warrior sorcerer" modId="morpheus562s-kitpack" />
+				<component id="Morpheus562sKitpackEldritchScionNoXan" name="[Install Eldritch Scion Kit] Do NOT assign kit to an existing NPC" label="Add kit: Eldritch Scion — Warrior sorcerer" modId="morpheus562s-kitpack" />
 				<component id="cd_tweaks_sorc_spell_progression" name="Un-Nerfed Sorcerer Spell Progression Table" label="Un-nerfed sorcerer spell progression table" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2250" />
 			</sorcerer>
 			<shaman label="Shaman">
@@ -1337,8 +1337,8 @@
 		<bg2 label="BG2" engine="bg2,eet">
 			<restructure>
 				<alternatives label="Crucible">
-					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" />
-					<component id="Crucible-FinalAssaultAI" label="Fully voiced NPCs using AI" modId="crucible" />
+					<component id="Crucible-FinalAssault" name="[Install Crucible] Mute NPCs" label="Mute NPCs" modId="crucible" />
+					<component id="Crucible-FinalAssaultAI" name="[Install Crucible] Fully Voiced NPCs using AI" label="Fully voiced NPCs using AI" modId="crucible" />
 				</alternatives>
 			</restructure>
 		</bg2>
@@ -1709,7 +1709,7 @@
 			</alternatives>
 			<component id="PPE:40" name="Vampire NPCs" label="PPE vampire NPCs" engine="bg,eet,iwd" modId="Portraits-Portraits-Everywhere" />
 			<component id="cd_tweaks_edwina" name="Female Edwina [Davide Carte, Wendy Yung, Weimer]" label="Female Edwina" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1180" />
-			<component id="SPC:0" label="Slayer portrait change" desc="Changes the PC portrait during the Slayer transformation" modId="BG2EE-Slayer-Portrait-Change" />
+			<component id="SPC:0" name="Slayer Portrait Change, for BG2EE" label="Slayer portrait change" desc="Changes the PC portrait during the Slayer transformation" modId="BG2EE-Slayer-Portrait-Change" />
 		</group>
 	</portraits>
 
@@ -1834,7 +1834,7 @@
 		<warriors label="Warriors" desc="Fighter/ranger/paladin/monk">
 			<fighter label="Fighter">
 				<wizardSlayer label="Wizard Slayer">
-					<component id="SkillsAndAbilitiesDI1" label="Add Detect Illusions, Spell Failure and Dispel on Hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." level="lowerDifficulty" />
+					<component id="SkillsAndAbilitiesDI1" name="Wizard Slayer Kit Enhancements" label="Add Detect Illusions, Spell Failure and Dispel on Hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." level="lowerDifficulty" />
 				</wizardSlayer>
 				<component id="SkillsAndAbilitiesFighter" name="Add New Fighter Abilities" label="Add new abilities" modId="skills-and-abilities" desc="1st level - Second Wind (Once per day, heal 1d10 + fighter level); 9th level - Indomitable (increase saving throws). HLA: increase thac0 and damage" />
 			</fighter>
@@ -1844,15 +1844,15 @@
 				</archer>
 			</ranger>
 			<paladin label="Paladin">
-				<component id="SkillsAndAbilitiesPaladin1" label="Add new abilities" modId="skills-and-abilities" desc="Smite, auras and Sanctify Strikes (+2 magic damage)" />
+				<component id="SkillsAndAbilitiesPaladin1" name="Add New Paladin Abilities" label="Add new abilities" modId="skills-and-abilities" desc="Smite, auras and Sanctify Strikes (+2 magic damage)" />
 				<inquisitor label="Inquisitor">
-					<component id="SkillsAndAbilitiesDI2" label="Replace Inquisitor True Seeing with Detect Illusion skill" displayIf="EEex:1" modId="skills-and-abilities" />
+					<component id="SkillsAndAbilitiesDI2" name="Replace Inquisitor True Seeing for Detect Illusion Skill" label="Replace Inquisitor True Seeing with Detect Illusion skill" displayIf="EEex:1" modId="skills-and-abilities" />
 					<component id="SkillsAndAbilitiesInquisitor1" name="Allow Inquisitor Kit to Cast Divine Spells" label="Allow Inquisitor kit to cast divine spells" modId="skills-and-abilities" />
 				</inquisitor>
 				<component id="METweaks:1500" name="Turn Paladin Detect Evil into a passive ability that can be toggled on and off" label="Turn paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" level="lowerDifficulty" />
 			</paladin>
 			<monk label="Monk">
-				<component id="SkillsAndAbilitiesMonk" label="Add Open Locks, Find/Disarm Traps and Detect Illusion" modId="skills-and-abilities" displayIf="EEex:1" desc="1 level - Flurry of Blows (extra APR). New HLA - become immune to Time Stop" />
+				<component id="SkillsAndAbilitiesMonk" name="Update Skills for Monks" label="Add Open Locks, Find/Disarm Traps and Detect Illusion" modId="skills-and-abilities" displayIf="EEex:1" desc="1 level - Flurry of Blows (extra APR). New HLA - become immune to Time Stop" />
 			</monk>
 		</warriors>
 		<rogues label="Rogues" desc="Thief/bard">
@@ -1867,8 +1867,8 @@
 				</skald>
 				<component id="SkillsAndAbilitiesSongDuration" name="Bard Songs Last 1 Turn" label="Bard Songs last 1 turn" modId="skills-and-abilities" />
 				<alternatives label="Add skills" displayIf="EEex:1">
-					<component id="SkillsAndAbilitiesBard1" label="Open Locks" displayIf="EEex:1" modId="skills-and-abilities" default="1" />
-					<component id="SkillsAndAbilitiesBard2" label="Open Locks and Find/Disarm Traps" displayIf="EEex:1" modId="skills-and-abilities" />
+					<component id="SkillsAndAbilitiesBard1" name="[Add skills] Add Lockpicking" label="Open Locks" displayIf="EEex:1" modId="skills-and-abilities" default="1" />
+					<component id="SkillsAndAbilitiesBard2" name="[Add skills] Add Lockpicking and Find/Disarm Traps" label="Open Locks and Find/Disarm Traps" displayIf="EEex:1" modId="skills-and-abilities" />
 				</alternatives>
 			</bard>
 		</rogues>
@@ -1887,9 +1887,9 @@
 		</spellcasters>
 		<multi label="Multi-class / dual-class">
 			<alternatives label="Allow fighter multiclasses to achieve higher Weapon Proficiency" level="lowerDifficulty">
-				<component id="SkillsAndAbilitiesWeaponProf1" label="Master (3 pips)" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesWeaponProf2" label="High master (4 pips)" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesWeaponProf3" label="Grand master (5 pips)" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesWeaponProf1" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve Master (3 pips) in Weapon Proficiencies" label="Master (3 pips)" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesWeaponProf2" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve High Master (4 pips) in Weapon Proficiencies" label="High master (4 pips)" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesWeaponProf3" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve Grand Master (5 pips) in Weapon Proficiencies" label="Grand master (5 pips)" modId="skills-and-abilities" />
 			</alternatives>
 			<component id="cd_tweaks_casting_in_armor" name="Allow Arcane Spellcasting in Heavy Armor" label="Allow arcane spellcasting in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2120" />
 			<component id="SkillsAndAbilitiesClericThief" name="Adjust Cleric/Thief Actionbar" label="Adjust cleric/thief action bar" displayIf="EEex:1" modId="skills-and-abilities" />
@@ -1897,7 +1897,7 @@
 		</multi>
 		<universal label="Universal">
 			<weapons label="Weapon Tweaks">
-				<component id="SkillsAndAbilitiesSTR" label="2H weapon additional STR bonus" modId="skills-and-abilities" level="lowerDifficulty" />
+				<component id="SkillsAndAbilitiesSTR" name="2H Weapon Additional Strength Bonus" label="2H weapon additional STR bonus" modId="skills-and-abilities" level="lowerDifficulty" />
 			</weapons>
 			<group label="HLAs">
 				<component id="SkillsAndAbilitiesNewHLA" name="Add New HLAs for ALL Classes and Kits" label="Add new HLAs for all classes and kits" modId="skills-and-abilities" />
@@ -1966,8 +1966,8 @@
 			<mod id="BGSpawn" label="BG1 Spawn System" engine="bg1,eet">
 				<component id="BGSpawn-Main" name="BGSpawn system based on levels &amp; party members" label="BGSpawn system based on levels and party members" core="1" />
 				<alternatives label="How often to check for respawn?">
-					<component id="BGSpawn-RespawnTime8Hours" label="8 hours (standard PnP rules)" default="1" />
-					<component id="BGSpawn-RespawnTime1Day" label="1 day" />
+					<component id="BGSpawn-RespawnTime8Hours" name="[How often to check for respawn?] Re-spawn time = 8 hours (standard ad&amp;d rules)" label="8 hours (standard PnP rules)" default="1" />
+					<component id="BGSpawn-RespawnTime1Day" name="[How often to check for respawn?] Re-spawn time = 24 hours" label="1 day" />
 				</alternatives>
 				<alternatives label="How sure a respawn should be?">
 					<component id="BGSpawn-SpawnProbability-100" name="100%" label="100%" default="1" />
