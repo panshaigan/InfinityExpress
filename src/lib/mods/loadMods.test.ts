@@ -9,38 +9,42 @@ import {
 import type { InstallSequenceModel, TreeNode } from '../xml/schema'
 
 const HEADER =
-  'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme'
+  'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme,Type'
 
 describe('parseModsCsv', () => {
   it('parses header and quoted fields including Size, Author, and Readme', () => {
     const raw = [
       HEADER,
-      'Totemic_Cernd,NPC,"https://github.com/Gibberlings3/Totemic_Cernd",BG2,,,2017-06-06,"v3",12345,Gibberlings3,',
-      'aTweaks,TWEAKS,"https://example.com/a,b",BG1,,,2018-05-19,"07d7bad",1000808525,Morpheus562,"https://example.com/readme"',
+      'Totemic_Cernd,NPC,"https://github.com/Gibberlings3/Totemic_Cernd",BG2,,,2017-06-06,"v3",12345,Gibberlings3,,minor',
+      'aTweaks,TWEAKS,"https://example.com/a,b",BG1,,,2018-05-19,"07d7bad",1000808525,Morpheus562,"https://example.com/readme",major',
     ].join('\n')
 
     const map = parseModsCsv(raw)
     expect(map.size).toBe(2)
     expect(map.get('Totemic_Cernd')).toEqual({
       codename: 'Totemic_Cernd',
+      category: 'NPC',
       url: 'https://github.com/Gibberlings3/Totemic_Cernd',
       readme: '',
       release: '2017-06-06',
       version: 'v3',
       sizeBytes: 12345,
       author: 'Gibberlings3',
+      type: 'minor',
     })
     expect(map.get('aTweaks')?.url).toBe('https://example.com/a,b')
+    expect(map.get('aTweaks')?.category).toBe('TWEAKS')
     expect(map.get('aTweaks')?.readme).toBe('https://example.com/readme')
     expect(map.get('aTweaks')?.sizeBytes).toBe(1000808525)
     expect(map.get('aTweaks')?.author).toBe('Morpheus562')
+    expect(map.get('aTweaks')?.type).toBe('major')
   })
 
   it('keeps first row on duplicate Codename', () => {
     const raw = [
       HEADER,
-      'Angelo,NPC,"https://example.com/v1",BG2,,,2020-01-01,"v1",100,A,https://r1',
-      'Angelo,QUEST,"https://example.com/v2",BG2,,,2021-01-01,"v2",200,B,https://r2',
+      'Angelo,NPC,"https://example.com/v1",BG2,,,2020-01-01,"v1",100,A,https://r1,minor',
+      'Angelo,QUEST,"https://example.com/v2",BG2,,,2021-01-01,"v2",200,B,https://r2,major',
     ].join('\n')
 
     const map = parseModsCsv(raw)
@@ -54,7 +58,7 @@ describe('parseModsCsv', () => {
 
   it('strips BOM and ignores empty lines', () => {
     const raw =
-      `\uFEFF${HEADER}\n\nEET,,,"https://x",,,2025-04-07,"v14.1",42,K4thos,\n`
+      `\uFEFF${HEADER}\n\nEET,BASE,"https://x",BG2,,,2025-04-07,"v14.1",42,K4thos,,major\n`
     const map = parseModsCsv(raw)
     expect(map.get('EET')?.version).toBe('v14.1')
     expect(map.get('EET')?.sizeBytes).toBe(42)
@@ -65,8 +69,8 @@ describe('parseModsCsv', () => {
   it('treats missing or invalid Size as null', () => {
     const raw = [
       HEADER,
-      'NoSize,NPC,"https://x",BG2,,,2020-01-01,"v1",,AuthorA,',
-      'BadSize,NPC,"https://x",BG2,,,2020-01-01,"v1",nope,AuthorB,',
+      'NoSize,NPC,"https://x",BG2,,,2020-01-01,"v1",,AuthorA,,',
+      'BadSize,NPC,"https://x",BG2,,,2020-01-01,"v1",nope,AuthorB,,',
     ].join('\n')
     const map = parseModsCsv(raw)
     expect(map.get('NoSize')?.sizeBytes).toBeNull()
@@ -76,10 +80,21 @@ describe('parseModsCsv', () => {
   it('treats missing Readme column as empty string', () => {
     const raw = [
       'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author',
-      'NoReadmeCol,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA',
+      'NoReadmeCol,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA,',
     ].join('\n')
     const map = parseModsCsv(raw)
     expect(map.get('NoReadmeCol')?.readme).toBe('')
+    expect(map.get('NoReadmeCol')?.type).toBe('')
+  })
+
+  it('treats missing Category and Type columns as empty string', () => {
+    const raw = [
+      'Codename,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme',
+      'Bare,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA,',
+    ].join('\n')
+    const map = parseModsCsv(raw)
+    expect(map.get('Bare')?.category).toBe('')
+    expect(map.get('Bare')?.type).toBe('')
   })
 })
 
@@ -99,9 +114,9 @@ describe('modSizeBounds', () => {
     const map = parseModsCsv(
       [
         HEADER,
-        'a,NPC,"https://x",BG2,,,2020-01-01,"v1",100,A',
-        'b,NPC,"https://x",BG2,,,2020-01-01,"v1",500,B',
-        'c,NPC,"https://x",BG2,,,2020-01-01,"v1",,C',
+        'a,NPC,"https://x",BG2,,,2020-01-01,"v1",100,A,,',
+        'b,NPC,"https://x",BG2,,,2020-01-01,"v1",500,B,,',
+        'c,NPC,"https://x",BG2,,,2020-01-01,"v1",,C,,',
       ].join('\n'),
     )
     expect(modSizeBounds(map)).toEqual({ min: 100, max: 500 })
@@ -109,7 +124,7 @@ describe('modSizeBounds', () => {
 
   it('returns null when no sizes', () => {
     const map = parseModsCsv(
-      [HEADER, 'a,NPC,"https://x",BG2,,,2020-01-01,"v1",,A'].join('\n'),
+      [HEADER, 'a,NPC,"https://x",BG2,,,2020-01-01,"v1",,A,,'].join('\n'),
     )
     expect(modSizeBounds(map)).toBeNull()
   })
@@ -119,11 +134,11 @@ describe('collectAuthorOptions', () => {
   it('returns authors with at least minMods, sorted by count then name', () => {
     const rows = [
       HEADER,
-      ...Array.from({ length: 3 }, (_, i) => `m${i},NPC,"https://x",BG2,,,2020-01-01,"v1",1,Lava`),
-      ...Array.from({ length: 3 }, (_, i) => `n${i},NPC,"https://x",BG2,,,2020-01-01,"v1",1,Argent77`),
-      'solo,NPC,"https://x",BG2,,,2020-01-01,"v1",1,OnlyOne',
-      'duo1,NPC,"https://x",BG2,,,2020-01-01,"v1",1,Pair',
-      'duo2,NPC,"https://x",BG2,,,2020-01-01,"v1",1,Pair',
+      ...Array.from({ length: 3 }, (_, i) => `m${i},NPC,"https://x",BG2,,,2020-01-01,"v1",1,Lava,,`),
+      ...Array.from({ length: 3 }, (_, i) => `n${i},NPC,"https://x",BG2,,,2020-01-01,"v1",1,Argent77,,`),
+      'solo,NPC,"https://x",BG2,,,2020-01-01,"v1",1,OnlyOne,,',
+      'duo1,NPC,"https://x",BG2,,,2020-01-01,"v1",1,Pair,,',
+      'duo2,NPC,"https://x",BG2,,,2020-01-01,"v1",1,Pair,,',
     ]
     const map = parseModsCsv(rows.join('\n'))
     expect(collectAuthorOptions(map, 3)).toEqual([

@@ -22,9 +22,14 @@ import {
   parseModsCsv,
   resolveModLookupKey,
 } from '../lib/mods/loadMods'
+import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
 import { isHttpUrl } from '../lib/url'
 
 const modsByCodename = parseModsCsv(modsCsv)
+
+function hasModField(value: string | undefined): value is string {
+  return !!value && value !== '-'
+}
 
 interface Props {
   display: DisplayNode | null
@@ -106,6 +111,7 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
 
   const codename = resolveModLookupKey(model, source)
   const mod = codename ? modsByCodename.get(codename) : undefined
+  const modType = hasModField(mod?.type) ? mod.type : undefined
   const componentReadme = attrs.readme
   const modReadme = mod?.readme
 
@@ -118,6 +124,9 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
       <div className="detail-badges">
         {level && (
           <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
+        )}
+        {modType && (
+          <span className={modTypeBadgeClass(modType)}>{modTypeBadgeLabel(modType)}</span>
         )}
         {stabilityLabel && <span className="badge">{stabilityLabel}</span>}
         {attrs.required && <span className="badge">required</span>}
@@ -144,6 +153,18 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
           <>
             <dt>Mod</dt>
             <dd>{codename}</dd>
+            {hasModField(mod?.category) && (
+              <>
+                <dt>Category</dt>
+                <dd>{mod.category}</dd>
+              </>
+            )}
+            {modType && (
+              <>
+                <dt>Type</dt>
+                <dd>{modType}</dd>
+              </>
+            )}
             {mod?.url && (
               <>
                 <dt>URL</dt>
