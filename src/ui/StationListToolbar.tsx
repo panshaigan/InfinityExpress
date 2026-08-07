@@ -87,7 +87,7 @@ export function StationListToolbar({
       </div>
       <details className="station-levels-fold">
         <summary>
-          Station levels
+          Preselect levels
           {levelOverrideCount > 0 ? ` (${levelOverrideCount})` : ''}
         </summary>
         <div className="station-list-toolbar-levels">
@@ -100,11 +100,15 @@ export function StationListToolbar({
             onLadderToggle={onLadderToggle}
             onDifficultyChange={onDifficultyChange}
           />
+          <p className="station-levels-hint">
+            Sets which components start checked on this stop. Does not hide rows — use Show
+            levels in filters for that.
+          </p>
           <button
             type="button"
             className="filter-inline-action station-clear-to-global"
             onClick={onClearToGlobal}
-            title="Clear selections in this station beyond the last Engine level preset"
+            title="Clear this stop’s level picks back to the last Engine preset"
           >
             Reset to global
           </button>

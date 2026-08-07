@@ -217,6 +217,14 @@ export function isAuthorFilterActive(
   return !setsEqual(criteria.authors, all)
 }
 
+export function isTagsFilterActive(
+  criteria: FilterCriteria,
+  tagOptions: readonly string[],
+): boolean {
+  if (criteria.tagsOnlyChecked) return true
+  return !setsEqual(criteria.tags, new Set(tagOptions))
+}
+
 /** True when criteria differ from the seeded defaults for the given options. */
 export function isFilterActive(
   criteria: FilterCriteria,

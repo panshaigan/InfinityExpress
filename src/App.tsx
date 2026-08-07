@@ -348,14 +348,14 @@ export default function App() {
       return {
         title: filtersActive ? 'Filters emptied this type' : 'Nothing in this type',
         body: filtersActive
-          ? 'Clear Level, Size, or Author to reveal components here.'
+          ? 'Clear Show levels, Size, Author, or Tags to reveal components here.'
           : 'This content type has no components for your engine. Try another Type tab.',
       }
     }
     if (filtersActive) {
       return {
         title: 'Filters emptied this stop',
-        body: 'Clear filters, or broaden Level / Size / Author to bring components back.',
+        body: 'Clear filters, or broaden Show levels / Size / Author / Tags to bring components back.',
       }
     }
     return {

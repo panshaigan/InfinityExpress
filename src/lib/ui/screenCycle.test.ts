@@ -89,9 +89,9 @@ describe('expandStationToScreens', () => {
 
 describe('buildNavigableScreens', () => {
   it('follows station order and never includes engine', () => {
-    const screens = buildNavigableScreens(['base', 'content', 'kits'], (id) => {
+    const screens = buildNavigableScreens(['base', 'content', 'spells'], (id) => {
       if (id === 'base') return [component('b')]
-      if (id === 'kits') return []
+      if (id === 'spells') return []
       return [
         branch('m', 'group', [branch('m-quest', 'quest', [component('q')])]),
       ]
@@ -118,7 +118,7 @@ describe('cycleScreen', () => {
       subKey: 's',
       subTag: 'quest',
     },
-    { stationId: 'kits' },
+    { stationId: 'spells' },
   ]
 
   it('wraps forward and backward', () => {
@@ -158,7 +158,7 @@ describe('cycleScreen', () => {
         subKey: 's2',
         subTag: 'npc',
       },
-      { stationId: 'kits' },
+      { stationId: 'spells' },
     ]
     const skip = (s: NavScreen) => s.stationId === 'content'
     expect(cycleScreen(contentScreens, contentScreens[1]!, 1, skip)).toEqual(

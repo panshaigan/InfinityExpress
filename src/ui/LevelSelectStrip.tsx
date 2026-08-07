@@ -35,7 +35,7 @@ export function LevelSelectStrip({
   return (
     <div
       className={`level-preselect${compact ? ' compact' : ''}${!enabled ? ' disabled' : ''}`}
-      aria-label={compact ? 'Station install levels' : 'Choose preselected components'}
+      aria-label={compact ? 'Preselect levels for this stop' : 'Choose preselected components'}
     >
       {!compact && (
         <>

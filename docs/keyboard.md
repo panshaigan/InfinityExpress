@@ -37,10 +37,13 @@ These work globally except where noted. Station and most chrome keys are ignored
 
 | Key | Action |
 | --- | --- |
+| `?` | Open the keys guide |
+| `\` | Collapse / expand the station rail |
+| `;` | Collapse / expand the details pane |
 | `[` | Previous station (wraps; order is Engine, then visible content stations) |
 | `]` | Next station (wraps) |
 | `/` | Focus the filter search field and select its contents (so the next keystrokes replace the query). If search is already focused, `/` is typed normally. |
-| `Esc` | If a filter panel (Level / Size / Author) is open → close it. Else if search is focused → blur search and return focus to the component tree. |
+| `Esc` | If a filter panel (Show levels / Size / Author / Tags) is open → close it. Else if search is focused → blur search and return focus to the component tree. |
 
 ---
 

@@ -15,6 +15,7 @@ import {
   isAuthorFilterActive,
   isFilterActive,
   isSizeFilterActive,
+  isTagsFilterActive,
   uncheckedFilterLabel,
   type AuthorFilterMode,
   type FilterCriteria,
@@ -26,7 +27,7 @@ export const FILTERS_SEARCH_ID = 'filters-search'
 interface Props {
   criteria: FilterCriteria
   onChange: (next: FilterCriteria) => void
-  /** Kept for default criteria seeding; Tags UI deferred to stations. */
+  /** Discovered tag tokens; Defaults / Clear select all. */
   tagOptions: string[]
   authorOptions: AuthorOption[]
   sizeBounds: SizeBounds | null
@@ -38,7 +39,7 @@ interface Props {
   searchScope?: 'station' | 'global'
 }
 
-type PanelId = 'level' | 'size' | 'author'
+type PanelId = 'level' | 'size' | 'author' | 'tags'
 
 const AUTHOR_MODE_OPTIONS: { value: AuthorFilterMode; label: string }[] = [
   { value: 'include', label: 'Include selected' },
@@ -114,6 +115,7 @@ export function FiltersStrip({
   const levelActive = criteria.maxLevel !== null
   const sizeActive = isSizeFilterActive(criteria, sizeBounds)
   const authorActive = isAuthorFilterActive(criteria, authorNames)
+  const tagsActive = isTagsFilterActive(criteria, tagOptions)
   const hiddenActive = criteria.showHidden
   const uncheckedActive = criteria.uncheckedFilter !== 'off'
 
@@ -236,14 +238,14 @@ export function FiltersStrip({
             aria-controls={`${baseId}-level`}
             onClick={() => togglePanel('level')}
           >
-            Level
+            Show levels
             {levelActive && criteria.maxLevel
               ? `: ${LEVEL_LABELS[criteria.maxLevel] ?? criteria.maxLevel}`
               : ''}
           </button>
           {renderPopover(
             'level',
-            'Level',
+            'Show levels',
             <>
               <label className="filter-option">
                 <input
@@ -418,6 +420,64 @@ export function FiltersStrip({
                       )}
                     </span>
                     <span className="filter-author-count">({opt.count})</span>
+                  </label>
+                ))}
+              </>
+            ),
+          )}
+        </FilterChipWrap>
+
+        <FilterChipWrap open={openPanel === 'tags'}>
+          <button
+            type="button"
+            className={`filter-chip${tagsActive ? ' active' : ''}${openPanel === 'tags' ? ' open' : ''}`}
+            aria-expanded={openPanel === 'tags'}
+            aria-controls={`${baseId}-tags`}
+            onClick={() => togglePanel('tags')}
+            disabled={tagOptions.length === 0}
+          >
+            Tags
+            {tagsActive ? ` (${criteria.tags.size})` : ''}
+          </button>
+          {renderPopover(
+            'tags',
+            'Tags',
+            tagOptions.length === 0 ? (
+              <p className="filter-panel-empty">No tags in this install sequence.</p>
+            ) : (
+              <>
+                <label className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={criteria.tagsOnlyChecked}
+                    onChange={(e) => patch({ tagsOnlyChecked: e.target.checked })}
+                  />
+                  Only tagged components
+                </label>
+                <button
+                  type="button"
+                  className="filter-inline-action"
+                  onClick={() => patch({ tags: new Set(tagOptions) })}
+                >
+                  Select all
+                </button>
+                <button
+                  type="button"
+                  className="filter-inline-action"
+                  onClick={() => patch({ tags: new Set() })}
+                >
+                  Clear
+                </button>
+                {tagOptions.map((tag) => (
+                  <label key={tag} className="filter-option">
+                    <input
+                      type="checkbox"
+                      checked={criteria.tags.has(tag)}
+                      onChange={() =>
+                        patch({ tags: toggleInSet(criteria.tags, tag) })
+                      }
+                    />
+                    {tag}
                   </label>
                 ))}
               </>
