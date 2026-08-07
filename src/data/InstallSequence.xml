@@ -2,14 +2,14 @@
 <installSequence>
 	<base desc="Base game fixes and modifications">
 		<component id="A7-DLCMERGER-MERGE_SOD" name="Merge &quot;Siege of Dragonspear&quot; DLC" label='Merge SoD DLC' desc="Required for further BG1 modding" modId="A7-DlcMerger" engine="bg1,eet1" required="1" noDisplay="1" />
-		<component id="bubb_revert_pathfinding:0" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,eet1,iwd,pst" required="1" noDisplay="1" />
+		<component id="bubb_revert_pathfinding:0" name="Bubb's Pathfinding Revert" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,eet1,iwd,pst" required="1" noDisplay="1" />
 		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" desc="The Enhanced Edition Fixpack is an unofficial collection of fixes for the Enhanced Editions of Baldur's Gate, Baldur's Gate II, Icewind Dale, and Planescape: Torment." level="fixes">
 			<component id="cd_eefp_core_fixes" name="Core Fixes" label="Core fixes" modId="EE_Fixpack" />
 			<component id="cd_eefp_game_text_update" name="Game Text Update" label="Game text update" modId="EE_Fixpack" noDisplay="1" alwaysIf="cd_eefp_core_fixes" />
 		</group>
 		<component id="EET:0" name="EET core (resource importation)" label="Baldur's Gate: Enhanced Edition Trilogy (EET)" desc="Merges the whole saga into one game and provides continuity between the events of Baldur's Gate, Tales of the Sword Coast, Shadows of Amn, Throne of Bhaal and Siege of Dragonspear expansions" modId="EET" engine="eet" required="1" noDisplay="1" />
 		<mod id="EEex" label="EEex — an executable extender" desc="Required for advanced modding" engine="bg,eet,iwd" level="vanillaPlus">
-			<component id="EEex:0" label="Quick menu core" alwaysIf="EEex:1" noDisplay="1" />
+			<component id="EEex:0" name="Quick Menu Core" label="Quick menu core" alwaysIf="EEex:1" noDisplay="1" />
 			<component id="EEex:1" name="EEex" label="EEex — an executable extender (required for advanced modding)" />
 			<component id="EEex:2" name="Enable effect menu module: LShift-on-hover to view spells affecting creature" label="Enable effect menu module: LShift-on-hover to view spells affecting creature" alwaysIf="EEex:1" noDisplay="1" />
 			<component id="EEex:3" name="Enable empty container module: Highlight empty containers in gray instead of cyan" label="Enable empty container module: Highlight empty containers in gray instead of cyan" alwaysIf="EEex:1" noDisplay="1" />
@@ -47,7 +47,7 @@
 		<alternatives label="Icewind Dale in Baldur's Gate EET" unfolded="1">
 			<component id="Tipun_iwd1_eet" name="Icewind Dale: Heart of Winter in Baldur's Gate Enhanced Edition Trilogy" label="Full Icewind Dale with HoW and TotL expansions" modId="IWD1_EET" engine="eet" default="1" />
 			<group label="IWD expansions without the main IWD1 content">
-				<component id="how_eet:0" label="Heart of Winter" modId="HoW_EET" engine="bg1,eet" />
+				<component id="how_eet:0" name="[Icewind Dale in Baldur's Gate EET] Heart of Winter in Baldur's Gate Enhanced Edition (Trilogy)" label="Heart of Winter" modId="HoW_EET" engine="bg1,eet" />
 				<mod id="A7-TotLM-BG2EE" label="Trials of the Luremaster for BG:EET" engine="bg2,eet">
 					<component id="A7-TOTLM-BG2EE-MAIN" name="Trials of the Luremaster for Baldur's Gate" label="Main component" core="1" />
 					<component id="A7-TOTLM-BG2EE-REBALANCE_ITEMS" name="Rebalance weapons and equipment" label="Rebalance weapons and equipment" />
@@ -61,7 +61,7 @@
 				</mod>
 			</group>
 		</alternatives>
-		<component id="iwd2_eet:0" label="Icewind Dale 2 in Baldur's Gate EET" modId="IWD2_EET" engine="eet"/>
+		<component id="iwd2_eet:0" name="Icewind Dale 2 in Baldur's Gate Enhanced Edition Trilogy" label="Icewind Dale 2 in Baldur's Gate EET" modId="IWD2_EET" engine="eet" />
 		<mod id="NWNForBG" label="Neverwinter Nights for Baldur's Gate" engine="bg2,eet">
 			<component id="NWN_MainComponent" name="NWN For BG" label="Main component" core="1" />
 			<component id="NWN_WorldmapSelect_NWNWorld" name="Use separate worldmap for NWN areas" label="Use a separate world map for NWN areas" />
@@ -138,7 +138,7 @@
 				</mod>
 			</restructure>
 			<quest label="Quests and Encounters">
-				<component id="Loretakers:0" label="Loretakers" modId="Loretakers" level="extended" />
+				<component id="Loretakers:0" name="Loretakers V 2.5" label="Loretakers" modId="Loretakers" level="extended" />
 				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" level="blendWell">
 					<component id="bgqe_slimequest" name="Slime Quest" label="Slime Quest" />
 					<component id="bgqe_nashkelmonster" name="Nashkel Monster Quest" label="Nashkel Monster Quest" />
@@ -221,43 +221,43 @@
 					<component id="bg1re_camryn_and_tamah" name="Camryn and Tamah, by tibicina" label="Camryn and Tamah, by Tibicina" />
 					<component id="bg1re_cloakwood_lovers" name="Cloakwood Lovers, by tibicina" label="Cloakwood Lovers, by Tibicina" />
 				</mod>
-				<component id="BS_BalduransSeatower-main" label="Balduran's Seatower" modId="BS_Baldurans_Seatower" level="blendWell" />
+				<component id="BS_BalduransSeatower-main" name="The BS Company presents Balduran's Seatower" label="Balduran's Seatower" modId="BS_Baldurans_Seatower" level="blendWell" />
 				<mod id="Ascalons_Questpack" label="Ascalon's Quest Pack" level="blendWell">
-					<component id="AscalonsQuestpack-FeastforGnolls" label="A Feast for the Gnolls" />
-					<component id="AscalonsQuestpack-LostSon" label="The Lost Son" />
-					<component id="AscalonsQuestpack-WolvesMen_Highhedge" label="Of Wolves and Men" desc="Quest uses hut near Thalantyr in High Hedge" />
-					<component id="AscalonsQuestpack-GreatKarlini" label="The Great Karlini" />
-					<component id="AscalonsQuestpack-Fans" label="Fangirls" />
-					<component id="AscalonsQuestpack-HalflingEyeless" label="A Halfling Among the Eyeless" />
+					<component id="AscalonsQuestpack-FeastforGnolls" name="A Feast for the Gnolls" label="A Feast for the Gnolls" />
+					<component id="AscalonsQuestpack-LostSon" name="The Lost Son" label="The Lost Son" />
+					<component id="AscalonsQuestpack-WolvesMen_Highhedge" name="[Of Wolves and Men] Quest uses hut near Thalantyr in High Hedge." label="Of Wolves and Men" desc="Quest uses hut near Thalantyr in High Hedge" />
+					<component id="AscalonsQuestpack-GreatKarlini" name="The Great Carlini" label="The Great Karlini" />
+					<component id="AscalonsQuestpack-Fans" name="Fangirls" label="Fangirls" />
+					<component id="AscalonsQuestpack-HalflingEyeless" name="A Halfling among the Eyeless" label="A Halfling Among the Eyeless" />
 				</mod>
 				<mod id="ExtraExpandedEnhancedEncounters" label="Extra Enhanced Expanded Encounters!" level="vanillaPlus">
-					<component id="OL-EEEE-COAST-WAY" label="Melia Quicknight, Crossroads" />
-					<component id="OL-EEEE-LONELY-PEAKS" label="Bimmy's Badgering Bandits" />
-					<component id="OL-EEEE-GNOLL-STRONGHOLD-CAVE" label="Bear Encounter near the Gnoll Stronghold" />
-					<component id="OL-EEEE-CLOAKWOOD-BRIDGE" label="Daenni's Bridge Bandits" />
+					<component id="OL-EEEE-COAST-WAY" name="EEEE: Melia Quicknight, Crossroads" label="Melia Quicknight, Crossroads" />
+					<component id="OL-EEEE-LONELY-PEAKS" name="EEEE: Bimmy's Badgering Bandits" label="Bimmy's Badgering Bandits" />
+					<component id="OL-EEEE-GNOLL-STRONGHOLD-CAVE" name="EEEE: Bear Encounter near the Gnoll Stronghold" label="Bear Encounter near the Gnoll Stronghold" />
+					<component id="OL-EEEE-CLOAKWOOD-BRIDGE" name="EEEE: Daenni's Bridge Bandits" label="Daenni's Bridge Bandits" />
 				</mod>
 				<component id="AWizardDidIt-Blackhearts_BG1" name="Install Blackhearts for &quot;BGEE&quot; or &quot;EET including BGEE and BG2EE&quot;" label="Blackhearts" modId="Black-Hearts" level="blendWell" />
-				<component id="SotSC:0" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" level="extended" />
+				<component id="SotSC:0" name="Shades of the Sword Coast – Expansion Pack for BGEE" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" level="extended" />
 				<mod id="The_Calling" label="The Calling" level="extended">
 					<component id="cd_the_calling_mage" name="The Calling: Mage - The Cursed Bracers" label="Mage — the Cursed Bracers" />
 					<component id="cd_the_calling_fighter" name="The Calling: Fighter - Expanded Gnoll Fortress" label="Fighter — Expanded Gnoll Fortress" />
 					<component id="cd_the_calling_shaman_golden_text" name="Use color in dialogue text" label="Shaman" />
 					<component id="cd_the_calling_monk" name="The Calling: Monk - Restoring Saiai no Hito" label="Monk — Restoring Saiai no Hito" />
 					<component id="cd_the_calling_thief" name="The Calling: Thief - The Bargain" label="Thief — the Bargain" />
-					<component id="cd_the_calling_peaceful_kaishas_resolution" label="Peaceful Werewolf Isle Resolution" level="vanillaPlus" />
+					<component id="cd_the_calling_peaceful_kaishas_resolution" name="Peaceful Werewolf Isle Resolution" label="Peaceful Werewolf Isle Resolution" level="vanillaPlus" />
 				</mod>
 				<component id="Coutelier-AerieBG1" name="Aerie for BG:EE" label="Aerie in BG:EE" level="extended" modId="AerieBG1" />
-				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" label="The Vanishing of Skie Silvershield" level="extended" desc="Lets Eldoth and Skie join your party sooner" modId="the-vanishing-of-skie-silvershield" />
+				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" name="The Vanishing of Skie Silvershield – a new quest for BGEE that lets Eldoth and Skie join your party sooner" label="The Vanishing of Skie Silvershield" level="extended" desc="Lets Eldoth and Skie join your party sooner" modId="the-vanishing-of-skie-silvershield" />
 				<component id="NQR" name="NecromancersQuestRestored. Restores the original BG1 freedom in the Arkion/Nemphre/Ordulinian questline in a bloodless way." label="Necromancers Quest Restored" modId="NecromancersQuestRestored" level="restoration" />
 				<mod id="gorgon" label="Gorgon's Eye">
-					<component id="gorgon:0" label="Gorgon's Eye" core="1" />
-					<component id="gorgon:1" label="Give portraits to all characters added from this mod" alwaysIf="gorgon:0" noDisplay="1" />
-					<component id="gorgon:4" label="Add more Pickpocketable items"/>
+					<component id="gorgon:0" name="Install The Gorgon's Eye" label="Gorgon's Eye" core="1" />
+					<component id="gorgon:1" name="Give portraits to all characters added from this mod" label="Give portraits to all characters added from this mod" alwaysIf="gorgon:0" noDisplay="1" />
+					<component id="gorgon:4" name="Add More Pickpocketable Items" label="Add more Pickpocketable items" />
 				</mod>
 				<mod id="baldurian-bar-hop" label="Baldurian Bar Hop">
 					<component id="baldurianbarhop:0" name="Thirst Things First" label="Thirst Things First" />
 					<component id="baldurianbarhop:10" name="Dress to Distress" label="Dress to Distress" />
-					<component id="baldurianbarhop:20" label="Fully Booked and Plot Twist" />
+					<component id="baldurianbarhop:20" name="Fully Booked &amp; Plot Twist" label="Fully Booked and Plot Twist" />
 				</mod>
 			</quest>
 			<npc label="Joinable NPCs">
@@ -272,14 +272,14 @@
 						<component id="AY-ChattyImoen-NPCInteractions" label="Add NPC interactions" />
 					</mod>
 					<component id="garrick-mirandir" name="Garrick: Tales of a Troubadour" label="Garrick: Tales of a Troubadour" modId="Garrick_Tales-of-a-Troubadour" />
-					<component id="XanBG1Friend:0" label="Xan Friendship" modId="Xan_BG1_Friendship" />
+					<component id="XanBG1Friend:0" name="Xan's friendship path for BG1" label="Xan Friendship" modId="Xan_BG1_Friendship" />
 					<component id="Domi-CoranBGFriend-Main" label="Coran Friendship" modId="CoranBGFriend" />
 					<component id="neera_expansion" name="Neera Expansion" label="Neera Expansion" modId="Neera-Expansion" tags="beamdog" />
 					<mod id="Ajantis_BG1_Expansion" label="Ajantis Expansion">
-						<component id="AjantisBG1Expansion-main" label="Installs Ajantis BG1 expansion modification" core="1" />
-						<component id="AjantisBG1Expansion-shieldBAM" label="Ajantis BG1 expansion modification - install the unique BG:EE BAM for Ajantis' Family Shield" alwaysIf="AjantisBG1Expansion-main" noDisplay="1" />
+						<component id="AjantisBG1Expansion-main" name="Installs Ajantis BG1 Expansion Modification" label="Installs Ajantis BG1 expansion modification" core="1" />
+						<component id="AjantisBG1Expansion-shieldBAM" name="Install the unique BG:EE BAM for Ajantis' Family Shield" label="Ajantis BG1 expansion modification - install the unique BG:EE BAM for Ajantis' Family Shield" alwaysIf="AjantisBG1Expansion-main" noDisplay="1" />
 					</mod>
-					<component id="Artisans_Rasaad_BG1:0" label="Rasaad Expansion" modId="Rasaad-Expansion-BG1" tags="beamdog" />
+					<component id="Artisans_Rasaad_BG1:0" name="Rasaad Expansion for Baldur's Gate: Enhanced Edition" label="Rasaad Expansion" modId="Rasaad-Expansion-BG1" tags="beamdog" />
 				</expansions>
 				<romances label="Romances" noBranches="1">
 					<mod id="BG1NPC">
@@ -298,7 +298,7 @@
 				</romances>
 				<custom label="Custom NPCs">
 					<component id="valerie:0" name="Valerie NPC Mod for BG1 Tutu, BGT BG:EE and EET" label="Valerie — human LG sorcerer" modId="Valerie-NPC" />
-					<component id="Drake:0" label="Drake — human NG Priest of Tyr" modId="Drake" />
+					<component id="Drake:0" name="Default Portrait (The Artisan)" label="Drake — human NG Priest of Tyr" modId="Drake" />
 				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<mod id="BG1NPC">
@@ -332,7 +332,7 @@
 					<component id="stratagems:3021" name="Fine weapons are immune to the iron crisis" label="Replace many +1 items by fine weapons which are immune to the iron crisis" modId="SwordCoastStratagems" level="blendWell" />
 				</update>
 				<upgrade label="Thalantyr Item Upgrade">
-					<component id="ThalantyrItemUpgrade-Main" label="Thalantyr Item Upgrade" desc="Cromwell-like item upgrade in BG1" modId="thalan" level="extended" />
+					<component id="ThalantyrItemUpgrade-Main" name="Thalantyr Item Upgrade" label="Thalantyr Item Upgrade" desc="Cromwell-like item upgrade in BG1" modId="thalan" level="extended" />
 				</upgrade>
 			</items>
 			<tweaks label="Tweaks" noBranches="1">
@@ -359,10 +359,10 @@
 			</restructure>
 			<tweaks label="Tweaks" noBranches="1">
 				<mod id="themed_tweaks" label="SoD Themed Tweaks" level="vanillaPlus">
-					<component id="#L-SOD-AID_IMOEN" label="Allow PC to give aid to Imoen after attack in palace" />
-					<component id="#L-SOD-STAT_BASED_OPTIONS" label="Stat-based observations and quest options" />
-					<component id="#L-SOD-DITCH_CORWIN" label="Ditch tour-guide Corwin Schael" />
-					<component id="#L-SOD-COASTWAY_CROSSING_QUEST" label="Quest: Scouting the Coast Way Crossing" level="blendWell" />
+					<component id="#L-SOD-AID_IMOEN" name="SoD - Allow PC to give aid to Imoen after attack in palace" label="Allow PC to give aid to Imoen after attack in palace" />
+					<component id="#L-SOD-STAT_BASED_OPTIONS" name="SoD - Stat-based observations and quest options" label="Stat-based observations and quest options" />
+					<component id="#L-SOD-DITCH_CORWIN" name="SoD - Ditch Tour-Guide Corwin Schael" label="Ditch tour-guide Corwin Schael" />
+					<component id="#L-SOD-COASTWAY_CROSSING_QUEST" name="SoD - Quest: Scouting the Coast Way Crossing" label="Quest: Scouting the Coast Way Crossing" level="blendWell" />
 				</mod>
 				<mod id="Jasteys_SoD_Tweakpack" label="Jastey's Tweaks for SoD and EET" level="vanillaPlus">
 					<component id="JasteySodTweaks-DoNotMissDialogues_NPCInParty" name="For NPCs in Party Only" label="Do not miss dialogues (for NPCs in party only)" />
@@ -381,19 +381,19 @@
 			</quest>
 			<restructure label="Restructure">
 				<mod id="Another_Fine_Hell" label="Another Fine Hell" level="extended" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240"  groupWith="sodRewrite" unfolded="1">
-					<component id="C#AnotherFineHell-Main" label="Another Fine Hell - optional ending for SoD" core="1" />
-					<component id="C#AnotherFineHell-Extended" label="Get the Hells Out - Quest Option" />
-					<component id="C#AnotherFineHell-ImoensChest" label="PC's and Imoen's Chest in the Palace should keep their content" alwaysIf="C#AnotherFineHell-Main" noDisplay="1" />
+					<component id="C#AnotherFineHell-Main" name="Another Fine Hell - Optional Ending for SoD and BGII Closure" label="Another Fine Hell - optional ending for SoD" core="1" />
+					<component id="C#AnotherFineHell-Extended" name="Get the Hells Out - Quest Option with Extended BGII Content" label="Get the Hells Out - Quest Option" />
+					<component id="C#AnotherFineHell-ImoensChest" name="PC's and Imoen's chest in Palace should have their content" label="PC's and Imoen's Chest in the Palace should keep their content" alwaysIf="C#AnotherFineHell-Main" noDisplay="1" />
 				</mod>
 				<mod id="Road_To_Discovery_for_SoD" label="Road to Discovery" level="blendWell" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240" groupWith="sodRewrite">
-					<component id="SoDRoadToDiscovery-main" label="Road to Discovery for SoD - SoD story enhancements" core="1" proposeIf="c#husam-main" />
-					<component id="SoDRoadToDiscovery-consistency" label="Consistency changes to game dialogues" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
-					<component id="SoDRoadToDiscovery-aware_officers" label="Officers are aware" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
-					<component id="SoDRoadToDiscovery-consistency_reply_options" label="Give PC informed reply options" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
-					<component id="SoDRoadToDiscovery-PC_tells_officers" label="PC can tell the officers" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
-					<component id="SoDRoadToDiscovery-officers_reactions" label="Add officers reactions" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
-					<component id="SoDRoadToDiscovery-additional_infopoints" label="Additional info points" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
-					<component id="SoDRoadToDiscovery-additional_communication_officers" label="Add additional communication with officers" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
+					<component id="SoDRoadToDiscovery-main" name="Main Component: Tracking System" label="Road to Discovery for SoD - SoD story enhancements" core="1" proposeIf="c#husam-main" />
+					<component id="SoDRoadToDiscovery-consistency" name="Consistency Changes to Game Dialogues" label="Consistency changes to game dialogues" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
+					<component id="SoDRoadToDiscovery-aware_officers" name="Officers Are Aware" label="Officers are aware" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
+					<component id="SoDRoadToDiscovery-consistency_reply_options" name="Give PC Informed Reply Options" label="Give PC informed reply options" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
+					<component id="SoDRoadToDiscovery-PC_tells_officers" name="PC Can Tell the Officers" label="PC can tell the officers" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
+					<component id="SoDRoadToDiscovery-officers_reactions" name="Add Officers Reactions" label="Add officers reactions" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
+					<component id="SoDRoadToDiscovery-additional_infopoints" name="Additional Info Points" label="Additional info points" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
+					<component id="SoDRoadToDiscovery-additional_communication_officers" name="Add Additional Communication with Officers" label="Add additional communication with officers" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" />
 				</mod>
 				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party">
 					<component id="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" name="Imoen 4 Ever in SoD: Imoen Remains in Group in Korlasz' Dungeon" label="Imoen 4 ever - modify the story to allow Imoen staying in the party" />
@@ -411,20 +411,20 @@
 					<component id="kinfriendship:1" name="M'Khiin Friendship for Siege of Dragonspear" label="M'Khiin expansion" modId="M-khiin-Friendship" tags="beamdog" />
 				</expansions>
 				<bioware label="Returning Playable NPCs" unfolded="1">
-					<component id="L#-ELDOTH-SOD" label="Eldoth" modId="eldoth-for-sod" />
-					<component id="L#-Faldorn-SOD" label="Faldorn" modId="faldorn-for-sod" />
+					<component id="L#-ELDOTH-SOD" name="Eldoth for the Siege of Dragonspear" label="Eldoth" modId="eldoth-for-sod" />
+					<component id="L#-Faldorn-SOD" name="Faldorn for Siege of Dragonspear" label="Faldorn" modId="faldorn-for-sod" />
 					<component id="k9SHarteel-SoD" name="Install Shar-Teel NPC Mod" label="Shar-Teel" modId="Sharteel-NPC-SoD" />
 					<component id="AddKagainDD" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" engine="bg1" />
-					<component id="AddXan" label="Continuous Xan" desc="Continuous, but mute" modId="continuous-npcs" engine="bg1" />
-					<component id="AddYeslick" label="Continuous Yeslick" desc="Continuous, but mute" modId="continuous-npcs" engine="bg1" />
+					<component id="AddXan" name="[Xan] Add Xan to SoD and BG2" label="Continuous Xan" desc="Continuous, but mute" modId="continuous-npcs" engine="bg1" />
+					<component id="AddYeslick" name="[Yeslick] Add Yeslick to SoD and BG2" label="Continuous Yeslick" desc="Continuous, but mute" modId="continuous-npcs" engine="bg1" />
 					<group label="Continuous Kivan (Archer)" engine="bg1">
 						<component id="AddKivanArcher" label="Core" desc="Continuous, but mute" modId="continuous-npcs" core="1" />
-						<component id="KivanTimedQuest" label="Removed Kivan's Timed Quest" modId="continuous-npcs" />
-						<component id="KivanAbilityScores" label="Slightly boost Kivan's Ability Scores" modId="continuous-npcs" />
+						<component id="KivanTimedQuest" name="[Kivan] Removed Kivan's timed quest" label="Removed Kivan's Timed Quest" modId="continuous-npcs" />
+						<component id="KivanAbilityScores" name="[Kivan] Slightly Boost Kivan's Ability Scores" label="Slightly boost Kivan's Ability Scores" modId="continuous-npcs" />
 					</group>
 				</bioware>
 				<banters>
-					<component id="C#Ajantis_SoD_NPC-crossmod_content" label="Ajantis crossmod" modId="Ajantis_BG1_Expansion" />
+					<component id="C#Ajantis_SoD_NPC-crossmod_content" name="Ajantis SoD NPC: Crossmod Content" label="Ajantis crossmod" modId="Ajantis_BG1_Expansion" />
 				</banters>
 				<tweaks>
 					<component id="A7-CONVENIENTEENPCS-APPEARANCE-CAELAR_FOLLOWER_CONDITIONAL" name="Joins as controllable follower if no free party slots available" label="Caelar joins as controllable follower if no free party slots available" modId="A7-NoEENPCs" tags="beamdog" level="vanillaPlus" />
@@ -438,7 +438,7 @@
 					<component id="Imoen4Ever-BGII-ImoenReturnsChapter2" name="Imoen 4 Ever in BGII: Imoen Returns after Talking to Gaelan in Chapter 2" label="Imoen 4 ever - modify the story to allow Imoen staying in the party" />
 					<component id="Imoen4Ever-BGII-DialoguesContentSoA" name="Imoen 4 Ever in BGII: Give Imoen Dialogue Content in SoA" label="Give Imoen dialogue content in SoA" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" />
 					<component id="Imoen4Ever-BGII-YoshimoBrynnlaw" name="Imoen 4 Ever in BGII: Yoshimo Comes to Brynnlaw" label="Yoshimo comes to brynnlaw" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" />
-					<component id="Imoen4Ever-BGII-ImoenProtectionSpellChapter2&amp;3" label="Give Imoen protection spell in chapters 2 &amp; 3" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" />
+					<component id="Imoen4Ever-BGII-ImoenProtectionSpellChapter2&amp;3" name="Imoen 4 Ever in BGII: Give Imoen Protection Spell in Chapters 2 &amp; 3" label="Give Imoen protection spell in chapters 2 &amp; 3" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" />
 					<!--component id="Imoen4Ever-BGII-Compatibility_Saerileth_Alternatives" label="Compatibility with Alternatives and Saerileth" /-->
 				</mod>
 				<alternatives label="Restored Rhynn Lanthorn Quest">
@@ -504,22 +504,22 @@
 					<component id="hidden_adventures-masktemple_docks" name="Temple of Mask in Docks District" label="Temple of Mask in Docks District" />
 				</mod>
 				<component id="CorthalaRomantique-SphereGuard" name="Install Leonora Content: A Guard for the Sphere" label="A Guard for the Sphere" desc="Corthala Romantique's Leonora Content" modId="Corthala_Romantique" />
-				<component id="Assassinations:0" label="Assassinations" modId="Assassinations" level="extended" />
+				<component id="Assassinations:0" name="Assassinations mod for Baldur's Gate II" label="Assassinations" modId="Assassinations" level="extended" />
 				<component id="ts_expanded_thief_stronghold_main" name="Expanded Thief Stronghold" label="Expanded Thief Stronghold" modId="Expanded-Thief-Stronghold" level="extended" />
-				<component id="Tidings:0" label="Dark Tidings" modId="Dark-Tidings" level="extended" />
+				<component id="Tidings:0" name="Dark Tidings" label="Dark Tidings" modId="Dark-Tidings" level="extended" />
 				<mod id="Call-of-the-Lost-Goddess" label="Call of the Lost Goddess" level="extended">
 					<component id="Godcall:0" name="Call Of The Lost Goddess" label="Call of the Lost Goddess v2.01" />
 					<component id="Godcall:50" name="Install portraits for the major NPCs of the mod" label="Install portraits for the major NPCs of the mod" alwaysIf="Godcall:0" noDisplay="1" />
 					<component id="Godcall:200" name="Install AI voiceover for major NPCs of the mod (mostly in English)" label="Install AI voiceover for major NPCs of the mod (mostly in English)" />
 				</mod>
-				<component id="ThroneoftheMadGod:0" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" level="extended" />
-				<component id="Poisoned_pathways:0" label="Poisoned Pathways" modId="Poisoned-Pathways" level="extended" />
+				<component id="ThroneoftheMadGod:0" name="Throne of the Mad God" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" level="extended" />
+				<component id="Poisoned_pathways:0" name="Poisoned pathways" label="Poisoned Pathways" modId="Poisoned-Pathways" level="extended" />
 				<component id="TangledIsle:0" name="Yes, but don't patch existing save games" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" level="extended" />
-				<component id="L#-OOZESLOUNGE" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" level="extended" />
-				<component id="L#-SKIECOST-MAINQUEST" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" level="extended" />
+				<component id="L#-OOZESLOUNGE" name="Athkatlan Grounds: The Ooze's Lounge - a new area under Athkatlan Slums" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" level="extended" />
+				<component id="L#-SKIECOST-MAINQUEST" name="Skie: The Cost of One Girl's Soul - New quest for Baldur's Gate 2 EE" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" level="extended" />
 				<component id="cowledmenace:1000" label="Cowled Menace" modId="CowledMenace" level="extended" />
 				<component id="AWizardDidIt-Blackhearts_BG2" name="Install Blackhearts for &quot;BG2EE only&quot;" label="Blackhearts" modId="Black-Hearts" level="extended" displayIfNot="AWizardDidIt-Blackhearts_BG1" />
-				<component id="Autumns_Twilight:0" label="Autumn's Twilight" modId="bg2-autumns-twilight-mod" />
+				<component id="Autumns_Twilight:0" name="Autumn's Twilight MOD" label="Autumn's Twilight" modId="bg2-autumns-twilight-mod" />
 			</quest>
 			<npc label="Joinable NPCs">
 				<expansions label="Original Cast Expansions">
@@ -536,85 +536,85 @@
 					<component id="viconia:0" name="Viconia Friendship" label="Viconia Friendship" modId="Viconia-Friendship" />
 					<component id="Dorn_friendship" name="Dorn Friendship for BG2EE" label="Dorn Friendship" modId="Dorn-Friendship" tags="beamdog" />
 					<component id="HexxatFriendship:0" name="Hexxat Friendship for BG2EE" label="Hexxat Friendship" modId="Hexxat-Friendship" tags="beamdog" />
-					<component id="YoshimosRemorse:0" label="Yoshimo's Remorse" desc="Makes Yoshimo a playable NPC in SoD" modId="Yoshimos_Remorse" />
+					<component id="YoshimosRemorse:0" name="Yoshimo's Remorse" label="Yoshimo's Remorse" desc="Makes Yoshimo a playable NPC in SoD" modId="Yoshimos_Remorse" />
 					<component id="korgan:0" name="Korgan's Redemption" label="Korgan's Redemption" desc="Provides the possibility of redeeming Korgan if Mazzy is in your party." modId="Korgan-Redemption" />
-					<component id="Wings:0" label="Wings - Aerie expansion" modId="Wings" />
+					<component id="Wings:0" name="Wings for BG2:EE" label="Wings - Aerie expansion" modId="Wings" />
 				</expansions>
 				<romances label="Romances">
 					<mod id="Imoen-Romance-Mod" label="Imoen Romance">
-						<component id="ImoenRomance:0" label="Imoen Romance" />
-						<component id="ImoenRomance:2" label="Don't allow multiple Romance (only valid for vanilla romances)" alwaysIf="ImoenRomance:0" noDisplay="1" />
+						<component id="ImoenRomance:0" name="Imoen NPC Romance Mod for BG2:SoA TOB (4.1.3 Version!)" label="Imoen Romance" />
+						<component id="ImoenRomance:2" name="Don't Allow multiple Romance (Only valid for Vanilla romances)" label="Don't allow multiple Romance (only valid for vanilla romances)" alwaysIf="ImoenRomance:0" noDisplay="1" />
 					</mod>
 					<mod id="Keldorn_Romance" label="Keldorn Romance">
-						<component id="berelinde-keldorn_rom-main" label="Keldorn Romance" />
-						<component id="berelinde-keldorn_rom-RomanceMatchLGNG" label="Romance is available to LG/NG protagonists only (recommended)" alwaysIf="berelinde-keldorn_rom-main" noDisplay="1" />
+						<component id="berelinde-keldorn_rom-main" name="berelinde's Keldorn Romance" label="Keldorn Romance" />
+						<component id="berelinde-keldorn_rom-RomanceMatchLGNG" name="Romance is available to LG/NG protagonists only (Recommended)" label="Romance is available to LG/NG protagonists only (recommended)" alwaysIf="berelinde-keldorn_rom-main" noDisplay="1" />
 					</mod>
 					<component id="luvnalia:0" name="Arnel's Nalia Romance Revision" label="Nalia Romance" modId="Arnel-Nalia-Romance-Revision" />
 					<mod id="Nalia_At_Last" label="Nalia at Last (ToB Romance)">
-						<component id="Nalia_at_Last:0" label="Nalia at Last (ToB Romance)" />
+						<component id="Nalia_at_Last:0" name="[Nalia at Last (ToB Romance)] Bring me my wife, Nalia, the thief/mage." label="Nalia at Last (ToB Romance)" />
 						<component id="Nalia_at_Last:1" label="Romance Theme Music" alwaysIf="Nalia_at_Last:0" noDisplay="1" />
 					</mod>
 					<mod id="yoshimo-romance" label="Yoshimo Romance">
-						<component id="L#-YOSHIMO-ROMANCE" label="Yoshimo Romance" />
-						<component id="L#-YOSHIMO-ROMANCE-CMATCH" label="Romance restriction: Keep restrictions" desc="elven/half-elven/human/halfling/tiefling female, CHA 13+" alwaysIf="L#-YOSHIMO-ROMANCE" noDisplay="1" />
+						<component id="L#-YOSHIMO-ROMANCE" name="Yoshimo Romance and additional friendship talks for BG2 / BG2EE" label="Yoshimo Romance" />
+						<component id="L#-YOSHIMO-ROMANCE-CMATCH" name="Romance restriction: Keep restrictions from the early version of the mod (elven/half-elven/human/halfling/tiefling female, charisma 13+)" label="Romance restriction: Keep restrictions" desc="elven/half-elven/human/halfling/tiefling female, CHA 13+" alwaysIf="L#-YOSHIMO-ROMANCE" noDisplay="1" />
 					</mod>
 					<mod id="Edwin-Romance" label="Edwin Romance">
 						<component id="LaufeysEdwinRomance-Main" name="Edwin Romance" label="Edwin Romance" />
 					</mod>
 					<mod id="cernd-romance" label="Cernd Romance">
-						<component id="L#-CERNDROMANCE" label="Cernd Romance" core="1" />
-						<component id="L#-CERNDROMANCE-PID" label="Player-initiated dialogues" />
+						<component id="L#-CERNDROMANCE" name="Cernd Romance for Baldur's Gate 2: Enhanced Edition" label="Cernd Romance" core="1" />
+						<component id="L#-CERNDROMANCE-PID" name="Cernd Romance - Player-Initiated Dialogues" label="Player-initiated dialogues" />
 					</mod>
 					<component id="CorthalaRomantique-main" name="Corthala Romantique - Main Valygar Romance" label="Valygar Romance" modId="Corthala_Romantique" />
 					<component id="haerdalisromance:0" label="Haer'Dalis Romance" modId="Haer-Dalis-Romance" />
-					<component id="Dorn:0" label="Dorn Expanded Romance" modId="Bg2Dorn" tags="beamdog" />
-					<component id="sarevokromance:0" label="Sarevok Romance" modId="Sarevok-Romance" />
-					<component id="OWRomanceExpanded-Viconia" label="Viconia Romance Expanded" modId="BG2-Romance-Expanded" />
-					<component id="OWRomanceExpanded-Phaere" label="Phaere Expanded" modId="BG2-Romance-Expanded" />
+					<component id="Dorn:0" name="Dorn expanded romance by trinit" label="Dorn Expanded Romance" modId="Bg2Dorn" tags="beamdog" />
+					<component id="sarevokromance:0" name="Aeryn's Sarevok Romance for BGII: Throne of Bhaal" label="Sarevok Romance" modId="Sarevok-Romance" />
+					<component id="OWRomanceExpanded-Viconia" name="Viconia Romance Expanded" label="Viconia Romance Expanded" modId="BG2-Romance-Expanded" />
+					<component id="OWRomanceExpanded-Phaere" name="Phaere Expanded" label="Phaere Expanded" modId="BG2-Romance-Expanded" />
 					<component id="cd_tweaks_stop_hd_aerie_romance" name="Stop Haer'Dalis-Aerie Romance from Starting" label="Stop Haer'Dalis-Aerie Romance from starting" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3124" />
 				</romances>
 				<bioware label="Returning Original Cast NPCs">
 					<component id="AddKagainDD" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" />
 					<alternatives label="Xan">
-						<component id="AddXan" label="Continuous Xan" desc="Continuous, but mute" modId="continuous-npcs" />
-						<component id="xan:0" label="Kulyok's Xan" modId="Xan_for_BGII" />
+						<component id="AddXan" name="[Xan] Add Xan to SoD and BG2" label="Continuous Xan" desc="Continuous, but mute" modId="continuous-npcs" />
+						<component id="xan:0" name="[Xan] Xan NPC MOD for Baldur's Gate II" label="Kulyok's Xan" modId="Xan_for_BGII" />
 					</alternatives>
 					<alternatives label="Yeslick">
-						<component id="AddYeslick" label="Continuous Yeslick" desc="Continuous, but mute" modId="continuous-npcs" />
+						<component id="AddYeslick" name="[Yeslick] Add Yeslick to SoD and BG2" label="Continuous Yeslick" desc="Continuous, but mute" modId="continuous-npcs" />
 						<component id="yeslicknpc:0" name="Yeslick is a regular Fighter-Cleric" label="SHS Yeslick" modId="Yeslick-NPC" />
 					</alternatives>
 					<alternatives label="Kivan">
 						<group label="Continuous Kivan (Archer)">
 							<component id="AddKivanArcher" label="Core" desc="Continuous, but mute" modId="continuous-npcs" core="1" />
-							<component id="KivanTimedQuest" label="Removed Kivan's Timed Quest" modId="continuous-npcs" />
-							<component id="KivanAbilityScores" label="Slightly boost Kivan's Ability Scores" modId="continuous-npcs" />
+							<component id="KivanTimedQuest" name="[Kivan] Removed Kivan's timed quest" label="Removed Kivan's Timed Quest" modId="continuous-npcs" />
+							<component id="KivanAbilityScores" name="[Kivan] Slightly Boost Kivan's Ability Scores" label="Slightly boost Kivan's Ability Scores" modId="continuous-npcs" />
 						</group>
 						<component id="p#_kivan" name="Kivan of Shilmista" label="Kivan and Deheriana" modId="Kivan_and_Deheriana" />
 					</alternatives>
 					<component id="Raven-alora_npc_for_bg2" name="Chosen of Mystra's Alora NPC Mod (Requires Throne of Bhaal)" label="Alora" modId="Alora-NPC-for-BG2" />
 					<mod id="the-return-of-xzar-and-montaron" label="Xzar and Montaron">
-						<component id="L#-XzarAndMontaron" label="The Return of Xzar and Montaron" core="1" />
-						<component id="L#-XzarAndMontaron-PIDs" label="Player-initiated dialogues" />
+						<component id="L#-XzarAndMontaron" name="The Return of Xzar and Montaron" label="The Return of Xzar and Montaron" core="1" />
+						<component id="L#-XzarAndMontaron-PIDs" name="The Return of Xzar and Montaron - Player-Initiated Dialoges" label="Player-initiated dialogues" />
 					</mod>
 					<mod id="skie-the-cost-of-one-girls-soul" label="Skie">
-						<component id="L#-SKIECOST-NPCSKIE" label="Skie: The Cost of One Girl's Soul" />
-						<component id="L#-SKIECOST-NPCSKIEPIDS" label="Add player-initiated dialogues" />
+						<component id="L#-SKIECOST-NPCSKIE" name="Skie: The Cost of One Girl's Soul - Allow Skie to return as a joinable NPC" label="Skie: The Cost of One Girl's Soul" />
+						<component id="L#-SKIECOST-NPCSKIEPIDS" name="Skie: The Cost of One Girl's Soul - Add Player-Initiated Dialogue (PID) for Skie" label="Add player-initiated dialogues" />
 					</mod>
 					<mod id="Ajantis_BG2" label="Ajantis">
 						<component id="ajantisbg2:0" name="Sir Ajantis NPC for BGII" label="Sir Ajantis NPC for BGII" />
-						<component id="ajantisbg2:1" label="Install the unique BG(II):EE BAM for Ajantis' Family Shield" alwaysIf="ajantisbg2:0" noDisplay="1" />
+						<component id="ajantisbg2:1" name="Install the unique BG(II):EE BAM for Ajantis' Family Shield" label="Install the unique BG(II):EE BAM for Ajantis' Family Shield" alwaysIf="ajantisbg2:0" noDisplay="1" />
 						<component id="ajantisbg2:40" name="Speed: 1 hour real time (standard) minimum between Dialogues" label="Speed: 1 hour real time (standard) minimum between dialogues" alwaysIf="ajantisbg2:0" noDisplay="1" />
 					</mod>
 					
 					<mod id="Coran_for_BGII" label="Coran">
-						<component id="O#CoranBGII-main" label="Coran NPC MOD for Baldur's Gate II" />
-						<component id="O#CoranBGII-Delete_original_Coran" label="Delete old Coran from the forest of tethyr (recommended)" alwaysIf="O#CoranBGII-main" noDisplay="1" />
+						<component id="O#CoranBGII-main" name="Coran NPC MOD for Baldur's Gate II" label="Coran NPC MOD for Baldur's Gate II" />
+						<component id="O#CoranBGII-Delete_original_Coran" name="Delete old Coran from the Forest of Tethyr (RECOMMENDED)" label="Delete old Coran from the forest of tethyr (recommended)" alwaysIf="O#CoranBGII-main" noDisplay="1" />
 					</mod>
 					<mod id="shar-teel-bg2ee" label="Shar-Teel">
-						<component id="L#-SHARTEELBG2EE" label="Shar-Teel for Baldur's Gate 2: Enhanced Edition" />
-						<component id="L#-SHARTEELBG2EE-PIDS" label="Player-initiated dialogues (PIDs)" />
+						<component id="L#-SHARTEELBG2EE" name="Shar-Teel for Baldur's Gate 2: Enhanced Edition" label="Shar-Teel for Baldur's Gate 2: Enhanced Edition" />
+						<component id="L#-SHARTEELBG2EE-PIDS" name="Shar-Teel for Baldur's Gate 2: Enhanced Edition - Player Initiated Dialogues (PIDs)" label="Player-initiated dialogues (PIDs)" />
 					</mod>
-					<component id="zdbae:0" label="Baeloth" modId="BaeBG2" tags="beamdog" />
+					<component id="zdbae:0" name="Baeloth BG2" label="Baeloth" modId="BaeBG2" tags="beamdog" />
 					<mod id="mkhiinbg2" label="M'Khiin" tags="beamdog">
 						<component id="mkhiinbg2:0" name="M'Khiin NPC for BG2EE" label="M'Khiin" core="1" />
 						<component id="mkhiinbg2:10" name="Artastrophe" label="Artastrophe portrait" alwaysIf="mkhiinbg2:0" noDisplay="1" />
@@ -622,47 +622,47 @@
 					<component id="YF-LivingClara" label="Clara instead of Hexxat &amp; darkside Anomen" modId="LivingClara" tags="beamdog" />
 					<group label="Returning NPCs swapping the existing ones">
 						<mod id="khalid-bg2" label="Khalid instead of Jaheira">
-							<component id="L#-KHALIDBG2EE" label="Core" core="1" />
-							<component id="L#-KHALIDBG2EE-PIDS" label="Player-initiated dialogues" />
+							<component id="L#-KHALIDBG2EE" name="Khalid for BG2EE" label="Core" core="1" />
+							<component id="L#-KHALIDBG2EE-PIDS" name="Khalid for BG2EE: Player-Initiated Dialogues" label="Player-initiated dialogues" />
 						</mod>
 						<mod id="dynaheir-bg2ee" label="Dynaheir instead of Mins">
-							<component id="L#-DynaheirBG2EE" label="Core" core="1" />
-							<component id="L#-DynaheirBG2EE-PID" label="Player-initiated dialogues" />
+							<component id="L#-DynaheirBG2EE" name="Dynaheir for Baldur's Gate 2: EE" label="Core" core="1" />
+							<component id="L#-DynaheirBG2EE-PID" name="Dynaheir for Baldur's Gate 2: EE - Player-Initiated Dialogues" label="Player-initiated dialogues" />
 						</mod>
 						<mod id="quayle-bg2" label="Quayle instead of Aerie">
-							<component id="L#-QUAYLEBG2" label="Core" core="1" />
-							<component id="L#-QUAYLEBG2-PID" label="Quayle NPC: player-initiated dialogues" />
+							<component id="L#-QUAYLEBG2" name="Quayle NPC for Baldur's Gate 2" label="Core" core="1" />
+							<component id="L#-QUAYLEBG2-PID" name="Quayle NPC: Player-Initiated Dialogues" label="Quayle NPC: player-initiated dialogues" />
 						</mod>
 						<mod id="faldorn-bg2ee" label="Faldorn instead of Cernd">
-							<component id="FaldornBG2:0" label="Core" core="1" />
-							<component id="FaldornBG2:1" label="Player-initiated dialogues (PIDs)" />
+							<component id="FaldornBG2:0" name="Faldorn NPC for BG2EE" label="Core" core="1" />
+							<component id="FaldornBG2:1" name="Faldorn NPC for BG2EE: Player-Initiated Dialogues (PIDs)" label="Player-initiated dialogues (PIDs)" />
 						</mod>
 					</group>
 				</bioware>
 				<custom label="Custom NPCs">
 					<component id="SisterVigilantes_Angelo-main" name="Angelo NPC MOD for Baldur's Gate II" label="Angelo — human CN fighter/mage" modId="Angelo" />
-					<component id="TheBeaurinLegacy:1000" label="Minyae — elven NE Enchanter/thief" desc="Also a hidden Archer NPC" modId="BaldursGateMods" />
+					<component id="TheBeaurinLegacy:1000" name="The Beaurin Legacy for BG2:SoA &amp; ToB &amp; BGII:EE" label="Minyae — elven NE Enchanter/thief" desc="Also a hidden Archer NPC" modId="BaldursGateMods" />
 					<mod id="Adrian-NPC" label="Adrian - half-elven LE sorcerer">
 						<component id="adrian_sorcerer" name="Adrian is a Sorcerer" label="Adrian — half-elven LE sorcerer" />
 						<component id="adrian_tolerates_high_reputation-active_romance" name="For Active Romance or Friendship" label="Tolerates high reputation for active Romance or Friendship" alwaysIf="adrian_sorcerer" noDisplay="1" />
 					</mod>
 					<mod id="Solaufeins_Rescue_NPC" label="Solaufein - drow LN fighter">
-						<component id="JasteysSolaufeinRescue-Main" label="Solaufein — drow LN fighter" />
+						<component id="JasteysSolaufeinRescue-Main" name="Solaufein's Rescue: Jastey's Solaufein NPC for BGII" label="Solaufein — drow LN fighter" />
 					</mod>
 					<mod id="Fade-NPC" label="Fade - tiefling CN Shadowdancer">
-						<component id="Fade:0" label="Tiefling CN Shadowdancer" core="1" />
-						<component id="Fade:1" label="Reactions to romantic encounters" />
-						<component id="Fade:2" label="Give Fade Shadowdancer kit" alwaysIf="Fade:0" noDisplay="1" />
+						<component id="Fade:0" name="Fade: An NPC for Baldur's Gate II: SoA and ToB" label="Tiefling CN Shadowdancer" core="1" />
+						<component id="Fade:1" name="Fade NPC: reactions to Romantic Encounters (RE may be installed before or after this component)" label="Reactions to romantic encounters" />
+						<component id="Fade:2" name="Fade EE: give Fade Shadowdancer kit" label="Give Fade Shadowdancer kit" alwaysIf="Fade:0" noDisplay="1" />
 					</mod>
 				</custom>
 				<banters label="Banters and Crossmods">
 					<component id="mkhiinbg2:20" name="Crossmod with Baeloth for BG2" label="M'Khiin crossmod with baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" tags="beamdog" />
 					<component id="adrian_crossmod_content" name="Crossmod content" label="Adrian crossmod" modId="Adrian-NPC" alwaysIf="adrian_sorcerer" noDisplay="1" />
 					<!-- component id="c#husam-crossmod" label="Husam Crossmod Content" modId="Husam_NP" /-->
-					<component id="Wings:1" label="Restore missing banters for Aerie" modId="Wings" />
+					<component id="Wings:1" name="Restore missing banters?" label="Restore missing banters for Aerie" modId="Wings" />
 					<mod id="NeeraBanters" label="Neera Banters" tags="beamdog">
-						<component id="AY-NEERABANTERS-DIALOGUE" label="Dialogue banters and interjections" />
-						<component id="AY-NEERABANTERS-INTERACTION" label="Interaction banters" />
+						<component id="AY-NEERABANTERS-DIALOGUE" name="Neera Banters: Dialogue Banters and Interjections" label="Dialogue banters and interjections" />
+						<component id="AY-NEERABANTERS-INTERACTION" name="Neera Banters: Interaction Banters" label="Interaction banters" />
 					</mod>
 					<mod id="IEP-Extended-Banters" label="IEP Extended Banters">
 						<component id="iep_banters" name="Extended NPC-NPC Interaction SoA" label="Extended NPC-NPC interaction" />
@@ -673,8 +673,8 @@
 						<component id="iep_restored_npc_interjection_underdark" name="Restored Aerie/Jaheira/Anomen interjection in Underdark" label="Restored Aerie/Jaheira/Anomen interjection in Underdark" />
 					</mod>
 					<mod id="Banter_Pack" label="Banter Pack">
-						<component id="PPGBanterPacks-soa" label="Banter pack for SoA and ToB" />
-						<component id="PPGBanterPacks-tob" label="Throne of Bhaal" alwaysIf="PPGBanterPacks-soa" noDisplay="1" />
+						<component id="PPGBanterPacks-soa" name="Pocket Plane Banter Pack for BG2: Shadows of Amn" label="Banter pack for SoA and ToB" />
+						<component id="PPGBanterPacks-tob" name="Pocket Plane Banter Pack for BG2: Throne of Bhaal" label="Throne of Bhaal" alwaysIf="PPGBanterPacks-soa" noDisplay="1" />
 					</mod>
 					<mod id="Crossmod_Banter_Pack_for_Baldurs_Gate_II" label="Crossmod Banter Pack">
 						<component id="cd_crossmod_banter_pack_bg2_soa" name="Crossmod Banter Pack for Shadows of Amn Content" label="Core" core="1" />
@@ -685,22 +685,22 @@
 				<tweaks label="Tweaks">
 					<component id="cd_tweaks_disable_romances" name="Disable Romances" label="Disable BioWare Romances" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3175" />
 					<component id="LaufeysNewViconiaEnding-Main" name="New ending for Viconia Romance by Laufey" label="New ending for Viconia Romance" modId="Edwin-Romance" />
-					<component id="SkitiaRomanceTweak:0" label="Skitia's Romance Tweak" desc="Allow short depatures from the party" modId="SkitiaBG2RomanceTweaks" level="fixes" />
+					<component id="SkitiaRomanceTweak:0" name="Skitia's Romance Tweak for BG2:EE" label="Skitia's Romance Tweak" desc="Allow short depatures from the party" modId="SkitiaBG2RomanceTweaks" level="fixes" />
 					<component id="cd_tweaks_improved_fate_spirit_summoning" name="Improved Fate Spirit Summoning" label="Improved Fate Spirit summoning" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4010" />
 				</tweaks>
 			</npc>
 			<items label="Items">
 				<add label="New Items" noBranches="1" unfolded="1">
-					<component id="u#_under-represented_items" label="Underrepresented items from Icewind Dale II" modId="Under-Respresented_Items" level="blendWell" />
-					<component id="L#-SKIECOST-SHOP" label="Brand new SoD-oriented items" modId="skie-the-cost-of-one-girls-soul" level="extended" />
+					<component id="u#_under-represented_items" name="Underrepresented Items From Icewind Dale II" label="Underrepresented items from Icewind Dale II" modId="Under-Respresented_Items" level="blendWell" />
+					<component id="L#-SKIECOST-SHOP" name="Skie: The Cost of One Girl's Soul - Add brand new SoD-oriented items to BG2" label="Brand new SoD-oriented items" modId="skie-the-cost-of-one-girls-soul" level="extended" />
 					<component id="A7-IMPROVEDARCHER-BOWS_AND_AMMO" name="Add +4 arrows, bolts and powerful bows to the game" label="+4 arrows, bolts and powerful bows" modId="A7-ImprovedArcher" level="blendWell" />
 					<component id="cowledmenace:2100" name="Appropriate Rewards for High-Level Spellcasters (recommended)" label="Appropriate items for high-level Spellcasters" modId="CowledMenace" level="extended" />
-					<component id="jarnip:0" label="Jarnip: New bonus merchant in the Adventurers Mart" modId="Jarnip" level="extended" />
-					<component id="PlanarItems:0" label="Planaritems" modId="PlanarItems" />
+					<component id="jarnip:0" name="Jarnip: New Bonus Merchant in the Adventurers Mart" label="Jarnip: New bonus merchant in the Adventurers Mart" modId="Jarnip" level="extended" />
+					<component id="PlanarItems:0" name="Revised Items" label="Planaritems" modId="PlanarItems" />
 					<component id="cd_spc_creslyn_item_pack" name="Creslyn's BG2 Item Pack" label="Creslyn's Item Pack" modId="SP_Collection" />
 					<mod id="forgotten-armament" label="Forgotten Armament">
-						<component id="ForgottenArmament-RubyRay" label="Ruby Ray Scrolls in Trademeet Store" />
-						<component id="ForgottenArmament-FreedomScroll" label="Freedom Scrolls in Ribald's Store (pre-Underdark)" />
+						<component id="ForgottenArmament-RubyRay" name="Add Ruby Ray Scrolls to Trademeet Store" label="Ruby Ray Scrolls in Trademeet Store" />
+						<component id="ForgottenArmament-FreedomScroll" name="Add Freedom Scrolls to Ribald's Store (Pre-Underdark)" label="Freedom Scrolls in Ribald's Store (pre-Underdark)" />
 					</mod>
 					<component id="k0_iskp:3102" name="all_imports_random" label="Import SoD Items" modId="sod-items-to-bg2ee-eet" level="extended" />
 					<component id="hidden_adventures-silverdagger_ID" name="Silver Dagger in Irenicus Dungeon" label="Silver Dagger in Irenicus Dungeon" level="blendWell" modId="hiddenadventure" />
@@ -784,7 +784,7 @@
 					</mod>
 					<component id="randomiser:9000" name="Cespenar can forge SoA items" label="Cespenar can forge SoA items" engine="bg2,eet" level="vanillaPlus" modId="randomiser" />
 					<component id="swordap:0" name="Improved Haer'Dalis' swords (special for Kania)" label="Improved Haer'Dalis' Swords" modId="HaerDalis-Swords" level="extended" />
-					<component id="L#-OfHeirloomsAndClasses" label="Of Heirlooms and Classes" desc="New artifacts forgeable by Cromwell" modId="of-heirlooms-and-classes" level="extended" />
+					<component id="L#-OfHeirloomsAndClasses" name="Of Heirlooms and Classes - new forgeable artifacts for different classes" label="Of Heirlooms and Classes" desc="New artifacts forgeable by Cromwell" modId="of-heirlooms-and-classes" level="extended" />
 					<mod id="Tweaks-Anthology" label="Item Upgrade" level="blendWell">
 						<component id="cd_tweaks_cromwell_updates_wk_items" name="Allow Cromwell to Upgrade Watcher's Keep Items" label="Allow Cromwell to upgrade Watcher's Keep items" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1220" />
 						<component id="cd_tweaks_cespenar_updates_soa_items" name="Allow Cespenar to Use Cromwell Recipes" label="Allow Cespenar to use Cromwell recipes" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1230" />
@@ -792,7 +792,7 @@
 				</upgrade>
 			</items>
 			<tweaks label="Tweaks">
-				<component id="#L-TRANSITIONS-RESTORE_POWER" label="Use Irenicus in Hell movie as dream to restore Bhaalspawn powers" modId="themed_tweaks" level="blendWell" />
+				<component id="#L-TRANSITIONS-RESTORE_POWER" name="BG2EE - Use Irenicus in hell movie as dream to restore Bhaalspawn powers" label="Use Irenicus in Hell movie as dream to restore Bhaalspawn powers" modId="themed_tweaks" level="blendWell" />
 				<component id="HouseTweaks:16" name="House Tweaks: Good-Aligned Roleplay Rewards (BG2:EE)" label="Good-aligned roleplay rewards" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="HouseTweaks:44" name="House Tweaks: Thief Stronghold—Ask Jariel to pay your quota in your stead" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" level="blendWell" />
 				<component id="cd_tweaks_disable_malchor" name="Keep Drizzt's Loot, Disable Malchor Harpell [Weimer]" label="Keep Drizzt's Loot, disable Malchor Harpell" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3160" />
@@ -838,15 +838,15 @@
 					<component id="cd_iwd_ub_vale_of_shadows_shadow_respawn" name="Actual Shadows in Vale of Shadows [Graion Dilach]" label="Actual Shadows in Vale of Shadows" />
 					<component id="cd_iwd_ub_ldd_wardstone" name="Add the Wardstone for Lower Dorn's Deep" label="Add the Wardstone for Lower Dorn's Deep" />
 				</mod>
-				<component id="L#-XIKASZ-NOPATCH" label="Xiksz's Grove of Chaos" modId="xikaszs-grove-of-chaos" />
-				<component id="L#-OurLady-IWD-NOPATCH" label="Tale of Our Lady Dreamless" modId="tale-of-our-lady-dreamless" />
-				<component id="L#-TheRediscoveryofKuldahar-IWD" label="The Rediscovery of Kuldahar" modId="the-rediscovery-of-kuldahar" />
-				<component id="L#-Skineater-IWD-NOPATCH" label="Terror of the Skineater" modId="terror-of-the-skineater" />
-				<component id="L#-Snowytoes-IWD-NOPATCH" label="Snowytoes Hamlet" modId="snowytoes-hamlet" />
-				<component id="L#-NIGHT-OF-THE-BLINKING-DEAD-NOPATCH" label="Night of the Blinking Dead" modId="night-of-the-blinking-dead" />
-				<component id="L#-BBINN-NOPATCH" label="Below &amp; Below Inn" modId="below-below-inn" />
-				<component id="L#-BLOOM-ROT-NOPATCH" label="The War of Bloom and Rot" modId="the-war-of-bloom-and-rot" />
-				<component id="L#-Arszyk-IWD" label="Arszyk's Wonderful Decay" desc="NPC (vampire NE fighter/druid) and a late-game quest" modId="arszyk" />
+				<component id="L#-XIKASZ-NOPATCH" name="[Xiksz's Grove of Chaos] Yes, but don't patch existing save games." label="Xiksz's Grove of Chaos" modId="xikaszs-grove-of-chaos" />
+				<component id="L#-OurLady-IWD-NOPATCH" name="Yes, but don't patch existing save games" label="Tale of Our Lady Dreamless" modId="tale-of-our-lady-dreamless" />
+				<component id="L#-TheRediscoveryofKuldahar-IWD" name="Yes, but don't patch existing save games" label="The Rediscovery of Kuldahar" modId="the-rediscovery-of-kuldahar" />
+				<component id="L#-Skineater-IWD-NOPATCH" name="Yes, but don't patch existing save games" label="Terror of the Skineater" modId="terror-of-the-skineater" />
+				<component id="L#-Snowytoes-IWD-NOPATCH" name="Yes, but don't patch existing save games" label="Snowytoes Hamlet" modId="snowytoes-hamlet" />
+				<component id="L#-NIGHT-OF-THE-BLINKING-DEAD-NOPATCH" name="Yes, but don't patch existing save games" label="Night of the Blinking Dead" modId="night-of-the-blinking-dead" />
+				<component id="L#-BBINN-NOPATCH" name="Yes, but don't patch existing save games" label="Below &amp; Below Inn" modId="below-below-inn" />
+				<component id="L#-BLOOM-ROT-NOPATCH" name="Yes, but do not patch all savegames" label="The War of Bloom and Rot" modId="the-war-of-bloom-and-rot" />
+				<component id="L#-Arszyk-IWD" name="Arszyk's Wonderful Decay - NPC and a late-game quest for IWD EE" label="Arszyk's Wonderful Decay" desc="NPC (vampire NE fighter/druid) and a late-game quest" modId="arszyk" />
 			</quest>
 			<npc label="Joinable NPCs">
 				<custom label="Custom Interactive NPCs">
@@ -890,26 +890,26 @@
 						</alternatives>
 					</mod>
 					<component id="druidsor:0" label="Geomantic Sorcerer kit" desc="This is needed for Tipps NPC" modId="Geomantic_Sorcerer" alwaysIf="L#-TIPPS-IWD" noDisplay="1" />
-					<component id="L#-OAKMAW-IWD" label="Oak-maw — half-orc NE Priest of Talos" modId="oak-maw" />
-					<component id="L#-LANNA-IWD" label="L'anna — elf NG Archer" modId="lanna" />
-					<component id="Tviy:0" label="T'viy — gnome CE cleric/thief" modId="tviy" />
-					<component id="L#-TIPPS-IWD" label="Tipps — gnome CG Swashbuckler" modId="tipps" />
-					<component id="L#-ORRA-IWD" label="Orra — human LG bard" modId="orra" />
-					<component id="L#-INA-IWD" label="Ina — half-elf TN sorcerer" modId="ina" />
-					<component id="L#-HOMMET-IWD" label="Hommet — human LN Necromancer" modId="hommet" />
-					<component id="L#-DENDJELION-IWD" label="Dendjelion — halfling CE fighter/thief" modId="dendjelion" />
-					<component id="L#-DUSKY-IWD" label="Dusky — half-orc LN Priest of Tempus" modId="dusky-iwdee-npc" />
-					<component id="L#-URCHIN-IWD" label="Urchin — human NG druid" modId="urchin" />
-					<component id="CassiaNPC:0" label="Cassia — human LG Undead Hunter" modId="CassiaNPC" />
-					<component id="Bethany:0" label="Bethany — human LN fighter" modId="bethany" />
-					<component id="MinervaNPC:0" label="Minerva — elf CG Enchanter" modId="MinervaNPC" />
-					<component id="KarihiNPC:0" label="Karihi — tiefling NE Wild Mage" modId="KarihiNPC" />
-					<component id="GuldrukNPC:0" label="Guldruk — half-orc NE fighter" modId="IWD-Guldruk-NPC" />
-					<component id="NirikNPC:0" label="Nirik — half-orc CN barbarian" modId="IWD-Nirik-NPC" />
-					<component id="Vito:0" label="Vito — kenku LN Diviner" modId="vito" />
+					<component id="L#-OAKMAW-IWD" name="Oak-Maw NPC for IWD:EE" label="Oak-maw — half-orc NE Priest of Talos" modId="oak-maw" />
+					<component id="L#-LANNA-IWD" name="L'anna - a new IWD EE companion" label="L'anna — elf NG Archer" modId="lanna" />
+					<component id="Tviy:0" name="T'viy NPC for IWD:EE" label="T'viy — gnome CE cleric/thief" modId="tviy" />
+					<component id="L#-TIPPS-IWD" name="Tipps NPC for IWD:EE" label="Tipps — gnome CG Swashbuckler" modId="tipps" />
+					<component id="L#-ORRA-IWD" name="Orra NPC for IWD:EE" label="Orra — human LG bard" modId="orra" />
+					<component id="L#-INA-IWD" name="Ina NPC for IWD:EE" label="Ina — half-elf TN sorcerer" modId="ina" />
+					<component id="L#-HOMMET-IWD" name="[Hommet — human LN Necromancer] Hommet Shaw for IWD EE... because - hey, why not? I'm STARVING. What do they eat in Icewind Dale? Let's check it out." label="Hommet — human LN Necromancer" modId="hommet" />
+					<component id="L#-DENDJELION-IWD" name="Dendjelion NPC for IWD:EE" label="Dendjelion — halfling CE fighter/thief" modId="dendjelion" />
+					<component id="L#-DUSKY-IWD" name="Dusky NPC for IWD:EE" label="Dusky — half-orc LN Priest of Tempus" modId="dusky-iwdee-npc" />
+					<component id="L#-URCHIN-IWD" name="Urchin NPC for IWD:EE" label="Urchin — human NG druid" modId="urchin" />
+					<component id="CassiaNPC:0" name="Cassia NPC for Icewind Dale: Enhanced Edition" label="Cassia — human LG Undead Hunter" modId="CassiaNPC" />
+					<component id="Bethany:0" name="Bethany IWDEE companion" label="Bethany — human LN fighter" modId="bethany" />
+					<component id="MinervaNPC:0" name="Minerva NPC for Icewind Dale: Enhanced Edition" label="Minerva — elf CG Enchanter" modId="MinervaNPC" />
+					<component id="KarihiNPC:0" name="*gulp* What?! Who are you? I know nothing of anything that happens here! Leave me alone!" label="Karihi — tiefling NE Wild Mage" modId="KarihiNPC" />
+					<component id="GuldrukNPC:0" name="Guldruk NPC for Icewind Dale: Enhanced Edition" label="Guldruk — half-orc NE fighter" modId="IWD-Guldruk-NPC" />
+					<component id="NirikNPC:0" name="Nirik NPC for Icewind Dale: Enhanced Edition" label="Nirik — half-orc CN barbarian" modId="IWD-Nirik-NPC" />
+					<component id="Vito:0" name="Vito, the Kenku Diviner" label="Vito — kenku LN Diviner" modId="vito" />
 					<alternatives label="Athanasios — halfling CG Priest of Tempus">
-						<component id="AthanasiosNPC:0" label="Athanasios NPC" modId="IWD-Athanasios-NPC" core="1" />
-						<component id="AthanasiosNPC:1" label="Change class to fighter/cleric" modId="IWD-Athanasios-NPC" />
+						<component id="AthanasiosNPC:0" name="[Athanasios — halfling CG Priest of Tempus] Athanasios NPC for Icewind Dale: Enhanced Edition" label="Athanasios NPC" modId="IWD-Athanasios-NPC" core="1" />
+						<component id="AthanasiosNPC:1" name="[Athanasios — halfling CG Priest of Tempus] Athanasios NPC: Install Athanasios as a Fighter/Cleric" label="Change class to fighter/cleric" modId="IWD-Athanasios-NPC" />
 					</alternatives>
 				</custom>
 				<banters label="Banters">
@@ -929,23 +929,23 @@
 			</tweaks>
 			<items label="Items">
 				<add label="New Items" noBranches="1">
-					<component id="L#-FINDIT-IWD" label="Findit item pack" modId="findit-iwd" />
+					<component id="L#-FINDIT-IWD" name="FindIt IWD:EE" label="Findit item pack" modId="findit-iwd" />
 					<component id="stratagems:3510" name="Wider availability of wizard spell scrolls in Icewind Dale" label="Wider availability of wizard spell scrolls in Icewind Dale" modId="SwordCoastStratagems" />
-					<component id="ee_cosmetic_enhancements:2" label="Add Bhaal's Fire and Benorg's Truth into loot tables" modId="EE_Cosmetic_Item_Enhancement" />
+					<component id="ee_cosmetic_enhancements:2" name="Add Bhaal's Fire and Benorg's Truth into loot tables - IWD:EE" label="Add Bhaal's Fire and Benorg's Truth into loot tables" modId="EE_Cosmetic_Item_Enhancement" />
 					<mod id="forgotten-armament">
 						<component id="ForgottenArmament-Orrick" name="Add more Items and Scrolls to Orrick's Store" label="Add more items and scrolls to Orrick's Store" />
 						<component id="ForgottenArmament-Conlan" name="Add more Items to Conlan's Smithy" label="Add more items to Conlan's Smithy" />
 					</mod>
 					<mod id="IWDEE-Frostforged" label="Frostforged">
-						<component id="Frostforged:0" label="Item rebalance mod for IWD:EE" />
-						<component id="Frostforged:1" label="New and restored items for IWD:EE" />
-						<component id="Frostforged:2" label="Key ring" />
+						<component id="Frostforged:0" name="Frostforged: Item Rebalance Mod for IWD:EE" label="Item rebalance mod for IWD:EE" />
+						<component id="Frostforged:1" name="Frostforged: New and Restored Items for IWD:EE" label="New and restored items for IWD:EE" />
+						<component id="Frostforged:2" name="Frostforged: Key Ring" label="Key ring" />
 					</mod>
 				</add>
 				<upgrade label="Item Upgrades">
 					<mod id="forgeit-iwd" label="ForgeIt - Forgeable artifacts">
-						<component id="L#-FORGEIT-IWD-MAIN" label="Main component" core="1" />
-						<component id="L#-FORGEIT-IWD-CDSCALE" label="Improved Icasaracht Armor for IWD EE" />
+						<component id="L#-FORGEIT-IWD-MAIN" name="Forgeable artifacts for IWD EE" label="Main component" core="1" />
+						<component id="L#-FORGEIT-IWD-CDSCALE" name="Improved Icasaracht Armor for IWD EE" label="Improved Icasaracht Armor for IWD EE" />
 					</mod>
 				</upgrade>
 			</items>
@@ -962,10 +962,10 @@
 				<component id="A7-PST-UB-RELOADED-ALL" name="All Recommended PS:T Unfinished Business Components" label="PS:T Unfinished Business - Reloaded" modId="PST-UB-reloaded" engine="pst" />
 				<component id="A7-PST-UB-RELOADED-EXPANDED_DEIONARRA_TRUTH" name="Expanded Deionarra's Truth Mod" label="PS:T UB - Expanded Deionarra's Truth Mod" modId="PST-UB-reloaded" engine="pst" />
 				<mod modId="blizzard-in-baator" engine="pst">
-					<component id="BlizzardinBaator:0" label="BlizzardinBaator - Blizzard in Baator" />
-					<component id="BlizzardinBaator:1" label="BlizzardinBaator - English Character Voices" alwaysIf="BlizzardinBaator:0" noDisplay="1" />
-					<component id="BlizzardinBaator:3" label="BlizzardinBaator - English Movies (FULL HD)" alwaysIf="BlizzardinBaator:0" noDisplay="1" />
-					<component id="BlizzardinBaator:7" label="BlizzardinBaator - Restore Footsteps/Movement Sounds, Absent in the Base Game" alwaysIf="BlizzardinBaator:0" noDisplay="1" />
+					<component id="BlizzardinBaator:0" name="Blizzard in Baator" label="BlizzardinBaator - Blizzard in Baator" />
+					<component id="BlizzardinBaator:1" name="English" label="BlizzardinBaator - English Character Voices" alwaysIf="BlizzardinBaator:0" noDisplay="1" />
+					<component id="BlizzardinBaator:3" name="English (FULL HD)" label="BlizzardinBaator - English Movies (FULL HD)" alwaysIf="BlizzardinBaator:0" noDisplay="1" />
+					<component id="BlizzardinBaator:7" name="Restore footsteps/movement sounds, absent in the base game" label="BlizzardinBaator - Restore Footsteps/Movement Sounds, Absent in the Base Game" alwaysIf="BlizzardinBaator:0" noDisplay="1" />
 				</mod>
 			</quest>
 			<items label="Items">
@@ -980,7 +980,7 @@
 		<universalBg label="Common BG1/BG2" engine="bg,eet">
 			<npc label="Joinable NPCs">
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
-					<component id="reflection:0" label="Reflection (new dialogue options)" modId="Reflection" />
+					<component id="reflection:0" name="Reflection" label="Reflection (new dialogue options)" modId="Reflection" />
 					<mod id="Tweaks-Anthology" level="blendWell">
 						<component id="cd_tweaks_more_interjections" name="More Interjections" label="More interjections" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1010" />
 						<component id="cd_tweaks_move_boo_into_inventory" name="Move Boo Into Minsc's Pack" label="Move Boo into Minsc's Pack" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4150" />
@@ -1009,7 +1009,7 @@
 							<component id="cd_tweaks_dorns_sword" name="Make Rancor +1 a Bit More Reliable" label="Make Rancor +1 a bit more reliable" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4200" />
 							<component id="cdtweaks:150" name="Remove &quot;+x&quot; From Unique Item Names" label="Remove &quot;+x&quot; from unique item names" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_150" />
 						</mod>
-						<component id="ForgottenArmament-SetBonus" label="Add set bonuses to Planar Items" modId="forgotten-armament" />
+						<component id="ForgottenArmament-SetBonus" name="Add Set Bonuses to Items" label="Add set bonuses to Planar Items" modId="forgotten-armament" />
 						<component id="ForgottenArmament-UpdateItems" name="Update Existing In-Game Items" label="Forgotten Armament: Update existing in-game items" modId="forgotten-armament" />
 						<mod id="ZSTweaks" level="blendWell">
 							<component id="ZSTweaks:1548" name="Make Void-weapons slightly more effective and logical" label="Make Void-Weapons slightly more effective and logical" />
@@ -1047,8 +1047,8 @@
 					<component id="DialogueChoiceAdditions-VVECompatibilityPatch" name="Dialogue Choice Additions: VVE Compatibility Patch" label="VVE compatibility patch" alwaysIf="DialogueChoiceAdditions-Core,vveBG:0" noDisplay="1" />
 				</mod>
 				<mod id="themed_tweaks" label="Themed Tweaks" level="blendWell">
-					<component id="#L-BG2-SNARK" label="Add a little snark to dialogues (SoD/BG2EE)" />
-					<component id="#L-BG2-CUTSCENES" label="Remove cut scenes that the PC shouldn't be privy to" level="blendWell" />
+					<component id="#L-BG2-SNARK" name="SoD/BG2EE - Add a little snark to dialogues" label="Add a little snark to dialogues (SoD/BG2EE)" />
+					<component id="#L-BG2-CUTSCENES" name="SoD/BG2EE - Remove cut scenes that the PC shouldn't be privy to" label="Remove cut scenes that the PC shouldn't be privy to" level="blendWell" />
 				</mod>
 				<component id="stratagems:4051" name="Reputation increases at about 1/2 the normal rate" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="blendWell" />
 				<component id="randomiser:10100" name="All scrolls from all stores" label="Remove Protection from Undead scrolls from all stores" level="higherDifficulty" engine="bg,eet" modId="randomiser" />
@@ -1107,11 +1107,11 @@
 				</mod>
 				<component id="stratagems:4130" name="Revised handling of death effects like disintegration, petrification and imprisonment (party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" label="Revised handling of death effects like disintegration, petrification and imprisonment" desc="Party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" modId="SwordCoastStratagems" level="vanillaPlus" />
 				<mod id="Lore_From_Learning" level="extended">
-					<component id="cd_lore_from_learning_books" label="Lore From Learning" desc="Provide Lore from books, weapons, party members, defeating monsters and exploring areas" />
-					<component id="cd_lore_from_learning_martial" label="Weapon knowledge provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
-					<component id="cd_lore_from_learning_party" label="Party members provide Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
-					<component id="cd_lore_from_learning_monster" label="Defeating monsters provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
-					<component id="cd_lore_from_learning_area" label="Exploring areas provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
+					<component id="cd_lore_from_learning_books" name="Books Provide Lore Bonuses" label="Lore From Learning" desc="Provide Lore from books, weapons, party members, defeating monsters and exploring areas" />
+					<component id="cd_lore_from_learning_martial" name="Weapon Knowledge Provides Lore Bonuses" label="Weapon knowledge provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
+					<component id="cd_lore_from_learning_party" name="Party Members Provide Lore Bonuses" label="Party members provide Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
+					<component id="cd_lore_from_learning_monster" name="Defeating Monsters Provides Lore Bonuses" label="Defeating monsters provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
+					<component id="cd_lore_from_learning_area" name="Exploring Areas Provides Lore Bonuses" label="Exploring areas provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" />
 				</mod>
 				<component id="cd_tweaks_hide_vfx_from_invisible_enemies" name="Hide Visual Effects from Invisible Enemies [Luke]" label="Hide visual effects from invisible enemies" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_260" />
 				<component id="cd_tweaks_stores_sell_higher_stacks" name="Stores Sell Higher Stacks of Items" label="Stores sell higher stacks of items" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1120" />
@@ -1178,7 +1178,7 @@
 			<component id="rr:0" name="Proper dual-wielding implementation for Thieves and Bards" label="Proper Dual-Wielding implementation for thieves and bards" modId="rogue_rebalancing" level="vanillaPlus" />
 			<component id="cd_tweaks_thieving_in_heavy_armor" name="Allow Thieving and Stealth in Heavy Armor per PnP" label="Allow Thieving and Stealth in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2100" />
 			<mod id="Epic-Thieving" label="Epic Thieving" level="blendWell">
-				<component id="EpicThieving:0" label="EpicThieving — Epic Locks, Traps, Pickpocketing, Illusions"  desc="Gives high valued Thieving skills sense by adding difficult locks, traps, pickpocket opportunities and illusions" />
+				<component id="EpicThieving:0" name="Epic Locks" label="EpicThieving — Epic Locks, Traps, Pickpocketing, Illusions"  desc="Gives high valued Thieving skills sense by adding difficult locks, traps, pickpocket opportunities and illusions" />
 				<component id="EpicThieving:100" name="Epic Traps" label="EpicThieving — Epic Traps" alwaysIf="EpicThieving:0" noDisplay="1" />
 				<component id="EpicThieving:200" name="Epic Trap Setting" label="EpicThieving — Epic Trap Setting" alwaysIf="EpicThieving:0" noDisplay="1" />
 				<component id="EpicThieving:300" name="Epic Pickpocketing" label="EpicThieving — Epic Pickpocketing" alwaysIf="EpicThieving:0" noDisplay="1" />
@@ -1347,10 +1347,10 @@
 	<npcChoices desc="Make some NPC more useful, especially in BG2" engine="bg,eet">
 		<group label="Class/kit">
 			<component id="ajantisbg2:5" name="Ajantis kit choice: make Ajantis Cavalier" label="Make Ajantis a Cavalier in BG2" modId="Ajantis_BG2" displayIf="ajantisbg2:0" />
-			<component id="totemiccernd:0" label="Make Cernd a Totemic Druid" modId="Totemic_Cernd" />
+			<component id="totemiccernd:0" name="Totemic Cernd" label="Make Cernd a Totemic Druid" modId="Totemic_Cernd" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" name="Bard" label="Make Clara a bard" modId="A7-NoEENPCs" />
-			<component id="sha-tweaks:3" label="Make Dynaheir a sorcerer" modId="shatweaks" />
-			<component id="sha-tweaks:4" label="Make Faldorn an Avenger" modId="shatweaks" />
+			<component id="sha-tweaks:3" name="Make Faldorn an Avenger" label="Make Dynaheir a sorcerer" modId="shatweaks" />
+			<component id="sha-tweaks:4" name="Make Skie a Shadowdancer" label="Make Faldorn an Avenger" modId="shatweaks" />
 			<alternatives label="Make Hexxat a...">
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_ASSASSIN" name="Assassin" label="Assassin" modId="A7-NoEENPCs" />
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" name="Fighter / Assassin" label="Fighter/Assassin" modId="A7-NoEENPCs" default="1" />
@@ -1361,16 +1361,16 @@
 			<!-- Make Kagain a Dwarven Defender BGEENPC tweaks.-->
 			<component id="cd_tweaks_make_montaron_assassin" name="Make Montaron an Assassin [Andyr]" label="Make Montaron an Assassin" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4090" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" name="Chaos Sorcerer" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" />
-			<component id="sha-tweaks:5" label="Make Skie a Shadowdancer" modId="shatweaks" />
+			<component id="sha-tweaks:5" name="Change dialog text color to orange" label="Make Skie a Shadowdancer" modId="shatweaks" />
 			<group label="Make Viconia...">
-				<component id="L#-VIC-REV-M-SH-C" label="...A Shadowdancer/cleric" modId="viconia-revamped" />
-				<component id="L#-VIC-REV-ABI" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" />
+				<component id="L#-VIC-REV-M-SH-C" name="Multi-class: Shadowdancer/Cleric" label="...A Shadowdancer/cleric" modId="viconia-revamped" />
+				<component id="L#-VIC-REV-ABI" name="Add special ability: Embrace of Shar" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" />
 			</group>
 			
 			<component id="p#_kivan_deheriana_wildmage" name="Wild Mage" label="Make Deheriana (f/m/c) a Wild Mage" modId="Kivan_and_Deheriana" displayIf="p#_kivan" />
 			<alternatives label="Make Xan a..." unfolded="1">
-				<component id="xan:1" label="Fighter/mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="1" />
-				<component id="xan:3" label="Sorcerer" modId="Xan_for_BGII" displayIfNot="ArtisansKitpack_npc:20002" />
+				<component id="xan:1" name="[Install alternate class for XAN?] Change Xan's class to Fighter/Mage" label="Fighter/mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="1" />
+				<component id="xan:3" name="[Install alternate class for XAN?] Change Xan's class to Sorcerer" label="Sorcerer" modId="Xan_for_BGII" displayIfNot="ArtisansKitpack_npc:20002" />
 			</alternatives>
 			<component id="ArtisansKitpack_npc:20002" name="Artisan's Kitpack: Make Xan an Eldritch Knight" label="Make Xan an Eldritch Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" />
 			<alternatives label="Upgrade Nalia's thief Class to...">
@@ -1379,7 +1379,7 @@
 				<component id="cd_tweaks_nalia_thief_level_7" name="To Thief level 7" label="Level 7 (further increases Open Locks, Pick Pockets)" modId="Tweaks-Anthology" level="blendWell" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4212" />
 				<component id="cd_tweaks_nalia_thief_level_8" name="To Thief level 8" label="Level 8 (further increases Pick Pockets, adds Single Weapon Style)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4213" />
 			</alternatives>
-			<component id="YoshimosRemorse:2" label="Make Yoshimo a Bounty Hunter 13 / fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" />
+			<component id="YoshimosRemorse:2" name="Bounty Hunter 13 / Fighter" label="Make Yoshimo a Bounty Hunter 13 / fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" />
 		</group>
 		<group label="Skills/abilities">
 			<!-- Dual Class Friendly Stats -->
@@ -1529,11 +1529,11 @@
 
 	<sounds level="vanillaPlus">
 		<group label="Additional voicesets available for the player character" unfolded="1">
-			<component id="ZG-VOICE-BG" label="Baldur's Gate Voice Pack" modId="Baldurs-Gate-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" />
-			<component id="ZG-VOICE-BG2" label="Baldur's Gate 2 voice pack" modId="Baldurs-Gate-II-Voice-Pack-for-EE-2.6" engine="bg1,iwd" />
-			<component id="ZG-VOICE-IWD" label="Icewind Dale voice pack" modId="Icewind-Dale-Voice-Pack-For-EE-2.6" engine="bg,eet" />
-			<component id="ZG-VOICE-IWD2" label="Icewind Dale II voice pack" modId="Icewind-Dale-II-Voice-Pack-For-EE-2.6" engine="bg,eet,iwd" />
-			<component id="ZG-VOICE-NWN" label="Neverwinter Nights voice pack" modId="Neverwinter-Nights-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" />
+			<component id="ZG-VOICE-BG" name="Baldur's Gate Voice Pack for EE 2.6+" label="Baldur's Gate Voice Pack" modId="Baldurs-Gate-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" />
+			<component id="ZG-VOICE-BG2" name="Baldur's Gate II Voice Pack for EE 2.6+" label="Baldur's Gate 2 voice pack" modId="Baldurs-Gate-II-Voice-Pack-for-EE-2.6" engine="bg1,iwd" />
+			<component id="ZG-VOICE-IWD" name="Icewind Dale Voice Pack for EE 2.6+" label="Icewind Dale voice pack" modId="Icewind-Dale-Voice-Pack-For-EE-2.6" engine="bg,eet" />
+			<component id="ZG-VOICE-IWD2" name="Icewind Dale II Voice Pack for EE 2.6+" label="Icewind Dale II voice pack" modId="Icewind-Dale-II-Voice-Pack-For-EE-2.6" engine="bg,eet,iwd" />
+			<component id="ZG-VOICE-NWN" name="NWN:" label="Neverwinter Nights voice pack" modId="Neverwinter-Nights-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" />
 		</group>
 		<mod id="Infinity-Sounds" label="Infinity Sounds - Improve many sonic aspects of the game" level="restoration" engine="bg2,eet">
 			<component id="s@-IS-BG1-Spell-Voices" name="Restore BG1 Spellcasting Voices" label="Restore BG1 spellcasting voices" level="vanillaPlus" />
@@ -1548,20 +1548,20 @@
 			<component id="s@-IS-Enhance-Pos-Audio" name="Enhance Positional Audio" label="Enhance positional audio" level="fixes" />
 			<component id="s@-IS-Restore-Tweak-Soundsets" name="Restore &amp; Tweak Soundsets" label="Restore &amp; tweak soundsets" />
 			<component id="s@-IS-More-Existence-Sounds" name="More Existence Sounds" label="More existence sounds" level="fixes" />
-			<component id="s@-IS-Tweak-Existence-Sound-Delay" label="Tweak existence sound delay" level="fixes" />
+			<component id="s@-IS-Tweak-Existence-Sound-Delay" name="Tweak Existence Sound Delay" label="Tweak existence sound delay" level="fixes" />
 			<component id="s@-IS-Restore-NPC-Voiceovers" name="Restore NPC Voiceovers" label="Restore NPC voiceovers" />
 			<component id="s@-IS-Salk-NPC-Voiceovers" name="Additional NPC Voiceovers (by Salk)" label="Additional NPC voiceovers (by salk)" level="vanillaPlus" />
 		</mod>
 		<component id="HouseTweaks:24" name="House Tweaks: NPC Soundsets for Icewind Dale" label="NPC soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" />
 		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" name="Install high quality soundclips for new BG2EE content" label="High quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" level="fixes" />
-		<component id="vveBG:0" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
-		<component id="vveSOD:0" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
+		<component id="vveBG:0" name="Add Character Sounds for BG" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" />
+		<component id="vveSOD:0" name="Add Character Sounds for BG: SOD" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" />
 		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet" level="restoration">
 			<alternatives label="Choose how she should be recast">
-				<component id="jaheirarecast:0" label="Use new SoD character sounds" default="1" />
-				<component id="jaheirarecast:1" label="Use BG1+BG2 character sounds" />
+				<component id="jaheirarecast:0" name="[Choose how she should be recast] Use new SoD Character Sounds" label="Use new SoD character sounds" default="1" />
+				<component id="jaheirarecast:1" name="[Choose how she should be recast] Use BG1+BG2 Character Sounds" label="Use BG1+BG2 character sounds" />
 			</alternatives>
-			<component id="jaheirarecast:2" label="Dialog voiceover" />
+			<component id="jaheirarecast:2" name="Jaheira Recast: Dialog Voiceover" label="Dialog voiceover" />
 		</mod>
 		<component id="HouseTweaks:21" name="House Tweaks: Restore Reputation Increase Sound Effect for BG2" label="Restore reputation increase sound effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" />
 		<component id="HouseTweaks:26" name="House Tweaks: Soundset Tweaks for Anomen and Sarevok (BG2:EE)" label="Soundset tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg2,eet" />
@@ -1587,7 +1587,7 @@
 				<component id="PPE:100" name="Sequenced" label="Category portraits - sequenced" engine="bg,eet,iwd" alwaysIf="PPE:0" noDisplay="1" />
 				<component id="PPE:20" name="Replace Low Quality TOB &amp; SOA Portraits" label="Replace low quality BG2 portraits" engine="bg,eet" alwaysIf="PPE:0" noDisplay="1" />
 			</mod>
-			<component id="JasteysSolaufeinRescue-Give_Ust_Natha_Solaufein_Portrait" label="Give original Solaufein the mod's portrait" modId="Solaufeins_Rescue_NPC"  alwaysIf="JasteysSolaufeinRescue-Main" noDisplay="1" />
+			<component id="JasteysSolaufeinRescue-Give_Ust_Natha_Solaufein_Portrait" name="Give Solaufein in Ust Natha the Mod's Portrait" label="Give original Solaufein the mod's portrait" modId="Solaufeins_Rescue_NPC"  alwaysIf="JasteysSolaufeinRescue-Main" noDisplay="1" />
 			
 		</group>
 		<group label="Original Joinable NPCs" unfolded="1">
@@ -1617,7 +1617,7 @@
 		</group>
 		<group label="Mod NPC Portraits">
 			<component id="zdbae:10" name="altportrait" label="Baeloth - alternative portrait" modId="BaeBG2" displayIf="zdbae:0" engine="bg2,eet" />
-			<component id="Drake:1" label="Default portrait (the artisan)" modId="Drake" alwaysIf="Drake:0" />
+			<component id="Drake:1" name="BG2-style (The Artisan)" label="Default portrait (the artisan)" modId="Drake" alwaysIf="Drake:0" />
 			<component id="SisterVigilantes_Angelo-Portrait_cassinus_free_fr" name="Angelo's alternative portrait from http://cassinus.free.fr" label="Angelo - alternative portrait" modId="Angelo" displayIf="SisterVigilantes_Angelo-main" engine="bg2,eet" />
 			<mod id="HPS-Portraits-Project-1.0" label="Add lacking portraits" engine="bg,eet">
 				<component id="HPSPP-ModNpcsACQ" name="Add new portraits to NPCs from mod: Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and other stories" label="Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and Other Stories" />
@@ -1697,14 +1697,14 @@
 			<component id="candlekeep_revisited:3" name="Candlekeep Revisited: New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" label="Candlekeep Revisited - new portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" engine="bg1,eet" level="vanillaPlus" />
 		</group>
 		<group label="PC Portraits" unfolded="1">
-			<component id="sha-tweaks:0" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" />
-			<component id="sha-tweaks:1" label="Add Extended Isandir's Portrait Pack" modId="shatweaks" engine="bg,eet" />
+			<component id="sha-tweaks:0" name="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" />
+			<component id="sha-tweaks:1" name="Add Extended Isandir's Portrait Pack" label="Add Extended Isandir's Portrait Pack" modId="shatweaks" engine="bg,eet" />
 			<component id="cd_icpp_iwd2" name="Icewind Dale AND Icewind Dale II Portraits" label="Install IWD1 and IWD2 portraits" modId="Infinity_Collection_Portrait_Pack" engine="bg,eet,iwd" alwaysIf="IWD_EET_integration:100" />
 		</group>
 		<group label="Special" engine="bg2,eet">
 			<alternatives label="Drow NPC Portraits">
 				<component id="cd_tweaks_no_drow_avatars_in_underdark" name="No Drow Avatars On Party In Underdark [Weimer]" label="No drow avatars on party in Underdark" modId="Tweaks-Anthology" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3170" />
-				<component id="PPE:30" label="PPE version" modId="Portraits-Portraits-Everywhere" />
+				<component id="PPE:30" name="Ust Natha Drow NPCs" label="PPE version" modId="Portraits-Portraits-Everywhere" />
 				<component id="HPSPP-PartyNPCsDrow" name="Add drow portraits to original party NPCs" label="HPS version" modId="HPS-Portraits-Project-1.0" />	
 			</alternatives>
 			<component id="PPE:40" name="Vampire NPCs" label="PPE vampire NPCs" engine="bg,eet,iwd" modId="Portraits-Portraits-Everywhere" />
@@ -1718,20 +1718,20 @@
 		<component id="cd_tweaks_icon_improvements" name="Icon Improvements" label="Icon improvements" desc="Uses a combination of BG, IWD, and BG2 icons to better differentiate armor when it is on the ground" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_110" />
 		<component id="cd_tweaks_unique_icons" name="Only replace icons that aren't already unique" label="Unique icons for special items" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_170" />
 		<component id="BG1_IPM_MainComponent" name="BG1 Icons Pack" label="Unique icons for the BG1 quest items" modId="bg1_icons_pack_mod" engine="bg1,eet" />
-		<component id="ee_cosmetic_enhancements:0" label="BG cosmetic enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="bg,eet" />
-		<component id="ee_cosmetic_enhancements:1" label="IWD cosmetic enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="iwd" />
+		<component id="ee_cosmetic_enhancements:0" name="Item cosmetic enhancements: Includes new icons, projectiles, recoloring, and addition of pulse and solid glows" label="BG cosmetic enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="bg,eet" />
+		<component id="ee_cosmetic_enhancements:1" name="Item cosmetic enhancements: Includes new icons, projectiles, recoloring, and addition of pulse and solid glows" label="IWD cosmetic enhancements" desc="Include new icons, projectiles, recoloring, and addition of pulse and solid glows" modId="EE_Cosmetic_Item_Enhancement" engine="iwd" />
 		<component id="cd_iwd_description_icons" name="Description Icons for IWD Items" label="Description icons for IWD items" modId="iwd_description_icons" engine="iwd" />
 		<component id="cd_tweaks_replace_fire_cold_resist_icons" name="Separate Resist Fire/Cold Icon into Separate Icons [Angel]" label="Separate resist fire/cold icon into separate icons" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2010" />
 		<mod id="RemasteredSpellIcons" label="Remastered Spell Icons">
-			<component id="remastered_spell_icons:0" label="Core component" core="1" />
-			<component id="remastered_spell_icons:1" label="Use IWD:EE colors" desc="Green icons for summoning spells" />
+			<component id="remastered_spell_icons:0" name="Install Remastered Spell Icons Core Component" label="Core component" core="1" />
+			<component id="remastered_spell_icons:1" name="Use IWD:EE Colors (Green icons for summoning spells)" label="Use IWD:EE colors" desc="Green icons for summoning spells" />
 		</mod>
 		<component id="cd_tweaks_static_pst_npc_portraits_status" name="Visualize health and status changes" label="Static character portraits" desc="With health and status changes visualization" engine="pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_270" />
 		<component id="A7_MISCTWEAKS_UPSCALED_PORTRAITS_PSTEE" name="High-resolution character portraits" label="Argent's Miscellaneous Tweaks - High-Resolution Character Portraits" modId="A7-MiscTweaks" engine="pst" />
 		<component id="HouseTweaks:51" name="House Tweaks: Remove Unnecessary Persistent Visuals from Long-Duration Spells" label="Remove unnecessary persistent visuals from long-duration spells" modId="House-Rule-Tweaks" />
 		<mod id="AC-Miscellaneous-Tweaks" label="AC Miscellaneous Tweaks" level="blendWell">
-			<component id="ac-miscellaneous-misctweaks" label="AC miscellaneous tweaks" />
-			<component id="ac-miscellaneous-random" label="Random stuff no-one wants" alwaysIf="ac-miscellaneous-misctweaks" noDisplay="1" />
+			<component id="ac-miscellaneous-misctweaks" name="Miscellaneous Tweaks" label="AC miscellaneous tweaks" />
+			<component id="ac-miscellaneous-random" name="Random Stuff No-one Wants" label="Random stuff no-one wants" alwaysIf="ac-miscellaneous-misctweaks" noDisplay="1" />
 		</mod>
 	</gfx>
 
@@ -1763,15 +1763,15 @@
 			<component id="D2-SCRIPT-NGAUTO" name="Better IWD Pregen (d2scrp)" label="Auto-assign better IWD Pregen (d2scrp) to new characters" />
 		</mod>
 		<mod id="enhanced-powergaming-scripts" label="Enhanced Powergaming Scripts">
-			<component id="EnhancedPowergamingScripts-MainAccelerated" label="Enhanced Powergaming Script - accelerated pre-buffing speed" />
-			<component id="EnhancedPowergamingScripts-Simulacrum" label="Install enhanced scripts for Simulacrum" alwaysIf="EnhancedPowergamingScripts-MainAccelerated" noDisplay="1" />
+			<component id="EnhancedPowergamingScripts-MainAccelerated" name="Accelerated Pre-Buffing Speed" label="Enhanced Powergaming Script - accelerated pre-buffing speed" />
+			<component id="EnhancedPowergamingScripts-Simulacrum" name="Install Enhanced Scripts for Simulacrum" label="Install enhanced scripts for Simulacrum" alwaysIf="EnhancedPowergamingScripts-MainAccelerated" noDisplay="1" />
 		</mod>
 		<component id="stratagems:5000" name="Specialist Type" label="Ease-of-Use Party AI" modId="SwordCoastStratagems" level="vanillaPlus" />
 	</scripts>
 
 	<campaigns engine="eet">
-		<component id="iwd_eet-party-banter:0" label="Icewind Dale in EET Party Banter" modId="iwd_eet-party-banter" displayIf="Tipun_iwd1_eet|iwd2_eet:0" />
-		<component id="iwd_eet_end:0" label="IWD EET end" modId="IWD_EET_End" alwaysIf="Tipun_iwd1_eet|iwd2_eet:0" noDisplay="1" />
+		<component id="iwd_eet-party-banter:0" name="Install IWDEET Party Banter" label="Icewind Dale in EET Party Banter" modId="iwd_eet-party-banter" displayIf="Tipun_iwd1_eet|iwd2_eet:0" />
+		<component id="iwd_eet_end:0" name="IWD_EET_End" label="IWD EET end" modId="IWD_EET_End" alwaysIf="Tipun_iwd1_eet|iwd2_eet:0" noDisplay="1" />
 		<mod id="IWD_EET_Integration" label="IWD Integration tweaks" displayIf="Tipun_iwd1_eet,iwd2_eet:0">
 			<component id="IWD_EET_integration:100" name="Add IWD Campaigns to the EET Menu" label="Install IWD as dedicated campaigns in EET menu" />
 			<component id="IWD_EET_integration:110" name="Adjust IWD1 XP for Full Campaign" label="Adjust IWD1 XP for full campaign" alwaysIf="IWD_EET_integration:100" noDisplay="1" />
@@ -1787,7 +1787,7 @@
 	</campaigns>
 
 	<ui engine="bg,eet,iwd" level="vanillaPlus">
-		<component id="AutoLoot:0" label="Bubb's Auto Loot" modId="AutoLoot" />
+		<component id="AutoLoot:0" name="Bubb's Auto Loot, for Baldur's Gate Enhanced Edition Games" label="Bubb's Auto Loot" modId="AutoLoot" />
 		<component id="buffbot:0" name="BuffBot: In-Game Buff Automation" label="Buffbot: In-game buff automation" modId="bg-eeex-buffbot" />
 		<component id="cd_tweaks_restored_loading_hints" name="Restored Loading Hints" label="Restored loading hints" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3400" />
 		<group label="Save game tweaks">
