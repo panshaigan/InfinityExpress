@@ -52,6 +52,8 @@ export type NodeKind = 'component' | 'container' | 'alternatives' | 'station'
 
 export interface NodeAttrs {
   id?: string
+  /** WeiDU installer title (tp2/TRA); preferred in the detail sidebar when present. */
+  name?: string
   label?: string
   desc?: string
   /** Optional http(s) URL to component-specific documentation. */

@@ -431,7 +431,7 @@ Rules:
 - Merged duplicate stations do not reorder export; late XML blocks keep higher `orderIndex`.
 - Browser downloads `install-order.txt`.
 
-Label fallback: `attrs.label`, else the component id.
+Label fallback: `attrs.name`, else `attrs.label`, else the component id.
 
 ---
 

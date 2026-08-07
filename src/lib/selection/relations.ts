@@ -103,7 +103,7 @@ function toRefs(model: InstallSequenceModel, ids: string[]): RelatedRef[] {
     const comp = model.componentsById.get(id)
     refs.push({
       id,
-      label: comp?.attrs.label ?? id,
+      label: comp?.attrs.name ?? comp?.attrs.label ?? id,
       navigable: !!comp,
     })
   }

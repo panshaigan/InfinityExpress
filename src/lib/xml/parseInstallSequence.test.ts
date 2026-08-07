@@ -46,3 +46,18 @@ describe('readme attribute', () => {
     expect(comp?.attrs.readme).toBe('https://example.com/readme.html')
   })
 })
+
+describe('name attribute', () => {
+  it('preserves WeiDU name from XML', () => {
+    const xml = `<?xml version="1.0"?>
+<installSequence>
+  <base>
+    <component id="Demo:0" name="WeiDU Title" label="Curated Label" />
+  </base>
+</installSequence>`
+    const { model } = parseInstallSequence(xml)
+    const comp = model.componentsById.get('Demo:0')
+    expect(comp?.attrs.name).toBe('WeiDU Title')
+    expect(comp?.attrs.label).toBe('Curated Label')
+  })
+})

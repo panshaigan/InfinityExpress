@@ -1135,10 +1135,46 @@ body {
   margin: 0;
 }
 
-.detail-title {
+.detail-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
   margin: 0 0 0.5rem;
+}
+
+.detail-title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
   font-size: 1.1rem;
   line-height: 1.3;
+}
+
+.detail-copy-name {
+  appearance: none;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.15rem 0 0;
+  padding: 0.2rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.detail-copy-name:hover {
+  color: var(--ink);
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--line) 40%, transparent);
+}
+
+.detail-copy-name:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .detail-badges {

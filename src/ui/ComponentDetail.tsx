@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import modsCsv from '../data/mods.csv?raw'
 import {
   isComponentNode,
@@ -37,11 +37,68 @@ interface Props {
   onNavigateToComponent?: (componentId: string) => void
 }
 
-function resolveLabel(node: TreeNode, collapsed?: ComponentNode): string {
+type TitleSource = 'name' | 'label' | 'tag'
+
+function resolveDetailTitle(
+  node: TreeNode,
+  collapsed?: ComponentNode,
+): { text: string; source: TitleSource } {
+  const name = node.attrs.name ?? collapsed?.attrs.name
+  if (name) return { text: name, source: 'name' }
+  const label = node.attrs.label ?? collapsed?.attrs.label
+  if (label) return { text: label, source: 'label' }
+  return { text: node.tag, source: 'tag' }
+}
+
+function CopyNameButton({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false)
+
+  async function onCopy() {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1500)
+    } catch {
+      /* clipboard may be unavailable */
+    }
+  }
+
   return (
-    node.attrs.label ??
-    (collapsed ? collapsed.attrs.label : undefined) ??
-    node.tag
+    <button
+      type="button"
+      className="detail-copy-name"
+      onClick={() => void onCopy()}
+      aria-label={copied ? 'Copied' : 'Copy name'}
+      title={copied ? 'Copied' : 'Copy name'}
+    >
+      {copied ? (
+        <svg
+          className="detail-copy-name-icon"
+          viewBox="0 0 16 16"
+          width="14"
+          height="14"
+          aria-hidden="true"
+        >
+          <path
+            fill="currentColor"
+            d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 4.6-4.6L12.2 5.5z"
+          />
+        </svg>
+      ) : (
+        <svg
+          className="detail-copy-name-icon"
+          viewBox="0 0 16 16"
+          width="14"
+          height="14"
+          aria-hidden="true"
+        >
+          <path
+            fill="currentColor"
+            d="M5.5 2A1.5 1.5 0 0 0 4 3.5v7A1.5 1.5 0 0 0 5.5 12h5A1.5 1.5 0 0 0 12 10.5v-7A1.5 1.5 0 0 0 10.5 2zm0 1h5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5zM2.5 5v7.5A1.5 1.5 0 0 0 4 14h6.5v-1H4a.5.5 0 0 1-.5-.5V5z"
+          />
+        </svg>
+      )}
+    </button>
   )
 }
 
@@ -96,7 +153,7 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
 
   const { node, collapsedComponent } = display
   const source = collapsedComponent ?? node
-  const label = resolveLabel(node, collapsedComponent)
+  const title = resolveDetailTitle(node, collapsedComponent)
   const desc = node.attrs.desc ?? collapsedComponent?.attrs.desc
   const level = collapsedComponent?.effectiveLevel ?? node.effectiveLevel
   const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
@@ -125,7 +182,10 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
 
   return (
     <article className="component-detail">
-      <h3 className="detail-title">{label}</h3>
+      <div className="detail-title-row">
+        <h3 className="detail-title">{title.text}</h3>
+        {title.source === 'name' && <CopyNameButton value={title.text} />}
+      </div>
       <div className="detail-badges">
         {level && (
           <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
