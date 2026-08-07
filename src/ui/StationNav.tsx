@@ -14,20 +14,17 @@ interface Props {
   visibleStations: StationId[]
   finishedStations: ReadonlySet<StationSlot>
   onSelectEngine: () => void
-  onSelectSearch: () => void
   onSelectStation: (id: StationId) => void
 }
 
 function stationClass(
-  id: AppNavSlot,
+  id: Exclude<AppNavSlot, 'search'>,
   activeStation: AppNavSlot,
   finishedStations: ReadonlySet<StationSlot>,
 ): string {
   const parts: string[] = []
   if (activeStation === id) parts.push('active')
-  if (id !== 'search' && finishedStations.has(id as StationSlot)) {
-    parts.push('finished')
-  }
+  if (finishedStations.has(id)) parts.push('finished')
   return parts.join(' ')
 }
 
@@ -37,7 +34,6 @@ export function StationNav({
   visibleStations,
   finishedStations,
   onSelectEngine,
-  onSelectSearch,
   onSelectStation,
 }: Props) {
   return (
@@ -53,14 +49,6 @@ export function StationNav({
             ✓
           </span>
         )}
-      </button>
-      <button
-        type="button"
-        className={stationClass('search', activeStation, finishedStations)}
-        disabled={!game}
-        onClick={onSelectSearch}
-      >
-        <span className="station-nav-label">Search</span>
       </button>
       {STATION_ORDER.filter((id) => visibleStations.includes(id)).map((id) => (
         <button

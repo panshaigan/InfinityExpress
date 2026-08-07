@@ -72,6 +72,43 @@ body {
   font-size: 0.75rem;
 }
 
+.top-bar-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.top-bar-search:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
+.top-bar-search.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+.top-bar-search:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.top-bar-search-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
 .top-bar-actions {
   margin-left: auto;
   display: flex;
