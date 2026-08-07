@@ -22,16 +22,16 @@
 
 	<ui engine="bg,eet,iwd" level="vanillaPlus">
 		<mod id="InfinityUI" label="InfinityUI">
-			<component id="infinity_ui:0" label="Infinity UI++ core component" core="1" />
-			<component id="infinity_ui:1" label="Add transparent tooltip background"/>
-			<component id="infinity_ui:2" label="Update several strings in Dialog.tlk" alwaysIf="infinity_ui:0" noDisplay="1" />
+			<component id="infinity_ui:0" name="Install Infinity UI++ Core Component" label="Infinity UI++ core component" core="1" />
+			<component id="infinity_ui:1" name="Add Transparent Tooltip Background" label="Add transparent tooltip background" />
+			<component id="infinity_ui:2" name="Update several strings in Dialog.tlk" label="Update several strings in Dialog.tlk" alwaysIf="infinity_ui:0" noDisplay="1" />
 			<alternatives label="Quick save slots">
-				<component id="infinity_ui:3" label="1" />
-				<component id="infinity_ui:4" label="2" />
-				<component id="infinity_ui:5" label="3" default="1" />
-				<component id="infinity_ui:6" label="4" />
-				<component id="infinity_ui:7" label="5" />
-				<component id="infinity_ui:8" label="6" />
+				<component id="infinity_ui:3" name="1" label="1" />
+				<component id="infinity_ui:4" name="2" label="2" />
+				<component id="infinity_ui:5" name="3" label="3" default="1" />
+				<component id="infinity_ui:6" name="4" label="4" />
+				<component id="infinity_ui:7" name="5" label="5" />
+				<component id="infinity_ui:8" name="6" label="6" />
 			</alternatives>
 		</mod>
 		<component id="B3-BubbsSpellMenuExtended-Main" name="Bubb's Spell Menu Extended" label="Bubb's Spell Menu Extended" modId="Bubbs-Spell-Menu-Extended" />
@@ -103,22 +103,22 @@
 			<restructure label="Restructure">
 				<alternatives label="Postgame" desc="Allows playing after killing Sarevok" unfolded="1">
 					<mod id="EndlessBG1" label="Endless BG1" level="blendWell">
-						<component id="EBG1_MainComponent" label="Main component" core="1" />
-						<component id="EBG1_MoreFlavor" label="More flavor to Hero of Baldur's Gate (includes PC's residence inside the Palace)" />
-						<component id="EBG1_HeroCutscene" label="Short public hero tribute" />
-						<component id="EBG1_SarevokItems" label="Sarevok's Unique Items" />
-						<component id="EBG1_SarevokSword" label="Sarevok's Sword" />
-						<component id="EBG1_ImoenJannath" label="Imoen and Duke Jannath (Imoen gets residence inside Palace)" />
-						<component id="EBG1_EltanInPalace" label="Duke Eltan is in the Palace" />
-						<component id="EBG1_FFHealerInBhaalTemple" label="Flaming Fist after final fight" />
-						<component id="EBG1_ElminsterAppearance_jastey" label="Jastey's Version" />
-						<component id="EBG1_RefugeesInBGCity" label="First refugees come to Baldur's Gate" />
-						<component id="EBG1_TreasurerInPalaceDungeon" label="Ophyllis the treasurer is inside the Palace Dungeon" />
-						<component id="EBG1_DenkodCommentsOnSarevoksDeath" label="Denkod in Thieves' Guild comments on Sarevok's death" />
-						<component id="EBG1_SkipThievesMazeOnce" label="Skip Thieves' Maze once after Sarevok's death" />
-						<component id="EBG1_KorlaszDungeonBG1" label="Korlasz' Dungeon is in BG1" />
-						<component id="EBG1_FensterInPalace" label="Fenster the Palace Healer is in the Palace" />
-						<component id="EBG1_CorwinInPalace" label="Captain Corwin is in the Palace" />
+						<component id="EBG1_MainComponent" name="Endless BG1: Main Component (Required)" label="Main component" core="1" />
+						<component id="EBG1_MoreFlavor" name="More Flavor to Hero of Baldur's Gate (Includes PC's Residence Inside Palace)" label="More flavor to Hero of Baldur's Gate (includes PC's residence inside the Palace)" />
+						<component id="EBG1_HeroCutscene" name="Short Public Hero Tribute" label="Short public hero tribute" />
+						<component id="EBG1_SarevokItems" name="Sarevok's Unique Items" label="Sarevok's Unique Items" />
+						<component id="EBG1_SarevokSword" name="Sarevok's Sword" label="Sarevok's Sword" />
+						<component id="EBG1_ImoenJannath" name="Imoen and Duke Jannath (Imoen Gets Residence Inside Palace)" label="Imoen and Duke Jannath (Imoen gets residence inside Palace)" />
+						<component id="EBG1_EltanInPalace" name="Duke Eltan Is in the Palace" label="Duke Eltan is in the Palace" />
+						<component id="EBG1_FFHealerInBhaalTemple" name="Flaming Fist After Final Fight" label="Flaming Fist after final fight" />
+						<component id="EBG1_ElminsterAppearance_jastey" name="jastey's Version" label="Jastey's Version" />
+						<component id="EBG1_RefugeesInBGCity" name="First Refugees Come to Baldur's Gate" label="First refugees come to Baldur's Gate" />
+						<component id="EBG1_TreasurerInPalaceDungeon" name="Ophyllis the Treasurer is Inside Palace Dungeon" label="Ophyllis the treasurer is inside the Palace Dungeon" />
+						<component id="EBG1_DenkodCommentsOnSarevoksDeath" name="Denkod in Thieves' Guild Comments on Sarevok's Death" label="Denkod in Thieves' Guild comments on Sarevok's death" />
+						<component id="EBG1_SkipThievesMazeOnce" name="Skip Thieves' Maze Once After Sarevok's Death" label="Skip Thieves' Maze once after Sarevok's death" />
+						<component id="EBG1_KorlaszDungeonBG1" name="Korlasz' Dungeon is in BG1" label="Korlasz' Dungeon is in BG1" />
+						<component id="EBG1_FensterInPalace" name="Fenster the Palace Healer Is in the Palace" label="Fenster the Palace Healer is in the Palace" />
+						<component id="EBG1_CorwinInPalace" name="Captain Corwin Is in the Palace" label="Captain Corwin is in the Palace" />
 					</mod>
 					<mod id="Reflections-of-Destiny" label="Reflections of Destiny" desc="Allows staying in BG1 after fulfilling its main quest and deciding when to progress to SoD/SoA">
 						<component id="Reflections_of_Destiny:100" name="Reflections of Destiny BG1: The Future is Now" label="The Future Is Now" />
@@ -140,86 +140,86 @@
 			<quest label="Quests and Encounters">
 				<component id="Loretakers:0" label="Loretakers" modId="Loretakers" level="extended" />
 				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" level="blendWell">
-					<component id="bgqe_slimequest" label="Slime Quest" />
-					<component id="bgqe_nashkelmonster" label="Nashkel Monster Quest" />
-					<component id="bgqe_fallenpaladin" label="Fallen Paladin Quest" />
+					<component id="bgqe_slimequest" name="Slime Quest" label="Slime Quest" />
+					<component id="bgqe_nashkelmonster" name="Nashkel Monster Quest" label="Nashkel Monster Quest" />
+					<component id="bgqe_fallenpaladin" name="Fallen Paladin Quest" label="Fallen Paladin Quest" />
 					<component id="bgqe_manypaws" label="Many Little Paws" />
-					<component id="bgqe_undyinglove" label="Undying Love Quest" />
-					<component id="bgqe_orclover" label="Lovesick Half-Orc" />
-					<component id="bgqe_unexpectedhelp" label="Unexpected Help Quest" />
-					<component id="bgqe_drunk" label="Drunk near Beregost Temple" />
-					<component id="bgqe_bragesword" label="Brage's Sword" />
-					<component id="bgqe_seacharts" label="Legal Sea Charts Sources" level="vanillaPlus" />
-					<component id="bgqe_waterqueentemple" label="Additions to the Lady's Hall and the Bitch Queen's Temple" level="vanillaPlus" />
-					<component id="bgqe_worriedfarmer" label="A Worried Farmer" />
-					<component id="bgqe_bodiesforgoodcause" label="Bodies for a Good Cause" />
-					<component id="bgqe_cordyrnokillingsil" label="Finish Cordyr's Quest without Killing Sil" level="vanillaPlus" />
-					<component id="bgqe_improved_borda" label="Improved Borda"/>
+					<component id="bgqe_undyinglove" name="Undying Love Quest" label="Undying Love Quest" />
+					<component id="bgqe_orclover" name="Lovesick Half-Orc" label="Lovesick Half-Orc" />
+					<component id="bgqe_unexpectedhelp" name="Unexpected Help Quest" label="Unexpected Help Quest" />
+					<component id="bgqe_drunk" name="Drunk Near Beregost Temple" label="Drunk near Beregost Temple" />
+					<component id="bgqe_bragesword" name="Brage's Sword" label="Brage's Sword" />
+					<component id="bgqe_seacharts" name="Legal Sea Charts Sources" label="Legal Sea Charts Sources" level="vanillaPlus" />
+					<component id="bgqe_waterqueentemple" name="Additions to the Lady's Hall and the Bitch Queen's Temple" label="Additions to the Lady's Hall and the Bitch Queen's Temple" level="vanillaPlus" />
+					<component id="bgqe_worriedfarmer" name="A Worried Farmer" label="A Worried Farmer" />
+					<component id="bgqe_bodiesforgoodcause" name="Bodies for a Good Cause" label="Bodies for a Good Cause" />
+					<component id="bgqe_cordyrnokillingsil" name="Finish Cordyr's Quest without killing Sil" label="Finish Cordyr's Quest without Killing Sil" level="vanillaPlus" />
+					<component id="bgqe_improved_borda" name="Improved Borda" label="Improved Borda" />
 				</mod>
 				<mod id="JA-AdventurePack" label="Jarl's Adventure Pack" level="restoration">
-					<component id="JA#BGT_AdvPack-Law_System" label="Extended Law System" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Ramazith" label="Ramazith" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Jopi" label="Jopi and His Uncle Ragefast" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Yuxi" label="Yuxi — Ragefast's Imp" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Husam" label="Husam's Story Line Finished" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Ducal_Palace" label="Ducal Palace" />
-					<component id="JA#BGT_AdvPack-Gervisse_Voltine" label="Gervisse &amp; Voltine" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Seven_Suns" label="Seven Suns" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Arkhstuff" label="Arkhstuff" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Iron_Throne" label="Iron Throne Guard" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Nashkel_Garrison" label="Nashkel Garrison Soldier" />
-					<component id="JA#BGT_AdvPack-Velvet" label="Velvet — Cockfight" />
-					<component id="JA#BGT_AdvPack-Caravan_merchant" label="Caravan Merchant" />
-					<component id="JA#BGT_AdvPack-Galtoth" label="Galtoth — the Fence" />
-					<component id="JA#BGT_AdvPack-Phandalyn" label="Phandalyn Waits in Elfsong Tavern" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Warehouse_Workers" label="Warehouse Workers" />
-					<component id="JA#BGT_AdvPack-Nobles" label="Nobles" />
-					<component id="JA#BGT_AdvPack-Yago" label="Yago's Guard in Low Lantern" />
-					<component id="JA#BGT_AdvPack-Ignatio_Phleed" label="Ignatio Phleed — the Invitation Seller" />
-					<component id="JA#BGT_AdvPack-Shalasin" label="Shalasin" />
-					<component id="JA#BGT_AdvPack-Artolas" label="Sir Artolas" />
-					<component id="JA#BGT_AdvPack-Pillar_Gheldehar" label="Pilar &amp; Gheldehar" />
-					<component id="JA#BGT_AdvPack-Llindellyn" label="Llindellyn — the Archer" />
-					<component id="JA#BGT_AdvPack-Keelor_Nasha" label="Keelor &amp; Nasha" />
-					<component id="JA#BGT_AdvPack-Marl" label="Marl — Tavern Brawl at Feldepost's Inn" />
-					<component id="JA#BGT_AdvPack-Beregost_guards" label="Beregost Guards" />
-					<component id="JA#BGT_AdvPack-Rythes_Last_Arrow" label="Rythe's Last Arrow" />
-					<component id="JA#BGT_AdvPack-The_Protector_of_the_Unworthy" label="The Protector of the Unworthy" />
-					<component id="JA#BGT_AdvPack-Counting_House" label="Counting House" />
-					<component id="JA#BGT_AdvPack-Merchants_League" label="Merchants' League Investigations" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Aldeth_Seniyad" label="Aldeth &amp; Seniyad" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Betrayal" label="Aldeth's Betrayal and Remorse" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Tenya" label="Tenya and the Fishermen" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Tenya2" label="Tenya's Quest in Temple of Umberlee" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Nashkel" label="Nashkel" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Nashkel_soldiers" label="Stationary Soldiers in Nashkel" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Imoen_Winthrop" label="Imoen at Winthrop's Inn" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Priests" label="Priest of Oghma, Gond and Ilmater in Baldur's Gate" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Improved_dialogues" label="Extended/Improved Dialogues" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Caldo" label="Caldo Can Be Charmed" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Hulrik" label="Hulrik and His Cows" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Shop_of_Silence" label="Improved Shop of Silence" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Ender_Sai" label="Ender Sai in Baldur's Gate" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Sorcerous_Sundries" label="Sorcerous Sundries" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Miniquest" label="Mini-Quest: &quot;The Mystery of the Silent Ghostly Voice&quot;" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Special_keg" label="Special Keg in Elfsong Tavern" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Black_Alarics_Cave" label="Black Alaric's Cave" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Cloakwood_druid" label="Cloakwood Druid" />
-					<component id="JA#BGT_AdvPack-Niemain_Zentarim" label="Extended Meeting between Xzar and Niemain" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Backdoor_Gellana" label="Backdoor to Gellana's Temple" level="vanillaPlus" />
-					<component id="JA#BGT_AdvPack-Backdoor_Waterqueen" label="Backdoor to Waterqueen's House" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Law_System" name="Extended Law System" label="Extended Law System" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Ramazith" name="Ramazith" label="Ramazith" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Jopi" name="Jopi and his uncle Ragefast" label="Jopi and His Uncle Ragefast" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Yuxi" name="Yuxi - Ragefast's imp" label="Yuxi — Ragefast's Imp" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Husam" name="Husam's story line finished" label="Husam's Story Line Finished" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Ducal_Palace" name="IMPROVED/RESTORED: Ducal Palace" label="Ducal Palace" />
+					<component id="JA#BGT_AdvPack-Gervisse_Voltine" name="Gervisse &amp; Voltine" label="Gervisse &amp; Voltine" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Seven_Suns" name="Seven Suns" label="Seven Suns" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Arkhstuff" name="Arkhstuff" label="Arkhstuff" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Iron_Throne" name="Iron Throne Guard" label="Iron Throne Guard" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Nashkel_Garrison" name="RESTORED: Nashkel Garrison soldier" label="Nashkel Garrison Soldier" />
+					<component id="JA#BGT_AdvPack-Velvet" name="RESTORED: Velvet - Cockfight" label="Velvet — Cockfight" />
+					<component id="JA#BGT_AdvPack-Caravan_merchant" name="RESTORED: Caravan merchant" label="Caravan Merchant" />
+					<component id="JA#BGT_AdvPack-Galtoth" name="RESTORED: Galtoth - the fence" label="Galtoth — the Fence" />
+					<component id="JA#BGT_AdvPack-Phandalyn" name="Phandalyn waits in Elfsong Tavern" label="Phandalyn Waits in Elfsong Tavern" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Warehouse_Workers" name="RESTORED: Warehouse Workers" label="Warehouse Workers" />
+					<component id="JA#BGT_AdvPack-Nobles" name="RESTORED: Nobles" label="Nobles" />
+					<component id="JA#BGT_AdvPack-Yago" name="RESTORED: Yago's guard in Low Lantern" label="Yago's Guard in Low Lantern" />
+					<component id="JA#BGT_AdvPack-Ignatio_Phleed" name="RESTORED: Ignatio Phleed - the invitation seller" label="Ignatio Phleed — the Invitation Seller" />
+					<component id="JA#BGT_AdvPack-Shalasin" name="RESTORED: Shalasin" label="Shalasin" />
+					<component id="JA#BGT_AdvPack-Artolas" name="RESTORED: Sir Artolas" label="Sir Artolas" />
+					<component id="JA#BGT_AdvPack-Pillar_Gheldehar" name="RESTORED: Pilar &amp; Gheldehar" label="Pilar &amp; Gheldehar" />
+					<component id="JA#BGT_AdvPack-Llindellyn" name="RESTORED: Llindellyn - the archer" label="Llindellyn — the Archer" />
+					<component id="JA#BGT_AdvPack-Keelor_Nasha" name="RESTORED: Keelor &amp; Nasha" label="Keelor &amp; Nasha" />
+					<component id="JA#BGT_AdvPack-Marl" name="RESTORED: Marl - Tavern brawl at Feldepost's Inn" label="Marl — Tavern Brawl at Feldepost's Inn" />
+					<component id="JA#BGT_AdvPack-Beregost_guards" name="RESTORED: Beregost guards" label="Beregost Guards" />
+					<component id="JA#BGT_AdvPack-Rythes_Last_Arrow" name="RESTORED ITEM: Rythe's Last Arrow" label="Rythe's Last Arrow" />
+					<component id="JA#BGT_AdvPack-The_Protector_of_the_Unworthy" name="RESTORED ITEM: The Protector of the Unworthy" label="The Protector of the Unworthy" />
+					<component id="JA#BGT_AdvPack-Counting_House" name="IMPROVED/FIXED: Counting House" label="Counting House" />
+					<component id="JA#BGT_AdvPack-Merchants_League" name="Merchants' League investigations" label="Merchants' League Investigations" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Aldeth_Seniyad" name="Aldeth &amp; Seniyad" label="Aldeth &amp; Seniyad" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Betrayal" name="Aldeth's betrayal and remorse" label="Aldeth's Betrayal and Remorse" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Tenya" name="Tenya and the fishermen" label="Tenya and the Fishermen" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Tenya2" name="Tenya's quest in Temple of Umberlee" label="Tenya's Quest in Temple of Umberlee" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Nashkel" name="Nashkel" label="Nashkel" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Nashkel_soldiers" name="Stationary soldiers in Nashkel" label="Stationary Soldiers in Nashkel" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Imoen_Winthrop" name="Imoen at Winthrop's inn" label="Imoen at Winthrop's Inn" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Priests" name="Priest of Oghma, Gond and Ilmater in Baldur's Gate" label="Priest of Oghma, Gond and Ilmater in Baldur's Gate" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Improved_dialogues" name="Extended/Improved dialogues" label="Extended/Improved Dialogues" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Caldo" name="Caldo can be charmed" label="Caldo Can Be Charmed" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Hulrik" name="Hulrik and his cows" label="Hulrik and His Cows" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Shop_of_Silence" name="Improved Shop of Silence" label="Improved Shop of Silence" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Ender_Sai" name="Ender Sai in Baldur's Gate" label="Ender Sai in Baldur's Gate" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Sorcerous_Sundries" name="Sorcerous Sundries" label="Sorcerous Sundries" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Miniquest" name="Mini-Quest: &quot;The mystery of the silent ghostly voice&quot;" label="Mini-Quest: &quot;The Mystery of the Silent Ghostly Voice&quot;" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Special_keg" name="Special keg in Elfsong Tavern" label="Special Keg in Elfsong Tavern" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Black_Alarics_Cave" name="Black Alaric's Cave" label="Black Alaric's Cave" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Cloakwood_druid" name="RESTORED: Cloakwood druid" label="Cloakwood Druid" />
+					<component id="JA#BGT_AdvPack-Niemain_Zentarim" name="Extended meeting between Xzar and Niemain" label="Extended Meeting between Xzar and Niemain" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Backdoor_Gellana" name="Backdoor to Gellana's temple" label="Backdoor to Gellana's Temple" level="vanillaPlus" />
+					<component id="JA#BGT_AdvPack-Backdoor_Waterqueen" name="Backdoor to Waterqueen's House" label="Backdoor to Waterqueen's House" level="vanillaPlus" />
 				</mod>
 				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" level="extended">
-					<component id="bg1re-required-teen_skip" label="Core" core="1" level="vanillaPlus" />
-					<component id="bg1re_late_night_jaheira" label="Late Night with Jaheira, by Kulyok" level="vanillaPlus" />
-					<component id="bg1re_mourning_of_centeol" label="The Mourning of Centeol, the Spider Lady, by Lava" />
-					<component id="bg1re_the_novellists" label="The Novelists, by Thimblerig" />
-					<component id="bg1re_honest_lies_of_two_riversides" label="The Honest Lies of Two Riversides, by Lava" level="blendWell" />
-					<component id="bg1re_necromancers_trouble" label="Necromancer's Trouble, by Jastey" />
-					<component id="bg1re_gender_girdle_reactions" label="Girdle of Gender Reactions, by Thimblerig, Kulyok, Domi, Lava, Lastknightleft, Twani, Jastey, Daisy Ninja Girl" level="vanillaPlus" />
-					<component id="bg1re_della_may_from_thay" label="Della May from Thay, by Kulyok" />
-					<component id="bg1re_camryn_and_tamah" label="Camryn and Tamah, by Tibicina" />
-					<component id="bg1re_cloakwood_lovers" label="Cloakwood Lovers, by Tibicina" />
+					<component id="bg1re-required-teen_skip" name="Teen Version and Skip Components with Warnings." label="Core" core="1" level="vanillaPlus" />
+					<component id="bg1re_late_night_jaheira" name="Late Night with Jaheira, by Kulyok" label="Late Night with Jaheira, by Kulyok" level="vanillaPlus" />
+					<component id="bg1re_mourning_of_centeol" name="The Mourning of Centeol, the Spider Lady, by Lava" label="The Mourning of Centeol, the Spider Lady, by Lava" />
+					<component id="bg1re_the_novellists" name="The Novelists, by Thimblerig" label="The Novelists, by Thimblerig" />
+					<component id="bg1re_honest_lies_of_two_riversides" name="The Honest Lies of Two Riversides, By Lava" label="The Honest Lies of Two Riversides, by Lava" level="blendWell" />
+					<component id="bg1re_necromancers_trouble" name="Necromancer's Trouble, by jastey" label="Necromancer's Trouble, by Jastey" />
+					<component id="bg1re_gender_girdle_reactions" name="Girdle of Gender Reactions, by Thimblerig, Kulyok, Domi, Lava, Lastknightleft, Twani, Jastey, Daisy Ninja Girl" label="Girdle of Gender Reactions, by Thimblerig, Kulyok, Domi, Lava, Lastknightleft, Twani, Jastey, Daisy Ninja Girl" level="vanillaPlus" />
+					<component id="bg1re_della_may_from_thay" name="Della May from Thay, by Kulyok" label="Della May from Thay, by Kulyok" />
+					<component id="bg1re_camryn_and_tamah" name="Camryn and Tamah, by tibicina" label="Camryn and Tamah, by Tibicina" />
+					<component id="bg1re_cloakwood_lovers" name="Cloakwood Lovers, by tibicina" label="Cloakwood Lovers, by Tibicina" />
 				</mod>
 				<component id="BS_BalduransSeatower-main" label="Balduran's Seatower" modId="BS_Baldurans_Seatower" level="blendWell" />
 				<mod id="Ascalons_Questpack" label="Ascalon's Quest Pack" level="blendWell">
@@ -263,9 +263,9 @@
 			<npc label="Joinable NPCs">
 				<expansions label="Original Cast Expansions" unfolded="1">
 					<mod id="BG1NPC" label="The BG1NPC Project" desc="Make the original BG1 NPCs talkative as in BG2" level="extended">
-						<component id="bg1npc_project-main" label="Core modifications" core="1" />
-						<component id="bg1npc_project-banters_quests_interjections" label="Banters, quests, and interjections" />
-						<component id="bg1npc_project-pid" label="Player-initiated dialogues" />
+						<component id="bg1npc_project-main" name="The BG1 NPC Project: Required Modifications" label="Core modifications" core="1" />
+						<component id="bg1npc_project-banters_quests_interjections" name="The BG1 NPC Project: Banters, Quests, and Interjections" label="Banters, quests, and interjections" />
+						<component id="bg1npc_project-pid" name="The BG1 NPC Project: Player-Initiated Dialogues" label="Player-initiated dialogues" />
 					</mod>
 					<mod id="ChattyImoen" label="Chatty Imoen" desc="Expands Imoen's voice set and adds interaction banters with other NPCs." level="vanillaPlus">
 						<component id="AY-ChattyImoen-CharSnds" label="Expanded character sounds" />
@@ -283,13 +283,13 @@
 				</expansions>
 				<romances label="Romances" noBranches="1">
 					<mod id="BG1NPC">
-						<component id="bg1npc_project-ajantisromance_1h" label="Ajantis" />
-						<component id="bg1npc_project-branwenromance_1h" label="Branwen" />
-						<component id="bg1npc_project-coranromance_1h" label="Coran" />
-						<component id="bg1npc_project-dynaheirromance_1h" label="Dynaheir" />
-						<component id="bg1npc_project-sharteelromance_1h" label="Shar-Teel" />
-						<component id="bg1npc_project-xanromance_1h" label="Xan" />
-						<component id="bg1npc_project-romancechallenge" label="Female Romance challenges, Ajantis vs Xan vs Coran" />
+						<component id="bg1npc_project-ajantisromance_1h" name="Speed: 1 hour real time (standard) minimum between LoveTalks" label="Ajantis" />
+						<component id="bg1npc_project-branwenromance_1h" name="Speed: 1 hour real time (standard) minimum between LoveTalks" label="Branwen" />
+						<component id="bg1npc_project-coranromance_1h" name="Speed: 1 hour real time (standard) minimum between LoveTalks" label="Coran" />
+						<component id="bg1npc_project-dynaheirromance_1h" name="Speed: 1 hour real time (standard) minimum between LoveTalks" label="Dynaheir" />
+						<component id="bg1npc_project-sharteelromance_1h" name="Speed: 1 hour real time (standard) minimum between LoveTalks" label="Shar-Teel" />
+						<component id="bg1npc_project-xanromance_1h" name="Speed: 1 hour real time (standard) minimum between LoveTalks" label="Xan" />
+						<component id="bg1npc_project-romancechallenge" name="The BG1 NPC Project: Female Romance Challenges, Ajantis vs Xan vs Coran" label="Female Romance challenges, Ajantis vs Xan vs Coran" />
 					</mod>
 					<mod id="Neera-Expansion" label="Neera Expansion" tags="beamdog">
 						<component id="neera_romanceable_by_women" name="Make Neera romanceable by women" label="Make Neera romanceable by women" />
@@ -302,7 +302,7 @@
 				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<mod id="BG1NPC">
-						<component id="bg1npc_project-sarevokdiary_sixofspades" label="Extended Sarevok's Diary" displayIf="bg1npc_project-main" level="extended" />
+						<component id="bg1npc_project-sarevokdiary_sixofspades" name="SixofSpades Extended Sarevok's Diary" label="Extended Sarevok's Diary" displayIf="bg1npc_project-main" level="extended" />
 					</mod>
 					<mod id="Tweaks-Anthology" label="The Tweaks Anthology" level="vanillaPlus" >
 						<component id="cd_tweaks_send_bg_npcs_to_inn" name="Send BioWare NPCs to an Inn [DavidW/Zed Nocear]" label="Send BioWare NPCs to an inn" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1075" />
@@ -325,7 +325,7 @@
 			<items label="Items" unfolded="1">
 				<add label="New Items">
 					<component id="cd_tweaks_taerom_makes_multiple_ankheg_armor" name="Taerom Makes Additional Ankheg Armor [Icendoan/grogerson]" label="Taerom makes additional Ankheg Armor" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3230" />
-					<component id="ForgottenArmament-Breach" label="Add Breach scrolls to Sorcerous Sundries" modId="forgotten-armament" />   
+					<component id="ForgottenArmament-Breach" name="Add Breach Scrolls to Sorcerous Sundries" label="Add Breach scrolls to Sorcerous Sundries" modId="forgotten-armament" />   
 				</add>
 				<update label="Item Changes" unfolded="1">
 					<component id="ZSTweaks:1663" name="Make Sandthief Ring consistently grant one use of invisibility per day" label="Make Sandthief Ring consistently grant one use of Invisibility per day" modId="ZSTweaks" level="blendWell" /> 
@@ -446,15 +446,15 @@
 					<component id="dw_lanthorn:20" name="Expanded Version (adds four new locations where lenses can be found)" label="Expanded version" desc="Adds four new locations where lenses can be found" modId="Restored-Rhynn-Lanthorn" />
 				</alternatives>
 				<mod id="Ascension" label="Ascension" level="blendWell" >
-					<component id="Ascension-RewrittenFinalChapterOfToB" label="Rewritten final chapter of Throne of Bhaal"/>
-					<component id="Ascension-BalthazarCanBeRedeemed" label="Balthazar can be redeemed" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
-					<component id="Ascension-ImprovedSarevokPlayerInteractions" label="Improved Sarevok-player interactions" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
-					<component id="Ascension-ImprovedImoenPlayerInteractions" label="Improved Imoen-player interactions in Throne of Bhaal" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
-					<component id="Ascension-ImprovedSlayerTransformation" label="Improved Slayer transformation" />
-					<component id="Ascension-DavidGaiderExpandedEpilogues" label="David Gaider's Expanded Epilogues for BioWare NPCs" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
-					<component id="Ascension-ExtendedEpiloguesForEENPCbyShawne" label="Extended epilogues for additional Beamdog NPCs, by Shawne" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
-					<component id="Ascension-SharperPortraitsAbazigalGromnir" label="Sharper portraits of Abazigal and Gromnir for the Enhanced Edition, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
-					<component id="Ascension-SlightlyImprovedCutscenes" label="Slightly improved cutscenes, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
+					<component id="Ascension-RewrittenFinalChapterOfToB" name="Rewritten Final Chapter of Throne of Bhaal" label="Rewritten final chapter of Throne of Bhaal" />
+					<component id="Ascension-BalthazarCanBeRedeemed" name="Balthazar can be redeemed" label="Balthazar can be redeemed" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
+					<component id="Ascension-ImprovedSarevokPlayerInteractions" name="Improved Sarevok-Player Interactions" label="Improved Sarevok-player interactions" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
+					<component id="Ascension-ImprovedImoenPlayerInteractions" name="Improved Imoen-Player Interactions in Throne of Bhaal" label="Improved Imoen-player interactions in Throne of Bhaal" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
+					<component id="Ascension-ImprovedSlayerTransformation" name="Improved Slayer Transformation" label="Improved Slayer transformation" />
+					<component id="Ascension-DavidGaiderExpandedEpilogues" name="David Gaider's expanded epilogues for Bioware NPCs" label="David Gaider's Expanded Epilogues for BioWare NPCs" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
+					<component id="Ascension-ExtendedEpiloguesForEENPCbyShawne" name="Extended Epilogues for additional Beamdog NPCs, by shawne" label="Extended epilogues for additional Beamdog NPCs, by Shawne" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
+					<component id="Ascension-SharperPortraitsAbazigalGromnir" name="Sharper portraits of Abazigal and Gromnir for the Enhanced Edition, by DavidW" label="Sharper portraits of Abazigal and Gromnir for the Enhanced Edition, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
+					<component id="Ascension-SlightlyImprovedCutscenes" name="Slightly improved cutscenes, by DavidW" label="Slightly improved cutscenes, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" />
 				</mod>
 				<component id="SoAExtended:1" name="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" label="Shadows of Amn extended: Book 1 - Quiet Before The Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" level="blendWell" />
 				<component id="FightHeaven-Main" label="Fight the Heavens" modId="fight-the-heavens" />
@@ -465,43 +465,43 @@
 			</restructure>
 			<restorations label="Restorations" level="restoration">
 				<mod id="UnfinishedBusiness" label="Unfinished Business">
-					<component id="ub:5" label="The Pai'Na/Spider's Bane Quest" level="vanillaPlus" />
-					<component id="ub:6" label="Restored Crooked Crane Inn" level="restoration" />
-					<component id="ub:7" label="Restored encounters" level="restoration" />
-					<component id="ub:3" label="Unfinished Business - &quot;Cat and Mouse&quot; (Bodhi hunts you in Spellhold) by Ghreyfain" level="higherDifficulty" />
-					<component id="ub:8" label="Artemis Entreri in Bodhi's Lair" level="vanillaPlus" />
-					<component id="ub:12" label="Item restorations" level="restoration" />
-					<component id="ub:17" label="Corrected character names and biographies" level="fixes" />
-					<component id="ub:18" label="Restored minor dialogues" level="restoration" />
-					<component id="ub:19" label="Restored Bhaalspawn Powers, by David Gaider" level="restoration" />
-					<component id="ub:20" label="Extended ToB item descriptions" level="vanillaPlus" />
-					<component id="ub:21" label="Throne of Bhaal minor restorations" level="restoration" />
+					<component id="ub:5" name="The Pai'Na/Spider's Bane Quest" label="The Pai'Na/Spider's Bane Quest" level="vanillaPlus" />
+					<component id="ub:6" name="Restored Crooked Crane Inn" label="Restored Crooked Crane Inn" level="restoration" />
+					<component id="ub:7" name="Restored Encounters" label="Restored encounters" level="restoration" />
+					<component id="ub:3" name="&quot;Cat and Mouse&quot; (Bodhi hunts you in Spellhold) by Ghreyfain" label="Unfinished Business - &quot;Cat and Mouse&quot; (Bodhi hunts you in Spellhold) by Ghreyfain" level="higherDifficulty" />
+					<component id="ub:8" name="Artemis Entreri in Bodhi's Lair" label="Artemis Entreri in Bodhi's Lair" level="vanillaPlus" />
+					<component id="ub:12" name="Item Restorations" label="Item restorations" level="restoration" />
+					<component id="ub:17" name="Corrected Character Names and Biographies" label="Corrected character names and biographies" level="fixes" />
+					<component id="ub:18" name="Restored Minor Dialogs" label="Restored minor dialogues" level="restoration" />
+					<component id="ub:19" name="Restored Bhaalspawn Powers, by David Gaider" label="Restored Bhaalspawn Powers, by David Gaider" level="restoration" />
+					<component id="ub:20" name="Extended ToB Item Descriptions" label="Extended ToB item descriptions" level="vanillaPlus" />
+					<component id="ub:21" name="Throne of Bhaal Minor Restorations" label="Throne of Bhaal minor restorations" level="restoration" />
 				</mod>
 				<mod id="Almateria-Restoration-Project" label="Almateria's Restoration Project" level="restoration" unfolded="1">
-					<component id="Almaterias_Restoration_Project-Restored_Locations" label="Restored locations" />
-					<component id="Almaterias_Restoration_Project-Restored_Characters_and_Dialogs" label="Restored characters and dialogues" />
-					<component id="Almaterias_Restoration_Project-Restored_Sounds" label="Restored sounds" />
-					<component id="Almaterias_Restoration_Project-Restored_Items" label="Restored items" />
-					<component id="Almaterias_Restoration_Project-Restored_Wish_Options" label="Restored wish options" />
-					<component id="Almaterias_Restoration_Project-Restored_XP_for_Minor_Things" label="Restored XP for minor things" />
-					<component id="Almaterias_Restoration_Project-Lich_Deril" label="Lich Deril" />
-					<component id="Almaterias_Restoration_Project-Restored_Random_Encounters" label="Restored random encounters" />
-					<component id="Almaterias_Restoration_Project-Minor_Restorations" label="Minor restorations" />
+					<component id="Almaterias_Restoration_Project-Restored_Locations" name="Restored Locations" label="Restored locations" />
+					<component id="Almaterias_Restoration_Project-Restored_Characters_and_Dialogs" name="Restored Characters and Dialogs" label="Restored characters and dialogues" />
+					<component id="Almaterias_Restoration_Project-Restored_Sounds" name="Restored Sounds" label="Restored sounds" />
+					<component id="Almaterias_Restoration_Project-Restored_Items" name="Restored Items" label="Restored items" />
+					<component id="Almaterias_Restoration_Project-Restored_Wish_Options" name="Restored Wish Options" label="Restored wish options" />
+					<component id="Almaterias_Restoration_Project-Restored_XP_for_Minor_Things" name="Restored XP for Minor Things" label="Restored XP for minor things" />
+					<component id="Almaterias_Restoration_Project-Lich_Deril" name="Lich Deril" label="Lich Deril" />
+					<component id="Almaterias_Restoration_Project-Restored_Random_Encounters" name="Restored Random Encounters" label="Restored random encounters" />
+					<component id="Almaterias_Restoration_Project-Minor_Restorations" name="Minor Restorations" label="Minor restorations" />
 					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" label="Alternate Slayer change" level="higherDifficulty" />
-					<component id="Almaterias_Restoration_Project-Restored_Final_Slayer_Dream" label="Restored final Slayer dream" />
-					<component id="Almaterias_Restoration_Project-Restored_Waukeens_Promenade_Cutscene" label="Restored Waukeen's Promenade Cutscene" />
+					<component id="Almaterias_Restoration_Project-Restored_Final_Slayer_Dream" name="Restored Final Slayer Dream" label="Restored final Slayer dream" />
+					<component id="Almaterias_Restoration_Project-Restored_Waukeens_Promenade_Cutscene" name="Restored Final Slayer Dream" label="Restored Waukeen's Promenade Cutscene" />
 				</mod>
 			</restorations>
 			<quest label="Quests and Encounters">
 				<component id="AdalonsBlood-main" name="Adalon's Blood - Modification for BGII by Gandalf the white" label="Adalon's Blood" desc="Allows good characters to finish the skinner quest in a good way" modId="Adalons_Blood" level="vanillaPlus" />
 				<mod id="hiddenadventure" label="Hidden Adventures" level="extended">
-					<component id="hidden_adventures-ladyelgea" label="Lady Elgea's Extended Plot" level="blendWell" />
-					<component id="hidden_adventures-anomenplot" label="Anomen's Extended Plot" />
-					<component id="hidden_adventures-jerliashop" label="Jerlia's Ore Shop" />
-					<component id="hidden_adventures-waveblade_treasury" label="Wave Blade in Treasury" level="blendWell" />
-					<component id="hidden_adventures-bard_stronghold_resting" label="Bards Can Spend the Night at Their Stronghold (Five Flagons)" level="fixes" />
-					<component id="hidden_adventures-tunnel_saradush" label="A Tunnel for Saradush" />
-					<component id="hidden_adventures-masktemple_docks" label="Temple of Mask in Docks District" />
+					<component id="hidden_adventures-ladyelgea" name="Lady Elgea's extended plot" label="Lady Elgea's Extended Plot" level="blendWell" />
+					<component id="hidden_adventures-anomenplot" name="Anomen's extended plot" label="Anomen's Extended Plot" />
+					<component id="hidden_adventures-jerliashop" name="Jerlia's Ore Shop" label="Jerlia's Ore Shop" />
+					<component id="hidden_adventures-waveblade_treasury" name="Wave Blade in Treasury" label="Wave Blade in Treasury" level="blendWell" />
+					<component id="hidden_adventures-bard_stronghold_resting" name="Bards can spend the night at their stronghold (Five Flagons)" label="Bards Can Spend the Night at Their Stronghold (Five Flagons)" level="fixes" />
+					<component id="hidden_adventures-tunnel_saradush" name="A Tunnel for Saradush" label="A Tunnel for Saradush" />
+					<component id="hidden_adventures-masktemple_docks" name="Temple of Mask in Docks District" label="Temple of Mask in Docks District" />
 				</mod>
 				<component id="CorthalaRomantique-SphereGuard" name="Install Leonora Content: A Guard for the Sphere" label="A Guard for the Sphere" desc="Corthala Romantique's Leonora Content" modId="Corthala_Romantique" />
 				<component id="Assassinations:0" label="Assassinations" modId="Assassinations" level="extended" />
@@ -703,11 +703,11 @@
 						<component id="ForgottenArmament-FreedomScroll" label="Freedom Scrolls in Ribald's Store (pre-Underdark)" />
 					</mod>
 					<component id="k0_iskp:3102" name="all_imports_random" label="Import SoD Items" modId="sod-items-to-bg2ee-eet" level="extended" />
-					<component id="hidden_adventures-silverdagger_ID" label="Silver Dagger in Irenicus Dungeon" level="blendWell" modId="hiddenadventure" />
+					<component id="hidden_adventures-silverdagger_ID" name="Silver Dagger in Irenicus Dungeon" label="Silver Dagger in Irenicus Dungeon" level="blendWell" modId="hiddenadventure" />
 				</add>
 				<update label="Item Changes">
 					<component id="cd_tweaks_gradual_drow_item_disintegration" name="Gradual Drow Item Disintegration" label="Gradual drow Item Disintegration" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1050" />
-					<component id="hidden_adventures-silversword" label="Silver Sword against mind flayers and lycanthropes" level="blendWell" modId="hiddenadventure" />
+					<component id="hidden_adventures-silversword" name="Silver Sword" label="Silver Sword against mind flayers and lycanthropes" level="blendWell" modId="hiddenadventure" />
 					<component id="HouseTweaks:19" name="House Tweaks: Useful Plot Items" label="Useful Plot Items" modId="House-Rule-Tweaks" level="blendWell" />
 					<component id="stuffofthemagi:0" name="Use new, less cheesy items AND Add them to creatures' equipment (recommended)" label="Nerf Stuff of the Magi condiments and add them to creatures' equipment" modId="Stuff-of-the-Magi" level="blendWell" />
 					<group label="Corrections" noBranches="1">
@@ -774,7 +774,7 @@
 							<component id="ZSTweaks:2250" name="Make Edwin's amulet nuanced in the privileges it grants to that snake" label="Make Edwin's Amulet nuanced in the privileges it grants to that snake" />
 							<component id="ZSTweaks:1556" name="Make minor improvements to Jaheira-specific items" label="Make minor improvements to Jaheira-specific items" />
 						</mod>
-						<component id="ForgottenArmament-NerfAPR" label="Nerf APR increasing one-handed melee weapons" modId="forgotten-armament" />
+						<component id="ForgottenArmament-NerfAPR" name="Nerf APR Increasing One-Handed Melee Weapons" label="Nerf APR increasing one-handed melee weapons" modId="forgotten-armament" />
 					</group>
 				</update>
 				<upgrade label="Item Upgrades" noBranches="1">
@@ -851,42 +851,42 @@
 			<npc label="Joinable NPCs">
 				<custom label="Custom Interactive NPCs">
 					<mod id="IWD_NPC" label="Icewind Dale NPCs Pack">
-						<component id="IWDNPC:0" label="Icewind Dale NPCs pack" core="1"/>
+						<component id="IWDNPC:0" name="Icewind Dale NPCs" label="Icewind Dale NPCs pack" core="1" />
 						<alternatives label="Change class for Holvir (human LG paladin)">
-							<component id="IWDNPC:9" label="Cavalier" />
-							<component id="IWDNPC:10" label="Inquisitor" />
-							<component id="IWDNPC:11" label="Undead Hunter" />
+							<component id="IWDNPC:9" name="Holvir, cavalier" label="Cavalier" />
+							<component id="IWDNPC:10" name="Holvir, inquisitor" label="Inquisitor" />
+							<component id="IWDNPC:11" name="Holvir, undead hunter" label="Undead Hunter" />
 						</alternatives>
 						<alternatives label="Change class for Korin (elf NG fighter/mage)">
-							<component id="IWDNPC:12" label="Archer" />
-							<component id="IWDNPC:13" label="Beast Master" />
-							<component id="IWDNPC:14" label="Stalker" />
-							<component id="IWDNPC:15" label="Cleric/ranger" />
+							<component id="IWDNPC:12" name="Korin, archer" label="Archer" />
+							<component id="IWDNPC:13" name="Korin, beast master" label="Beast Master" />
+							<component id="IWDNPC:14" name="Korin, stalker" label="Stalker" />
+							<component id="IWDNPC:15" name="Korin, multiclass cleric/ranger" label="Cleric/ranger" />
 						</alternatives>
 						<alternatives label="Change class for Nella (human NG fighter)">
-							<component id="IWDNPC:16" label="Berserker" />
-							<component id="IWDNPC:17" label="Kensai" />
-							<component id="IWDNPC:18" label="Wizard Slayer" />
-							<component id="IWDNPC:19" label="Fighter/cleric" />
-							<component id="IWDNPC:20" label="Fighter/druid" />
-							<component id="IWDNPC:21" label="Monk" />
+							<component id="IWDNPC:16" name="Nella, berserker" label="Berserker" />
+							<component id="IWDNPC:17" name="Nella, kensai" label="Kensai" />
+							<component id="IWDNPC:18" name="Nella, wizard slayer" label="Wizard Slayer" />
+							<component id="IWDNPC:19" name="Nella, multiclass fighter/cleric" label="Fighter/cleric" />
+							<component id="IWDNPC:20" name="Nella, multiclass fighter/druid" label="Fighter/druid" />
+							<component id="IWDNPC:21" name="Nella, monk" label="Monk" />
 						</alternatives>
 						<alternatives label="Change class for Severn (human NG bard)">
-							<component id="IWDNPC:22" label="Blade" />
-							<component id="IWDNPC:23" label="Jester" />
-							<component id="IWDNPC:24" label="Skald" />
-							<component id="IWDNPC:25" label="Fighter/mage" />
-							<component id="IWDNPC:26" label="Sorcerer" />
-							<component id="IWDNPC:27" label="Mage" />
-							<component id="IWDNPC:28" label="Wild Mage" />
+							<component id="IWDNPC:22" name="Severn, blade" label="Blade" />
+							<component id="IWDNPC:23" name="Severn, jester" label="Jester" />
+							<component id="IWDNPC:24" name="Severn, skald" label="Skald" />
+							<component id="IWDNPC:25" name="Severn, multiclass fighter/mage" label="Fighter/mage" />
+							<component id="IWDNPC:26" name="Severn, sorcerer" label="Sorcerer" />
+							<component id="IWDNPC:27" name="Severn, mage" label="Mage" />
+							<component id="IWDNPC:28" name="Severn, wild mage" label="Wild Mage" />
 						</alternatives>
 						<alternatives label="Change class for Teri (half-elf CN fighter/thief)">
-							<component id="IWDNPC:29" label="Assassin" />
-							<component id="IWDNPC:30" label="Bounty Hunter" />
-							<component id="IWDNPC:31" label="Swashbuckler" />
-							<component id="IWDNPC:32" label="Thief" />
-							<component id="IWDNPC:33" label="Fighter/thief/mage" />
-							<component id="IWDNPC:34" label="Thief/mage" />
+							<component id="IWDNPC:29" name="Teri, assassin" label="Assassin" />
+							<component id="IWDNPC:30" name="Teri, bounty hunter" label="Bounty Hunter" />
+							<component id="IWDNPC:31" name="Teri, swashbuckler" label="Swashbuckler" />
+							<component id="IWDNPC:32" name="Teri, thief" label="Thief" />
+							<component id="IWDNPC:33" name="Teri, multiclass fighter/thief/mage" label="Fighter/thief/mage" />
+							<component id="IWDNPC:34" name="Teri, multiclass thief/mage" label="Thief/mage" />
 						</alternatives>
 					</mod>
 					<component id="druidsor:0" label="Geomantic Sorcerer kit" desc="This is needed for Tipps NPC" modId="Geomantic_Sorcerer" alwaysIf="L#-TIPPS-IWD" noDisplay="1" />
@@ -933,8 +933,8 @@
 					<component id="stratagems:3510" name="Wider availability of wizard spell scrolls in Icewind Dale" label="Wider availability of wizard spell scrolls in Icewind Dale" modId="SwordCoastStratagems" />
 					<component id="ee_cosmetic_enhancements:2" label="Add Bhaal's Fire and Benorg's Truth into loot tables" modId="EE_Cosmetic_Item_Enhancement" />
 					<mod id="forgotten-armament">
-						<component id="ForgottenArmament-Orrick" label="Add more items and scrolls to Orrick's Store" />
-						<component id="ForgottenArmament-Conlan" label="Add more items to Conlan's Smithy" />
+						<component id="ForgottenArmament-Orrick" name="Add more Items and Scrolls to Orrick's Store" label="Add more items and scrolls to Orrick's Store" />
+						<component id="ForgottenArmament-Conlan" name="Add more Items to Conlan's Smithy" label="Add more items to Conlan's Smithy" />
 					</mod>
 					<mod id="IWDEE-Frostforged" label="Frostforged">
 						<component id="Frostforged:0" label="Item rebalance mod for IWD:EE" />
@@ -1010,7 +1010,7 @@
 							<component id="cdtweaks:150" name="Remove &quot;+x&quot; From Unique Item Names" label="Remove &quot;+x&quot; from unique item names" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_150" />
 						</mod>
 						<component id="ForgottenArmament-SetBonus" label="Add set bonuses to Planar Items" modId="forgotten-armament" />
-						<component id="ForgottenArmament-UpdateItems" label="Forgotten Armament: Update existing in-game items" modId="forgotten-armament" />
+						<component id="ForgottenArmament-UpdateItems" name="Update Existing In-Game Items" label="Forgotten Armament: Update existing in-game items" modId="forgotten-armament" />
 						<mod id="ZSTweaks" level="blendWell">
 							<component id="ZSTweaks:1548" name="Make Void-weapons slightly more effective and logical" label="Make Void-Weapons slightly more effective and logical" />
 							<component id="ZSTweaks:1532" name="Make bracers, belts and boots grant +1 HP, so even unenchanted variants have an actual use" label="Make bracers, belts and boots grant +1 HP, so even unenchanted variants have an actual use" />
@@ -1072,7 +1072,7 @@
 			</npc>
 			<items label="Items">
 				<add noBranches="1">
-					<component id="ForgottenArmament-AcidResist" label="Create Potions of Acid Resistance" modId="forgotten-armament" />
+					<component id="ForgottenArmament-AcidResist" name="Create Potions of Acid Resistance" label="Create Potions of Acid Resistance" modId="forgotten-armament" />
 					<component id="cd_tweaks_add_bags_of_holding" name="Add Bags of Holding" label="Add Bags of Holding" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1080" />
 				</add>
 				<update label="Item Changes">
@@ -1084,8 +1084,8 @@
 					<component id="HouseTweaks:39" name="House Tweaks: Ankheg and Dragonscale Armor Count as Medium Armor" label="Ankheg and dragonscale armor count as medium armor" modId="House-Rule-Tweaks" level="blendWell" />
 					<group label="Updates" noBranches="1">
 						<mod id="ZSTweaks">
-							<component id="ForgottenArmament-ReplaceSpeedBoots" label="Replace Boots of Speed (Paws of the Cheetah)" modId="forgotten-armament" />
-							<component id="ForgottenArmament-StatIncreaseItems" label="Update items setting an ability score to increment the increase" modId="forgotten-armament" />
+							<component id="ForgottenArmament-ReplaceSpeedBoots" name="Replace Boots of Speed (Paws of the Cheetah)" label="Replace Boots of Speed (Paws of the Cheetah)" modId="forgotten-armament" />
+							<component id="ForgottenArmament-StatIncreaseItems" name="Update Items Setting an Ability Score to Increment the Increase" label="Update items setting an ability score to increment the increase" modId="forgotten-armament" />
 							<component id="ZSTweaks:1547" name="Make Protection from Undead more balanced" label="Make Protection from Undead more balanced" level="higherDifficulty" />
 							<component id="ZSTweaks:1203" name="Make Girdle of Fortitude set Constitution to 18 on equip" label="Make Girdle of Fortitude set CON to 18 on equip" level="blendWell" />
 							<component id="ZSTweaks:1216" name="Make Ankheg's Plate grant 20% acid resistance" label="Make Ankheg's Plate grant 20% acid resistance" level="blendWell"  />
@@ -1394,7 +1394,7 @@
 			<component id="cd_tweaks_kagain_legal_con" name="Give Kagain a Legal Constitution Score of 19" label="Give Kagain a legal CON score of 19" level="blendWell" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4110" />
 			<component id="cd_tweaks_coran_legal_dex" name="Give Coran a Legal Dexterity Score of 19" label="Give Coran a legal DEX score of 19" level="blendWell" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4120" />
 			<component id="cd_tweaks_yoshimo_better_trapsetting" name="Increase Yoshimo's Trapsetting Ability" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4230" />
-			<component id="bg1npc_project-kivanproficiency_spears" label="Kivan uses spears" displayIf="bg1npc_project-main" level="fixes" modId="BG1NPC" />
+			<component id="bg1npc_project-kivanproficiency_spears" name="Kivan uses spears" label="Kivan uses spears" displayIf="bg1npc_project-main" level="fixes" modId="BG1NPC" />
 		</group>
 		<group label="Appearance">
 			<component id="cd_tweaks_nalia_avatar_change" name="Change Nalia's Avatar to Thief" label="Change Nalia's avatar to thief" modId="Tweaks-Anthology" engine="bg2,eet" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_30" />
@@ -1429,7 +1429,7 @@
 			<component id="ZS_CanIStabYou:310" name="Yaga-Shura cannot see through invisibility" label="Yaga-Shura cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
 			<component id="ZS_CanIStabYou:311" name="Amelyssan cannot see through invisibility" label="Amelyssan cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" />
 		</mod>
-		<component id="ForgottenArmament-CritImmunity2" label="Allow difficult enemies to remain immune to critical hits" modId="forgotten-armament" />
+		<component id="ForgottenArmament-CritImmunity2" name="Allow Difficult Enemies to Remain Immune to Critical Hits" label="Allow difficult enemies to remain immune to critical hits" modId="forgotten-armament" />
 		<tweaks label="Creature Tweaks" noBranches="1">
 			<component id="HouseTweaks:20" name="House Tweaks: Faster Troll Unconsciousness" label="Faster troll unconsciousness" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg,iwd,eet" />
 			<component id="METweaks:3150" name="Give Belhifet more reasonable immunities" label="Give belhifet more reasonable immunities" level="vanillaPlus" modId="Olvyn-Tweaks" engine="bg,iwd,eet" />
@@ -1829,18 +1829,18 @@
 				<wizardSlayer label="Wizard Slayer">
 					<component id="SkillsAndAbilitiesDI1" label="Add Detect Illusions, Spell Failure and Dispel on Hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." level="lowerDifficulty" />
 				</wizardSlayer>
-				<component id="SkillsAndAbilitiesFighter" label="Add new abilities" modId="skills-and-abilities" desc="1st level - Second Wind (Once per day, heal 1d10 + fighter level); 9th level - Indomitable (increase saving throws). HLA: increase thac0 and damage" />
+				<component id="SkillsAndAbilitiesFighter" name="Add New Fighter Abilities" label="Add new abilities" modId="skills-and-abilities" desc="1st level - Second Wind (Once per day, heal 1d10 + fighter level); 9th level - Indomitable (increase saving throws). HLA: increase thac0 and damage" />
 			</fighter>
 			<ranger label="Ranger">
 				<archer label="Archer">
-					<component id="SkillsAndAbilitiesUpdateArcher" label="Provide to-hit and damage bonuses per the kit description" modId="skills-and-abilities" />
+					<component id="SkillsAndAbilitiesUpdateArcher" name="Update Archer to provide to hit and damage bonuses per the kit description" label="Provide to-hit and damage bonuses per the kit description" modId="skills-and-abilities" />
 				</archer>
 			</ranger>
 			<paladin label="Paladin">
 				<component id="SkillsAndAbilitiesPaladin1" label="Add new abilities" modId="skills-and-abilities" desc="Smite, auras and Sanctify Strikes (+2 magic damage)" />
 				<inquisitor label="Inquisitor">
 					<component id="SkillsAndAbilitiesDI2" label="Replace Inquisitor True Seeing with Detect Illusion skill" displayIf="EEex:1" modId="skills-and-abilities" />
-					<component id="SkillsAndAbilitiesInquisitor1" label="Allow Inquisitor kit to cast divine spells" modId="skills-and-abilities" />
+					<component id="SkillsAndAbilitiesInquisitor1" name="Allow Inquisitor Kit to Cast Divine Spells" label="Allow Inquisitor kit to cast divine spells" modId="skills-and-abilities" />
 				</inquisitor>
 				<component id="METweaks:1500" name="Turn Paladin Detect Evil into a passive ability that can be toggled on and off" label="Turn paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" level="lowerDifficulty" />
 			</paladin>
@@ -1853,12 +1853,12 @@
 			</thief>
 			<bard label="Bard">
 				<blade label="Blade">
-					<component id="SkillsAndAbilitiesBlade" label="Blade kit enhancements" modId="skills-and-abilities" desc="This allows the bard Blade kit to master (3 slots) in all bladed weapons and receive a 0.5 APR boost at level 10 and again at level 20. This will also update all non-recruitable Blades within the game to have specialization in the melee weapon(s) of their choice." />
+					<component id="SkillsAndAbilitiesBlade" name="Blade Kit Enhancements" label="Blade kit enhancements" modId="skills-and-abilities" desc="This allows the bard Blade kit to master (3 slots) in all bladed weapons and receive a 0.5 APR boost at level 10 and again at level 20. This will also update all non-recruitable Blades within the game to have specialization in the melee weapon(s) of their choice." />
 				</blade>
 				<skald label="Skald">
-					<component id="SkillsAndAbilitiesSkald" label="Skald kit enhancements" modId="skills-and-abilities" />
+					<component id="SkillsAndAbilitiesSkald" name="Skald Kit Enhancements" label="Skald kit enhancements" modId="skills-and-abilities" />
 				</skald>
-				<component id="SkillsAndAbilitiesSongDuration" label="Bard Songs last 1 turn" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesSongDuration" name="Bard Songs Last 1 Turn" label="Bard Songs last 1 turn" modId="skills-and-abilities" />
 				<alternatives label="Add skills" displayIf="EEex:1">
 					<component id="SkillsAndAbilitiesBard1" label="Open Locks" displayIf="EEex:1" modId="skills-and-abilities" default="1" />
 					<component id="SkillsAndAbilitiesBard2" label="Open Locks and Find/Disarm Traps" displayIf="EEex:1" modId="skills-and-abilities" />
@@ -1876,7 +1876,7 @@
 			</sorcerer>
 			<shaman label="Shaman">
 			</shaman>
-			<component id="SkillsAndAbilitiesConcentration" label="Add Concentration Check to resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" />
+			<component id="SkillsAndAbilitiesConcentration" name="Add Concentration Check to Resist Spell Disruption" label="Add Concentration Check to resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" />
 		</spellcasters>
 		<multi label="Multi-class / dual-class">
 			<alternatives label="Allow fighter multiclasses to achieve higher Weapon Proficiency" level="lowerDifficulty">
@@ -1885,7 +1885,7 @@
 				<component id="SkillsAndAbilitiesWeaponProf3" label="Grand master (5 pips)" modId="skills-and-abilities" />
 			</alternatives>
 			<component id="cd_tweaks_casting_in_armor" name="Allow Arcane Spellcasting in Heavy Armor" label="Allow arcane spellcasting in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2120" />
-			<component id="SkillsAndAbilitiesClericThief" label="Adjust cleric/thief action bar" displayIf="EEex:1" modId="skills-and-abilities" />
+			<component id="SkillsAndAbilitiesClericThief" name="Adjust Cleric/Thief Actionbar" label="Adjust cleric/thief action bar" displayIf="EEex:1" modId="skills-and-abilities" />
 			<component id="D5_REVISED_DUAL_CLASS_REQS" name="Lower Dual-Class Requirements" label="Lower dual-class requirements" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" />
 		</multi>
 		<universal label="Universal">
@@ -1893,10 +1893,10 @@
 				<component id="SkillsAndAbilitiesSTR" label="2H weapon additional STR bonus" modId="skills-and-abilities" level="lowerDifficulty" />
 			</weapons>
 			<group label="HLAs">
-				<component id="SkillsAndAbilitiesNewHLA" label="Add new HLAs for all classes and kits" modId="skills-and-abilities" />
-				<component id="SkillsAndAbilitiesUpdateHLA" label="Update existing HLAs" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesNewHLA" name="Add New HLAs for ALL Classes and Kits" label="Add new HLAs for all classes and kits" modId="skills-and-abilities" />
+				<component id="SkillsAndAbilitiesUpdateHLA" name="Update Existing HLAs" label="Update existing HLAs" modId="skills-and-abilities" />
 			</group>
-			<component id="SkillsAndAbilitiesTurnUndead" label="Turn Undead overhaul" displayIf="EEex:1" modId="skills-and-abilities" />
+			<component id="SkillsAndAbilitiesTurnUndead" name="Turn Undead Overhaul" label="Turn Undead overhaul" displayIf="EEex:1" modId="skills-and-abilities" />
 		</universal>
 		<stats label="Stats">
 			<hp>
@@ -1936,11 +1936,11 @@
 					<component id="cd_tweaks_weapon_styles_for_all" name="Weapon Styles for All" label="Weapon Styles for all" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2060" />
 				</group>
 				<mod id="skills-and-abilities" label="Skills And Abilities">
-					<component id="SkillsAndAbilitiesWeapStyle" label="Update weapon Fighting Styles" />
+					<component id="SkillsAndAbilitiesWeapStyle" name="Update Weapon Fighting Styles" label="Update weapon Fighting Styles" />
 					<alternatives label="Overhaul Proficiency System - add new Proficiencies and Weapon Styles">
-						<component id="SkillsAndAbilitiesNewProf1" label="Vanilla Proficiency Progression" default="1" />
-						<component id="SkillsAndAbilitiesNewProf2" label="Accelerated Proficiency Progression" />
-						<component id="SkillsAndAbilitiesNewProf3" label="NWN2-style Proficiency Progression" />
+						<component id="SkillsAndAbilitiesNewProf1" name="Vanilla Proficiency Progression" label="Vanilla Proficiency Progression" default="1" />
+						<component id="SkillsAndAbilitiesNewProf2" name="Accelerated Proficiency Progression" label="Accelerated Proficiency Progression" />
+						<component id="SkillsAndAbilitiesNewProf3" name="NWN2 Style Proficiency Progression" label="NWN2-style Proficiency Progression" />
 					</alternatives>
 				</mod>
 				<mod id="Combat_Skill_Proficiencies" label="SubtleD Combat Skills &amp; Proficiencies">
@@ -1957,30 +1957,30 @@
 	<randomisation engine="bg,eet" level="higherDifficulty">
 		<alternatives label="Enemies" unfolded="1">
 			<mod id="BGSpawn" label="BG1 Spawn System" engine="bg1,eet">
-				<component id="BGSpawn-Main" label="BGSpawn system based on levels and party members" core="1" />
+				<component id="BGSpawn-Main" name="BGSpawn system based on levels &amp; party members" label="BGSpawn system based on levels and party members" core="1" />
 				<alternatives label="How often to check for respawn?">
 					<component id="BGSpawn-RespawnTime8Hours" label="8 hours (standard PnP rules)" default="1" />
 					<component id="BGSpawn-RespawnTime1Day" label="1 day" />
 				</alternatives>
 				<alternatives label="How sure a respawn should be?">
-					<component id="BGSpawn-SpawnProbability-100" label="100%" default="1" />
-					<component id="BGSpawn-SpawnProbability-75" label="75%" />
-					<component id="BGSpawn-SpawnProbability-50" label="50%" />
-					<component id="BGSpawn-SpawnProbability-25" label="25%" />
+					<component id="BGSpawn-SpawnProbability-100" name="100%" label="100%" default="1" />
+					<component id="BGSpawn-SpawnProbability-75" name="75%" label="75%" />
+					<component id="BGSpawn-SpawnProbability-50" name="50%" label="50%" />
+					<component id="BGSpawn-SpawnProbability-25" name="25%" label="25%" />
 				</alternatives>
-				<component id="BGSpawn-VampiricWolfLord" label="New Vampiric Wolf Lord" />
-				<component id="BGSpawn-RandomEncounters" label="Random encounters between areas" />
+				<component id="BGSpawn-VampiricWolfLord" name="Vampiric Wolf Lord (inspired to DavidW Wolf of Ulcaster)" label="New Vampiric Wolf Lord" />
+				<component id="BGSpawn-RandomEncounters" name="BGSpawn random encounters between areas" label="Random encounters between areas" />
 			</mod>
 			<mod id="bg_enemy_randomizer" label="BG1/BG2 Enemy Randomiser" engine="bg,eet" default="1">
-				<component id="gaEnemyRando:1" label="Spawn point randomizer" engine="bg1"/>
-				<component id="gaEnemyRando:2" label="Spawn point randomizer" engine="bg2"/>
-				<component id="gaEnemyRando:3" label="Spawn point randomizer" engine="eet" />
-				<component id="gaEnemyRando:6" label="Rest encounter randomizer" engine="bg1"/>
-				<component id="gaEnemyRando:7" label="Rest encounter randomizer" engine="bg2"/>
-				<component id="gaEnemyRando:11" label="Rest encounter randomizer" engine="eet" />
-				<component id="gaEnemyRando:15" label="Set creature randomizer" engine="bg1"/>
-				<component id="gaEnemyRando:18" label="Set creature randomizer" engine="bg2"/>
-				<component id="gaEnemyRando:25" label="Set creature randomizer" engine="eet" />
+				<component id="gaEnemyRando:1" name="With SoD creatures (Makes BG1 slightly tougher)" label="Spawn point randomizer" engine="bg1" />
+				<component id="gaEnemyRando:2" name="BG2 Spawn Point Randomizer" label="Spawn point randomizer" engine="bg2" />
+				<component id="gaEnemyRando:3" name="With SoD creatures (Makes BG1 slightly tougher)" label="Spawn point randomizer" engine="eet" />
+				<component id="gaEnemyRando:6" name="With SoD creatures (Makes BG1 slightly tougher)" label="Rest encounter randomizer" engine="bg1" />
+				<component id="gaEnemyRando:7" name="Include starting dungeon" label="Rest encounter randomizer" engine="bg2" />
+				<component id="gaEnemyRando:11" name="With SoD creatures (Makes BG1 slightly tougher) - Include Chateau Irenicus" label="Rest encounter randomizer" engine="eet" />
+				<component id="gaEnemyRando:15" name="With SoD creatures (Makes BG1 slightly tougher) - Keep enemies roughly similar in power" label="Set creature randomizer" engine="bg1" />
+				<component id="gaEnemyRando:18" name="Include starting dungeon - Completely random" label="Set creature randomizer" engine="bg2" />
+				<component id="gaEnemyRando:25" name="With SoD creatures (Makes BG1 slightly tougher) - Include Chateau Irenicus - Keep enemies roughly similar in power" label="Set creature randomizer" engine="eet" />
 			</mod>
 		</alternatives>
 		<mod id="randomiser" label="Items" engine="bg,eet" unfolded="1">
@@ -2050,47 +2050,47 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 		</group>
 		<mod id="RandomGraionTweaks" label="Gold Economy" unfolded="1">
 			<alternatives label="Gold carried by creatures">
-				<component id="ZG-GRAION-GOLD-200" label="Increase to 200%" />
-				<component id="ZG-GRAION-GOLD-150" label="Increase to 150%" />
-				<component id="ZG-GRAION-GOLD-83" label="Decrease to 83%" />
-				<component id="ZG-GRAION-GOLD-75" label="Decrease to 75%" level="blendWell" default="1" />
-				<component id="ZG-GRAION-GOLD-66" label="Decrease to 66%" />
-				<component id="ZG-GRAION-GOLD-50" label="Decrease to 50%" level="extended" />
-				<component id="ZG-GRAION-GOLD-33" label="Decrease to 33%" />
-				<component id="ZG-GRAION-GOLD-25" label="Decrease to 25%" />
+				<component id="ZG-GRAION-GOLD-200" name="Increase to 200%" label="Increase to 200%" />
+				<component id="ZG-GRAION-GOLD-150" name="Increase to 150%" label="Increase to 150%" />
+				<component id="ZG-GRAION-GOLD-83" name="Decrease to 83%" label="Decrease to 83%" />
+				<component id="ZG-GRAION-GOLD-75" name="Decrease to 75%" label="Decrease to 75%" level="blendWell" default="1" />
+				<component id="ZG-GRAION-GOLD-66" name="Decrease to 66%" label="Decrease to 66%" />
+				<component id="ZG-GRAION-GOLD-50" name="Decrease to 50%" label="Decrease to 50%" level="extended" />
+				<component id="ZG-GRAION-GOLD-33" name="Decrease to 33%" label="Decrease to 33%" />
+				<component id="ZG-GRAION-GOLD-25" name="Decrease to 25%" label="Decrease to 25%" />
 			</alternatives>
 			<alternatives label="Value of non-magical jewelry">
-				<component id="ZG-GRAION-GEMS-200" label="Increase to 200%" />
-				<component id="ZG-GRAION-GEMS-150" label="Increase to 150%" />
-				<component id="ZG-GRAION-GEMS-83" label="Decrease to 83%" />
-				<component id="ZG-GRAION-GEMS-75" label="Decrease to 75%" />
-				<component id="ZG-GRAION-GEMS-66" label="Decrease to 66%" />
-				<component id="ZG-GRAION-GEMS-50" label="Decrease to 50%" />
-				<component id="ZG-GRAION-GEMS-33" label="Decrease to 33%" />
-				<component id="ZG-GRAION-GEMS-25" label="Decrease to 25%" />
+				<component id="ZG-GRAION-GEMS-200" name="Increase to 200%" label="Increase to 200%" />
+				<component id="ZG-GRAION-GEMS-150" name="Increase to 150%" label="Increase to 150%" />
+				<component id="ZG-GRAION-GEMS-83" name="Decrease to 83%" label="Decrease to 83%" />
+				<component id="ZG-GRAION-GEMS-75" name="Decrease to 75%" label="Decrease to 75%" />
+				<component id="ZG-GRAION-GEMS-66" name="Decrease to 66%" label="Decrease to 66%" />
+				<component id="ZG-GRAION-GEMS-50" name="Decrease to 50%" label="Decrease to 50%" />
+				<component id="ZG-GRAION-GEMS-33" name="Decrease to 33%" label="Decrease to 33%" />
+				<component id="ZG-GRAION-GEMS-25" name="Decrease to 25%" label="Decrease to 25%" />
 			</alternatives>
 			<alternatives label="Prices in the shops">
-				<component id="ZG-GRAION-STORES-TOPLAYERS-50" label="Decrease to 50%" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-125" label="Increase to 125%"  level="blendWell" default="1" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-133" label="Increase to 133%" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-150" label="Increase to 150%" level="extended" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-175" label="Increase to 175%" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-200" label="Increase to 200%" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-300" label="Increase to 300%" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-400" label="Increase to 400%" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-500" label="Increase to 500%" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-50" name="Decrease to 50%" label="Decrease to 50%" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-125" name="Increase to 125%" label="Increase to 125%"  level="blendWell" default="1" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-133" name="Increase to 133%" label="Increase to 133%" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-150" name="Increase to 150%" label="Increase to 150%" level="extended" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-175" name="Increase to 175%" label="Increase to 175%" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-200" name="Increase to 200%" label="Increase to 200%" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-300" name="Increase to 300%" label="Increase to 300%" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-400" name="Increase to 400%" label="Increase to 400%" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-500" name="Increase to 500%" label="Increase to 500%" />
 			</alternatives>
 			<alternatives label="Prices for selling items">
-				<component id="ZG-GRAION-STORES-FROMPLAYERS-25" label="Decrease to 25%" />
-				<component id="ZG-GRAION-STORES-FROMPLAYERS-33" label="Decrease to 33%" />
-				<component id="ZG-GRAION-STORES-FROMPLAYERS-50" label="Decrease to 50%" />
-				<component id="ZG-GRAION-STORES-FROMPLAYERS-66" label="Decrease to 66%" />
-				<component id="ZG-GRAION-STORES-FROMPLAYERS-75" label="Decrease to 75%" />
-				<component id="ZG-GRAION-STORES-FROMPLAYERS-83" label="Decrease to 83%" />
-				<component id="ZG-GRAION-STORES-FROMPLAYERS-150" label="Increase to 150%" />
-				<component id="ZG-GRAION-STORES-FROMPLAYERS-200" label="Increase to 200%" />
+				<component id="ZG-GRAION-STORES-FROMPLAYERS-25" name="Decrease to 25%" label="Decrease to 25%" />
+				<component id="ZG-GRAION-STORES-FROMPLAYERS-33" name="Decrease to 33%" label="Decrease to 33%" />
+				<component id="ZG-GRAION-STORES-FROMPLAYERS-50" name="Decrease to 50%" label="Decrease to 50%" />
+				<component id="ZG-GRAION-STORES-FROMPLAYERS-66" name="Decrease to 66%" label="Decrease to 66%" />
+				<component id="ZG-GRAION-STORES-FROMPLAYERS-75" name="Decrease to 75%" label="Decrease to 75%" />
+				<component id="ZG-GRAION-STORES-FROMPLAYERS-83" name="Decrease to 83%" label="Decrease to 83%" />
+				<component id="ZG-GRAION-STORES-FROMPLAYERS-150" name="Increase to 150%" label="Increase to 150%" />
+				<component id="ZG-GRAION-STORES-FROMPLAYERS-200" name="Increase to 200%" label="Increase to 200%" />
 			</alternatives>
-			<component id="ZG-EQUIP-WHAT-I-CAN" label="Equip items from creatures' inventory to fill empty slots" level="higherDifficulty" />
+			<component id="ZG-EQUIP-WHAT-I-CAN" name="Equip items from inventory to fill empty slots" label="Equip items from creatures' inventory to fill empty slots" level="higherDifficulty" />
 		</mod>
 		<alternatives label="Alter identification mechanics" engine="bg,eet,iwd,pst">
 			<group label="Make it more strict" level="higherDifficulty">
