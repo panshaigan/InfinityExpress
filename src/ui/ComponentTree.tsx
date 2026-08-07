@@ -24,6 +24,7 @@ import {
 import {
   type ModInfo,
   isModTypeBranchDisplay,
+  resolveModStability,
   resolveModType,
   shouldShowModTypeBadge,
 } from '../lib/mods/loadMods'
@@ -214,9 +215,9 @@ function CheckboxRow({
     (collapsedComponent ? collapsedComponent.attrs.label : undefined) ??
     node.tag
   const level = collapsedComponent?.effectiveLevel ?? node.effectiveLevel
-  const stability =
-    collapsedComponent?.attrs.stability ?? node.attrs.stability
-  const stabilityLabel = stabilityBadgeLabel(stability)
+  const stabilityLabel = stabilityBadgeLabel(
+    resolveModStability(model, modsByCodename, source),
+  )
   const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
   const collapsedToSingle = Boolean(collapsedComponent)
   const branchOpts = { collapsedToSingleComponent: collapsedToSingle }

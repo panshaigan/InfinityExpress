@@ -12,6 +12,7 @@ export interface ModInfo {
   sizeBytes: number | null
   author: string
   type: string
+  stability: string
 }
 
 export interface SizeBounds {
@@ -86,6 +87,7 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
   const iSize = idx('Size')
   const iAuthor = idx('Author')
   const iType = idx('Type')
+  const iStability = idx('Stability')
   if (iCodename < 0) return map
 
   for (let li = 1; li < lines.length; li++) {
@@ -104,6 +106,7 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
       sizeBytes: iSize >= 0 ? parseSizeBytes(cols[iSize] ?? '') : null,
       author: (iAuthor >= 0 ? cols[iAuthor] ?? '' : '').trim(),
       type: (iType >= 0 ? cols[iType] ?? '' : '').trim(),
+      stability: (iStability >= 0 ? cols[iStability] ?? '' : '').trim(),
     })
   }
   return map
@@ -261,4 +264,20 @@ export function resolveModType(
   const asBranch = options?.asBranch ?? lookupNode.tag === 'mod'
   if (asBranch) return type
   return COMPONENT_TYPE_DEGRADE.get(type) ?? type
+}
+
+/**
+ * Resolve mods.csv Stability for badges via mod lookup (own modId or enclosing `<mod>`).
+ * Empty / missing catalog values return undefined (treated as released by badge helpers).
+ */
+export function resolveModStability(
+  model: InstallSequenceModel,
+  modsByCodename: ReadonlyMap<string, ModInfo>,
+  lookupNode: TreeNode,
+): string | undefined {
+  const codename = resolveModLookupKey(model, lookupNode)
+  if (!codename) return undefined
+  const stability = modsByCodename.get(codename)?.stability
+  if (!stability) return undefined
+  return stability
 }

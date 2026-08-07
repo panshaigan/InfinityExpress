@@ -3,7 +3,7 @@
 	<base desc="Base game fixes and modifications">
 		<component id="A7-DLCMERGER-MERGE_SOD" label='Merge SoD DLC' desc="Required for further BG1 modding" modId="A7-DlcMerger" engine="bg1,eet1" required="1" noDisplay="1" />
 		<component id="bubb_revert_pathfinding:0" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,eet1,iwd,pst" required="1" noDisplay="1" />
-		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" desc="The Enhanced Edition Fixpack is an unofficial collection of fixes for the Enhanced Editions of Baldur's Gate, Baldur's Gate II, Icewind Dale, and Planescape: Torment." level="fixes" stability="beta">
+		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" desc="The Enhanced Edition Fixpack is an unofficial collection of fixes for the Enhanced Editions of Baldur's Gate, Baldur's Gate II, Icewind Dale, and Planescape: Torment." level="fixes">
 			<component id="cd_eefp_core_fixes" label="Core fixes" modId="EE_Fixpack" />
 			<component id="cd_eefp_game_text_update" label="Game text update" modId="EE_Fixpack" noDisplay="1" alwaysIf="cd_eefp_core_fixes" />
 		</group>
@@ -120,7 +120,7 @@
 						<component id="EBG1_FensterInPalace" label="Fenster the Palace Healer is in the Palace" />
 						<component id="EBG1_CorwinInPalace" label="Captain Corwin is in the Palace" />
 					</mod>
-					<mod id="Reflections-of-Destiny" label="Reflections of Destiny" desc="Allows staying in BG1 after fulfilling its main quest and deciding when to progress to SoD/SoA" stability="beta">
+					<mod id="Reflections-of-Destiny" label="Reflections of Destiny" desc="Allows staying in BG1 after fulfilling its main quest and deciding when to progress to SoD/SoA">
 						<component id="Reflections_of_Destiny:100" label="The Future Is Now" />
 						<component id="Reflections_of_Destiny:110" label="The Mirror Shard" />
 					</mod>
@@ -254,7 +254,7 @@
 					<component id="gorgon:1" label="Give portraits to all characters added from this mod" alwaysIf="gorgon:0" noDisplay="1" />
 					<component id="gorgon:4" label="Add more Pickpocketable items"/>
 				</mod>
-				<mod id="baldurian-bar-hop" label="Baldurian Bar Hop" stability="beta">
+				<mod id="baldurian-bar-hop" label="Baldurian Bar Hop">
 					<component id="baldurianbarhop:0" label="Thirst Things First" />
 					<component id="baldurianbarhop:10" label="Dress to Distress" />
 					<component id="baldurianbarhop:20" label="Fully Booked and Plot Twist" />
@@ -350,7 +350,7 @@
 		</bg1>
 		<sod label="SoD" engine="bg1,eet">
 			<restructure label="Restructure">
-				<mod id="Reflections-of-Destiny" label="Reflections of Destiny" displayIfNot="C#AnotherFineHell-Main|SoDRoadToDiscovery-main" groupWith="sodRewrite" unfolded="1" stability="beta">
+				<mod id="Reflections-of-Destiny" label="Reflections of Destiny" displayIfNot="C#AnotherFineHell-Main|SoDRoadToDiscovery-main" groupWith="sodRewrite" unfolded="1">
 					<component id="Reflections_of_Destiny:200" label="Rewriting History" />
 					<component id="Reflections_of_Destiny:220" label="Magical Realism" />
 					<component id="Reflections_of_Destiny:230" label="Nothing to Fear but Feyr Itself" />
@@ -441,7 +441,7 @@
 					<component id="Imoen4Ever-BGII-ImoenProtectionSpellChapter2&amp;3" label="Give Imoen protection spell in chapters 2 &amp; 3" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" />
 					<!--component id="Imoen4Ever-BGII-Compatibility_Saerileth_Alternatives" label="Compatibility with Alternatives and Saerileth" /-->
 				</mod>
-				<alternatives label="Restored Rhynn Lanthorn Quest" stability="beta">
+				<alternatives label="Restored Rhynn Lanthorn Quest">
 					<component id="dw_lanthorn:10" label="Classic version" desc="Faithful restoration of cut content from the original game" modId="Restored-Rhynn-Lanthorn" default="1" />	
 					<component id="dw_lanthorn:20" label="Expanded version" desc="Adds four new locations where lenses can be found" modId="Restored-Rhynn-Lanthorn" />
 				</alternatives>
@@ -615,7 +615,7 @@
 						<component id="L#-SHARTEELBG2EE-PIDS" label="Player-initiated dialogues (PIDs)" />
 					</mod>
 					<component id="zdbae:0" label="Baeloth" modId="BaeBG2" tags="beamdog" />
-					<mod id="mkhiinbg2" label="M'Khiin" tags="beamdog" stability="beta">
+					<mod id="mkhiinbg2" label="M'Khiin" tags="beamdog">
 						<component id="mkhiinbg2:0" label="M'Khiin" core="1" />
 						<component id="mkhiinbg2:10" label="Artastrophe portrait" alwaysIf="mkhiinbg2:0" noDisplay="1" />
 					</mod>

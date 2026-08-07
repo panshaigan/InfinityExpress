@@ -100,7 +100,7 @@ arszyk,Arszyk's Wonderful Decay,,medium,QUEST/NPC,https://downloads.weaselmods.n
 Vienxay-BG1,Vienxay NPC,,minor,NPC,https://github.com/Skitia/Vienxay-BG1,BG1,,,2024-11-04,cf2ac83,,5864155,Skitia,-
 MinervaNPC,Minerva NPC,,minor,NPC,https://github.com/TheArtisanBG/MinervaNPC,IWD,1,,2026-04-26,d3d4e57,,26476932,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/iwdnpcs
 HoW_EET,Heart of Winter for EET,HoW_EET,major,CAMPAIGN,https://github.com/The-Gate-Project/HoW_EET,BG1-BG2,,,2026-05-07,d83619a,,302629798,tipun,-
-EE_Fixpack,EE Fixpack,EE Fixpack,major,FIX,https://github.com/Gibberlings3/EE_Fixpack,BG1-BG2-IWD-PST,1,,2026-07-20,e422b3f,,139376523,Multiple ,https://gibberlings3.github.io/Documentation/readmes/readme-eefixpack.html
+EE_Fixpack,EE Fixpack,EE Fixpack,major,FIX,https://github.com/Gibberlings3/EE_Fixpack,BG1-BG2-IWD-PST,1,,2026-07-20,e422b3f,beta,139376523,Multiple ,https://gibberlings3.github.io/Documentation/readmes/readme-eefixpack.html
 Kvel-BG1,Kvel NPC,,minor,NPC,https://github.com/ArtemiusI/Kvel-BG1,BG1,1,,2026-05-30,ea55144,,5803117,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/kvel-bg1
 Olvyn-Tweaks,OlvynTweaks,OlvynTweaks,compilation,TWEAKS,https://github.com/OlvynChuru/Olvyn-Tweaks,BG1-BG2-IWD,,,2022-08-19,ebe1f59,,1154760,OlvynChuru,https://forums.beamdog.com/discussion/74322/mod-olvyntweaks-version-1-4/p1
 Bg2Dorn,Dorn for BG2,,minor,NPC-EXPANSION,https://github.com/trinit2/Bg2Dorn,BG2,,,2022-05-01,ece4aad,,6595920,trinit,-
@@ -116,7 +116,7 @@ BaeBG2,Baeloth for BG2,,minor,NPC,https://github.com/dark0dave/BaeBG2,BG2,,,2025
 themed_tweaks,Themed Tweaks,Themed Tweaks,compilation,TWEAKS,https://github.com/lzenner/themed_tweaks,BG1-BG2,,,2026-01-19,v0.5,,2118596,Lauriel ,https://github.com/lzenner/themed_tweaks/blob/main/themed_tweaks/readme.themed_tweaks.english.txt
 PlanarItems,Items of the Planes,PlanarItems,compilation,ITEMS,https://github.com/aquadrizzt/PlanarItems,PST,,,2023-04-16,v0.61,,8575071,aquadrizzt,https://forums.beamdog.com/discussion/69700/mod-items-of-the-planes/p1
 NeeraBanters,Neera Banters,,minor,NPC-EXPANSION,https://github.com/The-Gate-Project/NeeraBanters,BG1,,,2024-11-19,v0.9.3,,4540570,AstroBryGuy,-
-baldurian-bar-hop,Baldurian Bar Hop,Baldurian Bar Hop,compilation,QUEST,https://github.com/bucketfulofsunshine/baldurian-bar-hop,BG1,,,2026-07-20,V0.91,,7819266,bucketfulofsunshine,-
+baldurian-bar-hop,Baldurian Bar Hop,Baldurian Bar Hop,compilation,QUEST,https://github.com/bucketfulofsunshine/baldurian-bar-hop,BG1,,,2026-07-20,V0.91,beta,7819266,bucketfulofsunshine,-
 Icewind-Dale-Graphical-Overhaul,Icewind Dale Graphical Overhaul,IDGO,major,GFX,https://github.com/Spellhold-Studios/Icewind-Dale-Graphical-Overhaul,IWD,,,2026-03-22,"v1,1",,492732782,"Yovaneth, Weigo ",-
 JA-AdventurePack,Jarl's Adventure Pack,JAP,compilation,RESTORATION,https://github.com/Gitjas/JA-AdventurePack,BG1,,,2025-07-13,v1.0,,23236764,Jarl,https://github.com/Gitjas/JA-AdventurePack/blob/master/JA%23BGT_AdvPack/readme/components.md
 VoicesVoicesExtravaganza-SOD,Voices Voices Extravaganza SoD,VVE-SOD,major,SOUND,https://github.com/ColossusChang/VoicesVoicesExtravaganza-SOD,BG1-BG2,,1,2025-05-12,v1.0,,337785344,Colossus,-

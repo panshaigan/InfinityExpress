@@ -57,7 +57,7 @@ InstallSequence.xml
    Export install-order.txt   ← selected ids, document order, first-id wins
 ```
 
-Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Mod Readme / Release / Version / Size / Author. Mod Readme and component `readme` links are shown only when the value is a valid `http`/`https` URL. Downloading mods / WeiDU come later.
+Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Mod Readme / Release / Version / Size / Author / Stability. Mod Readme and component `readme` links are shown only when the value is a valid `http`/`https` URL. Downloading mods / WeiDU come later.
 
 Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not internal tree keys.
 
@@ -272,7 +272,7 @@ The list shows **only the children** of the selected subbranch (no main/sub wrap
 
 Clicking a tree row focuses it (highlight distinct from checkbox selection). The right detail panel shows label, badges, full `desc`, and metadata (Codename, linkable URL, Release, Version, human-readable Size, Author from `mods.csv` when resolvable; component id). Descriptions are **not** inlined under tree rows.
 
-**Attribute badges** (in addition to level / non-released stability): `required`, `hidden` (`noDisplay`), `core`, `default`, and each comma-separated `tags` token.
+**Attribute badges** (in addition to level / non-released Stability from `mods.csv`): `required`, `hidden` (`noDisplay`), `core`, `default`, and each comma-separated `tags` token.
 
 **Relation rows** (only when non-empty; flat label lists, no AND/OR structure):
 
@@ -306,7 +306,7 @@ Next to each row label, if the node (or its `collapsedComponent`) has an `effect
 | `higherDifficulty`  | Higher difficulty  |
 
 
-Unknown levels still render with a muted badge using the raw token. Non-released `stability` values (e.g. `beta`, `alpha`) show as a separate badge; missing/`released` does not.
+Unknown levels still render with a muted badge using the raw token. Non-released `mods.csv` Stability values (e.g. `beta`, `alpha`) show as a separate badge on rows that resolve to that mod (own `modId` or enclosing `<mod>`); missing/`released` does not.
 
 ---
 

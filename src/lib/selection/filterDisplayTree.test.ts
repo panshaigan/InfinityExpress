@@ -178,7 +178,6 @@ describe('filterDisplayTree', () => {
       component('c', {
         label: 'Hard Mode',
         effectiveLevel: 'higherDifficulty',
-        stability: 'beta',
       }),
       component('cLow', {
         label: 'Mild Mode',
@@ -277,7 +276,7 @@ describe('filterDisplayTree', () => {
     expect(ids(withoutDiff)).toContain('nolevel')
   })
 
-  it('always includes alpha/beta components (no stability filter)', () => {
+  it('always includes components regardless of catalog stability', () => {
     const out = filterDisplayTree(tree, criteria())
     expect(ids(out)).toContain('c')
     expect(ids(out)).toEqual(['a', 'b', 'c', 'cLow', 'e', 'f', 'nolevel'])
@@ -340,11 +339,11 @@ describe('filterDisplayTree', () => {
     ).toEqual(['reqVis'])
   })
 
-  it('inherits mod-level beta onto children for badges (still always visible)', () => {
+  it('keeps beta and released components visible (no stability filter)', () => {
     const { model } = parseInstallSequence(`<?xml version="1.0"?>
 <installSequence>
   <content>
-    <mod id="Reflections-of-Destiny" label="Reflections of Destiny" stability="beta">
+    <mod id="Reflections-of-Destiny" label="Reflections of Destiny">
       <component id="Reflections_of_Destiny:100" label="The Future is Now" />
       <component id="Reflections_of_Destiny:110" label="The Mirror Shard" />
     </mod>
@@ -353,9 +352,6 @@ describe('filterDisplayTree', () => {
     </mod>
   </content>
 </installSequence>`)
-    expect(model.componentsById.get('Reflections_of_Destiny:100')?.attrs.stability).toBe(
-      'beta',
-    )
     const display: DisplayNode[] = model.componentsInOrder.map((c) => ({
       node: c,
       children: [],
@@ -420,6 +416,7 @@ describe('filterDisplayTree size and author', () => {
         sizeBytes: 100,
         author: 'SoloDev',
         type: '',
+        stability: '',
       },
     ],
     [
@@ -436,6 +433,7 @@ describe('filterDisplayTree size and author', () => {
         sizeBytes: 500,
         author: 'Lava',
         type: '',
+        stability: '',
       },
     ],
     [
@@ -452,6 +450,7 @@ describe('filterDisplayTree size and author', () => {
         sizeBytes: 1000,
         author: 'Argent77',
         type: '',
+        stability: '',
       },
     ],
   ])

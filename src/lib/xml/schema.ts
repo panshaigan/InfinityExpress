@@ -68,7 +68,6 @@ export interface NodeAttrs {
   displayIfNot?: string
   default?: boolean
   core?: boolean
-  stability?: string
   noBranches?: boolean
   tags?: string
   /** When true, the branch starts expanded in the UI despite default-folded tags. */

@@ -7,6 +7,7 @@ import {
   modSizeBounds,
   parseModsCsv,
   resolveModLookupKey,
+  resolveModStability,
   resolveModType,
   shouldShowModTypeBadge,
 } from './loadMods'
@@ -37,6 +38,7 @@ describe('parseModsCsv', () => {
       sizeBytes: 12345,
       author: 'Gibberlings3',
       type: 'minor',
+      stability: '',
     })
     expect(map.get('aTweaks')?.url).toBe('https://example.com/a,b')
     expect(map.get('aTweaks')?.category).toBe('TWEAKS')
@@ -124,6 +126,26 @@ describe('parseModsCsv', () => {
     const map = parseModsCsv(raw)
     expect(map.get('Bare')?.category).toBe('')
     expect(map.get('Bare')?.type).toBe('')
+  })
+
+  it('parses Stability when present and defaults to empty', () => {
+    const raw = [
+      'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Stability,Size,Author,Readme,Type',
+      'BetaMod,NPC,"https://x",BG2,,,2020-01-01,"v1",beta,10,AuthorA,,minor',
+      'EmptyStab,NPC,"https://x",BG2,,,2020-01-01,"v1",,10,AuthorB,,minor',
+    ].join('\n')
+    const map = parseModsCsv(raw)
+    expect(map.get('BetaMod')?.stability).toBe('beta')
+    expect(map.get('EmptyStab')?.stability).toBe('')
+  })
+
+  it('treats missing Stability column as empty string', () => {
+    const raw = [
+      HEADER,
+      'NoStabCol,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA,,minor',
+    ].join('\n')
+    const map = parseModsCsv(raw)
+    expect(map.get('NoStabCol')?.stability).toBe('')
   })
 })
 
@@ -634,5 +656,103 @@ describe('resolveModType', () => {
     })
     expect(resolveModType(modelWith(dashMod), modsByCodename, dashMod)).toBeUndefined()
     expect(resolveModType(modelWith(emptyMod), modsByCodename, emptyMod)).toBeUndefined()
+  })
+})
+
+describe('resolveModStability', () => {
+  function node(
+    partial: Partial<TreeNode> & Pick<TreeNode, 'key' | 'tag' | 'kind'>,
+  ): TreeNode {
+    return {
+      attrs: {},
+      effectiveEngine: '',
+      children: [],
+      ...partial,
+    } as TreeNode
+  }
+
+  function modelWith(...nodes: TreeNode[]): InstallSequenceModel {
+    const nodesByKey = new Map(nodes.map((n) => [n.key, n]))
+    return {
+      stations: [],
+      componentsById: new Map(),
+      componentsInOrder: [],
+      nodesByKey,
+    }
+  }
+
+  const modsByCodename = parseModsCsv(
+    [
+      'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Stability,Size,Author,Readme,Type',
+      'BetaMod,NPC,"https://x",BG2,,,2020-01-01,"v1",beta,10,A,,minor',
+      'AlphaMod,NPC,"https://x",BG2,,,2020-01-01,"v1",alpha,10,A,,minor',
+      'ReleasedMod,NPC,"https://x",BG2,,,2020-01-01,"v1",,10,A,,minor',
+    ].join('\n'),
+  )
+
+  it('uses component modId when present', () => {
+    const comp = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+      attrs: { modId: 'BetaMod' },
+    } as TreeNode)
+    expect(resolveModStability(modelWith(comp), modsByCodename, comp)).toBe('beta')
+  })
+
+  it('falls back to enclosing mod id', () => {
+    const comp = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+      parentKey: 'm1',
+    } as TreeNode)
+    const mod = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'AlphaMod' },
+      children: [comp],
+    })
+    expect(resolveModStability(modelWith(mod, comp), modsByCodename, comp)).toBe(
+      'alpha',
+    )
+  })
+
+  it('returns undefined when lookup key or catalog stability is missing', () => {
+    const orphan = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+    } as TreeNode)
+    expect(
+      resolveModStability(modelWith(orphan), modsByCodename, orphan),
+    ).toBeUndefined()
+
+    const released = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'ReleasedMod' },
+    })
+    expect(
+      resolveModStability(modelWith(released), modsByCodename, released),
+    ).toBeUndefined()
+
+    const unknown = node({
+      key: 'm2',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'MissingMod' },
+    })
+    expect(
+      resolveModStability(modelWith(unknown), modsByCodename, unknown),
+    ).toBeUndefined()
   })
 })

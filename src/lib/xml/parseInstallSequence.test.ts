@@ -31,14 +31,6 @@ describe('curated InstallSequence.xml', () => {
   it('bg token alone does not match eet for inheritance samples', () => {
     expect(engineMatches('bg', 'eet')).toBe(false)
   })
-
-  it('inherits mod-level stability onto child components', () => {
-    const { model } = parseInstallSequence(installSequenceXml)
-    const future = model.componentsById.get('Reflections_of_Destiny:100')
-    const mirror = model.componentsById.get('Reflections_of_Destiny:110')
-    expect(future?.attrs.stability).toBe('beta')
-    expect(mirror?.attrs.stability).toBe('beta')
-  })
 })
 
 describe('readme attribute', () => {

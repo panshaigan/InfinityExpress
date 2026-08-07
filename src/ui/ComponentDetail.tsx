@@ -23,6 +23,7 @@ import {
   isModTypeBranchDisplay,
   parseModsCsv,
   resolveModLookupKey,
+  resolveModStability,
   resolveModType,
 } from '../lib/mods/loadMods'
 import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
@@ -104,11 +105,12 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
     : isComponentNode(node)
       ? node.componentId
       : undefined
-  const stability = node.attrs.stability ?? collapsedComponent?.attrs.stability
-  const stabilityLabel = stabilityBadgeLabel(stability)
   const attrs = source.attrs
 
   const codename = resolveModLookupKey(model, source)
+  const stabilityLabel = stabilityBadgeLabel(
+    resolveModStability(model, modsByCodename, source),
+  )
   const mod = codename ? modsByCodename.get(codename) : undefined
   const modType = resolveModType(model, modsByCodename, source, {
     asBranch: isModTypeBranchDisplay(model, node, {
