@@ -793,7 +793,7 @@ describe('unchecked dependencies filter', () => {
     ])
   })
 
-  it('keeps unchecked options in gated alternatives; drops the selected option', () => {
+  it('keeps full gated alternatives including the checked option', () => {
     const selected = new Set(['gate:1', 'alt:1'])
     const built = buildDisplayTree(base.children, {
       game: 'bg1',
@@ -811,6 +811,13 @@ describe('unchecked dependencies filter', () => {
       'gated:b',
       'child:a',
       'child:b',
+      'alt:1',
+      'alt:2',
+      'alt:3',
+    ])
+    const alts = out.find((d) => d.node.kind === 'alternatives')
+    expect(alts?.children.map((c) => (c.node as ComponentNode).componentId)).toEqual([
+      'alt:1',
       'alt:2',
       'alt:3',
     ])
@@ -832,5 +839,84 @@ describe('unchecked dependencies filter', () => {
     expect(ids(out)).toContain('child:a')
     expect(ids(out)).toContain('child:b')
     expect(ids(out)).not.toContain('plain:a')
+  })
+})
+
+describe('unchecked dependencies: per-option displayIf in alternatives', () => {
+  const XML = `<?xml version="1.0"?>
+<installSequence>
+  <base label="Base" engine="bg1">
+    <mod id="Gate" label="Gate">
+      <component id="gate:1" label="Gate Component" />
+    </mod>
+    <alternatives label="Make Infravision Useful">
+      <component id="luke:1" label="Luke Solution" displayIf="gate:1" />
+      <component id="olvyn:std" label="Olvyn Standard" default="1" />
+      <component id="olvyn:light" label="Olvyn Light" />
+    </alternatives>
+    <alternatives label="Always Visible Alts">
+      <component id="plain-alt:1" label="Plain One" default="1" />
+      <component id="plain-alt:2" label="Plain Two" />
+    </alternatives>
+  </base>
+</installSequence>`
+
+  const { model } = parseInstallSequence(XML)
+  const base = model.stations.find((s) => s.stationId === 'base')!
+
+  it('keeps always-visible alternatives with an unchecked displayIf option (full list)', () => {
+    const selected = new Set(['gate:1', 'olvyn:std'])
+    const built = buildDisplayTree(base.children, {
+      game: 'bg1',
+      selectedIds: selected,
+    })
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'dependencies' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual(['luke:1', 'olvyn:std', 'olvyn:light'])
+    const alts = out.find((d) => d.node.attrs.label === 'Make Infravision Useful')
+    expect(alts?.children.map((c) => (c.node as ComponentNode).componentId)).toEqual([
+      'luke:1',
+      'olvyn:std',
+      'olvyn:light',
+    ])
+  })
+
+  it('drops the group when its only displayIf option is already checked', () => {
+    const selected = new Set(['gate:1', 'luke:1'])
+    const built = buildDisplayTree(base.children, {
+      game: 'bg1',
+      selectedIds: selected,
+    })
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'dependencies' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).toEqual([])
+  })
+
+  it('drops always-visible alternatives with no displayIf options', () => {
+    const selected = new Set(['gate:1'])
+    const built = buildDisplayTree(base.children, {
+      game: 'bg1',
+      selectedIds: selected,
+    })
+    const out = filterDisplayTree(
+      built,
+      criteria({ uncheckedFilter: 'dependencies' }),
+      undefined,
+      {},
+      { selectedIds: selected, game: 'bg1' },
+    )
+    expect(ids(out)).not.toContain('plain-alt:1')
+    expect(ids(out)).not.toContain('plain-alt:2')
+    expect(ids(out)).toContain('luke:1')
   })
 })

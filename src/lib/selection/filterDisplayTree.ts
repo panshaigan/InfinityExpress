@@ -26,7 +26,9 @@ export type AuthorFilterMode = 'include' | 'exclude'
  * - `only` — hide checked regular rows; keep only `<alternatives>` groups where
  *   nothing is selected yet
  * - `dependencies` — hide checked rows and always-visible rows; keep only
- *   unchecked rows gated by `displayIf` on themselves or an ancestor
+ *   unchecked rows gated by `displayIf` on themselves or an ancestor.
+ *   Keep `<alternatives>` when the group/ancestor is gated or an unchecked
+ *   option has its own `displayIf`; kept groups show the full option list.
  */
 export type UncheckedFilterMode = 'off' | 'withOptions' | 'only' | 'dependencies'
 
@@ -337,6 +339,23 @@ function leafMatchesCriteria(
   return true
 }
 
+/** True when an alternatives option has displayIf and is not checked. */
+function alternativesHasUncheckedDisplayIfOption(
+  display: DisplayNode,
+  selection: FilterSelectionContext,
+): boolean {
+  for (const child of display.children) {
+    if (!child.node.attrs.displayIf?.trim()) continue
+    if (
+      displaySelectionState(child, selection.selectedIds, selection.game) !==
+      'checked'
+    ) {
+      return true
+    }
+  }
+  return false
+}
+
 /**
  * Prune display tree by filter criteria. Keep ancestors when any descendant matches.
  * Leaf / collapsed rows must match; containers stay only as scaffolding for matches.
@@ -347,7 +366,9 @@ function leafMatchesCriteria(
  * - `only` — drop checked regular rows; keep `<alternatives>` only when nothing
  *   in the group is selected yet (full option list when kept)
  * - `dependencies` — drop checked and always-visible rows; keep unchecked rows
- *   gated by `displayIf` on themselves or an ancestor (no alternatives special-case)
+ *   gated by `displayIf` on themselves or an ancestor. Keep `<alternatives>`
+ *   when the group/ancestor is gated or an unchecked option has its own
+ *   `displayIf`; kept groups show the full option list
  */
 export function filterDisplayTree(
   nodes: DisplayNode[],
@@ -367,7 +388,14 @@ export function filterDisplayTree(
     const gatedHere =
       underDisplayIf || Boolean(display.node.attrs.displayIf?.trim())
 
-    if (applySelection && mode !== 'dependencies' && display.node.kind === 'alternatives') {
+    if (applySelection && display.node.kind === 'alternatives') {
+      if (
+        mode === 'dependencies' &&
+        !gatedHere &&
+        !alternativesHasUncheckedDisplayIfOption(display, selection)
+      ) {
+        continue
+      }
       if (
         mode === 'only' &&
         displaySelectionState(display, selection.selectedIds, selection.game) !==
