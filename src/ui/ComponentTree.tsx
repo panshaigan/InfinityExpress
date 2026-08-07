@@ -29,6 +29,7 @@ import {
   shouldShowModTypeBadge,
 } from '../lib/mods/loadMods'
 import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
+import { isTypingTarget } from '../lib/ui/chromeHotkeys'
 import {
   buildTreeKeyboardContext,
   collectAllExpandableKeys,
@@ -526,10 +527,15 @@ export function ComponentTree(props: Props) {
   }, [props.nodes])
 
   // Keep DOM focus on the focused row (arrow nav, click, relation jump).
+  // Do not steal focus from the filter search (or other typing fields) when the
+  // filtered tree remounts on each keystroke — search is display-only.
   useEffect(() => {
     if (!props.focusedKey) return
     const el = rowRefs.current.get(props.focusedKey)
     if (!el) return
+    if (isTypingTarget(document.activeElement)) {
+      return
+    }
     if (document.activeElement !== el) {
       el.focus({ preventScroll: true })
     }
