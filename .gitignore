@@ -50,7 +50,9 @@ Desktop.ini
 .turbo/
 .parcel-cache/
 
-# Cursor (keep shared rules; ignore local state)
+# Cursor (keep shared rules/skills; ignore local state)
 .cursor/*
 !.cursor/rules/
 !.cursor/rules/**
+!.cursor/skills/
+!.cursor/skills/**
