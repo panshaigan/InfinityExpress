@@ -80,7 +80,7 @@
 	</gfx>
 
 	<content>
-		<bg1 sectionId="bg1-content" label="BG1" engine="bg1,eet">
+		<bg1 label="BG1" engine="bg1,eet">
 			<restorations label="Restorations" unfolded="1">
 				<mod id="bg1ub" label="Unfinished Business" level="restoration" engine="bg1,eet1" unfolded="1">
 					<component id="bg1ub:11" label="Scar and the Sashenstar's Daughter" />
@@ -431,7 +431,7 @@
 				</tweaks>
 			</npc>
 		</sod>
-		<bg2 sectionId="bg2-content" label="BG2" engine="bg2,eet">
+		<bg2 label="BG2" engine="bg2,eet">
 			<restructure label="Restructure">
 				<component id="Reflections_of_Destiny:330" label="Wherever You Go, There You Are" modId="Reflections-of-Destiny" displayIf="Reflections_of_Destiny:100" />
 				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party">
@@ -831,7 +831,7 @@
 				</mod>
 			</restructure>
 		</bg2>
-		<iwd sectionId="iwd-content" label="IWD" engine="iwd">
+		<iwd label="IWD" engine="iwd">
 			<quest label="Quests and Encounters">
 				<mod id="iwd_unfinished_business" label="Unfinished Business for Icewind Dale">
 					<component id="cd_iwd_ub_markeths_ring" label="Marketh's Ring" />
@@ -977,7 +977,7 @@
 				<component id="cd_tweaks_reset_undersigil_fow" label="Reset Undersigil Fog of War" modId="Tweaks-Anthology" engine="pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3360" />
 			</tweaks>
 		</pst>
-		<common sectionId="universal-bg-content" label="Common BG1/BG2" engine="bg,eet">
+		<universalBg label="Common BG1/BG2" engine="bg,eet">
 			<npc label="Joinable NPCs">
 				<custom>
 					<!-- component id="c#husam-main" label="Husam - human CN thief" modId="Husam_NPC" /-->
@@ -1058,8 +1058,8 @@
 				<component id="stratagems:3041" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" level="blendWell" />
 				<component id="cd_tweaks_death_cam" label="Death cam" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3300" />
 			</tweaks>
-		</common>
-		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
+		</universalBg>
+		<universalBgIwd label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<npc label="Joinable NPCs">
 				<tweaks label="Tweaks" unfolded="1">
 					<component id="cd_tweaks_happy_neutrals" label="Neutral characters make happy comments at mid-range reputation" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3125" />
@@ -1119,64 +1119,64 @@
 				<component id="cd_tweaks_hide_vfx_from_invisible_enemies" label="Hide visual effects from invisible enemies" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_260" />
 				<component id="cd_tweaks_stores_sell_higher_stacks" label="Stores sell higher stacks of items" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1120" />
 			</tweaks>
-		</common>
+		</universalBgIwd>
 	</content>
 
 	<mechanics engine="bg,eet,iwd">
-		<group sectionId="warriors" label="Warriors" desc="Figher/ranger/paladin/monk">
-			<group sectionId="fighter" label="Fighter">
-				<group sectionId="wizard-slayer" label="Update kit: Wizard Slayer">
+		<warriors label="Warriors" desc="Figher/ranger/paladin/monk">
+			<fighter label="Fighter">
+				<wizardSlayer label="Update kit: Wizard Slayer">
 					<component id="ArtisansKitpack:1006" label="Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
 					<component id="METweaks:1600" label="Increase Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" default="Gain 5% Magic Resistance per level rather than 1%" />
-				</group>
+				</wizardSlayer>
 				<component id="Morpheus562sKitpackShieldBreaker" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" />
-			</group>
-			<group sectionId="ranger" label="Ranger">
-				<group sectionId="beastmaster" label="Update kit: Beast Master" level="blendWell">
+			</fighter>
+			<ranger label="Ranger">
+				<beastmaster label="Update kit: Beast Master" level="blendWell">
 					<component id="ArtisansKitpack:2012" label="Overhaul" modId="The-Artisan-s-Kitpack" />
 					<component id="cd_tweaks_nwn_animal_companion" label="Animal Companion class feat" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6340" />
-				</group>
-				<group sectionId="archer" label="Update kit: Archer — provide to-hit and damage bonuses per the kit description">
-				</group>
+				</beastmaster>
+				<archer label="Update kit: Archer — provide to-hit and damage bonuses per the kit description">
+				</archer>
 				<component id="iwdification:110" label="Make Tracking an innate ability since level 1" modId="iwdification" engine="bg,eet" level="blendWell" />
 				<component id="cd_tweaks_nwn_trackless_step" label="Add Trackless Step class feat for rangers" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6240" />
 				<component id="METweaks:1400" label="Power up ranger Charm Animal" modId="Olvyn-Tweaks" level="blendWell" />
-			</group>
-			<group sectionId="paladin" label="Paladin">
-				<group sectionId="inquisitor" label="Update kit: Inquisitor">
-				</group>
+			</ranger>
+			<paladin label="Paladin">
+				<inquisitor label="Update kit: Inquisitor">
+				</inquisitor>
 				<component id="BardicWonders:1012" label="Add kit: Gallant — Bardic paladin kit" modId="Bardic-Wonders" displayIf="EEex:1" level="extended" />
-			</group>
-			<group sectionId="monk" label="Monk">
+			</paladin>
+			<monk label="Monk">
 				<component id="ArtisansKitpack:10001" label="Update class: Revisions" modId="The-Artisan-s-Kitpack" level="blendWell" />
 				<component id="METweaks:1000" label="Update Deflect Missiles ability" modId="Olvyn-Tweaks" level="blendWell" />
-			</group>
+			</monk>
 			<component id="ZSTweaks:2120" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" />
 			<component id="METweaks:400" label="Remove the limit of two Proficiency Points in a weapon at character creation" modId="Olvyn-Tweaks" />
 			<component id="cd_tweaks_cleave" label="Add Cleave class feat for fighters and monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6100" />
 			<component id="cd_tweaks_nwn_knockdown" label="Add Knockdown class feat for fighters and monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6010" />
 			<component id="METweaks:900" label="Let rangers and paladins cast spells at their full caster level" modId="Olvyn-Tweaks" />
-		</group>
-		<group sectionId="rogues" label="Rogues" desc="Thieve/bard">
-			<group sectionId="thief" label="Thief">
+		</warriors>
+		<rogues label="Rogues" desc="Thieve/bard">
+			<thief label="Thief">
 				<mod id="rogue_rebalancing" label="Update kits: Assassin, Swashbuckler, Bounty Hunter revisions" level="blendWell">
 					<component id="rr:1" label="Thief kit revisions" />
 					<component id="rr:2" label="Thief High Level Ability revisions" alwaysIf="rr:1" noDisplay="1" />
 				</mod>
 				<component id="ArtisansKitpack:7008" label="Update kit: Shadowdancer overhaul" modId="The-Artisan-s-Kitpack" level="extended" />
-			</group>
-			<group sectionId="bard" label="Bard">
+			</thief>
+			<bard label="Bard">
 				<mod id="rogue_rebalancing" label="Update class and kits: Blade, Jester, Skald" level="blendWell">
 					<component id="rr:4" label="Bard kit revisions" modId="rogue_rebalancing" />
 					<component id="rr:5" label="Bard High Level Ability revisions" alwaysIf="rr:4" noDisplay="1" modId="rogue_rebalancing" />
 					<component id="rr:6" label="Proper spell progression for bards" modId="rogue_rebalancing" alwaysIf="rr:4" noDisplay="1" />
 				</mod>
-				<group sectionId="blade" label="Blade kit enhancements">
-				</group>
-				<group sectionId="skald" label="Skald kit enhancements">
-				</group>
+				<blade label="Blade kit enhancements">
+				</blade>
+				<skald label="Skald kit enhancements">
+				</skald>
 				<component id="cd_tweaks_nwn_armored_caster" label="Add Armored Caster class feat" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6230" />
-			</group>
+			</bard>
 			<component id="rr:9" label="Revised Thievery: Adds dialogue options after failed thievery." desc="Additionally PnP the thievery potions and prevents their effects from stacking" modId="rogue_rebalancing" level="vanillaPlus" />
 			<component id="rr:0" label="Proper Dual-Wielding implementation for thieves and bards" modId="rogue_rebalancing" level="vanillaPlus" />
 			<component id="cd_tweaks_thieving_in_heavy_armor" label="Allow Thieving and Stealth in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="blendWell" desc="" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2100" />
@@ -1196,46 +1196,46 @@
 				<component id="HouseTweaks:43" label="Set Traps in enemy range if invisible, does not break Stealth" modId="House-Rule-Tweaks" level="lowerDifficulty" />
 				<component id="cd_tweaks_trap_cap_removal" label="Remove concurrent trap cap" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2320" />
 			</group>
-		</group>
-		<group sectionId="spellcasters" label="Spellcasters" desc="Druid/cleric/mage/sorcerer/shaman">
-			<group sectionId="cleric" label="Cleric">
-			</group>
-			<group sectionId="druid" label="Druid">
+		</rogues>
+		<spellcasters label="Spellcasters" desc="Druid/cleric/mage/sorcerer/shaman">
+			<cleric label="Cleric">
+			</cleric>
+			<druid label="Druid">
 				<component id="ArtisansKitpack:5100" label="Update kit: Shapeshifter overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" />
 				<component id="ArtisansKitpack:5110" label="Change Shapeshifter werewolf sprite" modId="The-Artisan-s-Kitpack" alwaysIf="ArtisansKitpack:5100" noDisplay="1" />
 				<component id="cd_tweaks_shapeshifter_armor" label="Allow Shapeshifters to wear armor but prevent shapeshifting while worn" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2740" />
-			</group>
-			<group sectionId="mage" label="Mage" noBranches="1">
+			</druid>
+			<mage label="Mage" noBranches="1">
 				<mod id="TomeAndBlood" label="Tome and Blood: revised specialists and innate Metamagic">
 					<component id="TomeAndBlood:40" label="Revised specialists" level="extended" />
 					<component id="TomeAndBlood:51" label="Innate Metamagic, learned automatically by everyone" level="vanillaPlus" />
 					<component id="TomeAndBlood:56" label="Metamagic: Fill Sequencers for free" level="lowerDifficulty" />
 					<component id="TomeAndBlood:66" label="Innate Find Familiar" level="vanillaPlus" alwaysIf="TomeAndBlood:51" noDisplay="1"/>
 				</mod>
-			</group>
-			<group sectionId="sorcerer" label="Sorcerer">
+			</mage>
+			<sorcerer label="Sorcerer">
 				<component id="A7-CHAOSSORCERER-MAIN" label="Add kit: Chaos Sorcerer — Wild Magic sorcerer" modId="A7-ChaosSorcerer" level="extended" />
 				<component id="Morpheus562sKitpackEldritchScionNoXan" label="Add kit: Eldritch Scion — Warrior sorcerer" modId="morpheus562s-kitpack" />
 				<component id="cd_tweaks_sorc_spell_progression" label="Un-nerfed sorcerer spell progression table" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2250" />
-			</group>
-			<group sectionId="shaman" label="Shaman">
+			</sorcerer>
+			<shaman label="Shaman">
 				<component id="ArtisansKitpack:9001" label="Add kit: Warhorn Shaman" modId="The-Artisan-s-Kitpack" level="extended" />
 				<mod id="A7-ImprovedShamanicDance" label="Improved Shamanic Dance" level="vanillaPlus">
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-MAIN" label="Improved Shamanic Dance" />
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-EXPANDED_DANCE" label="Expanded Shamanic Dance for high level characters" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-APPLY_TO_KITS" label="Apply Shamanic Dance improvements to shaman kits" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" />
 				</mod>
-			</group>
+			</shaman>
 
 			<component id="stratagems:4240" label="Treat mages' and priests' HLAs as innate abilities" level="blendWell" modId="SwordCoastStratagems" />
-		</group>
-		<group sectionId="multi" label="Multi-class / dual-class">
+		</spellcasters>
+		<multi label="Multi-class / dual-class">
 			<component id="ArtisansKitpack:20000" label="Add kit: Eldritch Knight — fighter/mage kit" modId="The-Artisan-s-Kitpack" level="extended" />
 			<!--component id="cd_tweaks_multiclass_gm" label="Multi-class Grandmastery" level="lowerDifficulty" modId="Tweaks-Anthology" /-->
 			<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" label="Tighten equipment restrictions for  druid multi- and dual-classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." level="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2431" />
 			<component id="cd_tweaks_more_dual_classes" label="Expanded dual-class options" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2140" />
-		</group>
-		<group sectionId="universal" label="Universal">
+		</multi>
+		<universal label="Universal">
 			<component id="cd_tweaks_alter_thac0_table" label="Un-nerfed THAC0 table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2240" />
 			<alternatives label="Make Infravision useful" desc="Creatures without infravision have -4 THAC0 at night or in dark places">
 				<component id="cd_tweaks_infravision" label="Tweaks Anthology (Luke's) solution" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2680" />
@@ -1243,31 +1243,31 @@
 				<component id="METweaks:3205" label="Olvyn's Version (light)" desc="Creatures without infravision have reduced visual range at night or in dark places" modId="Olvyn-Tweaks" />
 				<component id="METweaks:3210" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" level="higherDifficulty" modId="Olvyn-Tweaks" />
 			</alternatives>
-			<group sectionId="feats" label="Add new feats">
+			<feats label="Add new feats">
 				<component id="cd_tweaks_planar_turning" label="Planar Turning class feat for clerics/paladins" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6140" />
 				<component id="cd_tweaks_nwn_uncanny_dodge" label="Uncanny Dodge class feat for barbarians and rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6260" />
 				<component id="cd_tweaks_nwn_evasion" label="Evasion class feat for monks and rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6280" />
-			</group>
-			<group sectionId="weapons" label="Weapon Tweaks">
+			</feats>
+			<weapons label="Weapon Tweaks">
 				<component id="cd_tweaks_universal_four_weapon_slots" label="Give every class/kit four weapon slots" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3280" />
 				<component id="cd_tweaks_universal_clubs" label="Universal clubs" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2040" />
 				<component id="cd_tweaks_loosen_shield_restrictions" label="Allow mages to use bucklers and thieves to use small shields" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2520" />
-			</group>
-		</group>
-		<group sectionId="stats" label="Stats">
-			<group sectionId="hp" label="HP">
+			</weapons>
+		</universal>
+		<stats label="Stats">
+			<hp label="HP">
 				<component id="cd_tweaks_max_hp_at_l1" label="Max HP at level one" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2999" />
 				<component id="cd_tweaks_extend_hp_rolls_to_l20" label="Allow HP rolls through level 20" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3008" />
-			</group>
-		</group>
-		<group sectionId="proficiencies" label="Proficiencies and Fighting Styles">
+			</hp>
+		</stats>
+		<proficiencies label="Proficiencies and Fighting Styles">
 			<component id="cd_tweaks_grandmastery_bonus_true" label="True Grandmastery" level="blendWell" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2210" />
 			<component id="cd_tweaks_specialization_apr_bonus_for_all" label="Everyone gets bonus APR from Specialization" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2440" />
-		</group>
+		</proficiencies>
 	</mechanics>
 
 	<content>
-		<common sectionId="universal-bg-iwd" label="Universal BG/IWD mods" engine="bg,eet,iwd">
+		<universalBgIwd label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<items>
 				<add>
 					<component id="rr:7" label="Add items for thieves and bards" modId="rogue_rebalancing" level="extended" />
@@ -1283,7 +1283,7 @@
 					<component id="rr:8" label="Upgradeable thieves and bards equipment" modId="rogue_rebalancing" level="extended" />   
 				</upgrade>
 			</items>
-		</common>
+		</universalBgIwd>
 	</content>
 
 	<spells engine="bg,eet,iwd">
@@ -1337,7 +1337,7 @@
 	</spells>
 
 	<content>
-		<bg2 sectionId="bg2-content" label="BG2" engine="bg2,eet">
+		<bg2 label="BG2" engine="bg2,eet">
 			<restructure>
 				<alternatives label="Crucible">
 					<component id="Crucible-FinalAssault" label="Mute NPCs" modId="crucible" />
@@ -1827,61 +1827,61 @@
 	</base>
 
 	<mechanics engine="bg,eet,iwd">
-		<group sectionId="warriors" label="Warriors Tweaks" desc="Figher/ranger/paladin/monk">
-			<group sectionId="fighter" label="Fighter">
-				<group sectionId="wizard-slayer" label="Wizard Slayer">
+		<warriors label="Warriors Tweaks" desc="Figher/ranger/paladin/monk">
+			<fighter label="Fighter">
+				<wizardSlayer label="Wizard Slayer">
 					<component id="SkillsAndAbilitiesDI1" label="Add Detect Illusions, Spell Failure and Dispel on Hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." level="lowerDifficulty" />
-				</group>
+				</wizardSlayer>
 				<component id="SkillsAndAbilitiesFighter" label="Add new abilities" modId="skills-and-abilities" desc="1st level - Second Wind (Once per day, heal 1d10 + fighter level); 9th level - Indomitable (increase saving throws). HLA: increase thac0 and damage" />
-			</group>
-			<group sectionId="ranger" label="Ranger">
-				<group sectionId="archer">
+			</fighter>
+			<ranger label="Ranger">
+				<archer>
 					<component id="SkillsAndAbilitiesUpdateArcher" label="Provide to-hit and damage bonuses per the kit description" modId="skills-and-abilities" />
-				</group>
-			</group>
-			<group sectionId="paladin" label="Paladin">
+				</archer>
+			</ranger>
+			<paladin label="Paladin">
 				<component id="SkillsAndAbilitiesPaladin1" label="Add new abilities" modId="skills-and-abilities" desc="Smite, auras and Sanctify Strikes (+2 magic damage)" />
-				<group sectionId="inquisitor">
+				<inquisitor>
 					<component id="SkillsAndAbilitiesDI2" label="Replace Inquisitor True Seeing with Detect Illusion skill" displayIf="EEex:1" modId="skills-and-abilities" />
 					<component id="SkillsAndAbilitiesInquisitor1" label="Allow Inquisitor kit to cast divine spells" modId="skills-and-abilities" />
-				</group>
+				</inquisitor>
 				<component id="METweaks:1500" label="Turn paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" level="lowerDifficulty" />
-			</group>
-			<group sectionId="monk" label="Monk">
+			</paladin>
+			<monk label="Monk">
 				<component id="SkillsAndAbilitiesMonk" label="Add Open Locks, Find/Disarm Traps and Detect Illusion" modId="skills-and-abilities" displayIf="EEex:1" desc="1 level - Flurry of Blows (extra APR). New HLA - become immune to Time Stop" />
-			</group>
-		</group>
-		<group sectionId="rogues" label="Rogues" desc="Thieve/bard">
-			<group sectionId="thief" label="Thief">
-			</group>
-			<group sectionId="bard" label="Bard">
-				<group sectionId="blade" label="Blade kit enhancements">
+			</monk>
+		</warriors>
+		<rogues label="Rogues" desc="Thieve/bard">
+			<thief label="Thief">
+			</thief>
+			<bard label="Bard">
+				<blade label="Blade kit enhancements">
 					<component id="SkillsAndAbilitiesBlade" label="Blade kit enhancements" modId="skills-and-abilities" desc="This allows the bard Blade kit to master (3 slots) in all bladed weapons and receive a 0.5 APR boost at level 10 and again at level 20. This will also update all non-recruitable Blades within the game to have specialization in the melee weapon(s) of their choice." />
-				</group>
-				<group sectionId="skald" label="Skald kit enhancements">
+				</blade>
+				<skald label="Skald kit enhancements">
 					<component id="SkillsAndAbilitiesSkald" label="Skald kit enhancements" modId="skills-and-abilities" />
-				</group>
+				</skald>
 				<component id="SkillsAndAbilitiesSongDuration" label="Bard Songs last 1 turn" modId="skills-and-abilities" />
 				<alternatives label="Add skills" displayIf="EEex:1">
 					<component id="SkillsAndAbilitiesBard1" label="Open Locks" displayIf="EEex:1" modId="skills-and-abilities" default="1" />
 					<component id="SkillsAndAbilitiesBard2" label="Open Locks and Find/Disarm Traps" displayIf="EEex:1" modId="skills-and-abilities" />
 				</alternatives>
-			</group>
-		</group>
-		<group sectionId="spellcasters" label="Spellcasters" desc="Druid/cleric/mage/sorcerer/shaman">
-			<group sectionId="cleric" label="Cleric">
-			</group>
-			<group sectionId="druid" label="Druid">
-			</group>
-			<group sectionId="mage" label="Mage" noBranches="1">
-			</group>
-			<group sectionId="sorcerer" label="Sorcerer">
-			</group>
-			<group sectionId="shaman" label="Shaman">
-			</group>
+			</bard>
+		</rogues>
+		<spellcasters label="Spellcasters" desc="Druid/cleric/mage/sorcerer/shaman">
+			<cleric label="Cleric">
+			</cleric>
+			<druid label="Druid">
+			</druid>
+			<mage label="Mage" noBranches="1">
+			</mage>
+			<sorcerer label="Sorcerer">
+			</sorcerer>
+			<shaman label="Shaman">
+			</shaman>
 			<component id="SkillsAndAbilitiesConcentration" label="Add Concentration Check to resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" />
-		</group>
-		<group sectionId="multi" label="Multi-class">
+		</spellcasters>
+		<multi label="Multi-class">
 			<alternatives label="Allow fighter multiclasses to achieve higher Weapon Proficiency" level="lowerDifficulty">
 				<component id="SkillsAndAbilitiesWeaponProf1" label="Master (3 pips)" modId="skills-and-abilities" />
 				<component id="SkillsAndAbilitiesWeaponProf2" label="High master (4 pips)" modId="skills-and-abilities" />
@@ -1890,19 +1890,19 @@
 			<component id="cd_tweaks_casting_in_armor" label="Allow arcane spellcasting in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2120" />
 			<component id="SkillsAndAbilitiesClericThief" label="Adjust cleric/thief action bar" displayIf="EEex:1" modId="skills-and-abilities" />
 			<component id="D5_REVISED_DUAL_CLASS_REQS" label="Lower dual-class requirements" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" />
-		</group>
-		<group sectionId="universal" label="Universal Tweaks">
-			<group sectionId="weapons" label="Weapon Tweaks">
+		</multi>
+		<universal label="Universal Tweaks">
+			<weapons label="Weapon Tweaks">
 				<component id="SkillsAndAbilitiesSTR" label="2H weapon additional STR bonus" modId="skills-and-abilities" level="lowerDifficulty" />
-			</group>
+			</weapons>
 			<group label="HLAs">
 				<component id="SkillsAndAbilitiesNewHLA" label="Add new HLAs for all classes and kits" modId="skills-and-abilities" />
 				<component id="SkillsAndAbilitiesUpdateHLA" label="Update existing HLAs" modId="skills-and-abilities" />
 			</group>
 			<component id="SkillsAndAbilitiesTurnUndead" label="Turn Undead overhaul" displayIf="EEex:1" modId="skills-and-abilities" />
-		</group>
-		<group sectionId="stats" label="Stats">
-			<group sectionId="hp">
+		</universal>
+		<stats label="Stats">
+			<hp>
 				<alternatives label="CON Bonuses/Regeneration">
 					<alternatives label="SubtleD's Hit Dice Overhaul — the new average, compared to vanilla average, is..." modId="SubtleD_Stat_Overhauls" desc="Take some of the randomness out of hit point rolls. Add slow regenration since 19 CON">
 						<component id="D5_HARDCORE_HD" label="Above" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" />
@@ -1911,7 +1911,7 @@
 					</alternatives>
 					<component id="HouseTweaks:9" label="House tweaks CON bonuses for all classes + regeneration changes" modId="House-Rule-Tweaks" />
 				</alternatives>
-			</group>
+			</hp>
 			<alternatives label="Stat-based bonus spell slots">
 				<component id="D5_ABILITY_SCORE_SPELL_SLOTS" label="SubtleD Stat Overhauls version" modId="SubtleD_Stat_Overhauls" />
 				<component id="HouseTweaks:12" label="House Tweaks version" modId="House-Rule-Tweaks" />
@@ -1922,8 +1922,8 @@
 			</group>
 			<component id="D5_REVISED_ABILITY_SCORES" label="Ability score overhaul" desc="Helps to make all stats useful" modId="SubtleD_Stat_Overhauls" />
 			<component id="cd_tweaks_exceptional_strength_weight_limits" label="Exceptional STR weight limit changes" modId="Tweaks-Anthology" level="vanillaPlus" engine="bg,eet,iwd,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2500" />
-		</group>
-		<group sectionId="proficiencies">
+		</stats>
+		<proficiencies>
 			<alternatives label="Proficiency/Fighting Styles Tweaks">
 				<group label="Tweaks Anthology/house Tweaks">
 					<component id="METweaks:500" label="Fighters get 1 Proficiency Point per 2 levels" modId="Olvyn-Tweaks" />
@@ -1954,7 +1954,7 @@
 					<component id="D5_EE_WSPATCK_FOR_ALL" label="APR on spec" />
 				</mod>
 			</alternatives>
-		</group>
+		</proficiencies>
 	</mechanics>
 
 	<randomisation engine="bg,eet" level="higherDifficulty">

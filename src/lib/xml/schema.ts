@@ -52,8 +52,6 @@ export type NodeKind = 'component' | 'container' | 'alternatives' | 'station'
 
 export interface NodeAttrs {
   id?: string
-  /** Stable id for folding duplicate sections across split station blocks. */
-  sectionId?: string
   label?: string
   desc?: string
   /** Optional http(s) URL to component-specific documentation. */

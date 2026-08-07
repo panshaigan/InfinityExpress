@@ -76,12 +76,12 @@ Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not i
 4. Each `<component id="…">` also gets:
   - `componentId`
   - `orderIndex` — monotonic counter in **document order** (used for export)
-5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Structural org tags (`add`, `update`, `tweaks`, `items`, `quest`, `npc`, `restorations`, `restructure`, …) reunite by tag; labeled buckets (`group`, `common`, …) reunite only when they share `sectionId`. Mechanics follows that same rule with a two-level layout: class-group `sectionId`s (`warriors`, `rogues`, …) nest class `sectionId`s (`fighter`, `ranger`, …) so components from a later `<mechanics>` block land in the matching class bucket. Mods/components/alternatives are never folded. First sibling’s attrs are kept. When a merged sibling has `noBranches`, only **that** sibling’s children are flattened into the survivor at merge time; siblings without the flag keep nested structure (`mod` / `group` rows). If the survivor still has `noBranches` when absorbing a structured sibling, its existing children are materialized flat and the flag is cleared so the incoming structure is preserved. Export still uses each component’s original `orderIndex`.
+5. Duplicate station tags (e.g. two `<base>` blocks far apart) are **merged for UI**: one station whose children are the folded union of all blocks’ children. Containers reunite by **tag** (first attrs kept; children appended then re-folded), except `group`, `mod`, `component`, and `alternatives`, which never merge. Anonymous `<group>` is the non-merging escape hatch; intentional merge buckets use camelCase tags (`warriors`, `fighter`, `universalBg`, …). Nested matching tags reunite recursively (e.g. two `<warriors>` each with `<fighter>` become one warriors → one fighter). When a merged sibling has `noBranches`, only **that** sibling’s children are flattened into the survivor at merge time; siblings without the flag keep nested structure (`mod` / `group` rows). If the survivor still has `noBranches` when absorbing a structured sibling, its existing children are materialized flat and the flag is cleared so the incoming structure is preserved. Export still uses each component’s original `orderIndex`.
 6. **Content station remount (UI only, after fold):** depending on the selected game, commons are absorbed into a target bucket with the same sibling-fold rules (`npc`/`items`/`tweaks` reunite by tag). `sod` / `pst` stay top-level.
-  - `bg1` → fold `universal-bg-content` + `universal-bg-iwd` into `bg1-content`
-  - `bg2` → fold both commons into `bg2-content`
-  - `iwd` → fold `universal-bg-iwd` into `iwd-content`
-  - `eet` → fold `universal-bg-iwd` into `universal-bg-content` (game buckets stay siblings)
+  - `bg1` → fold `universalBg` + `universalBgIwd` into `bg1`
+  - `bg2` → fold both commons into `bg2`
+  - `iwd` → fold `universalBgIwd` into `iwd`
+  - `eet` → fold `universalBgIwd` into `universalBg` (game buckets stay siblings)
   - `pst` → no remount
 
 If `engine` / `level` is missing after inheritance, engine is treated as empty → **visible for all games**.
@@ -263,7 +263,7 @@ Header (and Engine preselect) controls:
 
 On the Content station only, two button rows sit under the heading:
 
-1. **Main branches** — one button per top-level remapped content bucket (`bg1`, `sod`, `bg2`, `common`, …). Label from `label` attr, else the tag name.
+1. **Main branches** — one button per top-level remapped content bucket (`bg1`, `sod`, `bg2`, `universalBg`, …). Label from `label` attr, else the tag name.
 2. **Subbranches** — one button per direct child of the selected main branch. Presence is dynamic (e.g. SoD may omit `restorations` / `items`). Button order is fixed: `restorations` → `restructure` → `quest` → `npc` → `items` → `tweaks` (other tags append after). Same label rule (`label` attr, else tag). Sibling containers with the same structural tag (including `restorations` / `restructure`) are merged into one button and one list.
 
 The list shows **only the children** of the selected subbranch (no main/sub wrapper rows). First main and first subbranch (in the order above) autoselect when entering Content or when the current keys disappear after remap/filter. Switching main branches prefers the same subbranch tag when present. Relation links into Content also select the main/sub path that contains the target.

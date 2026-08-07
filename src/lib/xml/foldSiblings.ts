@@ -1,35 +1,21 @@
 import type { ContainerNode, TreeNode } from './schema'
 
-/** Org folders that reunite by tag alone when duplicate stations are folded. */
-export const STRUCTURAL_MERGE_TAGS = new Set([
-  'add',
-  'update',
-  'upgrade',
-  'delete',
-  'tweaks',
-  'items',
-  'npc',
-  'romances',
-  'quest',
-  'restorations',
-  'restructure',
-])
+/** Containers that never reunite across split station blocks (even with the same tag). */
+export const NEVER_MERGE_TAGS = new Set(['group', 'mod'])
 
 /**
- * Merge key for sibling folding. `sectionId` wins when present.
- * Structural org tags fall back to tag alone. Mods / components / alternatives never merge.
+ * Merge key for sibling folding. Same tag merges unless the node is a component,
+ * alternatives, or a never-merge tag (`group`, `mod`). Named section tags
+ * (`warriors`, `bg1`, `universalBg`, …) and org folders reunite by tag alone.
  */
 export function mergeKey(node: TreeNode): string | null {
-  if (node.kind === 'component' || node.kind === 'alternatives' || node.tag === 'mod') {
+  if (node.kind === 'component' || node.kind === 'alternatives') {
     return null
   }
-  if (node.attrs.sectionId) {
-    return `sectionId:${node.attrs.sectionId}`
+  if (NEVER_MERGE_TAGS.has(node.tag)) {
+    return null
   }
-  if (STRUCTURAL_MERGE_TAGS.has(node.tag)) {
-    return `tag:${node.tag}`
-  }
-  return null
+  return `tag:${node.tag}`
 }
 
 /**

@@ -1,11 +1,11 @@
 import type { ComponentNode, ContainerNode, SelectedGame, TreeNode } from './schema'
 import { foldSiblings } from './foldSiblings'
 
-const BG_CONTENT = 'universal-bg-content'
-const BG_IWD = 'universal-bg-iwd'
-const BG1 = 'bg1-content'
-const BG2 = 'bg2-content'
-const IWD = 'iwd-content'
+const BG_CONTENT = 'universalBg'
+const BG_IWD = 'universalBgIwd'
+const BG1 = 'bg1'
+const BG2 = 'bg2'
+const IWD = 'iwd'
 
 /** Deep-clone tree nodes so foldSiblings can mutate without touching the parse model. */
 export function cloneTree(nodes: TreeNode[]): TreeNode[] {
@@ -32,24 +32,24 @@ function cloneNode(node: TreeNode): TreeNode {
   return container
 }
 
-function findBySectionId(nodes: TreeNode[], sectionId: string): ContainerNode | undefined {
+function findByTag(nodes: TreeNode[], tag: string): ContainerNode | undefined {
   return nodes.find(
-    (n): n is ContainerNode => n.kind !== 'component' && n.attrs.sectionId === sectionId,
+    (n): n is ContainerNode => n.kind !== 'component' && n.tag === tag,
   )
 }
 
 /** Fold source commons' children into target, then drop those commons from siblings. */
 function absorbCommons(
   siblings: TreeNode[],
-  targetId: string,
-  sourceIds: string[],
+  targetTag: string,
+  sourceTags: string[],
 ): TreeNode[] {
-  const target = findBySectionId(siblings, targetId)
+  const target = findByTag(siblings, targetTag)
   if (!target) return siblings
 
-  const absorbSet = new Set(sourceIds)
+  const absorbSet = new Set(sourceTags)
   const sources = siblings.filter(
-    (n): n is ContainerNode => n.kind !== 'component' && !!n.attrs.sectionId && absorbSet.has(n.attrs.sectionId),
+    (n): n is ContainerNode => n.kind !== 'component' && absorbSet.has(n.tag),
   )
   if (sources.length === 0) return siblings
 
@@ -59,7 +59,7 @@ function absorbCommons(
   }
   target.children = foldSiblings([...target.children, ...incoming])
 
-  return siblings.filter((n) => !(n.attrs.sectionId && absorbSet.has(n.attrs.sectionId)))
+  return siblings.filter((n) => !absorbSet.has(n.tag))
 }
 
 /**

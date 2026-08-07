@@ -20,7 +20,6 @@ function readAttrs(el: Element): NodeAttrs {
   const g = (name: string) => el.getAttribute(name) ?? undefined
   return {
     id: g('id'),
-    sectionId: g('sectionId'),
     label: g('label'),
     desc: g('desc'),
     readme: g('readme'),

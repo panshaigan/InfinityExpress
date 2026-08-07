@@ -7,7 +7,7 @@ import type { ContainerNode, TreeNode } from './schema'
 const FIXTURE = `<?xml version="1.0"?>
 <installSequence>
   <content>
-    <bg1 sectionId="bg1-content" label="BG1" engine="bg1,eet">
+    <bg1 label="BG1" engine="bg1,eet">
       <npc>
         <component id="bg1:npc" label="BG1 NPC" />
       </npc>
@@ -20,12 +20,12 @@ const FIXTURE = `<?xml version="1.0"?>
     <sod label="SoD" engine="bg1,eet">
       <component id="sod:1" label="SoD mod" />
     </sod>
-    <bg2 sectionId="bg2-content" label="BG2" engine="bg2,eet">
+    <bg2 label="BG2" engine="bg2,eet">
       <npc>
         <component id="bg2:npc" label="BG2 NPC" />
       </npc>
     </bg2>
-    <iwd sectionId="iwd-content" label="IWD" engine="iwd">
+    <iwd label="IWD" engine="iwd">
       <items>
         <add>
           <component id="iwd:item" label="IWD item" />
@@ -35,7 +35,7 @@ const FIXTURE = `<?xml version="1.0"?>
     <pst label="PST" engine="pst">
       <component id="pst:1" label="PST mod" />
     </pst>
-    <common sectionId="universal-bg-content" label="Universal BG" engine="bg,eet">
+    <universalBg label="Universal BG" engine="bg,eet">
       <npc>
         <component id="ubg:npc" label="UBG NPC" />
       </npc>
@@ -47,8 +47,8 @@ const FIXTURE = `<?xml version="1.0"?>
           <component id="ubg:update" label="UBG update" />
         </update>
       </items>
-    </common>
-    <common sectionId="universal-bg-iwd" label="Universal BG/IWD" engine="bg,eet,iwd">
+    </universalBg>
+    <universalBgIwd label="Universal BG/IWD" engine="bg,eet,iwd">
       <npc>
         <component id="ubi:npc" label="UBI NPC" />
       </npc>
@@ -57,17 +57,17 @@ const FIXTURE = `<?xml version="1.0"?>
           <component id="ubi:item" label="UBI item" />
         </add>
       </items>
-    </common>
+    </universalBgIwd>
   </content>
 </installSequence>`
 
-function sectionIds(nodes: TreeNode[]): (string | undefined)[] {
-  return nodes.map((n) => n.attrs.sectionId ?? n.tag)
+function tags(nodes: TreeNode[]): string[] {
+  return nodes.map((n) => n.tag)
 }
 
-function findSection(nodes: TreeNode[], sectionId: string): ContainerNode {
-  const found = nodes.find((n) => n.attrs.sectionId === sectionId)
-  if (!found || found.kind === 'component') throw new Error(`missing ${sectionId}`)
+function findByTag(nodes: TreeNode[], tag: string): ContainerNode {
+  const found = nodes.find((n) => n.tag === tag)
+  if (!found || found.kind === 'component') throw new Error(`missing ${tag}`)
   return found
 }
 
@@ -81,19 +81,13 @@ describe('remapContentForGame', () => {
   const content = model.stations.find((s) => s.stationId === 'content')!.children
 
   it('bg1: folds both commons into bg1; sod stays; nested npc/items reunite', () => {
-    const snapshot = content.map((n) => n.attrs.sectionId)
+    const snapshot = tags(content)
     const remapped = remapContentForGame(content, 'bg1')
 
-    expect(sectionIds(remapped)).toEqual([
-      'bg1-content',
-      'sod',
-      'bg2-content',
-      'iwd-content',
-      'pst',
-    ])
-    expect(content.map((n) => n.attrs.sectionId)).toEqual(snapshot)
+    expect(tags(remapped)).toEqual(['bg1', 'sod', 'bg2', 'iwd', 'pst'])
+    expect(tags(content)).toEqual(snapshot)
 
-    const bg1 = findSection(remapped, 'bg1-content')
+    const bg1 = findByTag(remapped, 'bg1')
     expect(bg1.children.filter((c) => c.tag === 'npc')).toHaveLength(1)
     expect(bg1.children.filter((c) => c.tag === 'items')).toHaveLength(1)
     const ids = collectComponentIds(bg1)
@@ -105,39 +99,32 @@ describe('remapContentForGame', () => {
 
   it('bg2: folds both commons into bg2', () => {
     const remapped = remapContentForGame(content, 'bg2')
-    expect(remapped.some((n) => n.attrs.sectionId === 'universal-bg-content')).toBe(false)
-    expect(remapped.some((n) => n.attrs.sectionId === 'universal-bg-iwd')).toBe(false)
-    const bg2 = findSection(remapped, 'bg2-content')
+    expect(remapped.some((n) => n.tag === 'universalBg')).toBe(false)
+    expect(remapped.some((n) => n.tag === 'universalBgIwd')).toBe(false)
+    const bg2 = findByTag(remapped, 'bg2')
     expect(collectComponentIds(bg2)).toEqual(
       expect.arrayContaining(['bg2:npc', 'ubg:npc', 'ubi:npc', 'ubg:item', 'ubi:item']),
     )
   })
 
-  it('iwd: folds only universal-bg-iwd into iwd; leaves universal-bg-content', () => {
+  it('iwd: folds only universalBgIwd into iwd; leaves universalBg', () => {
     const remapped = remapContentForGame(content, 'iwd')
-    expect(remapped.some((n) => n.attrs.sectionId === 'universal-bg-iwd')).toBe(false)
-    expect(remapped.some((n) => n.attrs.sectionId === 'universal-bg-content')).toBe(true)
-    const iwd = findSection(remapped, 'iwd-content')
+    expect(remapped.some((n) => n.tag === 'universalBgIwd')).toBe(false)
+    expect(remapped.some((n) => n.tag === 'universalBg')).toBe(true)
+    const iwd = findByTag(remapped, 'iwd')
     expect(collectComponentIds(iwd)).toEqual(
       expect.arrayContaining(['iwd:item', 'ubi:item', 'ubi:npc']),
     )
   })
 
-  it('eet: folds universal-bg-iwd into universal-bg-content; game buckets stay', () => {
+  it('eet: folds universalBgIwd into universalBg; game buckets stay', () => {
     const remapped = remapContentForGame(content, 'eet')
-    expect(sectionIds(remapped)).toEqual([
-      'bg1-content',
-      'sod',
-      'bg2-content',
-      'iwd-content',
-      'pst',
-      'universal-bg-content',
-    ])
-    const common = findSection(remapped, 'universal-bg-content')
+    expect(tags(remapped)).toEqual(['bg1', 'sod', 'bg2', 'iwd', 'pst', 'universalBg'])
+    const common = findByTag(remapped, 'universalBg')
     expect(collectComponentIds(common)).toEqual(
       expect.arrayContaining(['ubg:npc', 'ubi:npc', 'ubg:item', 'ubi:item', 'ubg:update']),
     )
-    expect(findSection(remapped, 'bg1-content').children).toHaveLength(2)
+    expect(findByTag(remapped, 'bg1').children).toHaveLength(2)
   })
 
   it('pst: identity (same references)', () => {
@@ -148,7 +135,7 @@ describe('remapContentForGame', () => {
   it('does not mutate original children when remounting', () => {
     const before = JSON.stringify(
       content.map((n) => ({
-        sectionId: n.attrs.sectionId,
+        tag: n.tag,
         childCount: n.children.length,
         ids: collectComponentIds(n),
       })),
@@ -159,7 +146,7 @@ describe('remapContentForGame', () => {
     expect(
       JSON.stringify(
         content.map((n) => ({
-          sectionId: n.attrs.sectionId,
+          tag: n.tag,
           childCount: n.children.length,
           ids: collectComponentIds(n),
         })),
@@ -174,13 +161,13 @@ describe('curated InstallSequence.xml content remount', () => {
     const content = model.stations.find((s) => s.stationId === 'content')!.children
 
     const bg1 = remapContentForGame(content, 'bg1')
-    expect(bg1.filter((n) => n.attrs.sectionId === 'universal-bg-content')).toHaveLength(0)
-    expect(bg1.filter((n) => n.attrs.sectionId === 'universal-bg-iwd')).toHaveLength(0)
-    expect(bg1.some((n) => n.attrs.sectionId === 'bg1-content')).toBe(true)
+    expect(bg1.filter((n) => n.tag === 'universalBg')).toHaveLength(0)
+    expect(bg1.filter((n) => n.tag === 'universalBgIwd')).toHaveLength(0)
+    expect(bg1.some((n) => n.tag === 'bg1')).toBe(true)
     expect(bg1.some((n) => n.tag === 'sod')).toBe(true)
 
     const eet = remapContentForGame(content, 'eet')
-    expect(eet.filter((n) => n.attrs.sectionId === 'universal-bg-iwd')).toHaveLength(0)
-    expect(eet.filter((n) => n.attrs.sectionId === 'universal-bg-content')).toHaveLength(1)
+    expect(eet.filter((n) => n.tag === 'universalBgIwd')).toHaveLength(0)
+    expect(eet.filter((n) => n.tag === 'universalBg')).toHaveLength(1)
   })
 })

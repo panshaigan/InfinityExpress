@@ -34,28 +34,26 @@ function component(id: string, orderIndex: number): TreeNode {
 }
 
 describe('mergeKey', () => {
-  it('prefers sectionId over structural tag', () => {
-    expect(mergeKey(container('tweaks', { sectionId: 'a' }))).toBe('sectionId:a')
-  })
-
-  it('uses tag alone for structural org folders', () => {
+  it('uses tag alone for structural org folders and named sections', () => {
     expect(mergeKey(container('update'))).toBe('tag:update')
     expect(mergeKey(container('items'))).toBe('tag:items')
     expect(mergeKey(container('restorations'))).toBe('tag:restorations')
     expect(mergeKey(container('restructure'))).toBe('tag:restructure')
+    expect(mergeKey(container('warriors'))).toBe('tag:warriors')
+    expect(mergeKey(container('universalBg'))).toBe('tag:universalBg')
+    expect(mergeKey(container('bg1'))).toBe('tag:bg1')
   })
 
-  it('does not merge group/common without sectionId', () => {
+  it('does not merge anonymous group', () => {
     expect(mergeKey(container('group', { label: 'Warrior tweaks' }))).toBeNull()
-    expect(mergeKey(container('common', { label: 'Universal' }))).toBeNull()
   })
 
   it('never merges mod / component / alternatives', () => {
-    expect(mergeKey(container('mod', { id: 'x', sectionId: 'x' }))).toBeNull()
+    expect(mergeKey(container('mod', { id: 'x' }))).toBeNull()
     expect(mergeKey(component('c1', 0))).toBeNull()
     expect(
       mergeKey({
-        ...container('alternatives', { sectionId: 'alts' }),
+        ...container('alternatives', { label: 'alts' }),
         kind: 'alternatives',
       }),
     ).toBeNull()
@@ -116,7 +114,7 @@ describe('foldSiblings', () => {
     expect(folded[0]!.children[1]!.attrs.id).toBe('other')
   })
 
-  it('folds structural tags and sectionId groups recursively', () => {
+  it('folds structural tags and named section tags recursively', () => {
     const earlyWarrior = component('early-warrior', 0)
     const lateWarrior = component('late-warrior', 1)
     const stats = component('stats', 2)
@@ -124,16 +122,12 @@ describe('foldSiblings', () => {
     const folded = foldSiblings([
       container('update', { label: 'Overhaul' }, [component('kit-fix', 3)]),
       container('tweaks', {}, [
-        container('group', { sectionId: 'warrior-tweaks', label: 'Warrior tweaks' }, [
-          earlyWarrior,
-        ]),
+        container('warriorTweaks', { label: 'Warrior tweaks' }, [earlyWarrior]),
       ]),
       container('update', {}, [component('skills', 4)]),
       container('tweaks', {}, [
         container('group', { label: 'Stats' }, [stats]),
-        container('group', { sectionId: 'warrior-tweaks', label: 'Warrior tweaks' }, [
-          lateWarrior,
-        ]),
+        container('warriorTweaks', { label: 'Warrior tweaks' }, [lateWarrior]),
       ]),
     ])
 
@@ -146,7 +140,7 @@ describe('foldSiblings', () => {
 
     const tweaks = folded[1]!
     expect(tweaks.children).toHaveLength(2)
-    expect(tweaks.children[0]!.attrs.sectionId).toBe('warrior-tweaks')
+    expect(tweaks.children[0]!.tag).toBe('warriorTweaks')
     expect(tweaks.children[0]!.children.map((c) => (c as { componentId: string }).componentId)).toEqual([
       'early-warrior',
       'late-warrior',
@@ -154,15 +148,15 @@ describe('foldSiblings', () => {
     expect(tweaks.children[1]!.attrs.label).toBe('Stats')
   })
 
-  it('folds common by sectionId and nested items/add by tag', () => {
+  it('folds universalBgIwd by tag and nested items/add by tag', () => {
     const folded = foldSiblings([
-      container('common', { sectionId: 'universal-bg-iwd', label: 'Universal BG/IWD mods' }, [
+      container('universalBgIwd', { label: 'Universal BG/IWD mods' }, [
         container('items', {}, [
           container('add', {}, [component('early-item', 0)]),
           container('update', {}, [component('item-update', 1)]),
         ]),
       ]),
-      container('common', { sectionId: 'universal-bg-iwd', label: 'Universal BG/IWD mods' }, [
+      container('universalBgIwd', { label: 'Universal BG/IWD mods' }, [
         container('items', {}, [
           container('add', {}, [component('late-item', 2)]),
           container('upgrade', {}, [component('item-upgrade', 3)]),
@@ -171,6 +165,7 @@ describe('foldSiblings', () => {
     ])
 
     expect(folded).toHaveLength(1)
+    expect(folded[0]!.tag).toBe('universalBgIwd')
     const items = folded[0]!.children
     expect(items).toHaveLength(1)
     expect(items[0]!.tag).toBe('items')
@@ -190,19 +185,19 @@ const FOLD_SAMPLE = `<?xml version="1.0"?>
       <component id="kit:early" label="Early kit" />
     </update>
     <tweaks>
-      <group sectionId="warrior-tweaks" label="Warrior tweaks">
+      <warriorTweaks label="Warrior tweaks">
         <component id="war:early" label="Early warrior" />
-      </group>
+      </warriorTweaks>
     </tweaks>
   </mechanics>
   <content>
-    <common sectionId="universal-bg-iwd" label="Universal BG/IWD mods">
+    <universalBgIwd label="Universal BG/IWD mods">
       <items>
         <add>
           <component id="item:early" label="Early item" />
         </add>
       </items>
-    </common>
+    </universalBgIwd>
   </content>
   <mechanics>
     <update>
@@ -212,13 +207,13 @@ const FOLD_SAMPLE = `<?xml version="1.0"?>
       <group label="Stats">
         <component id="stats:1" label="Stats" />
       </group>
-      <group sectionId="warrior-tweaks" label="Warrior tweaks">
+      <warriorTweaks label="Warrior tweaks">
         <component id="war:late" label="Late warrior" />
-      </group>
+      </warriorTweaks>
     </tweaks>
   </mechanics>
   <content>
-    <common sectionId="universal-bg-iwd" label="Universal BG/IWD mods">
+    <universalBgIwd label="Universal BG/IWD mods">
       <items>
         <add>
           <component id="item:late" label="Late item" />
@@ -227,12 +222,12 @@ const FOLD_SAMPLE = `<?xml version="1.0"?>
           <component id="item:upgrade" label="Upgrade" />
         </upgrade>
       </items>
-    </common>
+    </universalBgIwd>
   </content>
 </installSequence>`
 
 describe('parseInstallSequence station folding', () => {
-  it('folds mechanics update/tweaks/groups and content common/items across split blocks', () => {
+  it('folds mechanics update/tweaks/sections and content universalBgIwd/items across split blocks', () => {
     const { model } = parseInstallSequence(FOLD_SAMPLE)
 
     const mechanics = model.stations.find((s) => s.stationId === 'mechanics')!
@@ -245,7 +240,7 @@ describe('parseInstallSequence station folding', () => {
 
     const tweaks = mechanics.children[1]!
     expect(tweaks.children).toHaveLength(2)
-    const warrior = tweaks.children.find((c) => c.attrs.sectionId === 'warrior-tweaks')!
+    const warrior = tweaks.children.find((c) => c.tag === 'warriorTweaks')!
     expect(warrior.children.map((c) => (c.kind === 'component' ? c.componentId : '?'))).toEqual([
       'war:early',
       'war:late',
@@ -255,7 +250,7 @@ describe('parseInstallSequence station folding', () => {
     const content = model.stations.find((s) => s.stationId === 'content')!
     expect(content.roots.length).toBe(2)
     expect(content.children).toHaveLength(1)
-    expect(content.children[0]!.attrs.sectionId).toBe('universal-bg-iwd')
+    expect(content.children[0]!.tag).toBe('universalBgIwd')
     const items = content.children[0]!.children
     expect(items).toHaveLength(1)
     expect(items[0]!.children.map((c) => c.tag)).toEqual(['add', 'upgrade'])
@@ -291,61 +286,61 @@ describe('parseInstallSequence station folding', () => {
 const KITS_CLASS_FOLD_SAMPLE = `<?xml version="1.0"?>
 <installSequence>
   <mechanics>
-    <group sectionId="warriors" label="Warriors tweaks">
-      <group sectionId="fighter" label="Fighter">
+    <warriors label="Warriors tweaks">
+      <fighter label="Fighter">
         <component id="war:early" label="Early fighter" />
-      </group>
-      <group sectionId="ranger" label="Ranger">
+      </fighter>
+      <ranger label="Ranger">
         <component id="ranger:early" label="Early ranger" />
-      </group>
-    </group>
-    <group sectionId="rogues" label="Rogues">
-      <group sectionId="thief" label="Thief">
+      </ranger>
+    </warriors>
+    <rogues label="Rogues">
+      <thief label="Thief">
         <component id="thief:early" label="Early thief" />
-      </group>
-    </group>
+      </thief>
+    </rogues>
   </mechanics>
   <mechanics>
-    <group sectionId="warriors" label="Warriors tweaks">
-      <group sectionId="fighter" label="Fighter">
+    <warriors label="Warriors tweaks">
+      <fighter label="Fighter">
         <component id="war:late" label="Late fighter" />
-      </group>
-      <group sectionId="ranger" label="Ranger">
-      </group>
-      <group sectionId="paladin" label="Paladin">
-      </group>
-      <group sectionId="monk" label="Monk">
-      </group>
-    </group>
-    <group sectionId="rogues" label="Rogues">
-      <group sectionId="thief" label="Thief">
-      </group>
-      <group sectionId="bard" label="Bard">
-      </group>
-    </group>
+      </fighter>
+      <ranger label="Ranger">
+      </ranger>
+      <paladin label="Paladin">
+      </paladin>
+      <monk label="Monk">
+      </monk>
+    </warriors>
+    <rogues label="Rogues">
+      <thief label="Thief">
+      </thief>
+      <bard label="Bard">
+      </bard>
+    </rogues>
   </mechanics>
 </installSequence>`
 
 describe('parseInstallSequence mechanics class-group folding', () => {
-  it('folds nested class groups by sectionId across split mechanics blocks', () => {
+  it('folds nested class sections by tag across split mechanics blocks', () => {
     const { model } = parseInstallSequence(KITS_CLASS_FOLD_SAMPLE)
     const mechanics = model.stations.find((s) => s.stationId === 'mechanics')!
     expect(mechanics.roots.length).toBe(2)
-    expect(mechanics.children.map((c) => c.attrs.sectionId)).toEqual(['warriors', 'rogues'])
+    expect(mechanics.children.map((c) => c.tag)).toEqual(['warriors', 'rogues'])
 
-    const warriors = mechanics.children.find((c) => c.attrs.sectionId === 'warriors')!
-    expect(warriors.children.map((c) => c.attrs.sectionId)).toEqual([
+    const warriors = mechanics.children.find((c) => c.tag === 'warriors')!
+    expect(warriors.children.map((c) => c.tag)).toEqual([
       'fighter',
       'ranger',
       'paladin',
       'monk',
     ])
-    const fighter = warriors.children.find((c) => c.attrs.sectionId === 'fighter')!
+    const fighter = warriors.children.find((c) => c.tag === 'fighter')!
     expect(fighter.children.map((c) => (c.kind === 'component' ? c.componentId : '?'))).toEqual([
       'war:early',
       'war:late',
     ])
-    const ranger = warriors.children.find((c) => c.attrs.sectionId === 'ranger')!
+    const ranger = warriors.children.find((c) => c.tag === 'ranger')!
     expect(ranger.children.map((c) => (c.kind === 'component' ? c.componentId : '?'))).toEqual([
       'ranger:early',
     ])
@@ -353,11 +348,11 @@ describe('parseInstallSequence mechanics class-group folding', () => {
 })
 
 describe('curated InstallSequence.xml folding', () => {
-  it('folds duplicate mechanics class groups and content common', () => {
+  it('folds duplicate mechanics class groups and content universalBgIwd', () => {
     const { model } = parseInstallSequence(installSequenceXml)
     const mechanics = model.stations.find((s) => s.stationId === 'mechanics')!
     expect(mechanics.roots.length).toBe(2)
-    expect(mechanics.children.map((c) => c.attrs.sectionId)).toEqual([
+    expect(mechanics.children.map((c) => c.tag)).toEqual([
       'warriors',
       'rogues',
       'spellcasters',
@@ -367,14 +362,16 @@ describe('curated InstallSequence.xml folding', () => {
       'proficiencies',
     ])
 
-    const warriors = mechanics.children.find((c) => c.attrs.sectionId === 'warriors')!
-    expect(warriors.children.map((c) => c.attrs.sectionId).filter(Boolean)).toEqual([
+    const warriors = mechanics.children.find((c) => c.tag === 'warriors')!
+    expect(warriors.children.map((c) => c.tag).filter((t) => t !== 'component')).toEqual([
       'fighter',
       'ranger',
       'paladin',
       'monk',
     ])
-    const fighter = warriors.children.find((c) => c.attrs.sectionId === 'fighter')!
+    // fighters also have direct component children mixed in
+    expect(warriors.children.some((c) => c.tag === 'fighter')).toBe(true)
+    const fighter = warriors.children.find((c) => c.tag === 'fighter')!
     expect(
       fighter.children.some(
         (c) => c.kind === 'component' && c.componentId === 'Morpheus562sKitpackShieldBreaker',
@@ -385,7 +382,7 @@ describe('curated InstallSequence.xml folding', () => {
         (c) => c.kind === 'component' && c.componentId === 'SkillsAndAbilitiesFighter',
       ),
     ).toBe(true)
-    const wizardSlayer = fighter.children.find((c) => c.attrs.sectionId === 'wizard-slayer')!
+    const wizardSlayer = fighter.children.find((c) => c.tag === 'wizardSlayer')!
     expect(
       wizardSlayer.children.some(
         (c) => c.kind === 'component' && c.componentId === 'ArtisansKitpack:1006',
@@ -410,7 +407,7 @@ describe('curated InstallSequence.xml folding', () => {
 
     const content = model.stations.find((s) => s.stationId === 'content')!
     expect(content.roots.length).toBe(3)
-    const commons = content.children.filter((c) => c.attrs.sectionId === 'universal-bg-iwd')
+    const commons = content.children.filter((c) => c.tag === 'universalBgIwd')
     expect(commons).toHaveLength(1)
     const items = commons[0]!.children.filter((c) => c.tag === 'items')
     expect(items).toHaveLength(1)
