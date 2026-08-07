@@ -297,8 +297,8 @@
 					</mod>
 				</romances>
 				<custom label="Custom NPCs">
-					<component id="valerie:0" label="Valerie — human Lawful Good sorcerer" modId="Valerie-NPC" />
-					<component id="Drake:0" label="Drake — human Neutral Good Priest of Tyr" modId="Drake" />
+					<component id="valerie:0" label="Valerie — human LG sorcerer" modId="Valerie-NPC" />
+					<component id="Drake:0" label="Drake — human NG Priest of Tyr" modId="Drake" />
 				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<mod id="BG1NPC">
@@ -640,17 +640,17 @@
 					</group>
 				</bioware>
 				<custom label="Custom NPCs">
-					<component id="SisterVigilantes_Angelo-main" label="Angelo — human Chaotic Neutral fighter/mage" modId="Angelo" />
-					<component id="TheBeaurinLegacy:1000" label="Minyae — elven Neutral Evil Enchanter/thief" desc="Also a hidden Archer NPC" modId="BaldursGateMods" />
-					<mod id="Adrian-NPC" label="Adrian - half-elven Lawful Evil sorcerer">
-						<component id="adrian_sorcerer" label="Adrian — half-elven Lawful Evil sorcerer" />
+					<component id="SisterVigilantes_Angelo-main" label="Angelo — human CN fighter/mage" modId="Angelo" />
+					<component id="TheBeaurinLegacy:1000" label="Minyae — elven NE Enchanter/thief" desc="Also a hidden Archer NPC" modId="BaldursGateMods" />
+					<mod id="Adrian-NPC" label="Adrian - half-elven LE sorcerer">
+						<component id="adrian_sorcerer" label="Adrian — half-elven LE sorcerer" />
 						<component id="adrian_tolerates_high_reputation-active_romance" label="Tolerates high reputation for active Romance or Friendship" alwaysIf="adrian_sorcerer" noDisplay="1"/>
 					</mod>
-					<mod id="Solaufeins_Rescue_NPC" label="Solaufein - drow Lawful Neutral fighter">
-						<component id="JasteysSolaufeinRescue-Main" label="Solaufein — drow Lawful Neutral fighter" />
+					<mod id="Solaufeins_Rescue_NPC" label="Solaufein - drow LN fighter">
+						<component id="JasteysSolaufeinRescue-Main" label="Solaufein — drow LN fighter" />
 					</mod>
-					<mod id="Fade-NPC" label="Fade - tiefling Chaotic Neutral Shadowdancer">
-						<component id="Fade:0" label="Tiefling Chaotic Neutral Shadowdancer" core="1" />
+					<mod id="Fade-NPC" label="Fade - tiefling CN Shadowdancer">
+						<component id="Fade:0" label="Tiefling CN Shadowdancer" core="1" />
 						<component id="Fade:1" label="Reactions to romantic encounters" />
 						<component id="Fade:2" label="Give Fade Shadowdancer kit" alwaysIf="Fade:0" noDisplay="1" />
 					</mod>
@@ -846,24 +846,24 @@
 				<component id="L#-NIGHT-OF-THE-BLINKING-DEAD-NOPATCH" label="Night of the Blinking Dead" modId="night-of-the-blinking-dead" />
 				<component id="L#-BBINN-NOPATCH" label="Below &amp; Below Inn" modId="below-below-inn" />
 				<component id="L#-BLOOM-ROT-NOPATCH" label="The War of Bloom and Rot" modId="the-war-of-bloom-and-rot" />
-				<component id="L#-Arszyk-IWD" label="Arszyk's Wonderful Decay" desc="NPC (vampire Neutral Evil fighter/druid) and a late-game quest" modId="arszyk" />
+				<component id="L#-Arszyk-IWD" label="Arszyk's Wonderful Decay" desc="NPC (vampire NE fighter/druid) and a late-game quest" modId="arszyk" />
 			</quest>
 			<npc label="Joinable NPCs">
 				<custom label="Custom Interactive NPCs">
 					<mod id="IWD_NPC" label="Icewind Dale NPCs Pack">
 						<component id="IWDNPC:0" label="Icewind Dale NPCs pack" core="1"/>
-						<alternatives label="Change class for Holvir (human Lawful Good paladin)">
+						<alternatives label="Change class for Holvir (human LG paladin)">
 							<component id="IWDNPC:9" label="Cavalier" />
 							<component id="IWDNPC:10" label="Inquisitor" />
 							<component id="IWDNPC:11" label="Undead Hunter" />
 						</alternatives>
-						<alternatives label="Change class for Korin (elf Neutral Good fighter/mage)">
+						<alternatives label="Change class for Korin (elf NG fighter/mage)">
 							<component id="IWDNPC:12" label="Archer" />
 							<component id="IWDNPC:13" label="Beast Master" />
 							<component id="IWDNPC:14" label="Stalker" />
 							<component id="IWDNPC:15" label="Cleric/ranger" />
 						</alternatives>
-						<alternatives label="Change class for Nella (human Neutral Good fighter)">
+						<alternatives label="Change class for Nella (human NG fighter)">
 							<component id="IWDNPC:16" label="Berserker" />
 							<component id="IWDNPC:17" label="Kensai" />
 							<component id="IWDNPC:18" label="Wizard Slayer" />
@@ -871,7 +871,7 @@
 							<component id="IWDNPC:20" label="Fighter/druid" />
 							<component id="IWDNPC:21" label="Monk" />
 						</alternatives>
-						<alternatives label="Change class for Severn (human Neutral Good bard)">
+						<alternatives label="Change class for Severn (human NG bard)">
 							<component id="IWDNPC:22" label="Blade" />
 							<component id="IWDNPC:23" label="Jester" />
 							<component id="IWDNPC:24" label="Skald" />
@@ -880,7 +880,7 @@
 							<component id="IWDNPC:27" label="Mage" />
 							<component id="IWDNPC:28" label="Wild Mage" />
 						</alternatives>
-						<alternatives label="Change class for Teri (half-elf Chaotic Neutral fighter/thief)">
+						<alternatives label="Change class for Teri (half-elf CN fighter/thief)">
 							<component id="IWDNPC:29" label="Assassin" />
 							<component id="IWDNPC:30" label="Bounty Hunter" />
 							<component id="IWDNPC:31" label="Swashbuckler" />
@@ -890,24 +890,24 @@
 						</alternatives>
 					</mod>
 					<component id="druidsor:0" label="Geomantic Sorcerer kit" desc="This is needed for Tipps NPC" modId="Geomantic_Sorcerer" alwaysIf="L#-TIPPS-IWD" noDisplay="1" />
-					<component id="L#-OAKMAW-IWD" label="Oak-maw — half-orc Neutral Evil Priest of Talos" modId="oak-maw" />
-					<component id="L#-LANNA-IWD" label="L'anna — elf Neutral Good Archer" modId="lanna" />
-					<component id="Tviy:0" label="T'viy — gnome Chaotic Evil cleric/thief" modId="tviy" />
-					<component id="L#-TIPPS-IWD" label="Tipps — gnome Chaotic Good Swashbuckler" modId="tipps" />
-					<component id="L#-ORRA-IWD" label="Orra — human Lawful Good bard" modId="orra" />
-					<component id="L#-INA-IWD" label="Ina — half-elf Neutral sorcerer" modId="ina" />
-					<component id="L#-HOMMET-IWD" label="Hommet — human Lawful Neutral Necromancer" modId="hommet" />
-					<component id="L#-DENDJELION-IWD" label="Dendjelion — halfling Chaotic Evil fighter/thief" modId="dendjelion" />
-					<component id="L#-DUSKY-IWD" label="Dusky — half-orc Lawful Neutral Priest of Tempus" modId="dusky-iwdee-npc" />
-					<component id="L#-URCHIN-IWD" label="Urchin — human Neutral Good druid" modId="urchin" />
-					<component id="CassiaNPC:0" label="Cassia — human Lawful Good Undead Hunter" modId="CassiaNPC" />
-					<component id="Bethany:0" label="Bethany — human Lawful Neutral fighter" modId="bethany" />
-					<component id="MinervaNPC:0" label="Minerva — elf Chaotic Good Enchanter" modId="MinervaNPC" />
-					<component id="KarihiNPC:0" label="Karihi — tiefling Neutral Evil Wild Mage" modId="KarihiNPC" />
-					<component id="GuldrukNPC:0" label="Guldruk — half-orc Neutral Evil fighter" modId="IWD-Guldruk-NPC" />
-					<component id="NirikNPC:0" label="Nirik — half-orc Chaotic Neutral barbarian" modId="IWD-Nirik-NPC" />
-					<component id="Vito:0" label="Vito — kenku Lawful Neutral Diviner" modId="vito" />
-					<alternatives label="Athanasios — halfling Chaotic Good Priest of Tempus">
+					<component id="L#-OAKMAW-IWD" label="Oak-maw — half-orc NE Priest of Talos" modId="oak-maw" />
+					<component id="L#-LANNA-IWD" label="L'anna — elf NG Archer" modId="lanna" />
+					<component id="Tviy:0" label="T'viy — gnome CE cleric/thief" modId="tviy" />
+					<component id="L#-TIPPS-IWD" label="Tipps — gnome CG Swashbuckler" modId="tipps" />
+					<component id="L#-ORRA-IWD" label="Orra — human LG bard" modId="orra" />
+					<component id="L#-INA-IWD" label="Ina — half-elf TN sorcerer" modId="ina" />
+					<component id="L#-HOMMET-IWD" label="Hommet — human LN Necromancer" modId="hommet" />
+					<component id="L#-DENDJELION-IWD" label="Dendjelion — halfling CE fighter/thief" modId="dendjelion" />
+					<component id="L#-DUSKY-IWD" label="Dusky — half-orc LN Priest of Tempus" modId="dusky-iwdee-npc" />
+					<component id="L#-URCHIN-IWD" label="Urchin — human NG druid" modId="urchin" />
+					<component id="CassiaNPC:0" label="Cassia — human LG Undead Hunter" modId="CassiaNPC" />
+					<component id="Bethany:0" label="Bethany — human LN fighter" modId="bethany" />
+					<component id="MinervaNPC:0" label="Minerva — elf CG Enchanter" modId="MinervaNPC" />
+					<component id="KarihiNPC:0" label="Karihi — tiefling NE Wild Mage" modId="KarihiNPC" />
+					<component id="GuldrukNPC:0" label="Guldruk — half-orc NE fighter" modId="IWD-Guldruk-NPC" />
+					<component id="NirikNPC:0" label="Nirik — half-orc CN barbarian" modId="IWD-Nirik-NPC" />
+					<component id="Vito:0" label="Vito — kenku LN Diviner" modId="vito" />
+					<alternatives label="Athanasios — halfling CG Priest of Tempus">
 						<component id="AthanasiosNPC:0" label="Athanasios NPC" modId="IWD-Athanasios-NPC" core="1" />
 						<component id="AthanasiosNPC:1" label="Change class to fighter/cleric" modId="IWD-Athanasios-NPC" />
 					</alternatives>
@@ -980,7 +980,7 @@
 		<common sectionId="universal-bg-content" label="Common BG1/BG2" engine="bg,eet">
 			<npc label="Joinable NPCs">
 				<custom>
-					<!-- component id="c#husam-main" label="Husam - human Chaotic Neutral thief" modId="Husam_NPC" /-->
+					<!-- component id="c#husam-main" label="Husam - human CN thief" modId="Husam_NPC" /-->
 				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<component id="reflection:0" label="Reflection (new dialogue options)" modId="Reflection" />
@@ -1405,8 +1405,8 @@
 			<component id="cd_tweaks_viconia_skin_color" label="Change Viconia's skin color to dark blue" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_40" />
 		</group>
 		<group label="Alignment">
-			<component id="cd_tweaks_ng_jaheira" label="Change Jaheira to Neutral Good alignment" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4050" />
-			<component id="cd_tweaks_ne_korgan" label="Change Korgan to Neutral Evil alignment" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4100" />	
+			<component id="cd_tweaks_ng_jaheira" label="Change Jaheira to NG alignment" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4050" />
+			<component id="cd_tweaks_ne_korgan" label="Change Korgan to NE alignment" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4100" />	
 		</group>
 		<component id="cd_tweaks_mp_kickout_dialogue" label="Improved multi-player kick-out dialogues" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1070" />
 	</npcChoices>
