@@ -57,7 +57,7 @@ InstallSequence.xml
    Export install-order.txt   ← selected ids, document order, first-id wins
 ```
 
-Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Release / Version / Size / Author. Downloading mods / WeiDU come later.
+Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Mod Readme / Release / Version / Size / Author. Mod Readme and component `readme` links are shown only when the value is a valid `http`/`https` URL. Downloading mods / WeiDU come later.
 
 Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not internal tree keys.
 

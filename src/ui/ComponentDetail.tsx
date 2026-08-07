@@ -22,6 +22,7 @@ import {
   parseModsCsv,
   resolveModLookupKey,
 } from '../lib/mods/loadMods'
+import { isHttpUrl } from '../lib/url'
 
 const modsByCodename = parseModsCsv(modsCsv)
 
@@ -105,6 +106,8 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
 
   const codename = resolveModLookupKey(model, source)
   const mod = codename ? modsByCodename.get(codename) : undefined
+  const componentReadme = attrs.readme
+  const modReadme = mod?.readme
 
   const relations = resolveRelations(model, relationIndex, attrs, componentId)
   const hasRelations = RELATION_ROWS.some((row) => relations[row.key].length > 0)
@@ -156,17 +159,17 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
                 </dd>
               </>
             )}
-            {mod?.readme && (
+            {isHttpUrl(modReadme) && (
               <>
-                <dt>Readme</dt>
+                <dt>Mod Readme</dt>
                 <dd>
                   <a
                     className="detail-url"
-                    href={mod.readme}
+                    href={modReadme}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {mod.readme}
+                    {modReadme}
                   </a>
                 </dd>
               </>
@@ -202,6 +205,21 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
             <dt>Component id</dt>
             <dd>
               <code>{componentId}</code>
+            </dd>
+          </>
+        )}
+        {isHttpUrl(componentReadme) && (
+          <>
+            <dt>Component readme</dt>
+            <dd>
+              <a
+                className="detail-url"
+                href={componentReadme}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {componentReadme}
+              </a>
             </dd>
           </>
         )}

@@ -40,3 +40,17 @@ describe('curated InstallSequence.xml', () => {
     expect(mirror?.attrs.stability).toBe('beta')
   })
 })
+
+describe('readme attribute', () => {
+  it('preserves component readme URL from XML', () => {
+    const xml = `<?xml version="1.0"?>
+<installSequence>
+  <base>
+    <component id="Demo:0" label="Demo" readme="https://example.com/readme.html" />
+  </base>
+</installSequence>`
+    const { model } = parseInstallSequence(xml)
+    const comp = model.componentsById.get('Demo:0')
+    expect(comp?.attrs.readme).toBe('https://example.com/readme.html')
+  })
+})

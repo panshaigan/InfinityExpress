@@ -21,7 +21,7 @@
 	</base>
 
 	<ui engine="bg,eet,iwd" level="vanillaPlus">
-		<mod id="InfinityUI" label="InfinityUI">
+		<mod id="InfinityUI" label="InfinityUI" tags="major">
 			<component id="infinity_ui:0" label="Install Infinity UI++ Core Component" core="1" />
 			<component id="infinity_ui:1" label="Add Transparent Tooltip Background"/>
 			<component id="infinity_ui:2" label="Update several strings in Dialog.tlk" alwaysIf="infinity_ui:0" noDisplay="1" />
@@ -82,7 +82,7 @@
 	<content>
 		<bg1 sectionId="bg1-content" label="BG1" engine="bg1,eet">
 			<restorations label="Restorations" unfolded="1">
-				<mod id="bg1ub" label="Unfinished Business" level="restoration" engine="bg1,eet1" unfolded="1">
+				<mod id="bg1ub" label="Unfinished Business" level="restoration" engine="bg1,eet1" unfolded="1" tags="compilation">
 					<component id="bg1ub:11" label="Scar and the Sashenstar's Daughter" />
 					<component id="bg1ub:12" label="Quoningar, the Cleric" />
 					<component id="bg1ub:13" label="Shilo Chen and the Ogre-Magi" />
@@ -132,14 +132,14 @@
 					<component id="cd_tweaks_reveal_cloakwood_4" label="All of Cloakwood except the mines" modId="Tweaks-Anthology" />
 				</alternatives>
 				<component id="cd_tweaks_change_cloakwood_trigger" label="Change Cloakwood Mine Chapter End Change Trigger to Non-TotSC Behavior" modId="Tweaks-Anthology" level="vanillaPlus" />
-				<mod id="Candlekeep-Revisited" label="Candlekeep Revisited" tags="smallQuest">
-					<component id="candlekeep_revisited:0" label="BG1 Prologue Expansion" tags="smallQuest" modId="Candlekeep-Revisited" level="extended" />
-					<component id="candlekeep_revisited:1" label="BG1 Expanded Starting Sequence" tags="smallQuest" modId="Candlekeep-Revisited" />
+				<mod id="Candlekeep-Revisited" label="Candlekeep Revisited" tags="compilation">
+					<component id="candlekeep_revisited:0" label="BG1 Prologue Expansion" tags="compilation" modId="Candlekeep-Revisited" level="extended" />
+					<component id="candlekeep_revisited:1" label="BG1 Expanded Starting Sequence" tags="compilation" modId="Candlekeep-Revisited" />
 				</mod>
 			</restructure>
 			<quest label="Quests and Encounters">
 				<component id="Loretakers:0" label="Loretakers" modId="Loretakers" tags="bigQuest" level="extended" />
-				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" level="blendWell" tags="smallQuest">
+				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" level="blendWell" tags="compilation">
 					<component id="bgqe_slimequest" label="Slime Quest" />
 					<component id="bgqe_nashkelmonster" label="Nashkel Monster Quest" />
 					<component id="bgqe_fallenpaladin" label="Fallen Paladin Quest" />
@@ -156,7 +156,7 @@
 					<component id="bgqe_cordyrnokillingsil" label="Finish Cordyr's Quest without killing Sil" level="vanillaPlus" />
 					<component id="bgqe_improved_borda" label="Improved Borda"/>
 				</mod>
-				<mod id="JA-AdventurePack" label="Jarl's Adventure Pack" tags="smallQuest" level="restoration">
+				<mod id="JA-AdventurePack" label="Jarl's Adventure Pack" tags="compilation" level="restoration">
 					<component id="JA#BGT_AdvPack-Law_System" label="Extended Law System" level="vanillaPlus" />
 					<component id="JA#BGT_AdvPack-Ramazith" label="Ramazith" level="vanillaPlus" />
 					<component id="JA#BGT_AdvPack-Jopi" label="Jopi and his uncle Ragefast" level="vanillaPlus" />
@@ -209,7 +209,7 @@
 					<component id="JA#BGT_AdvPack-Backdoor_Gellana" label="Backdoor to Gellana's temple" level="vanillaPlus" />
 					<component id="JA#BGT_AdvPack-Backdoor_Waterqueen" label="Backdoor to Waterqueen's House" level="vanillaPlus" />
 				</mod>
-				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" tags="smallQuest" level="extended">
+				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" tags="compilation" level="extended">
 					<component id="bg1re-required-teen_skip" label="Core" core="1" level="vanillaPlus" />
 					<component id="bg1re_late_night_jaheira" label="Late Night with Jaheira, by Kulyok" level="vanillaPlus" />
 					<component id="bg1re_mourning_of_centeol" label="The Mourning of Centeol, the Spider Lady, by Lava" />
@@ -222,7 +222,7 @@
 					<component id="bg1re_cloakwood_lovers" label="Cloakwood Lovers, by tibicina" />
 				</mod>
 				<component id="BS_BalduransSeatower-main" label="Balduran's Seatower" tags="bigQuest" modId="BS_Baldurans_Seatower" level="blendWell" />
-				<mod id="Ascalons_Questpack" label="Ascalon's Questpack" tags="smallQuest" level="blendWell">
+				<mod id="Ascalons_Questpack" label="Ascalon's Questpack" tags="compilation" level="blendWell">
 					<component id="AscalonsQuestpack-FeastforGnolls" label="A Feast for the Gnolls" />
 					<component id="AscalonsQuestpack-LostSon" label="The Lost Son" />
 					<component id="AscalonsQuestpack-WolvesMen_Highhedge" label="Of Wolves and Men" desc="Quest uses hut near Thalantyr in High Hedge" />
@@ -230,14 +230,14 @@
 					<component id="AscalonsQuestpack-Fans" label="Fangirls" />
 					<component id="AscalonsQuestpack-HalflingEyeless" label="A Halfling among the Eyeless" />
 				</mod>
-				<mod id="ExtraExpandedEnhancedEncounters" label="Extra Enhanced Expanded Encounters!" tags="smallQuest" level="vanillaPlus">
+				<mod id="ExtraExpandedEnhancedEncounters" label="Extra Enhanced Expanded Encounters!" tags="compilation" level="vanillaPlus">
 					<component id="OL-EEEE-COAST-WAY" label="Melia Quicknight, Crossroads" />
 					<component id="OL-EEEE-LONELY-PEAKS" label="Bimmy's Badgering Bandits" />
 					<component id="OL-EEEE-GNOLL-STRONGHOLD-CAVE" label="Bear Encounter near the Gnoll Stronghold" />
 					<component id="OL-EEEE-CLOAKWOOD-BRIDGE" label="Daenni's Bridge Bandits" />
 				</mod>
 				<component id="AWizardDidIt-Blackhearts_BG1" label="Blackhearts" modId="Black-Hearts" tags="bigQuest" level="blendWell" />
-				<component id="SotSC:0" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" level="extended" tags="smallQuest" />
+				<component id="SotSC:0" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" level="extended" tags="compilation" />
 				<mod id="The_Calling" label="The Calling" level="extended" tags="bigQuest">
 					<component id="cd_the_calling_mage" label="Mage - The Cursed Bracers" />
 					<component id="cd_the_calling_fighter" label="Fighter - Expanded Gnoll Fortress" />
@@ -246,15 +246,15 @@
 					<component id="cd_the_calling_thief" label="Thief - The Bargain" />
 					<component id="cd_the_calling_peaceful_kaishas_resolution" label="Peaceful Werewolf Isle Resolution" level="vanillaPlus" />
 				</mod>
-				<component id="Coutelier-AerieBG1" label="Aerie in BG:EE" tags="smallQuest" level="extended" modId="AerieBG1" />
-				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" label="The Vanishing of Skie Silvershield" level="extended" desc="Lets Eldoth and Skie join your party sooner" tags="smallQuest" modId="the-vanishing-of-skie-silvershield" />
-				<component id="NQR" label="Necromancers Quest Restored" tags="smallQuest" modId="NecromancersQuestRestored" level="restoration" />
+				<component id="Coutelier-AerieBG1" label="Aerie in BG:EE" tags="compilation" level="extended" modId="AerieBG1" />
+				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" label="The Vanishing of Skie Silvershield" level="extended" desc="Lets Eldoth and Skie join your party sooner" tags="compilation" modId="the-vanishing-of-skie-silvershield" />
+				<component id="NQR" label="Necromancers Quest Restored" tags="compilation" modId="NecromancersQuestRestored" level="restoration" />
 				<mod id="gorgon" label="Gorgon's Eye" tags="bigQuest">
 					<component id="gorgon:0" label="Gorgon's Eye" core="1" />
 					<component id="gorgon:1" label="Give portraits to all characters added from this mod" alwaysIf="gorgon:0" noDisplay="1" />
 					<component id="gorgon:4" label="Add More Pickpocketable Items"/>
 				</mod>
-				<mod id="baldurian-bar-hop" label="Baldurian Bar Hop" tags="smallQuest" stability="beta">
+				<mod id="baldurian-bar-hop" label="Baldurian Bar Hop" tags="compilation" stability="beta">
 					<component id="baldurianbarhop:0" label="Thirst Things First" />
 					<component id="baldurianbarhop:10" label="Dress to Distress" />
 					<component id="baldurianbarhop:20" label="Fully Booked and Plot Twist" />
@@ -461,7 +461,7 @@
 				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" label="Faster Chapter One and Two Cutscenes and Dreams" modId="Tweaks-Anthology" />
 			</restructure>
 			<restorations label="Restorations" level="restoration">
-				<mod id="UnfinishedBusiness" label="Unfinished Business" tags="smallQuest">
+				<mod id="UnfinishedBusiness" label="Unfinished Business" tags="compilation">
 					<component id="ub:5" label="The Pai'Na/Spider's Bane Quest" level="vanillaPlus" />
 					<component id="ub:6" label="Restored Crooked Crane Inn" level="restoration" />
 					<component id="ub:7" label="Restored Encounters" level="restoration" />
@@ -474,7 +474,7 @@
 					<component id="ub:20" label="Extended ToB Item Descriptions" level="vanillaPlus" />
 					<component id="ub:21" label="Throne of Bhaal Minor Restorations" level="restoration" />
 				</mod>
-				<mod id="Almateria-Restoration-Project" label="Almateria's Restoration Project" tags="smallQuest" level="restoration" unfolded="1">
+				<mod id="Almateria-Restoration-Project" label="Almateria's Restoration Project" tags="compilation" level="restoration" unfolded="1">
 					<component id="Almaterias_Restoration_Project-Restored_Locations" label="Restored Locations" />
 					<component id="Almaterias_Restoration_Project-Restored_Characters_and_Dialogs" label="Restored Characters and Dialogs" />
 					<component id="Almaterias_Restoration_Project-Restored_Sounds" label="Restored Sounds" />
@@ -490,8 +490,8 @@
 				</mod>
 			</restorations>
 			<quest label="Quests and Encounters">
-				<component id="AdalonsBlood-main" label="Adalon's Blood" desc="Allows good characters to finish the skinner quest in a good way" modId="Adalons_Blood" tags="smallQuest" level="vanillaPlus" />
-				<mod id="hiddenadventure" label="Hidden Adventures" tags="smallQuest" level="extended">
+				<component id="AdalonsBlood-main" label="Adalon's Blood" desc="Allows good characters to finish the skinner quest in a good way" modId="Adalons_Blood" tags="compilation" level="vanillaPlus" />
+				<mod id="hiddenadventure" label="Hidden Adventures" tags="compilation" level="extended">
 					<component id="hidden_adventures-ladyelgea" label="Lady Elgea's extended plot" level="blendWell" />
 					<component id="hidden_adventures-anomenplot" label="Anomen's extended plot" />
 					<component id="hidden_adventures-jerliashop" label="Jerlia's Ore Shop" />
@@ -500,7 +500,7 @@
 					<component id="hidden_adventures-tunnel_saradush" label="A Tunnel for Saradush" />
 					<component id="hidden_adventures-masktemple_docks" label="Temple of Mask in Docks District" />
 				</mod>
-				<component id="CorthalaRomantique-SphereGuard" label="A Guard for the Sphere" desc="Corthala Romantique's Leonora Content" modId="Corthala_Romantique" tags="smallQuest" />
+				<component id="CorthalaRomantique-SphereGuard" label="A Guard for the Sphere" desc="Corthala Romantique's Leonora Content" modId="Corthala_Romantique" tags="compilation" />
 				<component id="Assassinations:0" label="Assassinations" modId="Assassinations" tags="bigQuest" level="extended" />
 				<component id="ts_expanded_thief_stronghold_main" label="Expanded Thief Stronghold" modId="Expanded-Thief-Stronghold" tags="bigQuest" level="extended" />
 				<component id="Tidings:0" label="Dark Tidings" modId="Dark-Tidings" tags="bigQuest" level="extended" />

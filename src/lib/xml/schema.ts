@@ -56,6 +56,8 @@ export interface NodeAttrs {
   sectionId?: string
   label?: string
   desc?: string
+  /** Optional http(s) URL to component-specific documentation. */
+  readme?: string
   modId?: string
   engine?: string
   level?: string

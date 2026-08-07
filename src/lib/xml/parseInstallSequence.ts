@@ -23,6 +23,7 @@ function readAttrs(el: Element): NodeAttrs {
     sectionId: g('sectionId'),
     label: g('label'),
     desc: g('desc'),
+    readme: g('readme'),
     modId: g('modId') ?? g('modid'),
     engine: g('engine'),
     level: g('level'),
