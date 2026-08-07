@@ -21,7 +21,6 @@ import {
   splitTags,
   stabilityBadgeLabel,
 } from '../lib/selection/filterDisplayTree'
-import { MOD_TYPE_BADGE_SECTIONS } from '../lib/contentBranchOrder'
 import {
   type ModInfo,
   resolveModType,
@@ -52,8 +51,6 @@ interface Props {
   game: SelectedGame
   model: InstallSequenceModel
   modsByCodename: ReadonlyMap<string, ModInfo>
-  /** Active Content subbranch tag; null outside Content station. */
-  modTypeBadgeSection: string | null
   focusedKey: string | null
   onFocus: (key: string) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
@@ -130,7 +127,6 @@ function CheckboxRow({
   game,
   model,
   modsByCodename,
-  modTypeBadgeSection,
   focusedKey,
   tabbableKey,
   onFocus,
@@ -151,7 +147,6 @@ function CheckboxRow({
   game: SelectedGame
   model: InstallSequenceModel
   modsByCodename: ReadonlyMap<string, ModInfo>
-  modTypeBadgeSection: string | null
   focusedKey: string | null
   /** Row that holds tabIndex={0} (roving tabindex). */
   tabbableKey: string | null
@@ -222,12 +217,9 @@ function CheckboxRow({
     collapsedComponent?.attrs.stability ?? node.attrs.stability
   const stabilityLabel = stabilityBadgeLabel(stability)
   const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
-  const modType =
-    modTypeBadgeSection &&
-    MOD_TYPE_BADGE_SECTIONS.has(modTypeBadgeSection) &&
-    shouldShowModTypeBadge(model, node)
-      ? resolveModType(model, modsByCodename, source, node)
-      : undefined
+  const modType = shouldShowModTypeBadge(model, node)
+    ? resolveModType(model, modsByCodename, source, node)
+    : undefined
 
   function handleFoldClick(e: MouseEvent) {
     e.preventDefault()
@@ -441,7 +433,6 @@ function CheckboxRow({
             game={game}
             model={model}
             modsByCodename={modsByCodename}
-            modTypeBadgeSection={modTypeBadgeSection}
             focusedKey={focusedKey}
             tabbableKey={tabbableKey}
             onFocus={onFocus}
@@ -643,7 +634,6 @@ export function ComponentTree(props: Props) {
           game={props.game}
           model={props.model}
           modsByCodename={props.modsByCodename}
-          modTypeBadgeSection={props.modTypeBadgeSection}
           focusedKey={props.focusedKey}
           tabbableKey={tabbableKey}
           onFocus={props.onFocus}

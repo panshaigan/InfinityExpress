@@ -976,7 +976,6 @@ export default function App() {
                       game={game}
                       model={model}
                       modsByCodename={modsByCodename}
-                      modTypeBadgeSection={isContentStation ? contentSubTag : null}
                       focusedKey={focusedKey}
                       onFocus={onFocus}
                       onToggle={onToggle}

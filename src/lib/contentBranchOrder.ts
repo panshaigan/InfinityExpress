@@ -10,13 +10,6 @@ export const CONTENT_SUBBRANCH_ORDER = [
   'tweaks',
 ] as const
 
-/** Content subbranches that show mods.csv Type badges in the tree list. */
-export const MOD_TYPE_BADGE_SECTIONS = new Set<string>([
-  'restorations',
-  'restructure',
-  'quest',
-])
-
 const ORDER_INDEX = new Map<string, number>(
   CONTENT_SUBBRANCH_ORDER.map((tag, i) => [tag, i]),
 )
