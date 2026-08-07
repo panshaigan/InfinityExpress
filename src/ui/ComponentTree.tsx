@@ -23,6 +23,7 @@ import {
 } from '../lib/selection/filterDisplayTree'
 import {
   type ModInfo,
+  isModTypeBranchDisplay,
   resolveModType,
   shouldShowModTypeBadge,
 } from '../lib/mods/loadMods'
@@ -217,8 +218,12 @@ function CheckboxRow({
     collapsedComponent?.attrs.stability ?? node.attrs.stability
   const stabilityLabel = stabilityBadgeLabel(stability)
   const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
-  const modType = shouldShowModTypeBadge(model, node)
-    ? resolveModType(model, modsByCodename, source, node)
+  const collapsedToSingle = Boolean(collapsedComponent)
+  const branchOpts = { collapsedToSingleComponent: collapsedToSingle }
+  const modType = shouldShowModTypeBadge(model, node, branchOpts)
+    ? resolveModType(model, modsByCodename, source, {
+        asBranch: isModTypeBranchDisplay(model, node, branchOpts),
+      })
     : undefined
 
   function handleFoldClick(e: MouseEvent) {

@@ -174,12 +174,27 @@ export function findEnclosingMod(
 
 /**
  * Whether a tree row should show a mods.csv Type badge:
- * always for `<mod>`, for `<component>` only when not nested under a `<mod>`.
+ * always for `<mod>`, for `<component>` only when not nested under a `<mod>`,
+ * and for any row collapsed to a single component (branch stands in for that leaf).
  */
 export function shouldShowModTypeBadge(
   model: InstallSequenceModel,
   node: TreeNode,
+  options?: { collapsedToSingleComponent?: boolean },
 ): boolean {
+  return isModTypeBranchDisplay(model, node, options)
+}
+
+/**
+ * True when the row stands in for a whole mod / branch (no type degradation):
+ * `<mod>` rows, standalone components (not under `<mod>`), or single-child collapse.
+ */
+export function isModTypeBranchDisplay(
+  model: InstallSequenceModel,
+  node: TreeNode,
+  options?: { collapsedToSingleComponent?: boolean },
+): boolean {
+  if (options?.collapsedToSingleComponent) return true
   if (node.tag === 'mod') return true
   if (node.tag === 'component') return findEnclosingMod(model, node) === undefined
   return false
@@ -206,28 +221,38 @@ export function resolveModLookupKey(
   return undefined
 }
 
-/** Type shown for non-`<mod>` rows (one step down from the catalog value). */
+/** Type shown when the row is a pick from a multi-component mod (not the whole mod). */
 const COMPONENT_TYPE_DEGRADE: ReadonlyMap<string, string> = new Map([
   ['compilation', 'minor'],
   ['major', 'medium'],
   ['medium', 'minor'],
 ])
 
+export interface ResolveModTypeOptions {
+  /**
+   * When true, keep the catalog type (`<mod>` row, standalone whole-mod component,
+   * or a branch collapsed to one component). When false, degrade for a component
+   * pick from a multi-component mod.
+   */
+  asBranch?: boolean
+}
+
 /**
  * Resolve mods.csv Type for display.
- * `lookupNode` supplies the codename; `displayNode` (defaults to lookup) controls
- * remapping: on non-`<mod>` rows, degrade compilation→minor, major→medium, medium→minor.
+ * `lookupNode` supplies the codename. Pass `asBranch: true` for whole-mod rows;
+ * otherwise degrade compilation→minor, major→medium, medium→minor.
  */
 export function resolveModType(
   model: InstallSequenceModel,
   modsByCodename: ReadonlyMap<string, ModInfo>,
   lookupNode: TreeNode,
-  displayNode: TreeNode = lookupNode,
+  options?: ResolveModTypeOptions,
 ): string | undefined {
   const codename = resolveModLookupKey(model, lookupNode)
   if (!codename) return undefined
   const type = modsByCodename.get(codename)?.type
   if (!hasModField(type)) return undefined
-  if (displayNode.tag === 'mod') return type
+  const asBranch = options?.asBranch ?? lookupNode.tag === 'mod'
+  if (asBranch) return type
   return COMPONENT_TYPE_DEGRADE.get(type) ?? type
 }

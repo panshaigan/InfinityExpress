@@ -3,6 +3,7 @@ import {
   collectAuthorOptions,
   formatBytes,
   hasModField,
+  isModTypeBranchDisplay,
   modSizeBounds,
   parseModsCsv,
   resolveModLookupKey,
@@ -327,6 +328,19 @@ describe('shouldShowModTypeBadge', () => {
     })
     expect(shouldShowModTypeBadge(modelWith(alt), alt)).toBe(false)
   })
+
+  it('returns true when a branch is collapsed to a single component', () => {
+    const group = node({
+      key: 'g1',
+      tag: 'group',
+      kind: 'container',
+    })
+    expect(
+      shouldShowModTypeBadge(modelWith(group), group, {
+        collapsedToSingleComponent: true,
+      }),
+    ).toBe(true)
+  })
 })
 
 describe('resolveModType', () => {
@@ -399,7 +413,7 @@ describe('resolveModType', () => {
     )
   })
 
-  it('degrades types for component rows', () => {
+  it('keeps catalog types on standalone whole-mod components', () => {
     const fromMajor = node({
       key: 'c1',
       tag: 'component',
@@ -424,23 +438,97 @@ describe('resolveModType', () => {
       orderIndex: 2,
       attrs: { modId: 'CompMod' },
     } as TreeNode)
+    // Standalone component defaults asBranch from tag !== 'mod', so pass true
+    // the same way the UI does via isModTypeBranchDisplay.
+    expect(
+      resolveModType(modelWith(fromMajor), modsByCodename, fromMajor, {
+        asBranch: true,
+      }),
+    ).toBe('major')
+    expect(
+      resolveModType(modelWith(fromMedium), modsByCodename, fromMedium, {
+        asBranch: true,
+      }),
+    ).toBe('medium')
+    expect(
+      resolveModType(modelWith(fromCompilation), modsByCodename, fromCompilation, {
+        asBranch: true,
+      }),
+    ).toBe('compilation')
+  })
+
+  it('degrades types for component picks from a multi-component mod', () => {
+    const fromMajor = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+      parentKey: 'm1',
+      attrs: { modId: 'MyMod' },
+    } as TreeNode)
+    const fromMedium = node({
+      key: 'c2',
+      tag: 'component',
+      kind: 'component',
+      componentId: '1',
+      orderIndex: 1,
+      parentKey: 'm2',
+      attrs: { modId: 'MedMod' },
+    } as TreeNode)
+    const fromCompilation = node({
+      key: 'c3',
+      tag: 'component',
+      kind: 'component',
+      componentId: '2',
+      orderIndex: 2,
+      parentKey: 'm3',
+      attrs: { modId: 'CompMod' },
+    } as TreeNode)
     const fromMinor = node({
       key: 'c4',
       tag: 'component',
       kind: 'component',
       componentId: '3',
       orderIndex: 3,
+      parentKey: 'm4',
       attrs: { modId: 'MinMod' },
     } as TreeNode)
-    expect(resolveModType(modelWith(fromMajor), modsByCodename, fromMajor)).toBe('medium')
-    expect(resolveModType(modelWith(fromMedium), modsByCodename, fromMedium)).toBe('minor')
-    expect(resolveModType(modelWith(fromCompilation), modsByCodename, fromCompilation)).toBe(
-      'minor',
-    )
-    expect(resolveModType(modelWith(fromMinor), modsByCodename, fromMinor)).toBe('minor')
+    expect(
+      resolveModType(modelWith(fromMajor), modsByCodename, fromMajor, {
+        asBranch: false,
+      }),
+    ).toBe('medium')
+    expect(
+      resolveModType(modelWith(fromMedium), modsByCodename, fromMedium, {
+        asBranch: false,
+      }),
+    ).toBe('minor')
+    expect(
+      resolveModType(modelWith(fromCompilation), modsByCodename, fromCompilation, {
+        asBranch: false,
+      }),
+    ).toBe('minor')
+    expect(
+      resolveModType(modelWith(fromMinor), modsByCodename, fromMinor, {
+        asBranch: false,
+      }),
+    ).toBe('minor')
   })
 
-  it('keeps catalog type when lookup is a component but display is a mod', () => {
+  it('isModTypeBranchDisplay is true for standalone components', () => {
+    const comp = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+      attrs: { modId: 'MyMod' },
+    } as TreeNode)
+    expect(isModTypeBranchDisplay(modelWith(comp), comp)).toBe(true)
+  })
+
+  it('isModTypeBranchDisplay is false for components under a mod', () => {
     const comp = node({
       key: 'c1',
       tag: 'component',
@@ -453,12 +541,46 @@ describe('resolveModType', () => {
       key: 'm1',
       tag: 'mod',
       kind: 'container',
+      attrs: { id: 'MyMod' },
+      children: [comp],
+    })
+    expect(isModTypeBranchDisplay(modelWith(mod, comp), comp)).toBe(false)
+  })
+
+  it('keeps catalog type when display is a branch (mod or collapsed)', () => {
+    const comp = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: '0',
+      orderIndex: 0,
+      parentKey: 'm1',
+      attrs: { modId: 'CompMod' },
+    } as TreeNode)
+    const mod = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
       attrs: { id: 'CompMod' },
       children: [comp],
     })
     expect(
-      resolveModType(modelWith(mod, comp), modsByCodename, comp, mod),
+      resolveModType(modelWith(mod, comp), modsByCodename, comp, { asBranch: true }),
     ).toBe('compilation')
+
+    const fromMajor = node({
+      key: 'c2',
+      tag: 'component',
+      kind: 'component',
+      componentId: '1',
+      orderIndex: 1,
+      attrs: { modId: 'MyMod' },
+    } as TreeNode)
+    expect(
+      resolveModType(modelWith(fromMajor), modsByCodename, fromMajor, {
+        asBranch: true,
+      }),
+    ).toBe('major')
   })
 
   it('returns undefined when codename is missing', () => {

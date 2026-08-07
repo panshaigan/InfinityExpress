@@ -20,6 +20,7 @@ import {
 import {
   formatBytes,
   hasModField,
+  isModTypeBranchDisplay,
   parseModsCsv,
   resolveModLookupKey,
   resolveModType,
@@ -109,7 +110,11 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
 
   const codename = resolveModLookupKey(model, source)
   const mod = codename ? modsByCodename.get(codename) : undefined
-  const modType = resolveModType(model, modsByCodename, source, node)
+  const modType = resolveModType(model, modsByCodename, source, {
+    asBranch: isModTypeBranchDisplay(model, node, {
+      collapsedToSingleComponent: Boolean(collapsedComponent),
+    }),
+  })
   const componentReadme = attrs.readme
   const modReadme = mod?.readme
 
