@@ -70,6 +70,12 @@ import { GlobalSearchToolbar } from './ui/GlobalSearchToolbar'
 import { FILTERS_SEARCH_ID, FiltersStrip } from './ui/FiltersStrip'
 import { SelectionPresetsBar } from './ui/SelectionPresetsBar'
 import { KeyboardHelp } from './ui/KeyboardHelp'
+import {
+  RouteGuideTip,
+  readRouteTipDismissed,
+  writeRouteTipDismissed,
+} from './ui/RouteGuideTip'
+import { useScrolled } from './lib/ui/useScrolled'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
 import {
   applySelectionPreset,
@@ -188,6 +194,13 @@ export default function App() {
   const [contentSubKey, setContentSubKey] = useState<string | null>(null)
   const [contentSubTag, setContentSubTag] = useState<string | null>(null)
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false)
+  const [showRouteTip, setShowRouteTip] = useState(() => !readRouteTipDismissed())
+  const [exportFlash, setExportFlash] = useState<string | null>(null)
+  const {
+    scrolled: listScrolled,
+    onScroll: onListScroll,
+    reset: resetListScroll,
+  } = useScrolled()
   const foldApiRef = useRef<TreeFoldApi | null>(null)
   const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
     foldApiRef.current = api
@@ -746,9 +759,20 @@ export default function App() {
     if (next) applyNavScreen(next)
   }
 
+  function dismissRouteTip() {
+    setShowRouteTip(false)
+    writeRouteTipDismissed()
+  }
+
+  function handleExport() {
+    downloadInstallOrder(model, selectedIds)
+    setExportFlash('Downloaded install-order.txt')
+  }
+
   /** Mark current station finished, then advance past it to the next unfinished screen. */
   function onOk() {
     if (!canMarkFinished) return
+    if (showRouteTip) dismissRouteTip()
     markStationFinished()
     const next = cycleScreen(
       navigableScreens,
@@ -758,6 +782,16 @@ export default function App() {
     )
     if (next) applyNavScreen(next)
   }
+
+  useEffect(() => {
+    resetListScroll()
+  }, [activeStation, contentMainKey, contentSubKey, resetListScroll])
+
+  useEffect(() => {
+    if (!exportFlash) return
+    const id = window.setTimeout(() => setExportFlash(null), 2200)
+    return () => window.clearTimeout(id)
+  }, [exportFlash])
 
   function selectEngine() {
     setActiveStation('engine')
@@ -958,10 +992,15 @@ export default function App() {
             className="btn"
             disabled={selectedIds.size === 0}
             title="Download install-order.txt"
-            onClick={() => downloadInstallOrder(model, selectedIds)}
+            onClick={handleExport}
           >
             Export
           </button>
+          {exportFlash && (
+            <span className="export-flash" role="status">
+              {exportFlash}
+            </span>
+          )}
         </div>
       </header>
 
@@ -996,10 +1035,12 @@ export default function App() {
             />
           )}
 
+          <RouteGuideTip visible={showRouteTip && !!game} onDismiss={dismissRouteTip} />
+
           <div className={`workspace${showDetail ? '' : ' engine-only'}`}>
-            <div className="list-pane">
+            <div className={`list-pane${listScrolled ? ' is-scrolled' : ''}`}>
               {activeStation === 'engine' || !game ? (
-                <div className="list-pane-scroll engine-pane-scroll">
+                <div className="list-pane-scroll engine-pane-scroll" onScroll={onListScroll}>
                   <EngineStation
                     game={game}
                     onChoose={chooseGame}
@@ -1036,7 +1077,7 @@ export default function App() {
                       onToggleAll={onToggleAllSearch}
                     />
                   </div>
-                  <div className="list-pane-scroll">
+                  <div className="list-pane-scroll" onScroll={onListScroll}>
                     <GlobalSearchList
                       hits={globalSearchHits}
                       selectedIds={selectedIds}
@@ -1102,7 +1143,7 @@ export default function App() {
                       />
                     )}
                   </div>
-                  <div className="list-pane-scroll">
+                  <div className="list-pane-scroll" onScroll={onListScroll}>
                     <ComponentTree
                       key={treeKey}
                       treeKey={treeKey}

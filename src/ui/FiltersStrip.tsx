@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import {
   FILTER_LADDER_LEVELS,
   LEVEL_LABELS,
@@ -53,6 +53,44 @@ function toggleInSet(set: ReadonlySet<string>, value: string): Set<string> {
   if (next.has(value)) next.delete(value)
   else next.add(value)
   return next
+}
+
+function FilterChipWrap({
+  open,
+  children,
+}: {
+  open: boolean
+  children: ReactNode
+}) {
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const [alignEnd, setAlignEnd] = useState(false)
+
+  useLayoutEffect(() => {
+    if (!open) return
+    const el = wrapRef.current
+    if (!el) return
+
+    function measure() {
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const popoverMin = 360
+      const spaceRight = window.innerWidth - rect.left
+      setAlignEnd(spaceRight < popoverMin && rect.right > popoverMin)
+    }
+
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [open])
+
+  return (
+    <div
+      ref={wrapRef}
+      className={`filter-chip-wrap${alignEnd ? ' align-end' : ''}`}
+    >
+      {children}
+    </div>
+  )
 }
 
 export function FiltersStrip({
@@ -190,7 +228,7 @@ export function FiltersStrip({
           aria-label={searchPlaceholder}
         />
 
-        <div className="filter-chip-wrap">
+        <FilterChipWrap open={openPanel === 'level'}>
           <button
             type="button"
             className={`filter-chip${levelActive ? ' active' : ''}${openPanel === 'level' ? ' open' : ''}`}
@@ -258,9 +296,9 @@ export function FiltersStrip({
               </label>
             </>,
           )}
-        </div>
+        </FilterChipWrap>
 
-        <div className="filter-chip-wrap">
+        <FilterChipWrap open={openPanel === 'size'}>
           <button
             type="button"
             className={`filter-chip${sizeActive ? ' active' : ''}${openPanel === 'size' ? ' open' : ''}`}
@@ -310,9 +348,9 @@ export function FiltersStrip({
               <p className="filter-panel-empty">No size data in mods.csv.</p>
             ),
           )}
-        </div>
+        </FilterChipWrap>
 
-        <div className="filter-chip-wrap">
+        <FilterChipWrap open={openPanel === 'author'}>
           <button
             type="button"
             className={`filter-chip${authorActive ? ' active' : ''}${openPanel === 'author' ? ' open' : ''}`}
@@ -385,7 +423,7 @@ export function FiltersStrip({
               </>
             ),
           )}
-        </div>
+        </FilterChipWrap>
 
         <button
           type="button"
@@ -393,7 +431,7 @@ export function FiltersStrip({
           aria-pressed={hiddenActive}
           onClick={() => patch({ showHidden: !criteria.showHidden })}
         >
-          Show hidden components
+          Show hidden
         </button>
 
         <button
