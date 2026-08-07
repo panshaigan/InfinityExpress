@@ -35,6 +35,10 @@ export function StationListToolbar({
   const checked = listState === 'checked'
   const empty = listNodes.length === 0
   const foldDisabled = empty || collectAllExpandableKeys(listNodes).length === 0
+  const levelOverrideCount =
+    checkedLadderLevels.size +
+    (lowerDifficulty ? 1 : 0) +
+    (higherDifficulty ? 1 : 0)
 
   useEffect(() => {
     if (selectAllRef.current) {
@@ -48,56 +52,64 @@ export function StationListToolbar({
 
   return (
     <div className="station-list-toolbar">
-      <label className={`station-select-all${empty ? ' disabled' : ''}`}>
-        <input
-          ref={selectAllRef}
-          type="checkbox"
-          checked={checked}
-          disabled={empty}
-          aria-label="Select all on this list"
-          onChange={handleSelectAllChange}
-        />
-        <span>Select all</span>
-      </label>
-      <span className="station-fold-all">
-        <button
-          type="button"
-          className="filter-inline-action"
-          disabled={foldDisabled}
-          aria-label="Unfold all on this list"
-          onClick={onUnfoldAll}
-        >
-          Unfold all
-        </button>
-        <button
-          type="button"
-          className="filter-inline-action"
-          disabled={foldDisabled}
-          aria-label="Fold all on this list"
-          onClick={onFoldAll}
-        >
-          Fold all
-        </button>
-      </span>
-      <div className="station-list-toolbar-levels">
-        <LevelSelectStrip
-          compact
-          enabled
-          checkedLadderLevels={checkedLadderLevels}
-          lowerDifficulty={lowerDifficulty}
-          higherDifficulty={higherDifficulty}
-          onLadderToggle={onLadderToggle}
-          onDifficultyChange={onDifficultyChange}
-        />
-        <button
-          type="button"
-          className="filter-inline-action station-clear-to-global"
-          onClick={onClearToGlobal}
-          title="Clear selections in this station beyond the last Engine level preset"
-        >
-          Reset to global
-        </button>
+      <div className="station-list-toolbar-primary">
+        <label className={`station-select-all${empty ? ' disabled' : ''}`}>
+          <input
+            ref={selectAllRef}
+            type="checkbox"
+            checked={checked}
+            disabled={empty}
+            aria-label="Select all on this list"
+            onChange={handleSelectAllChange}
+          />
+          <span>Select all</span>
+        </label>
+        <span className="station-fold-all">
+          <button
+            type="button"
+            className="filter-inline-action"
+            disabled={foldDisabled}
+            aria-label="Unfold all on this list"
+            onClick={onUnfoldAll}
+          >
+            Unfold all
+          </button>
+          <button
+            type="button"
+            className="filter-inline-action"
+            disabled={foldDisabled}
+            aria-label="Fold all on this list"
+            onClick={onFoldAll}
+          >
+            Fold all
+          </button>
+        </span>
       </div>
+      <details className="station-levels-fold">
+        <summary>
+          Station levels
+          {levelOverrideCount > 0 ? ` (${levelOverrideCount})` : ''}
+        </summary>
+        <div className="station-list-toolbar-levels">
+          <LevelSelectStrip
+            compact
+            enabled
+            checkedLadderLevels={checkedLadderLevels}
+            lowerDifficulty={lowerDifficulty}
+            higherDifficulty={higherDifficulty}
+            onLadderToggle={onLadderToggle}
+            onDifficultyChange={onDifficultyChange}
+          />
+          <button
+            type="button"
+            className="filter-inline-action station-clear-to-global"
+            onClick={onClearToGlobal}
+            title="Clear selections in this station beyond the last Engine level preset"
+          >
+            Reset to global
+          </button>
+        </div>
+      </details>
     </div>
   )
 }

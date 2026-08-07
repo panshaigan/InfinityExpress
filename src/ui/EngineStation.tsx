@@ -40,10 +40,11 @@ export function EngineStation({
 }: Props) {
   return (
     <section className="engine-station">
+      <p className="engine-brand-mark">Infinity Express</p>
       <h2>Choose your engine</h2>
       <p className="lede">
-        Pick the base game you are modding. Stations ahead only show components allowed for that
-        engine.
+        Pick the game you are modding. Press <strong>Done</strong> to walk stop by stop, or jump
+        freely from the left rail anytime.
       </p>
       <div className="engine-grid">
         {GAMES.map((g) => (

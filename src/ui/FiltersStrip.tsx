@@ -34,6 +34,8 @@ interface Props {
   onRequestTreeFocus?: () => void
   /** Override search field placeholder / aria-label (e.g. global search). */
   searchPlaceholder?: string
+  /** Clarifies in-window vs all-stations search. */
+  searchScope?: 'station' | 'global'
 }
 
 type PanelId = 'level' | 'size' | 'author'
@@ -61,6 +63,7 @@ export function FiltersStrip({
   sizeBounds,
   onRequestTreeFocus,
   searchPlaceholder = 'Search in this window...',
+  searchScope = 'station',
 }: Props) {
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null)
   const baseId = useId()
@@ -307,6 +310,16 @@ export function FiltersStrip({
     >
       <div className="filters-row">
         <span className="filters-label">Filters</span>
+        <span
+          className={`filters-scope${searchScope === 'global' ? ' global' : ''}`}
+          title={
+            searchScope === 'global'
+              ? 'Matches components across every station'
+              : 'Matches only what is listed in this window'
+          }
+        >
+          {searchScope === 'global' ? 'All stops' : 'This stop'}
+        </span>
         <input
           ref={searchRef}
           id={FILTERS_SEARCH_ID}

@@ -35,7 +35,7 @@ export const STATION_LABELS: Record<StationId, string> = {
   portraits: 'Portraits',
   scripts: 'Scripts',
   randomisation: 'Randomisation',
-  adjustements: 'Adjustements',
+  adjustements: 'Adjustments',
 }
 
 export const GAME_LABELS: Record<SelectedGame, string> = {

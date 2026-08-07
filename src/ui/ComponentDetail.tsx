@@ -148,7 +148,15 @@ export function ComponentDetail({ display, model, onNavigateToComponent }: Props
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
 
   if (!display) {
-    return <p className="detail-empty">Select a component to see details.</p>
+    return (
+      <div className="detail-empty-state">
+        <p className="detail-empty-title">Nothing selected</p>
+        <p className="detail-empty">
+          Click a row for notes, links, and relations. Double-click or press Space to
+          check it.
+        </p>
+      </div>
+    )
   }
 
   const { node, collapsedComponent } = display

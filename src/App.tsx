@@ -69,6 +69,7 @@ import { GlobalSearchList } from './ui/GlobalSearchList'
 import { GlobalSearchToolbar } from './ui/GlobalSearchToolbar'
 import { FILTERS_SEARCH_ID, FiltersStrip } from './ui/FiltersStrip'
 import { SelectionPresetsBar } from './ui/SelectionPresetsBar'
+import { KeyboardHelp } from './ui/KeyboardHelp'
 import { sortContentSubBranches } from './lib/contentBranchOrder'
 import {
   applySelectionPreset,
@@ -186,6 +187,7 @@ export default function App() {
   const [contentMainKey, setContentMainKey] = useState<string | null>(null)
   const [contentSubKey, setContentSubKey] = useState<string | null>(null)
   const [contentSubTag, setContentSubTag] = useState<string | null>(null)
+  const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false)
   const foldApiRef = useRef<TreeFoldApi | null>(null)
   const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
     foldApiRef.current = api
@@ -252,6 +254,12 @@ export default function App() {
       )
     })
   }, [filters, game, model, modsByCodename, selectedIds, visibleStations])
+
+  const routeProgress = useMemo(() => {
+    const slots: StationSlot[] = ['engine', ...visibleStations]
+    const finishedCount = slots.filter((id) => finishedStations.has(id)).length
+    return { finishedCount, totalCount: slots.length }
+  }, [finishedStations, visibleStations])
 
   const stationDesc = useMemo(() => {
     if (activeStation === 'engine' || activeStation === 'search') return undefined
@@ -836,6 +844,15 @@ export default function App() {
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.altKey || e.ctrlKey || e.metaKey) return
+      if (
+        !isTypingTarget(e.target) &&
+        !keyboardHelpOpen &&
+        (e.key === '?' || (e.shiftKey && e.key === '/'))
+      ) {
+        e.preventDefault()
+        setKeyboardHelpOpen(true)
+        return
+      }
       const searchEl = document.getElementById(FILTERS_SEARCH_ID)
       const cmd = resolveChromeHotkey(e.key, {
         isTypingTarget: isTypingTarget(e.target),
@@ -889,6 +906,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [
     activeStation,
+    keyboardHelpOpen,
     visibleStations,
     contentMainBranches,
     contentSubBranches,
@@ -902,30 +920,8 @@ export default function App() {
       <header className="top-bar">
         <div className="brand">
           <h1>Infinity Express</h1>
-          <p>Mod route planner</p>
+          <p>Your mod route</p>
         </div>
-        <button
-          type="button"
-          className={`top-bar-search${isSearchStation ? ' active' : ''}`}
-          disabled={!game}
-          aria-current={isSearchStation ? 'page' : undefined}
-          aria-label="Search all components"
-          onClick={selectSearch}
-        >
-          <svg
-            className="top-bar-search-icon"
-            viewBox="0 0 16 16"
-            width="15"
-            height="15"
-            aria-hidden="true"
-          >
-            <path
-              fill="currentColor"
-              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"
-            />
-          </svg>
-          <span>Search</span>
-        </button>
         <div className="top-bar-actions">
           <span className="engine-badge">
             Engine:{' '}
@@ -949,11 +945,22 @@ export default function App() {
           />
           <button
             type="button"
+            className="btn secondary top-bar-help"
+            aria-haspopup="dialog"
+            aria-expanded={keyboardHelpOpen}
+            title="Keyboard shortcuts"
+            onClick={() => setKeyboardHelpOpen(true)}
+          >
+            ?
+          </button>
+          <button
+            type="button"
             className="btn"
             disabled={selectedIds.size === 0}
+            title="Download install-order.txt"
             onClick={() => downloadInstallOrder(model, selectedIds)}
           >
-            Export install order
+            Export
           </button>
         </div>
       </header>
@@ -964,29 +971,35 @@ export default function App() {
           activeStation={activeStation}
           visibleStations={visibleStations}
           finishedStations={finishedStations}
+          finishedCount={routeProgress.finishedCount}
+          totalCount={routeProgress.totalCount}
           onSelectEngine={selectEngine}
           onSelectStation={selectStation}
+          onSelectSearch={selectSearch}
         />
 
         <div className="app-main">
-          <FiltersStrip
-            criteria={filters}
-            onChange={setFilters}
-            tagOptions={filterOptions.tags}
-            authorOptions={catalogAuthorOptions}
-            sizeBounds={catalogSizeBounds}
-            onRequestTreeFocus={focusComponentTree}
-            searchPlaceholder={
-              isSearchStation
-                ? 'Search all components...'
-                : 'Search in this window...'
-            }
-          />
+          {game != null && activeStation !== 'engine' && (
+            <FiltersStrip
+              criteria={filters}
+              onChange={setFilters}
+              tagOptions={filterOptions.tags}
+              authorOptions={catalogAuthorOptions}
+              sizeBounds={catalogSizeBounds}
+              onRequestTreeFocus={focusComponentTree}
+              searchScope={isSearchStation ? 'global' : 'station'}
+              searchPlaceholder={
+                isSearchStation
+                  ? 'Search all components...'
+                  : 'Search in this window...'
+              }
+            />
+          )}
 
           <div className={`workspace${showDetail ? '' : ' engine-only'}`}>
             <div className="list-pane">
               {activeStation === 'engine' || !game ? (
-                <div className="list-pane-scroll">
+                <div className="list-pane-scroll engine-pane-scroll">
                   <EngineStation
                     game={game}
                     onChoose={chooseGame}
@@ -1003,16 +1016,6 @@ export default function App() {
                     onOk={onOk}
                     onCancel={unmarkStationFinished}
                   />
-                  {warnings.length > 0 && (
-                    <details className="warnings">
-                      <summary>{warnings.length} parse warnings</summary>
-                      <ul>
-                        {warnings.slice(0, 30).map((w) => (
-                          <li key={w}>{w}</li>
-                        ))}
-                      </ul>
-                    </details>
-                  )}
                 </div>
               ) : isSearchStation ? (
                 <>
@@ -1021,8 +1024,8 @@ export default function App() {
                       <h2>Search</h2>
                     </div>
                     <p className="lede">
-                      Find any eligible component across stations. Gated options
-                      stay listed but cannot be checked until unlocked.
+                      Find any eligible component across stations. Locked options
+                      stay listed until their requirements are met.
                     </p>
                     <GlobalSearchToolbar
                       resultCount={globalSearchHits.length}
@@ -1067,9 +1070,14 @@ export default function App() {
                         onCancel={unmarkStationFinished}
                       />
                     </div>
-                    <p className="lede">
-                      {stationDesc ?? 'Tick what you want on this stop. Switch stations anytime.'}
-                    </p>
+                    {stationDesc ? (
+                      <p className="lede">{stationDesc}</p>
+                    ) : (
+                      <p className="lede list-pane-hint">
+                        Tick what you want here. Done continues the path; the rail
+                        jumps anywhere.
+                      </p>
+                    )}
                     <StationListToolbar
                       listNodes={listNodes}
                       listState={listCheckState}
@@ -1109,18 +1117,18 @@ export default function App() {
                       onRandomize={onRandomize}
                       onFoldApiReady={onFoldApiReady}
                     />
-                    {warnings.length > 0 && (
-                      <details className="warnings">
-                        <summary>{warnings.length} parse warnings</summary>
-                        <ul>
-                          {warnings.slice(0, 30).map((w) => (
-                            <li key={w}>{w}</li>
-                          ))}
-                        </ul>
-                      </details>
-                    )}
                   </div>
                 </>
+              )}
+              {warnings.length > 0 && (
+                <details className="warnings">
+                  <summary>{warnings.length} parse notes</summary>
+                  <ul>
+                    {warnings.slice(0, 30).map((w) => (
+                      <li key={w}>{w}</li>
+                    ))}
+                  </ul>
+                </details>
               )}
             </div>
 
@@ -1138,6 +1146,11 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      <KeyboardHelp
+        open={keyboardHelpOpen}
+        onClose={() => setKeyboardHelpOpen(false)}
+      />
     </div>
   )
 }
