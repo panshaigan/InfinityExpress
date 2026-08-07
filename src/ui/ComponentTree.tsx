@@ -232,8 +232,12 @@ function CheckboxRow({
           {stabilityLabel && <span className="badge">{stabilityLabel}</span>}
           {attrs.required && <span className="badge">required</span>}
           {attrs.noDisplay && <span className="badge">hidden</span>}
-          {attrs.core && <span className="badge">core</span>}
-          {attrs.default && <span className="badge">default</span>}
+          {!collapsedComponent && attrs.core && (
+            <span className="badge">core</span>
+          )}
+          {!collapsedComponent && attrs.default && (
+            <span className="badge">default</span>
+          )}
           {tagList.map((tag) => (
             <span key={tag} className="badge">
               {tag}
