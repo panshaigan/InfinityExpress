@@ -62,13 +62,10 @@ function absorbCommons(
   return siblings.filter((n) => !absorbSet.has(n.tag))
 }
 
-/**
- * Game-dependent UI remount of content-station commons into the right bucket.
- * Runs on a clone; does not mutate the parsed station children.
- */
-export function remapContentForGame(children: TreeNode[], game: SelectedGame): TreeNode[] {
-  if (game === 'pst') return children
+/** Cache remounts by source children identity + game (parsed station trees are stable). */
+const remapCache = new WeakMap<TreeNode[], Map<SelectedGame, TreeNode[]>>()
 
+function remountContent(children: TreeNode[], game: SelectedGame): TreeNode[] {
   const cloned = cloneTree(children)
 
   switch (game) {
@@ -83,4 +80,26 @@ export function remapContentForGame(children: TreeNode[], game: SelectedGame): T
     default:
       return cloned
   }
+}
+
+/**
+ * Game-dependent UI remount of content-station commons into the right bucket.
+ * Runs on a clone; does not mutate the parsed station children.
+ * Results are memoized per `children` reference and game.
+ */
+export function remapContentForGame(children: TreeNode[], game: SelectedGame): TreeNode[] {
+  if (game === 'pst') return children
+
+  let byGame = remapCache.get(children)
+  if (!byGame) {
+    byGame = new Map()
+    remapCache.set(children, byGame)
+  }
+
+  const cached = byGame.get(game)
+  if (cached) return cached
+
+  const remounted = remountContent(children, game)
+  byGame.set(game, remounted)
+  return remounted
 }

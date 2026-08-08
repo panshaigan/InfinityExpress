@@ -127,6 +127,11 @@ export default function App() {
     setStationLevelPresets: levels.setStationLevelPresets,
   })
 
+  const filtersActive = useMemo(
+    () => isFilterActive(filters, filterOptions.tags, filterSeed),
+    [filters, filterOptions.tags, filterSeed],
+  )
+
   const { visibleStations, displayNodes, globalSearchHits, navigableScreens } =
     useStationTrees({
       model,
@@ -134,6 +139,7 @@ export default function App() {
       selectedIds,
       activeStation,
       filters,
+      filtersActive,
       modsByCodename,
       filterSeed,
     })
@@ -209,10 +215,6 @@ export default function App() {
   }, [activeStation, model.stations])
 
   const isSearchStation = activeStation === 'search'
-  const filtersActive = useMemo(
-    () => isFilterActive(filters, filterOptions.tags, filterSeed),
-    [filters, filterOptions.tags],
-  )
 
   const emptyCopy = useMemo(
     () =>

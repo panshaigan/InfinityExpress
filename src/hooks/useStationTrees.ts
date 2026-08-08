@@ -7,8 +7,24 @@ import {
   buildFilteredStationDisplayTree,
   stationHasVisibleContent,
 } from '../lib/selection/stationDisplayTree'
+import type { DisplayNode } from '../lib/selection/visibility'
 import { buildNavigableScreens, type NavScreen } from '../lib/ui/screenCycle'
 import type { AppNavSlot } from '../ui/StationNav'
+
+/** Non-content expandStationToScreens only checks `.length` — used when filters are inactive. */
+const NONEMPTY_STATION_ROWS: DisplayNode[] = [
+  {
+    node: {
+      key: '__nav-nonempty__',
+      tag: 'group',
+      kind: 'container',
+      attrs: {},
+      effectiveEngine: '',
+      children: [],
+    },
+    children: [],
+  },
+]
 
 export function useStationTrees(args: {
   model: InstallSequenceModel
@@ -16,6 +32,8 @@ export function useStationTrees(args: {
   selectedIds: ReadonlySet<string>
   activeStation: AppNavSlot
   filters: FilterCriteria
+  /** When false, non-content cycle stops skip full filtered-tree rebuilds. */
+  filtersActive: boolean
   modsByCodename: ReadonlyMap<string, ModInfo>
   filterSeed: Omit<FilterSeedOptions, 'tagOptions'>
 }) {
@@ -25,6 +43,7 @@ export function useStationTrees(args: {
     selectedIds,
     activeStation,
     filters,
+    filtersActive,
     modsByCodename,
     filterSeed,
   } = args
@@ -69,6 +88,18 @@ export function useStationTrees(args: {
   const navigableScreens = useMemo(() => {
     if (!game) return [] as NavScreen[]
     return buildNavigableScreens(visibleStations, (id) => {
+      if (
+        id === activeStation &&
+        activeStation !== 'engine' &&
+        activeStation !== 'search'
+      ) {
+        return displayNodes
+      }
+      // visibleStations already proved unfiltered visibility; without filters,
+      // non-content cycle entries only need a non-empty tree.
+      if (id !== 'content' && !filtersActive) {
+        return NONEMPTY_STATION_ROWS
+      }
       const block = model.stations.find((s) => s.stationId === id)
       if (!block) return []
       return buildFilteredStationDisplayTree(
@@ -81,7 +112,18 @@ export function useStationTrees(args: {
         filterSeed,
       )
     })
-  }, [filters, game, model, modsByCodename, filterSeed, selectedIds, visibleStations])
+  }, [
+    activeStation,
+    displayNodes,
+    filters,
+    filtersActive,
+    game,
+    model,
+    modsByCodename,
+    filterSeed,
+    selectedIds,
+    visibleStations,
+  ])
 
   return { visibleStations, displayNodes, globalSearchHits, navigableScreens }
 }

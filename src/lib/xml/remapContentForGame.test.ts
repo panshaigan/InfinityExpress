@@ -132,6 +132,12 @@ describe('remapContentForGame', () => {
     expect(remapped).toBe(content)
   })
 
+  it('memoizes remount results per children reference and game', () => {
+    expect(remapContentForGame(content, 'bg1')).toBe(remapContentForGame(content, 'bg1'))
+    expect(remapContentForGame(content, 'eet')).toBe(remapContentForGame(content, 'eet'))
+    expect(remapContentForGame(content, 'bg1')).not.toBe(remapContentForGame(content, 'eet'))
+  })
+
   it('does not mutate original children when remounting', () => {
     const before = JSON.stringify(
       content.map((n) => ({
