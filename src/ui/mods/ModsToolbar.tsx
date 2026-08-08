@@ -163,8 +163,8 @@ export function ModsToolbar({
 
       {!journeyLocked ? (
         <div className="mods-facets">
-          <label>
-            <span>Category</span>
+          <label className="outlined-field outlined-field-control">
+            <span className="outlined-field-label">Category</span>
             <select
               value={filters.categories[0] ?? ''}
               onChange={(e) =>
@@ -182,8 +182,8 @@ export function ModsToolbar({
               ))}
             </select>
           </label>
-          <label>
-            <span>Game</span>
+          <label className="outlined-field outlined-field-control">
+            <span className="outlined-field-label">Game</span>
             <select
               value={filters.games[0] ?? ''}
               onChange={(e) =>
@@ -201,8 +201,8 @@ export function ModsToolbar({
               ))}
             </select>
           </label>
-          <label>
-            <span>Author</span>
+          <label className="outlined-field outlined-field-control">
+            <span className="outlined-field-label">Author</span>
             <select
               value={filters.authors[0] ?? ''}
               onChange={(e) =>
@@ -220,8 +220,8 @@ export function ModsToolbar({
               ))}
             </select>
           </label>
-          <label>
-            <span>Status</span>
+          <label className="outlined-field outlined-field-control">
+            <span className="outlined-field-label">Status</span>
             <select
               value={filters.statuses[0] ?? ''}
               onChange={(e) =>

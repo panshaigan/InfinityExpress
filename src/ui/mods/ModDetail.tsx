@@ -30,7 +30,7 @@ function Field({
 }) {
   if (children == null || children === '') return null
   return (
-    <div className="mod-detail-field">
+    <div className="outlined-field">
       <dt>{label}</dt>
       <dd>{children}</dd>
     </div>
@@ -156,7 +156,7 @@ function ModDetailBody({
         </div>
       </header>
 
-      <dl className="mod-detail-dl">
+      <dl className="outlined-fields mod-detail-dl">
         <Field label="Download ID">{eff.codename}</Field>
         {eff.abbreviation ? (
           <Field label="Abbreviation">{eff.abbreviation}</Field>

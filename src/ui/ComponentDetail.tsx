@@ -334,24 +334,24 @@ export function ComponentDetail({
           ) : null}
 
           {hasComponentMeta && (
-            <dl className="detail-meta">
+            <dl className="outlined-fields">
               {componentId && (
-                <>
+                <div className="outlined-field">
                   <dt>Id</dt>
                   <dd className="detail-name-value">
                     <span>{componentId}</span>
                     <CopyButton value={componentId} label="Copy id" />
                   </dd>
-                </>
+                </div>
               )}
               {attrs.name && (
-                <>
+                <div className="outlined-field">
                   <dt>WeiDU Label</dt>
                   <dd className="detail-name-value">
                     <span>{attrs.name}</span>
                     <CopyButton value={attrs.name} label="Copy WeiDU label" />
                   </dd>
-                </>
+                </div>
               )}
             </dl>
           )}
@@ -371,9 +371,9 @@ export function ComponentDetail({
 
         {hasModSection && (
           <DetailBlock kind="mod" title="Mod">
-            <dl className="detail-meta">
+            <dl className="outlined-fields">
               {hasModField(mod?.name) && (
-                <>
+                <div className="outlined-field">
                   <dt>Name</dt>
                   <dd>
                     {mod.name}
@@ -382,43 +382,43 @@ export function ComponentDetail({
                       ? ` (${mod.abbreviation})`
                       : ''}
                   </dd>
-                </>
+                </div>
               )}
               {codename && (
-                <>
-                  <dt>Download id</dt>
+                <div className="outlined-field">
+                  <dt>Download ID</dt>
                   <dd>{codename}</dd>
-                </>
+                </div>
               )}
               {hasModField(mod?.category) && (
-                <>
+                <div className="outlined-field">
                   <dt>Category</dt>
                   <dd>{mod.category}</dd>
-                </>
+                </div>
               )}
               {mod?.release && (
-                <>
+                <div className="outlined-field">
                   <dt>Release</dt>
                   <dd>{mod.release}</dd>
-                </>
+                </div>
               )}
               {mod?.version && (
-                <>
+                <div className="outlined-field">
                   <dt>Version</dt>
                   <dd>{mod.version}</dd>
-                </>
+                </div>
               )}
               {mod?.sizeBytes != null && (
-                <>
+                <div className="outlined-field">
                   <dt>Size</dt>
                   <dd>{formatBytes(mod.sizeBytes)}</dd>
-                </>
+                </div>
               )}
               {mod?.author && (
-                <>
+                <div className="outlined-field">
                   <dt>Author</dt>
                   <dd>{mod.author}</dd>
-                </>
+                </div>
               )}
             </dl>
             <DetailLinks links={modLinks} />
