@@ -42,8 +42,19 @@ function pickLevelMassCheckCandidates(
       out.push(...comps)
       continue
     }
-    const defaults = comps.filter((c) => c.attrs.default)
-    out.push(defaults[0] ?? comps[0]!)
+    let best = comps[0]!
+    let bestRank = levelFilterRank(best.effectiveLevel) ?? -1
+    for (let i = 1; i < comps.length; i++) {
+      const c = comps[i]!
+      const rank = levelFilterRank(c.effectiveLevel) ?? -1
+      if (rank > bestRank) {
+        best = c
+        bestRank = rank
+      } else if (rank === bestRank && c.attrs.default && !best.attrs.default) {
+        best = c
+      }
+    }
+    out.push(best)
   }
   return out
 }

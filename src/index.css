@@ -2075,7 +2075,7 @@ body.is-resizing-detail * {
 }
 
 .level-card.has-tip:hover .level-card-tip,
-.level-card.has-tip:focus-within .level-card-tip {
+.level-card.has-tip:has(:focus-visible) .level-card-tip {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);

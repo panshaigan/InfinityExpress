@@ -415,6 +415,7 @@ const LEVELED = `<?xml version="1.0"?>
     <alternatives label="Level alts">
       <component id="alt:rest" label="Alt rest" level="restoration" />
       <component id="alt:vp" label="Alt VP" level="vanillaPlus" default="1" />
+      <component id="alt:bw" label="Alt BW" level="blendWell" />
       <component id="alt:qual" label="Alt extended" level="extended" />
     </alternatives>
   </base>
@@ -459,6 +460,7 @@ describe('level mass-check', () => {
 
     expect(selected.has('alt:vp')).toBe(true)
     expect(selected.has('alt:rest')).toBe(false)
+    expect(selected.has('alt:bw')).toBe(false)
     expect(selected.has('alt:qual')).toBe(false)
   })
 
@@ -519,7 +521,7 @@ describe('level mass-check', () => {
     expect(selected.has('fix:a')).toBe(false)
   })
 
-  it('alternatives: prefers default when it matches the ladder max', () => {
+  it('alternatives: prefers highest matching ladder rank over default', () => {
     let selected = createInitialSelection(model, 'bg1')
     selected = applyLadderLevelSelection(
       model,
@@ -529,14 +531,30 @@ describe('level mass-check', () => {
     )
     expect(selected.has('alt:vp')).toBe(true)
     expect(selected.has('alt:rest')).toBe(false)
+    expect(selected.has('alt:bw')).toBe(false)
     expect(selected.has('alt:qual')).toBe(false)
   })
 
-  it('alternatives: picks first matching when default is above max', () => {
+  it('alternatives: prefers blendWell over vanillaPlus default when both match', () => {
+    let selected = createInitialSelection(model, 'bg1')
+    selected = applyLadderLevelSelection(
+      model,
+      selected,
+      'bg1',
+      new Set(['fixes', 'restoration', 'vanillaPlus', 'blendWell']),
+    )
+    expect(selected.has('alt:bw')).toBe(true)
+    expect(selected.has('alt:vp')).toBe(false)
+    expect(selected.has('alt:rest')).toBe(false)
+    expect(selected.has('alt:qual')).toBe(false)
+  })
+
+  it('alternatives: picks only matching rank when higher options are above enabled', () => {
     let selected = createInitialSelection(model, 'bg1')
     selected = applyLadderLevelSelection(model, selected, 'bg1', new Set(['fixes', 'restoration']))
     expect(selected.has('alt:rest')).toBe(true)
     expect(selected.has('alt:vp')).toBe(false)
+    expect(selected.has('alt:bw')).toBe(false)
     expect(selected.has('alt:qual')).toBe(false)
   })
 })
