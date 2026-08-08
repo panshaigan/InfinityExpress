@@ -42,7 +42,18 @@ export function EngineStation({
 }: Props) {
   return (
     <section className="engine-station">
-      <h2>Choose your engine</h2>
+      <div className="engine-station-header">
+        <h2>Choose your engine</h2>
+        <button
+          type="button"
+          className="btn engine-start-btn"
+          disabled={!canStart}
+          onClick={onStart}
+          title="Continue to the first unfinished stop"
+        >
+          Start
+        </button>
+      </div>
       <div className="engine-grid">
         {ENGINE_ROWS.map((row) => (
           <div
@@ -73,17 +84,6 @@ export function EngineStation({
           onLadderToggle={onLadderToggle}
           onDifficultyChange={onDifficultyChange}
         />
-        <div className="engine-start-row">
-          <button
-            type="button"
-            className="btn engine-start-btn"
-            disabled={!canStart}
-            onClick={onStart}
-            title="Continue to the first unfinished stop"
-          >
-            Start
-          </button>
-        </div>
       </div>
     </section>
   )
