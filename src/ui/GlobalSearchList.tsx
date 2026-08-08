@@ -27,6 +27,8 @@ interface Props {
   searchQuery: string
   /** True when Level / Size / Author / hidden / unchecked filters change results. */
   filtersActive: boolean
+  /** True while the all-stations scan is in progress. */
+  loading?: boolean
 }
 
 function JumpIcon() {
@@ -80,6 +82,7 @@ export function GlobalSearchList({
   onJump,
   searchQuery,
   filtersActive,
+  loading = false,
 }: Props) {
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const tabbableId =
@@ -139,6 +142,25 @@ export function GlobalSearchList({
     }
   }
 
+  if (loading && hits.length === 0) {
+    return (
+      <div
+        className="global-search-loading"
+        role="status"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <div className="global-search-loading-track" aria-hidden="true">
+          <div className="global-search-loading-bar" />
+        </div>
+        <p className="global-search-loading-title">Gathering components</p>
+        <p className="global-search-loading-body">
+          Scanning every station for matches…
+        </p>
+      </div>
+    )
+  }
+
   if (hits.length === 0) {
     const copy = emptyCopy(searchQuery, filtersActive)
     return (
@@ -150,12 +172,18 @@ export function GlobalSearchList({
 
   return (
     <div
-      className="global-search-list"
+      className={`global-search-list${loading ? ' is-loading' : ''}`}
       role="listbox"
       aria-label="Search results"
+      aria-busy={loading || undefined}
       onKeyDown={handleListKeyDown}
       onMouseLeave={() => onHover(null)}
     >
+      {loading && (
+        <div className="global-search-loading-track sticky" aria-hidden="true">
+          <div className="global-search-loading-bar" />
+        </div>
+      )}
       {hits.map((hit) => {
         const id = hit.component.componentId
         const display: DisplayNode = { node: hit.component, children: [] }

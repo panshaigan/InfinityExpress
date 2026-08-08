@@ -1,9 +1,12 @@
-import { useMemo } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { STATION_ORDER, type InstallSequenceModel, type SelectedGame, type StationId } from '../lib/xml/schema'
 import type { ModInfo } from '../lib/mods/loadMods'
 import type { FilterCriteria, FilterSeedOptions } from '../lib/selection/filterDisplayTree'
 import { collectDisplayGateIds, selectionGateKey } from '../lib/selection/displayGates'
-import { buildGlobalSearchResults } from '../lib/selection/globalSearch'
+import {
+  buildGlobalSearchResults,
+  type GlobalSearchHit,
+} from '../lib/selection/globalSearch'
 import {
   buildFilteredStationDisplayTree,
   stationHasVisibleContent,
@@ -114,18 +117,62 @@ export function useStationTrees(args: {
     treeSelectionKey,
   ])
 
-  const globalSearchHits = useMemo(() => {
-    if (!game || searchScope !== 'all') return []
-    return buildGlobalSearchResults(
-      model,
-      game,
-      selectedIds,
-      filters,
-      { model, modsByCodename },
-      filterSeed,
-      { selectedIds, game },
-    )
-  }, [filters, game, model, modsByCodename, filterSeed, searchScope, selectedIds])
+  const [globalSearchHits, setGlobalSearchHits] = useState<GlobalSearchHit[]>([])
+  const [globalSearchLoading, setGlobalSearchLoading] = useState(false)
+  const globalSearchActive = Boolean(game && searchScope === 'all')
+
+  // Mark busy before paint so All sections never flashes the empty ready state.
+  useLayoutEffect(() => {
+    if (!globalSearchActive) {
+      setGlobalSearchHits([])
+      setGlobalSearchLoading(false)
+      return
+    }
+    setGlobalSearchLoading(true)
+  }, [
+    filterSeed,
+    filters,
+    game,
+    globalSearchActive,
+    model,
+    modsByCodename,
+    selectedIds,
+  ])
+
+  useEffect(() => {
+    if (!globalSearchActive || !game) return
+
+    let cancelled = false
+    // Yield so the loading chrome can paint before the sync scan.
+    const timer = window.setTimeout(() => {
+      const hits = buildGlobalSearchResults(
+        model,
+        game,
+        selectedIds,
+        filters,
+        { model, modsByCodename },
+        filterSeed,
+        { selectedIds, game },
+      )
+      if (!cancelled) {
+        setGlobalSearchHits(hits)
+        setGlobalSearchLoading(false)
+      }
+    }, 0)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [
+    filterSeed,
+    filters,
+    game,
+    globalSearchActive,
+    model,
+    modsByCodename,
+    selectedIds,
+  ])
 
   const navigableScreens = useMemo(() => {
     if (!game) return [] as NavScreen[]
@@ -165,5 +212,11 @@ export function useStationTrees(args: {
     visibleStations,
   ])
 
-  return { visibleStations, displayNodes, globalSearchHits, navigableScreens }
+  return {
+    visibleStations,
+    displayNodes,
+    globalSearchHits,
+    globalSearchLoading,
+    navigableScreens,
+  }
 }

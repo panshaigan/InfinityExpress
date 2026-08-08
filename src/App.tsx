@@ -129,7 +129,7 @@ export default function App() {
     [filters, filterOptions.tags, filterSeed],
   )
 
-  const { visibleStations, displayNodes, globalSearchHits, navigableScreens } =
+  const { visibleStations, displayNodes, globalSearchHits, globalSearchLoading, navigableScreens } =
     useStationTrees({
       model,
       game,
@@ -500,6 +500,7 @@ export default function App() {
                       listState={globalSearchCheckState}
                       onToggleAll={onToggleAllSearch}
                       searchQuery={filters.search}
+                      loading={globalSearchLoading}
                     />
                   </div>
                   <div className="list-pane-scroll">
@@ -514,6 +515,7 @@ export default function App() {
                       onJump={onJumpFromSearch}
                       searchQuery={filters.search}
                       filtersActive={filtersActive}
+                      loading={globalSearchLoading}
                     />
                   </div>
                 </>

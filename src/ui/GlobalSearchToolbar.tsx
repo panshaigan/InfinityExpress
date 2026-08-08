@@ -6,6 +6,8 @@ interface Props {
   listState: 'checked' | 'unchecked' | 'indeterminate'
   onToggleAll: (wantSelected: boolean) => void
   searchQuery?: string
+  /** True while the all-stations result set is being built. */
+  loading?: boolean
 }
 
 /** Select-all / clear for the current global search result set. */
@@ -15,9 +17,10 @@ export function GlobalSearchToolbar({
   listState,
   onToggleAll,
   searchQuery = '',
+  loading = false,
 }: Props) {
   const selectAllRef = useRef<HTMLInputElement>(null)
-  const empty = checkableCount === 0
+  const empty = loading || checkableCount === 0
   const checked = listState === 'checked'
   const q = searchQuery.trim()
 
@@ -32,7 +35,9 @@ export function GlobalSearchToolbar({
   }
 
   let countLabel: string
-  if (resultCount === 0) {
+  if (loading) {
+    countLabel = 'Searching…'
+  } else if (resultCount === 0) {
     countLabel = q ? 'No matches' : 'Ready to search'
   } else {
     countLabel = `${resultCount} component${resultCount === 1 ? '' : 's'}`
