@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import {
   diskStatusLabel,
   type ModsTableFilters,
 } from '../../lib/mods/modsTable'
 import type { DiskStatus } from '../../lib/mods/loadMods'
+import { OutlinedSelect } from '../OutlinedSelect'
 
 interface FacetOptions {
   categories: string[]
@@ -35,6 +37,8 @@ const ALL_STATUSES: DiskStatus[] = [
   'busy',
 ]
 
+type FacetId = 'category' | 'game' | 'author' | 'status'
+
 export const MODS_SEARCH_ID = 'mods-search'
 
 export function ModsToolbar({
@@ -63,6 +67,7 @@ export function ModsToolbar({
     filters.statuses.length > 0 ||
     !!filters.search.trim() ||
     (onlyNeededActive && !journeyLocked)
+  const [openFacet, setOpenFacet] = useState<FacetId | null>(null)
 
   function toggleOnlyNeeded() {
     if (journeyLocked) return
@@ -72,6 +77,10 @@ export function ModsToolbar({
     }
     if (neededCodenames.length === 0) return
     onChange({ ...filters, requiredCodenames: neededCodenames })
+  }
+
+  function facetOpenChange(id: FacetId, open: boolean) {
+    setOpenFacet(open ? id : null)
   }
 
   return (
@@ -163,84 +172,73 @@ export function ModsToolbar({
 
       {!journeyLocked ? (
         <div className="mods-facets">
-          <label className="outlined-field outlined-field-control">
-            <span className="outlined-field-label">Category</span>
-            <select
-              value={filters.categories[0] ?? ''}
-              onChange={(e) =>
-                onChange({
-                  ...filters,
-                  categories: e.target.value ? [e.target.value] : [],
-                })
-              }
-            >
-              <option value="">All</option>
-              {facets.categories.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="outlined-field outlined-field-control">
-            <span className="outlined-field-label">Game</span>
-            <select
-              value={filters.games[0] ?? ''}
-              onChange={(e) =>
-                onChange({
-                  ...filters,
-                  games: e.target.value ? [e.target.value] : [],
-                })
-              }
-            >
-              <option value="">All</option>
-              {facets.games.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="outlined-field outlined-field-control">
-            <span className="outlined-field-label">Author</span>
-            <select
-              value={filters.authors[0] ?? ''}
-              onChange={(e) =>
-                onChange({
-                  ...filters,
-                  authors: e.target.value ? [e.target.value] : [],
-                })
-              }
-            >
-              <option value="">All</option>
-              {facets.authors.map((a) => (
-                <option key={a} value={a}>
-                  {a}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="outlined-field outlined-field-control">
-            <span className="outlined-field-label">Status</span>
-            <select
-              value={filters.statuses[0] ?? ''}
-              onChange={(e) =>
-                onChange({
-                  ...filters,
-                  statuses: e.target.value
-                    ? [e.target.value as DiskStatus]
-                    : [],
-                })
-              }
-            >
-              <option value="">All</option>
-              {ALL_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {diskStatusLabel(s)}
-                </option>
-              ))}
-            </select>
-          </label>
+          <OutlinedSelect
+            label="Category"
+            value={filters.categories[0] ?? ''}
+            open={openFacet === 'category'}
+            onOpenChange={(open) => facetOpenChange('category', open)}
+            onChange={(next) =>
+              onChange({
+                ...filters,
+                categories: next ? [next] : [],
+              })
+            }
+            options={[
+              { value: '', label: 'All' },
+              ...facets.categories.map((c) => ({ value: c, label: c })),
+            ]}
+          />
+          <OutlinedSelect
+            label="Game"
+            value={filters.games[0] ?? ''}
+            open={openFacet === 'game'}
+            onOpenChange={(open) => facetOpenChange('game', open)}
+            onChange={(next) =>
+              onChange({
+                ...filters,
+                games: next ? [next] : [],
+              })
+            }
+            options={[
+              { value: '', label: 'All' },
+              ...facets.games.map((g) => ({ value: g, label: g })),
+            ]}
+          />
+          <OutlinedSelect
+            label="Author"
+            value={filters.authors[0] ?? ''}
+            open={openFacet === 'author'}
+            onOpenChange={(open) => facetOpenChange('author', open)}
+            onChange={(next) =>
+              onChange({
+                ...filters,
+                authors: next ? [next] : [],
+              })
+            }
+            options={[
+              { value: '', label: 'All' },
+              ...facets.authors.map((a) => ({ value: a, label: a })),
+            ]}
+          />
+          <OutlinedSelect
+            label="Status"
+            value={filters.statuses[0] ?? ''}
+            open={openFacet === 'status'}
+            onOpenChange={(open) => facetOpenChange('status', open)}
+            onChange={(next) =>
+              onChange({
+                ...filters,
+                statuses: next ? [next as DiskStatus] : [],
+              })
+            }
+            options={[
+              { value: '', label: 'All' },
+              ...ALL_STATUSES.map((s) => ({
+                value: s,
+                label: diskStatusLabel(s),
+              })),
+            ]}
+          />
           {hasFacetFilters ? (
             <button
               type="button"
