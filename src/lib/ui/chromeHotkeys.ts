@@ -4,7 +4,7 @@ export type StationSlot = 'engine' | StationId
 
 export type ChromeCommand =
   | { type: 'cycleStation'; direction: -1 | 1 }
-  | { type: 'cycleContentMain'; direction: -1 | 1 }
+  | { type: 'cycleBranchMain'; direction: -1 | 1 }
   | { type: 'cycleContentSub'; direction: -1 | 1 }
   | { type: 'focusSearch' }
   | { type: 'escapeChrome' }
@@ -16,8 +16,10 @@ export interface ChromeHotkeyContext {
   filterPanelOpen: boolean
   /** True when the filter search input currently has DOM focus. */
   searchFocused: boolean
-  /** True when the Content station is active (enables ,/. branch cycling). */
-  contentStationActive: boolean
+  /** True when Content or Mechanics is active (enables ,/. main branch cycling). */
+  branchMainCycleActive: boolean
+  /** True when Content is active (enables </> subbranch cycling). */
+  contentSubCycleActive: boolean
   /** Shift modifier — used with ,/. when the key value is unchanged. */
   shiftKey: boolean
 }
@@ -100,7 +102,7 @@ export function resolveChromeHotkey(
   if (key === '[') return { type: 'cycleStation', direction: -1 }
   if (key === ']') return { type: 'cycleStation', direction: 1 }
 
-  if (ctx.contentStationActive) {
+  if (ctx.contentSubCycleActive) {
     // US layout: Shift+, → '<', Shift+. → '>'. Some layouts keep ',' / '.' with shiftKey.
     if (key === '<' || (key === ',' && ctx.shiftKey)) {
       return { type: 'cycleContentSub', direction: -1 }
@@ -108,8 +110,11 @@ export function resolveChromeHotkey(
     if (key === '>' || (key === '.' && ctx.shiftKey)) {
       return { type: 'cycleContentSub', direction: 1 }
     }
-    if (key === ',') return { type: 'cycleContentMain', direction: -1 }
-    if (key === '.') return { type: 'cycleContentMain', direction: 1 }
+  }
+
+  if (ctx.branchMainCycleActive) {
+    if (key === ',') return { type: 'cycleBranchMain', direction: -1 }
+    if (key === '.') return { type: 'cycleBranchMain', direction: 1 }
   }
 
   return null

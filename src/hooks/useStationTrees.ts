@@ -15,7 +15,7 @@ import type { DisplayNode } from '../lib/selection/visibility'
 import { buildNavigableScreens, type NavScreen } from '../lib/ui/screenCycle'
 import type { AppNavSlot } from '../ui/StationNav'
 
-/** Non-content expandStationToScreens only checks `.length` — used when filters are inactive. */
+/** Flat (non-branch) expandStationToScreens only checks `.length` — used when filters are inactive. */
 const NONEMPTY_STATION_ROWS: DisplayNode[] = [
   {
     node: {
@@ -38,7 +38,7 @@ export function useStationTrees(args: {
   /** When 'all', build cross-station search hits. */
   searchScope: 'section' | 'all'
   filters: FilterCriteria
-  /** When false, non-content cycle stops skip full filtered-tree rebuilds. */
+  /** When false, flat cycle stops skip full filtered-tree rebuilds. */
   filtersActive: boolean
   modsByCodename: ReadonlyMap<string, ModInfo>
   filterSeed: Omit<FilterSeedOptions, 'tagOptions'>
@@ -91,9 +91,26 @@ export function useStationTrees(args: {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedIds via treeSelectionKey
   }, [filters, filterSeed, game, model, modsByCodename, treeSelectionKey])
 
+  const mechanicsDisplayNodes = useMemo(() => {
+    if (!game) return [] as DisplayNode[]
+    const block = model.stations.find((s) => s.stationId === 'mechanics')
+    if (!block) return []
+    return buildFilteredStationDisplayTree(
+      block,
+      game,
+      selectedIds,
+      filters,
+      model,
+      modsByCodename,
+      filterSeed,
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedIds via treeSelectionKey
+  }, [filters, filterSeed, game, model, modsByCodename, treeSelectionKey])
+
   const displayNodes = useMemo(() => {
     if (!game || activeStation === 'engine') return []
     if (activeStation === 'content') return contentDisplayNodes
+    if (activeStation === 'mechanics') return mechanicsDisplayNodes
     const block = model.stations.find((s) => s.stationId === activeStation)
     if (!block) return []
     return buildFilteredStationDisplayTree(
@@ -109,6 +126,7 @@ export function useStationTrees(args: {
   }, [
     activeStation,
     contentDisplayNodes,
+    mechanicsDisplayNodes,
     filters,
     filterSeed,
     game,
@@ -178,9 +196,10 @@ export function useStationTrees(args: {
     if (!game) return [] as NavScreen[]
     return buildNavigableScreens(visibleStations, (id) => {
       if (id === 'content') return contentDisplayNodes
+      if (id === 'mechanics') return mechanicsDisplayNodes
       if (id === activeStation) return displayNodes
       // visibleStations already proved unfiltered visibility; without filters,
-      // non-content cycle entries only need a non-empty tree.
+      // flat cycle entries only need a non-empty tree.
       if (!filtersActive) {
         return NONEMPTY_STATION_ROWS
       }
@@ -196,11 +215,12 @@ export function useStationTrees(args: {
         filterSeed,
       )
     })
-    // When filters are active, non-content trees still need selection fingerprint.
+    // When filters are active, flat trees still need selection fingerprint.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedIds via treeSelectionKey
   }, [
     activeStation,
     contentDisplayNodes,
+    mechanicsDisplayNodes,
     displayNodes,
     filters,
     filtersActive,

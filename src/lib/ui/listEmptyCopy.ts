@@ -3,15 +3,19 @@ import type { DisplayNode } from '../selection/visibility'
 export function listEmptyCopy(args: {
   listNodesLength: number
   isContentStation: boolean
+  isMechanicsStation: boolean
   contentSubBranchesLength: number
   selectedSub: DisplayNode | null
+  selectedMain: DisplayNode | null
   filtersActive: boolean
 }): { title: string; body: string } | null {
   const {
     listNodesLength,
     isContentStation,
+    isMechanicsStation,
     contentSubBranchesLength,
     selectedSub,
+    selectedMain,
     filtersActive,
   } = args
 
@@ -28,6 +32,16 @@ export function listEmptyCopy(args: {
       body: filtersActive
         ? 'Clear Show levels, Size, Author, or Tags to reveal components here.'
         : 'This content type has no components for your engine. Try another Type tab.',
+    }
+  }
+  if (isMechanicsStation && selectedMain && listNodesLength === 0) {
+    return {
+      title: filtersActive
+        ? 'Filters emptied this category'
+        : 'Nothing in this category',
+      body: filtersActive
+        ? 'Clear Show levels, Size, Author, or Tags to reveal components here.'
+        : 'This Mechanics category has no components for your engine. Try another Category.',
     }
   }
   if (filtersActive) {

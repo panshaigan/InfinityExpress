@@ -1,16 +1,29 @@
-import { sortContentSubBranches } from '../contentBranchOrder'
+import {
+  expandBranchScreens,
+  isBranchNavStation,
+  type FlatStationId,
+} from '../stationBranchNav'
 import type { DisplayNode } from '../selection/visibility'
 import type { StationId } from '../xml/schema'
 
 /** One stop in the Previous/Next cycle (Engine excluded). */
 export type NavScreen =
-  | { stationId: Exclude<StationId, 'content'> }
-  | { stationId: 'content'; mainKey: string; subKey: string; subTag: string }
+  | { stationId: FlatStationId }
+  | {
+      stationId: 'content'
+      mainKey: string
+      subKey: string
+      subTag: string
+    }
+  | { stationId: 'mechanics'; mainKey: string }
 
 export function navScreensEqual(a: NavScreen, b: NavScreen): boolean {
   if (a.stationId !== b.stationId) return false
   if (a.stationId === 'content' && b.stationId === 'content') {
     return a.mainKey === b.mainKey && a.subKey === b.subKey
+  }
+  if (a.stationId === 'mechanics' && b.stationId === 'mechanics') {
+    return a.mainKey === b.mainKey
   }
   return true
 }
@@ -20,20 +33,8 @@ export function expandStationToScreens(
   stationId: StationId,
   displayNodes: DisplayNode[],
 ): NavScreen[] {
-  if (stationId === 'content') {
-    const out: NavScreen[] = []
-    for (const main of displayNodes) {
-      for (const sub of sortContentSubBranches(main.children)) {
-        if (sub.children.length === 0) continue
-        out.push({
-          stationId: 'content',
-          mainKey: main.node.key,
-          subKey: sub.node.key,
-          subTag: sub.node.tag,
-        })
-      }
-    }
-    return out
+  if (isBranchNavStation(stationId)) {
+    return expandBranchScreens(stationId, displayNodes)
   }
   if (displayNodes.length === 0) return []
   return [{ stationId }]

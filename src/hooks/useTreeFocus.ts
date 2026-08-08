@@ -7,7 +7,7 @@ import {
   findPathToComponent,
 } from '../lib/selection/displayTreeQuery'
 import { displaySelectionState } from '../lib/selection/selectionEngine'
-import { preferredSub } from './useContentBranchNav'
+import { preferredContentSub } from '../lib/stationBranchNav'
 import type { AppNavSlot } from '../ui/StationNav'
 import type { RelationIndex } from '../lib/selection/relations'
 
@@ -19,6 +19,7 @@ export function useTreeFocus(args: {
   activeStation: AppNavSlot
   setActiveStation: (slot: AppNavSlot) => void
   isContentStation: boolean
+  isMechanicsStation: boolean
   contentSubTag: string | null
   setContentMainKey: (key: string | null) => void
   setContentSubKey: (key: string | null) => void
@@ -33,6 +34,7 @@ export function useTreeFocus(args: {
     activeStation,
     setActiveStation,
     isContentStation,
+    isMechanicsStation,
     contentSubTag,
     setContentMainKey,
     setContentSubKey,
@@ -70,11 +72,22 @@ export function useTreeFocus(args: {
         setFocusedKey(path[path.length - 1].node.key)
         setFocusedComponentId(null)
       } else if (path && path.length === 1) {
-        const sub = preferredSub(path[0], contentSubTag)
+        const sub = preferredContentSub(path[0], contentSubTag)
         setContentMainKey(path[0].node.key)
         setContentSubKey(sub?.node.key ?? null)
         if (!contentSubTag && sub) setContentSubTag(sub.node.tag)
         setFocusedKey(path[0].node.key)
+        setFocusedComponentId(null)
+      }
+      setPendingFocusId(null)
+      return
+    }
+    if (isMechanicsStation) {
+      const path = findPathToComponent(displayNodes, pendingFocusId)
+      if (path && path.length >= 1) {
+        setContentMainKey(path[0].node.key)
+        setContentSubKey(null)
+        setFocusedKey(path[path.length - 1].node.key)
         setFocusedComponentId(null)
       }
       setPendingFocusId(null)
@@ -90,6 +103,7 @@ export function useTreeFocus(args: {
     displayNodes,
     pendingFocusId,
     isContentStation,
+    isMechanicsStation,
     contentSubTag,
     setContentMainKey,
     setContentSubKey,

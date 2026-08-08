@@ -85,6 +85,18 @@ describe('expandStationToScreens', () => {
       },
     ])
   })
+
+  it('expands mechanics as first-level categories, skipping empty ones', () => {
+    const tree = [
+      branch('warriors', 'warriors', [component('w1')]),
+      branch('rogues', 'rogues', []),
+      branch('stats', 'stats', [component('s1')]),
+    ]
+    expect(expandStationToScreens('mechanics', tree)).toEqual([
+      { stationId: 'mechanics', mainKey: 'warriors' },
+      { stationId: 'mechanics', mainKey: 'stats' },
+    ])
+  })
 })
 
 describe('buildNavigableScreens', () => {
@@ -183,6 +195,21 @@ describe('navScreensEqual', () => {
       navScreensEqual(
         { stationId: 'content', mainKey: 'a', subKey: 'b', subTag: 'npc' },
         { stationId: 'content', mainKey: 'a', subKey: 'c', subTag: 'npc' },
+      ),
+    ).toBe(false)
+  })
+
+  it('matches mechanics by main key', () => {
+    expect(
+      navScreensEqual(
+        { stationId: 'mechanics', mainKey: 'warriors' },
+        { stationId: 'mechanics', mainKey: 'warriors' },
+      ),
+    ).toBe(true)
+    expect(
+      navScreensEqual(
+        { stationId: 'mechanics', mainKey: 'warriors' },
+        { stationId: 'mechanics', mainKey: 'rogues' },
       ),
     ).toBe(false)
   })

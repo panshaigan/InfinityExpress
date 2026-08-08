@@ -7,7 +7,7 @@ Keyboard behaviour for the selection UI. Command resolution is pure TypeScript u
 | `src/lib/ui/treeKeyboard.ts` | Flatten visible rows; map keys → tree commands |
 | `src/lib/ui/chromeHotkeys.ts` | Station cycle, jump-to-search, Esc chrome |
 | `src/ui/ComponentTree.tsx` | Apply tree commands; ARIA tree + roving tabindex |
-| `src/App.tsx` / `FiltersStrip` / `ContentBranchNav` | Apply chrome / tablist commands |
+| `src/App.tsx` / `FiltersStrip` / `StationBranchNav` | Apply chrome / tablist commands |
 
 ---
 
@@ -51,13 +51,13 @@ These work globally except where noted. Station and most chrome keys are ignored
 
 ## Content station branches
 
-When focus is on a Content main- or sub-branch tab:
+When focus is on a Content main- or sub-branch menu:
 
 | Key | Action |
 | --- | --- |
-| `←` / `→` (also `↑` / `↓`) | Move to the previous / next tab in that row (wraps) |
+| `←` / `→` (also `↑` / `↓`) | Move to the previous / next option in that menu (wraps) |
 
-While the Content station is active (focus need not be on the tabs; ignored while typing in a text field):
+While the Content station is active (focus need not be on the menus; ignored while typing in a text field):
 
 | Key | Action |
 | --- | --- |
@@ -67,6 +67,17 @@ While the Content station is active (focus need not be on the tabs; ignored whil
 | `Shift+.` / `>` | Next subbranch (content type) |
 
 Tree `←` / `→` only apply when the component tree has focus, so the two do not conflict.
+
+## Mechanics station branches
+
+While the Mechanics station is active (ignored while typing in a text field):
+
+| Key | Action |
+| --- | --- |
+| `,` | Previous category (`warriors`, `rogues`, …) |
+| `.` | Next category |
+
+Mechanics has no subbranch level, so `<` / `>` do nothing here.
 
 ### Mouse (component tree)
 

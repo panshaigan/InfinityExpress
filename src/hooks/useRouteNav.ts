@@ -70,6 +70,10 @@ export function useRouteNav(args: {
         subTag: contentSubTag ?? '',
       }
     }
+    if (activeStation === 'mechanics') {
+      if (contentMainKey == null) return null
+      return { stationId: 'mechanics', mainKey: contentMainKey }
+    }
     return { stationId: activeStation }
   }, [activeStation, contentMainKey, contentSubKey, contentSubTag, game])
 
@@ -84,6 +88,9 @@ export function useRouteNav(args: {
       setContentMainKey(screen.mainKey)
       setContentSubKey(screen.subKey)
       setContentSubTag(screen.subTag)
+    } else if (screen.stationId === 'mechanics') {
+      setContentMainKey(screen.mainKey)
+      setContentSubKey(null)
     }
     clearFocus()
   }

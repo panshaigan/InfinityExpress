@@ -18,15 +18,17 @@ export function useChromeHotkeys(args: {
   showDetail: boolean
   activeStation: AppNavSlot
   visibleStations: StationId[]
-  contentMainBranches: DisplayNode[]
-  contentSubBranches: DisplayNode[]
-  contentMainKey: string | null
-  contentSubKey: string | null
+  mainBranches: DisplayNode[]
+  subBranches: DisplayNode[]
+  mainKey: string | null
+  subKey: string | null
+  branchMainCycleActive: boolean
+  contentSubCycleActive: boolean
   onToggleRailCollapsed: () => void
   onToggleDetailCollapsed: () => void
   onOpenKeyboardHelp: () => void
-  onSelectContentMain: (key: string) => void
-  onSelectContentSub: (key: string) => void
+  onSelectMain: (key: string) => void
+  onSelectSub: (key: string) => void
   onApplyStationSlot: (slot: StationSlot) => void
   onFocusMainDisplay: () => void
 }) {
@@ -35,15 +37,17 @@ export function useChromeHotkeys(args: {
     showDetail,
     activeStation,
     visibleStations,
-    contentMainBranches,
-    contentSubBranches,
-    contentMainKey,
-    contentSubKey,
+    mainBranches,
+    subBranches,
+    mainKey,
+    subKey,
+    branchMainCycleActive,
+    contentSubCycleActive,
     onToggleRailCollapsed,
     onToggleDetailCollapsed,
     onOpenKeyboardHelp,
-    onSelectContentMain,
-    onSelectContentSub,
+    onSelectMain,
+    onSelectSub,
     onApplyStationSlot,
     onFocusMainDisplay,
   } = args
@@ -102,7 +106,8 @@ export function useChromeHotkeys(args: {
         isTypingTarget: isTypingTarget(e.target),
         filterPanelOpen: false,
         searchFocused: searchEl != null && document.activeElement === searchEl,
-        contentStationActive: activeStation === 'content',
+        branchMainCycleActive,
+        contentSubCycleActive,
         shiftKey: e.shiftKey,
       })
       if (!cmd) return
@@ -122,25 +127,25 @@ export function useChromeHotkeys(args: {
         return
       }
 
-      if (cmd.type === 'cycleContentMain') {
-        if (contentMainBranches.length === 0) return
+      if (cmd.type === 'cycleBranchMain') {
+        if (mainBranches.length === 0) return
         e.preventDefault()
-        const keys = contentMainBranches.map((b) => b.node.key)
-        const currentIndex = contentMainKey != null ? keys.indexOf(contentMainKey) : 0
+        const keys = mainBranches.map((b) => b.node.key)
+        const currentIndex = mainKey != null ? keys.indexOf(mainKey) : 0
         const next = cycleTabIndex(keys.length, currentIndex, cmd.direction)
         const nextKey = keys[next]
-        if (nextKey) onSelectContentMain(nextKey)
+        if (nextKey) onSelectMain(nextKey)
         return
       }
 
       if (cmd.type === 'cycleContentSub') {
-        if (contentSubBranches.length === 0) return
+        if (subBranches.length === 0) return
         e.preventDefault()
-        const keys = contentSubBranches.map((b) => b.node.key)
-        const currentIndex = contentSubKey != null ? keys.indexOf(contentSubKey) : 0
+        const keys = subBranches.map((b) => b.node.key)
+        const currentIndex = subKey != null ? keys.indexOf(subKey) : 0
         const next = cycleTabIndex(keys.length, currentIndex, cmd.direction)
         const nextKey = keys[next]
-        if (nextKey) onSelectContentSub(nextKey)
+        if (nextKey) onSelectSub(nextKey)
       }
     }
 
@@ -151,15 +156,17 @@ export function useChromeHotkeys(args: {
     keyboardHelpOpen,
     showDetail,
     visibleStations,
-    contentMainBranches,
-    contentSubBranches,
-    contentMainKey,
-    contentSubKey,
+    mainBranches,
+    subBranches,
+    mainKey,
+    subKey,
+    branchMainCycleActive,
+    contentSubCycleActive,
     onToggleRailCollapsed,
     onToggleDetailCollapsed,
     onOpenKeyboardHelp,
-    onSelectContentMain,
-    onSelectContentSub,
+    onSelectMain,
+    onSelectSub,
     onApplyStationSlot,
     onFocusMainDisplay,
   ])

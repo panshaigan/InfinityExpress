@@ -27,7 +27,8 @@ describe('resolveChromeHotkey', () => {
     isTypingTarget: false,
     filterPanelOpen: false,
     searchFocused: false,
-    contentStationActive: false,
+    branchMainCycleActive: false,
+    contentSubCycleActive: false,
     shiftKey: false,
   }
 
@@ -66,13 +67,17 @@ describe('resolveChromeHotkey', () => {
   })
 
   it('cycles Content branches with ,/. and Shift variants', () => {
-    const content = { ...idle, contentStationActive: true }
+    const content = {
+      ...idle,
+      branchMainCycleActive: true,
+      contentSubCycleActive: true,
+    }
     expect(resolveChromeHotkey(',', content)).toEqual({
-      type: 'cycleContentMain',
+      type: 'cycleBranchMain',
       direction: -1,
     })
     expect(resolveChromeHotkey('.', content)).toEqual({
-      type: 'cycleContentMain',
+      type: 'cycleBranchMain',
       direction: 1,
     })
     expect(resolveChromeHotkey('<', content)).toEqual({
@@ -88,6 +93,28 @@ describe('resolveChromeHotkey', () => {
       direction: -1,
     })
     expect(resolveChromeHotkey('.', idle)).toBeNull()
+  })
+
+  it('cycles Mechanics categories with ,/. but not sub keys', () => {
+    const mechanics = {
+      ...idle,
+      branchMainCycleActive: true,
+      contentSubCycleActive: false,
+    }
+    expect(resolveChromeHotkey(',', mechanics)).toEqual({
+      type: 'cycleBranchMain',
+      direction: -1,
+    })
+    expect(resolveChromeHotkey('.', mechanics)).toEqual({
+      type: 'cycleBranchMain',
+      direction: 1,
+    })
+    expect(resolveChromeHotkey('<', mechanics)).toBeNull()
+    expect(resolveChromeHotkey('>', mechanics)).toBeNull()
+    expect(resolveChromeHotkey(',', { ...mechanics, shiftKey: true })).toEqual({
+      type: 'cycleBranchMain',
+      direction: -1,
+    })
   })
 })
 

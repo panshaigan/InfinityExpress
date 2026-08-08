@@ -47,7 +47,7 @@ import { EngineStation } from './ui/EngineStation'
 import { RailCollapseButton } from './ui/RailCollapseButton'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
-import { ContentBranchNav } from './ui/ContentBranchNav'
+import { StationBranchNav } from './ui/StationBranchNav'
 import { StationListToolbar } from './ui/StationListToolbar'
 import { GlobalSearchList } from './ui/GlobalSearchList'
 import { GlobalSearchToolbar } from './ui/GlobalSearchToolbar'
@@ -62,7 +62,7 @@ import { AppTopBar } from './ui/AppTopBar'
 import { DetailPane } from './ui/DetailPane'
 import { countSelectedMods } from './lib/mods/loadMods'
 import { useStationTrees } from './hooks/useStationTrees'
-import { useContentBranchNav } from './hooks/useContentBranchNav'
+import { useBranchNav } from './hooks/useBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
 import { useLevelPresets } from './hooks/useLevelPresets'
 import { useChromeHotkeys } from './hooks/useChromeHotkeys'
@@ -153,14 +153,16 @@ export default function App() {
       filterSeed,
     })
 
-  const content = useContentBranchNav({
+  const branchNav = useBranchNav({
     activeStation,
     displayNodes,
     onClearFocus: clearFocus,
   })
 
   const {
+    isBranchNavStation,
     isContentStation,
+    isMechanicsStation,
     contentMainKey,
     contentSubKey,
     contentSubTag,
@@ -169,12 +171,13 @@ export default function App() {
     setContentSubTag,
     contentMainBranches,
     contentSubBranches,
+    selectedMain,
     selectedSub,
     listNodes,
     treeKey,
     selectContentMain,
     selectContentSub,
-  } = content
+  } = branchNav
 
   const focus = useTreeFocus({
     model,
@@ -184,6 +187,7 @@ export default function App() {
     activeStation,
     setActiveStation,
     isContentStation,
+    isMechanicsStation,
     contentSubTag,
     setContentMainKey,
     setContentSubKey,
@@ -230,15 +234,19 @@ export default function App() {
       listEmptyCopy({
         listNodesLength: listNodes.length,
         isContentStation,
+        isMechanicsStation,
         contentSubBranchesLength: contentSubBranches.length,
         selectedSub,
+        selectedMain,
         filtersActive,
       }),
     [
       listNodes.length,
       isContentStation,
+      isMechanicsStation,
       contentSubBranches.length,
       selectedSub,
+      selectedMain,
       filtersActive,
     ],
   )
@@ -449,15 +457,17 @@ export default function App() {
     showDetail,
     activeStation,
     visibleStations,
-    contentMainBranches,
-    contentSubBranches,
-    contentMainKey,
-    contentSubKey,
+    mainBranches: contentMainBranches,
+    subBranches: contentSubBranches,
+    mainKey: contentMainKey,
+    subKey: contentSubKey,
+    branchMainCycleActive: isBranchNavStation,
+    contentSubCycleActive: isContentStation,
     onToggleRailCollapsed: toggleRailCollapsed,
     onToggleDetailCollapsed: toggleDetailCollapsed,
     onOpenKeyboardHelp: openKeyboardHelp,
-    onSelectContentMain: selectContentMain,
-    onSelectContentSub: selectContentSub,
+    onSelectMain: selectContentMain,
+    onSelectSub: selectContentSub,
     onApplyStationSlot: applyStationSlot,
     onFocusMainDisplay: focusMainDisplay,
   })
@@ -624,8 +634,10 @@ export default function App() {
                         onFoldAll={onFoldAll}
                         onUnfoldAll={onUnfoldAll}
                       >
-                        {isContentStation ? (
-                          <ContentBranchNav
+                        {activeStation === 'content' ||
+                        activeStation === 'mechanics' ? (
+                          <StationBranchNav
+                            station={activeStation}
                             mainBranches={contentMainBranches}
                             subBranches={contentSubBranches}
                             mainKey={contentMainKey}
