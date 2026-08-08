@@ -4,7 +4,7 @@ This document describes **runtime behaviour** of the selection UI. For XML tag/a
 
 ### Runtime / target stack
 
-Milestone 1 runs in the browser via **Vite + React 18 + TypeScript**. The product target is **Tauri 2 + TypeScript + React**: the same React app in a Tauri webview, with selection engines and keyboard command resolvers kept in pure TypeScript under `src/lib/` (including `src/lib/ui/` for portable hotkey → command mapping).
+Milestone 1 runs in the browser via **Vite + React 18 + TypeScript**, and the same UI loads in a **Tauri 2** webview (`npm run tauri:dev`). Selection engines and keyboard command resolvers stay in pure TypeScript under `src/lib/` (including `src/lib/ui/` for portable hotkey → command mapping). Native FS / menus / installers are still later work.
 
 Primary code:
 
@@ -481,7 +481,7 @@ Persistence is React state only for now; the serializable shape in `src/lib/pres
 - **Real** mod download / update / remove-from-disk (UI stubs exist on the Mods phase)  
 - Invoking WeiDU (Install phase nav is visible but disabled)  
 - User-supplied XML overrides  
-- Tauri 2 shell wiring (window, FS, native menus) — UI and `src/lib/` logic are already oriented for that host
+- Tauri 2 native APIs (folder dialogs, FS, menus, installers) — shell boots via `npm run tauri:dev`; deeper wiring is later
 
 ### Mods phase (UI)
 

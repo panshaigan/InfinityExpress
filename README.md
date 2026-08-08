@@ -11,22 +11,20 @@ Station-based component picker driven by curated data:
 
 ## Tech stack
 
-**Current (Milestone 1):**
+**Current (Milestone 1 + Tauri shell):**
 
 - React 18
 - TypeScript
-- Vite 5
+- Vite
 - Vitest + jsdom
-
-**Target desktop host:**
-
-- **Tauri 2 + TypeScript + React** — same React UI and pure `src/lib/` domain/keyboard logic in a Tauri webview; native shell (window, FS, menus) comes later.
+- **Tauri 2** (`src-tauri/`) — same React UI in a native webview; FS / menus / installers come later
 
 Domain and keyboard command resolution stay in pure TypeScript under `src/lib/` so the web and Tauri hosts share behaviour.
 
 ## Requirements
 
-Node.js 18+
+- Node.js 18+
+- For the desktop shell: Rust (rustup), MSVC C++ Build Tools, WebView2 (usually already on Windows 10/11)
 
 ## Setup
 
@@ -35,10 +33,18 @@ npm install
 npm run dev
 ```
 
+Desktop shell (starts Vite, then opens the native window):
+
+```bash
+npm run tauri:dev
+```
+
 | Command | Description |
 | --- | --- |
-| `npm run dev` | Start the Vite development server |
-| `npm run build` | Typecheck (`tsc --noEmit`) then production build |
+| `npm run dev` | Start the Vite development server (browser) |
+| `npm run tauri:dev` | Start Vite + Tauri desktop window |
+| `npm run tauri:build` | Production desktop bundle |
+| `npm run build` | Typecheck (`tsc --noEmit`) then production web build |
 | `npm run preview` | Serve the production build locally |
 | `npm test` | Run the test suite once |
 | `npm run test:watch` | Run Vitest in watch mode |
