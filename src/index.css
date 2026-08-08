@@ -330,6 +330,8 @@ body {
 }
 
 .station-nav-track {
+  /* Bridge padding + 1px transparent border so segments meet between stops. */
+  --station-track-bridge: calc(0.35rem + 1px);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -338,35 +340,28 @@ body {
   flex-shrink: 0;
   width: 0.75rem;
   align-self: stretch;
-}
-
-.station-nav-track::before,
-.station-nav-track::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  width: 1.5px;
-  transform: translateX(-50%);
-  background: color-mix(in srgb, var(--line) 85%, transparent);
-  pointer-events: none;
+  overflow: visible;
 }
 
 .station-nav-track::before {
-  top: 0;
-  bottom: 50%;
-}
-
-.station-nav-track::after {
-  top: 50%;
-  bottom: 0;
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(-1 * var(--station-track-bridge));
+  bottom: calc(-1 * var(--station-track-bridge));
+  width: 1.5px;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--muted) 42%, var(--line));
+  pointer-events: none;
+  z-index: 0;
 }
 
 .station-nav-scroll > button:first-child .station-nav-track::before {
-  content: none;
+  top: 50%;
 }
 
-.station-nav-scroll > button:last-child .station-nav-track::after {
-  content: none;
+.station-nav-scroll > button:last-child .station-nav-track::before {
+  bottom: 50%;
 }
 
 .station-nav-dot {
@@ -378,7 +373,7 @@ body {
   width: 0.55rem;
   height: 0.55rem;
   border-radius: 50%;
-  border: 1.5px solid color-mix(in srgb, var(--line) 90%, var(--muted));
+  border: 1.5px solid color-mix(in srgb, var(--muted) 48%, var(--line));
   background: var(--panel);
   box-sizing: border-box;
   transition:
@@ -427,6 +422,7 @@ body {
 
 .station-nav.collapsed .station-nav-track {
   width: 0.6rem;
+  --station-track-bridge: calc(0.35rem + 1px);
 }
 
 .station-nav.collapsed .station-nav-dot {
@@ -3023,6 +3019,10 @@ body.is-resizing-detail * {
   .station-nav button:not(.station-nav-collapse) {
     padding: 0.3rem 0.3rem 0.3rem 0.2rem;
     font-size: 0.78rem;
+  }
+
+  .station-nav .station-nav-track {
+    --station-track-bridge: calc(0.3rem + 1px);
   }
 
   .station-nav.collapsed button:not(.station-nav-collapse) {
