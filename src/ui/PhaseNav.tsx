@@ -25,11 +25,6 @@ export function PhaseNav({ phase, onPhaseChange }: Props) {
           const active = phase === item.id
           return (
             <li key={item.id} className="phase-nav-item">
-              {index > 0 ? (
-                <span className="phase-nav-sep" aria-hidden="true">
-                  /
-                </span>
-              ) : null}
               <button
                 type="button"
                 className={`phase-nav-btn${active ? ' active' : ''}${

@@ -1,3 +1,5 @@
+import { notifyPathsChanged } from './pathPrefsEvents'
+
 export type GameFolderKey = 'bg1' | 'bg2' | 'iwd' | 'pst'
 
 export type GameFolderPaths = Record<GameFolderKey, string>
@@ -37,6 +39,7 @@ export function readGameFolderPaths(): GameFolderPaths {
 export function writeGameFolderPaths(paths: GameFolderPaths): void {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(paths))
+    notifyPathsChanged()
   } catch {
     /* private mode / blocked storage */
   }

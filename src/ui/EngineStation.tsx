@@ -1,12 +1,13 @@
-import { useState } from 'react'
-import { pickDirectory } from '../lib/desktop/fsDialogs'
+import { useEffect, useState } from 'react'
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import {
   readGameFolderPaths,
   writeGameFolderPaths,
   type GameFolderKey,
 } from '../lib/ui/gameFolderPrefs'
+import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
+import { DirectoryField } from './DirectoryField'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
 const GAME_BLURBS: Record<SelectedGame, string> = {
@@ -58,17 +59,20 @@ export function EngineStation({
   const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
   const visibleFolders = game ? FOLDERS_BY_GAME[game] : []
 
+  useEffect(() => {
+    function sync() {
+      setFolderPaths(readGameFolderPaths())
+    }
+    window.addEventListener(PATHS_CHANGED_EVENT, sync)
+    return () => window.removeEventListener(PATHS_CHANGED_EVENT, sync)
+  }, [])
+
   function setFolderPath(key: GameFolderKey, value: string) {
     setFolderPaths((prev) => {
       const next = { ...prev, [key]: value }
       writeGameFolderPaths(next)
       return next
     })
-  }
-
-  async function browseFolder(key: GameFolderKey) {
-    const path = await pickDirectory(`Select ${GAME_LABELS[key]} folder`)
-    if (path) setFolderPath(key, path)
   }
 
   return (
@@ -113,31 +117,15 @@ export function EngineStation({
             className={`engine-row${visibleFolders.length === 1 ? ' engine-row-span' : ''}`}
           >
             {visibleFolders.map((key) => (
-              <div key={key} className="engine-folder-field">
-                <label className="engine-folder-label" htmlFor={`game-folder-${key}`}>
-                  {GAME_LABELS[key]}
-                </label>
-                <div className="engine-folder-controls">
-                  <input
-                    id={`game-folder-${key}`}
-                    type="text"
-                    className="engine-folder-input"
-                    value={folderPaths[key]}
-                    onChange={(e) => setFolderPath(key, e.target.value)}
-                    placeholder="Select game folder…"
-                    spellCheck={false}
-                    autoComplete="off"
-                  />
-                  <button
-                    type="button"
-                    className="btn secondary"
-                    onClick={() => void browseFolder(key)}
-                    title="Choose game folder"
-                  >
-                    Browse
-                  </button>
-                </div>
-              </div>
+              <DirectoryField
+                key={key}
+                id={`game-folder-${key}`}
+                label={GAME_LABELS[key]}
+                value={folderPaths[key]}
+                onChange={(value) => setFolderPath(key, value)}
+                placeholder="Select game folder…"
+                browseTitle={`Select ${GAME_LABELS[key]} folder`}
+              />
             ))}
           </div>
         </div>

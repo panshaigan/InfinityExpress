@@ -107,6 +107,15 @@ body {
   font-weight: 700;
 }
 
+.top-bar-settings {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+  line-height: 0;
+}
+
+
 .selection-presets-bar {
   position: relative;
   display: flex;
@@ -3440,6 +3449,28 @@ body.is-resizing-detail * {
   color: color-mix(in srgb, var(--ink) 90%, var(--accent));
 }
 
+/* —— Settings (reuses keyboard-help chrome) —— */
+
+.settings-dialog {
+  width: min(36rem, 100%);
+  max-height: min(40rem, 90vh);
+}
+
+.settings-section {
+  margin-top: 1.15rem;
+}
+
+.settings-section:first-of-type {
+  margin-top: 0.35rem;
+}
+
+.settings-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+
 /* —— Confirm dialog —— */
 
 .confirm-dialog-backdrop {
@@ -3785,13 +3816,6 @@ body.is-resizing-detail * {
   display: inline-flex;
   align-items: center;
   gap: 0.15rem;
-}
-
-.phase-nav-sep {
-  color: var(--muted);
-  opacity: 0.45;
-  font-size: 0.85rem;
-  user-select: none;
 }
 
 .phase-nav-btn {

@@ -55,6 +55,7 @@ import { FiltersStrip } from './ui/FiltersStrip'
 import { KeyboardHelp } from './ui/KeyboardHelp'
 import { RouteGuideTip } from './ui/RouteGuideTip'
 import { RouteCaughtUp } from './ui/RouteCaughtUp'
+import { SettingsDialog } from './ui/SettingsDialog'
 import { ExportDialog } from './ui/ExportDialog'
 import { ConfirmDialog } from './ui/ConfirmDialog'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
@@ -94,6 +95,7 @@ export default function App() {
     ),
   )
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const [showRouteTip, setShowRouteTip] = useState(() => !readRouteTipDismissed())
   const [railCollapsed, setRailCollapsed] = useState(() => readRailCollapsed())
   const [detailCollapsed, setDetailCollapsed] = useState(() => readDetailCollapsed())
@@ -519,6 +521,7 @@ export default function App() {
   )
 
   const openKeyboardHelp = useCallback(() => setKeyboardHelpOpen(true), [])
+  const openSettings = useCallback(() => setSettingsOpen(true), [])
 
   useChromeHotkeys({
     keyboardHelpOpen,
@@ -564,6 +567,8 @@ export default function App() {
         onDelete={presets.deleteSelectionPreset}
         keyboardHelpOpen={keyboardHelpOpen}
         onOpenKeyboardHelp={openKeyboardHelp}
+        settingsOpen={settingsOpen}
+        onOpenSettings={openSettings}
         onExport={handleExport}
       />
 
@@ -819,6 +824,10 @@ export default function App() {
         open={keyboardHelpOpen}
         phase={appPhase}
         onClose={() => setKeyboardHelpOpen(false)}
+      />
+      <SettingsDialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
       />
       <ExportDialog
         open={exportOpen}

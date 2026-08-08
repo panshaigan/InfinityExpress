@@ -95,7 +95,7 @@ If `engine` / `level` is missing after inheritance, engine is treated as empty â
 
 ## Stations (UI)
 
-First stop is the **Engine** picker (not an XML station). After a game is chosen, **Unmodded game path** inputs appear for the relevant install folders (`bg1` / `bg2` / `iwd` / `pst`). Browse uses a native directory dialog in the desktop app; paths are remembered in `localStorage` (`src/lib/ui/gameFolderPrefs.ts`).
+First stop is the **Engine** picker (not an XML station). After a game is chosen, **Unmodded game path** inputs appear for the relevant install folders (`bg1` / `bg2` / `iwd` / `pst`). Browse uses a native directory dialog in the desktop app; paths are remembered in `localStorage` (`src/lib/ui/gameFolderPrefs.ts`). The top-bar **Settings** dialog edits the same game-folder prefs plus mods-download and backup directories (`src/lib/ui/appDirPrefs.ts`).
 
 Content stations (nav order):
 
