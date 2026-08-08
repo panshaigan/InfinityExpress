@@ -1702,8 +1702,8 @@ body.is-resizing-detail * {
   gap: 0.85rem;
 }
 
-.level-row-span {
-  grid-template-columns: 1fr;
+.level-row-triple {
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .level-difficulty-rule {

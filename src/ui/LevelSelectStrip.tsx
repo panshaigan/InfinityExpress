@@ -18,11 +18,10 @@ interface Props {
   compact?: boolean
 }
 
-/** Engine page rows: pair / full-width / pair. */
+/** Engine page rows: Fixes/Restorations, then Vanilla+/Well blended/Extended. */
 const LADDER_ROWS: LadderLevel[][] = [
   ['fixes', 'restoration'],
-  ['vanillaPlus'],
-  ['blendWell', 'extended'],
+  ['vanillaPlus', 'blendWell', 'extended'],
 ]
 
 function LevelCard({
@@ -96,7 +95,6 @@ export function LevelSelectStrip({
             <LevelCard
               key={token}
               label={LEVEL_LABELS[token]}
-              hint={LEVEL_HINTS[token]}
               checked={difficultyChecked[token]}
               enabled={enabled}
               compact
@@ -118,7 +116,7 @@ export function LevelSelectStrip({
         {LADDER_ROWS.map((row) => (
           <div
             key={row.join('-')}
-            className={`level-row${row.length === 1 ? ' level-row-span' : ''}`}
+            className={`level-row${row.length === 3 ? ' level-row-triple' : ''}`}
           >
             {row.map((level) => (
               <LevelCard
@@ -144,7 +142,6 @@ export function LevelSelectStrip({
           <LevelCard
             key={token}
             label={LEVEL_LABELS[token]}
-            hint={LEVEL_HINTS[token]}
             checked={difficultyChecked[token]}
             enabled={enabled}
             compact={false}

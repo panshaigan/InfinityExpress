@@ -30,11 +30,10 @@ export const LEVEL_LABELS: Record<string, string> = {
 export const LEVEL_HINTS: Record<string, string> = {
   fixes: 'Stability first',
   restoration: 'Cut content returned',
-  vanillaPlus: 'Familiar, plus polish',
-  blendWell: 'Fits the base game',
-  extended: 'Bigger departures',
-  lowerDifficulty: 'Easier encounters',
-  higherDifficulty: 'Harder encounters',
+  vanillaPlus:
+    'QoL, subtle additions and corrections in line with vanilla content',
+  blendWell: 'Expanded but not overwhelming',
+  extended: 'A lot of additional content and changes',
 }
 
 /** Levels shown as filter chips (restructure shares Well blended). */
