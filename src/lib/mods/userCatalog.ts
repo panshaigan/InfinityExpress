@@ -16,6 +16,8 @@ export interface StoredModEntry {
   url: string
   readme: string
   game: string
+  useMaster: boolean
+  useAssets: boolean
   release: string
   version: string
   sizeBytes: number | null
@@ -54,6 +56,8 @@ function storedToWorking(entry: StoredModEntry): WorkingMod {
     url: entry.url,
     readme: entry.readme,
     game: entry.game,
+    useMaster: entry.useMaster ?? false,
+    useAssets: entry.useAssets ?? false,
     release: entry.release,
     version: entry.version,
     sizeBytes: entry.sizeBytes,
@@ -81,6 +85,8 @@ export function mergeBaseIntoWorkingCopy(
   for (const row of existing ?? []) {
     byCode.set(row.codename, {
       ...row,
+      useMaster: row.useMaster ?? false,
+      useAssets: row.useAssets ?? false,
       overlays: row.overlays ?? {},
       diskStatus: row.diskStatus ?? 'not_present',
     })
@@ -218,6 +224,8 @@ export function addUserMod(
       url: input.url.trim(),
       readme: input.readme.trim(),
       game: input.game.trim(),
+      useMaster: !!input.useMaster,
+      useAssets: !!input.useAssets,
       release: input.release.trim(),
       version: input.version.trim(),
       sizeBytes: input.sizeBytes,
@@ -264,6 +272,8 @@ export function updateUserMod(
     url: input.url.trim(),
     readme: input.readme.trim(),
     game: input.game.trim(),
+    useMaster: !!input.useMaster,
+    useAssets: !!input.useAssets,
     release: input.release.trim(),
     version: input.version.trim(),
     sizeBytes: input.sizeBytes,

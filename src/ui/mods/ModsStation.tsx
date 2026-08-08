@@ -5,6 +5,13 @@ import {
   useState,
   type CSSProperties,
 } from 'react'
+import { useModAcquireJob } from '../../hooks/useModAcquireJob'
+import {
+  acquireButtonKind,
+  acquireButtonLabel,
+  modsNeedingAcquire,
+} from '../../lib/mods/acquireTargets'
+import { serializeModsCsv } from '../../lib/mods/exportModsCsv'
 import type { WorkingMod } from '../../lib/mods/loadMods'
 import {
   collectModsFacetOptions,
@@ -15,7 +22,10 @@ import {
   type ModsTableFilters,
 } from '../../lib/mods/modsTable'
 import type { UserModInput } from '../../lib/mods/userCatalog'
+import { saveTextFile, isDesktopApp } from '../../lib/desktop/fsDialogs'
 import { ConfirmDialog } from '../ConfirmDialog'
+import { AcquireJobDialog } from './AcquireJobDialog'
+import { AcquireSizeConfirmDialog } from './AcquireSizeConfirmDialog'
 import { ModDetail } from './ModDetail'
 import { ModEditorDialog } from './ModEditorDialog'
 import { ModsTable } from './ModsTable'
@@ -38,10 +48,12 @@ interface Props {
   onAddMod: (input: UserModInput) => void
   onEditMod: (codename: string, input: UserModInput) => void
   onDeleteMod: (codename: string) => void
-  onStubAction: (
-    codenames: string[],
-    kind: 'download' | 'update' | 'check',
+  onSetDiskStatus: (codename: string, status: WorkingMod['diskStatus']) => void
+  onApplyAcquireSuccess: (
+    codename: string,
+    overlays: { version: string; release: string; sizeBytes: number | null },
   ) => void
+  onRefreshDiskStatus: () => Promise<void>
   onRemoveFromDisk: (
     codenames: string[],
   ) => Promise<{ removed: string[]; errors: string[] }>
@@ -59,7 +71,9 @@ export function ModsStation({
   onAddMod,
   onEditMod,
   onDeleteMod,
-  onStubAction,
+  onSetDiskStatus,
+  onApplyAcquireSuccess,
+  onRefreshDiskStatus,
   onRemoveFromDisk,
 }: Props) {
   const journeyLocked = !!journey?.locked
@@ -70,7 +84,7 @@ export function ModsStation({
   const [sortDir, setSortDir] = useState<ModsSortDir>('asc')
   const [selected, setSelected] = useState<Set<string>>(() => new Set())
   const [focusedCodename, setFocusedCodename] = useState<string | null>(null)
-  const [stubNotice, setStubNotice] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [editor, setEditor] = useState<
     | { mode: 'create'; initial: null }
     | { mode: 'edit'; initial: WorkingMod }
@@ -80,7 +94,13 @@ export function ModsStation({
   const [pendingRemove, setPendingRemove] = useState<string[] | null>(null)
   const [removing, setRemoving] = useState(false)
 
-  // Sync journey lock → filters + selection
+  const acquire = useModAcquireJob({
+    mods,
+    patchDiskStatus: onSetDiskStatus,
+    applyAcquireSuccess: onApplyAcquireSuccess,
+    refreshDiskStatus: onRefreshDiskStatus,
+  })
+
   useEffect(() => {
     if (!journey?.locked) return
     setFilters((prev) => ({
@@ -96,7 +116,6 @@ export function ModsStation({
     setFocusedCodename(journey.requiredCodenames[0] ?? null)
   }, [journey])
 
-  // Keep "Only needed" filter list in sync with current component selection.
   useEffect(() => {
     if (journeyLocked) return
     setFilters((prev) => {
@@ -128,6 +147,44 @@ export function ModsStation({
     () => new Set(mods.map((m) => m.codename)),
     [mods],
   )
+
+  const selectedList = useMemo(() => [...selected], [selected])
+
+  const selectedAcquireKind = useMemo(() => {
+    const targets = modsNeedingAcquire(mods, selectedList)
+    return acquireButtonKind(targets.map((m) => m.diskStatus))
+  }, [mods, selectedList])
+
+  const focusedAcquireKind = useMemo(() => {
+    if (!focusedMod) return 'none' as const
+    return acquireButtonKind(
+      modsNeedingAcquire(mods, [focusedMod.codename]).map((m) => m.diskStatus),
+    )
+  }, [focusedMod, mods])
+
+  const rowProgress = useMemo(() => {
+    const map = new Map<string, { pct: number | null; label: string }>()
+    if (!acquire.job.running && !acquire.job.open && !acquire.job.minimized) {
+      return map
+    }
+    for (const entry of acquire.job.entries) {
+      if (entry.status === 'pending') {
+        map.set(entry.codename, { pct: 0, label: 'Queued' })
+      } else if (entry.status === 'running') {
+        const p = acquire.job.progress
+        if (p && p.codename === entry.codename && p.bytesTotal && p.bytesReceived != null) {
+          const pct = Math.min(
+            99,
+            Math.round((p.bytesReceived / p.bytesTotal) * 100),
+          )
+          map.set(entry.codename, { pct, label: p.phase || 'Working…' })
+        } else {
+          map.set(entry.codename, { pct: null, label: entry.message || 'Working…' })
+        }
+      }
+    }
+    return map
+  }, [acquire.job])
 
   const onSort = useCallback((key: ModsSortKey) => {
     if (key === sortKey) {
@@ -167,23 +224,9 @@ export function ModsStation({
   )
 
   const flashNotice = useCallback((message: string) => {
-    setStubNotice(message)
-    window.setTimeout(() => setStubNotice(null), 3200)
+    setNotice(message)
+    window.setTimeout(() => setNotice(null), 3200)
   }, [])
-
-  const runStub = useCallback(
-    (codenames: string[], kind: 'download' | 'update' | 'check') => {
-      if (codenames.length === 0) return
-      onStubAction(codenames, kind)
-      const labels = {
-        download: 'Download queued (stub — desktop app will fetch files).',
-        update: 'Update queued (stub — desktop app will refresh files).',
-        check: 'Checked for updates (stub — simulated status).',
-      } as const
-      flashNotice(labels[kind])
-    },
-    [flashNotice, onStubAction],
-  )
 
   const requestRemoveFromDisk = useCallback((codenames: string[]) => {
     if (codenames.length === 0) return
@@ -215,7 +258,16 @@ export function ModsStation({
     }
   }, [flashNotice, onRemoveFromDisk, pendingRemove, removing])
 
-  const selectedList = useMemo(() => [...selected], [selected])
+  const exportCsv = useCallback(async () => {
+    if (!isDesktopApp()) {
+      flashNotice('Export CSV requires the desktop app.')
+      return
+    }
+    const text = serializeModsCsv(mods)
+    const ok = await saveTextFile('mods-export.csv', text)
+    if (ok) flashNotice('Catalog exported.')
+    else flashNotice('Export cancelled.')
+  }, [flashNotice, mods])
 
   const removeConfirmMessage = useMemo(() => {
     if (!pendingRemove || pendingRemove.length === 0) return ''
@@ -256,13 +308,23 @@ export function ModsStation({
             selectedCount={selected.size}
             visibleCount={rows.length}
             totalCount={mods.length}
-            onDownload={() => runStub(selectedList, 'download')}
-            onCheckUpdates={() => runStub(selectedList, 'check')}
-            onUpdate={() => runStub(selectedList, 'update')}
+            acquireLabel={acquireButtonLabel(selectedAcquireKind)}
+            acquireDisabled={selectedAcquireKind === 'none'}
+            onAcquire={() => acquire.requestAcquire(selectedList)}
+            onCheckUpdates={() => {
+              void acquire.runCheck(selectedList)
+            }}
             onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
+            onExportCsv={() => {
+              void exportCsv()
+            }}
             onAddMod={() => setEditor({ mode: 'create', initial: null })}
             onContinueBrowsing={handleContinueBrowsing}
-            stubNotice={stubNotice}
+            notice={notice}
+            jobMinimized={acquire.job.minimized}
+            jobRunning={acquire.job.running}
+            jobSummary={acquire.job.summary}
+            onRestoreJob={acquire.restoreJob}
           />
         </div>
         <div className="list-pane-scroll mods-table-scroll">
@@ -277,6 +339,7 @@ export function ModsStation({
             onToggle={onToggle}
             onToggleAllVisible={onToggleAllVisible}
             onFocusRow={setFocusedCodename}
+            rowProgress={rowProgress}
           />
         </div>
       </div>
@@ -297,13 +360,14 @@ export function ModsStation({
             setPendingDelete(focusedMod.codename)
           }
         }}
-        onDownload={() =>
-          focusedMod && runStub([focusedMod.codename], 'download')
+        acquireLabel={acquireButtonLabel(focusedAcquireKind)}
+        acquireDisabled={focusedAcquireKind === 'none'}
+        onAcquire={() =>
+          focusedMod && acquire.requestAcquire([focusedMod.codename])
         }
-        onCheckUpdates={() =>
-          focusedMod && runStub([focusedMod.codename], 'check')
-        }
-        onUpdate={() => focusedMod && runStub([focusedMod.codename], 'update')}
+        onCheckUpdates={() => {
+          if (focusedMod) void acquire.runCheck([focusedMod.codename])
+        }}
         onRemoveFromDisk={() =>
           focusedMod && requestRemoveFromDisk([focusedMod.codename])
         }
@@ -359,6 +423,20 @@ export function ModsStation({
         onConfirm={() => {
           void confirmRemoveFromDisk()
         }}
+      />
+
+      <AcquireSizeConfirmDialog
+        state={acquire.sizeConfirm}
+        onCancel={acquire.cancelSizeConfirm}
+        onConfirm={() => {
+          void acquire.confirmAcquire()
+        }}
+      />
+
+      <AcquireJobDialog
+        job={acquire.job}
+        onMinimize={acquire.minimizeJob}
+        onClose={acquire.dismissJob}
       />
     </div>
   )

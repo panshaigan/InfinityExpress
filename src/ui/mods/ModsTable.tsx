@@ -29,6 +29,8 @@ interface Props {
   onToggle: (codename: string, want: boolean) => void
   onToggleAllVisible: (want: boolean) => void
   onFocusRow: (codename: string) => void
+  /** Active acquire/check progress by codename (0–100 or indeterminate). */
+  rowProgress?: ReadonlyMap<string, { pct: number | null; label: string }>
 }
 
 const COLUMNS: { key: ModsSortKey; label: string; className?: string }[] = [
@@ -80,6 +82,7 @@ export function ModsTable({
   onToggle,
   onToggleAllVisible,
   onFocusRow,
+  rowProgress,
 }: Props) {
   const rowRefs = useRef(new Map<string, HTMLTableRowElement>())
 
@@ -231,7 +234,7 @@ export function ModsTable({
                   }}
                   className={`mods-row${focused ? ' focused' : ''}${
                     checked ? ' selected' : ''
-                  }`}
+                  }${rowProgress?.has(mod.codename) ? ' busy' : ''}`}
                   role="row"
                   tabIndex={focused ? 0 : -1}
                   aria-selected={checked}
@@ -262,6 +265,28 @@ export function ModsTable({
                     <span className="mods-name">{displayModName(mod)}</span>
                     {mod.origin === 'user' ? (
                       <span className="mods-origin-tag">Added</span>
+                    ) : null}
+                    {rowProgress?.get(mod.codename) ? (
+                      <span className="mods-row-progress">
+                        <span
+                          className="mods-row-progress-bar"
+                          style={
+                            rowProgress.get(mod.codename)!.pct != null
+                              ? {
+                                  width: `${rowProgress.get(mod.codename)!.pct}%`,
+                                }
+                              : undefined
+                          }
+                          data-indeterminate={
+                            rowProgress.get(mod.codename)!.pct == null
+                              ? 'true'
+                              : undefined
+                          }
+                        />
+                        <span className="mods-row-progress-label">
+                          {rowProgress.get(mod.codename)!.label}
+                        </span>
+                      </span>
                     ) : null}
                   </td>
                   <td className="mods-col-category">{eff.category || '—'}</td>

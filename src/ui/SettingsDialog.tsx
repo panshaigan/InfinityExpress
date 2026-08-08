@@ -5,6 +5,11 @@ import {
   type AppDirPaths,
 } from '../lib/ui/appDirPrefs'
 import {
+  GITHUB_TOKEN_HELP_URL,
+  readGithubToken,
+  writeGithubToken,
+} from '../lib/ui/githubTokenPrefs'
+import {
   readGameFolderPaths,
   writeGameFolderPaths,
   type GameFolderKey,
@@ -25,11 +30,13 @@ export function SettingsDialog({ open, onClose }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
   const [appDirs, setAppDirs] = useState(readAppDirPaths)
+  const [githubToken, setGithubToken] = useState(readGithubToken)
 
   useEffect(() => {
     if (!open) return
     setFolderPaths(readGameFolderPaths())
     setAppDirs(readAppDirPaths())
+    setGithubToken(readGithubToken())
     closeRef.current?.focus()
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
@@ -65,6 +72,11 @@ export function SettingsDialog({ open, onClose }: Props) {
       writeAppDirPaths(next)
       return next
     })
+  }
+
+  function onGithubTokenChange(value: string) {
+    setGithubToken(value)
+    writeGithubToken(value)
   }
 
   if (!open) return null
@@ -134,6 +146,39 @@ export function SettingsDialog({ open, onClose }: Props) {
               placeholder="Select backup folder…"
               browseTitle="Select backup folder"
             />
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <h3 className="engine-folders-title">GitHub</h3>
+          <p className="settings-help">
+            Optional personal access token raises API rate limits for Check for
+            updates on large catalogs. Without a token the app still works via
+            public API and HTML scrape fallback. Create a classic token with{' '}
+            <code>public_repo</code> (or a fine-grained token with read access to
+            public repositories).
+          </p>
+          <div className="settings-fields">
+            <div className="engine-folder-field">
+              <label className="engine-folder-label" htmlFor="settings-github-token">
+                GitHub token
+              </label>
+              <input
+                id="settings-github-token"
+                type="password"
+                className="engine-folder-input"
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="ghp_… (optional)"
+                value={githubToken}
+                onChange={(e) => onGithubTokenChange(e.target.value)}
+              />
+            </div>
+            <p className="settings-help">
+              <a href={GITHUB_TOKEN_HELP_URL} target="_blank" rel="noreferrer">
+                Open GitHub token page
+              </a>
+            </p>
           </div>
         </section>
       </div>

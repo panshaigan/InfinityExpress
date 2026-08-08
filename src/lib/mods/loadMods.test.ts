@@ -36,6 +36,8 @@ describe('parseModsCsv', () => {
       url: 'https://github.com/Gibberlings3/Totemic_Cernd',
       readme: '',
       game: 'BG2',
+      useMaster: false,
+      useAssets: false,
       release: '2017-06-06',
       version: 'v3',
       sizeBytes: 12345,
@@ -149,6 +151,21 @@ describe('parseModsCsv', () => {
     ].join('\n')
     const map = parseModsCsv(raw)
     expect(map.get('NoStabCol')?.stability).toBe('')
+  })
+  it('parses UseMaster and UseAssets flags', () => {
+    const raw = [
+      HEADER,
+      'Art,NPC,"https://x",BG2,1,,2020-01-01,"abc",10,A,,minor',
+      'Asset,NPC,"https://x",BG2,,1,2020-01-01,"v1",10,B,,minor',
+      'Both,NPC,"https://x",BG2,1,true,2020-01-01,"v1",10,C,,minor',
+    ].join('\n')
+    const map = parseModsCsv(raw)
+    expect(map.get('Art')?.useMaster).toBe(true)
+    expect(map.get('Art')?.useAssets).toBe(false)
+    expect(map.get('Asset')?.useMaster).toBe(false)
+    expect(map.get('Asset')?.useAssets).toBe(true)
+    expect(map.get('Both')?.useMaster).toBe(true)
+    expect(map.get('Both')?.useAssets).toBe(true)
   })
 })
 

@@ -8,6 +8,10 @@ export interface ModInfo {
   url: string
   readme: string
   game: string
+  /** Track default-branch tip (SHA) instead of releases — Artisan-style. */
+  useMaster: boolean
+  /** Prefer GitHub release archive assets (or zip URL in release body). */
+  useAssets: boolean
   release: string
   version: string
   sizeBytes: number | null
@@ -86,6 +90,14 @@ function parseSizeBytes(raw: string): number | null {
   return Math.floor(n)
 }
 
+/** Truthy CSV flags: non-empty UseMaster; UseAssets only `1` / `true`. */
+export function parseCsvFlag(raw: string | undefined, mode: 'any' | 'strict'): boolean {
+  const s = (raw ?? '').trim()
+  if (!s) return false
+  if (mode === 'any') return true
+  return s === '1' || s.toLowerCase() === 'true'
+}
+
 /**
  * Parse mods.csv into a Map keyed by Codename.
  * Duplicate Codenames keep the first row.
@@ -105,6 +117,8 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
   const iUrl = idx('URL')
   const iReadme = idx('Readme')
   const iGame = idx('Game')
+  const iUseMaster = idx('UseMaster')
+  const iUseAssets = idx('UseAssets')
   const iRelease = idx('Release')
   const iVersion = idx('Version')
   const iSize = idx('Size')
@@ -125,6 +139,10 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
       url: (iUrl >= 0 ? cols[iUrl] ?? '' : '').trim(),
       readme: (iReadme >= 0 ? cols[iReadme] ?? '' : '').trim(),
       game: (iGame >= 0 ? cols[iGame] ?? '' : '').trim(),
+      useMaster:
+        iUseMaster >= 0 ? parseCsvFlag(cols[iUseMaster], 'any') : false,
+      useAssets:
+        iUseAssets >= 0 ? parseCsvFlag(cols[iUseAssets], 'strict') : false,
       release: (iRelease >= 0 ? cols[iRelease] ?? '' : '').trim(),
       version: (iVersion >= 0 ? cols[iVersion] ?? '' : '').trim(),
       sizeBytes: iSize >= 0 ? parseSizeBytes(cols[iSize] ?? '') : null,
@@ -146,6 +164,8 @@ export function effectiveModFields(mod: WorkingMod): ModInfo {
     url: mod.url,
     readme: mod.readme,
     game: mod.game,
+    useMaster: mod.useMaster,
+    useAssets: mod.useAssets,
     release: mod.overlays.release ?? mod.release,
     version: mod.overlays.version ?? mod.version,
     sizeBytes:

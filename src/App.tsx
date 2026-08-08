@@ -591,7 +591,9 @@ export default function App() {
               onAddMod={userCatalog.addMod}
               onEditMod={userCatalog.editMod}
               onDeleteMod={userCatalog.deleteMod}
-              onStubAction={userCatalog.applyAcquireStub}
+              onSetDiskStatus={userCatalog.setDiskStatus}
+              onApplyAcquireSuccess={userCatalog.applyAcquireSuccess}
+              onRefreshDiskStatus={userCatalog.refreshDiskStatus}
               onRemoveFromDisk={userCatalog.removeFromDisk}
             />
           </div>

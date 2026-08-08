@@ -11,9 +11,13 @@ export async function saveTextFile(
   defaultName: string,
   contents: string,
 ): Promise<boolean> {
+  if (!isDesktopApp()) return false
+  const isCsv = /\.csv$/i.test(defaultName)
   const path = await save({
     defaultPath: defaultName,
-    filters: [{ name: 'Text', extensions: ['txt'] }],
+    filters: isCsv
+      ? [{ name: 'CSV', extensions: ['csv'] }]
+      : [{ name: 'Text', extensions: ['txt'] }],
   })
   if (!path) return false
   await writeTextFile(path, contents)

@@ -15,9 +15,10 @@ interface Props {
   onToggleCollapsed: () => void
   onEdit: () => void
   onDeleteFromCatalog: () => void
-  onDownload: () => void
+  acquireLabel: string
+  acquireDisabled: boolean
+  onAcquire: () => void
   onCheckUpdates: () => void
-  onUpdate: () => void
   onRemoveFromDisk: () => void
 }
 
@@ -54,9 +55,10 @@ export function ModDetail({
   onToggleCollapsed,
   onEdit,
   onDeleteFromCatalog,
-  onDownload,
+  acquireLabel,
+  acquireDisabled,
+  onAcquire,
   onCheckUpdates,
-  onUpdate,
   onRemoveFromDisk,
 }: Props) {
   return (
@@ -106,9 +108,10 @@ export function ModDetail({
                   mod={mod}
                   onEdit={onEdit}
                   onDeleteFromCatalog={onDeleteFromCatalog}
-                  onDownload={onDownload}
+                  acquireLabel={acquireLabel}
+                  acquireDisabled={acquireDisabled}
+                  onAcquire={onAcquire}
                   onCheckUpdates={onCheckUpdates}
-                  onUpdate={onUpdate}
                   onRemoveFromDisk={onRemoveFromDisk}
                 />
               )}
@@ -124,17 +127,19 @@ function ModDetailBody({
   mod,
   onEdit,
   onDeleteFromCatalog,
-  onDownload,
+  acquireLabel,
+  acquireDisabled,
+  onAcquire,
   onCheckUpdates,
-  onUpdate,
   onRemoveFromDisk,
 }: {
   mod: WorkingMod
   onEdit: () => void
   onDeleteFromCatalog: () => void
-  onDownload: () => void
+  acquireLabel: string
+  acquireDisabled: boolean
+  onAcquire: () => void
   onCheckUpdates: () => void
-  onUpdate: () => void
   onRemoveFromDisk: () => void
 }) {
   const eff = effectiveModFields(mod)
@@ -178,8 +183,13 @@ function ModDetailBody({
       </dl>
 
       <div className="mod-detail-actions">
-        <button type="button" className="btn secondary" onClick={onDownload}>
-          Download
+        <button
+          type="button"
+          className="btn secondary"
+          disabled={acquireDisabled}
+          onClick={onAcquire}
+        >
+          {acquireLabel}
         </button>
         <button
           type="button"
@@ -187,9 +197,6 @@ function ModDetailBody({
           onClick={onCheckUpdates}
         >
           Check for updates
-        </button>
-        <button type="button" className="btn secondary" onClick={onUpdate}>
-          Update
         </button>
         <button
           type="button"

@@ -1,3 +1,4 @@
+mod mod_acquire;
 mod mod_fs;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -8,6 +9,8 @@ pub fn run() {
     .invoke_handler(tauri::generate_handler![
       mod_fs::list_subdir_names,
       mod_fs::remove_mod_dir,
+      mod_acquire::probe_mod_remote,
+      mod_acquire::acquire_mod,
     ])
     .setup(|app| {
       if cfg!(debug_assertions) {

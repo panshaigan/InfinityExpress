@@ -7,3 +7,13 @@ commands.allow = ["list_subdir_names"]
 identifier = "allow-remove-mod-dir"
 description = "Recursively delete a named folder under the mods download directory"
 commands.allow = ["remove_mod_dir"]
+
+[[permission]]
+identifier = "allow-probe-mod-remote"
+description = "Probe remote mod version and download metadata"
+commands.allow = ["probe_mod_remote"]
+
+[[permission]]
+identifier = "allow-acquire-mod"
+description = "Download and extract a mod into the mods download directory"
+commands.allow = ["acquire_mod"]

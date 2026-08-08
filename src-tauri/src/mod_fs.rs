@@ -59,7 +59,7 @@ pub fn remove_mod_dir(download_dir: String, folder_name: String) -> Result<(), S
   fs::remove_dir_all(&target).map_err(|e| e.to_string())
 }
 
-fn find_subdir_ci(parent: &Path, wanted: &str) -> Result<Option<String>, String> {
+pub(crate) fn find_subdir_ci(parent: &Path, wanted: &str) -> Result<Option<String>, String> {
   let wanted_lower = wanted.to_lowercase();
   let entries = fs::read_dir(parent).map_err(|e| e.to_string())?;
   for entry in entries {
@@ -79,7 +79,7 @@ fn find_subdir_ci(parent: &Path, wanted: &str) -> Result<Option<String>, String>
   Ok(None)
 }
 
-fn validate_folder_name(name: &str) -> Result<(), String> {
+pub(crate) fn validate_folder_name(name: &str) -> Result<(), String> {
   if name.is_empty() {
     return Err("Folder name is required".into());
   }
@@ -99,9 +99,8 @@ fn validate_folder_name(name: &str) -> Result<(), String> {
   }
 }
 
-fn ensure_under_parent(parent: &Path, child: &Path) -> Result<(), String> {
+pub(crate) fn ensure_under_parent(parent: &Path, child: &Path) -> Result<(), String> {
   let parent_canon = fs::canonicalize(parent).map_err(|e| e.to_string())?;
-  // Target may not exist yet for delete-of-missing; canonicalize parent of join via parent + name.
   let child_canon = if child.exists() {
     fs::canonicalize(child).map_err(|e| e.to_string())?
   } else {
@@ -113,10 +112,10 @@ fn ensure_under_parent(parent: &Path, child: &Path) -> Result<(), String> {
   };
 
   if !child_canon.starts_with(&parent_canon) {
-    return Err("Refusing to delete a path outside the mods download directory".into());
+    return Err("Refusing to modify a path outside the mods download directory".into());
   }
   if child_canon == parent_canon {
-    return Err("Refusing to delete the mods download directory itself".into());
+    return Err("Refusing to modify the mods download directory itself".into());
   }
   Ok(())
 }

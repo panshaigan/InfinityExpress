@@ -10,6 +10,8 @@
     "dialog:default",
     "fs:allow-write-text-file",
     "allow-list-subdir-names",
-    "allow-remove-mod-dir"
+    "allow-remove-mod-dir",
+    "allow-probe-mod-remote",
+    "allow-acquire-mod"
   ]
 }

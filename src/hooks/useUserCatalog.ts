@@ -105,9 +105,41 @@ export function useUserCatalog() {
 
   const setDiskStatus = useCallback(
     (codename: string, diskStatus: DiskStatus) => {
-      persist(patchWorkingMod(store, codename, { diskStatus }))
+      setStore((prev) => {
+        const next = patchWorkingMod(prev, codename, { diskStatus })
+        writeUserCatalogStore(next)
+        return next
+      })
     },
-    [persist, store],
+    [],
+  )
+
+  const applyAcquireSuccess = useCallback(
+    (
+      codename: string,
+      overlays: {
+        version: string
+        release: string
+        sizeBytes: number | null
+      },
+    ) => {
+      setStore((prev) => {
+        const mod = prev.mods.find((m) => m.codename === codename)
+        const merged: ModFieldOverlays = {
+          ...(mod?.overlays ?? {}),
+          version: overlays.version,
+          release: overlays.release,
+          sizeBytes: overlays.sizeBytes,
+        }
+        const next = patchWorkingMod(prev, codename, {
+          diskStatus: 'present',
+          overlays: merged,
+        })
+        writeUserCatalogStore(next)
+        return next
+      })
+    },
+    [],
   )
 
   const removeFromDisk = useCallback(
@@ -142,54 +174,10 @@ export function useUserCatalog() {
         }
       }
       if (removed.length > 0) persist(next)
-      else if (errors.length === 0) {
-        // nothing selected / nothing to do
-      }
       await refreshDiskStatus()
       return { removed, errors }
     },
     [persist, refreshDiskStatus, store],
-  )
-
-  const applyAcquireStub = useCallback(
-    (codenames: string[], kind: 'download' | 'update' | 'check') => {
-      let next = store
-      for (const code of codenames) {
-        if (kind === 'check') {
-          const mod = next.mods.find((m) => m.codename === code)
-          if (!mod) continue
-          if (mod.diskStatus === 'present') {
-            const flip = code.length % 2 === 0
-            next = patchWorkingMod(next, code, {
-              diskStatus: flip ? 'update_available' : 'present',
-            })
-          }
-          continue
-        }
-        const mod = next.mods.find((m) => m.codename === code)
-        if (!mod) continue
-        const overlays: ModFieldOverlays = {
-          ...mod.overlays,
-          version: (mod.overlays.version ?? mod.version) || 'local',
-          sizeBytes:
-            mod.overlays.sizeBytes !== undefined
-              ? mod.overlays.sizeBytes
-              : mod.sizeBytes,
-        }
-        if (kind === 'update') {
-          overlays.version = `${overlays.version || 'v0'}+`
-          if (overlays.sizeBytes != null) {
-            overlays.sizeBytes = Math.round(overlays.sizeBytes * 1.01)
-          }
-        }
-        next = patchWorkingMod(next, code, {
-          diskStatus: 'present',
-          overlays,
-        })
-      }
-      persist(next)
-    },
-    [persist, store],
   )
 
   return {
@@ -199,8 +187,8 @@ export function useUserCatalog() {
     editMod,
     deleteMod,
     setDiskStatus,
+    applyAcquireSuccess,
     refreshDiskStatus,
     removeFromDisk,
-    applyAcquireStub,
   }
 }

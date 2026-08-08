@@ -21,13 +21,19 @@ interface Props {
   selectedCount: number
   visibleCount: number
   totalCount: number
-  onDownload: () => void
+  acquireLabel: string
+  acquireDisabled: boolean
+  onAcquire: () => void
   onCheckUpdates: () => void
-  onUpdate: () => void
   onRemoveFromDisk: () => void
+  onExportCsv: () => void
   onAddMod: () => void
   onContinueBrowsing: () => void
-  stubNotice: string | null
+  notice: string | null
+  jobMinimized: boolean
+  jobRunning: boolean
+  jobSummary: string | null
+  onRestoreJob: () => void
 }
 
 const ALL_STATUSES: DiskStatus[] = [
@@ -50,13 +56,19 @@ export function ModsToolbar({
   selectedCount,
   visibleCount,
   totalCount,
-  onDownload,
+  acquireLabel,
+  acquireDisabled,
+  onAcquire,
   onCheckUpdates,
-  onUpdate,
   onRemoveFromDisk,
+  onExportCsv,
   onAddMod,
   onContinueBrowsing,
-  stubNotice,
+  notice,
+  jobMinimized,
+  jobRunning,
+  jobSummary,
+  onRestoreJob,
 }: Props) {
   const bulkDisabled = selectedCount === 0
   const onlyNeededActive = filters.requiredCodenames != null
@@ -126,29 +138,20 @@ export function ModsToolbar({
           <button
             type="button"
             className="btn secondary"
-            disabled={bulkDisabled}
-            title="Desktop app will download selected mods"
-            onClick={onDownload}
+            disabled={bulkDisabled || acquireDisabled}
+            title="Download missing mods and update outdated ones in the selection"
+            onClick={onAcquire}
           >
-            Download
+            {acquireLabel}
           </button>
           <button
             type="button"
             className="btn secondary"
             disabled={bulkDisabled}
-            title="Desktop app will check remote versions"
+            title="Probe remote versions for the selection"
             onClick={onCheckUpdates}
           >
             Check for updates
-          </button>
-          <button
-            type="button"
-            className="btn secondary"
-            disabled={bulkDisabled}
-            title="Desktop app will update selected mods"
-            onClick={onUpdate}
-          >
-            Update
           </button>
           <button
             type="button"
@@ -161,6 +164,14 @@ export function ModsToolbar({
           </button>
           <button
             type="button"
+            className="btn secondary"
+            title="Export the current catalog (with overlays) as CSV"
+            onClick={onExportCsv}
+          >
+            Export CSV
+          </button>
+          <button
+            type="button"
             className="btn"
             disabled={journeyLocked}
             onClick={onAddMod}
@@ -169,6 +180,22 @@ export function ModsToolbar({
           </button>
         </div>
       </div>
+
+      {jobMinimized ? (
+        <div className="mods-job-chip-row">
+          <button
+            type="button"
+            className={`mods-job-chip${jobRunning ? ' running' : ''}`}
+            onClick={onRestoreJob}
+          >
+            {jobRunning
+              ? 'Job running — show progress'
+              : jobSummary
+                ? `Job finished — ${jobSummary}`
+                : 'Show job log'}
+          </button>
+        </div>
+      ) : null}
 
       {!journeyLocked ? (
         <div className="mods-facets">
@@ -281,9 +308,9 @@ export function ModsToolbar({
         </div>
       )}
 
-      {stubNotice ? (
+      {notice ? (
         <p className="mods-stub-notice" role="status">
-          {stubNotice}
+          {notice}
         </p>
       ) : null}
     </div>

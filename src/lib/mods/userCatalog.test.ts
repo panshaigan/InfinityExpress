@@ -19,6 +19,8 @@ function baseMod(partial: Partial<ModInfo> & { codename: string }): ModInfo {
     url: partial.url ?? 'https://example.com',
     readme: partial.readme ?? '',
     game: partial.game ?? 'BG2',
+    useMaster: partial.useMaster ?? false,
+    useAssets: partial.useAssets ?? false,
     release: partial.release ?? '2020-01-01',
     version: partial.version ?? 'v1',
     sizeBytes: partial.sizeBytes ?? 100,

@@ -19,6 +19,8 @@ function entry(
     url: '',
     readme: '',
     game: '',
+    useMaster: false,
+    useAssets: false,
     release: '',
     version: '',
     sizeBytes: null,

@@ -15,6 +15,8 @@ function mod(partial: Partial<WorkingMod> & { codename: string }): WorkingMod {
     url: '',
     readme: '',
     game: partial.game ?? 'BG2',
+    useMaster: partial.useMaster ?? false,
+    useAssets: partial.useAssets ?? false,
     release: '',
     version: partial.version ?? 'v1',
     sizeBytes: partial.sizeBytes ?? 10,

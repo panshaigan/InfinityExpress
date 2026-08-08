@@ -25,3 +25,9 @@ tauri = { version = "2.11.3", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-dialog = "2.7.2"
 tauri-plugin-fs = "2.5.1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
+regex = "1"
+tempfile = "3"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+futures-util = "0.3"
+sevenz-rust = "0.6"
