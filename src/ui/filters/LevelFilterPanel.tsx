@@ -19,54 +19,58 @@ export function LevelFilterPanel({
   onPatch,
 }: Props) {
   return (
-    <>
-      <label className="filter-option">
-        <input
-          type="radio"
-          name={`${baseId}-ladder`}
-          checked={criteria.maxLevel === null}
-          onChange={() => onSelectLadder(null)}
-        />
-        All levels
-      </label>
-      {FILTER_LADDER_LEVELS.map((level) => (
-        <label key={level} className="filter-option">
+    <div className="filter-panel-stack">
+      <div className="filter-panel-section" role="group" aria-label="Level">
+        <label className="filter-option">
           <input
             type="radio"
             name={`${baseId}-ladder`}
-            checked={criteria.maxLevel === level}
-            onChange={() => onSelectLadder(level)}
+            checked={criteria.maxLevel === null}
+            onChange={() => onSelectLadder(null)}
           />
-          {LEVEL_LABELS[level]}
+          All levels
         </label>
-      ))}
-      <label className={`filter-option${criteria.maxLevel ? '' : ' disabled'}`}>
-        <input
-          type="checkbox"
-          checked={criteria.levelExact}
-          disabled={!criteria.maxLevel}
-          onChange={(e) => onPatch({ levelExact: e.target.checked })}
-        />
-        This level only
-      </label>
-      <label className="filter-option">
-        <input
-          type="checkbox"
-          checked={criteria.includeLowerDifficulty}
-          onChange={(e) => onPatch({ includeLowerDifficulty: e.target.checked })}
-        />
-        Include {LEVEL_LABELS.lowerDifficulty}
-      </label>
-      <label className="filter-option">
-        <input
-          type="checkbox"
-          checked={criteria.includeHigherDifficulty}
-          onChange={(e) =>
-            onPatch({ includeHigherDifficulty: e.target.checked })
-          }
-        />
-        Include {LEVEL_LABELS.higherDifficulty}
-      </label>
-    </>
+        {FILTER_LADDER_LEVELS.map((level) => (
+          <label key={level} className="filter-option">
+            <input
+              type="radio"
+              name={`${baseId}-ladder`}
+              checked={criteria.maxLevel === level}
+              onChange={() => onSelectLadder(level)}
+            />
+            {LEVEL_LABELS[level]}
+          </label>
+        ))}
+      </div>
+      <div className="filter-panel-section" role="group" aria-label="Level options">
+        <label className={`filter-option${criteria.maxLevel ? '' : ' disabled'}`}>
+          <input
+            type="checkbox"
+            checked={criteria.levelExact}
+            disabled={!criteria.maxLevel}
+            onChange={(e) => onPatch({ levelExact: e.target.checked })}
+          />
+          This level only
+        </label>
+        <label className="filter-option">
+          <input
+            type="checkbox"
+            checked={criteria.includeLowerDifficulty}
+            onChange={(e) => onPatch({ includeLowerDifficulty: e.target.checked })}
+          />
+          Include {LEVEL_LABELS.lowerDifficulty}
+        </label>
+        <label className="filter-option">
+          <input
+            type="checkbox"
+            checked={criteria.includeHigherDifficulty}
+            onChange={(e) =>
+              onPatch({ includeHigherDifficulty: e.target.checked })
+            }
+          />
+          Include {LEVEL_LABELS.higherDifficulty}
+        </label>
+      </div>
+    </div>
   )
 }

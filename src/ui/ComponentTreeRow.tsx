@@ -361,6 +361,7 @@ export const CheckboxRow = memo(function CheckboxRow({
                 aria-expanded={menuOpen}
                 aria-haspopup="true"
                 aria-label={`Randomise selection under ${label}`}
+                title="Randomise selection"
                 onClick={handleRandomizeToggle}
                 onDoubleClick={handleFoldDoubleClick}
               >

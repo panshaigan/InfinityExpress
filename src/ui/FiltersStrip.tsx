@@ -19,6 +19,24 @@ import { TagsFilterPanel } from './filters/TagsFilterPanel'
 /** Stable id for chrome hotkey `/` focus jump. */
 export const FILTERS_SEARCH_ID = 'filters-search'
 
+function ClearFiltersIcon() {
+  return (
+    <svg
+      className="filter-clear-icon"
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M3.5 3.5 8 8l4.5-4.5.9.9L8.9 8.9l4.5 4.5-.9.9L8 9.8l-4.5 4.5-.9-.9 4.5-4.5L2.6 4.4z"
+      />
+    </svg>
+  )
+}
+
 interface Props {
   criteria: FilterCriteria
   onChange: (next: FilterCriteria) => void
@@ -149,13 +167,6 @@ export function FiltersStrip({
     return (
       <div className="filter-popover" id={panelId} role="group" aria-label={label}>
         <div className="filter-panel">{body}</div>
-        <button
-          type="button"
-          className="filter-panel-hide"
-          onClick={() => setOpenPanel(null)}
-        >
-          Close
-        </button>
       </div>
     )
   }
@@ -342,8 +353,14 @@ export function FiltersStrip({
         </button>
 
         {active && (
-          <button type="button" className="filter-clear" onClick={clearFilters}>
-            Clear filters
+          <button
+            type="button"
+            className="filter-clear"
+            onClick={clearFilters}
+            title="Clear filters"
+            aria-label="Clear filters"
+          >
+            <ClearFiltersIcon />
           </button>
         )}
       </div>

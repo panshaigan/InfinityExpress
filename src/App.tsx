@@ -441,6 +441,19 @@ export default function App() {
     foldApiRef.current?.unfoldAll()
   }
 
+  const stationTitle =
+    activeStation === 'engine'
+      ? 'Engine'
+      : activeStation === 'content' || activeStation === 'mechanics'
+        ? (() => {
+            const sectionLabel =
+              selectedMain?.node.attrs.label ?? selectedMain?.node.tag
+            return sectionLabel
+              ? `${sectionLabel} ${STATION_LABELS[activeStation]}`
+              : STATION_LABELS[activeStation]
+          })()
+        : STATION_LABELS[activeStation]
+
   const applyStationSlot = useCallback(
     (slot: StationSlot) => {
       setActiveStation(slot === 'engine' ? 'engine' : slot)
@@ -601,7 +614,7 @@ export default function App() {
                           onToggle={toggleRailCollapsed}
                         />
                         <h2>
-                          {STATION_LABELS[activeStation]}
+                          {stationTitle}
                           {route.currentFinished && (
                             <span className="station-finished-mark" aria-label="Finished">
                               ✓
@@ -680,23 +693,6 @@ export default function App() {
                   </details>
                 )}
               </div>
-              {game != null && activeStation !== 'engine' && (
-                <FiltersStrip
-                  criteria={filters}
-                  onChange={setFilters}
-                  tagOptions={filterOptions.tags}
-                  authorOptions={catalogAuthorOptions}
-                  sizeBounds={filterSeed.sizeBounds}
-                  onRequestTreeFocus={focusComponentTree}
-                  searchScope={searchScope}
-                  onSearchScopeChange={setSearchScope}
-                  searchPlaceholder={
-                    isAllSections
-                      ? 'Search all components...'
-                      : 'Search in this window...'
-                  }
-                />
-              )}
             </div>
 
             {showDetail && (
@@ -714,6 +710,23 @@ export default function App() {
               />
             )}
           </div>
+          {game != null && activeStation !== 'engine' && (
+            <FiltersStrip
+              criteria={filters}
+              onChange={setFilters}
+              tagOptions={filterOptions.tags}
+              authorOptions={catalogAuthorOptions}
+              sizeBounds={filterSeed.sizeBounds}
+              onRequestTreeFocus={focusComponentTree}
+              searchScope={searchScope}
+              onSearchScopeChange={setSearchScope}
+              searchPlaceholder={
+                isAllSections
+                  ? 'Search all components...'
+                  : 'Search in this window...'
+              }
+            />
+          )}
         </div>
       </div>
 

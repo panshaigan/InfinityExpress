@@ -12,6 +12,38 @@ import type { DisplayNode } from '../lib/selection/visibility'
 import { collectAllExpandableKeys } from '../lib/ui/treeKeyboard'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
+function UnfoldAllIcon() {
+  return (
+    <svg
+      className="station-fold-icon"
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path fill="currentColor" d="M2.75 1.5h10.5v1.1H2.75zm0 12.9h10.5v1.1H2.75z" />
+      <path fill="currentColor" d="M4.6 6.6 8 3.2l3.4 3.4zm0 2.8h6.8L8 12.8z" />
+    </svg>
+  )
+}
+
+function FoldAllIcon() {
+  return (
+    <svg
+      className="station-fold-icon"
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path fill="currentColor" d="M2.75 1.5h10.5v1.1H2.75zm0 12.9h10.5v1.1H2.75z" />
+      <path fill="currentColor" d="M4.6 3.2h6.8L8 6.6zm0 9.6 3.4-3.4 3.4 3.4z" />
+    </svg>
+  )
+}
+
 interface Props {
   listNodes: DisplayNode[]
   listState: 'checked' | 'unchecked' | 'indeterminate'
@@ -121,9 +153,10 @@ export function StationListToolbar({
           className="station-fold-toggle"
           disabled={foldDisabled}
           aria-label={`${foldLabel} on this list`}
+          title={foldLabel}
           onClick={handleFoldToggle}
         >
-          {foldLabel}
+          {allUnfolded ? <FoldAllIcon /> : <UnfoldAllIcon />}
         </button>
         {children}
         <div ref={levelsMenuRef} className="station-levels-menu">
@@ -154,10 +187,6 @@ export function StationListToolbar({
                   onLadderToggle={onLadderToggle}
                   onDifficultyChange={onDifficultyChange}
                 />
-                <p className="station-levels-hint">
-                  Sets which components start checked on this stop. Does not hide rows — use Show
-                  levels in filters for that.
-                </p>
                 <button
                   type="button"
                   className="filter-inline-action station-clear-to-global"
