@@ -39,6 +39,7 @@ type: short imperative title
 - Body: focus on why and user-visible impact; avoid dumping raw file lists.
 - Prefer one primary type; if mixed, pick the dominant change.
 - Prefer the repository's existing commit style when history clearly differs.
+- Escape every `"` character in the suggested commit message as `\"` (title and body).
 
 ## Examples
 
@@ -67,4 +68,12 @@ ui: tighten station nav hierarchy
 
 - Make the active station clearer without adding extra chrome.
 - Keep first viewport focused on brand and primary CTA.
+```
+
+Suggested commit message:
+
+```
+fix: escape quotes in component labels like Remove \"+x\" bonuses
+
+- Keep suggested commit text shell-safe when names include \".
 ```
