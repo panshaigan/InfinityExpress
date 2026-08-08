@@ -1357,10 +1357,46 @@ body.is-resizing-detail * {
 
 .branch-menu {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  gap: 0.15rem;
   min-width: 0;
   flex-shrink: 1;
+}
+
+.branch-menu-step {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.55rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--ease), background var(--ease), border-color var(--ease);
+}
+
+.branch-menu-step:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+}
+
+.branch-menu-step:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.branch-menu-step:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .branch-menu-trigger {
@@ -1394,12 +1430,12 @@ body.is-resizing-detail * {
 .branch-menu-popover {
   position: absolute;
   top: calc(100% + 0.35rem);
-  left: 0;
+  left: 1.5rem;
   z-index: 30;
   display: flex;
   flex-direction: column;
   gap: 0.12rem;
-  min-width: 100%;
+  min-width: calc(100% - 3rem);
   width: max-content;
   max-width: min(18rem, 90vw);
   max-height: min(20rem, 50vh);

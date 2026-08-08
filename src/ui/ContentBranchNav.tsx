@@ -26,6 +26,8 @@ type OpenMenu = 'main' | 'sub' | null
 function BranchMenu({
   label,
   ariaLabel,
+  prevTitle,
+  nextTitle,
   branches,
   activeKey,
   open,
@@ -34,6 +36,8 @@ function BranchMenu({
 }: {
   label: string
   ariaLabel: string
+  prevTitle: string
+  nextTitle: string
   branches: DisplayNode[]
   activeKey: string | null
   open: boolean
@@ -49,6 +53,7 @@ function BranchMenu({
   const activeBranch = branches.find((b) => b.node.key === activeKey)
   const triggerLabel = activeBranch ? branchLabel(activeBranch) : label
   const [highlightKey, setHighlightKey] = useState<string | null>(activeKey)
+  const canCycle = keys.length > 1
 
   useEffect(() => {
     if (!open) return
@@ -82,6 +87,14 @@ function BranchMenu({
     btn?.focus()
   }, [open, highlightKey])
 
+  function cycle(direction: -1 | 1) {
+    if (keys.length === 0) return
+    const currentIndex = activeKey != null ? keys.indexOf(activeKey) : 0
+    const next = cycleTabIndex(keys.length, currentIndex, direction)
+    const nextKey = keys[next]
+    if (nextKey) onSelect(nextKey)
+  }
+
   function handleListKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
     if (keys.length === 0) return
     if (e.key === 'Enter' || e.key === ' ') {
@@ -112,17 +125,47 @@ function BranchMenu({
     <div ref={menuRef} className="branch-menu">
       <button
         type="button"
+        className="branch-menu-step"
+        disabled={!canCycle}
+        aria-label={`Previous ${ariaLabel.toLowerCase()}`}
+        title={prevTitle}
+        onClick={() => cycle(-1)}
+      >
+        ‹
+      </button>
+      <button
+        type="button"
         className={`btn secondary branch-menu-trigger${open ? ' open' : ''}`}
         aria-label={ariaLabel}
         aria-expanded={open}
         aria-controls={panelId}
         aria-haspopup="listbox"
         onClick={() => onOpenChange(!open)}
+        onKeyDown={(e) => {
+          if (open) return
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault()
+            cycle(-1)
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault()
+            cycle(1)
+          }
+        }}
       >
         <span className="branch-menu-trigger-label">{triggerLabel}</span>
         <span className="branch-menu-caret" aria-hidden="true">
           ▾
         </span>
+      </button>
+      <button
+        type="button"
+        className="branch-menu-step"
+        disabled={!canCycle}
+        aria-label={`Next ${ariaLabel.toLowerCase()}`}
+        title={nextTitle}
+        onClick={() => cycle(1)}
+      >
+        ›
       </button>
       {open && (
         <div
@@ -174,6 +217,8 @@ export function ContentBranchNav({
       <BranchMenu
         label="Game"
         ariaLabel="Game"
+        prevTitle="Previous game (,)"
+        nextTitle="Next game (.)"
         branches={mainBranches}
         activeKey={mainKey}
         open={openMenu === 'main'}
@@ -184,6 +229,8 @@ export function ContentBranchNav({
         <BranchMenu
           label="Type"
           ariaLabel="Type"
+          prevTitle="Previous type (<)"
+          nextTitle="Next type (>)"
           branches={subBranches}
           activeKey={subKey}
           open={openMenu === 'sub'}
