@@ -1,14 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import {
-  FILTER_LADDER_LEVELS,
-  LEVEL_LABELS,
-  type LadderLevel,
-} from '../lib/levels'
-import {
-  formatBytes,
-  type AuthorOption,
-  type SizeBounds,
-} from '../lib/mods/loadMods'
+import { LEVEL_LABELS, type LadderLevel } from '../lib/levels'
+import { formatBytes, type AuthorOption, type SizeBounds } from '../lib/mods/loadMods'
 import {
   createDefaultFilterCriteria,
   cycleUncheckedFilter,
@@ -17,9 +9,12 @@ import {
   isSizeFilterActive,
   isTagsFilterActive,
   uncheckedFilterLabel,
-  type AuthorFilterMode,
   type FilterCriteria,
 } from '../lib/selection/filterDisplayTree'
+import { LevelFilterPanel } from './filters/LevelFilterPanel'
+import { SizeFilterPanel } from './filters/SizeFilterPanel'
+import { AuthorFilterPanel } from './filters/AuthorFilterPanel'
+import { TagsFilterPanel } from './filters/TagsFilterPanel'
 
 /** Stable id for chrome hotkey `/` focus jump. */
 export const FILTERS_SEARCH_ID = 'filters-search'
@@ -40,21 +35,6 @@ interface Props {
 }
 
 type PanelId = 'level' | 'size' | 'author' | 'tags'
-
-const AUTHOR_MODE_OPTIONS: { value: AuthorFilterMode; label: string }[] = [
-  { value: 'include', label: 'Include selected' },
-  { value: 'exclude', label: 'Exclude selected' },
-]
-
-const MORPHEUS_WARNING =
-  "This author is known for redirecting his site's domain to unsecure sites. If you use his mods, do so with caution."
-
-function toggleInSet(set: ReadonlySet<string>, value: string): Set<string> {
-  const next = new Set(set)
-  if (next.has(value)) next.delete(value)
-  else next.add(value)
-  return next
-}
 
 function FilterChipWrap({
   open,
@@ -246,57 +226,12 @@ export function FiltersStrip({
           {renderPopover(
             'level',
             'Show levels',
-            <>
-              <label className="filter-option">
-                <input
-                  type="radio"
-                  name={`${baseId}-ladder`}
-                  checked={criteria.maxLevel === null}
-                  onChange={() => selectLadder(null)}
-                />
-                All levels
-              </label>
-              {FILTER_LADDER_LEVELS.map((level) => (
-                <label key={level} className="filter-option">
-                  <input
-                    type="radio"
-                    name={`${baseId}-ladder`}
-                    checked={criteria.maxLevel === level}
-                    onChange={() => selectLadder(level)}
-                  />
-                  {LEVEL_LABELS[level]}
-                </label>
-              ))}
-              <label className={`filter-option${criteria.maxLevel ? '' : ' disabled'}`}>
-                <input
-                  type="checkbox"
-                  checked={criteria.levelExact}
-                  disabled={!criteria.maxLevel}
-                  onChange={(e) => patch({ levelExact: e.target.checked })}
-                />
-                This level only
-              </label>
-              <label className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={criteria.includeLowerDifficulty}
-                  onChange={(e) =>
-                    patch({ includeLowerDifficulty: e.target.checked })
-                  }
-                />
-                Include {LEVEL_LABELS.lowerDifficulty}
-              </label>
-              <label className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={criteria.includeHigherDifficulty}
-                  onChange={(e) =>
-                    patch({ includeHigherDifficulty: e.target.checked })
-                  }
-                />
-                Include {LEVEL_LABELS.higherDifficulty}
-              </label>
-            </>,
+            <LevelFilterPanel
+              baseId={baseId}
+              criteria={criteria}
+              onSelectLadder={selectLadder}
+              onPatch={patch}
+            />,
           )}
         </FilterChipWrap>
 
@@ -314,41 +249,13 @@ export function FiltersStrip({
           {renderPopover(
             'size',
             'Size',
-            sizeBounds ? (
-              <div className="filter-size">
-                <div className="filter-size-labels">
-                  <span>{formatBytes(min)}</span>
-                  <span>—</span>
-                  <span>{formatBytes(max)}</span>
-                </div>
-                <div className="filter-size-slider">
-                  <input
-                    type="range"
-                    className="filter-size-range filter-size-range-min"
-                    min={sizeBounds.min}
-                    max={sizeBounds.max}
-                    value={min}
-                    aria-label="Minimum size"
-                    onChange={(e) => setSizeMin(Number(e.target.value))}
-                  />
-                  <input
-                    type="range"
-                    className="filter-size-range filter-size-range-max"
-                    min={sizeBounds.min}
-                    max={sizeBounds.max}
-                    value={max}
-                    aria-label="Maximum size"
-                    onChange={(e) => setSizeMax(Number(e.target.value))}
-                  />
-                </div>
-                <div className="filter-size-bounds">
-                  <span>{formatBytes(sizeBounds.min)}</span>
-                  <span>{formatBytes(sizeBounds.max)}</span>
-                </div>
-              </div>
-            ) : (
-              <p className="filter-panel-empty">No size data in mods.csv.</p>
-            ),
+            <SizeFilterPanel
+              sizeBounds={sizeBounds}
+              min={min}
+              max={max}
+              onSetMin={setSizeMin}
+              onSetMax={setSizeMax}
+            />,
           )}
         </FilterChipWrap>
 
@@ -369,61 +276,13 @@ export function FiltersStrip({
           {renderPopover(
             'author',
             'Author',
-            authorOptions.length === 0 ? (
-              <p className="filter-panel-empty">No frequent authors in mods.csv.</p>
-            ) : (
-              <>
-                {AUTHOR_MODE_OPTIONS.map((opt) => (
-                  <label key={opt.value} className="filter-option">
-                    <input
-                      type="radio"
-                      name={`${baseId}-author-mode`}
-                      checked={criteria.authorMode === opt.value}
-                      onChange={() => patch({ authorMode: opt.value })}
-                    />
-                    {opt.label}
-                  </label>
-                ))}
-                <button
-                  type="button"
-                  className="filter-inline-action"
-                  onClick={() => patch({ authors: new Set(authorNames) })}
-                >
-                  Select all
-                </button>
-                <button
-                  type="button"
-                  className="filter-inline-action"
-                  onClick={() => patch({ authors: new Set() })}
-                >
-                  Clear
-                </button>
-                {authorOptions.map((opt) => (
-                  <label key={opt.name} className="filter-option">
-                    <input
-                      type="checkbox"
-                      checked={criteria.authors.has(opt.name)}
-                      onChange={() =>
-                        patch({ authors: toggleInSet(criteria.authors, opt.name) })
-                      }
-                    />
-                    <span className="filter-author-name">
-                      {opt.name}
-                      {opt.name === 'Morpheus562' && (
-                        <span
-                          className="filter-author-warning"
-                          title={MORPHEUS_WARNING}
-                          aria-label={MORPHEUS_WARNING}
-                        >
-                          !
-                        </span>
-                      )}
-                    </span>
-                    <span className="filter-author-count">({opt.count})</span>
-                  </label>
-                ))}
-              </>
-            ),
+            <AuthorFilterPanel
+              baseId={baseId}
+              criteria={criteria}
+              authorOptions={authorOptions}
+              authorNames={authorNames}
+              onPatch={patch}
+            />,
           )}
         </FilterChipWrap>
 
@@ -442,46 +301,11 @@ export function FiltersStrip({
           {renderPopover(
             'tags',
             'Tags',
-            tagOptions.length === 0 ? (
-              <p className="filter-panel-empty">No tags in this install sequence.</p>
-            ) : (
-              <>
-                <label className="filter-option">
-                  <input
-                    type="checkbox"
-                    checked={criteria.tagsOnlyChecked}
-                    onChange={(e) => patch({ tagsOnlyChecked: e.target.checked })}
-                  />
-                  Only tagged components
-                </label>
-                <button
-                  type="button"
-                  className="filter-inline-action"
-                  onClick={() => patch({ tags: new Set(tagOptions) })}
-                >
-                  Select all
-                </button>
-                <button
-                  type="button"
-                  className="filter-inline-action"
-                  onClick={() => patch({ tags: new Set() })}
-                >
-                  Clear
-                </button>
-                {tagOptions.map((tag) => (
-                  <label key={tag} className="filter-option">
-                    <input
-                      type="checkbox"
-                      checked={criteria.tags.has(tag)}
-                      onChange={() =>
-                        patch({ tags: toggleInSet(criteria.tags, tag) })
-                      }
-                    />
-                    {tag}
-                  </label>
-                ))}
-              </>
-            ),
+            <TagsFilterPanel
+              criteria={criteria}
+              tagOptions={tagOptions}
+              onPatch={patch}
+            />,
           )}
         </FilterChipWrap>
 
