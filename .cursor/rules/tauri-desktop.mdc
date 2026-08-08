@@ -1,6 +1,6 @@
 ---
-description: Tauri 2 desktop shell — dialogs, FS plugins, capabilities, and InfinityExpress desktop helpers
-globs: src-tauri/**/*,src/lib/desktop/**/*,**/ExportDialog.tsx,**/EngineStation.tsx,**/SettingsDialog.tsx,**/DirectoryField.tsx
+description: Tauri 2 desktop shell — dialogs, FS, custom Rust commands, ACL, and InfinityExpress helpers
+globs: src-tauri/**/*,src/lib/desktop/**/*,**/ExportDialog.tsx,**/EngineStation.tsx,**/SettingsDialog.tsx,**/DirectoryField.tsx,**/useUserCatalog.ts
 alwaysApply: false
 ---
 
@@ -8,60 +8,109 @@ alwaysApply: false
 
 ## Stack
 
-- Shell is **Tauri 2** (not Electron). Frontend is Vite + React under `src/`.
+- Shell is **Tauri 2** (not Electron). Frontend: Vite + React under `src/`.
 - Rust entry: [`src-tauri/src/lib.rs`](src-tauri/src/lib.rs) via `app_lib::run()`.
 - Scripts: `npm run tauri:dev` / `tauri:build`. Browser-only: `npm run dev`.
+- Detect desktop: `isTauri()` from `@tauri-apps/api/core` via `isDesktopApp()` in [`fsDialogs.ts`](src/lib/desktop/fsDialogs.ts).
 
-## Plugins in use
+## Plugins vs app commands
 
-Registered on the builder in `lib.rs`:
+| Need | Use |
+| --- | --- |
+| Native open/save/pick-dir dialogs | `tauri-plugin-dialog` (`@tauri-apps/plugin-dialog`) |
+| Write a file the user just picked in **this session** | `tauri-plugin-fs` `writeTextFile` — dialog path is **auto-scoped for the session only** |
+| Read/list/delete under a **persisted** user path (e.g. `D:\games\…` after restart) | App `#[tauri::command]` + **`std::fs`** — do **not** fight static `plugin-fs` scopes |
+| Persist prefs (paths, catalog) | **localStorage** — do not add `tauri-plugin-store` unless storage must live outside the webview |
 
-- `tauri-plugin-dialog` → `@tauri-apps/plugin-dialog`
-- `tauri-plugin-fs` → `@tauri-apps/plugin-fs`
+Official note: for Rust-side file work, prefer `std::fs` / `tokio::fs` over stretching plugin-fs to arbitrary drives.
 
-NPM also has `@tauri-apps/api` (e.g. `isTauri()`).
+## Capabilities (current)
 
-Capabilities: [`src-tauri/capabilities/default.json`](src-tauri/capabilities/default.json)
+[`src-tauri/capabilities/default.json`](src-tauri/capabilities/default.json):
 
-- `core:default`
-- `dialog:default` (open + save)
-- `fs:allow-write-text-file`
-- `allow-list-subdir-names` / `allow-remove-mod-dir` (app commands in [`permissions/mod-fs.toml`](src-tauri/permissions/mod-fs.toml))
+- `core:default`, `dialog:default`, `fs:allow-write-text-file`
+- App commands: `allow-list-subdir-names`, `allow-remove-mod-dir` → [`permissions/mod-fs.toml`](src-tauri/permissions/mod-fs.toml)
 
-Dialog-selected paths are **auto-scoped for the session**, so `writeTextFile` on a path returned by `save()` does not need a broad FS allow-list. Scope is not persisted across app restarts. Arbitrary user paths (mods download dir) use custom Rust `std::fs` commands instead of plugin-fs scopes.
+By default, commands registered with `invoke_handler` are callable; still declare explicit `permissions/*.toml` + capability entries when adding commands (clear ACL, matches this repo).
 
-## Frontend helpers
-
-Prefer extending [`src/lib/desktop/`](src/lib/desktop/) over scattering plugin imports:
+## Frontend helpers (`src/lib/desktop/`)
 
 | Helper | Behavior |
 | --- | --- |
-| `isDesktopApp()` | `isTauri()` from `@tauri-apps/api/core` |
-| `saveTextFile(name, contents)` | `save({ defaultPath, filters })` then `writeTextFile`; `false` if cancelled |
-| `pickDirectory(title?)` | `open({ directory: true, multiple: false })`; `null` if cancelled or not Tauri |
-| `listSubdirNames(path)` | invoke `list_subdir_names`; `[]` if not desktop / empty path |
-| `removeModDir(downloadDir, folderName)` | invoke `remove_mod_dir` (case-insensitive folder match under download dir); no-op if not desktop |
+| `isDesktopApp()` | `isTauri()` |
+| `saveTextFile(name, contents)` | `save()` then `writeTextFile`; `false` if cancelled |
+| `pickDirectory(title?)` | `open({ directory: true })`; `null` if cancelled / not Tauri |
+| `listSubdirNames(path)` | invoke `list_subdir_names`; `[]` if not desktop / empty |
+| `removeModDir(downloadDir, folderName)` | invoke `remove_mod_dir` (CI folder match); no-op if not desktop |
 
-### Call sites
+Guards: every helper no-ops or returns empty when `!isDesktopApp()`. UI (e.g. Browse) should disable + tooltip outside desktop.
 
-- **Export Save** ([`ExportDialog.tsx`](src/ui/ExportDialog.tsx)): desktop → `saveTextFile`; browser → `downloadText` Blob fallback.
-- **Engine / Settings Browse** ([`EngineStation.tsx`](src/ui/EngineStation.tsx), [`SettingsDialog.tsx`](src/ui/SettingsDialog.tsx)): `DirectoryField` → `pickDirectory`; game paths via [`gameFolderPrefs.ts`](src/lib/ui/gameFolderPrefs.ts); app dirs via [`appDirPrefs.ts`](src/lib/ui/appDirPrefs.ts).
-- **Mods disk presence / remove** ([`useUserCatalog.ts`](src/hooks/useUserCatalog.ts)): scan download dir; Download ID = folder name; remove deletes that folder.
+## Cookbook: add a custom FS command
 
-## Prefs vs native storage
+1. Implement in [`src-tauri/src/mod_fs.rs`](src-tauri/src/mod_fs.rs) (or a new module):
 
-Plain string prefs (game folders, chrome, detail pane, mods catalog) use **localStorage** helpers under `src/lib/ui/` (and `userCatalog`). Do **not** add `tauri-plugin-store` unless persistence must live outside the webview.
+```rust
+#[tauri::command]
+pub fn my_command(path: String) -> Result<Vec<String>, String> {
+  // std::fs… map_err(|e| e.to_string())
+}
+```
 
-## Adding more native FS
+2. Register in `lib.rs`:
 
-1. Cargo + npm plugin (if new), **or** app `#[tauri::command]` + `std::fs` for arbitrary user paths.
-2. `.plugin(...::init())` and/or `invoke_handler` in `lib.rs`.
-3. Capability permission in `default.json` (and `permissions/*.toml` for app commands).
-4. Thin wrapper in `src/lib/desktop/`; keep browser fallbacks when useful.
+```rust
+.invoke_handler(tauri::generate_handler![
+  mod_fs::list_subdir_names,
+  mod_fs::remove_mod_dir,
+  // mod_fs::my_command,
+])
+```
 
-## Official refs (API detail only)
+3. ACL — `src-tauri/permissions/something.toml`:
+
+```toml
+[[permission]]
+identifier = "allow-my-command"
+description = "…"
+commands.allow = ["my_command"]
+```
+
+4. Reference `"allow-my-command"` in `capabilities/default.json` `permissions` array (app perms have **no** `plugin:` prefix).
+
+5. Thin TS wrapper with `invoke` from `@tauri-apps/api/core`. **Args are camelCase** in JS matching snake_case Rust params:
+
+```ts
+await invoke('remove_mod_dir', { downloadDir, folderName })
+// Rust: remove_mod_dir(download_dir: String, folder_name: String)
+```
+
+6. Command name for invoke is the function name (`remove_mod_dir`), not `mod_fs::…`.
+
+## Path-safety patterns (this repo)
+
+- Reject empty names, `.` / `..`, `/` `\`, multi-segment names before joining.
+- Resolve delete target as **child of** download dir; refuse if canonical path escapes parent or equals parent.
+- Windows: match folder names **case-insensitively**, then delete using the **on-disk** spelling (`find_subdir_ci`).
+- Missing download dir / missing folder: list → `[]`; remove of missing folder → `Ok(())`.
+
+## Mods disk semantics
+
+- Settings `modsDownloadDir` (`infinity-express.app-dirs`) is the scan root.
+- Download ID (`codename`) = subdirectory name under that root.
+- Presence logic (pure TS): [`diskPresence.ts`](src/lib/mods/diskPresence.ts); hook refreshes on load + `ie-paths-changed`.
+- Remove from disk deletes the folder; catalog row stays.
+
+## Prefer not to re-research
+
+- Dialog scope ≠ persisted FS access across restarts.
+- Broad `$HOME/**` plugin-fs scopes are a poor fit for multi-drive Windows game/mod paths — use app commands.
+- Errors from commands: return `Result<T, String>`; frontend `invoke` rejects with that string (often not an `Error` instance — coerce with `String(err)`).
+- PowerShell: use `;` not `&&` when chaining (`cd src-tauri; cargo test`).
+
+## Refs (API detail only)
 
 - https://v2.tauri.app/plugin/dialog/
 - https://v2.tauri.app/plugin/file-system/
 - https://v2.tauri.app/learn/security/using-plugin-permissions/
 - https://v2.tauri.app/develop/calling-rust/
+- https://v2.tauri.app/security/capabilities/
