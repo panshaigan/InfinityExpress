@@ -1,0 +1,90 @@
+import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
+import { SelectionPresetsBar } from './SelectionPresetsBar'
+
+interface PresetItem {
+  id: string
+  name: string
+}
+
+interface Props {
+  game: SelectedGame | null
+  selectedCount: number
+  presets: PresetItem[]
+  activePresetId: string | null
+  activePresetName: string | null
+  dirty: boolean
+  canSave: boolean
+  canDelete: boolean
+  onSelectPreset: (id: string | null) => void
+  onSave: () => void
+  onRename: (name: string) => void
+  onDelete: () => void
+  keyboardHelpOpen: boolean
+  onOpenKeyboardHelp: () => void
+  onExport: () => void
+}
+
+export function AppTopBar({
+  game,
+  selectedCount,
+  presets,
+  activePresetId,
+  activePresetName,
+  dirty,
+  canSave,
+  canDelete,
+  onSelectPreset,
+  onSave,
+  onRename,
+  onDelete,
+  keyboardHelpOpen,
+  onOpenKeyboardHelp,
+  onExport,
+}: Props) {
+  return (
+    <header className="top-bar">
+      <div className="brand">
+        <h1>Infinity Express</h1>
+        <p>Your mod route</p>
+      </div>
+      <div className="top-bar-actions">
+        <span className="engine-badge">
+          Engine: <strong>{game ? GAME_LABELS[game] : 'not set'}</strong>
+        </span>
+        <span className="stats">{selectedCount} selected</span>
+        <SelectionPresetsBar
+          disabled={game == null}
+          presets={presets}
+          activePresetId={activePresetId}
+          activePresetName={activePresetName}
+          dirty={dirty}
+          canSave={canSave}
+          canDelete={canDelete}
+          onSelectPreset={onSelectPreset}
+          onSave={onSave}
+          onRename={onRename}
+          onDelete={onDelete}
+        />
+        <button
+          type="button"
+          className="btn secondary top-bar-help"
+          aria-haspopup="dialog"
+          aria-expanded={keyboardHelpOpen}
+          title="Keyboard shortcuts"
+          onClick={onOpenKeyboardHelp}
+        >
+          ?
+        </button>
+        <button
+          type="button"
+          className="btn"
+          disabled={selectedCount === 0}
+          title="Download install-order.txt"
+          onClick={onExport}
+        >
+          Export
+        </button>
+      </div>
+    </header>
+  )
+}
