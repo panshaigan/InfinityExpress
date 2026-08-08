@@ -256,39 +256,6 @@ body {
   padding-right: 0.2rem;
 }
 
-.station-nav-collapse {
-  position: absolute;
-  top: 0.2rem;
-  right: 0.2rem;
-  z-index: 1;
-  appearance: none;
-  border: 1px solid transparent;
-  background: color-mix(in srgb, var(--panel) 88%, transparent);
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.85rem;
-  line-height: 1;
-  padding: 0.2rem 0.35rem;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-.station-nav.collapsed .station-nav-collapse {
-  right: 50%;
-  transform: translateX(50%);
-}
-
-.station-nav-collapse:hover {
-  color: var(--ink);
-  background: var(--accent-soft);
-  border-color: var(--line);
-}
-
-.station-nav-collapse:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
-
 .station-nav-scroll {
   display: flex;
   flex-direction: column;
@@ -297,16 +264,6 @@ body {
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-}
-
-.station-nav.collapsed .station-nav-scroll {
-  /* Keep short labels clear of the centered expand control. */
-  padding-top: 1.15rem;
-}
-
-.station-nav:not(.collapsed) .station-nav-scroll > button:first-child {
-  /* Clear the corner overlay so labels stay readable. */
-  padding-right: 1.55rem;
 }
 
 .station-nav button {
@@ -410,7 +367,7 @@ body {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
-.station-nav.collapsed button:not(.station-nav-collapse) {
+.station-nav.collapsed button {
   justify-content: flex-start;
   padding: 0.35rem 0.1rem 0.35rem 0.05rem;
   border-right-width: 2px;
@@ -1007,7 +964,7 @@ body.is-resizing-detail * {
 }
 
 .list-pane-header {
-  padding: 0.55rem 0.9rem 0.45rem;
+  padding: 0.55rem 0.9rem 0.45rem 0.45rem;
   flex-shrink: 0;
   border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 78%, var(--bg));
@@ -1162,7 +1119,32 @@ body.is-resizing-detail * {
 .list-pane-header-title {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.45rem;
+}
+
+.rail-collapse {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.2rem 0.3rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.rail-collapse:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+  border-color: var(--line);
+}
+
+.rail-collapse:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .list-pane-header-title h2 {
@@ -1600,6 +1582,21 @@ body.is-resizing-detail * {
   line-height: 1.1;
   color: color-mix(in srgb, var(--ink) 88%, var(--accent));
   text-shadow: 0 1px 0 color-mix(in srgb, #000 35%, transparent);
+}
+
+.engine-station-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.45rem;
+}
+
+.engine-station-title .rail-collapse {
+  margin-left: -0.15rem;
+}
+
+.engine-station-title h2 {
+  margin: 0;
 }
 
 .engine-station h2 {
@@ -3039,7 +3036,7 @@ body.is-resizing-detail * {
     min-width: 3.1rem;
   }
 
-  .station-nav button:not(.station-nav-collapse) {
+  .station-nav button {
     padding: 0.3rem 0.3rem 0.3rem 0.2rem;
     font-size: 0.78rem;
   }
@@ -3048,7 +3045,7 @@ body.is-resizing-detail * {
     --station-track-bridge: calc(0.3rem + 1px);
   }
 
-  .station-nav.collapsed button:not(.station-nav-collapse) {
+  .station-nav.collapsed button {
     padding: 0.3rem 0.05rem 0.3rem 0.02rem;
     font-size: 0.64rem;
   }

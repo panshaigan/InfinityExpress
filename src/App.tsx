@@ -42,6 +42,7 @@ import {
 import { listEmptyCopy } from './lib/ui/listEmptyCopy'
 import { StationNav, type AppNavSlot } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
+import { RailCollapseButton } from './ui/RailCollapseButton'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
 import { ContentBranchNav } from './ui/ContentBranchNav'
@@ -430,7 +431,6 @@ export default function App() {
           finishedCount={route.routeProgress.finishedCount}
           totalCount={route.routeProgress.totalCount}
           collapsed={railCollapsed}
-          onToggleCollapsed={toggleRailCollapsed}
           onSelectEngine={selectEngine}
           onSelectStation={selectStation}
         />
@@ -472,6 +472,8 @@ export default function App() {
                       higherDifficulty={levels.higherDifficultyPreset}
                       onLadderToggle={levels.onLadderToggle}
                       onDifficultyChange={levels.onDifficultyPresetChange}
+                      railCollapsed={railCollapsed}
+                      onToggleRailCollapsed={toggleRailCollapsed}
                       canCycle={route.canCycleScreens}
                       canOk={route.canMarkFinished}
                       finished={route.currentFinished}
@@ -485,6 +487,10 @@ export default function App() {
                   <>
                     <div className="list-pane-header">
                       <div className="list-pane-header-title">
+                        <RailCollapseButton
+                          collapsed={railCollapsed}
+                          onToggle={toggleRailCollapsed}
+                        />
                         <h2>Search</h2>
                       </div>
                       <p className="lede">
@@ -522,6 +528,10 @@ export default function App() {
                   <>
                     <div className="list-pane-header">
                       <div className="list-pane-header-title">
+                        <RailCollapseButton
+                          collapsed={railCollapsed}
+                          onToggle={toggleRailCollapsed}
+                        />
                         <h2>
                           {STATION_LABELS[activeStation]}
                           {route.currentFinished && (

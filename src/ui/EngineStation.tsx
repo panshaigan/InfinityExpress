@@ -1,6 +1,7 @@
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import { LevelSelectStrip } from './LevelSelectStrip'
+import { RailCollapseButton } from './RailCollapseButton'
 import { ScreenNavButtons } from './ScreenNavButtons'
 
 const GAMES: SelectedGame[] = ['bg1', 'bg2', 'eet', 'iwd', 'pst']
@@ -21,6 +22,8 @@ interface Props {
   higherDifficulty: boolean
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
   onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
+  railCollapsed: boolean
+  onToggleRailCollapsed: () => void
   canCycle: boolean
   canOk: boolean
   finished: boolean
@@ -38,6 +41,8 @@ export function EngineStation({
   higherDifficulty,
   onLadderToggle,
   onDifficultyChange,
+  railCollapsed,
+  onToggleRailCollapsed,
   canCycle,
   canOk,
   finished,
@@ -49,7 +54,13 @@ export function EngineStation({
   return (
     <section className="engine-station">
       <p className="engine-brand-mark">Infinity Express</p>
-      <h2>Choose your engine</h2>
+      <div className="engine-station-title">
+        <RailCollapseButton
+          collapsed={railCollapsed}
+          onToggle={onToggleRailCollapsed}
+        />
+        <h2>Choose your engine</h2>
+      </div>
       <p className="lede">
         Pick the game you are modding. Press <strong>Done</strong> to walk stop by stop, or jump
         freely from the left rail anytime.

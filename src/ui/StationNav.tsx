@@ -34,7 +34,6 @@ interface Props {
   finishedCount: number
   totalCount: number
   collapsed: boolean
-  onToggleCollapsed: () => void
   onSelectEngine: () => void
   onSelectStation: (id: StationId) => void
 }
@@ -106,7 +105,6 @@ export function StationNav({
   finishedCount,
   totalCount,
   collapsed,
-  onToggleCollapsed,
   onSelectEngine,
   onSelectStation,
 }: Props) {
@@ -118,16 +116,6 @@ export function StationNav({
       className={`station-nav${collapsed ? ' collapsed' : ''}`}
       aria-label="Stations"
     >
-      <button
-        type="button"
-        className="station-nav-collapse"
-        onClick={onToggleCollapsed}
-        title={collapsed ? 'Expand station rail (\\)' : 'Collapse station rail (\\)'}
-        aria-expanded={!collapsed}
-        aria-label={collapsed ? 'Expand station rail' : 'Collapse station rail'}
-      >
-        {collapsed ? '»' : '«'}
-      </button>
       <div className="station-nav-scroll">
         <StationStop
           id="engine"
