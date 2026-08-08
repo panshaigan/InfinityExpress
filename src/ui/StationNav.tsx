@@ -83,18 +83,16 @@ export function StationNav({
       className={`station-nav${collapsed ? ' collapsed' : ''}`}
       aria-label="Stations"
     >
-      <div className="station-nav-chrome">
-        <button
-          type="button"
-          className="station-nav-collapse"
-          onClick={onToggleCollapsed}
-          title={collapsed ? 'Expand station rail (\\)' : 'Collapse station rail (\\)'}
-          aria-expanded={!collapsed}
-          aria-label={collapsed ? 'Expand station rail' : 'Collapse station rail'}
-        >
-          {collapsed ? '»' : '«'}
-        </button>
-      </div>
+      <button
+        type="button"
+        className="station-nav-collapse"
+        onClick={onToggleCollapsed}
+        title={collapsed ? 'Expand station rail (\\)' : 'Collapse station rail (\\)'}
+        aria-expanded={!collapsed}
+        aria-label={collapsed ? 'Expand station rail' : 'Collapse station rail'}
+      >
+        {collapsed ? '»' : '«'}
+      </button>
       <div className="station-nav-scroll">
         <button
           type="button"

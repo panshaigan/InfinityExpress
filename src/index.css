@@ -234,6 +234,7 @@ body {
 /* —— Station rail (left) —— */
 
 .station-nav {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -255,21 +256,14 @@ body {
   padding-right: 0.2rem;
 }
 
-.station-nav-chrome {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.2rem;
-  flex-shrink: 0;
-}
-
-.station-nav.collapsed .station-nav-chrome {
-  justify-content: center;
-}
-
 .station-nav-collapse {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  z-index: 1;
   appearance: none;
   border: 1px solid transparent;
-  background: transparent;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
   color: var(--muted);
   font: inherit;
   font-size: 0.85rem;
@@ -277,6 +271,11 @@ body {
   padding: 0.2rem 0.35rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
+}
+
+.station-nav.collapsed .station-nav-collapse {
+  right: 50%;
+  transform: translateX(50%);
 }
 
 .station-nav-collapse:hover {
@@ -298,6 +297,16 @@ body {
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+.station-nav.collapsed .station-nav-scroll {
+  /* Keep short labels clear of the centered expand control. */
+  padding-top: 1.15rem;
+}
+
+.station-nav:not(.collapsed) .station-nav-scroll > button:first-child {
+  /* Clear the corner overlay so finished marks stay visible. */
+  padding-right: 1.55rem;
 }
 
 .station-nav button {
