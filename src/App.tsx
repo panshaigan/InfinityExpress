@@ -262,6 +262,7 @@ export default function App() {
     levels.resetLevelPresets()
     presets.resetPresetSelection()
     route.resetFinishedStations()
+    route.markStationFinished('engine')
     setActiveStation('engine')
     setSearchScope('section')
     clearFocus()

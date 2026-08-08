@@ -112,10 +112,10 @@ export function useRouteNav(args: {
     if (next) applyNavScreen(next)
   }
 
-  function markStationFinished() {
+  function markStationFinished(slot: StationSlot = activeStation) {
     setFinishedStations((prev) => {
       const next = new Set(prev)
-      next.add(activeStation)
+      next.add(slot)
       return next
     })
   }
@@ -159,6 +159,7 @@ export function useRouteNav(args: {
     goPrevScreen,
     goNextScreen,
     onOk,
+    markStationFinished,
     unmarkStationFinished,
     resetFinishedStations,
   }

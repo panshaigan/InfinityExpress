@@ -25,34 +25,6 @@ const LADDER_ROWS: LadderLevel[][] = [
   ['vanillaPlus', 'blendWell', 'extended'],
 ]
 
-function HelpTip({ text }: { text: string }) {
-  return (
-    <span
-      className="level-help"
-      tabIndex={0}
-      aria-label={text}
-      onMouseDown={(e) => e.preventDefault()}
-      onClick={(e) => e.preventDefault()}
-    >
-      <span className="level-help-icon" aria-hidden="true">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
-          <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.4" />
-          <path
-            d="M8 7.15v3.6"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-          <circle cx="8" cy="5.15" r="0.85" fill="currentColor" />
-        </svg>
-      </span>
-      <span className="level-help-tip" role="tooltip">
-        {text}
-      </span>
-    </span>
-  )
-}
-
 function LevelCard({
   label,
   hint,
@@ -70,9 +42,13 @@ function LevelCard({
   compact: boolean
   onChange: (wantChecked: boolean) => void
 }) {
+  const showTip = !compact && !!recommendation
+
   return (
     <label
-      className={`level-card${!enabled ? ' disabled' : ''}${checked ? ' active' : ''}`}
+      className={`level-card${!enabled ? ' disabled' : ''}${checked ? ' active' : ''}${
+        showTip ? ' has-tip' : ''
+      }`}
     >
       <input
         type="checkbox"
@@ -81,14 +57,16 @@ function LevelCard({
         onChange={(e) => onChange(e.target.checked)}
       />
       <span className="level-card-copy">
-        <span className="level-card-label-row">
-          <span className="level-card-label">{label}</span>
-          {!compact && recommendation ? <HelpTip text={recommendation} /> : null}
-        </span>
+        <span className="level-card-label">{label}</span>
         {!compact && hint ? (
           <span className="level-card-hint">{hint}</span>
         ) : null}
       </span>
+      {showTip ? (
+        <span className="level-card-tip" role="tooltip">
+          {recommendation}
+        </span>
+      ) : null}
     </label>
   )
 }
