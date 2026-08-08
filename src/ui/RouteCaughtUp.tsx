@@ -1,6 +1,7 @@
 interface Props {
   visible: boolean
   selectedCount: number
+  onOpenMods: () => void
   onExport: () => void
   onDismiss: () => void
 }
@@ -9,6 +10,7 @@ interface Props {
 export function RouteCaughtUp({
   visible,
   selectedCount,
+  onOpenMods,
   onExport,
   onDismiss,
 }: Props) {
@@ -23,13 +25,16 @@ export function RouteCaughtUp({
           {selectedCount > 0
             ? ` · ${selectedCount} component${selectedCount === 1 ? '' : 's'} selected`
             : ''}
-          . Export when ready, or reopen any stop from the rail.
+          . Next, review the mods your route needs — or export the install order.
         </p>
       </div>
       <div className="route-caught-up-actions">
+        <button type="button" className="btn" onClick={onOpenMods}>
+          Open Mods
+        </button>
         <button
           type="button"
-          className="btn"
+          className="btn secondary"
           disabled={selectedCount === 0}
           onClick={onExport}
           title={

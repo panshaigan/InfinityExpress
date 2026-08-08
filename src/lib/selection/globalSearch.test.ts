@@ -26,6 +26,7 @@ function mod(partial: Partial<ModInfo> & { codename: string; name: string }): Mo
     category: '',
     url: '',
     readme: '',
+    game: '',
     release: '',
     version: '',
     sizeBytes: null,

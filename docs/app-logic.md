@@ -58,7 +58,7 @@ InstallSequence.xml
                                  ← EET: Pre-EET (eet1) + EET (eet) tabs
 ```
 
-Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Mod Readme / Release / Version / Size / Author / Stability. Mod Readme and component `readme` links are shown only when the value is a valid `http`/`https` URL. Downloading mods / WeiDU come later.
+Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Mod Readme / Release / Version / Size / Author / Stability. Mod Readme and component `readme` links are shown only when the value is a valid `http`/`https` URL. The Mods phase manages a user working copy of that catalog (download/update actions are stubs until the desktop app).
 
 Selection state is a `Set` of **component ids** (WeiDU / XML `id` values), not internal tree keys.
 
@@ -478,10 +478,14 @@ Persistence is React state only for now; the serializable shape in `src/lib/pres
 
 ## Out of scope (later milestones)
 
-- Downloading mods  
-- Invoking WeiDU  
-- User-supplied XML/CSV overrides  
+- **Real** mod download / update / remove-from-disk (UI stubs exist on the Mods phase)  
+- Invoking WeiDU (Install phase nav is visible but disabled)  
+- User-supplied XML overrides  
 - Tauri 2 shell wiring (window, FS, native menus) — UI and `src/lib/` logic are already oriented for that host
+
+### Mods phase (UI)
+
+Top-bar phases: **Components** · **Mods** · **Install** (disabled). The Mods screen is a working-copy catalog: shipped `src/data/mods.csv` is the immutable base; a per-user copy (localStorage now, user data later) receives acquire/update overlays (version, size, disk status). Base rows cannot be deleted from the catalog; only user-added rows support full CRUD. Completing the last Components station opens Mods in journey mode with required mods filtered and selection locked.
 
 Domain logic is kept in pure TypeScript under `src/lib/` so those features can wrap the same modules.
 

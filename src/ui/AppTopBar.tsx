@@ -1,5 +1,6 @@
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import { SelectionPresetsBar } from './SelectionPresetsBar'
+import { PhaseNav, type AppPhase } from './PhaseNav'
 
 interface PresetItem {
   id: string
@@ -7,6 +8,8 @@ interface PresetItem {
 }
 
 interface Props {
+  phase: AppPhase
+  onPhaseChange: (phase: AppPhase) => void
   game: SelectedGame | null
   selectedModsCount: number
   selectedCount: number
@@ -26,6 +29,8 @@ interface Props {
 }
 
 export function AppTopBar({
+  phase,
+  onPhaseChange,
   game,
   selectedModsCount,
   selectedCount,
@@ -49,6 +54,7 @@ export function AppTopBar({
         <h1>Infinity Express</h1>
         <p>Your mod route</p>
       </div>
+      <PhaseNav phase={phase} onPhaseChange={onPhaseChange} />
       <div className="top-bar-actions">
         <span className="engine-badge">
           Engine: <strong>{game ? GAME_LABELS[game] : 'not set'}</strong>

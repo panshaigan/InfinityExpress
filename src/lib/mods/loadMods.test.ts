@@ -5,6 +5,7 @@ import {
   formatBytes,
   hasModField,
   isModTypeBranchDisplay,
+  listSelectedModCodenames,
   modSizeBounds,
   parseModsCsv,
   resolveModLookupKey,
@@ -34,6 +35,7 @@ describe('parseModsCsv', () => {
       category: 'NPC',
       url: 'https://github.com/Gibberlings3/Totemic_Cernd',
       readme: '',
+      game: 'BG2',
       release: '2017-06-06',
       version: 'v3',
       sizeBytes: 12345,
@@ -341,6 +343,9 @@ describe('countSelectedMods', () => {
     })
     const model = modelWithComponents(mod, a, b)
     expect(countSelectedMods(model, new Set(['a:1', 'a:2']))).toBe(1)
+    expect(listSelectedModCodenames(model, new Set(['a:1', 'a:2']))).toEqual([
+      'EEex',
+    ])
   })
 
   it('counts distinct modIds as separate mods', () => {

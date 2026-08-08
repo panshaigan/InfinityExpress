@@ -7,12 +7,34 @@ export interface ModInfo {
   category: string
   url: string
   readme: string
+  game: string
   release: string
   version: string
   sizeBytes: number | null
   author: string
   type: string
   stability: string
+}
+
+export type ModOrigin = 'base' | 'user'
+
+export type DiskStatus =
+  | 'not_present'
+  | 'present'
+  | 'update_available'
+  | 'busy'
+
+/** Local overrides applied on top of base/user catalog fields after acquire/update. */
+export interface ModFieldOverlays {
+  version?: string
+  release?: string
+  sizeBytes?: number | null
+}
+
+export interface WorkingMod extends ModInfo {
+  origin: ModOrigin
+  diskStatus: DiskStatus
+  overlays: ModFieldOverlays
 }
 
 export interface SizeBounds {
@@ -82,6 +104,7 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
   const iCategory = idx('Category')
   const iUrl = idx('URL')
   const iReadme = idx('Readme')
+  const iGame = idx('Game')
   const iRelease = idx('Release')
   const iVersion = idx('Version')
   const iSize = idx('Size')
@@ -101,6 +124,7 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
       category: (iCategory >= 0 ? cols[iCategory] ?? '' : '').trim(),
       url: (iUrl >= 0 ? cols[iUrl] ?? '' : '').trim(),
       readme: (iReadme >= 0 ? cols[iReadme] ?? '' : '').trim(),
+      game: (iGame >= 0 ? cols[iGame] ?? '' : '').trim(),
       release: (iRelease >= 0 ? cols[iRelease] ?? '' : '').trim(),
       version: (iVersion >= 0 ? cols[iVersion] ?? '' : '').trim(),
       sizeBytes: iSize >= 0 ? parseSizeBytes(cols[iSize] ?? '') : null,
@@ -110,6 +134,45 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
     })
   }
   return map
+}
+
+/** Apply overlays onto catalog fields for display / acquire state. */
+export function effectiveModFields(mod: WorkingMod): ModInfo {
+  return {
+    codename: mod.codename,
+    name: mod.name,
+    abbreviation: mod.abbreviation,
+    category: mod.category,
+    url: mod.url,
+    readme: mod.readme,
+    game: mod.game,
+    release: mod.overlays.release ?? mod.release,
+    version: mod.overlays.version ?? mod.version,
+    sizeBytes:
+      mod.overlays.sizeBytes !== undefined
+        ? mod.overlays.sizeBytes
+        : mod.sizeBytes,
+    author: mod.author,
+    type: mod.type,
+    stability: mod.stability,
+  }
+}
+
+/**
+ * Distinct mod codenames represented by the selected components.
+ * Uses resolveModLookupKey; orphans with no key fall back to componentId.
+ */
+export function listSelectedModCodenames(
+  model: InstallSequenceModel,
+  selectedIds: ReadonlySet<string>,
+): string[] {
+  const keys = new Set<string>()
+  for (const id of selectedIds) {
+    const node = model.componentsById.get(id)
+    if (!node) continue
+    keys.add(resolveModLookupKey(model, node) ?? node.componentId)
+  }
+  return [...keys].sort((a, b) => a.localeCompare(b))
 }
 
 /** Format byte count as human-readable (1024-based). */
@@ -238,13 +301,7 @@ export function countSelectedMods(
   model: InstallSequenceModel,
   selectedIds: ReadonlySet<string>,
 ): number {
-  const keys = new Set<string>()
-  for (const id of selectedIds) {
-    const node = model.componentsById.get(id)
-    if (!node) continue
-    keys.add(resolveModLookupKey(model, node) ?? node.componentId)
-  }
-  return keys.size
+  return listSelectedModCodenames(model, selectedIds).length
 }
 
 /** Type shown when the row is a pick from a multi-component mod (not the whole mod). */

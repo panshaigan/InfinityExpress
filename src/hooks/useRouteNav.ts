@@ -19,6 +19,8 @@ export function useRouteNav(args: {
   clearFocus: () => void
   showRouteTip: boolean
   dismissRouteTip: () => void
+  /** Called when Done finishes the last unfinished station (no next screen). */
+  onRouteJustCompleted?: () => void
 }) {
   const {
     game,
@@ -35,6 +37,7 @@ export function useRouteNav(args: {
     clearFocus,
     showRouteTip,
     dismissRouteTip,
+    onRouteJustCompleted,
   } = args
 
   const [finishedStations, setFinishedStations] = useState<Set<StationSlot>>(
@@ -147,7 +150,11 @@ export function useRouteNav(args: {
       1,
       (s) => finishedStations.has(s.stationId) || s.stationId === activeStation,
     )
-    if (next) applyNavScreen(next)
+    if (next) {
+      applyNavScreen(next)
+      return
+    }
+    onRouteJustCompleted?.()
   }
 
   function resetFinishedStations() {

@@ -60,7 +60,7 @@ import { ConfirmDialog } from './ui/ConfirmDialog'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { AppTopBar } from './ui/AppTopBar'
 import { DetailPane } from './ui/DetailPane'
-import { countSelectedMods } from './lib/mods/loadMods'
+import { countSelectedMods, listSelectedModCodenames } from './lib/mods/loadMods'
 import { useStationTrees } from './hooks/useStationTrees'
 import { useBranchNav } from './hooks/useBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
@@ -68,6 +68,9 @@ import { useLevelPresets } from './hooks/useLevelPresets'
 import { useChromeHotkeys } from './hooks/useChromeHotkeys'
 import { useRouteNav } from './hooks/useRouteNav'
 import { useTreeFocus } from './hooks/useTreeFocus'
+import { useUserCatalog } from './hooks/useUserCatalog'
+import { type AppPhase } from './ui/PhaseNav'
+import { ModsStation, type ModsJourneyState } from './ui/mods/ModsStation'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
@@ -78,7 +81,10 @@ export default function App() {
   const [game, setGame] = useState<SelectedGame | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const [activeStation, setActiveStation] = useState<AppNavSlot>('engine')
+  const [appPhase, setAppPhase] = useState<AppPhase>('components')
+  const [modsJourney, setModsJourney] = useState<ModsJourneyState | null>(null)
   const [searchScope, setSearchScope] = useState<'section' | 'all'>('section')
+  const userCatalog = useUserCatalog()
 
   const filterOptions = useMemo(() => collectFilterOptions(model), [model])
   const [filters, setFilters] = useState<FilterCriteria>(() =>
@@ -219,7 +225,29 @@ export default function App() {
     clearFocus,
     showRouteTip,
     dismissRouteTip,
+    onRouteJustCompleted: () => {
+      const required = listSelectedModCodenames(model, selectedIds)
+      setModsJourney({ locked: true, requiredCodenames: required })
+      setAppPhase('mods')
+    },
   })
+
+  function openModsJourneyFromBanner() {
+    const required = listSelectedModCodenames(model, selectedIds)
+    setModsJourney({ locked: true, requiredCodenames: required })
+    setAppPhase('mods')
+    route.setHideCaughtUp(true)
+  }
+
+  function onPhaseChange(phase: AppPhase) {
+    if (phase === 'install') return
+    if (phase === appPhase) return
+    if (phase === 'mods') {
+      // Phase nav opens the library; journey lock only from Done / Open Mods.
+      setModsJourney((prev) => (prev ? { ...prev, locked: false } : null))
+    }
+    setAppPhase(phase)
+  }
 
   const stationDesc = useMemo(() => {
     if (activeStation === 'engine') return undefined
@@ -272,6 +300,7 @@ export default function App() {
   }, [game, globalSearchHits, selectedIds])
 
   const showDetail = activeStation !== 'engine' && !!game
+  const showComponentsChrome = appPhase === 'components'
 
   function isSelectionDirty(): boolean {
     if (!game) return false
@@ -470,15 +499,15 @@ export default function App() {
 
   useChromeHotkeys({
     keyboardHelpOpen,
-    showDetail,
+    showDetail: (showComponentsChrome && showDetail) || appPhase === 'mods',
     activeStation,
     visibleStations,
     mainBranches: contentMainBranches,
     subBranches: contentSubBranches,
     mainKey: contentMainKey,
     subKey: contentSubKey,
-    branchMainCycleActive: isBranchNavStation,
-    contentSubCycleActive: isContentStation,
+    branchMainCycleActive: isBranchNavStation && showComponentsChrome,
+    contentSubCycleActive: isContentStation && showComponentsChrome,
     onToggleRailCollapsed: toggleRailCollapsed,
     onToggleDetailCollapsed: toggleDetailCollapsed,
     onOpenKeyboardHelp: openKeyboardHelp,
@@ -491,6 +520,8 @@ export default function App() {
   return (
     <div className="app">
       <AppTopBar
+        phase={appPhase}
+        onPhaseChange={onPhaseChange}
         game={game}
         selectedModsCount={selectedModsCount}
         selectedCount={selectedIds.size}
@@ -513,6 +544,29 @@ export default function App() {
         onExport={handleExport}
       />
 
+      {appPhase === 'mods' ? (
+        <div className="app-body mods-app-body">
+          <div className="app-main mods-app-main">
+            <ModsStation
+              mods={userCatalog.mods}
+              journey={modsJourney}
+              onClearJourneyLock={() =>
+                setModsJourney((prev) =>
+                  prev ? { ...prev, locked: false } : null,
+                )
+              }
+              detailCollapsed={detailCollapsed}
+              detailWidth={detailWidth}
+              onDetailWidthChange={setDetailWidth}
+              onToggleDetailCollapsed={toggleDetailCollapsed}
+              onAddMod={userCatalog.addMod}
+              onEditMod={userCatalog.editMod}
+              onDeleteMod={userCatalog.deleteMod}
+              onStubAction={userCatalog.applyAcquireStub}
+            />
+          </div>
+        </div>
+      ) : (
       <div className="app-body">
         <StationNav
           game={game}
@@ -531,6 +585,7 @@ export default function App() {
           <RouteCaughtUp
             visible={route.routeComplete && !route.hideCaughtUp && !showRouteTip}
             selectedCount={selectedIds.size}
+            onOpenMods={openModsJourneyFromBanner}
             onExport={handleExport}
             onDismiss={() => route.setHideCaughtUp(true)}
           />
@@ -734,6 +789,7 @@ export default function App() {
           )}
         </div>
       </div>
+      )}
 
       <KeyboardHelp
         open={keyboardHelpOpen}
