@@ -38,13 +38,7 @@ export function LevelSelectStrip({
       aria-label={compact ? 'Preselect levels for this stop' : 'Choose preselected components'}
     >
       {!compact && (
-        <>
-          <h3 className="level-preselect-title">Choose preselected components</h3>
-          <p className="level-preselect-lede">
-            Tick the install levels you want filled in automatically. Checking a level also checks
-            the ones below it; you can uncheck any of them afterward.
-          </p>
-        </>
+        <h3 className="level-preselect-title">Choose preselected components</h3>
       )}
       <div className="level-preselect-grid" role="group" aria-label="Ladder levels">
         {FILTER_LADDER_LEVELS.map((level) => {

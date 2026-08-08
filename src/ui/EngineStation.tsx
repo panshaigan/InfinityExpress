@@ -7,11 +7,11 @@ import { ScreenNavButtons } from './ScreenNavButtons'
 const GAMES: SelectedGame[] = ['bg1', 'bg2', 'eet', 'iwd', 'pst']
 
 const GAME_BLURBS: Record<SelectedGame, string> = {
-  bg1: "Baldur's Gate",
-  bg2: 'Shadows of Amn',
-  eet: 'The full saga',
+  bg1: "Baldur's Gate, Siege of Dragonspear (SoD)",
+  bg2: 'Shadows of Amn (SoA), Throne of Bhaal (ToB)',
+  eet: 'The full saga merged into one game',
   iwd: 'Icewind Dale',
-  pst: 'Torment',
+  pst: 'Planescape: Torment',
 }
 
 interface Props {
@@ -61,10 +61,6 @@ export function EngineStation({
         />
         <h2>Choose your engine</h2>
       </div>
-      <p className="lede">
-        Pick the game you are modding. Press <strong>Done</strong> to walk stop by stop, or jump
-        freely from the left rail anytime.
-      </p>
       <div className="engine-grid">
         {GAMES.map((g) => (
           <button
