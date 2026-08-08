@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   collectAuthorOptions,
+  countSelectedMods,
   formatBytes,
   hasModField,
   isModTypeBranchDisplay,
@@ -11,7 +12,7 @@ import {
   resolveModType,
   shouldShowModTypeBadge,
 } from './loadMods'
-import type { InstallSequenceModel, TreeNode } from '../xml/schema'
+import type { ComponentNode, InstallSequenceModel, TreeNode } from '../xml/schema'
 
 const HEADER =
   'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme,Type'
@@ -288,6 +289,103 @@ describe('resolveModLookupKey', () => {
       orderIndex: 0,
     } as TreeNode)
     expect(resolveModLookupKey(modelWith(comp), comp)).toBeUndefined()
+  })
+})
+
+describe('countSelectedMods', () => {
+  function node(
+    partial: Partial<TreeNode> & Pick<TreeNode, 'key' | 'tag' | 'kind'>,
+  ): TreeNode {
+    return {
+      attrs: {},
+      effectiveEngine: '',
+      children: [],
+      ...partial,
+    } as TreeNode
+  }
+
+  function modelWithComponents(...comps: TreeNode[]): InstallSequenceModel {
+    const components = comps.filter((n) => n.kind === 'component') as ComponentNode[]
+    const nodesByKey = new Map(comps.map((n) => [n.key, n]))
+    return {
+      stations: [],
+      componentsById: new Map(components.map((c) => [c.componentId, c])),
+      componentsInOrder: components,
+      nodesByKey,
+    }
+  }
+
+  it('counts multiple components under one mod as one', () => {
+    const a = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'a:1',
+      orderIndex: 0,
+      parentKey: 'm1',
+    } as TreeNode)
+    const b = node({
+      key: 'c2',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'a:2',
+      orderIndex: 1,
+      parentKey: 'm1',
+    } as TreeNode)
+    const mod = node({
+      key: 'm1',
+      tag: 'mod',
+      kind: 'container',
+      attrs: { id: 'EEex' },
+      children: [a, b],
+    })
+    const model = modelWithComponents(mod, a, b)
+    expect(countSelectedMods(model, new Set(['a:1', 'a:2']))).toBe(1)
+  })
+
+  it('counts distinct modIds as separate mods', () => {
+    const a = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'x:1',
+      orderIndex: 0,
+      attrs: { modId: 'ModA' },
+    } as TreeNode)
+    const b = node({
+      key: 'c2',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'y:1',
+      orderIndex: 1,
+      attrs: { modId: 'ModB' },
+    } as TreeNode)
+    const model = modelWithComponents(a, b)
+    expect(countSelectedMods(model, new Set(['x:1', 'y:1']))).toBe(2)
+  })
+
+  it('counts orphan components via componentId', () => {
+    const orphan = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'orphan:1',
+      orderIndex: 0,
+    } as TreeNode)
+    const model = modelWithComponents(orphan)
+    expect(countSelectedMods(model, new Set(['orphan:1']))).toBe(1)
+  })
+
+  it('returns 0 for empty selection', () => {
+    const a = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'x:1',
+      orderIndex: 0,
+      attrs: { modId: 'ModA' },
+    } as TreeNode)
+    expect(countSelectedMods(modelWithComponents(a), new Set())).toBe(0)
   })
 })
 

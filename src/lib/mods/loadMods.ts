@@ -230,6 +230,23 @@ export function resolveModLookupKey(
   return undefined
 }
 
+/**
+ * Count distinct mods represented by the selected components.
+ * Uses resolveModLookupKey; orphans with no key fall back to componentId.
+ */
+export function countSelectedMods(
+  model: InstallSequenceModel,
+  selectedIds: ReadonlySet<string>,
+): number {
+  const keys = new Set<string>()
+  for (const id of selectedIds) {
+    const node = model.componentsById.get(id)
+    if (!node) continue
+    keys.add(resolveModLookupKey(model, node) ?? node.componentId)
+  }
+  return keys.size
+}
+
 /** Type shown when the row is a pick from a multi-component mod (not the whole mod). */
 const COMPONENT_TYPE_DEGRADE: ReadonlyMap<string, string> = new Map([
   ['compilation', 'minor'],

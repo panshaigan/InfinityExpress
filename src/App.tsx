@@ -56,6 +56,7 @@ import { ExportDialog } from './ui/ExportDialog'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { AppTopBar } from './ui/AppTopBar'
 import { DetailPane } from './ui/DetailPane'
+import { countSelectedMods } from './lib/mods/loadMods'
 import { useStationTrees } from './hooks/useStationTrees'
 import { useContentBranchNav } from './hooks/useContentBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
@@ -237,6 +238,11 @@ export default function App() {
     return listSelectionState(listNodes, selectedIds, game)
   }, [game, listNodes, selectedIds])
 
+  const selectedModsCount = useMemo(
+    () => countSelectedMods(model, selectedIds),
+    [model, selectedIds],
+  )
+
   const globalSearchCheckState = useMemo(() => {
     if (!game) return 'unchecked' as const
     const checkable = globalSearchHits.filter((h) => h.checkable)
@@ -394,6 +400,7 @@ export default function App() {
     <div className="app">
       <AppTopBar
         game={game}
+        selectedModsCount={selectedModsCount}
         selectedCount={selectedIds.size}
         presets={presets.gamePresets.map((p) => ({ id: p.id, name: p.name }))}
         activePresetId={

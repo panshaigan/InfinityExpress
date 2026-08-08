@@ -8,6 +8,7 @@ interface PresetItem {
 
 interface Props {
   game: SelectedGame | null
+  selectedModsCount: number
   selectedCount: number
   presets: PresetItem[]
   activePresetId: string | null
@@ -26,6 +27,7 @@ interface Props {
 
 export function AppTopBar({
   game,
+  selectedModsCount,
   selectedCount,
   presets,
   activePresetId,
@@ -51,7 +53,9 @@ export function AppTopBar({
         <span className="engine-badge">
           Engine: <strong>{game ? GAME_LABELS[game] : 'not set'}</strong>
         </span>
-        <span className="stats">{selectedCount} selected</span>
+        <span className="stats">
+          {selectedModsCount} mods · {selectedCount} components
+        </span>
         <SelectionPresetsBar
           disabled={game == null}
           presets={presets}
