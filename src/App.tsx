@@ -472,15 +472,6 @@ export default function App() {
                       higherDifficulty={levels.higherDifficultyPreset}
                       onLadderToggle={levels.onLadderToggle}
                       onDifficultyChange={levels.onDifficultyPresetChange}
-                      railCollapsed={railCollapsed}
-                      onToggleRailCollapsed={toggleRailCollapsed}
-                      canCycle={route.canCycleScreens}
-                      canOk={route.canMarkFinished}
-                      finished={route.currentFinished}
-                      onPrevious={route.goPrevScreen}
-                      onNext={route.goNextScreen}
-                      onOk={route.onOk}
-                      onCancel={route.unmarkStationFinished}
                     />
                   </div>
                 ) : isAllSections ? (

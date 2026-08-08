@@ -1171,20 +1171,6 @@ body.is-resizing-detail * {
   gap: 0.45rem;
 }
 
-.engine-preselect .screen-nav-buttons {
-  align-self: flex-end;
-}
-
-.engine-preselect .screen-nav-buttons .btn {
-  min-width: 6.5rem;
-  padding: 0.7rem 1.1rem;
-  font-size: 1rem;
-}
-
-.engine-preselect .screen-nav-ok-btn {
-  min-width: 5rem;
-}
-
 .list-pane-header .lede {
   color: var(--muted);
   margin: 0.35rem 0 0;
@@ -1569,38 +1555,12 @@ body.is-resizing-detail * {
 }
 
 .engine-station {
-  max-width: 46rem;
+  width: 100%;
   padding: 0.5rem 0.25rem 1rem;
 }
 
-.engine-brand-mark {
-  margin: 0 0 0.65rem;
-  font-family: var(--font-display);
-  font-size: clamp(1.85rem, 3.2vw, 2.45rem);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.1;
-  color: color-mix(in srgb, var(--ink) 88%, var(--accent));
-  text-shadow: 0 1px 0 color-mix(in srgb, #000 35%, transparent);
-}
-
-.engine-station-title {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin: 0 0 0.45rem;
-}
-
-.engine-station-title .rail-collapse {
-  margin-left: -0.15rem;
-}
-
-.engine-station-title h2 {
-  margin: 0;
-}
-
 .engine-station h2 {
-  margin: 0 0 0.45rem;
+  margin: 0 0 0.75rem;
   font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 600;
@@ -1688,10 +1648,6 @@ body.is-resizing-detail * {
   margin-top: 2.5rem;
   padding-top: 2rem;
   border-top: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: stretch;
 }
 
 .level-preselect {
@@ -1703,7 +1659,7 @@ body.is-resizing-detail * {
 }
 
 .level-preselect-title {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.75rem;
   font-family: var(--font-display);
   font-size: 1.15rem;
   font-weight: 600;
@@ -3119,7 +3075,4 @@ body.is-resizing-detail * {
     right: 0;
   }
 
-  .engine-brand-mark {
-    font-size: 1.7rem;
-  }
 }

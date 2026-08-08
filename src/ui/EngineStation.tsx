@@ -1,8 +1,6 @@
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import { LevelSelectStrip } from './LevelSelectStrip'
-import { RailCollapseButton } from './RailCollapseButton'
-import { ScreenNavButtons } from './ScreenNavButtons'
 
 const GAMES: SelectedGame[] = ['bg1', 'bg2', 'eet', 'iwd', 'pst']
 
@@ -22,15 +20,6 @@ interface Props {
   higherDifficulty: boolean
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
   onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
-  railCollapsed: boolean
-  onToggleRailCollapsed: () => void
-  canCycle: boolean
-  canOk: boolean
-  finished: boolean
-  onPrevious: () => void
-  onNext: () => void
-  onOk: () => void
-  onCancel: () => void
 }
 
 export function EngineStation({
@@ -41,26 +30,10 @@ export function EngineStation({
   higherDifficulty,
   onLadderToggle,
   onDifficultyChange,
-  railCollapsed,
-  onToggleRailCollapsed,
-  canCycle,
-  canOk,
-  finished,
-  onPrevious,
-  onNext,
-  onOk,
-  onCancel,
 }: Props) {
   return (
     <section className="engine-station">
-      <p className="engine-brand-mark">Infinity Express</p>
-      <div className="engine-station-title">
-        <RailCollapseButton
-          collapsed={railCollapsed}
-          onToggle={onToggleRailCollapsed}
-        />
-        <h2>Choose your engine</h2>
-      </div>
+      <h2>Choose your engine</h2>
       <div className="engine-grid">
         {GAMES.map((g) => (
           <button
@@ -83,15 +56,6 @@ export function EngineStation({
           higherDifficulty={higherDifficulty}
           onLadderToggle={onLadderToggle}
           onDifficultyChange={onDifficultyChange}
-        />
-        <ScreenNavButtons
-          canCycle={canCycle}
-          canOk={canOk}
-          finished={finished}
-          onPrevious={onPrevious}
-          onNext={onNext}
-          onOk={onOk}
-          onCancel={onCancel}
         />
       </div>
     </section>
