@@ -908,10 +908,6 @@ body.is-resizing-detail * {
   z-index: 3;
 }
 
-.list-pane-hint {
-  font-size: 0.8rem !important;
-}
-
 .route-tip {
   display: flex;
   align-items: center;

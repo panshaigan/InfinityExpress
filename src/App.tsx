@@ -542,12 +542,7 @@ export default function App() {
                       </div>
                       {stationDesc ? (
                         <p className="lede">{stationDesc}</p>
-                      ) : (
-                        <p className="lede list-pane-hint">
-                          Tick what you want here. Done continues the path; the rail
-                          jumps anywhere.
-                        </p>
-                      )}
+                      ) : null}
                       <StationListToolbar
                         listNodes={listNodes}
                         listState={listCheckState}
