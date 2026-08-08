@@ -436,24 +436,6 @@ export default function App() {
         />
 
         <div className="app-main">
-          {game != null && activeStation !== 'engine' && (
-            <FiltersStrip
-              criteria={filters}
-              onChange={setFilters}
-              tagOptions={filterOptions.tags}
-              authorOptions={catalogAuthorOptions}
-              sizeBounds={filterSeed.sizeBounds}
-              onRequestTreeFocus={focusComponentTree}
-              searchScope={searchScope}
-              onSearchScopeChange={setSearchScope}
-              searchPlaceholder={
-                isAllSections
-                  ? 'Search all components...'
-                  : 'Search in this window...'
-              }
-            />
-          )}
-
           <RouteGuideTip visible={showRouteTip && !!game} onDismiss={dismissRouteTip} />
           <RouteCaughtUp
             visible={route.routeComplete && !route.hideCaughtUp && !showRouteTip}
@@ -479,146 +461,165 @@ export default function App() {
             }
           >
             <div className="list-pane">
-              {activeStation === 'engine' || !game ? (
-                <div className="list-pane-scroll engine-pane-scroll">
-                  <EngineStation
-                    game={game}
-                    onChoose={chooseGame}
-                    checkedLadderLevels={levels.ladderChecked}
-                    lowerDifficulty={levels.lowerDifficultyPreset}
-                    higherDifficulty={levels.higherDifficultyPreset}
-                    onLadderToggle={levels.onLadderToggle}
-                    onDifficultyChange={levels.onDifficultyPresetChange}
-                    canCycle={route.canCycleScreens}
-                    canOk={route.canMarkFinished}
-                    finished={route.currentFinished}
-                    onPrevious={route.goPrevScreen}
-                    onNext={route.goNextScreen}
-                    onOk={route.onOk}
-                    onCancel={route.unmarkStationFinished}
-                  />
-                </div>
-              ) : isAllSections ? (
-                <>
-                  <div className="list-pane-header">
-                    <div className="list-pane-header-title">
-                      <h2>Search</h2>
-                    </div>
-                    <p className="lede">
-                      Find any eligible component across stations. Locked options
-                      stay listed until their requirements are met.
-                    </p>
-                    <GlobalSearchToolbar
-                      resultCount={globalSearchHits.length}
-                      checkableCount={
-                        globalSearchHits.filter((h) => h.checkable).length
-                      }
-                      listState={globalSearchCheckState}
-                      onToggleAll={onToggleAllSearch}
-                      searchQuery={filters.search}
-                      loading={globalSearchLoading}
-                    />
-                  </div>
-                  <div className="list-pane-scroll">
-                    <GlobalSearchList
-                      hits={globalSearchHits}
-                      selectedIds={selectedIds}
+              <div className="list-pane-body">
+                {activeStation === 'engine' || !game ? (
+                  <div className="list-pane-scroll engine-pane-scroll">
+                    <EngineStation
                       game={game}
-                      focusedComponentId={focus.focusedComponentId}
-                      onFocus={focus.onFocusSearchResult}
-                      onHover={focus.onHoverSearchResult}
-                      onToggle={onToggle}
-                      onJump={onJumpFromSearch}
-                      searchQuery={filters.search}
-                      filtersActive={filtersActive}
-                      loading={globalSearchLoading}
+                      onChoose={chooseGame}
+                      checkedLadderLevels={levels.ladderChecked}
+                      lowerDifficulty={levels.lowerDifficultyPreset}
+                      higherDifficulty={levels.higherDifficultyPreset}
+                      onLadderToggle={levels.onLadderToggle}
+                      onDifficultyChange={levels.onDifficultyPresetChange}
+                      canCycle={route.canCycleScreens}
+                      canOk={route.canMarkFinished}
+                      finished={route.currentFinished}
+                      onPrevious={route.goPrevScreen}
+                      onNext={route.goNextScreen}
+                      onOk={route.onOk}
+                      onCancel={route.unmarkStationFinished}
                     />
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className="list-pane-header">
-                    <div className="list-pane-header-title">
-                      <h2>
-                        {STATION_LABELS[activeStation]}
-                        {route.currentFinished && (
-                          <span className="station-finished-mark" aria-label="Finished">
-                            ✓
-                          </span>
-                        )}
-                      </h2>
-                      <ScreenNavButtons
-                        canCycle={route.canCycleScreens}
-                        canOk={route.canMarkFinished}
-                        finished={route.currentFinished}
-                        onPrevious={route.goPrevScreen}
-                        onNext={route.goNextScreen}
-                        onOk={route.onOk}
-                        onCancel={route.unmarkStationFinished}
-                      />
-                    </div>
-                    {stationDesc ? (
-                      <p className="lede">{stationDesc}</p>
-                    ) : (
-                      <p className="lede list-pane-hint">
-                        Tick what you want here. Done continues the path; the rail
-                        jumps anywhere.
+                ) : isAllSections ? (
+                  <>
+                    <div className="list-pane-header">
+                      <div className="list-pane-header-title">
+                        <h2>Search</h2>
+                      </div>
+                      <p className="lede">
+                        Find any eligible component across stations. Locked options
+                        stay listed until their requirements are met.
                       </p>
-                    )}
-                    <StationListToolbar
-                      listNodes={listNodes}
-                      listState={listCheckState}
-                      checkedLadderLevels={levels.activeStationPreset.ladder}
-                      lowerDifficulty={levels.activeStationPreset.lowerDifficulty}
-                      higherDifficulty={levels.activeStationPreset.higherDifficulty}
-                      onToggleAll={onToggleAll}
-                      onLadderToggle={levels.onStationLadderToggle}
-                      onDifficultyChange={levels.onStationDifficultyChange}
-                      onClearToGlobal={levels.onClearToGlobal}
-                      onFoldAll={onFoldAll}
-                      onUnfoldAll={onUnfoldAll}
-                    />
-                    {isContentStation && (
-                      <ContentBranchNav
-                        mainBranches={contentMainBranches}
-                        subBranches={contentSubBranches}
-                        mainKey={contentMainKey}
-                        subKey={contentSubKey}
-                        onSelectMain={selectContentMain}
-                        onSelectSub={selectContentSub}
+                      <GlobalSearchToolbar
+                        resultCount={globalSearchHits.length}
+                        checkableCount={
+                          globalSearchHits.filter((h) => h.checkable).length
+                        }
+                        listState={globalSearchCheckState}
+                        onToggleAll={onToggleAllSearch}
+                        searchQuery={filters.search}
+                        loading={globalSearchLoading}
                       />
-                    )}
-                  </div>
-                  <div className="list-pane-scroll">
-                    <ComponentTree
-                      key={treeKey}
-                      treeKey={treeKey}
-                      nodes={listNodes}
-                      selectedIds={selectedIds}
-                      game={game}
-                      model={model}
-                      modsByCodename={modsByCodename}
-                      focusedKey={focus.focusedKey}
-                      onFocus={focus.onFocus}
-                      onHover={focus.onHover}
-                      onToggle={onToggle}
-                      onRandomize={onRandomize}
-                      onFoldApiReady={onFoldApiReady}
-                      emptyTitle={emptyCopy?.title}
-                      emptyBody={emptyCopy?.body}
-                    />
-                  </div>
-                </>
-              )}
-              {warnings.length > 0 && (
-                <details className="warnings">
-                  <summary>{warnings.length} parse notes</summary>
-                  <ul>
-                    {warnings.slice(0, 30).map((w) => (
-                      <li key={w}>{w}</li>
-                    ))}
-                  </ul>
-                </details>
+                    </div>
+                    <div className="list-pane-scroll">
+                      <GlobalSearchList
+                        hits={globalSearchHits}
+                        selectedIds={selectedIds}
+                        game={game}
+                        focusedComponentId={focus.focusedComponentId}
+                        onFocus={focus.onFocusSearchResult}
+                        onHover={focus.onHoverSearchResult}
+                        onToggle={onToggle}
+                        onJump={onJumpFromSearch}
+                        searchQuery={filters.search}
+                        filtersActive={filtersActive}
+                        loading={globalSearchLoading}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="list-pane-header">
+                      <div className="list-pane-header-title">
+                        <h2>
+                          {STATION_LABELS[activeStation]}
+                          {route.currentFinished && (
+                            <span className="station-finished-mark" aria-label="Finished">
+                              ✓
+                            </span>
+                          )}
+                        </h2>
+                        <ScreenNavButtons
+                          canCycle={route.canCycleScreens}
+                          canOk={route.canMarkFinished}
+                          finished={route.currentFinished}
+                          onPrevious={route.goPrevScreen}
+                          onNext={route.goNextScreen}
+                          onOk={route.onOk}
+                          onCancel={route.unmarkStationFinished}
+                        />
+                      </div>
+                      {stationDesc ? (
+                        <p className="lede">{stationDesc}</p>
+                      ) : (
+                        <p className="lede list-pane-hint">
+                          Tick what you want here. Done continues the path; the rail
+                          jumps anywhere.
+                        </p>
+                      )}
+                      <StationListToolbar
+                        listNodes={listNodes}
+                        listState={listCheckState}
+                        checkedLadderLevels={levels.activeStationPreset.ladder}
+                        lowerDifficulty={levels.activeStationPreset.lowerDifficulty}
+                        higherDifficulty={levels.activeStationPreset.higherDifficulty}
+                        onToggleAll={onToggleAll}
+                        onLadderToggle={levels.onStationLadderToggle}
+                        onDifficultyChange={levels.onStationDifficultyChange}
+                        onClearToGlobal={levels.onClearToGlobal}
+                        onFoldAll={onFoldAll}
+                        onUnfoldAll={onUnfoldAll}
+                      />
+                      {isContentStation && (
+                        <ContentBranchNav
+                          mainBranches={contentMainBranches}
+                          subBranches={contentSubBranches}
+                          mainKey={contentMainKey}
+                          subKey={contentSubKey}
+                          onSelectMain={selectContentMain}
+                          onSelectSub={selectContentSub}
+                        />
+                      )}
+                    </div>
+                    <div className="list-pane-scroll">
+                      <ComponentTree
+                        key={treeKey}
+                        treeKey={treeKey}
+                        nodes={listNodes}
+                        selectedIds={selectedIds}
+                        game={game}
+                        model={model}
+                        modsByCodename={modsByCodename}
+                        focusedKey={focus.focusedKey}
+                        onFocus={focus.onFocus}
+                        onHover={focus.onHover}
+                        onToggle={onToggle}
+                        onRandomize={onRandomize}
+                        onFoldApiReady={onFoldApiReady}
+                        emptyTitle={emptyCopy?.title}
+                        emptyBody={emptyCopy?.body}
+                      />
+                    </div>
+                  </>
+                )}
+                {warnings.length > 0 && (
+                  <details className="warnings">
+                    <summary>{warnings.length} parse notes</summary>
+                    <ul>
+                      {warnings.slice(0, 30).map((w) => (
+                        <li key={w}>{w}</li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </div>
+              {game != null && activeStation !== 'engine' && (
+                <FiltersStrip
+                  criteria={filters}
+                  onChange={setFilters}
+                  tagOptions={filterOptions.tags}
+                  authorOptions={catalogAuthorOptions}
+                  sizeBounds={filterSeed.sizeBounds}
+                  onRequestTreeFocus={focusComponentTree}
+                  searchScope={searchScope}
+                  onSearchScopeChange={setSearchScope}
+                  searchPlaceholder={
+                    isAllSections
+                      ? 'Search all components...'
+                      : 'Search in this window...'
+                  }
+                />
               )}
             </div>
 

@@ -465,7 +465,7 @@ body {
   flex-direction: column;
   gap: 0.35rem;
   padding: 0.4rem 0.75rem;
-  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 70%, var(--bg));
   flex-shrink: 0;
   overflow: visible;
@@ -493,7 +493,8 @@ body {
 
 .filter-popover {
   position: absolute;
-  top: calc(100% + 0.35rem);
+  bottom: calc(100% + 0.35rem);
+  top: auto;
   left: 0;
   z-index: 20;
   min-width: min(22rem, 78vw);
@@ -882,9 +883,17 @@ body.is-resizing-detail * {
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
   border-right: 1px solid var(--line);
   position: relative;
+}
+
+.list-pane-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .workspace.engine-only .list-pane {
