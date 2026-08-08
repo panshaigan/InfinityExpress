@@ -1674,6 +1674,66 @@ body.is-resizing-detail * {
   }
 }
 
+.engine-folders {
+  margin-top: 1.35rem;
+}
+
+.engine-folders-title {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.engine-folder-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.engine-folder-label {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+
+.engine-folder-controls {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.engine-folder-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--panel) 88%, #000);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+}
+
+.engine-folder-input::placeholder {
+  color: var(--muted);
+}
+
+.engine-folder-input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.engine-folder-controls .btn {
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
 .engine-preselect {
   margin-top: 3.5rem;
   padding-top: 1rem;
