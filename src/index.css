@@ -1783,10 +1783,103 @@ body.is-resizing-detail * {
   flex: 1;
 }
 
+.level-card-label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
 .level-card-label {
   font-size: 1.02rem;
   font-weight: 600;
   line-height: 1.25;
+}
+
+.level-help {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--muted) 88%, var(--accent));
+  outline: none;
+  cursor: help;
+}
+
+.level-help-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 55%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 80%, var(--accent));
+  transition: color var(--ease), background var(--ease), box-shadow var(--ease);
+}
+
+.level-help:hover .level-help-icon,
+.level-help:focus-visible .level-help-icon {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent-soft) 80%, var(--panel));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+.level-help-tip {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.45rem);
+  z-index: 8;
+  width: max-content;
+  max-width: min(16.5rem, 70vw);
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--panel) 88%, var(--accent-soft)),
+      color-mix(in srgb, var(--panel) 96%, #000)
+    );
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  text-wrap: pretty;
+  box-shadow:
+    0 10px 24px color-mix(in srgb, #000 45%, transparent),
+    0 0 0 1px color-mix(in srgb, #000 20%, transparent);
+  transform: translateX(-50%) translateY(-2px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.08s ease, transform 0.08s ease, visibility 0.08s ease;
+}
+
+.level-help-tip::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-left: -0.275rem;
+  border-left: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-top: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: color-mix(in srgb, var(--panel) 90%, var(--accent-soft));
+  transform: rotate(45deg) translateY(0.2rem);
+}
+
+.level-help:hover .level-help-tip,
+.level-help:focus-visible .level-help-tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 .level-card-hint {
