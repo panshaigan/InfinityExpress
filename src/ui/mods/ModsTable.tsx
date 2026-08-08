@@ -3,6 +3,7 @@ import {
   useEffect,
   useRef,
   type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
 } from 'react'
 import {
   displayModName,
@@ -52,7 +53,7 @@ function TipCell({
   tip,
 }: {
   className: string
-  display: string
+  display: ReactNode
   tip: string | undefined
 }) {
   const showTip = !!tip
@@ -264,21 +265,25 @@ export function ModsTable({
                     ) : null}
                   </td>
                   <td className="mods-col-category">{eff.category || '—'}</td>
-                  <td className="mods-col-url">
-                    {isHttpUrl(eff.url) ? (
-                      <a
-                        href={eff.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        tabIndex={-1}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {eff.url.replace(/^https?:\/\//, '')}
-                      </a>
-                    ) : (
-                      <span>{eff.url || '—'}</span>
-                    )}
-                  </td>
+                  <TipCell
+                    className="mods-col-url"
+                    display={
+                      isHttpUrl(eff.url) ? (
+                        <a
+                          href={eff.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          tabIndex={-1}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {eff.url.replace(/^https?:\/\//, '')}
+                        </a>
+                      ) : (
+                        eff.url || '—'
+                      )
+                    }
+                    tip={eff.url.trim() || undefined}
+                  />
                   <td className="mods-col-release">{eff.release || '—'}</td>
                   <TipCell
                     className="mods-col-version"

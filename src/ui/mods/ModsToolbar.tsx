@@ -163,15 +163,6 @@ export function ModsToolbar({
 
       {!journeyLocked ? (
         <div className="mods-facets">
-          <button
-            type="button"
-            className={`filter-chip${onlyNeededActive ? ' active' : ''}`}
-            aria-pressed={onlyNeededActive}
-            disabled={neededCodenames.length === 0 && !onlyNeededActive}
-            onClick={toggleOnlyNeeded}
-          >
-            Only needed
-          </button>
           <label>
             <span>Category</span>
             <select
@@ -269,12 +260,21 @@ export function ModsToolbar({
               Clear filters
             </button>
           ) : null}
+          <button
+            type="button"
+            className={`filter-chip mods-only-needed${onlyNeededActive ? ' active' : ''}`}
+            aria-pressed={onlyNeededActive}
+            disabled={neededCodenames.length === 0 && !onlyNeededActive}
+            onClick={toggleOnlyNeeded}
+          >
+            Only needed
+          </button>
         </div>
       ) : (
         <div className="mods-facets mods-facets-locked">
           <button
             type="button"
-            className="filter-chip active"
+            className="filter-chip mods-only-needed active"
             aria-pressed={true}
             disabled
           >

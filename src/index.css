@@ -3707,9 +3707,10 @@ body.is-resizing-detail * {
   gap: 0.55rem;
 }
 
-.mods-facets > .filter-chip {
+.mods-facets > .mods-only-needed {
   align-self: flex-end;
   margin-bottom: 0.05rem;
+  margin-left: auto;
 }
 
 .mods-facets label {
@@ -3735,6 +3736,7 @@ body.is-resizing-detail * {
 
 .mods-facets-locked {
   align-items: center;
+  justify-content: flex-end;
 }
 
 .mods-locked-chip {
@@ -3874,10 +3876,18 @@ body.is-resizing-detail * {
 }
 
 .mods-col-url {
+  position: relative;
   max-width: 14rem;
+  overflow: visible;
+}
+
+.mods-col-url .mods-cell-clip,
+.mods-col-url .mods-cell-clip a {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 100%;
 }
 
 .mods-col-url a {
@@ -3895,7 +3905,14 @@ body.is-resizing-detail * {
   white-space: nowrap;
 }
 
-.mods-col-version,
+.mods-col-version {
+  position: relative;
+  max-width: 3.5rem;
+  width: 3.5rem;
+  overflow: visible;
+  white-space: nowrap;
+}
+
 .mods-col-author {
   position: relative;
   max-width: 6.5rem;
@@ -3918,7 +3935,8 @@ body.is-resizing-detail * {
 
 /* Keep clipped cells from painting over neighboring columns; tip escapes. */
 .mods-col-version .icon-tip,
-.mods-col-author .icon-tip {
+.mods-col-author .icon-tip,
+.mods-col-url .icon-tip {
   white-space: normal;
   max-width: min(18rem, 70vw);
 }
