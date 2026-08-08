@@ -18,6 +18,13 @@ interface Props {
   compact?: boolean
 }
 
+/** Engine page rows: pair / full-width / pair. */
+const LADDER_ROWS: LadderLevel[][] = [
+  ['fixes', 'restoration'],
+  ['vanillaPlus'],
+  ['blendWell', 'extended'],
+]
+
 function LevelCard({
   label,
   hint,
@@ -67,59 +74,84 @@ export function LevelSelectStrip({
     higherDifficulty,
   }
 
-  const ladderCards = FILTER_LADDER_LEVELS.map((level) => (
-    <LevelCard
-      key={level}
-      label={LEVEL_LABELS[level]}
-      hint={LEVEL_HINTS[level]}
-      checked={checkedLadderLevels.has(level)}
-      enabled={enabled}
-      compact={compact}
-      onChange={(want) => onLadderToggle(level, want)}
-    />
-  ))
-
-  const difficultyCards = DIFFICULTY_LEVELS.map((token) => (
-    <LevelCard
-      key={token}
-      label={LEVEL_LABELS[token]}
-      hint={LEVEL_HINTS[token]}
-      checked={difficultyChecked[token]}
-      enabled={enabled}
-      compact={compact}
-      onChange={(want) => onDifficultyChange(token, want)}
-    />
-  ))
+  if (compact) {
+    return (
+      <div
+        className={`level-preselect compact${!enabled ? ' disabled' : ''}`}
+        aria-label="Preselect levels for this stop"
+      >
+        <div className="level-preselect-grid" role="group" aria-label="Levels">
+          {FILTER_LADDER_LEVELS.map((level) => (
+            <LevelCard
+              key={level}
+              label={LEVEL_LABELS[level]}
+              hint={LEVEL_HINTS[level]}
+              checked={checkedLadderLevels.has(level)}
+              enabled={enabled}
+              compact
+              onChange={(want) => onLadderToggle(level, want)}
+            />
+          ))}
+          {DIFFICULTY_LEVELS.map((token) => (
+            <LevelCard
+              key={token}
+              label={LEVEL_LABELS[token]}
+              hint={LEVEL_HINTS[token]}
+              checked={difficultyChecked[token]}
+              enabled={enabled}
+              compact
+              onChange={(want) => onDifficultyChange(token, want)}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
-      className={`level-preselect${compact ? ' compact' : ''}${!enabled ? ' disabled' : ''}`}
-      aria-label={
-        compact ? 'Preselect levels for this stop' : 'Choose your base components'
-      }
+      className={`level-preselect${!enabled ? ' disabled' : ''}`}
+      aria-label="Choose your base components"
     >
-      {!compact && (
-        <h3 className="level-preselect-title">Choose your base components</h3>
-      )}
-      {compact ? (
-        <div className="level-preselect-grid" role="group" aria-label="Levels">
-          {ladderCards}
-          {difficultyCards}
-        </div>
-      ) : (
-        <>
-          <div className="level-preselect-grid" role="group" aria-label="Ladder levels">
-            {ladderCards}
-          </div>
+      <h3 className="level-preselect-title">Choose your base components</h3>
+      <div className="level-preselect-layout" role="group" aria-label="Ladder levels">
+        {LADDER_ROWS.map((row) => (
           <div
-            className="level-preselect-grid level-difficulty-grid"
-            role="group"
-            aria-label="Difficulty"
+            key={row.join('-')}
+            className={`level-row${row.length === 1 ? ' level-row-span' : ''}`}
           >
-            {difficultyCards}
+            {row.map((level) => (
+              <LevelCard
+                key={level}
+                label={LEVEL_LABELS[level]}
+                hint={LEVEL_HINTS[level]}
+                checked={checkedLadderLevels.has(level)}
+                enabled={enabled}
+                compact={false}
+                onChange={(want) => onLadderToggle(level, want)}
+              />
+            ))}
           </div>
-        </>
-      )}
+        ))}
+      </div>
+      <hr className="level-difficulty-rule" />
+      <div
+        className="level-row level-difficulty-row"
+        role="group"
+        aria-label="Difficulty"
+      >
+        {DIFFICULTY_LEVELS.map((token) => (
+          <LevelCard
+            key={token}
+            label={LEVEL_LABELS[token]}
+            hint={LEVEL_HINTS[token]}
+            checked={difficultyChecked[token]}
+            enabled={enabled}
+            compact={false}
+            onChange={(want) => onDifficultyChange(token, want)}
+          />
+        ))}
+      </div>
     </div>
   )
 }

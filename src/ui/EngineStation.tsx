@@ -2,8 +2,6 @@ import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
-const GAMES: SelectedGame[] = ['bg1', 'bg2', 'eet', 'iwd', 'pst']
-
 const GAME_BLURBS: Record<SelectedGame, string> = {
   bg1: "Baldur's Gate, Siege of Dragonspear (SoD)",
   bg2: 'Shadows of Amn (SoA), Throne of Bhaal (ToB)',
@@ -11,6 +9,13 @@ const GAME_BLURBS: Record<SelectedGame, string> = {
   iwd: 'Icewind Dale',
   pst: 'Planescape: Torment',
 }
+
+/** Layout rows: BG pair, full-width EET, then IWD/PST. */
+const ENGINE_ROWS: SelectedGame[][] = [
+  ['bg1', 'bg2'],
+  ['eet'],
+  ['iwd', 'pst'],
+]
 
 interface Props {
   game: SelectedGame | null
@@ -39,16 +44,23 @@ export function EngineStation({
     <section className="engine-station">
       <h2>Choose your engine</h2>
       <div className="engine-grid">
-        {GAMES.map((g) => (
-          <button
-            key={g}
-            type="button"
-            className={game === g ? 'engine-card active' : 'engine-card'}
-            onClick={() => onChoose(g)}
+        {ENGINE_ROWS.map((row) => (
+          <div
+            key={row.join('-')}
+            className={`engine-row${row.length === 1 ? ' engine-row-span' : ''}`}
           >
-            <span className="engine-card-title">{GAME_LABELS[g]}</span>
-            <span className="engine-card-blurb">{GAME_BLURBS[g]}</span>
-          </button>
+            {row.map((g) => (
+              <button
+                key={g}
+                type="button"
+                className={game === g ? 'engine-card active' : 'engine-card'}
+                onClick={() => onChoose(g)}
+              >
+                <span className="engine-card-title">{GAME_LABELS[g]}</span>
+                <span className="engine-card-blurb">{GAME_BLURBS[g]}</span>
+              </button>
+            ))}
+          </div>
         ))}
       </div>
 

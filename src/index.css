@@ -1560,7 +1560,7 @@ body.is-resizing-detail * {
 }
 
 .engine-station h2 {
-  margin: 0 0 0.75rem;
+  margin: 0 0 1.15rem;
   font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 600;
@@ -1587,9 +1587,19 @@ body.is-resizing-detail * {
 }
 
 .engine-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 0.85rem;
+}
+
+.engine-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.engine-row-span {
+  grid-template-columns: 1fr;
 }
 
 .engine-card {
@@ -1680,8 +1690,26 @@ body.is-resizing-detail * {
   gap: 0.85rem;
 }
 
-.level-difficulty-grid {
-  margin-top: 0.85rem;
+.level-preselect-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.level-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.level-row-span {
+  grid-template-columns: 1fr;
+}
+
+.level-difficulty-rule {
+  margin: 1.25rem 0 1rem;
+  border: 0;
+  border-top: 1px solid var(--line);
 }
 
 .engine-start-row {
