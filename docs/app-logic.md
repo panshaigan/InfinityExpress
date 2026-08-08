@@ -54,7 +54,8 @@ InstallSequence.xml
    User toggles checkboxes
         │  toggleNode() → alternatives / core / alwaysIf
         ▼
-   Export install-order.txt   ← selected ids, document order, first-id wins
+   Export install-order preview   ← selected ids, document order, first-id wins
+                                 ← EET: Pre-EET (eet1) + EET (eet) tabs
 ```
 
 Curated defaults live in `src/data/`. The detail panel joins component `modId` (or enclosing `<mod id|modId>`) to `mods.csv` Codename for URL / Mod Readme / Release / Version / Size / Author / Stability. Mod Readme and component `readme` links are shown only when the value is a valid `http`/`https` URL. Downloading mods / WeiDU come later.
@@ -423,7 +424,7 @@ When selecting the alternatives **parent**, existing choices under it are cleare
 
 ## Export
 
-**Export install order** builds lines:
+**Export install order** opens a preview dialog (not an immediate download). The preview shows lines:
 
 ```text
 componentId;componentLabel
@@ -435,9 +436,22 @@ Rules:
 - Sort by `orderIndex` (XML document order), **not** by station visit order.
 - If the same component id appears more than once in the sequence and is selected, emit it **only once** — the **first** document-order occurrence.
 - Merged duplicate stations do not reorder export; late XML blocks keep higher `orderIndex`.
-- Browser downloads `install-order.txt`.
+- **Copy** puts the active preview on the clipboard; **Save** downloads it. The save file name is editable in the dialog (defaults to `install-order.txt`).
 
-Label fallback: `attrs.name`, else `attrs.label`, else the component id.
+### EET split
+
+When the selected game is **EET**, the dialog has two tabs, each with its own preview, copy/save, and file name:
+
+| Tab | Contents | Default file name |
+| --- | --- | --- |
+| **Pre-EET (install on BG1)** | Selected exportable components whose `effectiveEngine` includes token `eet1` | `install-order-pre-eet.txt` |
+| **EET** | Selected exportable components whose `effectiveEngine` includes token `eet` | `install-order-eet.txt` |
+
+- Components marked with **both** `eet1` and `eet` appear in **both** lists.
+- Empty / missing `engine` (matches every game) is included only in the **EET** tab.
+- Token checks use the same `parseEngineTokens` allow-list as eligibility matching.
+
+Label fallback: `attrs.label`, else the component id.
 
 ---
 

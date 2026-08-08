@@ -56,6 +56,7 @@ export type CheckboxRowProps = {
   /** Row that holds tabIndex={0} (roving tabindex). */
   tabbableKey: string | null
   onFocus: (key: string) => void
+  onHover: (key: string | null) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
   onRandomize: (display: DisplayNode, options: RandomizeOptions) => void
   randomizeMenuKey: string | null
@@ -140,6 +141,7 @@ function checkboxRowPropsAreEqual(
   if (prev.depth !== next.depth) return false
   if (prev.exclusiveGroupKey !== next.exclusiveGroupKey) return false
   if (prev.onFocus !== next.onFocus) return false
+  if (prev.onHover !== next.onHover) return false
   if (prev.onToggle !== next.onToggle) return false
   if (prev.onRandomize !== next.onRandomize) return false
   if (prev.onToggleExpand !== next.onToggleExpand) return false
@@ -180,6 +182,7 @@ export const CheckboxRow = memo(function CheckboxRow({
   focusedKey,
   tabbableKey,
   onFocus,
+  onHover,
   onToggle,
   onRandomize,
   randomizeMenuKey,
@@ -281,17 +284,11 @@ export const CheckboxRow = memo(function CheckboxRow({
 
   function handleRowActivate() {
     onFocus(node.key)
+    onToggle(display, !checked)
   }
 
   function handleRowFocus() {
     onFocus(node.key)
-  }
-
-  function handleRowDoubleClick(e: MouseEvent) {
-    e.preventDefault()
-    e.stopPropagation()
-    onFocus(node.key)
-    onToggle(display, !checked)
   }
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
@@ -321,8 +318,8 @@ export const CheckboxRow = memo(function CheckboxRow({
         aria-selected={focused}
         aria-label={label}
         onClick={handleRowActivate}
-        onDoubleClick={handleRowDoubleClick}
         onFocus={handleRowFocus}
+        onMouseEnter={() => onHover(node.key)}
         ref={(el) => {
           if (el) rowRefs.current.set(node.key, el)
           else rowRefs.current.delete(node.key)
@@ -454,6 +451,7 @@ export const CheckboxRow = memo(function CheckboxRow({
             focusedKey={focusedKey}
             tabbableKey={tabbableKey}
             onFocus={onFocus}
+            onHover={onHover}
             onToggle={onToggle}
             onRandomize={onRandomize}
             randomizeMenuKey={randomizeMenuKey}

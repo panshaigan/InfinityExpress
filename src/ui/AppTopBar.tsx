@@ -79,7 +79,7 @@ export function AppTopBar({
           type="button"
           className="btn"
           disabled={selectedCount === 0}
-          title="Download install-order.txt"
+          title="Preview and save install order"
           onClick={onExport}
         >
           Export

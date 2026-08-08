@@ -1,0 +1,80 @@
+import { describe, expect, it } from 'vitest'
+import {
+  buildInstallOrderLines,
+  buildInstallOrderText,
+  normalizeExportFilename,
+} from './installOrder'
+import { parseInstallSequence } from '../xml/parseInstallSequence'
+
+const SAMPLE = `<?xml version="1.0"?>
+<installSequence>
+  <base label="Base">
+    <component id="pre:only" label="Pre only" engine="bg1,eet1" />
+    <component id="both:fix" label="Both tokens" engine="bg,eet,eet1" />
+    <component id="eet:only" label="EET only" engine="eet" />
+    <component id="empty:engine" label="Empty engine" />
+    <component id="skip:me" label="No export" engine="eet1" noExport="1" />
+    <component id="bg:only" label="BG only" engine="bg1" />
+  </base>
+</installSequence>`
+
+describe('buildInstallOrderLines', () => {
+  const { model } = parseInstallSequence(SAMPLE)
+  const selected = new Set([
+    'pre:only',
+    'both:fix',
+    'eet:only',
+    'empty:engine',
+    'skip:me',
+    'bg:only',
+  ])
+
+  it('exports flat document order for phase all', () => {
+    expect(buildInstallOrderLines(model, selected).map((l) => l.split(';')[0])).toEqual([
+      'pre:only',
+      'both:fix',
+      'eet:only',
+      'empty:engine',
+      'bg:only',
+    ])
+  })
+
+  it('omits noExport even when selected', () => {
+    const lines = buildInstallOrderLines(model, selected)
+    expect(lines.some((l) => l.startsWith('skip:me'))).toBe(false)
+  })
+
+  it('eet1 phase includes eet1-marked components only', () => {
+    expect(
+      buildInstallOrderLines(model, selected, 'eet1').map((l) => l.split(';')[0]),
+    ).toEqual(['pre:only', 'both:fix'])
+  })
+
+  it('eet phase includes eet-marked and empty-engine components', () => {
+    expect(
+      buildInstallOrderLines(model, selected, 'eet').map((l) => l.split(';')[0]),
+    ).toEqual(['both:fix', 'eet:only', 'empty:engine'])
+  })
+
+  it('dual-token components appear in both eet1 and eet phases', () => {
+    const pre = buildInstallOrderLines(model, selected, 'eet1').map((l) => l.split(';')[0])
+    const eet = buildInstallOrderLines(model, selected, 'eet').map((l) => l.split(';')[0])
+    expect(pre).toContain('both:fix')
+    expect(eet).toContain('both:fix')
+  })
+
+  it('buildInstallOrderText appends trailing newline when non-empty', () => {
+    expect(buildInstallOrderText(model, new Set(['eet:only']), 'eet')).toBe(
+      'eet:only;EET only\n',
+    )
+    expect(buildInstallOrderText(model, new Set(['pre:only']), 'eet')).toBe('')
+  })
+})
+
+describe('normalizeExportFilename', () => {
+  it('keeps .txt and appends when missing', () => {
+    expect(normalizeExportFilename('order.txt', 'install-order.txt')).toBe('order.txt')
+    expect(normalizeExportFilename('order', 'install-order.txt')).toBe('order.txt')
+    expect(normalizeExportFilename('  ', 'install-order.txt')).toBe('install-order.txt')
+  })
+})

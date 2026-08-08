@@ -41,6 +41,7 @@ interface Props {
   modsByCodename: ReadonlyMap<string, ModInfo>
   focusedKey: string | null
   onFocus: (key: string) => void
+  onHover: (key: string | null) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
   onRandomize: (display: DisplayNode, options: RandomizeOptions) => void
   /** Registers fold/unfold-all for the current list; cleared on unmount. */
@@ -309,6 +310,7 @@ export function ComponentTree(props: Props) {
       role="tree"
       aria-label="Components"
       onKeyDown={handleTreeKeyDown}
+      onMouseLeave={() => props.onHover(null)}
     >
       {props.nodes.map((n) => (
         <CheckboxRow
@@ -321,6 +323,7 @@ export function ComponentTree(props: Props) {
           focusedKey={props.focusedKey}
           tabbableKey={tabbableKey}
           onFocus={props.onFocus}
+          onHover={props.onHover}
           onToggle={props.onToggle}
           onRandomize={props.onRandomize}
           randomizeMenuKey={randomizeMenuKey}

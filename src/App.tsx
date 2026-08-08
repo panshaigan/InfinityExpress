@@ -27,7 +27,6 @@ import {
   modsByCodename,
 } from './lib/mods/catalog'
 import { buildRelationIndex } from './lib/selection/relations'
-import { downloadInstallOrder, buildInstallOrderLines } from './lib/export/installOrder'
 import { type StationSlot } from './lib/ui/chromeHotkeys'
 import {
   readDetailCollapsed,
@@ -53,7 +52,7 @@ import { FiltersStrip } from './ui/FiltersStrip'
 import { KeyboardHelp } from './ui/KeyboardHelp'
 import { RouteGuideTip } from './ui/RouteGuideTip'
 import { RouteCaughtUp } from './ui/RouteCaughtUp'
-import { ExportNotice } from './ui/ExportNotice'
+import { ExportDialog } from './ui/ExportDialog'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { AppTopBar } from './ui/AppTopBar'
 import { DetailPane } from './ui/DetailPane'
@@ -62,7 +61,6 @@ import { useContentBranchNav } from './hooks/useContentBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
 import { useLevelPresets } from './hooks/useLevelPresets'
 import { useChromeHotkeys } from './hooks/useChromeHotkeys'
-import { useAutoDismiss } from './hooks/useAutoDismiss'
 import { useRouteNav } from './hooks/useRouteNav'
 import { useTreeFocus } from './hooks/useTreeFocus'
 import './index.css'
@@ -88,9 +86,7 @@ export default function App() {
   const [railCollapsed, setRailCollapsed] = useState(() => readRailCollapsed())
   const [detailCollapsed, setDetailCollapsed] = useState(() => readDetailCollapsed())
   const [detailWidth, setDetailWidth] = useState(() => readDetailWidth())
-  const [exportNotice, setExportNotice] = useState<{ lineCount: number } | null>(
-    null,
-  )
+  const [exportOpen, setExportOpen] = useState(false)
   const foldApiRef = useRef<TreeFoldApi | null>(null)
   const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
     foldApiRef.current = api
@@ -291,13 +287,8 @@ export default function App() {
   }, [])
 
   function handleExport() {
-    const lineCount = buildInstallOrderLines(model, selectedIds).length
-    downloadInstallOrder(model, selectedIds)
-    setExportNotice({ lineCount })
+    setExportOpen(true)
   }
-
-  const clearExportNotice = useCallback(() => setExportNotice(null), [])
-  useAutoDismiss(exportNotice, clearExportNotice)
 
   function selectEngine() {
     setActiveStation('engine')
@@ -445,11 +436,6 @@ export default function App() {
             onExport={handleExport}
             onDismiss={() => route.setHideCaughtUp(true)}
           />
-          <ExportNotice
-            visible={exportNotice != null && !showRouteTip}
-            lineCount={exportNotice?.lineCount ?? 0}
-            onDismiss={() => setExportNotice(null)}
-          />
           <PresetLoadNotice
             visible={presets.presetNotice != null && !showRouteTip}
             presetName={presets.presetNotice?.name ?? ''}
@@ -514,6 +500,7 @@ export default function App() {
                       game={game}
                       focusedComponentId={focus.focusedComponentId}
                       onFocus={focus.onFocusSearchResult}
+                      onHover={focus.onHoverSearchResult}
                       onToggle={onToggle}
                       onJump={focus.onNavigateToComponent}
                       searchQuery={filters.search}
@@ -586,6 +573,7 @@ export default function App() {
                       modsByCodename={modsByCodename}
                       focusedKey={focus.focusedKey}
                       onFocus={focus.onFocus}
+                      onHover={focus.onHover}
                       onToggle={onToggle}
                       onRandomize={onRandomize}
                       onFoldApiReady={onFoldApiReady}
@@ -613,11 +601,11 @@ export default function App() {
                 width={detailWidth}
                 onWidthChange={setDetailWidth}
                 onToggleCollapsed={toggleDetailCollapsed}
-                display={focus.focusedDisplay}
+                display={focus.detailDisplay}
                 model={model}
                 relationIndex={relationIndex}
                 modsByCodename={modsByCodename}
-                selectionState={focus.focusedSelectionState}
+                selectionState={focus.detailSelectionState}
                 onNavigateToComponent={focus.onNavigateToComponent}
               />
             )}
@@ -628,6 +616,13 @@ export default function App() {
       <KeyboardHelp
         open={keyboardHelpOpen}
         onClose={() => setKeyboardHelpOpen(false)}
+      />
+      <ExportDialog
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        model={model}
+        selectedIds={selectedIds}
+        game={game}
       />
     </div>
   )

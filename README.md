@@ -69,13 +69,13 @@ Tests live next to the code as `src/**/*.test.ts` and cover:
 
 ## Export
 
-**Export install order** downloads `install-order.txt` with one line per selected component:
+**Export install order** opens a preview dialog. You can browse the list, copy it, or save with a custom file name. Lines are:
 
 ```text
 componentId;componentLabel
 ```
 
-Lines follow XML document order (duplicate stations merged in the UI only).
+Lines follow XML document order (duplicate stations merged in the UI only). For **EET**, the dialog splits into **Pre-EET (install on BG1)** (`eet1` tokens) and **EET** (`eet` tokens); components marked with both appear in both lists.
 
 ## Documentation
 

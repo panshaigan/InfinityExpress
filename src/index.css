@@ -980,45 +980,6 @@ body.is-resizing-detail * {
   flex-shrink: 0;
 }
 
-.export-notice {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  flex-shrink: 0;
-  padding: 0.5rem 0.9rem;
-  border-bottom: 1px solid var(--line);
-  background:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--ok) 16%, transparent),
-      color-mix(in srgb, var(--panel) 72%, transparent) 55%
-    );
-}
-
-.export-notice-text {
-  flex: 1;
-  min-width: 0;
-}
-
-.export-notice-title {
-  margin: 0 0 0.12rem;
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--ink) 85%, var(--ok));
-}
-
-.export-notice-body {
-  margin: 0;
-  font-size: 0.84rem;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-.export-notice-dismiss {
-  flex-shrink: 0;
-}
-
 .preset-load-notice {
   display: flex;
   align-items: center;
@@ -1059,7 +1020,6 @@ body.is-resizing-detail * {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .export-notice,
   .preset-load-notice {
     animation: export-flash-in 0.22s ease;
   }
@@ -2603,6 +2563,175 @@ body.is-resizing-detail * {
   font: inherit;
   font-weight: 600;
   color: color-mix(in srgb, var(--ink) 90%, var(--accent));
+}
+
+/* —— Export dialog —— */
+
+.export-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: color-mix(in srgb, #0c0907 62%, transparent);
+}
+
+.export-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(44rem, 100%);
+  max-height: min(40rem, 92vh);
+  padding: 1.1rem 1.2rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(ellipse at top left, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    var(--panel);
+  box-shadow: 0 18px 40px color-mix(in srgb, #000 45%, transparent);
+}
+
+.export-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+  flex-shrink: 0;
+}
+
+.export-dialog-header h2 {
+  margin: 0;
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+}
+
+.export-dialog-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.55rem;
+  flex-shrink: 0;
+}
+
+.export-dialog-tab {
+  flex: 1;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+
+.export-dialog-tab:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+
+.export-dialog-tab.active {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+}
+
+.export-dialog-meta {
+  margin: 0 0 0.45rem;
+  flex-shrink: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.export-dialog-code {
+  flex: 1 1 auto;
+  min-height: 14rem;
+  width: 100%;
+  margin: 0 0 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, #0c0907 35%, var(--panel));
+  color: var(--ink);
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  resize: vertical;
+  white-space: pre;
+  overflow: auto;
+}
+
+.export-dialog-code:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.export-dialog-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.export-dialog-filename {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.export-dialog-filename-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.export-dialog-filename input {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--panel) 80%, #000);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+}
+
+.export-dialog-filename input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.export-dialog-icons {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.export-dialog-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.export-dialog-icon-btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+}
+
+.export-dialog-icon-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 1px;
 }
 
 @media (max-width: 800px) {

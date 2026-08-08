@@ -20,6 +20,7 @@ interface Props {
   game: SelectedGame
   focusedComponentId: string | null
   onFocus: (componentId: string) => void
+  onHover: (componentId: string | null) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
   onJump: (componentId: string) => void
   /** Current search box text (may be empty). */
@@ -74,6 +75,7 @@ export function GlobalSearchList({
   game,
   focusedComponentId,
   onFocus,
+  onHover,
   onToggle,
   onJump,
   searchQuery,
@@ -152,6 +154,7 @@ export function GlobalSearchList({
       role="listbox"
       aria-label="Search results"
       onKeyDown={handleListKeyDown}
+      onMouseLeave={() => onHover(null)}
     >
       {hits.map((hit) => {
         const id = hit.component.componentId
@@ -165,10 +168,16 @@ export function GlobalSearchList({
 
         function handleRowClick() {
           onFocus(id)
+          if (hit.checkable) onToggle(display, !checked)
+        }
+
+        function handleRowFocus() {
+          onFocus(id)
         }
 
         function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
           if (!hit.checkable) return
+          onFocus(id)
           onToggle(display, e.target.checked)
         }
 
@@ -192,7 +201,8 @@ export function GlobalSearchList({
               !hit.checkable ? ' gated' : ''
             }`}
             onClick={handleRowClick}
-            onFocus={handleRowClick}
+            onFocus={handleRowFocus}
+            onMouseEnter={() => onHover(id)}
             ref={(el) => {
               if (el) rowRefs.current.set(id, el)
               else rowRefs.current.delete(id)

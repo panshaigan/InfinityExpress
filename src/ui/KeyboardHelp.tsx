@@ -64,7 +64,7 @@ export function KeyboardHelp({ open, onClose }: Props) {
         </div>
         <p className="keyboard-help-lede">
           Walk with <strong>Done</strong> for a guided path, or jump from the left rail anytime.
-          Double-click a row to check it; single-click only focuses details.
+          Click a row to check it and focus details; hover previews details without changing focus.
         </p>
         <table className="keyboard-help-table">
           <tbody>

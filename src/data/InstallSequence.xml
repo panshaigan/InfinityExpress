@@ -2,7 +2,7 @@
 <installSequence>
 	<base desc="Base game fixes and modifications">
 		<component id="A7-DLCMERGER-MERGE_SOD" name="Merge &quot;Siege of Dragonspear&quot; DLC" label='Merge SoD DLC' desc="Required for further BG1 modding" modId="A7-DlcMerger" engine="bg1,eet1" required="1" noDisplay="1" />
-		<component id="bubb_revert_pathfinding:0" name="Bubb's Pathfinding Revert" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,eet1,iwd,pst" required="1" noDisplay="1" />
+		<component id="bubb_revert_pathfinding:0" name="Bubb's Pathfinding Revert" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,iwd,pst" required="1" noDisplay="1" />
 		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" desc="The Enhanced Edition Fixpack is an unofficial collection of fixes for the Enhanced Editions of Baldur's Gate, Baldur's Gate II, Icewind Dale, and Planescape: Torment." level="fixes">
 			<component id="cd_eefp_core_fixes" name="Core Fixes" label="Core fixes" modId="EE_Fixpack" />
 			<component id="cd_eefp_game_text_update" name="Game Text Update" label="Game text update" modId="EE_Fixpack" noDisplay="1" alwaysIf="cd_eefp_core_fixes" />

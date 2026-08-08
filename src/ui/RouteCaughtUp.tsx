@@ -35,7 +35,7 @@ export function RouteCaughtUp({
           title={
             selectedCount === 0
               ? 'Select at least one component to export'
-              : 'Download install-order.txt'
+              : 'Preview and save install order'
           }
         >
           Export
