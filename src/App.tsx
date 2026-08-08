@@ -73,6 +73,7 @@ export default function App() {
   const [game, setGame] = useState<SelectedGame | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const [activeStation, setActiveStation] = useState<AppNavSlot>('engine')
+  const [searchScope, setSearchScope] = useState<'section' | 'all'>('section')
 
   const filterOptions = useMemo(() => collectFilterOptions(model), [model])
   const [filters, setFilters] = useState<FilterCriteria>(() =>
@@ -134,6 +135,7 @@ export default function App() {
       game,
       selectedIds,
       activeStation,
+      searchScope,
       filters,
       filtersActive,
       modsByCodename,
@@ -205,12 +207,12 @@ export default function App() {
   })
 
   const stationDesc = useMemo(() => {
-    if (activeStation === 'engine' || activeStation === 'search') return undefined
+    if (activeStation === 'engine') return undefined
     const block = model.stations.find((s) => s.stationId === activeStation)
     return block?.roots.find((r) => r.attrs.desc)?.attrs.desc
   }, [activeStation, model.stations])
 
-  const isSearchStation = activeStation === 'search'
+  const isAllSections = searchScope === 'all'
 
   const emptyCopy = useMemo(
     () =>
@@ -254,6 +256,7 @@ export default function App() {
     presets.resetPresetSelection()
     route.resetFinishedStations()
     setActiveStation('engine')
+    setSearchScope('section')
     clearFocus()
   }
 
@@ -292,18 +295,23 @@ export default function App() {
 
   function selectEngine() {
     setActiveStation('engine')
-    clearFocus()
-  }
-
-  function selectSearch() {
-    setActiveStation('search')
+    setSearchScope('section')
     clearFocus()
   }
 
   function selectStation(id: StationId) {
     setActiveStation(id)
+    setSearchScope('section')
     clearFocus()
   }
+
+  const onJumpFromSearch = useCallback(
+    (componentId: string) => {
+      setSearchScope('section')
+      focus.onNavigateToComponent(componentId)
+    },
+    [focus.onNavigateToComponent],
+  )
 
   const onToggle = useCallback(
     (display: DisplayNode, wantSelected: boolean) => {
@@ -348,6 +356,7 @@ export default function App() {
   const applyStationSlot = useCallback(
     (slot: StationSlot) => {
       setActiveStation(slot === 'engine' ? 'engine' : slot)
+      setSearchScope('section')
       clearFocus()
     },
     [clearFocus],
@@ -408,7 +417,6 @@ export default function App() {
           onToggleCollapsed={toggleRailCollapsed}
           onSelectEngine={selectEngine}
           onSelectStation={selectStation}
-          onSelectSearch={selectSearch}
         />
 
         <div className="app-main">
@@ -420,9 +428,10 @@ export default function App() {
               authorOptions={catalogAuthorOptions}
               sizeBounds={filterSeed.sizeBounds}
               onRequestTreeFocus={focusComponentTree}
-              searchScope={isSearchStation ? 'global' : 'station'}
+              searchScope={searchScope}
+              onSearchScopeChange={setSearchScope}
               searchPlaceholder={
-                isSearchStation
+                isAllSections
                   ? 'Search all components...'
                   : 'Search in this window...'
               }
@@ -473,7 +482,7 @@ export default function App() {
                     onCancel={route.unmarkStationFinished}
                   />
                 </div>
-              ) : isSearchStation ? (
+              ) : isAllSections ? (
                 <>
                   <div className="list-pane-header">
                     <div className="list-pane-header-title">
@@ -502,7 +511,7 @@ export default function App() {
                       onFocus={focus.onFocusSearchResult}
                       onHover={focus.onHoverSearchResult}
                       onToggle={onToggle}
-                      onJump={focus.onNavigateToComponent}
+                      onJump={onJumpFromSearch}
                       searchQuery={filters.search}
                       filtersActive={filtersActive}
                     />

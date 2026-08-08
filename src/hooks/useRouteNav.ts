@@ -57,11 +57,10 @@ export function useRouteNav(args: {
     if (!routeComplete) setHideCaughtUp(false)
   }, [routeComplete])
 
-  const currentFinished =
-    activeStation !== 'search' && finishedStations.has(activeStation)
+  const currentFinished = finishedStations.has(activeStation)
 
   const currentNavScreen = useMemo((): NavScreen | null => {
-    if (activeStation === 'engine' || activeStation === 'search' || !game) return null
+    if (activeStation === 'engine' || !game) return null
     if (activeStation === 'content') {
       if (contentMainKey == null || contentSubKey == null) return null
       return {
@@ -77,12 +76,7 @@ export function useRouteNav(args: {
   const canCycleScreens =
     !!game && navigableScreens.some((s) => !finishedStations.has(s.stationId))
 
-  const canMarkFinished =
-    activeStation === 'search'
-      ? false
-      : activeStation === 'engine'
-        ? !!game
-        : true
+  const canMarkFinished = activeStation === 'engine' ? !!game : true
 
   function applyNavScreen(screen: NavScreen) {
     setActiveStation(screen.stationId)
@@ -119,7 +113,6 @@ export function useRouteNav(args: {
   }
 
   function markStationFinished() {
-    if (activeStation === 'search') return
     setFinishedStations((prev) => {
       const next = new Set(prev)
       next.add(activeStation)
@@ -128,7 +121,6 @@ export function useRouteNav(args: {
   }
 
   function unmarkStationFinished() {
-    if (activeStation === 'search') return
     setFinishedStations((prev) => {
       if (!prev.has(activeStation)) return prev
       const next = new Set(prev)

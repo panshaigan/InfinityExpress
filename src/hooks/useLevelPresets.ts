@@ -40,7 +40,7 @@ export function useLevelPresets(args: {
   )
 
   const activeStationPreset =
-    activeStation === 'engine' || activeStation === 'search'
+    activeStation === 'engine'
       ? emptyLiveStationPreset()
       : (stationLevelPresets.get(activeStation) ?? emptyLiveStationPreset())
 
@@ -73,7 +73,7 @@ export function useLevelPresets(args: {
   }
 
   function onStationLadderToggle(level: LadderLevel, wantChecked: boolean) {
-    if (!game || activeStation === 'engine' || activeStation === 'search') return
+    if (!game || activeStation === 'engine') return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setStationLevelPresets((prev) => {
@@ -97,7 +97,7 @@ export function useLevelPresets(args: {
     token: 'lowerDifficulty' | 'higherDifficulty',
     want: boolean,
   ) {
-    if (!game || activeStation === 'engine' || activeStation === 'search') return
+    if (!game || activeStation === 'engine') return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setStationLevelPresets((prev) => {
@@ -116,7 +116,7 @@ export function useLevelPresets(args: {
   }
 
   function onClearToGlobal() {
-    if (!game || activeStation === 'engine' || activeStation === 'search') return
+    if (!game || activeStation === 'engine') return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setSelectedIds((prev) =>

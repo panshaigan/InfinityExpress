@@ -32,6 +32,8 @@ export function useStationTrees(args: {
   game: SelectedGame | null
   selectedIds: ReadonlySet<string>
   activeStation: AppNavSlot
+  /** When 'all', build cross-station search hits. */
+  searchScope: 'section' | 'all'
   filters: FilterCriteria
   /** When false, non-content cycle stops skip full filtered-tree rebuilds. */
   filtersActive: boolean
@@ -43,6 +45,7 @@ export function useStationTrees(args: {
     game,
     selectedIds,
     activeStation,
+    searchScope,
     filters,
     filtersActive,
     modsByCodename,
@@ -86,7 +89,7 @@ export function useStationTrees(args: {
   }, [filters, filterSeed, game, model, modsByCodename, treeSelectionKey])
 
   const displayNodes = useMemo(() => {
-    if (!game || activeStation === 'engine' || activeStation === 'search') return []
+    if (!game || activeStation === 'engine') return []
     if (activeStation === 'content') return contentDisplayNodes
     const block = model.stations.find((s) => s.stationId === activeStation)
     if (!block) return []
@@ -112,7 +115,7 @@ export function useStationTrees(args: {
   ])
 
   const globalSearchHits = useMemo(() => {
-    if (!game || activeStation !== 'search') return []
+    if (!game || searchScope !== 'all') return []
     return buildGlobalSearchResults(
       model,
       game,
@@ -122,7 +125,7 @@ export function useStationTrees(args: {
       filterSeed,
       { selectedIds, game },
     )
-  }, [activeStation, filters, game, model, modsByCodename, filterSeed, selectedIds])
+  }, [filters, game, model, modsByCodename, filterSeed, searchScope, selectedIds])
 
   const navigableScreens = useMemo(() => {
     if (!game) return [] as NavScreen[]

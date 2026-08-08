@@ -103,9 +103,7 @@ export function useChromeHotkeys(args: {
       if (cmd.type === 'cycleStation') {
         e.preventDefault()
         const order = stationCycleOrder(visibleStations)
-        const cycleFrom: StationSlot =
-          activeStation === 'search' ? 'engine' : activeStation
-        const next = cycleStation(order, cycleFrom, cmd.direction)
+        const next = cycleStation(order, activeStation, cmd.direction)
         if (next) onApplyStationSlot(next)
         return
       }

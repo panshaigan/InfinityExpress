@@ -30,8 +30,9 @@ interface Props {
   onRequestTreeFocus?: () => void
   /** Override search field placeholder / aria-label (e.g. global search). */
   searchPlaceholder?: string
-  /** Clarifies in-window vs all-stations search. */
-  searchScope?: 'station' | 'global'
+  /** In-window vs all-stations search. */
+  searchScope?: 'section' | 'all'
+  onSearchScopeChange?: (scope: 'section' | 'all') => void
 }
 
 type PanelId = 'level' | 'size' | 'author' | 'tags'
@@ -82,7 +83,8 @@ export function FiltersStrip({
   sizeBounds,
   onRequestTreeFocus,
   searchPlaceholder = 'Search in this window...',
-  searchScope = 'station',
+  searchScope = 'section',
+  onSearchScopeChange,
 }: Props) {
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null)
   const baseId = useId()
@@ -189,16 +191,26 @@ export function FiltersStrip({
     >
       <div className="filters-row">
         <span className="filters-label">Filters</span>
-        <span
-          className={`filters-scope${searchScope === 'global' ? ' global' : ''}`}
+        <button
+          type="button"
+          className={`filters-scope${searchScope === 'all' ? ' all' : ''}`}
           title={
-            searchScope === 'global'
+            searchScope === 'all'
               ? 'Matches components across every station'
               : 'Matches only what is listed in this window'
           }
+          aria-pressed={searchScope === 'all'}
+          aria-label={
+            searchScope === 'all'
+              ? 'Search scope: all sections. Click for this section.'
+              : 'Search scope: this section. Click for all sections.'
+          }
+          onClick={() =>
+            onSearchScopeChange?.(searchScope === 'all' ? 'section' : 'all')
+          }
         >
-          {searchScope === 'global' ? 'All stops' : 'This stop'}
-        </span>
+          {searchScope === 'all' ? 'All sections' : 'This section'}
+        </button>
         <input
           ref={searchRef}
           id={FILTERS_SEARCH_ID}

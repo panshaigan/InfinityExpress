@@ -551,6 +551,7 @@ body {
 
 .filters-scope {
   flex-shrink: 0;
+  font: inherit;
   font-size: 0.7rem;
   letter-spacing: 0.03em;
   color: var(--muted);
@@ -558,9 +559,20 @@ body {
   border-radius: var(--radius-sm);
   padding: 0.15rem 0.45rem;
   background: color-mix(in srgb, var(--bg) 55%, transparent);
+  cursor: pointer;
 }
 
-.filters-scope.global {
+.filters-scope:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--ink) 25%, var(--line));
+}
+
+.filters-scope:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.filters-scope.all {
   color: var(--ink);
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
   background: var(--accent-soft);

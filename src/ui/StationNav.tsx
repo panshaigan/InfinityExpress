@@ -6,11 +6,10 @@ import {
 } from '../lib/xml/schema'
 import type { StationSlot } from '../lib/ui/chromeHotkeys'
 
-export type AppNavSlot = 'engine' | 'search' | StationId
+export type AppNavSlot = 'engine' | StationId
 
-const SHORT_LABELS: Record<Exclude<AppNavSlot, 'search'> | 'search', string> = {
+const SHORT_LABELS: Record<AppNavSlot, string> = {
   engine: 'Eng',
-  search: 'Find',
   base: 'Base',
   ui: 'UI',
   campaigns: 'Camp',
@@ -38,11 +37,10 @@ interface Props {
   onToggleCollapsed: () => void
   onSelectEngine: () => void
   onSelectStation: (id: StationId) => void
-  onSelectSearch: () => void
 }
 
 function stationClass(
-  id: Exclude<AppNavSlot, 'search'>,
+  id: AppNavSlot,
   activeStation: AppNavSlot,
   finishedStations: ReadonlySet<StationSlot>,
 ): string {
@@ -55,7 +53,6 @@ function stationClass(
 function labelFor(id: AppNavSlot, collapsed: boolean): string {
   if (!collapsed) {
     if (id === 'engine') return 'Engine'
-    if (id === 'search') return 'Search'
     return STATION_LABELS[id]
   }
   return SHORT_LABELS[id]
@@ -63,7 +60,6 @@ function labelFor(id: AppNavSlot, collapsed: boolean): string {
 
 function titleFor(id: AppNavSlot): string {
   if (id === 'engine') return 'Engine'
-  if (id === 'search') return 'Search every eligible component'
   return STATION_LABELS[id]
 }
 
@@ -78,7 +74,6 @@ export function StationNav({
   onToggleCollapsed,
   onSelectEngine,
   onSelectStation,
-  onSelectSearch,
 }: Props) {
   const progressRatio = totalCount > 0 ? finishedCount / totalCount : 0
   const allDone = totalCount > 0 && finishedCount === totalCount
@@ -113,15 +108,6 @@ export function StationNav({
               ✓
             </span>
           )}
-        </button>
-        <button
-          type="button"
-          className={activeStation === 'search' ? 'active' : ''}
-          disabled={!game}
-          onClick={onSelectSearch}
-          title={titleFor('search')}
-        >
-          <span className="station-nav-label">{labelFor('search', collapsed)}</span>
         </button>
         {STATION_ORDER.filter((id) => visibleStations.includes(id)).map((id) => (
           <button
@@ -170,4 +156,3 @@ export function StationNav({
     </nav>
   )
 }
-
