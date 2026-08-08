@@ -32,6 +32,8 @@ import { isHttpUrl } from '../lib/url'
 
 export type DetailSelectionState = 'checked' | 'unchecked' | 'indeterminate'
 
+type DetailBlockKind = 'component' | 'mod' | 'relations'
+
 interface Props {
   display: DisplayNode | null
   model: InstallSequenceModel
@@ -116,18 +118,41 @@ function CopyButton({ value, label }: { value: string; label: string }) {
   )
 }
 
-function DetailSection({
+function DetailBlock({
+  kind,
   title,
   children,
 }: {
+  kind: DetailBlockKind
   title: string
   children: ReactNode
 }) {
   return (
-    <section className="detail-section">
-      <h4 className="detail-section-label">{title}</h4>
-      <div className="detail-section-body">{children}</div>
+    <section className={`detail-block detail-block-${kind}`}>
+      <h4 className="detail-block-title">{title}</h4>
+      <div className="detail-block-body">{children}</div>
     </section>
+  )
+}
+
+function DetailLinks({ links }: { links: { href: string; label: string }[] }) {
+  if (links.length === 0) return null
+  return (
+    <ul className="detail-links">
+      {links.map((link) => (
+        <li key={link.href + link.label}>
+          <a
+            className="detail-url"
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={link.href}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
   )
 }
 
@@ -151,7 +176,7 @@ function RelationList({
               {ref.label}
             </button>
           ) : (
-            <span>{ref.label}</span>
+            <span className="detail-relation-label">{ref.label}</span>
           )}
         </li>
       ))}
@@ -242,16 +267,17 @@ export function ComponentDetail({
       .filter((row) => row.refs.length > 0),
   })).filter((group) => group.rows.length > 0)
 
-  const links: { href: string; label: string }[] = []
-  if (mod?.url) links.push({ href: mod.url, label: 'Page' })
-  if (isHttpUrl(modReadme)) links.push({ href: modReadme, label: 'Mod readme' })
+  const componentLinks: { href: string; label: string }[] = []
   if (isHttpUrl(componentReadme)) {
-    links.push({ href: componentReadme, label: 'Component readme' })
+    componentLinks.push({ href: componentReadme, label: 'Component readme' })
   }
 
-  const hasModSection = Boolean(codename)
+  const modLinks: { href: string; label: string }[] = []
+  if (mod?.url) modLinks.push({ href: mod.url, label: 'Page' })
+  if (isHttpUrl(modReadme)) modLinks.push({ href: modReadme, label: 'Mod readme' })
 
-  const hasComponentSection = Boolean(componentId || attrs.name)
+  const hasModSection = Boolean(codename)
+  const hasComponentMeta = Boolean(componentId || attrs.name)
 
   const aboutSummary =
     kind === 'Component'
@@ -298,150 +324,131 @@ export function ComponentDetail({
         </div>
       </div>
 
-      <DetailSection title="About">
-        {desc ? (
-          <p className="detail-desc">{desc}</p>
-        ) : aboutSummary ? (
-          <p className="detail-empty">{aboutSummary}</p>
-        ) : (
-          <p className="detail-empty">No description.</p>
+      <div className="detail-blocks">
+        <DetailBlock kind="component" title="Component">
+          {desc ? (
+            <p className="detail-desc">{desc}</p>
+          ) : aboutSummary ? (
+            <p className="detail-empty">{aboutSummary}</p>
+          ) : (
+            <p className="detail-empty">No description.</p>
+          )}
+
+          {hasComponentMeta && (
+            <dl className="detail-meta">
+              {componentId && (
+                <>
+                  <dt>Id</dt>
+                  <dd className="detail-name-value">
+                    <code>{componentId}</code>
+                    <CopyButton value={componentId} label="Copy id" />
+                  </dd>
+                </>
+              )}
+              {attrs.name && (
+                <>
+                  <dt>Name</dt>
+                  <dd className="detail-name-value">
+                    <span>{attrs.name}</span>
+                    <CopyButton value={attrs.name} label="Copy name" />
+                  </dd>
+                </>
+              )}
+            </dl>
+          )}
+
+          {tagList.length > 0 && (
+            <ul className="detail-tags">
+              {tagList.map((tag) => (
+                <li key={tag} className="detail-tag">
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <DetailLinks links={componentLinks} />
+        </DetailBlock>
+
+        {hasModSection && (
+          <DetailBlock kind="mod" title="Mod">
+            <dl className="detail-meta">
+              {hasModField(mod?.name) && (
+                <>
+                  <dt>Name</dt>
+                  <dd>
+                    {mod.name}
+                    {hasModField(mod.abbreviation) &&
+                    mod.abbreviation !== mod.name
+                      ? ` (${mod.abbreviation})`
+                      : ''}
+                  </dd>
+                </>
+              )}
+              {codename && (
+                <>
+                  <dt>Download id</dt>
+                  <dd>
+                    <code>{codename}</code>
+                  </dd>
+                </>
+              )}
+              {hasModField(mod?.category) && (
+                <>
+                  <dt>Category</dt>
+                  <dd>{mod.category}</dd>
+                </>
+              )}
+              {mod?.release && (
+                <>
+                  <dt>Release</dt>
+                  <dd>{mod.release}</dd>
+                </>
+              )}
+              {mod?.version && (
+                <>
+                  <dt>Version</dt>
+                  <dd>{mod.version}</dd>
+                </>
+              )}
+              {mod?.sizeBytes != null && (
+                <>
+                  <dt>Size</dt>
+                  <dd>{formatBytes(mod.sizeBytes)}</dd>
+                </>
+              )}
+              {mod?.author && (
+                <>
+                  <dt>Author</dt>
+                  <dd>{mod.author}</dd>
+                </>
+              )}
+            </dl>
+            <DetailLinks links={modLinks} />
+          </DetailBlock>
         )}
-      </DetailSection>
 
-      {links.length > 0 && (
-        <DetailSection title="Links">
-          <ul className="detail-links">
-            {links.map((link) => (
-              <li key={link.href + link.label}>
-                <a
-                  className="detail-url"
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={link.href}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </DetailSection>
-      )}
-
-      {hasModSection && (
-        <DetailSection title="Mod">
-          <dl className="detail-meta">
-            {hasModField(mod?.name) && (
-              <>
-                <dt>Name</dt>
-                <dd>
-                  {mod.name}
-                  {hasModField(mod.abbreviation) &&
-                  mod.abbreviation !== mod.name
-                    ? ` (${mod.abbreviation})`
-                    : ''}
-                </dd>
-              </>
-            )}
-            {codename && (
-              <>
-                <dt>Download id</dt>
-                <dd>
-                  <code>{codename}</code>
-                </dd>
-              </>
-            )}
-            {hasModField(mod?.category) && (
-              <>
-                <dt>Category</dt>
-                <dd>{mod.category}</dd>
-              </>
-            )}
-            {mod?.release && (
-              <>
-                <dt>Release</dt>
-                <dd>{mod.release}</dd>
-              </>
-            )}
-            {mod?.version && (
-              <>
-                <dt>Version</dt>
-                <dd>{mod.version}</dd>
-              </>
-            )}
-            {mod?.sizeBytes != null && (
-              <>
-                <dt>Size</dt>
-                <dd>{formatBytes(mod.sizeBytes)}</dd>
-              </>
-            )}
-            {mod?.author && (
-              <>
-                <dt>Author</dt>
-                <dd>{mod.author}</dd>
-              </>
-            )}
-          </dl>
-        </DetailSection>
-      )}
-
-      {hasComponentSection && (
-        <DetailSection title="Component">
-          <dl className="detail-meta">
-            {componentId && (
-              <>
-                <dt>Id</dt>
-                <dd className="detail-name-value">
-                  <code>{componentId}</code>
-                  <CopyButton value={componentId} label="Copy id" />
-                </dd>
-              </>
-            )}
-            {attrs.name && (
-              <>
-                <dt>Name</dt>
-                <dd className="detail-name-value">
-                  <span>{attrs.name}</span>
-                  <CopyButton value={attrs.name} label="Copy name" />
-                </dd>
-              </>
-            )}
-          </dl>
-        </DetailSection>
-      )}
-
-      {tagList.length > 0 && (
-        <DetailSection title="Tags">
-          <ul className="detail-tags">
-            {tagList.map((tag) => (
-              <li key={tag} className="detail-tag">
-                {tag}
-              </li>
-            ))}
-          </ul>
-        </DetailSection>
-      )}
-
-      {relationGroups.length > 0 && (
-        <DetailSection title="Relations">
-          <div className="detail-relations">
-            {relationGroups.map((group) => (
-              <div key={group.title} className="detail-relation-group">
-                <h5 className="detail-relation-group-title">{group.title}</h5>
-                {group.rows.map((row) => (
-                  <div key={row.key} className="detail-relation-section">
-                    <p className="detail-relation-heading">{row.label}</p>
-                    <RelationList
-                      refs={row.refs}
-                      onNavigate={onNavigateToComponent}
-                    />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </DetailSection>
-      )}
+        {relationGroups.length > 0 && (
+          <DetailBlock kind="relations" title="Relations">
+            <div className="detail-relations">
+              {relationGroups.map((group) => (
+                <div key={group.title} className="detail-relation-group">
+                  <h5 className="detail-relation-group-title">{group.title}</h5>
+                  {group.rows.map((row) => (
+                    <div key={row.key} className="detail-relation-section">
+                      <p className="detail-relation-heading">{row.label}</p>
+                      <RelationList
+                        refs={row.refs}
+                        onNavigate={onNavigateToComponent}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </DetailBlock>
+        )}
+      </div>
     </article>
   )
 }
