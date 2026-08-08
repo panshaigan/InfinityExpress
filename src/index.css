@@ -1703,7 +1703,7 @@ body.is-resizing-detail * {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 0.65rem 1.1rem 1.5rem 0;
+  padding: 0.65rem 0.3rem 1.5rem 0;
 }
 
 .engine-station {
@@ -2872,7 +2872,7 @@ body.is-resizing-detail * {
 
 .detail-block-title {
   margin: 0;
-  padding: 0.45rem 0.7rem 0.4rem;
+  padding: 0.45rem 1rem 0.4rem;
   font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -2887,7 +2887,7 @@ body.is-resizing-detail * {
   flex-direction: column;
   gap: var(--space-3);
   min-width: 0;
-  padding: 0.65rem 0.7rem 0.75rem;
+  padding: 0.65rem 1rem 0.75rem;
 }
 
 .detail-desc {
