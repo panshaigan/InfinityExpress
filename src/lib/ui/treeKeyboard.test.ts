@@ -115,15 +115,18 @@ describe('resolveTreeKey', () => {
     expect(resolveTreeKey('End', ctx)).toEqual({ type: 'move', key: 'b' })
   })
 
-  it('PageDown and PageUp move among same-level siblings', () => {
-    const ctx = buildTreeKeyboardContext(sampleTree, expanded, 'a1')
-    expect(resolveTreeKey('PageDown', ctx)).toEqual({ type: 'move', key: 'a2' })
-    expect(resolveTreeKey('PageUp', ctx)).toBeNull()
-    const atA2 = buildTreeKeyboardContext(sampleTree, expanded, 'a2')
-    expect(resolveTreeKey('PageUp', atA2)).toEqual({ type: 'move', key: 'a1' })
+  it('PageDown and PageUp move among one-level-higher nodes', () => {
+    // Under a: parent is a; higher level is roots [a, b] → PageDown to b
+    const atA1 = buildTreeKeyboardContext(sampleTree, expanded, 'a1')
+    expect(resolveTreeKey('PageDown', atA1)).toEqual({ type: 'move', key: 'b' })
+    expect(resolveTreeKey('PageUp', atA1)).toBeNull()
+    // Nested under a2: higher level is [a1, a2] → PageUp to a1
+    const atA2a = buildTreeKeyboardContext(sampleTree, expanded, 'a2a')
+    expect(resolveTreeKey('PageUp', atA2a)).toEqual({ type: 'move', key: 'a1' })
+    expect(resolveTreeKey('PageDown', atA2a)).toBeNull()
   })
 
-  it('PageUp and PageDown do not wrap at sibling ends', () => {
+  it('PageUp and PageDown at roots move among root siblings without wrap', () => {
     const atRoot = buildTreeKeyboardContext(sampleTree, expanded, 'a')
     expect(resolveTreeKey('PageUp', atRoot)).toBeNull()
     expect(resolveTreeKey('PageDown', atRoot)).toEqual({ type: 'move', key: 'b' })

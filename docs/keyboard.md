@@ -18,7 +18,7 @@ Focus a row (click or Tab into the tree), then:
 | Key | Action |
 | --- | --- |
 | `↑` / `↓` | Move to previous / next **visible** row |
-| `Page Up` / `Page Down` | Move to previous / next **sibling** at the same tree level (no wrap) |
+| `Page Up` / `Page Down` | Move to previous / next node **one level higher** (siblings of the parent; at roots, among roots; no wrap) |
 | `Home` / `End` | First / last visible row |
 | `→` | Expand a collapsed folder; if already expanded, move to first child |
 | `←` | Collapse an expanded folder; otherwise move to parent |

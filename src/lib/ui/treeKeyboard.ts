@@ -125,11 +125,16 @@ export function resolveTreeKey(
     case 'PageDown':
     case 'PageUp': {
       if (focusedIndex < 0) return { type: 'move', key: visibleRows[0]!.key }
-      const siblings = visibleRows.filter((r) => r.parentKey === current.parentKey)
-      const sibIndex = siblings.findIndex((r) => r.key === currentKey)
-      if (sibIndex < 0) return null
+      // Move among nodes one level up (siblings of the parent). At roots, move among roots.
+      const anchorKey =
+        current.parentKey != null ? current.parentKey : currentKey
+      const anchor = visibleRows.find((r) => r.key === anchorKey)
+      if (!anchor) return null
+      const levelRows = visibleRows.filter((r) => r.parentKey === anchor.parentKey)
+      const levelIndex = levelRows.findIndex((r) => r.key === anchorKey)
+      if (levelIndex < 0) return null
       const next =
-        key === 'PageDown' ? siblings[sibIndex + 1] : siblings[sibIndex - 1]
+        key === 'PageDown' ? levelRows[levelIndex + 1] : levelRows[levelIndex - 1]
       return next ? { type: 'move', key: next.key } : null
     }
     case 'ArrowRight': {

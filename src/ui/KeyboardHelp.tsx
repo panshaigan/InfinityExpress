@@ -14,7 +14,7 @@ const ROWS: { keys: string; action: string }[] = [
   { keys: '/', action: 'Jump to search in this window' },
   { keys: 'Esc', action: 'Close filter panel or leave search' },
   { keys: '↑ ↓', action: 'Move in the component list' },
-  { keys: 'PgUp PgDn', action: 'Previous / next sibling at same level' },
+  { keys: 'PgUp PgDn', action: 'Previous / next node one level higher' },
   { keys: 'Space', action: 'Check / uncheck focused row' },
   { keys: 'Enter', action: 'Show details (does not toggle)' },
   { keys: '← →', action: 'Fold / unfold folders' },
