@@ -185,6 +185,7 @@ export function useModAcquireJob(args: {
 
       let rateLimitHint = false
       let updated = 0
+      let available = 0
       let upToDate = 0
       let failed = 0
       const nextPending = new Map(pendingRemotesRef.current)
@@ -235,7 +236,7 @@ export function useModAcquireJob(args: {
               'ok',
               `Remote ${remote.version} (not on disk)`,
             )
-            upToDate += 1
+            available += 1
           } else if (remote.version !== localVersion) {
             patchDiskStatus(mod.codename, 'update_available')
             setEntry(
@@ -268,7 +269,7 @@ export function useModAcquireJob(args: {
         activeCodename: null,
         progress: null,
         rateLimitHint: prev.rateLimitHint || rateLimitHint,
-        summary: `Check done: ${updated} update(s), ${upToDate} current, ${failed} failed`,
+        summary: `Check done: ${updated} update(s), ${available} available, ${upToDate} up to date, ${failed} failed`,
       }))
     },
     [patchDiskStatus, setEntry],

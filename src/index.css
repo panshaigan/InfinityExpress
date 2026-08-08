@@ -4183,6 +4183,27 @@ body.is-resizing-detail * {
   align-items: start;
 }
 
+.acquire-job-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.55rem 0 0.35rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.acquire-job-filter-count {
+  opacity: 0.85;
+}
+
+.acquire-job-filter-empty {
+  margin: 0.35rem 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .acquire-job-entry-code {
   font-weight: 600;
   overflow-wrap: anywhere;
@@ -4372,6 +4393,41 @@ body.is-resizing-detail * {
   overflow: visible;
 }
 
+.mods-url-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.mods-url-cell a {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mods-url-copy {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.mods-url-copy:hover {
+  color: var(--ink);
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--panel) 70%, var(--accent));
+}
+
 .mods-col-url .mods-cell-clip,
 .mods-col-url .mods-cell-clip a {
   display: block;
@@ -4379,6 +4435,10 @@ body.is-resizing-detail * {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+}
+
+.mods-col-url .mods-cell-clip:has(.mods-url-cell) {
+  overflow: visible;
 }
 
 .mods-col-url a {

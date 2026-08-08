@@ -1,5 +1,5 @@
-import { useEffect, useId, useRef } from 'react'
-import type { AcquireJobState } from '../../hooks/useModAcquireJob'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import type { AcquireJobState, JobKind } from '../../hooks/useModAcquireJob'
 import { formatBytes } from '../../lib/mods/loadMods'
 
 interface Props {
@@ -8,16 +8,16 @@ interface Props {
   onClose: () => void
 }
 
-function statusLabel(status: string): string {
+function statusLabel(status: string, kind: JobKind): string {
   switch (status) {
     case 'pending':
       return 'Queued'
     case 'running':
       return 'Running'
     case 'ok':
-      return 'Downloaded'
+      return kind === 'check' ? 'Available' : 'Downloaded'
     case 'updated':
-      return 'Updated'
+      return kind === 'check' ? 'Update available' : 'Updated'
     case 'up_to_date':
       return 'Up to date'
     case 'failed':
@@ -33,6 +33,20 @@ export function AcquireJobDialog({ job, onMinimize, onClose }: Props) {
   const titleId = useId()
   const closeRef = useRef<HTMLButtonElement>(null)
   const logRef = useRef<HTMLDivElement>(null)
+  const [hideUpToDate, setHideUpToDate] = useState(true)
+
+  const visibleEntries = useMemo(
+    () =>
+      hideUpToDate
+        ? job.entries.filter((e) => e.status !== 'up_to_date')
+        : job.entries,
+    [hideUpToDate, job.entries],
+  )
+
+  const upToDateCount = useMemo(
+    () => job.entries.filter((e) => e.status === 'up_to_date').length,
+    [job.entries],
+  )
 
   useEffect(() => {
     if (!job.open) return
@@ -53,7 +67,7 @@ export function AcquireJobDialog({ job, onMinimize, onClose }: Props) {
     const el = logRef.current
     if (!el) return
     el.scrollTop = el.scrollHeight
-  }, [job.entries, job.progress, job.open])
+  }, [visibleEntries, job.progress, job.open])
 
   if (!job.open) return null
 
@@ -123,19 +137,36 @@ export function AcquireJobDialog({ job, onMinimize, onClose }: Props) {
           ) : null}
         </div>
 
+        <label className="acquire-job-filter">
+          <input
+            type="checkbox"
+            checked={hideUpToDate}
+            onChange={(e) => setHideUpToDate(e.target.checked)}
+          />
+          Hide up to date
+          {upToDateCount > 0 ? (
+            <span className="acquire-job-filter-count">({upToDateCount})</span>
+          ) : null}
+        </label>
+
         <div className="acquire-job-log" ref={logRef} role="log">
-          {job.entries.map((entry) => (
+          {visibleEntries.map((entry) => (
             <div
               key={entry.codename}
               className={`acquire-job-entry acquire-job-entry-${entry.status}`}
             >
               <strong className="acquire-job-entry-code">{entry.codename}</strong>
               <span className="acquire-job-entry-status">
-                {statusLabel(entry.status)}
+                {statusLabel(entry.status, job.kind)}
               </span>
               <span className="acquire-job-entry-msg">{entry.message}</span>
             </div>
           ))}
+          {visibleEntries.length === 0 && job.entries.length > 0 ? (
+            <p className="acquire-job-filter-empty">
+              All checked mods are up to date.
+            </p>
+          ) : null}
         </div>
 
         {job.rateLimitHint ? (

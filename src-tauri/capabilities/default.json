@@ -9,6 +9,7 @@
     "core:default",
     "dialog:default",
     "fs:allow-write-text-file",
+    "opener:default",
     "allow-list-subdir-names",
     "allow-remove-mod-dir",
     "allow-probe-mod-remote",

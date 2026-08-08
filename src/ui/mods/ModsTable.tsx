@@ -2,7 +2,9 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
   type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from 'react'
 import {
@@ -68,6 +70,49 @@ function TipCell({
         </span>
       ) : null}
     </td>
+  )
+}
+
+function UrlCopyButton({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false)
+
+  async function onCopy(e: ReactMouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1500)
+    } catch {
+      /* clipboard may be unavailable */
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      className="mods-url-copy"
+      tabIndex={-1}
+      onClick={(e) => void onCopy(e)}
+      aria-label={copied ? 'Copied' : 'Copy URL'}
+      title={copied ? 'Copied' : 'Copy URL'}
+    >
+      {copied ? (
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 4.6-4.6L12.2 5.5z"
+          />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M5.5 2A1.5 1.5 0 0 0 4 3.5v7A1.5 1.5 0 0 0 5.5 12h5A1.5 1.5 0 0 0 12 10.5v-7A1.5 1.5 0 0 0 10.5 2zm0 1h5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5zM2.5 5v7.5A1.5 1.5 0 0 0 4 14h6.5v-1H4a.5.5 0 0 1-.5-.5V5z"
+          />
+        </svg>
+      )}
+    </button>
   )
 }
 
@@ -294,15 +339,18 @@ export function ModsTable({
                     className="mods-col-url"
                     display={
                       isHttpUrl(eff.url) ? (
-                        <a
-                          href={eff.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          tabIndex={-1}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {eff.url.replace(/^https?:\/\//, '')}
-                        </a>
+                        <span className="mods-url-cell">
+                          <a
+                            href={eff.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            tabIndex={-1}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {eff.url.replace(/^https?:\/\//, '')}
+                          </a>
+                          <UrlCopyButton url={eff.url} />
+                        </span>
                       ) : (
                         eff.url || '—'
                       )

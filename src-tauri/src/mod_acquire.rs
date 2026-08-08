@@ -116,6 +116,160 @@ fn is_archive_ext(ext: &str) -> bool {
   matches!(ext, "zip" | "7z" | "rar")
 }
 
+/// Turn a GitHub href (absolute or site-relative) into an https://github.com URL.
+fn absolutize_github_href(href: &str) -> Option<String> {
+  let h = href.trim();
+  if h.is_empty() {
+    return None;
+  }
+  if h.starts_with("https://github.com/") || h.starts_with("http://github.com/") {
+    return Some(h.to_string());
+  }
+  if h.starts_with('/') {
+    return Some(format!("https://github.com{h}"));
+  }
+  None
+}
+
+/// Parse release asset download links from GitHub HTML (release page or expanded_assets).
+/// Ignores source-code archive links under `/archive/`. Prefers largest when sizes are known.
+fn pick_release_download_asset(html: &str) -> Option<(String, String, Option<u64>)> {
+  let re = Regex::new(
+    r#"(?i)href="((?:https://github\.com)?/[^"]+/releases/download/[^"]+\.(?:zip|7z|rar))""#,
+  )
+  .ok()?;
+  let mut best: Option<(String, String, u64)> = None;
+  let mut first: Option<(String, String)> = None;
+  for caps in re.captures_iter(html) {
+    let raw = caps.get(1)?.as_str();
+    if raw.contains("/archive/") {
+      continue;
+    }
+    let Some(url) = absolutize_github_href(raw) else {
+      continue;
+    };
+    let ext = ext_from_name(&url).unwrap_or_else(|| "zip".into());
+    if first.is_none() {
+      first = Some((url.clone(), ext.clone()));
+    }
+    // Look ahead a short window for a byte size (GitHub expanded_assets lists size near the link).
+    let end = caps.get(0)?.end();
+    let window = &html[end..html.len().min(end + 400)];
+    let size = parse_nearby_asset_size(window).unwrap_or(0);
+    if best.as_ref().map(|b| b.2).unwrap_or(0) < size {
+      best = Some((url, ext, size));
+    }
+  }
+  if let Some((url, ext, size)) = best.filter(|b| b.2 > 0) {
+    return Some((url, ext, Some(size)));
+  }
+  first.map(|(url, ext)| (url, ext, None))
+}
+
+fn parse_nearby_asset_size(window: &str) -> Option<u64> {
+  // e.g. "978 MB", "1.2 GB", "337785344" (raw bytes rare in HTML)
+  let re = Regex::new(r"(?i)([\d.]+)\s*(B|KB|MB|GB|TB)\b").ok()?;
+  let caps = re.captures(window)?;
+  let n: f64 = caps.get(1)?.as_str().parse().ok()?;
+  let unit = caps.get(2)?.as_str().to_ascii_uppercase();
+  let mult = match unit.as_str() {
+    "B" => 1.0,
+    "KB" => 1024.0,
+    "MB" => 1024.0 * 1024.0,
+    "GB" => 1024.0 * 1024.0 * 1024.0,
+    "TB" => 1024.0 * 1024.0 * 1024.0 * 1024.0,
+    _ => return None,
+  };
+  Some((n * mult) as u64)
+}
+
+fn branch_tip_result(
+  owner: &str,
+  repo: &str,
+  branch: &str,
+  version: String,
+  release: String,
+  used_scrape_fallback: bool,
+  rate_limited: bool,
+) -> RemoteProbeResult {
+  RemoteProbeResult {
+    version,
+    release,
+    download_url: Some(format!(
+      "https://codeload.github.com/{owner}/{repo}/zip/refs/heads/{branch}"
+    )),
+    extension: Some("zip".into()),
+    strategy: "github_zipball_branch".into(),
+    size_bytes: None,
+    size_is_estimate: false,
+    used_scrape_fallback,
+    rate_limited,
+    zipball_ref: Some(branch.to_string()),
+    owner: Some(owner.to_string()),
+    repo: Some(repo.to_string()),
+  }
+}
+
+async fn github_probe_branch_tip_api(
+  owner: &str,
+  repo: &str,
+  token: Option<&str>,
+  rate_limited: bool,
+) -> Result<RemoteProbeResult, String> {
+  let api = format!("https://api.github.com/repos/{owner}/{repo}");
+  let mut rl = rate_limited;
+  let (json, commits_rl) = fetch_json(&format!("{api}/commits?per_page=1"), token).await?;
+  rl |= commits_rl;
+  let commit = json
+    .as_array()
+    .and_then(|a| a.first())
+    .ok_or_else(|| "No commits returned".to_string())?;
+  let sha = commit
+    .get("sha")
+    .and_then(|v| v.as_str())
+    .ok_or_else(|| "Missing commit sha".to_string())?;
+  let short = sha[..sha.len().min(7)].to_string();
+  let date = commit
+    .pointer("/commit/author/date")
+    .and_then(|v| v.as_str())
+    .unwrap_or("");
+  // Prefer main, then master for the zipball URL; version stays tip SHA.
+  let branch = match resolve_github_branch_zipball(owner, repo, "main", token).await {
+    Ok(u) if u.contains("/heads/master") => "master",
+    Ok(_) => "main",
+    Err(_) => "main",
+  };
+  Ok(branch_tip_result(
+    owner,
+    repo,
+    branch,
+    short,
+    date_prefix(date),
+    false,
+    rl,
+  ))
+}
+
+async fn github_probe_branch_tip_scrape(
+  owner: &str,
+  repo: &str,
+) -> Result<RemoteProbeResult, String> {
+  for branch in ["main", "master"] {
+    let url = format!("https://github.com/{owner}/{repo}/commits/{branch}");
+    if let Ok((html, _)) = fetch_text(&url, None).await {
+      let re = Regex::new(r#"/commit/([0-9a-f]{40})"#).map_err(|e| e.to_string())?;
+      if let Some(caps) = re.captures(&html) {
+        let sha = caps.get(1).unwrap().as_str();
+        let short = sha[..7].to_string();
+        return Ok(branch_tip_result(
+          owner, repo, branch, short, String::new(), true, true,
+        ));
+      }
+    }
+  }
+  Err("Could not scrape default branch tip from GitHub".into())
+}
+
 async fn fetch_text(url: &str, token: Option<&str>) -> Result<(String, bool), String> {
   let client = http_client()?;
   let mut req = client.get(url);
@@ -176,37 +330,7 @@ async fn github_probe_api(
   let mut rate_limited = false;
 
   if use_master {
-    let (json, rl) = fetch_json(&format!("{api}/commits?per_page=1"), token).await?;
-    rate_limited |= rl;
-    let commit = json
-      .as_array()
-      .and_then(|a| a.first())
-      .ok_or_else(|| "No commits returned".to_string())?;
-    let sha = commit
-      .get("sha")
-      .and_then(|v| v.as_str())
-      .ok_or_else(|| "Missing commit sha".to_string())?;
-    let short = &sha[..sha.len().min(7)];
-    let date = commit
-      .pointer("/commit/author/date")
-      .and_then(|v| v.as_str())
-      .unwrap_or("");
-    return Ok(RemoteProbeResult {
-      version: short.to_string(),
-      release: date_prefix(date),
-      download_url: Some(format!(
-        "https://codeload.github.com/{owner}/{repo}/zip/refs/heads/main"
-      )),
-      extension: Some("zip".into()),
-      strategy: "github_zipball_branch".into(),
-      size_bytes: None,
-      size_is_estimate: false,
-      used_scrape_fallback: false,
-      rate_limited,
-      zipball_ref: Some("main".into()),
-      owner: Some(owner.to_string()),
-      repo: Some(repo.to_string()),
-    });
+    return github_probe_branch_tip_api(owner, repo, token, rate_limited).await;
   }
 
   match fetch_json(&format!("{api}/releases/latest"), token).await {
@@ -306,38 +430,8 @@ async fn github_probe_api(
     }
     Err(e) if use_assets => Err(e),
     Err(_) => {
-      // No releases: fall back to latest commit zipball.
-      let (json, rl) = fetch_json(&format!("{api}/commits?per_page=1"), token).await?;
-      rate_limited |= rl;
-      let commit = json
-        .as_array()
-        .and_then(|a| a.first())
-        .ok_or_else(|| "No commits returned".to_string())?;
-      let sha = commit
-        .get("sha")
-        .and_then(|v| v.as_str())
-        .ok_or_else(|| "Missing commit sha".to_string())?;
-      let short = &sha[..sha.len().min(7)];
-      let date = commit
-        .pointer("/commit/author/date")
-        .and_then(|v| v.as_str())
-        .unwrap_or("");
-      Ok(RemoteProbeResult {
-        version: short.to_string(),
-        release: date_prefix(date),
-        download_url: Some(format!(
-          "https://codeload.github.com/{owner}/{repo}/zip/{sha}"
-        )),
-        extension: Some("zip".into()),
-        strategy: "github_zipball_sha".into(),
-        size_bytes: None,
-        size_is_estimate: false,
-        used_scrape_fallback: false,
-        rate_limited,
-        zipball_ref: Some(sha.to_string()),
-        owner: Some(owner.to_string()),
-        repo: Some(repo.to_string()),
-      })
+      // No releases: fall back to main/master branch tip (no UseMaster required).
+      github_probe_branch_tip_api(owner, repo, token, rate_limited).await
     }
   }
 }
@@ -349,41 +443,17 @@ async fn github_probe_scrape(
   use_assets: bool,
 ) -> Result<RemoteProbeResult, String> {
   if use_master {
-    // Prefer main, then master via HTML commits page.
-    for branch in ["main", "master"] {
-      let url = format!("https://github.com/{owner}/{repo}/commits/{branch}");
-      if let Ok((html, _)) = fetch_text(&url, None).await {
-        let re = Regex::new(r#"/commit/([0-9a-f]{40})"#).map_err(|e| e.to_string())?;
-        if let Some(caps) = re.captures(&html) {
-          let sha = caps.get(1).unwrap().as_str();
-          let short = &sha[..7];
-          return Ok(RemoteProbeResult {
-            version: short.to_string(),
-            release: String::new(),
-            download_url: Some(format!(
-              "https://codeload.github.com/{owner}/{repo}/zip/refs/heads/{branch}"
-            )),
-            extension: Some("zip".into()),
-            strategy: "github_zipball_branch".into(),
-            size_bytes: None,
-            size_is_estimate: false,
-            used_scrape_fallback: true,
-            rate_limited: true,
-            zipball_ref: Some(branch.to_string()),
-            owner: Some(owner.to_string()),
-            repo: Some(repo.to_string()),
-          });
-        }
-      }
-    }
-    return Err("Could not scrape default branch tip from GitHub".into());
+    return github_probe_branch_tip_scrape(owner, repo).await;
   }
 
   let latest = format!("https://github.com/{owner}/{repo}/releases/latest");
   let client = http_client()?;
   let res = client.get(&latest).send().await.map_err(|e| e.to_string())?;
+  let status = res.status();
   let final_url = res.url().clone();
   let html = res.text().await.map_err(|e| e.to_string())?;
+
+  // No releases (or soft 404 page that never redirects to a tag): use branch tip.
   let tag = final_url
     .path_segments()
     .and_then(|mut s| s.next_back())
@@ -393,30 +463,35 @@ async fn github_probe_scrape(
       let re = Regex::new(r#"/releases/tag/([^\"'?#]+)"#).ok()?;
       re.captures(&html)
         .and_then(|c| c.get(1).map(|m| m.as_str().to_string()))
-    })
-    .ok_or_else(|| "Could not determine latest release tag from GitHub HTML".to_string())?;
+    });
+
+  let Some(tag) = tag else {
+    if use_assets {
+      return Err(format!(
+        "UseAssets set but no releases found for {owner}/{repo} (HTTP {status})"
+      ));
+    }
+    return github_probe_branch_tip_scrape(owner, repo).await;
+  };
 
   if use_assets {
-    // Look for archive asset links on the release page.
-    let re = Regex::new(
-      r#"(?i)href="(https://github\.com/[^"]+/releases/download/[^"]+\.(?:zip|7z|rar))""#,
-    )
-    .map_err(|e| e.to_string())?;
-    let mut best: Option<(String, String)> = None;
-    for caps in re.captures_iter(&html) {
-      let url = caps.get(1).unwrap().as_str().to_string();
-      let ext = ext_from_name(&url).unwrap_or_else(|| "zip".into());
-      best = Some((url, ext));
-      break;
-    }
-    if let Some((url, ext)) = best {
+    // Assets are reliably listed on expanded_assets (often relative hrefs).
+    let expanded =
+      format!("https://github.com/{owner}/{repo}/releases/expanded_assets/{tag}");
+    let assets_html = match fetch_text(&expanded, None).await {
+      Ok((t, _)) => t,
+      Err(_) => html.clone(),
+    };
+    if let Some((url, ext, size)) = pick_release_download_asset(&assets_html)
+      .or_else(|| pick_release_download_asset(&html))
+    {
       return Ok(RemoteProbeResult {
         version: tag,
         release: String::new(),
         download_url: Some(url),
         extension: Some(ext),
         strategy: "github_asset".into(),
-        size_bytes: None,
+        size_bytes: size,
         size_is_estimate: false,
         used_scrape_fallback: true,
         rate_limited: true,
@@ -429,21 +504,23 @@ async fn github_probe_scrape(
       Regex::new(r#"(?i)https?://[^\s)\"'<>]+\.(?:zip|7z|rar)"#).map_err(|e| e.to_string())?;
     if let Some(m) = body_re.find(&html) {
       let url = m.as_str().to_string();
-      let ext = ext_from_name(&url).unwrap_or_else(|| "zip".into());
-      return Ok(RemoteProbeResult {
-        version: tag,
-        release: String::new(),
-        download_url: Some(url),
-        extension: Some(ext),
-        strategy: "github_body_url".into(),
-        size_bytes: None,
-        size_is_estimate: false,
-        used_scrape_fallback: true,
-        rate_limited: true,
-        zipball_ref: None,
-        owner: Some(owner.to_string()),
-        repo: Some(repo.to_string()),
-      });
+      if !url.contains("/archive/") {
+        let ext = ext_from_name(&url).unwrap_or_else(|| "zip".into());
+        return Ok(RemoteProbeResult {
+          version: tag,
+          release: String::new(),
+          download_url: Some(url),
+          extension: Some(ext),
+          strategy: "github_body_url".into(),
+          size_bytes: None,
+          size_is_estimate: false,
+          used_scrape_fallback: true,
+          rate_limited: true,
+          zipball_ref: None,
+          owner: Some(owner.to_string()),
+          repo: Some(repo.to_string()),
+        });
+      }
     }
     return Err("UseAssets set but no archive links found on release page".into());
   }
@@ -1168,4 +1245,54 @@ pub async fn acquire_mod(
   Ok(AcquireModResult {
     size_bytes: Some(size),
   })
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn absolutize_github_href_relative_and_absolute() {
+    assert_eq!(
+      absolutize_github_href(
+        "/ColossusChang/VoicesVoicesExtravaganza/releases/download/v1.1/VoicesVoicesExtravaganza.zip"
+      )
+      .as_deref(),
+      Some(
+        "https://github.com/ColossusChang/VoicesVoicesExtravaganza/releases/download/v1.1/VoicesVoicesExtravaganza.zip"
+      )
+    );
+    assert_eq!(
+      absolutize_github_href(
+        "https://github.com/o/r/releases/download/v1/a.zip"
+      )
+      .as_deref(),
+      Some("https://github.com/o/r/releases/download/v1/a.zip")
+    );
+    assert_eq!(absolutize_github_href("javascript:alert(1)"), None);
+  }
+
+  #[test]
+  fn pick_release_download_asset_prefers_relative_assets_and_size() {
+    let html = r#"
+      <a href="/ColossusChang/VoicesVoicesExtravaganza/archive/refs/tags/v1.1.zip">Source</a>
+      <a href="/ColossusChang/VoicesVoicesExtravaganza/releases/download/v1.1/small.zip">s</a>
+      12 MB
+      <a href="/ColossusChang/VoicesVoicesExtravaganza/releases/download/v1.1/VoicesVoicesExtravaganza.zip">mod</a>
+      978 MB
+    "#;
+    let (url, ext, size) = pick_release_download_asset(html).expect("asset");
+    assert_eq!(ext, "zip");
+    assert!(url.ends_with("/VoicesVoicesExtravaganza.zip"), "{url}");
+    assert!(url.starts_with("https://github.com/"));
+    assert!(size.unwrap_or(0) > 100_000_000, "{size:?}");
+  }
+
+  #[test]
+  fn pick_release_download_asset_ignores_source_archive_only() {
+    let html = r#"
+      <a href="/o/r/archive/refs/tags/v1.zip">Source code (zip)</a>
+    "#;
+    assert!(pick_release_download_asset(html).is_none());
+  }
 }

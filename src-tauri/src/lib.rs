@@ -6,6 +6,7 @@ pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_dialog::init())
     .plugin(tauri_plugin_fs::init())
+    .plugin(tauri_plugin_opener::init())
     .invoke_handler(tauri::generate_handler![
       mod_fs::list_subdir_names,
       mod_fs::remove_mod_dir,
