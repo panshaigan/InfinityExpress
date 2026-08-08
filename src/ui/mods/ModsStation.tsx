@@ -28,6 +28,7 @@ export type ModsJourneyState = {
 
 interface Props {
   mods: WorkingMod[]
+  neededCodenames: string[]
   journey: ModsJourneyState | null
   onClearJourneyLock: () => void
   detailCollapsed: boolean
@@ -45,6 +46,7 @@ interface Props {
 
 export function ModsStation({
   mods,
+  neededCodenames,
   journey,
   onClearJourneyLock,
   detailCollapsed,
@@ -88,6 +90,22 @@ export function ModsStation({
     setFocusedCodename(journey.requiredCodenames[0] ?? null)
   }, [journey])
 
+  // Keep "Only needed" filter list in sync with current component selection.
+  useEffect(() => {
+    if (journeyLocked) return
+    setFilters((prev) => {
+      if (prev.requiredCodenames == null) return prev
+      const cur = prev.requiredCodenames
+      if (
+        cur.length === neededCodenames.length &&
+        cur.every((c, i) => c === neededCodenames[i])
+      ) {
+        return prev
+      }
+      return { ...prev, requiredCodenames: neededCodenames }
+    })
+  }, [neededCodenames, journeyLocked])
+
   const facets = useMemo(() => collectModsFacetOptions(mods), [mods])
 
   const rows = useMemo(
@@ -106,15 +124,13 @@ export function ModsStation({
   )
 
   const onSort = useCallback((key: ModsSortKey) => {
-    setSortKey((prev) => {
-      if (prev === key) {
-        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
-        return prev
-      }
-      setSortDir('asc')
-      return key
-    })
-  }, [])
+    if (key === sortKey) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+      return
+    }
+    setSortKey(key)
+    setSortDir('asc')
+  }, [sortKey])
 
   const onToggle = useCallback(
     (codename: string, want: boolean) => {
@@ -168,7 +184,7 @@ export function ModsStation({
 
   function handleFiltersChange(next: ModsTableFilters) {
     if (journeyLocked) return
-    setFilters({ ...next, requiredCodenames: null })
+    setFilters(next)
   }
 
   function handleContinueBrowsing() {
@@ -188,14 +204,11 @@ export function ModsStation({
           <div className="list-pane-header-title">
             <h2>Mods</h2>
           </div>
-          <p className="lede">
-            Your working mod catalog. Download and update when the desktop app
-            ships; manage entries you add yourself anytime.
-          </p>
           <ModsToolbar
             filters={filters}
             onChange={handleFiltersChange}
             facets={facets}
+            neededCodenames={neededCodenames}
             journeyLocked={journeyLocked}
             selectedCount={selected.size}
             visibleCount={rows.length}

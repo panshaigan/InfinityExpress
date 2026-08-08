@@ -1,6 +1,9 @@
 import { useEffect, useId, useState, type FormEvent } from 'react'
 import type { ModInfo } from '../../lib/mods/loadMods'
-import type { UserModInput } from '../../lib/mods/userCatalog'
+import {
+  provisionalCodenameFromUrl,
+  type UserModInput,
+} from '../../lib/mods/userCatalog'
 
 export type ModEditorMode = 'create' | 'edit'
 
@@ -86,22 +89,34 @@ export function ModEditorDialog({
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    const code = form.codename.trim()
-    if (!code) {
-      setError('Codename is required')
+    const url = form.url.trim()
+    if (!url) {
+      setError('URL is required')
       return
     }
+
+    let code = form.codename.trim()
+    if (!code) {
+      if (mode === 'create') {
+        code = provisionalCodenameFromUrl(url, existingCodenames)
+      } else {
+        setError('Download ID is required')
+        return
+      }
+    }
+
     const original = initial?.codename ?? ''
     if (
       (mode === 'create' || code !== original) &&
       existingCodenames.has(code)
     ) {
-      setError(`Codename "${code}" already exists`)
+      setError(`Download ID "${code}" already exists`)
       return
     }
     setError(null)
     onSave({
       ...form,
+      url,
       codename: code,
       sizeBytes:
         form.sizeBytes != null && Number.isFinite(form.sizeBytes)
@@ -128,12 +143,15 @@ export function ModEditorDialog({
         </div>
         <form className="mod-editor-form" onSubmit={handleSubmit}>
           <label>
-            <span>Codename</span>
+            <span>
+              URL <abbr title="required">*</abbr>
+            </span>
             <input
-              value={form.codename}
-              onChange={(e) => setField('codename', e.target.value)}
+              value={form.url}
+              onChange={(e) => setField('url', e.target.value)}
               required
               autoFocus
+              placeholder="https://…"
             />
           </label>
           <label>
@@ -141,6 +159,22 @@ export function ModEditorDialog({
             <input
               value={form.name}
               onChange={(e) => setField('name', e.target.value)}
+            />
+          </label>
+          <label>
+            <span>
+              Download ID
+              {mode === 'create' ? (
+                <span className="mod-editor-hint"> (optional)</span>
+              ) : null}
+            </span>
+            <input
+              value={form.codename}
+              onChange={(e) => setField('codename', e.target.value)}
+              placeholder={
+                mode === 'create' ? 'Filled from URL if blank' : undefined
+              }
+              required={mode === 'edit'}
             />
           </label>
           <label>
@@ -165,13 +199,6 @@ export function ModEditorDialog({
             />
           </label>
           <label>
-            <span>URL</span>
-            <input
-              value={form.url}
-              onChange={(e) => setField('url', e.target.value)}
-            />
-          </label>
-          <label>
             <span>Readme</span>
             <input
               value={form.readme}
@@ -186,7 +213,7 @@ export function ModEditorDialog({
             />
           </label>
           <label>
-            <span>Release</span>
+            <span>Latest update</span>
             <input
               value={form.release}
               onChange={(e) => setField('release', e.target.value)}

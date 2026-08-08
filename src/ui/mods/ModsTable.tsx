@@ -1,12 +1,21 @@
 import {
+  useCallback,
+  useEffect,
+  useRef,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from 'react'
+import {
   displayModName,
   diskStatusLabel,
   formatModSize,
+  primaryAuthorLabel,
   type ModsSortDir,
   type ModsSortKey,
 } from '../../lib/mods/modsTable'
 import { effectiveModFields, type WorkingMod } from '../../lib/mods/loadMods'
 import { isHttpUrl } from '../../lib/url'
+
+export const MODS_TABLE_ID = 'mods-table'
 
 interface Props {
   rows: WorkingMod[]
@@ -49,13 +58,86 @@ export function ModsTable({
   onToggleAllVisible,
   onFocusRow,
 }: Props) {
+  const rowRefs = useRef(new Map<string, HTMLTableRowElement>())
+
   const allSelected =
     rows.length > 0 && rows.every((r) => selected.has(r.codename))
   const someSelected =
     !allSelected && rows.some((r) => selected.has(r.codename))
 
+  const focusIndex = useCallback(
+    (index: number) => {
+      const row = rows[index]
+      if (!row) return
+      onFocusRow(row.codename)
+      requestAnimationFrame(() => {
+        rowRefs.current.get(row.codename)?.focus()
+      })
+    },
+    [onFocusRow, rows],
+  )
+
+  useEffect(() => {
+    if (!focusedCodename) return
+    const el = rowRefs.current.get(focusedCodename)
+    el?.scrollIntoView({ block: 'nearest' })
+  }, [focusedCodename])
+
+  function handleTableKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
+    if (rows.length === 0) return
+    const current = focusedCodename
+      ? rows.findIndex((r) => r.codename === focusedCodename)
+      : 0
+    const idx = current < 0 ? 0 : current
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      focusIndex(Math.min(idx + 1, rows.length - 1))
+      return
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      focusIndex(Math.max(idx - 1, 0))
+      return
+    }
+    if (e.key === 'Home') {
+      e.preventDefault()
+      focusIndex(0)
+      return
+    }
+    if (e.key === 'End') {
+      e.preventDefault()
+      focusIndex(rows.length - 1)
+      return
+    }
+    if (e.key === ' ') {
+      const row = rows[idx]
+      if (!row || selectionLocked) return
+      e.preventDefault()
+      onToggle(row.codename, !selected.has(row.codename))
+      onFocusRow(row.codename)
+      return
+    }
+    if (e.key === 'Enter') {
+      const row = rows[idx]
+      if (!row) return
+      e.preventDefault()
+      onFocusRow(row.codename)
+    }
+  }
+
   return (
-    <div className="mods-table-wrap">
+    <div
+      id={MODS_TABLE_ID}
+      className="mods-table-wrap"
+      role="grid"
+      aria-label="Mods"
+      tabIndex={rows.length === 0 ? 0 : -1}
+      onKeyDown={handleTableKeyDown}
+      onFocus={() => {
+        if (!focusedCodename && rows[0]) onFocusRow(rows[0].codename)
+      }}
+    >
       <table className="mods-table">
         <thead>
           <tr>
@@ -92,11 +174,12 @@ export function ModsTable({
                     onClick={() => onSort(col.key)}
                   >
                     {col.label}
-                    {active ? (
-                      <span aria-hidden="true">
-                        {sortDir === 'asc' ? ' ↑' : ' ↓'}
-                      </span>
-                    ) : null}
+                    <span
+                      className={`mods-sort-indicator${active ? ' active' : ''}`}
+                      aria-hidden="true"
+                    >
+                      {active ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}
+                    </span>
                   </button>
                 </th>
               )
@@ -115,13 +198,27 @@ export function ModsTable({
               const eff = effectiveModFields(mod)
               const checked = selected.has(mod.codename)
               const focused = focusedCodename === mod.codename
+              const author = primaryAuthorLabel(eff.author)
               return (
                 <tr
                   key={mod.codename}
+                  ref={(el) => {
+                    if (el) rowRefs.current.set(mod.codename, el)
+                    else rowRefs.current.delete(mod.codename)
+                  }}
                   className={`mods-row${focused ? ' focused' : ''}${
                     checked ? ' selected' : ''
                   }`}
-                  onClick={() => onFocusRow(mod.codename)}
+                  role="row"
+                  tabIndex={focused ? 0 : -1}
+                  aria-selected={checked}
+                  onClick={() => {
+                    onFocusRow(mod.codename)
+                    requestAnimationFrame(() => {
+                      rowRefs.current.get(mod.codename)?.focus()
+                    })
+                  }}
+                  onFocus={() => onFocusRow(mod.codename)}
                 >
                   <td
                     className="mods-col-check"
@@ -131,6 +228,7 @@ export function ModsTable({
                       type="checkbox"
                       checked={checked}
                       disabled={selectionLocked}
+                      tabIndex={-1}
                       aria-label={`Select ${displayModName(mod)}`}
                       onChange={(e) =>
                         onToggle(mod.codename, e.target.checked)
@@ -151,6 +249,7 @@ export function ModsTable({
                         target="_blank"
                         rel="noreferrer"
                         title={eff.url}
+                        tabIndex={-1}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {eff.url.replace(/^https?:\/\//, '')}
@@ -163,7 +262,12 @@ export function ModsTable({
                   <td className="mods-col-release">{eff.release || '—'}</td>
                   <td className="mods-col-version">{eff.version || '—'}</td>
                   <td className="mods-col-size">{formatModSize(eff.sizeBytes)}</td>
-                  <td className="mods-col-author">{eff.author || '—'}</td>
+                  <td
+                    className="mods-col-author"
+                    title={author.title}
+                  >
+                    {author.display}
+                  </td>
                   <td className="mods-col-status">
                     <span className={statusClass(mod.diskStatus)}>
                       {diskStatusLabel(mod.diskStatus)}

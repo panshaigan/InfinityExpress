@@ -175,3 +175,21 @@ export function displayModName(mod: WorkingMod): string {
   const eff = effectiveModFields(mod)
   return eff.name || eff.codename
 }
+
+/** First author for narrow table cells; full string on hover via title. */
+export function primaryAuthorLabel(author: string): {
+  display: string
+  title: string | undefined
+} {
+  const full = author.trim()
+  if (!full) return { display: '—', title: undefined }
+  const parts = full
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean)
+  const primary = parts[0] ?? full
+  if (parts.length <= 1) {
+    return { display: primary, title: full }
+  }
+  return { display: `${primary}…`, title: full }
+}

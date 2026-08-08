@@ -60,7 +60,7 @@ import { ConfirmDialog } from './ui/ConfirmDialog'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { AppTopBar } from './ui/AppTopBar'
 import { DetailPane } from './ui/DetailPane'
-import { countSelectedMods, listSelectedModCodenames } from './lib/mods/loadMods'
+import { listSelectedModCodenames } from './lib/mods/loadMods'
 import { useStationTrees } from './hooks/useStationTrees'
 import { useBranchNav } from './hooks/useBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
@@ -284,10 +284,11 @@ export default function App() {
     return listSelectionState(listNodes, selectedIds, game)
   }, [game, listNodes, selectedIds])
 
-  const selectedModsCount = useMemo(
-    () => countSelectedMods(model, selectedIds),
+  const neededCodenames = useMemo(
+    () => listSelectedModCodenames(model, selectedIds),
     [model, selectedIds],
   )
+  const selectedModsCount = neededCodenames.length
 
   const globalSearchCheckState = useMemo(() => {
     if (!game) return 'unchecked' as const
@@ -457,7 +458,29 @@ export default function App() {
     row?.focus()
   }
 
+  function focusModsTable() {
+    const focused = document.querySelector<HTMLElement>(
+      '#mods-table [role="row"][tabindex="0"]',
+    )
+    if (focused) {
+      focused.focus()
+      return
+    }
+    const first = document.querySelector<HTMLElement>(
+      '#mods-table [role="row"][tabindex="-1"]',
+    )
+    if (first) {
+      first.focus()
+      return
+    }
+    document.getElementById('mods-table')?.focus()
+  }
+
   function focusMainDisplay() {
+    if (appPhase === 'mods') {
+      focusModsTable()
+      return
+    }
     if (activeStation === 'engine') {
       document.querySelector<HTMLElement>('.engine-card')?.focus()
       return
@@ -549,6 +572,7 @@ export default function App() {
           <div className="app-main mods-app-main">
             <ModsStation
               mods={userCatalog.mods}
+              neededCodenames={neededCodenames}
               journey={modsJourney}
               onClearJourneyLock={() =>
                 setModsJourney((prev) =>
@@ -793,6 +817,7 @@ export default function App() {
 
       <KeyboardHelp
         open={keyboardHelpOpen}
+        phase={appPhase}
         onClose={() => setKeyboardHelpOpen(false)}
       />
       <ExportDialog

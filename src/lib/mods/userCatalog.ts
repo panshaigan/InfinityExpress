@@ -161,14 +161,53 @@ export type UserModInput = Omit<
   diskStatus?: DiskStatus
 }
 
+/**
+ * Build a provisional catalog id from a download URL when the user leaves
+ * Download ID blank. Collisions get -2, -3, … suffixes.
+ */
+export function provisionalCodenameFromUrl(
+  url: string,
+  existing: ReadonlySet<string>,
+): string {
+  let base = 'user-mod'
+  try {
+    const parsed = new URL(url.trim())
+    const host = parsed.hostname.replace(/^www\./i, '')
+    const segments = parsed.pathname
+      .split('/')
+      .map((s) => s.trim())
+      .filter(Boolean)
+    const last = segments[segments.length - 1]?.replace(/\.[a-z0-9]+$/i, '') ?? ''
+    const raw = [host, last].filter(Boolean).join('-') || host || 'user-mod'
+    const cleaned = raw
+      .replace(/[^a-zA-Z0-9._-]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+    if (cleaned) base = cleaned.slice(0, 64)
+  } catch {
+    const cleaned = url
+      .trim()
+      .replace(/[^a-zA-Z0-9._-]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 64)
+    if (cleaned) base = cleaned
+  }
+
+  if (!existing.has(base)) return base
+  let n = 2
+  while (existing.has(`${base}-${n}`)) n += 1
+  return `${base}-${n}`
+}
+
 export function addUserMod(
   store: UserCatalogStore,
   input: UserModInput,
 ): UserCatalogStore {
   const codename = input.codename.trim()
-  if (!codename) throw new Error('Codename is required')
+  if (!codename) throw new Error('Download ID is required')
   if (store.mods.some((m) => m.codename === codename)) {
-    throw new Error(`Codename "${codename}" already exists`)
+    throw new Error(`Download ID "${codename}" already exists`)
   }
   const entry = modInfoToStored(
     {
@@ -209,12 +248,12 @@ export function updateUserMod(
     throw new Error('Only user-added mods can be edited in the catalog')
   }
   const nextCode = input.codename.trim()
-  if (!nextCode) throw new Error('Codename is required')
+  if (!nextCode) throw new Error('Download ID is required')
   if (
     nextCode !== codename &&
     store.mods.some((m) => m.codename === nextCode)
   ) {
-    throw new Error(`Codename "${nextCode}" already exists`)
+    throw new Error(`Download ID "${nextCode}" already exists`)
   }
   const entry: StoredModEntry = {
     ...prev,

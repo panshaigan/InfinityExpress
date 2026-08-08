@@ -157,7 +157,7 @@ function ModDetailBody({
       </header>
 
       <dl className="mod-detail-dl">
-        <Field label="Codename">{eff.codename}</Field>
+        <Field label="Download ID">{eff.codename}</Field>
         {eff.abbreviation ? (
           <Field label="Abbreviation">{eff.abbreviation}</Field>
         ) : null}
@@ -167,7 +167,7 @@ function ModDetailBody({
         <Field label="Stability">{eff.stability || '—'}</Field>
         <Field label="Author">{eff.author || '—'}</Field>
         <Field label="Version">{eff.version || '—'}</Field>
-        <Field label="Release">{eff.release || '—'}</Field>
+        <Field label="Latest update">{eff.release || '—'}</Field>
         <Field label="Size">{formatModSize(eff.sizeBytes)}</Field>
         <Field label="URL">
           <LinkValue href={eff.url} />
@@ -176,14 +176,6 @@ function ModDetailBody({
           <LinkValue href={eff.readme} />
         </Field>
       </dl>
-
-      {mod.origin === 'base' ? (
-        <p className="mod-detail-note">
-          Version and size update on your working copy when you acquire or
-          update this mod in the desktop app. The shipped catalog is never
-          overwritten.
-        </p>
-      ) : null}
 
       <div className="mod-detail-actions">
         <button type="button" className="btn secondary" onClick={onDownload}>

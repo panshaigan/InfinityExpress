@@ -14,6 +14,7 @@ interface Props {
   filters: ModsTableFilters
   onChange: (next: ModsTableFilters) => void
   facets: FacetOptions
+  neededCodenames: string[]
   journeyLocked: boolean
   selectedCount: number
   visibleCount: number
@@ -34,10 +35,13 @@ const ALL_STATUSES: DiskStatus[] = [
   'busy',
 ]
 
+export const MODS_SEARCH_ID = 'mods-search'
+
 export function ModsToolbar({
   filters,
   onChange,
   facets,
+  neededCodenames,
   journeyLocked,
   selectedCount,
   visibleCount,
@@ -51,12 +55,24 @@ export function ModsToolbar({
   stubNotice,
 }: Props) {
   const bulkDisabled = selectedCount === 0
+  const onlyNeededActive = filters.requiredCodenames != null
   const hasFacetFilters =
     filters.categories.length > 0 ||
     filters.games.length > 0 ||
     filters.authors.length > 0 ||
     filters.statuses.length > 0 ||
-    !!filters.search.trim()
+    !!filters.search.trim() ||
+    (onlyNeededActive && !journeyLocked)
+
+  function toggleOnlyNeeded() {
+    if (journeyLocked) return
+    if (onlyNeededActive) {
+      onChange({ ...filters, requiredCodenames: null })
+      return
+    }
+    if (neededCodenames.length === 0) return
+    onChange({ ...filters, requiredCodenames: neededCodenames })
+  }
 
   return (
     <div className="mods-toolbar">
@@ -83,8 +99,9 @@ export function ModsToolbar({
         <label className="mods-search">
           <span className="visually-hidden">Search mods</span>
           <input
+            id={MODS_SEARCH_ID}
             type="search"
-            placeholder="Search name, author, codename…"
+            placeholder="Search name, author, download id…"
             value={filters.search}
             disabled={journeyLocked}
             onChange={(e) =>
@@ -146,6 +163,15 @@ export function ModsToolbar({
 
       {!journeyLocked ? (
         <div className="mods-facets">
+          <button
+            type="button"
+            className={`filter-chip${onlyNeededActive ? ' active' : ''}`}
+            aria-pressed={onlyNeededActive}
+            disabled={neededCodenames.length === 0 && !onlyNeededActive}
+            onClick={toggleOnlyNeeded}
+          >
+            Only needed
+          </button>
           <label>
             <span>Category</span>
             <select
@@ -236,6 +262,7 @@ export function ModsToolbar({
                   games: [],
                   authors: [],
                   statuses: [],
+                  requiredCodenames: null,
                 })
               }
             >
@@ -245,7 +272,14 @@ export function ModsToolbar({
         </div>
       ) : (
         <div className="mods-facets mods-facets-locked">
-          <span className="mods-locked-chip">Needed for your route</span>
+          <button
+            type="button"
+            className="filter-chip active"
+            aria-pressed={true}
+            disabled
+          >
+            Only needed
+          </button>
         </div>
       )}
 

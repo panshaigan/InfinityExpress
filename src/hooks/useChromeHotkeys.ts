@@ -11,7 +11,18 @@ import {
   type StationSlot,
 } from '../lib/ui/chromeHotkeys'
 import { FILTERS_SEARCH_ID } from '../ui/FiltersStrip'
+import { MODS_SEARCH_ID } from '../ui/mods/ModsToolbar'
 import type { AppNavSlot } from '../ui/StationNav'
+
+const SEARCH_IDS = [FILTERS_SEARCH_ID, MODS_SEARCH_ID] as const
+
+function findSearchInput(): HTMLInputElement | null {
+  for (const id of SEARCH_IDS) {
+    const el = document.getElementById(id) as HTMLInputElement | null
+    if (el) return el
+  }
+  return null
+}
 
 export function useChromeHotkeys(args: {
   keyboardHelpOpen: boolean
@@ -53,8 +64,8 @@ export function useChromeHotkeys(args: {
   } = args
 
   useEffect(() => {
-    function focusFiltersSearch() {
-      const el = document.getElementById(FILTERS_SEARCH_ID) as HTMLInputElement | null
+    function focusAppSearch() {
+      const el = findSearchInput()
       if (!el) return
       el.focus()
       el.select()
@@ -101,7 +112,7 @@ export function useChromeHotkeys(args: {
         onOpenKeyboardHelp()
         return
       }
-      const searchEl = document.getElementById(FILTERS_SEARCH_ID)
+      const searchEl = findSearchInput()
       const cmd = resolveChromeHotkey(e.key, {
         isTypingTarget: isTypingTarget(e.target),
         filterPanelOpen: false,
@@ -115,7 +126,7 @@ export function useChromeHotkeys(args: {
 
       if (cmd.type === 'focusSearch') {
         e.preventDefault()
-        focusFiltersSearch()
+        focusAppSearch()
         return
       }
 

@@ -4,6 +4,7 @@ import {
   createDefaultModsTableFilters,
   filterAndSortWorkingMods,
   filterWorkingMods,
+  primaryAuthorLabel,
 } from './modsTable'
 
 function mod(partial: Partial<WorkingMod> & { codename: string }): WorkingMod {
@@ -69,5 +70,31 @@ describe('modsTable filter/sort', () => {
       'asc',
     )
     expect(rows.map((m) => m.codename)).toEqual(['Alpha', 'Beta', 'Zebra'])
+  })
+
+  it('sorts descending when dir is desc', () => {
+    const rows = filterAndSortWorkingMods(
+      mods,
+      createDefaultModsTableFilters(),
+      'name',
+      'desc',
+    )
+    expect(rows.map((m) => m.codename)).toEqual(['Zebra', 'Beta', 'Alpha'])
+  })
+})
+
+describe('primaryAuthorLabel', () => {
+  it('shows first author and ellipsis when multiple', () => {
+    expect(primaryAuthorLabel('Lava, Kaeloree, TheArtisan')).toEqual({
+      display: 'Lava…',
+      title: 'Lava, Kaeloree, TheArtisan',
+    })
+  })
+
+  it('keeps a single author as-is', () => {
+    expect(primaryAuthorLabel('K4thos')).toEqual({
+      display: 'K4thos',
+      title: 'K4thos',
+    })
   })
 })

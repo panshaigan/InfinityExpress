@@ -3,6 +3,7 @@ import type { ModInfo } from './loadMods'
 import {
   addUserMod,
   mergeBaseIntoWorkingCopy,
+  provisionalCodenameFromUrl,
   removeUserMod,
   replaceOverlays,
   updateUserMod,
@@ -129,5 +130,20 @@ describe('user catalog CRUD', () => {
     const a = store.mods[0]
     expect(a.overlays).toEqual({})
     expect(a.diskStatus).toBe('not_present')
+  })
+})
+
+describe('provisionalCodenameFromUrl', () => {
+  it('derives an id from host and path and avoids collisions', () => {
+    const existing = new Set(['github.com-MyMod'])
+    expect(
+      provisionalCodenameFromUrl(
+        'https://github.com/org/MyMod/releases',
+        new Set(),
+      ),
+    ).toBe('github.com-releases')
+    expect(
+      provisionalCodenameFromUrl('https://github.com/org/MyMod', existing),
+    ).toBe('github.com-MyMod-2')
   })
 })
