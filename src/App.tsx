@@ -472,6 +472,8 @@ export default function App() {
                       higherDifficulty={levels.higherDifficultyPreset}
                       onLadderToggle={levels.onLadderToggle}
                       onDifficultyChange={levels.onDifficultyPresetChange}
+                      canStart={route.canCycleScreens}
+                      onStart={route.goNextScreen}
                     />
                   </div>
                 ) : isAllSections ? (

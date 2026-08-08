@@ -20,6 +20,8 @@ interface Props {
   higherDifficulty: boolean
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
   onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
+  canStart: boolean
+  onStart: () => void
 }
 
 export function EngineStation({
@@ -30,6 +32,8 @@ export function EngineStation({
   higherDifficulty,
   onLadderToggle,
   onDifficultyChange,
+  canStart,
+  onStart,
 }: Props) {
   return (
     <section className="engine-station">
@@ -57,6 +61,17 @@ export function EngineStation({
           onLadderToggle={onLadderToggle}
           onDifficultyChange={onDifficultyChange}
         />
+        <div className="engine-start-row">
+          <button
+            type="button"
+            className="btn engine-start-btn"
+            disabled={!canStart}
+            onClick={onStart}
+            title="Continue to the first unfinished stop"
+          >
+            Start
+          </button>
+        </div>
       </div>
     </section>
   )
