@@ -154,7 +154,7 @@ export function ModsToolbar({
             type="button"
             className="btn secondary"
             disabled={bulkDisabled}
-            title="Desktop app will remove files from disk"
+            title="Delete selected mod folders from the download directory"
             onClick={onRemoveFromDisk}
           >
             Remove from disk

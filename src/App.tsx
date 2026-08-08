@@ -592,6 +592,7 @@ export default function App() {
               onEditMod={userCatalog.editMod}
               onDeleteMod={userCatalog.deleteMod}
               onStubAction={userCatalog.applyAcquireStub}
+              onRemoveFromDisk={userCatalog.removeFromDisk}
             />
           </div>
         </div>

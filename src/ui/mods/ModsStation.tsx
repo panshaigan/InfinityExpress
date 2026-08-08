@@ -40,8 +40,11 @@ interface Props {
   onDeleteMod: (codename: string) => void
   onStubAction: (
     codenames: string[],
-    kind: 'download' | 'update' | 'check' | 'remove',
+    kind: 'download' | 'update' | 'check',
   ) => void
+  onRemoveFromDisk: (
+    codenames: string[],
+  ) => Promise<{ removed: string[]; errors: string[] }>
 }
 
 export function ModsStation({
@@ -57,6 +60,7 @@ export function ModsStation({
   onEditMod,
   onDeleteMod,
   onStubAction,
+  onRemoveFromDisk,
 }: Props) {
   const journeyLocked = !!journey?.locked
   const [filters, setFilters] = useState<ModsTableFilters>(() =>
@@ -73,6 +77,8 @@ export function ModsStation({
     | null
   >(null)
   const [pendingDelete, setPendingDelete] = useState<string | null>(null)
+  const [pendingRemove, setPendingRemove] = useState<string[] | null>(null)
+  const [removing, setRemoving] = useState(false)
 
   // Sync journey lock → filters + selection
   useEffect(() => {
@@ -160,27 +166,64 @@ export function ModsStation({
     [journeyLocked, rows],
   )
 
-  const flashStub = useCallback((message: string) => {
+  const flashNotice = useCallback((message: string) => {
     setStubNotice(message)
     window.setTimeout(() => setStubNotice(null), 3200)
   }, [])
 
   const runStub = useCallback(
-    (codenames: string[], kind: 'download' | 'update' | 'check' | 'remove') => {
+    (codenames: string[], kind: 'download' | 'update' | 'check') => {
       if (codenames.length === 0) return
       onStubAction(codenames, kind)
       const labels = {
         download: 'Download queued (stub — desktop app will fetch files).',
         update: 'Update queued (stub — desktop app will refresh files).',
         check: 'Checked for updates (stub — simulated status).',
-        remove: 'Removed from disk (stub — catalog entry kept).',
       } as const
-      flashStub(labels[kind])
+      flashNotice(labels[kind])
     },
-    [flashStub, onStubAction],
+    [flashNotice, onStubAction],
   )
 
+  const requestRemoveFromDisk = useCallback((codenames: string[]) => {
+    if (codenames.length === 0) return
+    setPendingRemove(codenames)
+  }, [])
+
+  const confirmRemoveFromDisk = useCallback(async () => {
+    if (!pendingRemove || removing) return
+    const targets = pendingRemove
+    setPendingRemove(null)
+    setRemoving(true)
+    try {
+      const result = await onRemoveFromDisk(targets)
+      if (result.errors.length > 0 && result.removed.length === 0) {
+        flashNotice(result.errors[0] ?? 'Failed to remove from disk.')
+      } else if (result.errors.length > 0) {
+        flashNotice(
+          `Removed ${result.removed.length}; ${result.errors.length} failed.`,
+        )
+      } else if (result.removed.length === 0) {
+        flashNotice('Nothing to remove from disk.')
+      } else if (result.removed.length === 1) {
+        flashNotice(`Removed ${result.removed[0]} from disk.`)
+      } else {
+        flashNotice(`Removed ${result.removed.length} mods from disk.`)
+      }
+    } finally {
+      setRemoving(false)
+    }
+  }, [flashNotice, onRemoveFromDisk, pendingRemove, removing])
+
   const selectedList = useMemo(() => [...selected], [selected])
+
+  const removeConfirmMessage = useMemo(() => {
+    if (!pendingRemove || pendingRemove.length === 0) return ''
+    if (pendingRemove.length === 1) {
+      return `Permanently delete the \"${pendingRemove[0]}\" folder from the mods download directory? The catalog entry is kept.`
+    }
+    return `Permanently delete ${pendingRemove.length} mod folders from the mods download directory? Catalog entries are kept.`
+  }, [pendingRemove])
 
   function handleFiltersChange(next: ModsTableFilters) {
     if (journeyLocked) return
@@ -216,7 +259,7 @@ export function ModsStation({
             onDownload={() => runStub(selectedList, 'download')}
             onCheckUpdates={() => runStub(selectedList, 'check')}
             onUpdate={() => runStub(selectedList, 'update')}
-            onRemoveFromDisk={() => runStub(selectedList, 'remove')}
+            onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
             onAddMod={() => setEditor({ mode: 'create', initial: null })}
             onContinueBrowsing={handleContinueBrowsing}
             stubNotice={stubNotice}
@@ -262,7 +305,7 @@ export function ModsStation({
         }
         onUpdate={() => focusedMod && runStub([focusedMod.codename], 'update')}
         onRemoveFromDisk={() =>
-          focusedMod && runStub([focusedMod.codename], 'remove')
+          focusedMod && requestRemoveFromDisk([focusedMod.codename])
         }
       />
 
@@ -302,6 +345,19 @@ export function ModsStation({
             if (focusedCodename === pendingDelete) setFocusedCodename(null)
           }
           setPendingDelete(null)
+        }}
+      />
+
+      <ConfirmDialog
+        open={pendingRemove != null}
+        title="Remove from disk?"
+        message={removeConfirmMessage}
+        confirmLabel={removing ? 'Removing…' : 'Remove'}
+        onCancel={() => {
+          if (!removing) setPendingRemove(null)
+        }}
+        onConfirm={() => {
+          void confirmRemoveFromDisk()
         }}
       />
     </div>

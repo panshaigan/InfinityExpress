@@ -1,6 +1,6 @@
 ---
 description: Tauri 2 desktop shell — dialogs, FS plugins, capabilities, and InfinityExpress desktop helpers
-globs: src-tauri/**/*,src/lib/desktop/**/*,**/ExportDialog.tsx,**/EngineStation.tsx
+globs: src-tauri/**/*,src/lib/desktop/**/*,**/ExportDialog.tsx,**/EngineStation.tsx,**/SettingsDialog.tsx,**/DirectoryField.tsx
 alwaysApply: false
 ---
 
@@ -26,33 +26,37 @@ Capabilities: [`src-tauri/capabilities/default.json`](src-tauri/capabilities/def
 - `core:default`
 - `dialog:default` (open + save)
 - `fs:allow-write-text-file`
+- `allow-list-subdir-names` / `allow-remove-mod-dir` (app commands in [`permissions/mod-fs.toml`](src-tauri/permissions/mod-fs.toml))
 
-Dialog-selected paths are **auto-scoped for the session**, so `writeTextFile` on a path returned by `save()` does not need a broad FS allow-list. Scope is not persisted across app restarts.
+Dialog-selected paths are **auto-scoped for the session**, so `writeTextFile` on a path returned by `save()` does not need a broad FS allow-list. Scope is not persisted across app restarts. Arbitrary user paths (mods download dir) use custom Rust `std::fs` commands instead of plugin-fs scopes.
 
 ## Frontend helpers
 
-Prefer extending [`src/lib/desktop/fsDialogs.ts`](src/lib/desktop/fsDialogs.ts) over scattering plugin imports:
+Prefer extending [`src/lib/desktop/`](src/lib/desktop/) over scattering plugin imports:
 
 | Helper | Behavior |
 | --- | --- |
 | `isDesktopApp()` | `isTauri()` from `@tauri-apps/api/core` |
 | `saveTextFile(name, contents)` | `save({ defaultPath, filters })` then `writeTextFile`; `false` if cancelled |
 | `pickDirectory(title?)` | `open({ directory: true, multiple: false })`; `null` if cancelled or not Tauri |
+| `listSubdirNames(path)` | invoke `list_subdir_names`; `[]` if not desktop / empty path |
+| `removeModDir(downloadDir, folderName)` | invoke `remove_mod_dir` (case-insensitive folder match under download dir); no-op if not desktop |
 
 ### Call sites
 
 - **Export Save** ([`ExportDialog.tsx`](src/ui/ExportDialog.tsx)): desktop → `saveTextFile`; browser → `downloadText` Blob fallback.
-- **Engine Browse** ([`EngineStation.tsx`](src/ui/EngineStation.tsx)): `pickDirectory`; paths persist via [`gameFolderPrefs.ts`](src/lib/ui/gameFolderPrefs.ts) (`infinity-express.game-folders` in localStorage).
+- **Engine / Settings Browse** ([`EngineStation.tsx`](src/ui/EngineStation.tsx), [`SettingsDialog.tsx`](src/ui/SettingsDialog.tsx)): `DirectoryField` → `pickDirectory`; game paths via [`gameFolderPrefs.ts`](src/lib/ui/gameFolderPrefs.ts); app dirs via [`appDirPrefs.ts`](src/lib/ui/appDirPrefs.ts).
+- **Mods disk presence / remove** ([`useUserCatalog.ts`](src/hooks/useUserCatalog.ts)): scan download dir; Download ID = folder name; remove deletes that folder.
 
 ## Prefs vs native storage
 
-Plain string prefs (game folders, chrome, detail pane, mods catalog) use **localStorage** helpers under `src/lib/ui/`. Do **not** add `tauri-plugin-store` unless persistence must live outside the webview.
+Plain string prefs (game folders, chrome, detail pane, mods catalog) use **localStorage** helpers under `src/lib/ui/` (and `userCatalog`). Do **not** add `tauri-plugin-store` unless persistence must live outside the webview.
 
 ## Adding more native FS
 
-1. Cargo + npm plugin (if new).
-2. `.plugin(...::init())` in `lib.rs`.
-3. Capability permission in `default.json`.
+1. Cargo + npm plugin (if new), **or** app `#[tauri::command]` + `std::fs` for arbitrary user paths.
+2. `.plugin(...::init())` and/or `invoke_handler` in `lib.rs`.
+3. Capability permission in `default.json` (and `permissions/*.toml` for app commands).
 4. Thin wrapper in `src/lib/desktop/`; keep browser fallbacks when useful.
 
 ## Official refs (API detail only)
@@ -60,3 +64,4 @@ Plain string prefs (game folders, chrome, detail pane, mods catalog) use **local
 - https://v2.tauri.app/plugin/dialog/
 - https://v2.tauri.app/plugin/file-system/
 - https://v2.tauri.app/learn/security/using-plugin-permissions/
+- https://v2.tauri.app/develop/calling-rust/

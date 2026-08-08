@@ -1,5 +1,11 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { listSubdirNames, removeModDir } from '../lib/desktop/modFs'
+import { isDesktopApp } from '../lib/desktop/fsDialogs'
 import { modsByCodename } from '../lib/mods/catalog'
+import {
+  applyDiskPresence,
+  clearDiskPresence,
+} from '../lib/mods/diskPresence'
 import type { DiskStatus, ModFieldOverlays, WorkingMod } from '../lib/mods/loadMods'
 import { workingModsFromStore } from '../lib/mods/userCatalog'
 import {
@@ -13,6 +19,8 @@ import {
   type UserCatalogStore,
   type UserModInput,
 } from '../lib/mods/userCatalog'
+import { readAppDirPaths } from '../lib/ui/appDirPrefs'
+import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 
 function initialStore(): UserCatalogStore {
   return loadOrCreateUserCatalog(modsByCodename)
@@ -37,18 +45,55 @@ export function useUserCatalog() {
     return map
   }, [mods])
 
+  const refreshDiskStatus = useCallback(async () => {
+    const downloadDir = readAppDirPaths().modsDownloadDir.trim()
+    if (!downloadDir || !isDesktopApp()) {
+      setStore((prev) => {
+        const next = clearDiskPresence(prev)
+        if (next !== prev) writeUserCatalogStore(next)
+        return next
+      })
+      return
+    }
+    try {
+      const folders = await listSubdirNames(downloadDir)
+      setStore((prev) => {
+        const next = applyDiskPresence(prev, folders)
+        if (next !== prev) writeUserCatalogStore(next)
+        return next
+      })
+    } catch {
+      setStore((prev) => {
+        const next = clearDiskPresence(prev)
+        if (next !== prev) writeUserCatalogStore(next)
+        return next
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    void refreshDiskStatus()
+    function onPathsChanged() {
+      void refreshDiskStatus()
+    }
+    window.addEventListener(PATHS_CHANGED_EVENT, onPathsChanged)
+    return () => window.removeEventListener(PATHS_CHANGED_EVENT, onPathsChanged)
+  }, [refreshDiskStatus])
+
   const addMod = useCallback(
     (input: UserModInput) => {
       persist(addUserMod(store, input))
+      void refreshDiskStatus()
     },
-    [persist, store],
+    [persist, refreshDiskStatus, store],
   )
 
   const editMod = useCallback(
     (codename: string, input: UserModInput) => {
       persist(updateUserMod(store, codename, input))
+      void refreshDiskStatus()
     },
-    [persist, store],
+    [persist, refreshDiskStatus, store],
   )
 
   const deleteMod = useCallback(
@@ -65,19 +110,55 @@ export function useUserCatalog() {
     [persist, store],
   )
 
-  const applyAcquireStub = useCallback(
-    (codenames: string[], kind: 'download' | 'update' | 'check' | 'remove') => {
+  const removeFromDisk = useCallback(
+    async (codenames: string[]): Promise<{ removed: string[]; errors: string[] }> => {
+      const downloadDir = readAppDirPaths().modsDownloadDir.trim()
+      const removed: string[] = []
+      const errors: string[] = []
+      if (!downloadDir) {
+        return {
+          removed,
+          errors: ['Set a mods download directory in Settings first.'],
+        }
+      }
+      if (!isDesktopApp()) {
+        return {
+          removed,
+          errors: ['Removing mods from disk requires the desktop app.'],
+        }
+      }
+
       let next = store
       for (const code of codenames) {
-        if (kind === 'remove') {
+        const mod = next.mods.find((m) => m.codename === code)
+        if (!mod) continue
+        try {
+          await removeModDir(downloadDir, code)
           next = replaceOverlays(next, code, {}, 'not_present')
-          continue
+          removed.push(code)
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          errors.push(`${code}: ${message}`)
         }
+      }
+      if (removed.length > 0) persist(next)
+      else if (errors.length === 0) {
+        // nothing selected / nothing to do
+      }
+      await refreshDiskStatus()
+      return { removed, errors }
+    },
+    [persist, refreshDiskStatus, store],
+  )
+
+  const applyAcquireStub = useCallback(
+    (codenames: string[], kind: 'download' | 'update' | 'check') => {
+      let next = store
+      for (const code of codenames) {
         if (kind === 'check') {
           const mod = next.mods.find((m) => m.codename === code)
           if (!mod) continue
           if (mod.diskStatus === 'present') {
-            // Simulate: half get an update available for UI demos.
             const flip = code.length % 2 === 0
             next = patchWorkingMod(next, code, {
               diskStatus: flip ? 'update_available' : 'present',
@@ -85,7 +166,6 @@ export function useUserCatalog() {
           }
           continue
         }
-        // download / update — mark present and bump overlay version/size for demo
         const mod = next.mods.find((m) => m.codename === code)
         if (!mod) continue
         const overlays: ModFieldOverlays = {
@@ -119,6 +199,8 @@ export function useUserCatalog() {
     editMod,
     deleteMod,
     setDiskStatus,
+    refreshDiskStatus,
+    removeFromDisk,
     applyAcquireStub,
   }
 }

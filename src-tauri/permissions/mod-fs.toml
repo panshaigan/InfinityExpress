@@ -1,0 +1,9 @@
+[[permission]]
+identifier = "allow-list-subdir-names"
+description = "List immediate subdirectory names under a user-chosen path"
+commands.allow = ["list_subdir_names"]
+
+[[permission]]
+identifier = "allow-remove-mod-dir"
+description = "Recursively delete a named folder under the mods download directory"
+commands.allow = ["remove_mod_dir"]

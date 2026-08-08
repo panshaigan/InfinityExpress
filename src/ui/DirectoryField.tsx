@@ -1,4 +1,4 @@
-import { pickDirectory } from '../lib/desktop/fsDialogs'
+import { isDesktopApp, pickDirectory } from '../lib/desktop/fsDialogs'
 
 interface Props {
   id: string
@@ -17,7 +17,10 @@ export function DirectoryField({
   placeholder = 'Select folder…',
   browseTitle,
 }: Props) {
+  const canBrowse = isDesktopApp()
+
   async function browse() {
+    if (!canBrowse) return
     const path = await pickDirectory(browseTitle)
     if (path) onChange(path)
   }
@@ -42,7 +45,12 @@ export function DirectoryField({
           type="button"
           className="btn secondary"
           onClick={() => void browse()}
-          title={browseTitle}
+          disabled={!canBrowse}
+          title={
+            canBrowse
+              ? browseTitle
+              : 'Browse is available in the desktop app'
+          }
         >
           Browse
         </button>

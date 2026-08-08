@@ -480,14 +480,14 @@ Persistence is React state only for now; the serializable shape in `src/lib/pres
 
 ## Out of scope (later milestones)
 
-- **Real** mod download / update / remove-from-disk (UI stubs exist on the Mods phase)  
-- Invoking WeiDU (Install phase nav is visible but disabled)  
-- User-supplied XML overrides  
-- Tauri 2 menus / installers / WeiDU invocation — shell boots via `npm run tauri:dev`; export save dialog and engine game-folder pickers are wired
+- **Real** mod download / update / check-for-updates (UI stubs exist on the Mods phase; disk presence scan and remove-from-disk are wired in the desktop app)
+- Invoking WeiDU (Install phase nav is visible but disabled)
+- User-supplied XML overrides
+- Tauri 2 menus / installers / WeiDU invocation — shell boots via `npm run tauri:dev`; export save dialog, Settings/Engine folder pickers, mods download-dir scan, and remove-from-disk are wired
 
 ### Mods phase (UI)
 
-Top-bar phases: **Components** · **Mods** · **Install** (disabled). The Mods screen is a working-copy catalog: shipped `src/data/mods.csv` is the immutable base; a per-user copy (localStorage now, user data later) receives acquire/update overlays (version, size, disk status). Base rows cannot be deleted from the catalog; only user-added rows support full CRUD. Completing the last Components station opens Mods in journey mode with required mods filtered and selection locked.
+Top-bar phases: **Components** · **Mods** · **Install** (disabled). The Mods screen is a working-copy catalog: shipped `src/data/mods.csv` is the immutable base; a per-user copy (localStorage) receives acquire/update overlays (version, size) and disk status. In the desktop app, disk status is refreshed from the Settings **mods download directory** by matching subdirectory names to Download IDs (case-insensitive). **Remove from disk** deletes that folder and keeps the catalog entry. Base rows cannot be deleted from the catalog; only user-added rows support full CRUD. Completing the last Components station opens Mods in journey mode with required mods filtered and selection locked.
 
 Domain logic is kept in pure TypeScript under `src/lib/` so those features can wrap the same modules.
 
