@@ -20,21 +20,21 @@
 		</mod>
 	</base>
 
-	<ui engine="bg,eet,iwd" level="vanillaPlus">
+	<ui engine="bg,eet,iwd">
 		<mod id="InfinityUI" label="InfinityUI">
-			<component id="infinity_ui:0" name="Install Infinity UI++ Core Component" label="Infinity UI++ core component" core="1" />
-			<component id="infinity_ui:1" name="Add Transparent Tooltip Background" label="Add transparent tooltip background" />
+			<component id="infinity_ui:0" name="Install Infinity UI++ Core Component" label="Infinity UI++ core component" core="1" level="vanillaPlus" />
+			<component id="infinity_ui:1" name="Add Transparent Tooltip Background" label="Add transparent tooltip background" level="vanillaPlus" />
 			<component id="infinity_ui:2" name="Update several strings in Dialog.tlk" label="Update several strings in Dialog.tlk" alwaysIf="infinity_ui:0" noDisplay="1" />
-			<alternatives label="Quick save slots">
+			<alternatives label="Quick save slots" horizontal="1">
 				<component id="infinity_ui:3" name="1" label="1" />
 				<component id="infinity_ui:4" name="2" label="2" />
-				<component id="infinity_ui:5" name="3" label="3" default="1" />
+				<component id="infinity_ui:5" name="3" label="3" default="1" level="vanillaPlus" />
 				<component id="infinity_ui:6" name="4" label="4" />
 				<component id="infinity_ui:7" name="5" label="5" />
 				<component id="infinity_ui:8" name="6" label="6" />
 			</alternatives>
 		</mod>
-		<component id="B3-BubbsSpellMenuExtended-Main" name="Bubb's Spell Menu Extended" label="Bubb's Spell Menu Extended" modId="Bubbs-Spell-Menu-Extended" />
+		<component id="B3-BubbsSpellMenuExtended-Main" name="Bubb's Spell Menu Extended" label="Bubb's Spell Menu Extended" modId="Bubbs-Spell-Menu-Extended" level="vanillaPlus" />
 		<component id="A7-LEVELUPTWEAKS-MAIN" name="Enable &quot;level up&quot; icon activation switch in baldur.lua" label="Enable Level Up icon activation switch in baldur.lua" core="1" modId="A7-LevelUpTweaks" engine="pst" />
 		<component id="A7-LEVELUPTWEAKS-ICON_IN_PORTRAIT" name="Move &quot;level up&quot; icon into character portrait" label="Move Level Up icon into character portrait" modId="A7-LevelUpTweaks" engine="pst" />
 		<component id="A7-RESIZEABLECOMBATLOG-MAIN" name="Freely resizeable combat log" label="Freely resizable combat log"  modId="A7-ResizeableCombatLog" engine="pst" />

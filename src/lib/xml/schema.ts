@@ -75,6 +75,8 @@ export interface NodeAttrs {
   tags?: string
   /** When true, the branch starts expanded in the UI despite default-folded tags. */
   unfolded?: boolean
+  /** When true, children render in one horizontal row instead of a vertical list. */
+  horizontal?: boolean
 }
 
 /** Shared fields for every tree node. */

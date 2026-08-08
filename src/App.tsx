@@ -10,10 +10,12 @@ import {
   createInitialSelection,
   listSelectionState,
   randomizeDisplaySubtree,
+  selectionMatchesLevelBaseline,
   toggleDisplayNode,
   toggleListSelection,
   type RandomizeOptions,
 } from './lib/selection/selectionEngine'
+import type { DifficultyLevel, LadderLevel } from './lib/levels'
 import { type DisplayNode } from './lib/selection/visibility'
 import {
   collectFilterOptions,
@@ -54,6 +56,7 @@ import { KeyboardHelp } from './ui/KeyboardHelp'
 import { RouteGuideTip } from './ui/RouteGuideTip'
 import { RouteCaughtUp } from './ui/RouteCaughtUp'
 import { ExportDialog } from './ui/ExportDialog'
+import { ConfirmDialog } from './ui/ConfirmDialog'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { AppTopBar } from './ui/AppTopBar'
 import { DetailPane } from './ui/DetailPane'
@@ -90,6 +93,12 @@ export default function App() {
   const [detailCollapsed, setDetailCollapsed] = useState(() => readDetailCollapsed())
   const [detailWidth, setDetailWidth] = useState(() => readDetailWidth())
   const [exportOpen, setExportOpen] = useState(false)
+  type PendingSelectionReset =
+    | { type: 'chooseGame'; game: SelectedGame }
+    | { type: 'ladder'; level: LadderLevel; wantChecked: boolean }
+    | { type: 'difficulty'; token: DifficultyLevel; want: boolean }
+  const [pendingSelectionReset, setPendingSelectionReset] =
+    useState<PendingSelectionReset | null>(null)
   const foldApiRef = useRef<TreeFoldApi | null>(null)
   const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
     foldApiRef.current = api
@@ -256,7 +265,19 @@ export default function App() {
 
   const showDetail = activeStation !== 'engine' && !!game
 
-  function chooseGame(next: SelectedGame) {
+  function isSelectionDirty(): boolean {
+    if (!game) return false
+    return !selectionMatchesLevelBaseline(
+      model,
+      game,
+      selectedIds,
+      levels.ladderChecked,
+      levels.lowerDifficultyPreset,
+      levels.higherDifficultyPreset,
+    )
+  }
+
+  function applyChooseGame(next: SelectedGame) {
     setGame(next)
     setSelectedIds(createInitialSelection(model, next))
     levels.resetLevelPresets()
@@ -266,6 +287,49 @@ export default function App() {
     setActiveStation('engine')
     setSearchScope('section')
     clearFocus()
+  }
+
+  function chooseGame(next: SelectedGame) {
+    if (game != null && isSelectionDirty()) {
+      setPendingSelectionReset({ type: 'chooseGame', game: next })
+      return
+    }
+    applyChooseGame(next)
+  }
+
+  function onEngineLadderToggle(level: LadderLevel, wantChecked: boolean) {
+    if (isSelectionDirty()) {
+      setPendingSelectionReset({ type: 'ladder', level, wantChecked })
+      return
+    }
+    levels.onLadderToggle(level, wantChecked)
+  }
+
+  function onEngineDifficultyChange(token: DifficultyLevel, want: boolean) {
+    if (isSelectionDirty()) {
+      setPendingSelectionReset({ type: 'difficulty', token, want })
+      return
+    }
+    levels.onDifficultyPresetChange(token, want)
+  }
+
+  function cancelSelectionReset() {
+    setPendingSelectionReset(null)
+  }
+
+  function confirmSelectionReset() {
+    if (!pendingSelectionReset) return
+    const pending = pendingSelectionReset
+    setPendingSelectionReset(null)
+    if (pending.type === 'chooseGame') {
+      applyChooseGame(pending.game)
+      return
+    }
+    if (pending.type === 'ladder') {
+      levels.onLadderToggle(pending.level, pending.wantChecked)
+      return
+    }
+    levels.onDifficultyPresetChange(pending.token, pending.want)
   }
 
   function onToggleAll(wantSelected: boolean) {
@@ -471,8 +535,8 @@ export default function App() {
                       checkedLadderLevels={levels.ladderChecked}
                       lowerDifficulty={levels.lowerDifficultyPreset}
                       higherDifficulty={levels.higherDifficultyPreset}
-                      onLadderToggle={levels.onLadderToggle}
-                      onDifficultyChange={levels.onDifficultyPresetChange}
+                      onLadderToggle={onEngineLadderToggle}
+                      onDifficultyChange={onEngineDifficultyChange}
                       canStart={route.canCycleScreens}
                       onStart={route.goNextScreen}
                     />
@@ -651,6 +715,14 @@ export default function App() {
         model={model}
         selectedIds={selectedIds}
         game={game}
+      />
+      <ConfirmDialog
+        open={pendingSelectionReset != null}
+        title="Discard selection?"
+        message="Changing this will discard your current selection. Are you sure?"
+        confirmLabel="Discard"
+        onConfirm={confirmSelectionReset}
+        onCancel={cancelSelectionReset}
       />
     </div>
   )

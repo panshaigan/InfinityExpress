@@ -17,6 +17,8 @@ export {
   applyLadderLevelSelection,
   setDifficultySelection,
   applyGlobalLevelBaseline,
+  buildLevelBaselineSelection,
+  selectionMatchesLevelBaseline,
 } from './selectionLevels'
 export type { RandomizePercent, RandomizeOptions } from './selectionRandomize'
 export {

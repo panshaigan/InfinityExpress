@@ -8,6 +8,7 @@ import {
   displaySelectionState,
   nodeSelectionState,
   randomizeDisplaySubtree,
+  selectionMatchesLevelBaseline,
   setDifficultySelection,
   toggleDisplayNode,
   toggleNode,
@@ -537,6 +538,47 @@ describe('level mass-check', () => {
     expect(selected.has('alt:rest')).toBe(true)
     expect(selected.has('alt:vp')).toBe(false)
     expect(selected.has('alt:qual')).toBe(false)
+  })
+})
+
+describe('selectionMatchesLevelBaseline', () => {
+  const { model } = parseInstallSequence(LEVELED)
+  const emptyLadder = new Set<never>()
+
+  it('no levels + only required → matches', () => {
+    const selected = createInitialSelection(model, 'bg1')
+    expect(
+      selectionMatchesLevelBaseline(model, 'bg1', selected, emptyLadder, false, false),
+    ).toBe(true)
+  })
+
+  it('no levels + manual select → dirty', () => {
+    const selected = new Set(createInitialSelection(model, 'bg1'))
+    selected.add('plain')
+    expect(
+      selectionMatchesLevelBaseline(model, 'bg1', selected, emptyLadder, false, false),
+    ).toBe(false)
+  })
+
+  it('levels applied with no further edits → matches', () => {
+    const ladder = new Set(['fixes', 'restoration'] as const)
+    let selected = createInitialSelection(model, 'bg1')
+    selected = applyLadderLevelSelection(model, selected, 'bg1', ladder)
+    selected = setDifficultySelection(model, selected, 'bg1', 'higherDifficulty', true)
+    expect(
+      selectionMatchesLevelBaseline(model, 'bg1', selected, ladder, false, true),
+    ).toBe(true)
+  })
+
+  it('levels then manual toggle → dirty', () => {
+    const ladder = new Set(['fixes', 'restoration'] as const)
+    let selected = createInitialSelection(model, 'bg1')
+    selected = applyLadderLevelSelection(model, selected, 'bg1', ladder)
+    selected = new Set(selected)
+    selected.add('plain')
+    expect(
+      selectionMatchesLevelBaseline(model, 'bg1', selected, ladder, false, false),
+    ).toBe(false)
   })
 })
 

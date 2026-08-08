@@ -439,32 +439,41 @@ export const CheckboxRow = memo(function CheckboxRow({
           )}
         </div>
       </div>
-      {expanded &&
-        children.map((child) => (
-          <CheckboxRow
-            key={child.node.key}
-            display={child}
-            selectedIds={selectedIds}
-            game={game}
-            model={model}
-            modsByCodename={modsByCodename}
-            focusedKey={focusedKey}
-            tabbableKey={tabbableKey}
-            onFocus={onFocus}
-            onHover={onHover}
-            onToggle={onToggle}
-            onRandomize={onRandomize}
-            randomizeMenuKey={randomizeMenuKey}
-            onRandomizeMenuKeyChange={onRandomizeMenuKeyChange}
-            depth={depth + 1}
-            expandedKeys={expandedKeys}
-            onToggleExpand={onToggleExpand}
-            onExpandSubtree={onExpandSubtree}
-            onCollapseSubtree={onCollapseSubtree}
-            exclusiveGroupKey={childExclusiveKey}
-            rowRefs={rowRefs}
-          />
-        ))}
+      {expanded && (
+        <div
+          className={
+            node.attrs.horizontal
+              ? 'tree-children tree-children--horizontal'
+              : 'tree-children'
+          }
+        >
+          {children.map((child) => (
+            <CheckboxRow
+              key={child.node.key}
+              display={child}
+              selectedIds={selectedIds}
+              game={game}
+              model={model}
+              modsByCodename={modsByCodename}
+              focusedKey={focusedKey}
+              tabbableKey={tabbableKey}
+              onFocus={onFocus}
+              onHover={onHover}
+              onToggle={onToggle}
+              onRandomize={onRandomize}
+              randomizeMenuKey={randomizeMenuKey}
+              onRandomizeMenuKeyChange={onRandomizeMenuKeyChange}
+              depth={node.attrs.horizontal ? depth : depth + 1}
+              expandedKeys={expandedKeys}
+              onToggleExpand={onToggleExpand}
+              onExpandSubtree={onExpandSubtree}
+              onCollapseSubtree={onCollapseSubtree}
+              exclusiveGroupKey={childExclusiveKey}
+              rowRefs={rowRefs}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }, checkboxRowPropsAreEqual)

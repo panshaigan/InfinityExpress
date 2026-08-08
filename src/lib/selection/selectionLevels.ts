@@ -16,7 +16,7 @@ import {
   applyAlternativesExclusion,
   eligibleComponents,
 } from './selectionInternals'
-import { finalizeSelection } from './selectionCore'
+import { createInitialSelection, finalizeSelection } from './selectionCore'
 
 function isLadderLeveled(component: ComponentNode): boolean {
   return levelFilterRank(component.effectiveLevel) !== null
@@ -209,4 +209,46 @@ export function applyGlobalLevelBaseline(
   next = setDifficultySelection(model, next, game, 'lowerDifficulty', lowerDifficulty, scope)
   next = setDifficultySelection(model, next, game, 'higherDifficulty', higherDifficulty, scope)
   return next
+}
+
+/** Pure selection implied by engine + global ladder/difficulty (no manual edits). */
+export function buildLevelBaselineSelection(
+  model: InstallSequenceModel,
+  game: SelectedGame,
+  ladder: ReadonlySet<LadderLevel>,
+  lowerDifficulty: boolean,
+  higherDifficulty: boolean,
+): SelectionSet {
+  let next = createInitialSelection(model, game)
+  next = applyLadderLevelSelection(model, next, game, ladder)
+  next = setDifficultySelection(model, next, game, 'lowerDifficulty', lowerDifficulty)
+  next = setDifficultySelection(model, next, game, 'higherDifficulty', higherDifficulty)
+  return next
+}
+
+function selectionSetsEqual(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
+  if (a.size !== b.size) return false
+  for (const id of a) {
+    if (!b.has(id)) return false
+  }
+  return true
+}
+
+/** True when live selection matches what the current global levels would produce alone. */
+export function selectionMatchesLevelBaseline(
+  model: InstallSequenceModel,
+  game: SelectedGame,
+  selectedIds: ReadonlySet<string>,
+  ladder: ReadonlySet<LadderLevel>,
+  lowerDifficulty: boolean,
+  higherDifficulty: boolean,
+): boolean {
+  const expected = buildLevelBaselineSelection(
+    model,
+    game,
+    ladder,
+    lowerDifficulty,
+    higherDifficulty,
+  )
+  return selectionSetsEqual(selectedIds, expected)
 }
