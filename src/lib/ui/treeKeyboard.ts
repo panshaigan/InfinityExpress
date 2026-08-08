@@ -94,7 +94,7 @@ export function buildTreeKeyboardContext(
 
 /**
  * Resolve a key press to a tree command. Returns null when the key is not handled.
- * Uses `KeyboardEvent.key` values (ArrowDown, ' ', Home, …).
+ * Uses `KeyboardEvent.key` values (ArrowDown, PageDown, ' ', Home, …).
  */
 export function resolveTreeKey(
   key: string,
@@ -122,6 +122,16 @@ export function resolveTreeKey(
       return { type: 'move', key: visibleRows[0]!.key }
     case 'End':
       return { type: 'move', key: visibleRows[visibleRows.length - 1]!.key }
+    case 'PageDown':
+    case 'PageUp': {
+      if (focusedIndex < 0) return { type: 'move', key: visibleRows[0]!.key }
+      const siblings = visibleRows.filter((r) => r.parentKey === current.parentKey)
+      const sibIndex = siblings.findIndex((r) => r.key === currentKey)
+      if (sibIndex < 0) return null
+      const next =
+        key === 'PageDown' ? siblings[sibIndex + 1] : siblings[sibIndex - 1]
+      return next ? { type: 'move', key: next.key } : null
+    }
     case 'ArrowRight': {
       if (focusedIndex < 0) return { type: 'move', key: currentKey }
       if (current.foldable && !current.expanded) {

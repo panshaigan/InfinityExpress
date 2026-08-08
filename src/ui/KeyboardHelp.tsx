@@ -6,6 +6,7 @@ interface Props {
 }
 
 const ROWS: { keys: string; action: string }[] = [
+  { keys: 'Tab', action: 'When nothing focused: first item on this display' },
   { keys: '?', action: 'Open this keys guide' },
   { keys: '\\', action: 'Collapse / expand the station rail' },
   { keys: ';', action: 'Collapse / expand the details pane' },
@@ -13,6 +14,7 @@ const ROWS: { keys: string; action: string }[] = [
   { keys: '/', action: 'Jump to search in this window' },
   { keys: 'Esc', action: 'Close filter panel or leave search' },
   { keys: '↑ ↓', action: 'Move in the component list' },
+  { keys: 'PgUp PgDn', action: 'Previous / next sibling at same level' },
   { keys: 'Space', action: 'Check / uncheck focused row' },
   { keys: 'Enter', action: 'Show details (does not toggle)' },
   { keys: '← →', action: 'Fold / unfold folders' },

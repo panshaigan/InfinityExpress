@@ -18,6 +18,7 @@ Focus a row (click or Tab into the tree), then:
 | Key | Action |
 | --- | --- |
 | `↑` / `↓` | Move to previous / next **visible** row |
+| `Page Up` / `Page Down` | Move to previous / next **sibling** at the same tree level (no wrap) |
 | `Home` / `End` | First / last visible row |
 | `→` | Expand a collapsed folder; if already expanded, move to first child |
 | `←` | Collapse an expanded folder; otherwise move to parent |
@@ -37,6 +38,7 @@ These work globally except where noted. Station and most chrome keys are ignored
 
 | Key | Action |
 | --- | --- |
+| `Tab` | When nothing is focused, jump to the first item on the current display (first engine card on Engine; otherwise the component list / search results) |
 | `?` | Open the keys guide |
 | `\` | Collapse / expand the station rail |
 | `;` | Collapse / expand the details pane |

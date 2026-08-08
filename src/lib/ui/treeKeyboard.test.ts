@@ -115,6 +115,28 @@ describe('resolveTreeKey', () => {
     expect(resolveTreeKey('End', ctx)).toEqual({ type: 'move', key: 'b' })
   })
 
+  it('PageDown and PageUp move among same-level siblings', () => {
+    const ctx = buildTreeKeyboardContext(sampleTree, expanded, 'a1')
+    expect(resolveTreeKey('PageDown', ctx)).toEqual({ type: 'move', key: 'a2' })
+    expect(resolveTreeKey('PageUp', ctx)).toBeNull()
+    const atA2 = buildTreeKeyboardContext(sampleTree, expanded, 'a2')
+    expect(resolveTreeKey('PageUp', atA2)).toEqual({ type: 'move', key: 'a1' })
+  })
+
+  it('PageUp and PageDown do not wrap at sibling ends', () => {
+    const atRoot = buildTreeKeyboardContext(sampleTree, expanded, 'a')
+    expect(resolveTreeKey('PageUp', atRoot)).toBeNull()
+    expect(resolveTreeKey('PageDown', atRoot)).toEqual({ type: 'move', key: 'b' })
+    const atLastRoot = buildTreeKeyboardContext(sampleTree, expanded, 'b')
+    expect(resolveTreeKey('PageDown', atLastRoot)).toBeNull()
+  })
+
+  it('PageDown focuses first row when nothing is focused', () => {
+    const ctx = buildTreeKeyboardContext(sampleTree, expanded, null)
+    expect(resolveTreeKey('PageDown', ctx)).toEqual({ type: 'move', key: 'a' })
+    expect(resolveTreeKey('PageUp', ctx)).toEqual({ type: 'move', key: 'a' })
+  })
+
   it('ArrowRight expands a collapsed foldable row', () => {
     const ctx = buildTreeKeyboardContext(sampleTree, new Set(), 'a')
     expect(resolveTreeKey('ArrowRight', ctx)).toEqual({ type: 'expand', key: 'a' })

@@ -47,6 +47,12 @@ export function isTypingTarget(target: EventTarget | null): boolean {
   return TYPING_TAGS.has(el.tagName)
 }
 
+/** True when no interactive element has DOM focus (body / html / null). */
+export function isDocumentShellFocused(el: Element | null): boolean {
+  if (el == null) return true
+  return el === document.body || el === document.documentElement
+}
+
 /**
  * Build ordered station slots: Engine first, then visible content stations.
  */

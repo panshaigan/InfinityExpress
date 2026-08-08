@@ -345,6 +345,14 @@ export default function App() {
     row?.focus()
   }
 
+  function focusMainDisplay() {
+    if (activeStation === 'engine') {
+      document.querySelector<HTMLElement>('.engine-card')?.focus()
+      return
+    }
+    focusComponentTree()
+  }
+
   function onFoldAll() {
     foldApiRef.current?.foldAll()
   }
@@ -379,6 +387,7 @@ export default function App() {
     onSelectContentMain: selectContentMain,
     onSelectContentSub: selectContentSub,
     onApplyStationSlot: applyStationSlot,
+    onFocusMainDisplay: focusMainDisplay,
   })
 
   return (

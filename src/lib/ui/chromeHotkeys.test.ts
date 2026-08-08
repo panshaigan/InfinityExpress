@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   cycleStation,
   cycleTabIndex,
+  isDocumentShellFocused,
   isTypingTarget,
   resolveChromeHotkey,
   stationCycleOrder,
@@ -107,5 +108,20 @@ describe('isTypingTarget', () => {
     const checkbox = document.createElement('input')
     checkbox.type = 'checkbox'
     expect(isTypingTarget(checkbox)).toBe(false)
+  })
+})
+
+describe('isDocumentShellFocused', () => {
+  it('is true for null, body, and html', () => {
+    expect(isDocumentShellFocused(null)).toBe(true)
+    expect(isDocumentShellFocused(document.body)).toBe(true)
+    expect(isDocumentShellFocused(document.documentElement)).toBe(true)
+  })
+
+  it('is false for interactive elements', () => {
+    const btn = document.createElement('button')
+    document.body.appendChild(btn)
+    expect(isDocumentShellFocused(btn)).toBe(false)
+    btn.remove()
   })
 })

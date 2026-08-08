@@ -4,6 +4,7 @@ import type { StationId } from '../lib/xml/schema'
 import {
   cycleStation,
   cycleTabIndex,
+  isDocumentShellFocused,
   isTypingTarget,
   resolveChromeHotkey,
   stationCycleOrder,
@@ -27,6 +28,7 @@ export function useChromeHotkeys(args: {
   onSelectContentMain: (key: string) => void
   onSelectContentSub: (key: string) => void
   onApplyStationSlot: (slot: StationSlot) => void
+  onFocusMainDisplay: () => void
 }) {
   const {
     keyboardHelpOpen,
@@ -43,6 +45,7 @@ export function useChromeHotkeys(args: {
     onSelectContentMain,
     onSelectContentSub,
     onApplyStationSlot,
+    onFocusMainDisplay,
   } = args
 
   useEffect(() => {
@@ -55,6 +58,17 @@ export function useChromeHotkeys(args: {
 
     function onKeyDown(e: KeyboardEvent) {
       if (e.altKey || e.ctrlKey || e.metaKey) return
+      if (
+        !keyboardHelpOpen &&
+        !isTypingTarget(e.target) &&
+        e.key === 'Tab' &&
+        !e.shiftKey &&
+        isDocumentShellFocused(document.activeElement)
+      ) {
+        e.preventDefault()
+        onFocusMainDisplay()
+        return
+      }
       if (
         !isTypingTarget(e.target) &&
         !keyboardHelpOpen &&
@@ -147,5 +161,6 @@ export function useChromeHotkeys(args: {
     onSelectContentMain,
     onSelectContentSub,
     onApplyStationSlot,
+    onFocusMainDisplay,
   ])
 }
