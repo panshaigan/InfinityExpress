@@ -63,6 +63,41 @@ function titleFor(id: AppNavSlot): string {
   return STATION_LABELS[id]
 }
 
+function StationStop({
+  id,
+  activeStation,
+  finishedStations,
+  collapsed,
+  disabled,
+  onClick,
+}: {
+  id: AppNavSlot
+  activeStation: AppNavSlot
+  finishedStations: ReadonlySet<StationSlot>
+  collapsed: boolean
+  disabled?: boolean
+  onClick: () => void
+}) {
+  const finished = finishedStations.has(id)
+
+  return (
+    <button
+      type="button"
+      className={stationClass(id, activeStation, finishedStations)}
+      disabled={disabled}
+      onClick={onClick}
+      title={titleFor(id)}
+    >
+      <span className="station-nav-track" aria-hidden="true">
+        <span className="station-nav-dot">
+          {finished && <span className="station-finished-mark">✓</span>}
+        </span>
+      </span>
+      <span className="station-nav-label">{labelFor(id, collapsed)}</span>
+    </button>
+  )
+}
+
 export function StationNav({
   game,
   activeStation,
@@ -94,35 +129,23 @@ export function StationNav({
         {collapsed ? '»' : '«'}
       </button>
       <div className="station-nav-scroll">
-        <button
-          type="button"
-          className={stationClass('engine', activeStation, finishedStations)}
+        <StationStop
+          id="engine"
+          activeStation={activeStation}
+          finishedStations={finishedStations}
+          collapsed={collapsed}
           onClick={onSelectEngine}
-          title={titleFor('engine')}
-        >
-          <span className="station-nav-label">{labelFor('engine', collapsed)}</span>
-          {finishedStations.has('engine') && (
-            <span className="station-finished-mark" aria-hidden="true">
-              ✓
-            </span>
-          )}
-        </button>
+        />
         {STATION_ORDER.filter((id) => visibleStations.includes(id)).map((id) => (
-          <button
+          <StationStop
             key={id}
-            type="button"
-            className={stationClass(id, activeStation, finishedStations)}
+            id={id}
+            activeStation={activeStation}
+            finishedStations={finishedStations}
+            collapsed={collapsed}
             disabled={!game}
             onClick={() => onSelectStation(id)}
-            title={titleFor(id)}
-          >
-            <span className="station-nav-label">{labelFor(id, collapsed)}</span>
-            {finishedStations.has(id) && (
-              <span className="station-finished-mark" aria-hidden="true">
-                ✓
-              </span>
-            )}
-          </button>
+          />
         ))}
       </div>
       {game && totalCount > 0 && (
