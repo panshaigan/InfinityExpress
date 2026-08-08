@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ChangeEvent } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { collectAllExpandableKeys } from '../lib/ui/treeKeyboard'
@@ -32,9 +32,16 @@ export function StationListToolbar({
   onUnfoldAll,
 }: Props) {
   const selectAllRef = useRef<HTMLInputElement>(null)
+  const levelsMenuRef = useRef<HTMLDivElement>(null)
+  const levelsPanelId = useId()
+  const [allUnfolded, setAllUnfolded] = useState(false)
+  const [levelsOpen, setLevelsOpen] = useState(false)
+
   const checked = listState === 'checked'
   const empty = listNodes.length === 0
-  const foldDisabled = empty || collectAllExpandableKeys(listNodes).length === 0
+  const expandableKeys = useMemo(() => collectAllExpandableKeys(listNodes), [listNodes])
+  const foldDisabled = empty || expandableKeys.length === 0
+  const expandableKeySignature = expandableKeys.join('\0')
   const levelOverrideCount =
     checkedLadderLevels.size +
     (lowerDifficulty ? 1 : 0) +
@@ -46,9 +53,44 @@ export function StationListToolbar({
     }
   }, [listState])
 
+  useEffect(() => {
+    setAllUnfolded(false)
+  }, [expandableKeySignature])
+
+  useEffect(() => {
+    if (!levelsOpen) return
+    function onPointerDown(e: PointerEvent) {
+      if (!levelsMenuRef.current?.contains(e.target as Node)) setLevelsOpen(false)
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        setLevelsOpen(false)
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [levelsOpen])
+
   function handleSelectAllChange(e: ChangeEvent<HTMLInputElement>) {
     onToggleAll(e.target.checked)
   }
+
+  function handleFoldToggle() {
+    if (allUnfolded) {
+      onFoldAll()
+      setAllUnfolded(false)
+    } else {
+      onUnfoldAll()
+      setAllUnfolded(true)
+    }
+  }
+
+  const foldLabel = allUnfolded ? 'Fold all' : 'Unfold all'
 
   return (
     <div className="station-list-toolbar">
@@ -64,56 +106,60 @@ export function StationListToolbar({
           />
           <span>Select all</span>
         </label>
-        <span className="station-fold-all">
+        <button
+          type="button"
+          className="station-fold-toggle"
+          disabled={foldDisabled}
+          aria-label={`${foldLabel} on this list`}
+          onClick={handleFoldToggle}
+        >
+          {foldLabel}
+        </button>
+        <div ref={levelsMenuRef} className="station-levels-menu">
           <button
             type="button"
-            className="filter-inline-action"
-            disabled={foldDisabled}
-            aria-label="Unfold all on this list"
-            onClick={onUnfoldAll}
+            className={`btn secondary station-levels-trigger${levelsOpen ? ' open' : ''}`}
+            aria-expanded={levelsOpen}
+            aria-controls={levelsPanelId}
+            onClick={() => setLevelsOpen((v) => !v)}
           >
-            Unfold all
+            <span className="station-levels-trigger-label">
+              Preselect levels
+              {levelOverrideCount > 0 ? ` (${levelOverrideCount})` : ''}
+            </span>
+            <span className="station-levels-caret" aria-hidden="true">
+              ▾
+            </span>
           </button>
-          <button
-            type="button"
-            className="filter-inline-action"
-            disabled={foldDisabled}
-            aria-label="Fold all on this list"
-            onClick={onFoldAll}
-          >
-            Fold all
-          </button>
-        </span>
-      </div>
-      <details className="station-levels-fold">
-        <summary>
-          Preselect levels
-          {levelOverrideCount > 0 ? ` (${levelOverrideCount})` : ''}
-        </summary>
-        <div className="station-list-toolbar-levels">
-          <LevelSelectStrip
-            compact
-            enabled
-            checkedLadderLevels={checkedLadderLevels}
-            lowerDifficulty={lowerDifficulty}
-            higherDifficulty={higherDifficulty}
-            onLadderToggle={onLadderToggle}
-            onDifficultyChange={onDifficultyChange}
-          />
-          <p className="station-levels-hint">
-            Sets which components start checked on this stop. Does not hide rows — use Show
-            levels in filters for that.
-          </p>
-          <button
-            type="button"
-            className="filter-inline-action station-clear-to-global"
-            onClick={onClearToGlobal}
-            title="Clear this stop’s level picks back to the last Engine preset"
-          >
-            Reset to global
-          </button>
+          {levelsOpen && (
+            <div className="station-levels-popover" id={levelsPanelId} role="group">
+              <div className="station-list-toolbar-levels">
+                <LevelSelectStrip
+                  compact
+                  enabled
+                  checkedLadderLevels={checkedLadderLevels}
+                  lowerDifficulty={lowerDifficulty}
+                  higherDifficulty={higherDifficulty}
+                  onLadderToggle={onLadderToggle}
+                  onDifficultyChange={onDifficultyChange}
+                />
+                <p className="station-levels-hint">
+                  Sets which components start checked on this stop. Does not hide rows — use Show
+                  levels in filters for that.
+                </p>
+                <button
+                  type="button"
+                  className="filter-inline-action station-clear-to-global"
+                  onClick={onClearToGlobal}
+                  title="Clear this stop’s level picks back to the last Engine preset"
+                >
+                  Reset to global
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      </details>
+      </div>
     </div>
   )
 }
