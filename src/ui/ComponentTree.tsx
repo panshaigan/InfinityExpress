@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -123,13 +124,16 @@ export function ComponentTree(props: Props) {
     return initial
   })
 
-  function setExpandedKeys(updater: (prev: Set<string>) => Set<string>) {
-    setExpandedKeysState((prev) => {
-      const next = updater(prev)
-      expandedKeysCache.set(props.treeKey, next)
-      return next
-    })
-  }
+  const setExpandedKeys = useCallback(
+    (updater: (prev: Set<string>) => Set<string>) => {
+      setExpandedKeysState((prev) => {
+        const next = updater(prev)
+        expandedKeysCache.set(props.treeKey, next)
+        return next
+      })
+    },
+    [props.treeKey],
+  )
 
   // When the display tree changes (station / engine / displayIf), expand newly visible
   // non-default-folded containers without collapsing user-toggled ones.
@@ -147,7 +151,7 @@ export function ComponentTree(props: Props) {
       addDefaults(props.nodes)
       return next
     })
-  }, [props.nodes])
+  }, [props.nodes, setExpandedKeys])
 
   // Keep DOM focus on the focused row (arrow nav, click, relation jump).
   // Do not steal focus from the filter search (or other typing fields) when the
@@ -170,45 +174,57 @@ export function ComponentTree(props: Props) {
     [props.nodes, expandedKeys, props.focusedKey],
   )
 
-  function onToggleExpand(key: string) {
-    setExpandedKeys((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      return next
-    })
-  }
+  const onToggleExpand = useCallback(
+    (key: string) => {
+      setExpandedKeys((prev) => {
+        const next = new Set(prev)
+        if (next.has(key)) next.delete(key)
+        else next.add(key)
+        return next
+      })
+    },
+    [setExpandedKeys],
+  )
 
-  function setExpanded(key: string, want: boolean) {
-    setExpandedKeys((prev) => {
-      const next = new Set(prev)
-      if (want) next.add(key)
-      else next.delete(key)
-      return next
-    })
-  }
+  const setExpanded = useCallback(
+    (key: string, want: boolean) => {
+      setExpandedKeys((prev) => {
+        const next = new Set(prev)
+        if (want) next.add(key)
+        else next.delete(key)
+        return next
+      })
+    },
+    [setExpandedKeys],
+  )
 
-  function expandSubtree(key: string) {
-    const display = findDisplayNode(props.nodes, key)
-    if (!display) return
-    const keys = collectExpandableDescendantKeys(display)
-    setExpandedKeys((prev) => {
-      const next = new Set(prev)
-      for (const k of keys) next.add(k)
-      return next
-    })
-  }
+  const expandSubtree = useCallback(
+    (key: string) => {
+      const display = findDisplayNode(props.nodes, key)
+      if (!display) return
+      const keys = collectExpandableDescendantKeys(display)
+      setExpandedKeys((prev) => {
+        const next = new Set(prev)
+        for (const k of keys) next.add(k)
+        return next
+      })
+    },
+    [props.nodes, setExpandedKeys],
+  )
 
-  function collapseSubtree(key: string) {
-    const display = findDisplayNode(props.nodes, key)
-    if (!display) return
-    const keys = collectExpandableDescendantKeys(display)
-    setExpandedKeys((prev) => {
-      const next = new Set(prev)
-      for (const k of keys) next.delete(k)
-      return next
-    })
-  }
+  const collapseSubtree = useCallback(
+    (key: string) => {
+      const display = findDisplayNode(props.nodes, key)
+      if (!display) return
+      const keys = collectExpandableDescendantKeys(display)
+      setExpandedKeys((prev) => {
+        const next = new Set(prev)
+        for (const k of keys) next.delete(k)
+        return next
+      })
+    },
+    [props.nodes, setExpandedKeys],
+  )
 
   useEffect(() => {
     const ready = props.onFoldApiReady
@@ -232,7 +248,7 @@ export function ComponentTree(props: Props) {
       },
     })
     return () => ready(null)
-  }, [props.nodes, props.onFoldApiReady, props.treeKey])
+  }, [props.nodes, props.onFoldApiReady, props.treeKey, setExpandedKeys])
 
   function applyCommand(cmd: TreeCommand) {
     switch (cmd.type) {

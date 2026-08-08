@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { STATION_ORDER, type InstallSequenceModel, type SelectedGame, type StationId } from '../lib/xml/schema'
 import type { ModInfo } from '../lib/mods/loadMods'
 import type { FilterCriteria, FilterSeedOptions } from '../lib/selection/filterDisplayTree'
+import { collectDisplayGateIds, selectionGateKey } from '../lib/selection/displayGates'
 import { buildGlobalSearchResults } from '../lib/selection/globalSearch'
 import {
   buildFilteredStationDisplayTree,
@@ -48,6 +49,15 @@ export function useStationTrees(args: {
     filterSeed,
   } = args
 
+  const gateIds = useMemo(() => collectDisplayGateIds(model), [model])
+  const gatingKey = useMemo(
+    () => selectionGateKey(selectedIds, gateIds),
+    [selectedIds, gateIds],
+  )
+  /** Unchecked filters read full selection; otherwise only gating ids reshape trees. */
+  const treeSelectionKey =
+    filters.uncheckedFilter !== 'off' ? selectedIds : gatingKey
+
   const visibleStations = useMemo(() => {
     if (!game) return [] as StationId[]
     return STATION_ORDER.filter((id) => {
@@ -55,10 +65,29 @@ export function useStationTrees(args: {
       if (!block) return false
       return stationHasVisibleContent(block, game, selectedIds)
     })
-  }, [game, model.stations, selectedIds])
+    // Structure only depends on displayIf gates, fingerprinted by gatingKey.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedIds via gatingKey
+  }, [game, model.stations, gatingKey])
+
+  const contentDisplayNodes = useMemo(() => {
+    if (!game) return [] as DisplayNode[]
+    const block = model.stations.find((s) => s.stationId === 'content')
+    if (!block) return []
+    return buildFilteredStationDisplayTree(
+      block,
+      game,
+      selectedIds,
+      filters,
+      model,
+      modsByCodename,
+      filterSeed,
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedIds via treeSelectionKey
+  }, [filters, filterSeed, game, model, modsByCodename, treeSelectionKey])
 
   const displayNodes = useMemo(() => {
     if (!game || activeStation === 'engine' || activeStation === 'search') return []
+    if (activeStation === 'content') return contentDisplayNodes
     const block = model.stations.find((s) => s.stationId === activeStation)
     if (!block) return []
     return buildFilteredStationDisplayTree(
@@ -70,7 +99,17 @@ export function useStationTrees(args: {
       modsByCodename,
       filterSeed,
     )
-  }, [activeStation, filters, game, model, modsByCodename, filterSeed, selectedIds])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedIds via treeSelectionKey
+  }, [
+    activeStation,
+    contentDisplayNodes,
+    filters,
+    filterSeed,
+    game,
+    model,
+    modsByCodename,
+    treeSelectionKey,
+  ])
 
   const globalSearchHits = useMemo(() => {
     if (!game || activeStation !== 'search') return []
@@ -88,16 +127,11 @@ export function useStationTrees(args: {
   const navigableScreens = useMemo(() => {
     if (!game) return [] as NavScreen[]
     return buildNavigableScreens(visibleStations, (id) => {
-      if (
-        id === activeStation &&
-        activeStation !== 'engine' &&
-        activeStation !== 'search'
-      ) {
-        return displayNodes
-      }
+      if (id === 'content') return contentDisplayNodes
+      if (id === activeStation) return displayNodes
       // visibleStations already proved unfiltered visibility; without filters,
       // non-content cycle entries only need a non-empty tree.
-      if (id !== 'content' && !filtersActive) {
+      if (!filtersActive) {
         return NONEMPTY_STATION_ROWS
       }
       const block = model.stations.find((s) => s.stationId === id)
@@ -112,16 +146,19 @@ export function useStationTrees(args: {
         filterSeed,
       )
     })
+    // When filters are active, non-content trees still need selection fingerprint.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedIds via treeSelectionKey
   }, [
     activeStation,
+    contentDisplayNodes,
     displayNodes,
     filters,
     filtersActive,
+    filterSeed,
     game,
     model,
     modsByCodename,
-    filterSeed,
-    selectedIds,
+    treeSelectionKey,
     visibleStations,
   ])
 

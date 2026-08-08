@@ -106,28 +106,31 @@ export function useTreeFocus(args: {
     return displaySelectionState(focusedDisplay, selectedIds, game)
   }, [focusedDisplay, game, selectedIds])
 
-  function onFocus(key: string) {
+  const onFocus = useCallback((key: string) => {
     setFocusedKey(key)
     setFocusedComponentId(null)
     setPendingFocusId(null)
-  }
+  }, [])
 
-  function onFocusSearchResult(componentId: string) {
+  const onFocusSearchResult = useCallback((componentId: string) => {
     setFocusedKey(null)
     setFocusedComponentId(componentId)
     setPendingFocusId(null)
-  }
+  }, [])
 
-  function onNavigateToComponent(componentId: string) {
-    const station = relationIndex.stationByComponentId.get(componentId)
-    if (!station) return
-    setFocusedKey(null)
-    setFocusedComponentId(componentId)
-    setPendingFocusId(componentId)
-    if (activeStation !== station) {
-      setActiveStation(station)
-    }
-  }
+  const onNavigateToComponent = useCallback(
+    (componentId: string) => {
+      const station = relationIndex.stationByComponentId.get(componentId)
+      if (!station) return
+      setFocusedKey(null)
+      setFocusedComponentId(componentId)
+      setPendingFocusId(componentId)
+      if (activeStation !== station) {
+        setActiveStation(station)
+      }
+    },
+    [activeStation, relationIndex.stationByComponentId, setActiveStation],
+  )
 
   return {
     focusedKey,

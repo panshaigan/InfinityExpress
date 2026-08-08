@@ -1,4 +1,5 @@
 import {
+  memo,
   useEffect,
   useRef,
   useState,
@@ -12,7 +13,7 @@ import {
   type RandomizeOptions,
   type RandomizePercent,
 } from '../lib/selection/selectionEngine'
-import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
+import { isComponentNode, type InstallSequenceModel, type SelectedGame } from '../lib/xml/schema'
 import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import {
   stabilityBadgeClass,
@@ -45,27 +46,7 @@ function ShuffleIcon() {
   )
 }
 
-export function CheckboxRow({
-  display,
-  selectedIds,
-  game,
-  model,
-  modsByCodename,
-  focusedKey,
-  tabbableKey,
-  onFocus,
-  onToggle,
-  onRandomize,
-  randomizeMenuKey,
-  onRandomizeMenuKeyChange,
-  depth,
-  expandedKeys,
-  onToggleExpand,
-  onExpandSubtree,
-  onCollapseSubtree,
-  exclusiveGroupKey,
-  rowRefs,
-}: {
+export type CheckboxRowProps = {
   display: DisplayNode
   selectedIds: ReadonlySet<string>
   game: SelectedGame
@@ -87,7 +68,130 @@ export function CheckboxRow({
   /** When set, this row is a mutually exclusive option under an alternatives parent. */
   exclusiveGroupKey?: string
   rowRefs: MutableRefObject<Map<string, HTMLDivElement>>
-}) {
+}
+
+function subtreeSelectionChanged(
+  display: DisplayNode,
+  prev: ReadonlySet<string>,
+  next: ReadonlySet<string>,
+): boolean {
+  if (prev === next) return false
+
+  function walk(d: DisplayNode): boolean {
+    if (d.collapsedComponent) {
+      const id = d.collapsedComponent.componentId
+      return prev.has(id) !== next.has(id)
+    }
+    if (isComponentNode(d.node)) {
+      return prev.has(d.node.componentId) !== next.has(d.node.componentId)
+    }
+    for (const child of d.children) {
+      if (walk(child)) return true
+    }
+    return false
+  }
+
+  return walk(display)
+}
+
+function subtreeExpandedChanged(
+  display: DisplayNode,
+  prevKeys: ReadonlySet<string>,
+  nextKeys: ReadonlySet<string>,
+): boolean {
+  if (prevKeys === nextKeys) return false
+
+  function walk(d: DisplayNode): boolean {
+    if (d.children.length > 0) {
+      if (prevKeys.has(d.node.key) !== nextKeys.has(d.node.key)) return true
+      for (const child of d.children) {
+        if (walk(child)) return true
+      }
+    }
+    return false
+  }
+
+  return walk(display)
+}
+
+function displayContainsKey(display: DisplayNode, key: string | null): boolean {
+  if (key == null) return false
+  if (display.node.key === key) return true
+  return display.children.some((child) => displayContainsKey(child, key))
+}
+
+function subtreeKeyPropChanged(
+  display: DisplayNode,
+  prevKey: string | null,
+  nextKey: string | null,
+): boolean {
+  if (prevKey === nextKey) return false
+  return displayContainsKey(display, prevKey) || displayContainsKey(display, nextKey)
+}
+
+function checkboxRowPropsAreEqual(
+  prev: CheckboxRowProps,
+  next: CheckboxRowProps,
+): boolean {
+  if (prev.display !== next.display) return false
+  if (prev.game !== next.game) return false
+  if (prev.model !== next.model) return false
+  if (prev.modsByCodename !== next.modsByCodename) return false
+  if (prev.depth !== next.depth) return false
+  if (prev.exclusiveGroupKey !== next.exclusiveGroupKey) return false
+  if (prev.onFocus !== next.onFocus) return false
+  if (prev.onToggle !== next.onToggle) return false
+  if (prev.onRandomize !== next.onRandomize) return false
+  if (prev.onToggleExpand !== next.onToggleExpand) return false
+  if (prev.onExpandSubtree !== next.onExpandSubtree) return false
+  if (prev.onCollapseSubtree !== next.onCollapseSubtree) return false
+  if (prev.onRandomizeMenuKeyChange !== next.onRandomizeMenuKeyChange) return false
+  if (prev.rowRefs !== next.rowRefs) return false
+
+  if (subtreeKeyPropChanged(prev.display, prev.focusedKey, next.focusedKey)) {
+    return false
+  }
+  if (subtreeKeyPropChanged(prev.display, prev.tabbableKey, next.tabbableKey)) {
+    return false
+  }
+  if (
+    subtreeKeyPropChanged(prev.display, prev.randomizeMenuKey, next.randomizeMenuKey)
+  ) {
+    return false
+  }
+
+  if (subtreeExpandedChanged(prev.display, prev.expandedKeys, next.expandedKeys)) {
+    return false
+  }
+
+  if (subtreeSelectionChanged(prev.display, prev.selectedIds, next.selectedIds)) {
+    return false
+  }
+
+  return true
+}
+
+export const CheckboxRow = memo(function CheckboxRow({
+  display,
+  selectedIds,
+  game,
+  model,
+  modsByCodename,
+  focusedKey,
+  tabbableKey,
+  onFocus,
+  onToggle,
+  onRandomize,
+  randomizeMenuKey,
+  onRandomizeMenuKeyChange,
+  depth,
+  expandedKeys,
+  onToggleExpand,
+  onExpandSubtree,
+  onCollapseSubtree,
+  exclusiveGroupKey,
+  rowRefs,
+}: CheckboxRowProps) {
   const { node, collapsedComponent, children } = display
   const state = displaySelectionState(display, selectedIds, game)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -365,4 +469,4 @@ export function CheckboxRow({
         ))}
     </div>
   )
-}
+}, checkboxRowPropsAreEqual)

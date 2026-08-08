@@ -146,7 +146,20 @@ export function buildDisplayTree(nodes: TreeNode[], ctx: VisibilityContext): Dis
 }
 
 export function displayTreeHasVisible(nodes: TreeNode[], ctx: VisibilityContext): boolean {
-  return buildDisplayTree(nodes, { ...ctx, includeHidden: false }).length > 0
+  const probeCtx: VisibilityContext = { ...ctx, includeHidden: false }
+  return nodes.some((n) => hasVisibleComponentLeaf(n, probeCtx))
+}
+
+/**
+ * True when `node` contributes at least one UI-visible component leaf under
+ * `buildDisplayTree` rules (engine + displayIf, respecting noDisplay).
+ */
+function hasVisibleComponentLeaf(node: TreeNode, ctx: VisibilityContext): boolean {
+  if (!isEngineAndDisplayEligible(node, ctx)) return false
+  if (isComponentNode(node)) {
+    return !(node.attrs.noDisplay && !ctx.includeHidden)
+  }
+  return node.children.some((c) => hasVisibleComponentLeaf(c, ctx))
 }
 
 /** True when at least one station root passes engine + displayIf / displayIfNot. */

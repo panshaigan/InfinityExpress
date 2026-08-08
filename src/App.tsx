@@ -314,15 +314,23 @@ export default function App() {
     clearFocus()
   }
 
-  function onToggle(display: DisplayNode, wantSelected: boolean) {
-    if (!game) return
-    setSelectedIds((prev) => toggleDisplayNode(model, prev, game, display, wantSelected))
-  }
+  const onToggle = useCallback(
+    (display: DisplayNode, wantSelected: boolean) => {
+      if (!game) return
+      setSelectedIds((prev) => toggleDisplayNode(model, prev, game, display, wantSelected))
+    },
+    [game, model],
+  )
 
-  function onRandomize(display: DisplayNode, options: RandomizeOptions) {
-    if (!game) return
-    setSelectedIds((prev) => randomizeDisplaySubtree(model, prev, game, display, options))
-  }
+  const onRandomize = useCallback(
+    (display: DisplayNode, options: RandomizeOptions) => {
+      if (!game) return
+      setSelectedIds((prev) =>
+        randomizeDisplaySubtree(model, prev, game, display, options),
+      )
+    },
+    [game, model],
+  )
 
   function focusComponentTree() {
     const searchRow = document.querySelector<HTMLElement>(
