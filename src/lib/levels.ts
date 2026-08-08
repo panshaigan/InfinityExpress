@@ -26,23 +26,75 @@ export const LEVEL_LABELS: Record<string, string> = {
   higherDifficulty: 'Higher difficulty',
 }
 
-/** One-line hints for Engine / station level cards (optional). */
-export const LEVEL_HINTS: Record<string, string> = {
-  fixes: 'Stability first',
-  restoration: 'Restored cut content',
-  vanillaPlus:
-    'QoL tweaks, subtle additions, and corrections in line with vanilla',
-  blendWell: 'Expanded, but not overwhelming',
-  extended: 'Lots of additional content and changes',
+/** Engine tile summary + tooltip copy for a level card. */
+export interface LevelInfo {
+  summary: string
+  typeAndDepth: string
+  recommendedFor: string
 }
 
-/** Hover recommendations for Engine base-component cards. */
-export const LEVEL_RECOMMENDATIONS: Partial<Record<LadderLevel, string>> = {
-  vanillaPlus: "Recommended if you've never played the original game",
-  blendWell:
-    "Recommended if you've already played, but don't want big changes",
-  extended:
-    "Recommended if you're okay with adding a lot of new content and changing some game mechanics",
+/** Ladder level copy shown on Engine tiles and hover tips. */
+export const LADDER_LEVEL_INFO: Record<LadderLevel, LevelInfo> = {
+  fixes: {
+    summary:
+      'Essential stability, logic, and bug-correction patches for the base engine and game data.',
+    typeAndDepth:
+      'Low mechanical impact. Focuses strictly on fixing technical bugs, alignment inconsistencies, broken quest logic, and text/dialogue errors without altering core gameplay systems or adding new narrative elements.',
+    recommendedFor:
+      'Everyone. Essential for all players to ensure a smooth, stable, and error-free experience.',
+  },
+  restoration: {
+    summary:
+      'Reinstates cut, unfinished, or unused content directly from the original game files.',
+    typeAndDepth:
+      'Low to moderate impact. Restores scrapped areas, cut dialogue options, missing encounters, and unused graphics/audio that were created by the original developers but omitted from the final release.',
+    recommendedFor:
+      'Purists and returning veterans who want to experience the complete original vision of the developers without introducing fan-made storylines.',
+  },
+  vanillaPlus: {
+    summary:
+      'Quality-of-life enhancements and subtle mechanical polish that stay faithful to original game design.',
+    typeAndDepth:
+      'Low to moderate impact. Focuses on interface/UI enhancements, minor dialogue polish, quality-of-life conveniences, and light roleplay/encounter refinements that seamlessly feel like native base-game features.',
+    recommendedFor:
+      'First-time players and modernizers looking for a refined experience that preserves the authentic feel of the original game while removing dated clunkiness.',
+  },
+  blendWell: {
+    summary:
+      'Thoughtfully integrated fan-made modifications designed to match original tone, balance, and lore seamlessly.',
+    typeAndDepth:
+      'Moderate impact. Introduces lore-friendly rebalances to items, economy, and quests, along with well-integrated post-game or campaign-restructuring elements without breaking game balance or narrative immersion.',
+    recommendedFor:
+      'Experienced players seeking fresh, meaningful gameplay updates and seamless content expansions that feel completely natural in the game world.',
+  },
+  extended: {
+    summary:
+      'Substantial, transformative content additions including expanded systems, companion content, and major quest modifications.',
+    typeAndDepth:
+      'High impact. Significantly alters game flow by introducing major narrative overhauls, entirely new areas, expanded companion banters/quests, forgeable end-game artifacts, and sequence breaks.',
+    recommendedFor:
+      'Series veterans looking to heavily customize their playthrough, overhaul major plot points, or add a vast amount of new content to keep the game fresh.',
+  },
+}
+
+/** Difficulty opt-in copy shown on Engine tiles and hover tips. */
+export const DIFFICULTY_LEVEL_INFO: Record<DifficultyLevel, LevelInfo> = {
+  lowerDifficulty: {
+    summary:
+      'Adjustments designed to ease combat mechanics, reduce game friction, and make encounters less punitive.',
+    typeAndDepth:
+      'Low to moderate impact. Focuses on weakening enemy stats, increasing player utility, removing frustrating mechanics (e.g., instant-death traps or permanent level drain), and granting more forgiving resource availability.',
+    recommendedFor:
+      'Casual players or story-focused gamers who want to experience the narrative, dialogue, and exploration without getting bogged down by high tactical difficulty or unforgiving combat.',
+  },
+  higherDifficulty: {
+    summary:
+      "Tactical overhauls and tactical enhancements aimed at dramatically increasing the game's challenge.",
+    typeAndDepth:
+      'Moderate to high impact. Introduces smarter enemy AI, tougher party compositions, pre-buffed opponents, stricter resource management, and reworked encounter scripts that demand optimal party builds and tactical strategy.',
+    recommendedFor:
+      'Tactical veterans and min-maxers looking for a grueling test of game knowledge, strategy, and party synergy.',
+  },
 }
 
 /** Levels shown as filter chips (restructure shares Well blended). */

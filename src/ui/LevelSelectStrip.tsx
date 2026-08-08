@@ -1,11 +1,12 @@
 import {
   DIFFICULTY_LEVELS,
+  DIFFICULTY_LEVEL_INFO,
   FILTER_LADDER_LEVELS,
-  LEVEL_HINTS,
+  LADDER_LEVEL_INFO,
   LEVEL_LABELS,
-  LEVEL_RECOMMENDATIONS,
   type DifficultyLevel,
   type LadderLevel,
+  type LevelInfo,
 } from '../lib/levels'
 
 interface Props {
@@ -27,22 +28,20 @@ const LADDER_ROWS: LadderLevel[][] = [
 
 function LevelCard({
   label,
-  hint,
-  recommendation,
+  info,
   checked,
   enabled,
   compact,
   onChange,
 }: {
   label: string
-  hint?: string
-  recommendation?: string
+  info?: LevelInfo
   checked: boolean
   enabled: boolean
   compact: boolean
   onChange: (wantChecked: boolean) => void
 }) {
-  const showTip = !compact && !!recommendation
+  const showTip = !compact && !!info
 
   return (
     <label
@@ -58,13 +57,20 @@ function LevelCard({
       />
       <span className="level-card-copy">
         <span className="level-card-label">{label}</span>
-        {!compact && hint ? (
-          <span className="level-card-hint">{hint}</span>
+        {!compact && info ? (
+          <span className="level-card-hint">{info.summary}</span>
         ) : null}
       </span>
-      {showTip ? (
+      {showTip && info ? (
         <span className="level-card-tip" role="tooltip">
-          {recommendation}
+          <span className="level-card-tip-section">
+            <span className="level-card-tip-heading">Type & Depth of Changes</span>
+            <span className="level-card-tip-body">{info.typeAndDepth}</span>
+          </span>
+          <span className="level-card-tip-section">
+            <span className="level-card-tip-heading">Who It&apos;s Recommended For</span>
+            <span className="level-card-tip-body">{info.recommendedFor}</span>
+          </span>
         </span>
       ) : null}
     </label>
@@ -96,7 +102,6 @@ export function LevelSelectStrip({
             <LevelCard
               key={level}
               label={LEVEL_LABELS[level]}
-              hint={LEVEL_HINTS[level]}
               checked={checkedLadderLevels.has(level)}
               enabled={enabled}
               compact
@@ -123,7 +128,7 @@ export function LevelSelectStrip({
       className={`level-preselect${!enabled ? ' disabled' : ''}`}
       aria-label="Choose your base components"
     >
-      <h3 className="level-preselect-title">Choose your base components</h3>
+      <h3 className="level-preselect-title">Choose your initial selection</h3>
       <div className="level-preselect-layout" role="group" aria-label="Ladder levels">
         {LADDER_ROWS.map((row) => (
           <div
@@ -134,8 +139,7 @@ export function LevelSelectStrip({
               <LevelCard
                 key={level}
                 label={LEVEL_LABELS[level]}
-                hint={LEVEL_HINTS[level]}
-                recommendation={LEVEL_RECOMMENDATIONS[level]}
+                info={LADDER_LEVEL_INFO[level]}
                 checked={checkedLadderLevels.has(level)}
                 enabled={enabled}
                 compact={false}
@@ -155,6 +159,7 @@ export function LevelSelectStrip({
           <LevelCard
             key={token}
             label={LEVEL_LABELS[token]}
+            info={DIFFICULTY_LEVEL_INFO[token]}
             checked={difficultyChecked[token]}
             enabled={enabled}
             compact={false}
