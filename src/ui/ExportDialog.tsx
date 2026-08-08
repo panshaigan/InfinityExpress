@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { isDesktopApp, saveTextFile } from '../lib/desktop/fsDialogs'
 import {
   buildInstallOrderText,
   downloadText,
@@ -118,8 +119,17 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
     }
   }
 
-  function onSave() {
-    downloadText(text, normalizeExportFilename(filename, fallbackName))
+  async function onSave() {
+    const name = normalizeExportFilename(filename, fallbackName)
+    if (isDesktopApp()) {
+      try {
+        await saveTextFile(name, text)
+      } catch {
+        /* dialog/fs may fail; leave preview open */
+      }
+      return
+    }
+    downloadText(text, name)
   }
 
   if (!open) return null
@@ -219,7 +229,7 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
             <button
               type="button"
               className="export-dialog-icon-btn"
-              onClick={onSave}
+              onClick={() => void onSave()}
               aria-label="Save install order"
               title="Save"
             >

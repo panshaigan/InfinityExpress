@@ -4,7 +4,7 @@ This document describes **runtime behaviour** of the selection UI. For XML tag/a
 
 ### Runtime / target stack
 
-Milestone 1 runs in the browser via **Vite + React 18 + TypeScript**, and the same UI loads in a **Tauri 2** webview (`npm run tauri:dev`). Selection engines and keyboard command resolvers stay in pure TypeScript under `src/lib/` (including `src/lib/ui/` for portable hotkey → command mapping). Native FS / menus / installers are still later work.
+Milestone 1 runs in the browser via **Vite + React 18 + TypeScript**, and the same UI loads in a **Tauri 2** webview (`npm run tauri:dev`). Selection engines and keyboard command resolvers stay in pure TypeScript under `src/lib/` (including `src/lib/ui/` for portable hotkey → command mapping). Desktop folder pickers and export save-to-disk use Tauri dialog/FS plugins (`src/lib/desktop/`); menus / installers remain later work.
 
 Primary code:
 
@@ -19,6 +19,8 @@ Primary code:
 | What appears in the UI | `src/lib/selection/visibility.ts`      |
 | Tree / chrome hotkeys  | `src/lib/ui/treeKeyboard.ts`, `chromeHotkeys.ts` |
 | Export text file       | `src/lib/export/installOrder.ts`       |
+| Desktop save / folders | `src/lib/desktop/fsDialogs.ts`         |
+| Game folder prefs      | `src/lib/ui/gameFolderPrefs.ts`        |
 | Selection presets      | `src/lib/presets/selectionPresets.ts`  |
 | Shell UI               | `src/App.tsx`, `src/ui/*`              |
 
@@ -93,7 +95,7 @@ If `engine` / `level` is missing after inheritance, engine is treated as empty �
 
 ## Stations (UI)
 
-First stop is the **Engine** picker (not an XML station).
+First stop is the **Engine** picker (not an XML station). After a game is chosen, **Unmodded game path** inputs appear for the relevant install folders (`bg1` / `bg2` / `iwd` / `pst`). Browse uses a native directory dialog in the desktop app; paths are remembered in `localStorage` (`src/lib/ui/gameFolderPrefs.ts`).
 
 Content stations (nav order):
 
@@ -436,7 +438,7 @@ Rules:
 - Sort by `orderIndex` (XML document order), **not** by station visit order.
 - If the same component id appears more than once in the sequence and is selected, emit it **only once** — the **first** document-order occurrence.
 - Merged duplicate stations do not reorder export; late XML blocks keep higher `orderIndex`.
-- **Copy** puts the active preview on the clipboard; **Save** downloads it. The save file name is editable in the dialog (defaults to `install-order.txt`).
+- **Copy** puts the active preview on the clipboard; **Save** opens a native save dialog in the desktop app (or a browser download when running in Vite alone). The save file name is editable in the dialog (defaults to `install-order.txt`).
 
 ### EET split
 
@@ -481,7 +483,7 @@ Persistence is React state only for now; the serializable shape in `src/lib/pres
 - **Real** mod download / update / remove-from-disk (UI stubs exist on the Mods phase)  
 - Invoking WeiDU (Install phase nav is visible but disabled)  
 - User-supplied XML overrides  
-- Tauri 2 native APIs (folder dialogs, FS, menus, installers) — shell boots via `npm run tauri:dev`; deeper wiring is later
+- Tauri 2 menus / installers / WeiDU invocation — shell boots via `npm run tauri:dev`; export save dialog and engine game-folder pickers are wired
 
 ### Mods phase (UI)
 

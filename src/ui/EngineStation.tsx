@@ -1,6 +1,12 @@
 import { useState } from 'react'
-import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
+import { pickDirectory } from '../lib/desktop/fsDialogs'
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
+import {
+  readGameFolderPaths,
+  writeGameFolderPaths,
+  type GameFolderKey,
+} from '../lib/ui/gameFolderPrefs'
+import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
 const GAME_BLURBS: Record<SelectedGame, string> = {
@@ -18,29 +24,12 @@ const ENGINE_ROWS: SelectedGame[][] = [
   ['iwd', 'pst'],
 ]
 
-type GameFolderKey = 'bg1' | 'bg2' | 'iwd' | 'pst'
-
 const FOLDERS_BY_GAME: Record<SelectedGame, GameFolderKey[]> = {
   bg1: ['bg1'],
   bg2: ['bg2'],
   eet: ['bg1', 'bg2'],
   iwd: ['iwd'],
   pst: ['pst'],
-}
-
-/** Simulated desktop browse paths — replaced by a real folder dialog later. */
-const SAMPLE_FOLDER_PATHS: Record<GameFolderKey, string> = {
-  bg1: "C:\\Games\\Baldur's Gate Enhanced Edition",
-  bg2: "C:\\Games\\Baldur's Gate II Enhanced Edition",
-  iwd: 'C:\\Games\\Icewind Dale Enhanced Edition',
-  pst: 'C:\\Games\\Planescape Torment Enhanced Edition',
-}
-
-const EMPTY_FOLDER_PATHS: Record<GameFolderKey, string> = {
-  bg1: '',
-  bg2: '',
-  iwd: '',
-  pst: '',
 }
 
 interface Props {
@@ -66,15 +55,20 @@ export function EngineStation({
   canStart,
   onStart,
 }: Props) {
-  const [folderPaths, setFolderPaths] = useState(EMPTY_FOLDER_PATHS)
+  const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
   const visibleFolders = game ? FOLDERS_BY_GAME[game] : []
 
   function setFolderPath(key: GameFolderKey, value: string) {
-    setFolderPaths((prev) => ({ ...prev, [key]: value }))
+    setFolderPaths((prev) => {
+      const next = { ...prev, [key]: value }
+      writeGameFolderPaths(next)
+      return next
+    })
   }
 
-  function browseFolder(key: GameFolderKey) {
-    setFolderPath(key, SAMPLE_FOLDER_PATHS[key])
+  async function browseFolder(key: GameFolderKey) {
+    const path = await pickDirectory(`Select ${GAME_LABELS[key]} folder`)
+    if (path) setFolderPath(key, path)
   }
 
   return (
@@ -137,8 +131,8 @@ export function EngineStation({
                   <button
                     type="button"
                     className="btn secondary"
-                    onClick={() => browseFolder(key)}
-                    title="Simulate choosing a folder (desktop dialog later)"
+                    onClick={() => void browseFolder(key)}
+                    title="Choose game folder"
                   >
                     Browse
                   </button>
