@@ -385,13 +385,16 @@ export default function App() {
     clearFocus()
   }
 
-  const onJumpFromSearch = useCallback(
+  const onNavigateToComponent = useCallback(
     (componentId: string) => {
+      // Leave global search so the station tree / jump target is visible.
       setSearchScope('section')
       focus.onNavigateToComponent(componentId)
     },
     [focus.onNavigateToComponent],
   )
+
+  const onJumpFromSearch = onNavigateToComponent
 
   const onToggle = useCallback(
     (display: DisplayNode, wantSelected: boolean) => {
@@ -708,7 +711,7 @@ export default function App() {
                 relationIndex={relationIndex}
                 modsByCodename={modsByCodename}
                 selectionState={focus.detailSelectionState}
-                onNavigateToComponent={focus.onNavigateToComponent}
+                onNavigateToComponent={onNavigateToComponent}
               />
             )}
           </div>

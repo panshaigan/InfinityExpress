@@ -339,7 +339,7 @@ export function ComponentDetail({
                 <>
                   <dt>Id</dt>
                   <dd className="detail-name-value">
-                    <code>{componentId}</code>
+                    <span>{componentId}</span>
                     <CopyButton value={componentId} label="Copy id" />
                   </dd>
                 </>

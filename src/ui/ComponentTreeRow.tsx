@@ -25,6 +25,7 @@ import {
 } from '../lib/mods/loadMods'
 import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { hasNestedFoldable } from '../lib/ui/treeKeyboard'
+import { FoldAllIcon, UnfoldAllIcon } from './FoldAllIcons'
 
 const RANDOMIZE_PERCENTS: RandomizePercent[] = [25, 50, 75, 100]
 
@@ -356,16 +357,18 @@ export const CheckboxRow = memo(function CheckboxRow({
             <span className="tree-randomize" ref={menuRef}>
               <button
                 type="button"
-                className={`tree-randomize-btn${menuOpen ? ' open' : ''}`}
+                className={`tree-randomize-btn has-icon-tip${menuOpen ? ' open' : ''}`}
                 tabIndex={-1}
                 aria-expanded={menuOpen}
                 aria-haspopup="true"
                 aria-label={`Randomise selection under ${label}`}
-                title="Randomise selection"
                 onClick={handleRandomizeToggle}
                 onDoubleClick={handleFoldDoubleClick}
               >
                 <ShuffleIcon />
+                <span className="icon-tip" role="tooltip">
+                  Randomise selection
+                </span>
               </button>
               {menuOpen && (
                 <div
@@ -403,23 +406,29 @@ export const CheckboxRow = memo(function CheckboxRow({
             <span className="tree-fold-all">
               <button
                 type="button"
-                className="tree-fold-all-btn"
+                className="tree-fold-all-btn has-icon-tip"
                 tabIndex={-1}
                 aria-label={`Unfold all under ${label}`}
                 onClick={(e) => handleSubtreeFoldClick(e, 'expand')}
                 onDoubleClick={handleFoldDoubleClick}
               >
-                Unfold all
+                <UnfoldAllIcon className="tree-fold-all-icon" />
+                <span className="icon-tip" role="tooltip">
+                  Unfold all
+                </span>
               </button>
               <button
                 type="button"
-                className="tree-fold-all-btn"
+                className="tree-fold-all-btn has-icon-tip"
                 tabIndex={-1}
                 aria-label={`Fold all under ${label}`}
                 onClick={(e) => handleSubtreeFoldClick(e, 'collapse')}
                 onDoubleClick={handleFoldDoubleClick}
               >
-                Fold all
+                <FoldAllIcon className="tree-fold-all-icon" />
+                <span className="icon-tip" role="tooltip">
+                  Fold all
+                </span>
               </button>
             </span>
           )}

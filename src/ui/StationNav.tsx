@@ -85,7 +85,7 @@ function StationStop({
       className={stationClass(id, activeStation, finishedStations)}
       disabled={disabled}
       onClick={onClick}
-      title={titleFor(id)}
+      aria-label={titleFor(id)}
     >
       <span className="station-nav-track" aria-hidden="true">
         <span className="station-nav-dot">
