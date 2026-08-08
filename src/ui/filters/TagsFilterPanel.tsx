@@ -17,14 +17,6 @@ export function TagsFilterPanel({ criteria, tagOptions, onPatch }: Props) {
   return (
     <div className="filter-panel-stack">
       <div className="filter-panel-toolbar">
-        <label className="filter-option filter-option-inline">
-          <input
-            type="checkbox"
-            checked={criteria.tagsOnlyChecked}
-            onChange={(e) => onPatch({ tagsOnlyChecked: e.target.checked })}
-          />
-          Only tagged components
-        </label>
         <div className="filter-panel-actions">
           <button
             type="button"

@@ -29,6 +29,7 @@ import {
 import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
 import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { isHttpUrl } from '../lib/url'
+import { JumpIcon } from './JumpIcon'
 
 export type DetailSelectionState = 'checked' | 'unchecked' | 'indeterminate'
 
@@ -184,31 +185,16 @@ function RelationList({
   )
 }
 
-const RELATION_GROUPS: {
-  title: string
-  rows: { key: keyof ReturnType<typeof resolveRelations>; label: string }[]
+const RELATION_ROWS: {
+  key: keyof ReturnType<typeof resolveRelations>
+  label: string
 }[] = [
-  {
-    title: 'Auto-include',
-    rows: [
-      { key: 'autoIncludedWhen', label: 'Included when' },
-      { key: 'autoIncludes', label: 'Includes' },
-    ],
-  },
-  {
-    title: 'Visibility',
-    rows: [
-      { key: 'shownWhen', label: 'Shown when' },
-      { key: 'unlocks', label: 'Unlocks' },
-    ],
-  },
-  {
-    title: 'Hide',
-    rows: [
-      { key: 'hiddenWhen', label: 'Hidden when' },
-      { key: 'hides', label: 'Hides' },
-    ],
-  },
+  { key: 'autoIncludedWhen', label: 'Included when' },
+  { key: 'autoIncludes', label: 'Includes' },
+  { key: 'shownWhen', label: 'Shown when' },
+  { key: 'unlocks', label: 'Unlocks' },
+  { key: 'hiddenWhen', label: 'Hidden when' },
+  { key: 'hides', label: 'Hides' },
 ]
 
 export function ComponentDetail({
@@ -260,21 +246,25 @@ export function ComponentDetail({
   const modReadme = mod?.readme
 
   const relations = resolveRelations(model, relationIndex, attrs, componentId)
-  const relationGroups = RELATION_GROUPS.map((group) => ({
-    ...group,
-    rows: group.rows
-      .map((row) => ({ ...row, refs: relations[row.key] }))
-      .filter((row) => row.refs.length > 0),
-  })).filter((group) => group.rows.length > 0)
+  const relationRows = RELATION_ROWS.map((row) => ({
+    ...row,
+    refs: relations[row.key],
+  })).filter((row) => row.refs.length > 0)
 
   const componentLinks: { href: string; label: string }[] = []
   if (isHttpUrl(componentReadme)) {
-    componentLinks.push({ href: componentReadme, label: 'Component readme' })
+    componentLinks.push({ href: componentReadme, label: 'Readme' })
   }
 
+  const modHasReadme = isHttpUrl(modReadme)
   const modLinks: { href: string; label: string }[] = []
-  if (mod?.url) modLinks.push({ href: mod.url, label: 'Page' })
-  if (isHttpUrl(modReadme)) modLinks.push({ href: modReadme, label: 'Mod readme' })
+  if (mod?.url) {
+    modLinks.push({
+      href: mod.url,
+      label: modHasReadme ? 'Page' : 'Page/Readme',
+    })
+  }
+  if (modHasReadme) modLinks.push({ href: modReadme, label: 'Readme' })
 
   const hasModSection = Boolean(codename)
   const hasComponentMeta = Boolean(componentId || attrs.name)
@@ -291,6 +281,17 @@ export function ComponentDetail({
       <div className="detail-sticky">
         <div className="detail-title-row">
           <h3 className="detail-title">{title}</h3>
+          {componentId && onNavigateToComponent && (
+            <button
+              type="button"
+              className="detail-jump"
+              aria-label={`Jump to ${title} in its station`}
+              title="Jump to station"
+              onClick={() => onNavigateToComponent(componentId)}
+            >
+              <JumpIcon />
+            </button>
+          )}
         </div>
         <div className="detail-badges">
           {selectionState && (
@@ -330,9 +331,7 @@ export function ComponentDetail({
             <p className="detail-desc">{desc}</p>
           ) : aboutSummary ? (
             <p className="detail-empty">{aboutSummary}</p>
-          ) : (
-            <p className="detail-empty">No description.</p>
-          )}
+          ) : null}
 
           {hasComponentMeta && (
             <dl className="detail-meta">
@@ -347,10 +346,10 @@ export function ComponentDetail({
               )}
               {attrs.name && (
                 <>
-                  <dt>Name</dt>
+                  <dt>WeiDU Label</dt>
                   <dd className="detail-name-value">
                     <span>{attrs.name}</span>
-                    <CopyButton value={attrs.name} label="Copy name" />
+                    <CopyButton value={attrs.name} label="Copy WeiDU label" />
                   </dd>
                 </>
               )}
@@ -388,9 +387,7 @@ export function ComponentDetail({
               {codename && (
                 <>
                   <dt>Download id</dt>
-                  <dd>
-                    <code>{codename}</code>
-                  </dd>
+                  <dd>{codename}</dd>
                 </>
               )}
               {hasModField(mod?.category) && (
@@ -428,21 +425,16 @@ export function ComponentDetail({
           </DetailBlock>
         )}
 
-        {relationGroups.length > 0 && (
+        {relationRows.length > 0 && (
           <DetailBlock kind="relations" title="Relations">
             <div className="detail-relations">
-              {relationGroups.map((group) => (
-                <div key={group.title} className="detail-relation-group">
-                  <h5 className="detail-relation-group-title">{group.title}</h5>
-                  {group.rows.map((row) => (
-                    <div key={row.key} className="detail-relation-section">
-                      <p className="detail-relation-heading">{row.label}</p>
-                      <RelationList
-                        refs={row.refs}
-                        onNavigate={onNavigateToComponent}
-                      />
-                    </div>
-                  ))}
+              {relationRows.map((row) => (
+                <div key={row.key} className="detail-relation-section">
+                  <p className="detail-relation-heading">{row.label}</p>
+                  <RelationList
+                    refs={row.refs}
+                    onNavigate={onNavigateToComponent}
+                  />
                 </div>
               ))}
             </div>

@@ -676,6 +676,8 @@ export default function App() {
                         onToggle={onToggle}
                         onRandomize={onRandomize}
                         onFoldApiReady={onFoldApiReady}
+                        expandKeys={focus.pendingExpandKeys}
+                        onExpandKeysApplied={focus.clearPendingExpandKeys}
                         emptyTitle={emptyCopy?.title}
                         emptyBody={emptyCopy?.body}
                       />

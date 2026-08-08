@@ -46,6 +46,10 @@ interface Props {
   onRandomize: (display: DisplayNode, options: RandomizeOptions) => void
   /** Registers fold/unfold-all for the current list; cleared on unmount. */
   onFoldApiReady?: (api: TreeFoldApi | null) => void
+  /** Ancestor keys to expand so a jumped-to row is visible. */
+  expandKeys?: string[] | null
+  /** Called after expandKeys have been applied. */
+  onExpandKeysApplied?: () => void
   /** Optional explanation when the list is empty. */
   emptyTitle?: string
   emptyBody?: string
@@ -153,6 +157,18 @@ export function ComponentTree(props: Props) {
       return next
     })
   }, [props.nodes, setExpandedKeys])
+
+  // Expand ancestors after a detail/search jump so the focused row is in the DOM.
+  useEffect(() => {
+    const keys = props.expandKeys
+    if (!keys || keys.length === 0) return
+    setExpandedKeys((prev) => {
+      const next = new Set(prev)
+      for (const k of keys) next.add(k)
+      return next
+    })
+    props.onExpandKeysApplied?.()
+  }, [props.expandKeys, props.onExpandKeysApplied, setExpandedKeys])
 
   // Keep DOM focus on the focused row (arrow nav, click, relation jump).
   // Do not steal focus from the filter search (or other typing fields) when the

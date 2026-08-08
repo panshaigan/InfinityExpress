@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
 import {
-  findDisplayByComponentId,
   findDisplayNode,
   findPathToComponent,
 } from '../lib/selection/displayTreeQuery'
@@ -10,6 +9,11 @@ import { displaySelectionState } from '../lib/selection/selectionEngine'
 import { preferredContentSub } from '../lib/stationBranchNav'
 import type { AppNavSlot } from '../ui/StationNav'
 import type { RelationIndex } from '../lib/selection/relations'
+
+function ancestorKeysFromPath(path: DisplayNode[] | null): string[] {
+  if (!path || path.length < 2) return []
+  return path.slice(0, -1).map((n) => n.node.key)
+}
 
 export function useTreeFocus(args: {
   model: InstallSequenceModel
@@ -45,6 +49,9 @@ export function useTreeFocus(args: {
   const [focusedKey, setFocusedKey] = useState<string | null>(null)
   const [focusedComponentId, setFocusedComponentId] = useState<string | null>(null)
   const [pendingFocusId, setPendingFocusId] = useState<string | null>(null)
+  const [pendingExpandKeys, setPendingExpandKeys] = useState<string[] | null>(
+    null,
+  )
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
   const [hoveredComponentId, setHoveredComponentId] = useState<string | null>(null)
 
@@ -57,8 +64,13 @@ export function useTreeFocus(args: {
     setFocusedKey(null)
     setFocusedComponentId(null)
     setPendingFocusId(null)
+    setPendingExpandKeys(null)
     setHoveredKey(null)
     setHoveredComponentId(null)
+  }, [])
+
+  const clearPendingExpandKeys = useCallback(() => {
+    setPendingExpandKeys(null)
   }, [])
 
   useEffect(() => {
@@ -71,6 +83,7 @@ export function useTreeFocus(args: {
         setContentSubTag(path[1].node.tag)
         setFocusedKey(path[path.length - 1].node.key)
         setFocusedComponentId(null)
+        setPendingExpandKeys(ancestorKeysFromPath(path))
       } else if (path && path.length === 1) {
         const sub = preferredContentSub(path[0], contentSubTag)
         setContentMainKey(path[0].node.key)
@@ -78,6 +91,7 @@ export function useTreeFocus(args: {
         if (!contentSubTag && sub) setContentSubTag(sub.node.tag)
         setFocusedKey(path[0].node.key)
         setFocusedComponentId(null)
+        setPendingExpandKeys(ancestorKeysFromPath(path))
       }
       setPendingFocusId(null)
       return
@@ -89,14 +103,16 @@ export function useTreeFocus(args: {
         setContentSubKey(null)
         setFocusedKey(path[path.length - 1].node.key)
         setFocusedComponentId(null)
+        setPendingExpandKeys(ancestorKeysFromPath(path))
       }
       setPendingFocusId(null)
       return
     }
-    const found = findDisplayByComponentId(displayNodes, pendingFocusId)
-    if (found) {
-      setFocusedKey(found.node.key)
+    const path = findPathToComponent(displayNodes, pendingFocusId)
+    if (path && path.length >= 1) {
+      setFocusedKey(path[path.length - 1].node.key)
       setFocusedComponentId(null)
+      setPendingExpandKeys(ancestorKeysFromPath(path))
     }
     setPendingFocusId(null)
   }, [
@@ -158,12 +174,14 @@ export function useTreeFocus(args: {
     setFocusedKey(key)
     setFocusedComponentId(null)
     setPendingFocusId(null)
+    setPendingExpandKeys(null)
   }, [])
 
   const onFocusSearchResult = useCallback((componentId: string) => {
     setFocusedKey(null)
     setFocusedComponentId(componentId)
     setPendingFocusId(null)
+    setPendingExpandKeys(null)
   }, [])
 
   const onHover = useCallback((key: string | null) => {
@@ -197,6 +215,8 @@ export function useTreeFocus(args: {
     focusedSelectionState,
     detailDisplay,
     detailSelectionState,
+    pendingExpandKeys,
+    clearPendingExpandKeys,
     clearFocus,
     clearHover,
     onFocus,
