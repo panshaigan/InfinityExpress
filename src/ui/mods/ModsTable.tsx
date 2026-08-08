@@ -34,7 +34,6 @@ const COLUMNS: { key: ModsSortKey; label: string; className?: string }[] = [
   { key: 'name', label: 'Name', className: 'mods-col-name' },
   { key: 'category', label: 'Category', className: 'mods-col-category' },
   { key: 'url', label: 'Url', className: 'mods-col-url' },
-  { key: 'game', label: 'Game', className: 'mods-col-game' },
   { key: 'release', label: 'Release', className: 'mods-col-release' },
   { key: 'version', label: 'Version', className: 'mods-col-version' },
   { key: 'size', label: 'Size', className: 'mods-col-size' },
@@ -44,6 +43,29 @@ const COLUMNS: { key: ModsSortKey; label: string; className?: string }[] = [
 
 function statusClass(status: WorkingMod['diskStatus']): string {
   return `mods-status mods-status-${status}`
+}
+
+/** Immediate hover tip (engine / icon-tip style — no native title delay). */
+function TipCell({
+  className,
+  display,
+  tip,
+}: {
+  className: string
+  display: string
+  tip: string | undefined
+}) {
+  const showTip = !!tip
+  return (
+    <td className={`${className}${showTip ? ' has-icon-tip' : ''}`}>
+      <span className="mods-cell-clip">{display}</span>
+      {showTip ? (
+        <span className="icon-tip" role="tooltip">
+          {tip}
+        </span>
+      ) : null}
+    </td>
+  )
 }
 
 export function ModsTable({
@@ -248,26 +270,27 @@ export function ModsTable({
                         href={eff.url}
                         target="_blank"
                         rel="noreferrer"
-                        title={eff.url}
                         tabIndex={-1}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {eff.url.replace(/^https?:\/\//, '')}
                       </a>
                     ) : (
-                      <span title={eff.url || undefined}>{eff.url || '—'}</span>
+                      <span>{eff.url || '—'}</span>
                     )}
                   </td>
-                  <td className="mods-col-game">{eff.game || '—'}</td>
                   <td className="mods-col-release">{eff.release || '—'}</td>
-                  <td className="mods-col-version">{eff.version || '—'}</td>
+                  <TipCell
+                    className="mods-col-version"
+                    display={eff.version || '—'}
+                    tip={eff.version.trim() || undefined}
+                  />
                   <td className="mods-col-size">{formatModSize(eff.sizeBytes)}</td>
-                  <td
+                  <TipCell
                     className="mods-col-author"
-                    title={author.title}
-                  >
-                    {author.display}
-                  </td>
+                    display={author.display}
+                    tip={author.title}
+                  />
                   <td className="mods-col-status">
                     <span className={statusClass(mod.diskStatus)}>
                       {diskStatusLabel(mod.diskStatus)}

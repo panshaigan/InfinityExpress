@@ -3891,22 +3891,36 @@ body.is-resizing-detail * {
 
 .mods-col-size,
 .mods-col-release,
-.mods-col-version,
-.mods-col-game,
 .mods-col-category {
   white-space: nowrap;
 }
 
+.mods-col-version,
 .mods-col-author {
+  position: relative;
   max-width: 6.5rem;
   width: 6.5rem;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.mods-cell-clip {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 100%;
 }
 
 .mods-col-status {
   white-space: nowrap;
+}
+
+/* Keep clipped cells from painting over neighboring columns; tip escapes. */
+.mods-col-version .icon-tip,
+.mods-col-author .icon-tip {
+  white-space: normal;
+  max-width: min(18rem, 70vw);
 }
 
 .mods-table-wrap:focus {
