@@ -3,6 +3,7 @@ import {
   FILTER_LADDER_LEVELS,
   LEVEL_HINTS,
   LEVEL_LABELS,
+  LEVEL_RECOMMENDATIONS,
   type DifficultyLevel,
   type LadderLevel,
 } from '../lib/levels'
@@ -27,6 +28,7 @@ const LADDER_ROWS: LadderLevel[][] = [
 function LevelCard({
   label,
   hint,
+  recommendation,
   checked,
   enabled,
   compact,
@@ -34,6 +36,7 @@ function LevelCard({
 }: {
   label: string
   hint?: string
+  recommendation?: string
   checked: boolean
   enabled: boolean
   compact: boolean
@@ -42,6 +45,7 @@ function LevelCard({
   return (
     <label
       className={`level-card${!enabled ? ' disabled' : ''}${checked ? ' active' : ''}`}
+      title={recommendation}
     >
       <input
         type="checkbox"
@@ -123,6 +127,7 @@ export function LevelSelectStrip({
                 key={level}
                 label={LEVEL_LABELS[level]}
                 hint={LEVEL_HINTS[level]}
+                recommendation={LEVEL_RECOMMENDATIONS[level]}
                 checked={checkedLadderLevels.has(level)}
                 enabled={enabled}
                 compact={false}

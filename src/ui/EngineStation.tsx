@@ -3,8 +3,8 @@ import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
 const GAME_BLURBS: Record<SelectedGame, string> = {
-  bg1: "Baldur's Gate, Siege of Dragonspear (SoD)",
-  bg2: 'Shadows of Amn (SoA), Throne of Bhaal (ToB)',
+  bg1: "Baldur's Gate with Siege of Dragonspear (SoD)",
+  bg2: 'Shadows of Amn (SoA) and Throne of Bhaal (ToB)',
   eet: 'The full saga merged into one game',
   iwd: 'Icewind Dale',
   pst: 'Planescape: Torment',

@@ -29,11 +29,20 @@ export const LEVEL_LABELS: Record<string, string> = {
 /** One-line hints for Engine / station level cards (optional). */
 export const LEVEL_HINTS: Record<string, string> = {
   fixes: 'Stability first',
-  restoration: 'Cut content returned',
+  restoration: 'Restored cut content',
   vanillaPlus:
-    'QoL, subtle additions and corrections in line with vanilla content',
-  blendWell: 'Expanded but not overwhelming',
-  extended: 'A lot of additional content and changes',
+    'QoL tweaks, subtle additions, and corrections in line with vanilla',
+  blendWell: 'Expanded, but not overwhelming',
+  extended: 'Lots of additional content and changes',
+}
+
+/** Hover recommendations for Engine base-component cards. */
+export const LEVEL_RECOMMENDATIONS: Partial<Record<LadderLevel, string>> = {
+  vanillaPlus: "Recommended if you've never played the original game",
+  blendWell:
+    "Recommended if you've already played, but don't want big changes",
+  extended:
+    "Recommended if you're okay with adding a lot of new content and changing some game mechanics",
 }
 
 /** Levels shown as filter chips (restructure shares Well blended). */
