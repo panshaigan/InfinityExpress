@@ -115,7 +115,7 @@ export function resolveChromeHotkey(
   return null
 }
 
-/** Next tab index within a tablist (wrap). Pure helper for ContentBranchNav. */
+/** Next tab index within a tablist/listbox (wrap). Pure helper for branch menus. */
 export function cycleTabIndex(
   count: number,
   currentIndex: number,

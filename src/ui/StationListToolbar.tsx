@@ -1,4 +1,12 @@
-import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent } from 'react'
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ReactNode,
+} from 'react'
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { collectAllExpandableKeys } from '../lib/ui/treeKeyboard'
@@ -16,6 +24,7 @@ interface Props {
   onClearToGlobal: () => void
   onFoldAll: () => void
   onUnfoldAll: () => void
+  children?: ReactNode
 }
 
 export function StationListToolbar({
@@ -30,6 +39,7 @@ export function StationListToolbar({
   onClearToGlobal,
   onFoldAll,
   onUnfoldAll,
+  children,
 }: Props) {
   const selectAllRef = useRef<HTMLInputElement>(null)
   const levelsMenuRef = useRef<HTMLDivElement>(null)
@@ -115,6 +125,7 @@ export function StationListToolbar({
         >
           {foldLabel}
         </button>
+        {children}
         <div ref={levelsMenuRef} className="station-levels-menu">
           <button
             type="button"

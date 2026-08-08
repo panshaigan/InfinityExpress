@@ -555,17 +555,18 @@ export default function App() {
                         onClearToGlobal={levels.onClearToGlobal}
                         onFoldAll={onFoldAll}
                         onUnfoldAll={onUnfoldAll}
-                      />
-                      {isContentStation && (
-                        <ContentBranchNav
-                          mainBranches={contentMainBranches}
-                          subBranches={contentSubBranches}
-                          mainKey={contentMainKey}
-                          subKey={contentSubKey}
-                          onSelectMain={selectContentMain}
-                          onSelectSub={selectContentSub}
-                        />
-                      )}
+                      >
+                        {isContentStation ? (
+                          <ContentBranchNav
+                            mainBranches={contentMainBranches}
+                            subBranches={contentSubBranches}
+                            mainKey={contentMainKey}
+                            subKey={contentSubKey}
+                            onSelectMain={selectContentMain}
+                            onSelectSub={selectContentSub}
+                          />
+                        ) : null}
+                      </StationListToolbar>
                     </div>
                     <div className="list-pane-scroll">
                       <ComponentTree
