@@ -216,20 +216,16 @@ function ModDetailBody({
         >
           Remove from disk
         </button>
-        {mod.origin === 'user' ? (
-          <>
-            <button type="button" className="btn" onClick={onEdit}>
-              Edit
-            </button>
-            <button
-              type="button"
-              className="btn secondary"
-              onClick={onDeleteFromCatalog}
-            >
-              Delete from catalog
-            </button>
-          </>
-        ) : null}
+        <button type="button" className="btn" onClick={onEdit}>
+          Edit
+        </button>
+        <button
+          type="button"
+          className="btn secondary"
+          onClick={onDeleteFromCatalog}
+        >
+          Delete from catalog
+        </button>
       </div>
     </div>
   )

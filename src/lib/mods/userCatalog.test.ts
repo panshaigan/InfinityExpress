@@ -109,10 +109,10 @@ describe('user catalog CRUD', () => {
     return { version: 1, mods }
   }
 
-  it('adds and updates user mods; rejects base edits/deletes', () => {
+  it('adds and updates mods including base; hides deleted base rows', () => {
     let store = storeWith([
       {
-        ...baseMod({ codename: 'Base' }),
+        ...baseMod({ codename: 'Base', name: 'Base Name' }),
         origin: 'base',
         diskStatus: 'not_present',
         overlays: {},
@@ -128,10 +128,32 @@ describe('user catalog CRUD', () => {
     expect(store.mods.find((m) => m.codename === 'UserMod')?.name).toBe(
       'Renamed',
     )
-    expect(() =>
-      updateUserMod(store, 'Base', baseMod({ codename: 'Base' })),
-    ).toThrow(/user-added/)
-    expect(() => removeUserMod(store, 'Base')).toThrow(/cannot be removed/)
+    store = updateUserMod(store, 'Base', {
+      ...baseMod({ codename: 'Base', name: 'Edited Base' }),
+    })
+    expect(store.mods.find((m) => m.codename === 'Base')?.name).toBe(
+      'Edited Base',
+    )
+    expect(store.mods.find((m) => m.codename === 'Base')?.localEdit).toBe(true)
+
+    const baseMap = new Map([
+      ['Base', baseMod({ codename: 'Base', name: 'Shipped Base' })],
+    ])
+    expect(
+      mergeBaseIntoWorkingCopy(baseMap, store.mods, store.hiddenBaseCodenames).find(
+        (m) => m.codename === 'Base',
+      )?.name,
+    ).toBe('Edited Base')
+
+    store = removeUserMod(store, 'Base')
+    expect(store.mods.some((m) => m.codename === 'Base')).toBe(false)
+    expect(store.hiddenBaseCodenames).toContain('Base')
+    expect(
+      mergeBaseIntoWorkingCopy(baseMap, store.mods, store.hiddenBaseCodenames).some(
+        (m) => m.codename === 'Base',
+      ),
+    ).toBe(false)
+
     store = removeUserMod(store, 'UserMod')
     expect(store.mods.some((m) => m.codename === 'UserMod')).toBe(false)
   })

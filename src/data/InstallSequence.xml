@@ -274,12 +274,12 @@
 					<component id="garrick-mirandir" name="Garrick: Tales of a Troubadour" label="Garrick: Tales of a Troubadour" modId="Garrick_Tales-of-a-Troubadour" />
 					<component id="XanBG1Friend:0" name="Xan's friendship path for BG1" label="Xan Friendship" modId="Xan_BG1_Friendship" />
 					<component id="Domi-CoranBGFriend-Main" name="Coran's Extended BG Friendship Talks" label="Coran Friendship" modId="CoranBGFriend" />
-					<component id="neera_expansion" name="Neera Expansion" label="Neera Expansion" modId="Neera-Expansion" tags="beamdog" />
+					<component id="neera_expansion" name="Neera Expansion" label="Neera Expansion" modId="Neera-Expansion" tags="Beamdog" />
 					<mod id="Ajantis_BG1_Expansion" label="Ajantis Expansion">
 						<component id="AjantisBG1Expansion-main" name="Installs Ajantis BG1 Expansion Modification" label="Installs Ajantis BG1 expansion modification" core="1" />
 						<component id="AjantisBG1Expansion-shieldBAM" name="Install the unique BG:EE BAM for Ajantis' Family Shield" label="Ajantis BG1 expansion modification - install the unique BG:EE BAM for Ajantis' Family Shield" alwaysIf="AjantisBG1Expansion-main" noDisplay="1" />
 					</mod>
-					<component id="Artisans_Rasaad_BG1:0" name="Rasaad Expansion for Baldur's Gate: Enhanced Edition" label="Rasaad Expansion" modId="Rasaad-Expansion-BG1" tags="beamdog" />
+					<component id="Artisans_Rasaad_BG1:0" name="Rasaad Expansion for Baldur's Gate: Enhanced Edition" label="Rasaad Expansion" modId="Rasaad-Expansion-BG1" tags="Beamdog" />
 				</expansions>
 				<romances label="Romances" noBranches="1">
 					<mod id="BG1NPC">
@@ -291,7 +291,7 @@
 						<component id="bg1npc_project-xanromance_1h" name="Speed: 1 hour real time (standard) minimum between LoveTalks" label="Xan" />
 						<component id="bg1npc_project-romancechallenge" name="The BG1 NPC Project: Female Romance Challenges, Ajantis vs Xan vs Coran" label="Female Romance challenges, Ajantis vs Xan vs Coran" />
 					</mod>
-					<mod id="Neera-Expansion" label="Neera Expansion" tags="beamdog">
+					<mod id="Neera-Expansion" label="Neera Expansion" tags="Beamdog">
 						<component id="neera_romanceable_by_women" name="Make Neera romanceable by women" label="Make Neera romanceable by women" />
 						<component id="rasaad_romanceable_by_men" name="Make Rasaad romanceable by men" label="Make Rasaad romanceable by men" />
 					</mod>
@@ -408,7 +408,7 @@
 			</restructure>
 			<npc label="Joinable NPCs">
 				<expansions>
-					<component id="kinfriendship:1" name="M'Khiin Friendship for Siege of Dragonspear" label="M'Khiin expansion" modId="M-khiin-Friendship" tags="beamdog" />
+					<component id="kinfriendship:1" name="M'Khiin Friendship for Siege of Dragonspear" label="M'Khiin expansion" modId="M-khiin-Friendship" tags="Beamdog" />
 				</expansions>
 				<bioware label="Returning Playable NPCs" unfolded="1">
 					<component id="L#-ELDOTH-SOD" name="Eldoth for the Siege of Dragonspear" label="Eldoth" modId="eldoth-for-sod" />
@@ -427,7 +427,7 @@
 					<component id="C#Ajantis_SoD_NPC-crossmod_content" name="Ajantis SoD NPC: Crossmod Content" label="Ajantis crossmod" modId="Ajantis_BG1_Expansion" />
 				</banters>
 				<tweaks>
-					<component id="A7-CONVENIENTEENPCS-APPEARANCE-CAELAR_FOLLOWER_CONDITIONAL" name="Joins as controllable follower if no free party slots available" label="Caelar joins as controllable follower if no free party slots available" modId="A7-NoEENPCs" tags="beamdog" level="vanillaPlus" />
+					<component id="A7-CONVENIENTEENPCS-APPEARANCE-CAELAR_FOLLOWER_CONDITIONAL" name="Joins as controllable follower if no free party slots available" label="Caelar joins as controllable follower if no free party slots available" modId="A7-NoEENPCs" tags="Beamdog" level="vanillaPlus" />
 				</tweaks>
 			</npc>
 		</sod>
@@ -534,8 +534,8 @@
 					<component id="korganfriendship:0" name="Korgan Friendship for BG2: ToB" label="Korgan Friendship" modId="Korgan-Friendship" />
 					<component id="sarevokfriendship:0" name="Sarevok Friendship for BGII: ToB" label="Sarevok Friendship" modId="Sarevok-Friendship" />
 					<component id="viconia:0" name="Viconia Friendship" label="Viconia Friendship" modId="Viconia-Friendship" />
-					<component id="Dorn_friendship" name="Dorn Friendship for BG2EE" label="Dorn Friendship" modId="Dorn-Friendship" tags="beamdog" />
-					<component id="HexxatFriendship:0" name="Hexxat Friendship for BG2EE" label="Hexxat Friendship" modId="Hexxat-Friendship" tags="beamdog" />
+					<component id="Dorn_friendship" name="Dorn Friendship for BG2EE" label="Dorn Friendship" modId="Dorn-Friendship" tags="Beamdog" />
+					<component id="HexxatFriendship:0" name="Hexxat Friendship for BG2EE" label="Hexxat Friendship" modId="Hexxat-Friendship" tags="Beamdog" />
 					<component id="YoshimosRemorse:0" name="Yoshimo's Remorse" label="Yoshimo's Remorse" desc="Makes Yoshimo a playable NPC in SoD" modId="Yoshimos_Remorse" />
 					<component id="korgan:0" name="Korgan's Redemption" label="Korgan's Redemption" desc="Provides the possibility of redeeming Korgan if Mazzy is in your party." modId="Korgan-Redemption" />
 					<component id="Wings:0" name="Wings for BG2:EE" label="Wings - Aerie expansion" modId="Wings" />
@@ -567,7 +567,7 @@
 					</mod>
 					<component id="CorthalaRomantique-main" name="Corthala Romantique - Main Valygar Romance" label="Valygar Romance" modId="Corthala_Romantique" />
 					<component id="haerdalisromance:0" label="Haer'Dalis Romance" modId="Haer-Dalis-Romance" />
-					<component id="Dorn:0" name="Dorn expanded romance by trinit" label="Dorn Expanded Romance" modId="Bg2Dorn" tags="beamdog" />
+					<component id="Dorn:0" name="Dorn expanded romance by trinit" label="Dorn Expanded Romance" modId="Bg2Dorn" tags="Beamdog" />
 					<component id="sarevokromance:0" name="Aeryn's Sarevok Romance for BGII: Throne of Bhaal" label="Sarevok Romance" modId="Sarevok-Romance" />
 					<component id="OWRomanceExpanded-Viconia" name="Viconia Romance Expanded" label="Viconia Romance Expanded" modId="BG2-Romance-Expanded" />
 					<component id="OWRomanceExpanded-Phaere" name="Phaere Expanded" label="Phaere Expanded" modId="BG2-Romance-Expanded" />
@@ -614,12 +614,12 @@
 						<component id="L#-SHARTEELBG2EE" name="Shar-Teel for Baldur's Gate 2: Enhanced Edition" label="Shar-Teel for Baldur's Gate 2: Enhanced Edition" />
 						<component id="L#-SHARTEELBG2EE-PIDS" name="Shar-Teel for Baldur's Gate 2: Enhanced Edition - Player Initiated Dialogues (PIDs)" label="Player-initiated dialogues (PIDs)" />
 					</mod>
-					<component id="zdbae:0" name="Baeloth BG2" label="Baeloth" modId="BaeBG2" tags="beamdog" />
-					<mod id="mkhiinbg2" label="M'Khiin" tags="beamdog">
+					<component id="zdbae:0" name="Baeloth BG2" label="Baeloth" modId="BaeBG2" tags="Beamdog" />
+					<mod id="mkhiinbg2" label="M'Khiin" tags="Beamdog">
 						<component id="mkhiinbg2:0" name="M'Khiin NPC for BG2EE" label="M'Khiin" core="1" />
 						<component id="mkhiinbg2:10" name="Artastrophe" label="Artastrophe portrait" alwaysIf="mkhiinbg2:0" noDisplay="1" />
 					</mod>
-					<component id="YF-LivingClara" name="Living Clara" label="Clara instead of Hexxat &amp; darkside Anomen" modId="LivingClara" tags="beamdog" />
+					<component id="YF-LivingClara" name="Living Clara" label="Clara instead of Hexxat &amp; darkside Anomen" modId="LivingClara" tags="Beamdog" />
 					<group label="Returning NPCs swapping the existing ones">
 						<mod id="khalid-bg2" label="Khalid instead of Jaheira">
 							<component id="L#-KHALIDBG2EE" name="Khalid for BG2EE" label="Core" core="1" />
@@ -656,11 +656,11 @@
 					</mod>
 				</custom>
 				<banters label="Banters and Crossmods">
-					<component id="mkhiinbg2:20" name="Crossmod with Baeloth for BG2" label="M'Khiin crossmod with baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" tags="beamdog" />
+					<component id="mkhiinbg2:20" name="Crossmod with Baeloth for BG2" label="M'Khiin crossmod with baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" tags="Beamdog" />
 					<component id="adrian_crossmod_content" name="Crossmod content" label="Adrian crossmod" modId="Adrian-NPC" alwaysIf="adrian_sorcerer" noDisplay="1" />
 					<!-- component id="c#husam-crossmod" label="Husam Crossmod Content" modId="Husam_NP" /-->
 					<component id="Wings:1" name="Restore missing banters?" label="Restore missing banters for Aerie" modId="Wings" />
-					<mod id="NeeraBanters" label="Neera Banters" tags="beamdog">
+					<mod id="NeeraBanters" label="Neera Banters" tags="Beamdog">
 						<component id="AY-NEERABANTERS-DIALOGUE" name="Neera Banters: Dialogue Banters and Interjections" label="Dialogue banters and interjections" />
 						<component id="AY-NEERABANTERS-INTERACTION" name="Neera Banters: Interaction Banters" label="Interaction banters" />
 					</mod>

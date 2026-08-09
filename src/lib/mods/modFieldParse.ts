@@ -7,7 +7,7 @@ export type GameToken = (typeof GAME_TOKENS)[number]
 export const GAME_FILTER_OPTIONS = [
   'BG1',
   'BG2',
-  'BG1-BG2',
+  'BG1+BG2',
   'IWD',
   'PST',
 ] as const
@@ -48,8 +48,9 @@ export function modMatchesGameFilter(
 ): boolean {
   if (!filter) return true
   const tokens = new Set(splitGameTokens(modGame))
-  if (filter === 'BG1-BG2') {
-    return tokens.has('BG1') && tokens.has('BG2')
+  if (filter === 'BG1+BG2' || filter === 'BG1-BG2') {
+    // Union of BG1 and BG2 (includes BG1-only, BG2-only, and dual tags).
+    return tokens.has('BG1') || tokens.has('BG2')
   }
   return tokens.has(filter)
 }

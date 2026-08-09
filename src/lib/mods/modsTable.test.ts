@@ -170,12 +170,13 @@ describe('game and author filter matching', () => {
     ])
   })
 
-  it('filters BG1-BG2 when both tokens are present', () => {
+  it('filters BG1+BG2 as the union of BG1 and BG2', () => {
     const filters = {
       ...createDefaultModsTableFilters(),
-      games: ['BG1-BG2'],
+      games: ['BG1+BG2'],
     }
     expect(filterWorkingMods(mods, filters).map((m) => m.codename)).toEqual([
+      'only-bg1',
       'bg-pair',
       'all-ee',
     ])

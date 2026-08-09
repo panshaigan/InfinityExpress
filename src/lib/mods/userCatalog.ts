@@ -27,11 +27,15 @@ export interface StoredModEntry {
   origin: 'base' | 'user'
   diskStatus: DiskStatus
   overlays: ModFieldOverlays
+  /** When true, merge keeps this base row's fields instead of refreshing from CSV. */
+  localEdit?: boolean
 }
 
 export interface UserCatalogStore {
   version: 1
   mods: StoredModEntry[]
+  /** Base codenames removed from the working catalog (not re-added on merge). */
+  hiddenBaseCodenames?: string[]
 }
 
 function modInfoToStored(
@@ -72,15 +76,17 @@ function storedToWorking(entry: StoredModEntry): WorkingMod {
 
 /**
  * Merge shipped base catalog into a user working copy.
- * - New base rows are added.
- * - Existing base-origin rows refresh non-overlay fields from base.
- * - Overlays, diskStatus, and user-origin rows are preserved.
+ * - New base rows are added (unless hidden).
+ * - Existing base-origin rows refresh non-overlay fields from base unless localEdit.
+ * - Overlays, diskStatus, localEdit rows, and user-origin rows are preserved.
  * - Rows dropped from base stay in the working copy.
  */
 export function mergeBaseIntoWorkingCopy(
   base: ReadonlyMap<string, ModInfo>,
   existing: readonly StoredModEntry[] | null | undefined,
+  hiddenBaseCodenames?: readonly string[] | null,
 ): StoredModEntry[] {
+  const hidden = new Set(hiddenBaseCodenames ?? [])
   const byCode = new Map<string, StoredModEntry>()
   for (const row of existing ?? []) {
     byCode.set(row.codename, {
@@ -93,6 +99,10 @@ export function mergeBaseIntoWorkingCopy(
   }
 
   for (const [codename, info] of base) {
+    if (hidden.has(codename)) {
+      byCode.delete(codename)
+      continue
+    }
     const prev = byCode.get(codename)
     if (!prev) {
       byCode.set(codename, modInfoToStored(info, 'base'))
@@ -100,6 +110,17 @@ export function mergeBaseIntoWorkingCopy(
     }
     if (prev.origin === 'user') {
       // User-added row with same codename wins; leave as-is.
+      continue
+    }
+    if (prev.localEdit) {
+      // User edited this base row; keep fields, preserve acquire state.
+      byCode.set(codename, {
+        ...prev,
+        origin: 'base',
+        localEdit: true,
+        diskStatus: prev.diskStatus,
+        overlays: prev.overlays ?? {},
+      })
       continue
     }
     byCode.set(codename, {
@@ -121,7 +142,11 @@ export function workingModsFromStore(
   store: UserCatalogStore | null,
   base: ReadonlyMap<string, ModInfo>,
 ): WorkingMod[] {
-  const merged = mergeBaseIntoWorkingCopy(base, store?.mods)
+  const merged = mergeBaseIntoWorkingCopy(
+    base,
+    store?.mods,
+    store?.hiddenBaseCodenames,
+  )
   return merged.map(storedToWorking)
 }
 
@@ -156,7 +181,12 @@ export function loadOrCreateUserCatalog(
   const existing = readUserCatalogStore()
   const store: UserCatalogStore = {
     version: 1,
-    mods: mergeBaseIntoWorkingCopy(base, existing?.mods),
+    mods: mergeBaseIntoWorkingCopy(
+      base,
+      existing?.mods,
+      existing?.hiddenBaseCodenames,
+    ),
+    hiddenBaseCodenames: existing?.hiddenBaseCodenames ?? [],
   }
   writeUserCatalogStore(store)
   return store
@@ -243,6 +273,9 @@ export function addUserMod(
     mods: [...store.mods, entry].sort((a, b) =>
       a.codename.localeCompare(b.codename),
     ),
+    hiddenBaseCodenames: (store.hiddenBaseCodenames ?? []).filter(
+      (c) => c !== codename,
+    ),
   }
 }
 
@@ -254,9 +287,6 @@ export function updateUserMod(
   const idx = store.mods.findIndex((m) => m.codename === codename)
   if (idx < 0) throw new Error(`Unknown mod "${codename}"`)
   const prev = store.mods[idx]
-  if (prev.origin !== 'user') {
-    throw new Error('Only user-added mods can be edited in the catalog')
-  }
   const nextCode = input.codename.trim()
   if (!nextCode) throw new Error('Download ID is required')
   if (
@@ -282,26 +312,35 @@ export function updateUserMod(
     author: input.author.trim(),
     type: input.type.trim(),
     stability: input.stability.trim(),
+    localEdit: prev.origin === 'base' ? true : prev.localEdit,
+  }
+  let hidden = [...(store.hiddenBaseCodenames ?? [])]
+  if (prev.origin === 'base' && nextCode !== codename) {
+    // Renamed base row: hide the old shipped codename so merge does not revive it.
+    if (!hidden.includes(codename)) hidden.push(codename)
+    hidden = hidden.filter((c) => c !== nextCode)
   }
   const mods = [...store.mods]
   mods[idx] = entry
   mods.sort((a, b) => a.codename.localeCompare(b.codename))
-  return { version: 1, mods }
+  return { version: 1, mods, hiddenBaseCodenames: hidden }
 }
 
-/** Remove a user-origin catalog entry. Base rows cannot be removed. */
+/** Remove a catalog entry. Base rows are tombstoned so merge does not revive them. */
 export function removeUserMod(
   store: UserCatalogStore,
   codename: string,
 ): UserCatalogStore {
   const prev = store.mods.find((m) => m.codename === codename)
   if (!prev) throw new Error(`Unknown mod "${codename}"`)
-  if (prev.origin !== 'user') {
-    throw new Error('Base catalog mods cannot be removed')
+  const hidden = [...(store.hiddenBaseCodenames ?? [])]
+  if (prev.origin === 'base' && !hidden.includes(codename)) {
+    hidden.push(codename)
   }
   return {
     version: 1,
     mods: store.mods.filter((m) => m.codename !== codename),
+    hiddenBaseCodenames: hidden,
   }
 }
 
@@ -322,7 +361,11 @@ export function patchWorkingMod(
       : prev.overlays,
     author: patch.author !== undefined ? patch.author : prev.author,
   }
-  return { version: 1, mods }
+  return {
+    version: 1,
+    mods,
+    hiddenBaseCodenames: store.hiddenBaseCodenames,
+  }
 }
 
 export function replaceOverlays(
@@ -340,5 +383,9 @@ export function replaceOverlays(
     overlays,
     diskStatus: diskStatus ?? prev.diskStatus,
   }
-  return { version: 1, mods }
+  return {
+    version: 1,
+    mods,
+    hiddenBaseCodenames: store.hiddenBaseCodenames,
+  }
 }

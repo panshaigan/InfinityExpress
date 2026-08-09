@@ -4677,6 +4677,21 @@ body.is-resizing-detail * {
   margin-bottom: 0.85rem;
 }
 
+.mod-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+}
+
+.mod-editor-header-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  align-items: center;
+}
+
 .mod-editor-dialog .confirm-dialog-header h2 {
   margin: 0;
   font-family: var(--font-display);
@@ -4726,6 +4741,17 @@ body.is-resizing-detail * {
   flex-wrap: wrap;
   gap: 0.65rem 1rem;
   align-items: center;
+}
+
+.mod-editor-game-row {
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.mod-editor-game-row .mod-editor-check {
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 3.5rem;
 }
 
 .mod-editor-check {

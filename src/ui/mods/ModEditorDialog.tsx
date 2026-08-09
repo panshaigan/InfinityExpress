@@ -311,8 +311,26 @@ export function ModEditorDialog({
         aria-labelledby={titleId}
         onClick={(ev) => ev.stopPropagation()}
       >
-        <div className="confirm-dialog-header">
+        <div className="confirm-dialog-header mod-editor-header">
           <h2 id={titleId}>{mode === 'create' ? 'Add mod' : 'Edit mod'}</h2>
+          <div className="mod-editor-header-flags">
+            <label className="mod-editor-check">
+              <input
+                type="checkbox"
+                checked={form.useMaster}
+                onChange={(e) => setField('useMaster', e.target.checked)}
+              />
+              Use master
+            </label>
+            <label className="mod-editor-check">
+              <input
+                type="checkbox"
+                checked={form.useAssets}
+                onChange={(e) => setField('useAssets', e.target.checked)}
+              />
+              Use assets
+            </label>
+          </div>
         </div>
         <form className="mod-editor-form" onSubmit={(e) => void handleSubmit(e)}>
           <OutlinedTextField
@@ -324,6 +342,16 @@ export function ModEditorDialog({
             onBlur={() => void onUrlBlur()}
             required
             autoFocus
+            placeholder="https://…"
+            spellCheck={false}
+            autoComplete="off"
+          />
+          <OutlinedTextField
+            className="mod-editor-span-2"
+            label="Readme"
+            type="url"
+            value={form.readme}
+            onChange={(v) => setField('readme', v)}
             placeholder="https://…"
             spellCheck={false}
             autoComplete="off"
@@ -378,7 +406,7 @@ export function ModEditorDialog({
           <fieldset className="mod-editor-check-group mod-editor-span-2">
             <legend id={gameFieldId}>Game</legend>
             <div
-              className="mod-editor-check-row"
+              className="mod-editor-check-row mod-editor-game-row"
               role="group"
               aria-labelledby={gameFieldId}
             >
@@ -394,34 +422,6 @@ export function ModEditorDialog({
               ))}
             </div>
           </fieldset>
-          <div className="mod-editor-check-row mod-editor-span-2">
-            <label className="mod-editor-check">
-              <input
-                type="checkbox"
-                checked={form.useMaster}
-                onChange={(e) => setField('useMaster', e.target.checked)}
-              />
-              Use master
-            </label>
-            <label className="mod-editor-check">
-              <input
-                type="checkbox"
-                checked={form.useAssets}
-                onChange={(e) => setField('useAssets', e.target.checked)}
-              />
-              Use assets
-            </label>
-          </div>
-          <OutlinedTextField
-            className="mod-editor-span-2"
-            label="Readme"
-            type="url"
-            value={form.readme}
-            onChange={(v) => setField('readme', v)}
-            placeholder="https://…"
-            spellCheck={false}
-            autoComplete="off"
-          />
           {error ? <p className="mod-editor-error">{error}</p> : null}
           <div className="confirm-dialog-actions">
             <button type="button" className="btn secondary" onClick={onCancel}>

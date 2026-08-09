@@ -389,12 +389,12 @@ export function ModsStation({
         onWidthChange={onDetailWidthChange}
         onToggleCollapsed={onToggleDetailCollapsed}
         onEdit={() => {
-          if (focusedMod?.origin === 'user') {
+          if (focusedMod) {
             setEditor({ mode: 'edit', initial: focusedMod })
           }
         }}
         onDeleteFromCatalog={() => {
-          if (focusedMod?.origin === 'user') {
+          if (focusedMod) {
             setPendingDelete(focusedMod.codename)
           }
         }}
@@ -438,7 +438,7 @@ export function ModsStation({
       <ConfirmDialog
         open={pendingDelete != null}
         title="Delete mod from catalog?"
-        message="This removes the entry you added. It does not delete files from disk."
+        message="This removes the mod from your working catalog. It does not delete files from disk."
         confirmLabel="Delete"
         onCancel={() => setPendingDelete(null)}
         onConfirm={() => {

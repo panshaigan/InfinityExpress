@@ -31,11 +31,13 @@ describe('modMatchesGameFilter', () => {
     expect(modMatchesGameFilter('BG2', 'BG1')).toBe(false)
   })
 
-  it('matches BG1-BG2 when both tokens are present', () => {
-    expect(modMatchesGameFilter('BG1-BG2', 'BG1-BG2')).toBe(true)
-    expect(modMatchesGameFilter('BG1-BG2-IWD-PST', 'BG1-BG2')).toBe(true)
-    expect(modMatchesGameFilter('BG1', 'BG1-BG2')).toBe(false)
-    expect(modMatchesGameFilter('BG2', 'BG1-BG2')).toBe(false)
+  it('matches BG1+BG2 as the union of BG1 and BG2', () => {
+    expect(modMatchesGameFilter('BG1-BG2', 'BG1+BG2')).toBe(true)
+    expect(modMatchesGameFilter('BG1-BG2-IWD-PST', 'BG1+BG2')).toBe(true)
+    expect(modMatchesGameFilter('BG1', 'BG1+BG2')).toBe(true)
+    expect(modMatchesGameFilter('BG2', 'BG1+BG2')).toBe(true)
+    expect(modMatchesGameFilter('IWD', 'BG1+BG2')).toBe(false)
+    expect(modMatchesGameFilter('PST', 'BG1+BG2')).toBe(false)
   })
 })
 
