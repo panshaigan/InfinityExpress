@@ -406,42 +406,6 @@ export function ModEditorDialog({
       >
         <div className="confirm-dialog-header mod-editor-header">
           <h2 id={titleId}>{mode === 'create' ? 'Add mod' : 'Edit mod'}</h2>
-          {showGithubSource ? (
-            <div className="mod-editor-header-flags">
-              <OutlinedSelect
-                className="mod-editor-source-select"
-                label="Track"
-                value={trackMode}
-                options={TRACK_MODE_OPTIONS}
-                emptyLabel="Release"
-                open={openSelect === 'track'}
-                onOpenChange={(o) => setOpenSelect(o ? 'track' : null)}
-                onChange={(v) => setTrackMode(v as TrackMode)}
-              />
-              {trackMode === 'custom' ? (
-                <OutlinedTextField
-                  className="mod-editor-branch-field"
-                  label="Branch"
-                  value={customBranch}
-                  onChange={setCustomBranch}
-                  placeholder="branch-name"
-                  spellCheck={false}
-                  autoComplete="off"
-                />
-              ) : null}
-              <OutlinedSelect
-                className="mod-editor-source-select"
-                label="Download"
-                value={downloadValue}
-                options={DOWNLOAD_OPTIONS}
-                emptyLabel="Zipball"
-                disabled={trackMode !== 'release'}
-                open={openSelect === 'download'}
-                onOpenChange={(o) => setOpenSelect(o ? 'download' : null)}
-                onChange={setDownloadMode}
-              />
-            </div>
-          ) : null}
         </div>
         <form className="mod-editor-form" onSubmit={(e) => void handleSubmit(e)}>
           <OutlinedTextField
@@ -533,6 +497,42 @@ export function ModEditorDialog({
               ))}
             </div>
           </fieldset>
+          {showGithubSource ? (
+            <div className="mod-editor-github-flags mod-editor-span-2">
+              <OutlinedSelect
+                className="mod-editor-source-select"
+                label="Track"
+                value={trackMode}
+                options={TRACK_MODE_OPTIONS}
+                emptyLabel="Release"
+                open={openSelect === 'track'}
+                onOpenChange={(o) => setOpenSelect(o ? 'track' : null)}
+                onChange={(v) => setTrackMode(v as TrackMode)}
+              />
+              {trackMode === 'custom' ? (
+                <OutlinedTextField
+                  className="mod-editor-branch-field"
+                  label="Branch"
+                  value={customBranch}
+                  onChange={setCustomBranch}
+                  placeholder="branch-name"
+                  spellCheck={false}
+                  autoComplete="off"
+                />
+              ) : null}
+              <OutlinedSelect
+                className="mod-editor-source-select"
+                label="Download"
+                value={downloadValue}
+                options={DOWNLOAD_OPTIONS}
+                emptyLabel="Zipball"
+                disabled={trackMode !== 'release'}
+                open={openSelect === 'download'}
+                onOpenChange={(o) => setOpenSelect(o ? 'download' : null)}
+                onChange={setDownloadMode}
+              />
+            </div>
+          ) : null}
           {error ? <p className="mod-editor-error">{error}</p> : null}
           <div className="confirm-dialog-actions">
             <button type="button" className="btn secondary" onClick={onCancel}>

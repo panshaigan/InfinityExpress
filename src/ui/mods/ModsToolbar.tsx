@@ -121,22 +121,8 @@ export function ModsToolbar({
       ) : null}
 
       <div className="mods-toolbar-row">
-        <label className="mods-search">
-          <span className="visually-hidden">Search mods</span>
-          <input
-            id={MODS_SEARCH_ID}
-            type="search"
-            placeholder="Search name, author, download id…"
-            value={filters.search}
-            autoComplete="off"
-            disabled={journeyLocked}
-            onChange={(e) =>
-              onChange({ ...filters, search: e.target.value })
-            }
-          />
-        </label>
         <span className="mods-count" aria-live="polite">
-          {visibleCount} of {totalCount}
+          {visibleCount} of {totalCount} mods
           {selectedCount > 0 ? ` · ${selectedCount} selected` : ''}
         </span>
         <div className="mods-toolbar-actions">
@@ -204,6 +190,19 @@ export function ModsToolbar({
 
       {!journeyLocked ? (
         <div className="mods-facets">
+          <label className="mods-search">
+            <span className="visually-hidden">Search mods</span>
+            <input
+              id={MODS_SEARCH_ID}
+              type="search"
+              placeholder="Search..."
+              value={filters.search}
+              autoComplete="off"
+              onChange={(e) =>
+                onChange({ ...filters, search: e.target.value })
+              }
+            />
+          </label>
           <OutlinedSelect
             label="Category"
             value={filters.categories[0] ?? ''}
@@ -308,6 +307,20 @@ export function ModsToolbar({
         </div>
       ) : (
         <div className="mods-facets mods-facets-locked">
+          <label className="mods-search">
+            <span className="visually-hidden">Search mods</span>
+            <input
+              id={MODS_SEARCH_ID}
+              type="search"
+              placeholder="Search..."
+              value={filters.search}
+              autoComplete="off"
+              disabled
+              onChange={(e) =>
+                onChange({ ...filters, search: e.target.value })
+              }
+            />
+          </label>
           <span className="mods-action-icon-wrap mods-only-needed has-icon-tip">
             <button
               type="button"

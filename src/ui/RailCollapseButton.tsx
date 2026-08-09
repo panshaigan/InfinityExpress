@@ -1,9 +1,15 @@
+import { IconTip } from './IconTip'
+
 interface Props {
   collapsed: boolean
   onToggle: () => void
 }
 
 export function RailCollapseButton({ collapsed, onToggle }: Props) {
+  const label = collapsed
+    ? 'Expand station rail (\\)'
+    : 'Collapse station rail (\\)'
+
   return (
     <button
       type="button"
@@ -13,9 +19,7 @@ export function RailCollapseButton({ collapsed, onToggle }: Props) {
       aria-label={collapsed ? 'Expand station rail' : 'Collapse station rail'}
     >
       {collapsed ? '»' : '«'}
-      <span className="icon-tip" role="tooltip">
-        {collapsed ? 'Expand station rail (\\)' : 'Collapse station rail (\\)'}
-      </span>
+      <IconTip>{label}</IconTip>
     </button>
   )
 }

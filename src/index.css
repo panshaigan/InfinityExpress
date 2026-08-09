@@ -4237,8 +4237,9 @@ body.is-resizing-detail * {
 }
 
 .mods-search {
-  flex: 1 1 14rem;
+  flex: 0 1 16rem;
   min-width: 10rem;
+  max-width: 20rem;
 }
 
 .mods-search input {
@@ -4341,7 +4342,6 @@ body.is-resizing-detail * {
 
 .mods-facets-locked {
   align-items: center;
-  justify-content: flex-end;
 }
 
 .mods-locked-chip {
@@ -5020,32 +5020,31 @@ body.is-resizing-detail * {
 .mod-editor-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.75rem 1rem;
   flex-wrap: wrap;
 }
 
-.mod-editor-header-flags {
+.mod-editor-github-flags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem 0.75rem;
   align-items: flex-start;
 }
 
-.mod-editor-header-flags .mod-editor-source-select {
+.mod-editor-github-flags .mod-editor-source-select {
   min-width: 8.5rem;
 }
 
-.mod-editor-header-flags .mod-editor-branch-field {
+.mod-editor-github-flags .mod-editor-branch-field {
   min-width: 9rem;
   max-width: 12rem;
 }
 
-.mod-editor-header-flags .outlined-field {
+.mod-editor-github-flags .outlined-field {
   --outlined-field-bg: color-mix(in srgb, var(--panel) 72%, #000);
 }
 
-.mod-editor-header-flags .outlined-select-popover {
+.mod-editor-github-flags .outlined-select-popover {
   z-index: 50;
 }
 
