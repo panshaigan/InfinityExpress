@@ -1,3 +1,4 @@
+import { modsByCodename } from './catalog'
 import { effectiveModFields, type WorkingMod } from './loadMods'
 
 /** Full catalog header matching shipped `src/data/mods.csv`. */
@@ -19,13 +20,35 @@ function sizeCell(n: number | null): string {
   return n == null ? '' : String(n)
 }
 
+/** Order mods like shipped mods.csv; append mods not in base order last. */
+function orderModsForCsvExport(
+  mods: readonly WorkingMod[],
+  baseOrder: Iterable<string> = modsByCodename.keys(),
+): WorkingMod[] {
+  const byCode = new Map(mods.map((m) => [m.codename, m]))
+  const ordered: WorkingMod[] = []
+  const seen = new Set<string>()
+  for (const codename of baseOrder) {
+    const m = byCode.get(codename)
+    if (!m) continue
+    ordered.push(m)
+    seen.add(codename)
+  }
+  for (const m of mods) {
+    if (seen.has(m.codename)) continue
+    ordered.push(m)
+    seen.add(m.codename)
+  }
+  return ordered
+}
+
 /** Serialize working mods (overlays applied) to full-catalog CSV text. */
-export function serializeModsCsv(mods: readonly WorkingMod[]): string {
+export function serializeModsCsv(
+  mods: readonly WorkingMod[],
+  baseOrder: Iterable<string> = modsByCodename.keys(),
+): string {
   const lines = [MODS_CSV_HEADER]
-  const sorted = [...mods].sort((a, b) =>
-    a.codename.localeCompare(b.codename),
-  )
-  for (const mod of sorted) {
+  for (const mod of orderModsForCsvExport(mods, baseOrder)) {
     const e = effectiveModFields(mod)
     lines.push(
       [
