@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   diskStatusLabel,
+  GAME_FILTER_OPTIONS,
   type ModsTableFilters,
 } from '../../lib/mods/modsTable'
 import type { DiskStatus } from '../../lib/mods/loadMods'
@@ -8,7 +9,6 @@ import { OutlinedSelect } from '../OutlinedSelect'
 
 interface FacetOptions {
   categories: string[]
-  games: string[]
   authors: string[]
 }
 
@@ -229,7 +229,7 @@ export function ModsToolbar({
             }
             options={[
               { value: '', label: 'All' },
-              ...facets.games.map((g) => ({ value: g, label: g })),
+              ...GAME_FILTER_OPTIONS.map((g) => ({ value: g, label: g })),
             ]}
           />
           <OutlinedSelect

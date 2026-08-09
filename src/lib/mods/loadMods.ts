@@ -1,4 +1,5 @@
 import type { InstallSequenceModel, TreeNode } from '../xml/schema'
+import { splitAuthorNames } from './modFieldParse'
 
 export interface ModInfo {
   codename: string
@@ -225,6 +226,7 @@ export function modSizeBounds(map: Map<string, ModInfo>): SizeBounds | null {
 
 /**
  * Authors with at least `minMods` mods (default 3 = more than two).
+ * Co-author cells are split on commas so each person counts separately.
  * Sorted by count descending, then name.
  */
 export function collectAuthorOptions(
@@ -234,7 +236,9 @@ export function collectAuthorOptions(
   const counts = new Map<string, number>()
   for (const mod of map.values()) {
     if (!mod.author) continue
-    counts.set(mod.author, (counts.get(mod.author) ?? 0) + 1)
+    for (const name of splitAuthorNames(mod.author)) {
+      counts.set(name, (counts.get(name) ?? 0) + 1)
+    }
   }
   return [...counts.entries()]
     .filter(([, count]) => count >= minMods)

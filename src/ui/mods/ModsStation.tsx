@@ -418,7 +418,6 @@ export function ModsStation({
         existingCodenames={existingCodenames}
         facetOptions={{
           categories: facets.categories,
-          games: facets.games,
           types: facets.types,
           stabilities: facets.stabilities,
         }}

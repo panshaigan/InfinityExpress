@@ -217,6 +217,24 @@ describe('collectAuthorOptions', () => {
       { name: 'Lava', count: 3 },
     ])
   })
+
+  it('splits co-author cells when counting', () => {
+    const rows = [
+      HEADER,
+      'a,NPC,"https://x",BG2,,,2020-01-01,"v1",1,"Lava, Kaeloree",,',
+      'b,NPC,"https://x",BG2,,,2020-01-01,"v1",1,"Lava, Kaeloree",,',
+      'c,NPC,"https://x",BG2,,,2020-01-01,"v1",1,Lava,,',
+      'd,NPC,"https://x",BG2,,,2020-01-01,"v1",1,Solo,,',
+    ]
+    const map = parseModsCsv(rows.join('\n'))
+    expect(collectAuthorOptions(map, 3)).toEqual([
+      { name: 'Lava', count: 3 },
+    ])
+    expect(collectAuthorOptions(map, 2)).toEqual([
+      { name: 'Lava', count: 3 },
+      { name: 'Kaeloree', count: 2 },
+    ])
+  })
 })
 
 describe('resolveModLookupKey', () => {

@@ -2,6 +2,13 @@ import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { scrapeModPageMeta } from '../../lib/desktop/modPageMeta'
 import type { ModInfo } from '../../lib/mods/loadMods'
 import {
+  GAME_TOKENS,
+  joinGameTokens,
+  splitGameTokens,
+  withHtmlPreviewIfNeeded,
+  type GameToken,
+} from '../../lib/mods/modFieldParse'
+import {
   provisionalCodenameFromUrl,
   type UserModInput,
 } from '../../lib/mods/userCatalog'
@@ -13,7 +20,6 @@ export type ModEditorMode = 'create' | 'edit'
 
 export interface ModEditorFacetOptions {
   categories: string[]
-  games: string[]
   types: string[]
   stabilities: string[]
 }
@@ -46,17 +52,18 @@ const EMPTY: UserModInput = {
   stability: '',
 }
 
-type OpenSelect = 'category' | 'game' | 'type' | 'stability' | null
+type OpenSelect = 'category' | 'type' | 'stability' | null
 
 function toForm(initial: Partial<ModInfo> | null): UserModInput {
   if (!initial) return { ...EMPTY }
+  const readme = initial.readme ?? ''
   return {
     codename: initial.codename ?? '',
     name: initial.name ?? '',
     abbreviation: initial.abbreviation ?? '',
     category: initial.category ?? '',
     url: initial.url ?? '',
-    readme: initial.readme ?? '',
+    readme: readme ? withHtmlPreviewIfNeeded(readme) : '',
     game: initial.game ?? '',
     useMaster: initial.useMaster ?? false,
     useAssets: initial.useAssets ?? false,
@@ -80,6 +87,16 @@ function withEmptyOption(
   return [{ value: '', label: emptyLabel }, ...toSelectOptions(values)]
 }
 
+function selectedGameTokens(game: string): Set<GameToken> {
+  const selected = new Set<GameToken>()
+  for (const token of splitGameTokens(game)) {
+    if ((GAME_TOKENS as readonly string[]).includes(token)) {
+      selected.add(token as GameToken)
+    }
+  }
+  return selected
+}
+
 export function ModEditorDialog({
   open,
   mode,
@@ -90,6 +107,7 @@ export function ModEditorDialog({
   onCancel,
 }: Props) {
   const titleId = useId()
+  const gameFieldId = useId()
   const [form, setForm] = useState<UserModInput>(() => toForm(initial))
   const [error, setError] = useState<string | null>(null)
   const [openSelect, setOpenSelect] = useState<OpenSelect>(null)
@@ -133,6 +151,15 @@ export function ModEditorDialog({
 
   function setField<K extends keyof UserModInput>(key: K, value: UserModInput[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function toggleGameToken(token: GameToken, checked: boolean) {
+    setForm((prev) => {
+      const next = selectedGameTokens(prev.game)
+      if (checked) next.add(token)
+      else next.delete(token)
+      return { ...prev, game: joinGameTokens([...next]) }
+    })
   }
 
   function resolvedCodename(url: string, current: UserModInput): string {
@@ -192,7 +219,7 @@ export function ModEditorDialog({
       next = { ...next, name: fromScrape || code }
     }
     if (needReadme && meta?.readme && isHttpUrl(meta.readme)) {
-      next = { ...next, readme: meta.readme }
+      next = { ...next, readme: withHtmlPreviewIfNeeded(meta.readme) }
     }
     return next
   }
@@ -224,10 +251,11 @@ export function ModEditorDialog({
       next = { ...next, name: code }
     }
 
-    const readme = next.readme.trim()
+    const readmeRaw = next.readme.trim()
+    const readme = readmeRaw ? withHtmlPreviewIfNeeded(readmeRaw) : ''
     if (readme && !isHttpUrl(readme)) {
       setError('Readme must be a valid http(s) address')
-      setForm(next)
+      setForm({ ...next, readme })
       return
     }
 
@@ -256,6 +284,7 @@ export function ModEditorDialog({
       ...next,
       url,
       readme,
+      game: joinGameTokens(splitGameTokens(next.game)),
       codename: code,
       sizeBytes:
         next.sizeBytes != null && Number.isFinite(next.sizeBytes)
@@ -265,9 +294,9 @@ export function ModEditorDialog({
   }
 
   const categoryOptions = withEmptyOption(facetOptions.categories, '—')
-  const gameOptions = withEmptyOption(facetOptions.games, '—')
   const typeOptions = withEmptyOption(facetOptions.types, '—')
   const stabilityOptions = withEmptyOption(facetOptions.stabilities, 'Released')
+  const games = selectedGameTokens(form.game)
 
   return (
     <div
@@ -328,16 +357,6 @@ export function ModEditorDialog({
           />
           <OutlinedSelect
             className="outlined-field-wide"
-            label="Game"
-            value={form.game}
-            options={gameOptions}
-            emptyLabel="—"
-            open={openSelect === 'game'}
-            onOpenChange={(o) => setOpenSelect(o ? 'game' : null)}
-            onChange={(v) => setField('game', v)}
-          />
-          <OutlinedSelect
-            className="outlined-field-wide"
             label="Type"
             value={form.type}
             options={typeOptions}
@@ -356,6 +375,43 @@ export function ModEditorDialog({
             onOpenChange={(o) => setOpenSelect(o ? 'stability' : null)}
             onChange={(v) => setField('stability', v)}
           />
+          <fieldset className="mod-editor-check-group mod-editor-span-2">
+            <legend id={gameFieldId}>Game</legend>
+            <div
+              className="mod-editor-check-row"
+              role="group"
+              aria-labelledby={gameFieldId}
+            >
+              {GAME_TOKENS.map((token) => (
+                <label key={token} className="mod-editor-check">
+                  <input
+                    type="checkbox"
+                    checked={games.has(token)}
+                    onChange={(e) => toggleGameToken(token, e.target.checked)}
+                  />
+                  {token}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <div className="mod-editor-check-row mod-editor-span-2">
+            <label className="mod-editor-check">
+              <input
+                type="checkbox"
+                checked={form.useMaster}
+                onChange={(e) => setField('useMaster', e.target.checked)}
+              />
+              Use master
+            </label>
+            <label className="mod-editor-check">
+              <input
+                type="checkbox"
+                checked={form.useAssets}
+                onChange={(e) => setField('useAssets', e.target.checked)}
+              />
+              Use assets
+            </label>
+          </div>
           <OutlinedTextField
             className="mod-editor-span-2"
             label="Readme"

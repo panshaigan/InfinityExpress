@@ -126,4 +126,68 @@ describe('collectModsFacetOptions', () => {
     expect(facets.stabilities).toEqual(['beta'])
     expect(facets.categories).toEqual(['NPC', 'QUEST'])
   })
+
+  it('splits co-author fields into singular author facets', () => {
+    const facets = collectModsFacetOptions([
+      mod({
+        codename: 'A',
+        author: 'Lava, Kaeloree',
+      }),
+      mod({
+        codename: 'B',
+        author: 'Kaeloree',
+      }),
+    ])
+    expect(facets.authors).toEqual(['Kaeloree', 'Lava'])
+  })
+})
+
+describe('game and author filter matching', () => {
+  const mods = [
+    mod({ codename: 'only-bg1', game: 'BG1', author: 'Solo' }),
+    mod({
+      codename: 'bg-pair',
+      game: 'BG1-BG2',
+      author: 'Lava, Kaeloree',
+    }),
+    mod({
+      codename: 'all-ee',
+      game: 'BG1-BG2-IWD-PST',
+      author: 'Kaeloree',
+    }),
+    mod({ codename: 'iwd', game: 'IWD', author: 'Weigo' }),
+  ]
+
+  it('filters by individual game token membership', () => {
+    const filters = {
+      ...createDefaultModsTableFilters(),
+      games: ['BG1'],
+    }
+    expect(filterWorkingMods(mods, filters).map((m) => m.codename)).toEqual([
+      'only-bg1',
+      'bg-pair',
+      'all-ee',
+    ])
+  })
+
+  it('filters BG1-BG2 when both tokens are present', () => {
+    const filters = {
+      ...createDefaultModsTableFilters(),
+      games: ['BG1-BG2'],
+    }
+    expect(filterWorkingMods(mods, filters).map((m) => m.codename)).toEqual([
+      'bg-pair',
+      'all-ee',
+    ])
+  })
+
+  it('filters by a singular co-author name', () => {
+    const filters = {
+      ...createDefaultModsTableFilters(),
+      authors: ['Lava'],
+    }
+    expect(filterWorkingMods(mods, filters).map((m) => m.codename)).toEqual([
+      'bg-pair',
+    ])
+  })
 })

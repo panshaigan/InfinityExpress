@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { effectiveModFields, type WorkingMod } from '../../lib/mods/loadMods'
+import { withHtmlPreviewIfNeeded } from '../../lib/mods/modFieldParse'
 import {
   diskStatusLabel,
   formatModSize,
@@ -38,11 +39,20 @@ function Field({
   )
 }
 
-function LinkValue({ href, label }: { href: string; label?: string }) {
-  if (!isHttpUrl(href)) return <span>{href || '—'}</span>
+function LinkValue({
+  href,
+  label,
+  htmlPreview,
+}: {
+  href: string
+  label?: string
+  htmlPreview?: boolean
+}) {
+  const resolved = htmlPreview && href ? withHtmlPreviewIfNeeded(href) : href
+  if (!isHttpUrl(resolved)) return <span>{resolved || '—'}</span>
   return (
-    <a href={href} target="_blank" rel="noreferrer">
-      {label ?? href}
+    <a href={resolved} target="_blank" rel="noreferrer">
+      {label ?? resolved}
     </a>
   )
 }
@@ -178,7 +188,7 @@ function ModDetailBody({
           <LinkValue href={eff.url} />
         </Field>
         <Field label="Readme">
-          <LinkValue href={eff.readme} />
+          <LinkValue href={eff.readme} htmlPreview />
         </Field>
       </dl>
 

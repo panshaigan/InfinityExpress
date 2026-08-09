@@ -4,6 +4,20 @@ import {
   type DiskStatus,
   type WorkingMod,
 } from './loadMods'
+import {
+  modMatchesGameFilter,
+  splitAuthorNames,
+} from './modFieldParse'
+
+export {
+  GAME_FILTER_OPTIONS,
+  GAME_TOKENS,
+  joinGameTokens,
+  modMatchesGameFilter,
+  splitAuthorNames,
+  splitGameTokens,
+  withHtmlPreviewIfNeeded,
+} from './modFieldParse'
 
 export type ModsSortKey =
   | 'name'
@@ -68,7 +82,7 @@ export function collectModsFacetOptions(mods: readonly WorkingMod[]): {
     const eff = effectiveModFields(mod)
     if (eff.category) categories.add(eff.category)
     if (eff.game) games.add(eff.game)
-    if (eff.author) authors.add(eff.author)
+    for (const name of splitAuthorNames(eff.author)) authors.add(name)
     if (eff.type) types.add(eff.type)
     if (eff.stability) stabilities.add(eff.stability)
   }
@@ -116,8 +130,14 @@ export function filterWorkingMods(
     if (!matchesSearch(mod, filters.search)) return false
     const eff = effectiveModFields(mod)
     if (cat && !cat.has(eff.category)) return false
-    if (games && !games.has(eff.game)) return false
-    if (authors && !authors.has(eff.author)) return false
+    if (games) {
+      const ok = [...games].some((g) => modMatchesGameFilter(eff.game, g))
+      if (!ok) return false
+    }
+    if (authors) {
+      const names = splitAuthorNames(eff.author)
+      if (!names.some((name) => authors.has(name))) return false
+    }
     if (statuses && !statuses.has(mod.diskStatus)) return false
     return true
   })
@@ -191,10 +211,7 @@ export function primaryAuthorLabel(author: string): {
 } {
   const full = author.trim()
   if (!full) return { display: '—', title: undefined }
-  const parts = full
-    .split(',')
-    .map((p) => p.trim())
-    .filter(Boolean)
+  const parts = splitAuthorNames(full)
   const primary = parts[0] ?? full
   if (parts.length <= 1) {
     return { display: primary, title: full }

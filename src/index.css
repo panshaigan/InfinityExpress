@@ -4705,6 +4705,42 @@ body.is-resizing-detail * {
   z-index: 50;
 }
 
+.mod-editor-check-group {
+  margin: 0;
+  padding: 0.55rem 0.7rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: var(--radius, 0.4rem);
+  background: color-mix(in srgb, var(--panel) 72%, #000);
+}
+
+.mod-editor-check-group legend {
+  padding: 0 0.25rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+}
+
+.mod-editor-check-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  align-items: center;
+}
+
+.mod-editor-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mod-editor-check input {
+  margin: 0;
+}
+
 .mod-editor-error {
   margin: 0;
   color: color-mix(in srgb, #e08070 70%, var(--ink));

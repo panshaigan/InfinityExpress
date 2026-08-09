@@ -4,6 +4,7 @@ import {
   type ModInfo,
   type SizeBounds,
 } from '../mods/loadMods'
+import { splitAuthorNames } from '../mods/modFieldParse'
 import {
   isComponentNode,
   type TreeNode,
@@ -110,12 +111,13 @@ function authorPasses(
   authorOptions: readonly string[],
 ): boolean {
   if (!isAuthorFilterActive(criteria, authorOptions)) return true
-  const author = mod?.author ?? ''
+  const names = splitAuthorNames(mod?.author ?? '')
   if (criteria.authorMode === 'exclude') {
-    return !author || !criteria.authors.has(author)
+    if (names.length === 0) return true
+    return !names.some((name) => criteria.authors.has(name))
   }
   // include + partial selection
-  return Boolean(author) && criteria.authors.has(author)
+  return names.some((name) => criteria.authors.has(name))
 }
 
 /** Display label used for search (attrs.label, else tag name). */
