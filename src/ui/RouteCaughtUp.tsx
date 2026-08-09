@@ -1,3 +1,5 @@
+import { IconTip } from './IconTip'
+
 interface Props {
   visible: boolean
   selectedCount: number
@@ -32,19 +34,21 @@ export function RouteCaughtUp({
         <button type="button" className="btn" onClick={onOpenMods}>
           Open Mods
         </button>
-        <button
-          type="button"
-          className="btn secondary has-icon-tip"
-          disabled={selectedCount === 0}
-          onClick={onExport}
-        >
-          Export
-          <span className="icon-tip" role="tooltip">
+        <span className="has-icon-tip">
+          <button
+            type="button"
+            className="btn secondary"
+            disabled={selectedCount === 0}
+            onClick={onExport}
+          >
+            Export
+          </button>
+          <IconTip>
             {selectedCount === 0
               ? 'Select at least one component to export'
               : 'Preview and save install order'}
-          </span>
-        </button>
+          </IconTip>
+        </span>
         <button
           type="button"
           className="btn secondary"

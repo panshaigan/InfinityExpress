@@ -351,6 +351,7 @@ export function ModsStation({
               totalCount={mods.length}
               acquireLabel={acquireButtonLabel(selectedAcquireKind)}
               acquireDisabled={selectedAcquireKind === 'none'}
+              jobRunning={jobRunning}
               onAcquire={() => acquire.requestAcquire(selectedList)}
               onCheckUpdates={() => {
                 void acquire.runCheck(selectedList)
@@ -398,6 +399,7 @@ export function ModsStation({
           }}
           acquireLabel={acquireButtonLabel(focusedAcquireKind)}
           acquireDisabled={focusedAcquireKind === 'none'}
+          jobRunning={jobRunning}
           onAcquire={() =>
             focusedMod && acquire.requestAcquire([focusedMod.codename])
           }

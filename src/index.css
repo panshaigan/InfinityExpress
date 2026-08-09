@@ -232,9 +232,16 @@ body {
   flex-wrap: wrap;
 }
 
+.selection-presets-actions > .has-icon-tip {
+  display: inline-flex;
+  flex: 1;
+  min-width: 5rem;
+}
+
 .selection-presets-actions .btn {
   flex: 1;
   min-width: 5rem;
+  width: 100%;
 }
 
 .engine-badge {
@@ -1298,6 +1305,10 @@ body.is-resizing-detail * {
   gap: 0.45rem;
 }
 
+.screen-nav-buttons > .has-icon-tip {
+  display: inline-flex;
+}
+
 .list-pane-header .lede {
   color: var(--muted);
   margin: 0.35rem 0 0;
@@ -1435,6 +1446,20 @@ body.is-resizing-detail * {
   top: auto;
   bottom: auto;
   transform: translateX(-50%);
+}
+
+.icon-tip.icon-tip-portal.icon-tip-align-end {
+  transform: translateX(-100%);
+}
+
+.icon-tip.icon-tip-portal.icon-tip-align-end.icon-tip-below {
+  transform: translateX(-100%);
+}
+
+.icon-tip.icon-tip-portal.icon-tip-align-end::after {
+  left: auto;
+  right: 0.65rem;
+  margin-left: 0;
 }
 
 .icon-tip.icon-tip-portal.icon-tip-visible {
@@ -1714,7 +1739,7 @@ body.is-resizing-detail * {
 }
 
 .detail-pane-chrome-label {
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -1733,6 +1758,7 @@ body.is-resizing-detail * {
   padding: 0.2rem 0.35rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  margin-left: auto;
 }
 
 .detail-pane-collapse:hover {
@@ -2154,8 +2180,41 @@ body.is-resizing-detail * {
   transform: rotate(45deg) translateY(-0.2rem);
 }
 
-.level-card.has-tip:hover .level-card-tip,
-.level-card.has-tip:has(:focus-visible) .level-card-tip {
+/* Portaled level-card tips (escape scroll clipping; flip above/below). */
+.level-card-tip.level-card-tip-portal {
+  position: fixed;
+  bottom: auto;
+  top: auto;
+  z-index: 60;
+  transform: translateX(-50%);
+  transition: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.level-card-tip.level-card-tip-portal.level-card-tip-below {
+  bottom: auto;
+  top: auto;
+  transform: translateX(-50%);
+}
+
+.level-card-tip.level-card-tip-portal.level-card-tip-below::after {
+  top: auto;
+  bottom: 100%;
+  transform: rotate(225deg) translateY(-0.2rem);
+}
+
+.level-card-tip.level-card-tip-portal.level-card-tip-align-end {
+  transform: translateX(-100%);
+}
+
+.level-card-tip.level-card-tip-portal.level-card-tip-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.level-card.has-tip:hover .level-card-tip:not(.level-card-tip-portal),
+.level-card.has-tip:has(:focus-visible) .level-card-tip:not(.level-card-tip-portal) {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
@@ -3690,6 +3749,15 @@ body.is-resizing-detail * {
 
 .settings-help a {
   color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1px;
+  transition: color 0.12s ease;
+}
+
+.settings-help a:hover,
+.settings-help a:focus-visible {
+  color: var(--ink);
 }
 
 
@@ -4020,9 +4088,8 @@ body.is-resizing-detail * {
   border: 0;
 }
 
-.phase-nav {
-  flex-shrink: 0;
-  margin-left: 0.25rem;
+.phase-nav-tip-host {
+  display: inline-flex;
 }
 
 .phase-nav-list {
@@ -4256,6 +4323,12 @@ body.is-resizing-detail * {
 .mods-facets > .mods-only-needed {
   align-self: center;
   margin-left: auto;
+}
+
+.mods-only-needed-btn.active {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent-soft) 75%, transparent);
+  color: var(--ink);
 }
 
 .mods-facets .outlined-field {
@@ -4880,6 +4953,15 @@ body.is-resizing-detail * {
 
 .mod-detail .outlined-field a {
   color: color-mix(in srgb, var(--ink) 75%, var(--accent));
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1px;
+  transition: color 0.12s ease;
+}
+
+.mod-detail .outlined-field a:hover,
+.mod-detail .outlined-field a:focus-visible {
+  color: var(--ink);
 }
 
 .mod-detail-note {
@@ -4893,6 +4975,25 @@ body.is-resizing-detail * {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+}
+
+.mod-detail-actions-chrome {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin-left: 0.35rem;
+}
+
+.mod-detail-actions-chrome + .detail-pane-collapse {
+  margin-left: 0.25rem;
+}
+
+.mod-detail-actions-chrome .btn {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
 }
 
 .mod-editor-dialog {

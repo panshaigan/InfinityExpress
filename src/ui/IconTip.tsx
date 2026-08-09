@@ -13,12 +13,25 @@ const GAP_PX = 6
 const EDGE_PAD = 8
 
 type Placement = 'above' | 'below'
+export type IconTipAlign = 'center' | 'end'
+export type IconTipVariant = 'icon' | 'level-card'
 
 /**
- * Portal tip that escapes overflow clipping. Parent must have `.has-icon-tip`.
- * Shows on host hover / focus-visible (same as CSS icon-tip).
+ * Portal tip that escapes overflow clipping. Parent must have `.has-icon-tip`
+ * (or `.has-tip` for level-card). Shows on host hover / focus-visible.
  */
-export function IconTip({ children }: { children: ReactNode }) {
+export function IconTip({
+  children,
+  align = 'center',
+  variant = 'icon',
+  hostSelector = '.has-icon-tip',
+}: {
+  children: ReactNode
+  align?: IconTipAlign
+  variant?: IconTipVariant
+  /** Closest ancestor that owns hover/focus for showing the tip. */
+  hostSelector?: string
+}) {
   const anchorRef = useRef<HTMLSpanElement>(null)
   const tipRef = useRef<HTMLSpanElement>(null)
   const hostRef = useRef<HTMLElement | null>(null)
@@ -40,12 +53,22 @@ export function IconTip({ children }: { children: ReactNode }) {
     const nextPlacement: Placement =
       spaceAbove < tipRect.height + GAP_PX + EDGE_PAD ? 'below' : 'above'
 
-    let left = hostRect.left + hostRect.width / 2
-    const half = tipRect.width / 2
-    left = Math.min(
-      window.innerWidth - EDGE_PAD - half,
-      Math.max(EDGE_PAD + half, left),
-    )
+    let left: number
+    if (align === 'end') {
+      // Pin tip's right edge near the host's right edge (tip grows leftward).
+      left = hostRect.right
+      left = Math.min(
+        window.innerWidth - EDGE_PAD,
+        Math.max(EDGE_PAD + tipRect.width, left),
+      )
+    } else {
+      left = hostRect.left + hostRect.width / 2
+      const half = tipRect.width / 2
+      left = Math.min(
+        window.innerWidth - EDGE_PAD - half,
+        Math.max(EDGE_PAD + half, left),
+      )
+    }
 
     const top =
       nextPlacement === 'below'
@@ -54,11 +77,11 @@ export function IconTip({ children }: { children: ReactNode }) {
 
     setPlacement(nextPlacement)
     setStyle({ top, left })
-  }, [])
+  }, [align])
 
   useEffect(() => {
     const anchor = anchorRef.current
-    const host = anchor?.closest('.has-icon-tip') as HTMLElement | null
+    const host = anchor?.closest(hostSelector) as HTMLElement | null
     hostRef.current = host
     if (!host) return
 
@@ -84,7 +107,7 @@ export function IconTip({ children }: { children: ReactNode }) {
       host.removeEventListener('focusin', onFocusIn)
       host.removeEventListener('focusout', hide)
     }
-  }, [])
+  }, [hostSelector])
 
   useLayoutEffect(() => {
     if (!open) return
@@ -104,6 +127,15 @@ export function IconTip({ children }: { children: ReactNode }) {
     }
   }, [open, position])
 
+  const tipClass =
+    variant === 'level-card'
+      ? `level-card-tip level-card-tip-portal${
+          placement === 'below' ? ' level-card-tip-below' : ''
+        }${align === 'end' ? ' level-card-tip-align-end' : ''} level-card-tip-visible`
+      : `icon-tip icon-tip-portal${
+          placement === 'below' ? ' icon-tip-below' : ''
+        }${align === 'end' ? ' icon-tip-align-end' : ''} icon-tip-visible`
+
   return (
     <>
       <span ref={anchorRef} className="icon-tip-anchor" aria-hidden="true" />
@@ -111,9 +143,7 @@ export function IconTip({ children }: { children: ReactNode }) {
         ? createPortal(
             <span
               ref={tipRef}
-              className={`icon-tip icon-tip-portal${
-                placement === 'below' ? ' icon-tip-below' : ''
-              } icon-tip-visible`}
+              className={tipClass}
               role="tooltip"
               style={style}
             >

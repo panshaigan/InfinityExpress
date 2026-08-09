@@ -7,6 +7,7 @@ import {
   type ExportPhase,
 } from '../lib/export/installOrder'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
+import { IconTip } from './IconTip'
 
 type EetTab = 'eet1' | 'eet'
 
@@ -224,9 +225,7 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
               aria-label={copied ? 'Copied' : 'Copy install order'}
             >
               <CopyIcon copied={copied} />
-              <span className="icon-tip" role="tooltip">
-                {copied ? 'Copied' : 'Copy'}
-              </span>
+              <IconTip align="end">{copied ? 'Copied' : 'Copy'}</IconTip>
             </button>
             <button
               type="button"
@@ -235,9 +234,7 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
               aria-label="Save install order"
             >
               <SaveIcon />
-              <span className="icon-tip" role="tooltip">
-                Save
-              </span>
+              <IconTip align="end">Save</IconTip>
             </button>
           </div>
         </div>

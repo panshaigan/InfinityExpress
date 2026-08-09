@@ -11,6 +11,7 @@ import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { collectAllExpandableKeys } from '../lib/ui/treeKeyboard'
 import { FoldAllIcon, UnfoldAllIcon } from './FoldAllIcons'
+import { IconTip } from './IconTip'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
 interface Props {
@@ -117,18 +118,18 @@ export function StationListToolbar({
           />
           <span>Select all</span>
         </label>
-        <button
-          type="button"
-          className="station-fold-toggle has-icon-tip"
-          disabled={foldDisabled}
-          aria-label={`${foldLabel} on this list`}
-          onClick={handleFoldToggle}
-        >
-          {allUnfolded ? <FoldAllIcon /> : <UnfoldAllIcon />}
-          <span className="icon-tip" role="tooltip">
-            {foldLabel}
-          </span>
-        </button>
+        <span className="has-icon-tip">
+          <button
+            type="button"
+            className="station-fold-toggle"
+            disabled={foldDisabled}
+            aria-label={`${foldLabel} on this list`}
+            onClick={handleFoldToggle}
+          >
+            {allUnfolded ? <FoldAllIcon /> : <UnfoldAllIcon />}
+          </button>
+          <IconTip>{foldLabel}</IconTip>
+        </span>
         {children}
         <div ref={levelsMenuRef} className="station-levels-menu">
           <button

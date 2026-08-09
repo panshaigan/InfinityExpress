@@ -7,6 +7,7 @@ import {
 import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import { DirectoryField } from './DirectoryField'
+import { IconTip } from './IconTip'
 
 const GAME_BLURBS: Record<SelectedGame, string> = {
   bg1: "Baldur's Gate with Siege of Dragonspear (SoD)",
@@ -67,17 +68,17 @@ export function EngineStation({
     <section className="engine-station">
       <div className="engine-station-header">
         <h2>Choose your engine</h2>
-        <button
-          type="button"
-          className="btn engine-start-btn has-icon-tip"
-          disabled={!canContinue}
-          onClick={onContinue}
-        >
-          Continue
-          <span className="icon-tip icon-tip-below" role="tooltip">
-            Continue to Presets
-          </span>
-        </button>
+        <span className="has-icon-tip">
+          <button
+            type="button"
+            className="btn engine-start-btn"
+            disabled={!canContinue}
+            onClick={onContinue}
+          >
+            Continue
+          </button>
+          <IconTip>Continue to Presets</IconTip>
+        </span>
       </div>
       <div className="engine-grid">
         {ENGINE_ROWS.map((row) => (

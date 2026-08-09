@@ -1,3 +1,5 @@
+import { IconTip } from './IconTip'
+
 export type AppPhase = 'components' | 'mods' | 'install'
 
 interface Props {
@@ -23,30 +25,35 @@ export function PhaseNav({ phase, onPhaseChange }: Props) {
       <ol className="phase-nav-list">
         {PHASES.map((item, index) => {
           const active = phase === item.id
+          const button = (
+            <button
+              type="button"
+              className={`phase-nav-btn${active ? ' active' : ''}${
+                item.disabled ? ' disabled' : ''
+              }`}
+              aria-current={active ? 'page' : undefined}
+              aria-disabled={item.disabled || undefined}
+              disabled={item.disabled}
+              onClick={() => {
+                if (!item.disabled) onPhaseChange(item.id)
+              }}
+            >
+              <span className="phase-nav-index" aria-hidden="true">
+                {index + 1}
+              </span>
+              <span className="phase-nav-label">{item.label}</span>
+            </button>
+          )
           return (
             <li key={item.id} className="phase-nav-item">
-              <button
-                type="button"
-                className={`phase-nav-btn${item.title ? ' has-icon-tip' : ''}${
-                  active ? ' active' : ''
-                }${item.disabled ? ' disabled' : ''}`}
-                aria-current={active ? 'page' : undefined}
-                aria-disabled={item.disabled || undefined}
-                disabled={item.disabled}
-                onClick={() => {
-                  if (!item.disabled) onPhaseChange(item.id)
-                }}
-              >
-                <span className="phase-nav-index" aria-hidden="true">
-                  {index + 1}
+              {item.title ? (
+                <span className="has-icon-tip phase-nav-tip-host">
+                  {button}
+                  <IconTip>{item.title}</IconTip>
                 </span>
-                <span className="phase-nav-label">{item.label}</span>
-                {item.title ? (
-                  <span className="icon-tip icon-tip-below" role="tooltip">
-                    {item.title}
-                  </span>
-                ) : null}
-              </button>
+              ) : (
+                button
+              )}
             </li>
           )
         })}

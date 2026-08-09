@@ -24,6 +24,7 @@ interface Props {
   onDeleteFromCatalog: () => void
   acquireLabel: string
   acquireDisabled: boolean
+  jobRunning?: boolean
   onAcquire: () => void
   onCheckUpdates: () => void
   onRemoveFromDisk: () => void
@@ -73,6 +74,7 @@ export function ModDetail({
   onDeleteFromCatalog,
   acquireLabel,
   acquireDisabled,
+  jobRunning = false,
   onAcquire,
   onCheckUpdates,
   onRemoveFromDisk,
@@ -101,6 +103,56 @@ export function ModDetail({
           <>
             <div className="detail-pane-chrome">
               <span className="detail-pane-chrome-label">Details</span>
+              {mod ? (
+                <div className="mod-detail-actions mod-detail-actions-chrome">
+                  <span className="mods-action-icon-wrap has-icon-tip">
+                    <button
+                      type="button"
+                      className="mods-action-icon-btn"
+                      disabled={acquireDisabled || jobRunning}
+                      onClick={onAcquire}
+                      aria-label={acquireLabel}
+                    >
+                      <DownloadIcon />
+                    </button>
+                    <IconTip>{acquireLabel}</IconTip>
+                  </span>
+                  <span className="mods-action-icon-wrap has-icon-tip">
+                    <button
+                      type="button"
+                      className="mods-action-icon-btn"
+                      disabled={jobRunning}
+                      onClick={onCheckUpdates}
+                      aria-label="Check for updates"
+                    >
+                      <CheckUpdatesIcon />
+                    </button>
+                    <IconTip>Check for updates</IconTip>
+                  </span>
+                  <span className="mods-action-icon-wrap has-icon-tip">
+                    <button
+                      type="button"
+                      className="mods-action-icon-btn"
+                      onClick={onRemoveFromDisk}
+                      disabled={mod.diskStatus === 'not_present'}
+                      aria-label="Remove from disk"
+                    >
+                      <RemoveFromDiskIcon />
+                    </button>
+                    <IconTip>Remove from disk</IconTip>
+                  </span>
+                  <button type="button" className="btn" onClick={onEdit}>
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="btn secondary"
+                    onClick={onDeleteFromCatalog}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ) : null}
               <button
                 type="button"
                 className="detail-pane-collapse has-icon-tip"
@@ -121,16 +173,7 @@ export function ModDetail({
                   </p>
                 </div>
               ) : (
-                <ModDetailBody
-                  mod={mod}
-                  onEdit={onEdit}
-                  onDeleteFromCatalog={onDeleteFromCatalog}
-                  acquireLabel={acquireLabel}
-                  acquireDisabled={acquireDisabled}
-                  onAcquire={onAcquire}
-                  onCheckUpdates={onCheckUpdates}
-                  onRemoveFromDisk={onRemoveFromDisk}
-                />
+                <ModDetailBody mod={mod} />
               )}
             </div>
           </>
@@ -140,25 +183,7 @@ export function ModDetail({
   )
 }
 
-function ModDetailBody({
-  mod,
-  onEdit,
-  onDeleteFromCatalog,
-  acquireLabel,
-  acquireDisabled,
-  onAcquire,
-  onCheckUpdates,
-  onRemoveFromDisk,
-}: {
-  mod: WorkingMod
-  onEdit: () => void
-  onDeleteFromCatalog: () => void
-  acquireLabel: string
-  acquireDisabled: boolean
-  onAcquire: () => void
-  onCheckUpdates: () => void
-  onRemoveFromDisk: () => void
-}) {
+function ModDetailBody({ mod }: { mod: WorkingMod }) {
   const eff = effectiveModFields(mod)
   const title = eff.name || eff.codename
 
@@ -167,9 +192,7 @@ function ModDetailBody({
       <header className="mod-detail-header">
         <h2>{title}</h2>
         <div className="mod-detail-badges">
-          <span
-            className={`mods-origin-badge origin-${mod.origin}`}
-          >
+          <span className={`mods-origin-badge origin-${mod.origin}`}>
             {mod.origin === 'user' ? 'Added by you' : 'Base catalog'}
           </span>
           <span className={`mods-status mods-status-${mod.diskStatus}`}>
@@ -198,54 +221,6 @@ function ModDetailBody({
           <LinkValue href={eff.readme} htmlPreview />
         </Field>
       </dl>
-
-      <div className="mod-detail-actions">
-        <span className="mods-action-icon-wrap has-icon-tip">
-          <button
-            type="button"
-            className="mods-action-icon-btn"
-            disabled={acquireDisabled}
-            onClick={onAcquire}
-            aria-label={acquireLabel}
-          >
-            <DownloadIcon />
-          </button>
-          <IconTip>{acquireLabel}</IconTip>
-        </span>
-        <span className="mods-action-icon-wrap has-icon-tip">
-          <button
-            type="button"
-            className="mods-action-icon-btn"
-            onClick={onCheckUpdates}
-            aria-label="Check for updates"
-          >
-            <CheckUpdatesIcon />
-          </button>
-          <IconTip>Check for updates</IconTip>
-        </span>
-        <span className="mods-action-icon-wrap has-icon-tip">
-          <button
-            type="button"
-            className="mods-action-icon-btn"
-            onClick={onRemoveFromDisk}
-            disabled={mod.diskStatus === 'not_present'}
-            aria-label="Remove from disk"
-          >
-            <RemoveFromDiskIcon />
-          </button>
-          <IconTip>Remove from disk</IconTip>
-        </span>
-        <button type="button" className="btn" onClick={onEdit}>
-          Edit
-        </button>
-        <button
-          type="button"
-          className="btn secondary"
-          onClick={onDeleteFromCatalog}
-        >
-          Delete from catalog
-        </button>
-      </div>
     </div>
   )
 }

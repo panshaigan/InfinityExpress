@@ -58,3 +58,15 @@ export function AddModIcon({ size = 16 }: { size?: number }) {
     </svg>
   )
 }
+
+/** Funnel / filter — “only mods required by selection”. */
+export function OnlyNeededIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M2.25 2.5h11.5a.75.75 0 0 1 .53 1.28L9.5 8.56v3.69a.75.75 0 0 1-1.17.62l-2-1.25A.75.75 0 0 1 6 10.94V8.56L1.72 3.78A.75.75 0 0 1 2.25 2.5Zm1.6 1.5 3.43 3.86a.75.75 0 0 1 .17.48v2.2l.6.38V8.34a.75.75 0 0 1 .17-.48L11.65 4H3.85Z"
+      />
+    </svg>
+  )
+}

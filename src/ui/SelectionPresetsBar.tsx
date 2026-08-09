@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { IconTip } from './IconTip'
 
 export interface SelectionPresetsBarProps {
   disabled: boolean
@@ -139,37 +140,39 @@ export function SelectionPresetsBar({
           ) : null}
 
           <div className="selection-presets-actions">
-            <button
-              type="button"
-              className="btn has-icon-tip"
-              disabled={!canSave}
-              onClick={() => {
-                onSave()
-              }}
-            >
-              {activePresetId && dirty ? 'Update' : 'Save'}
-              <span className="icon-tip icon-tip-below" role="tooltip">
+            <span className="has-icon-tip">
+              <button
+                type="button"
+                className="btn"
+                disabled={!canSave}
+                onClick={() => {
+                  onSave()
+                }}
+              >
+                {activePresetId && dirty ? 'Update' : 'Save'}
+              </button>
+              <IconTip>
                 {activePresetId
                   ? dirty
                     ? 'Update current preset'
                     : 'No changes to save'
                   : 'Save current selection as a new preset'}
-              </span>
-            </button>
-            <button
-              type="button"
-              className="btn secondary has-icon-tip"
-              disabled={!canDelete}
-              onClick={() => {
-                onDelete()
-                setOpen(false)
-              }}
-            >
-              Delete
-              <span className="icon-tip icon-tip-below" role="tooltip">
-                Delete current preset
-              </span>
-            </button>
+              </IconTip>
+            </span>
+            <span className="has-icon-tip">
+              <button
+                type="button"
+                className="btn secondary"
+                disabled={!canDelete}
+                onClick={() => {
+                  onDelete()
+                  setOpen(false)
+                }}
+              >
+                Delete
+              </button>
+              <IconTip>Delete current preset</IconTip>
+            </span>
           </div>
         </div>
       )}

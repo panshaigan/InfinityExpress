@@ -12,6 +12,7 @@ import {
   CheckUpdatesIcon,
   DownloadIcon,
   ExportCsvIcon,
+  OnlyNeededIcon,
   RemoveFromDiskIcon,
 } from './ModsActionIcons'
 
@@ -19,6 +20,8 @@ interface FacetOptions {
   categories: string[]
   authors: string[]
 }
+
+const ONLY_NEEDED_TIP = 'Only mods required by the selected components'
 
 interface Props {
   filters: ModsTableFilters
@@ -31,6 +34,7 @@ interface Props {
   totalCount: number
   acquireLabel: string
   acquireDisabled: boolean
+  jobRunning?: boolean
   onAcquire: () => void
   onCheckUpdates: () => void
   onRemoveFromDisk: () => void
@@ -61,6 +65,7 @@ export function ModsToolbar({
   totalCount,
   acquireLabel,
   acquireDisabled,
+  jobRunning = false,
   onAcquire,
   onCheckUpdates,
   onRemoveFromDisk,
@@ -69,6 +74,7 @@ export function ModsToolbar({
   onContinueBrowsing,
 }: Props) {
   const bulkDisabled = selectedCount === 0
+  const acquireBusy = jobRunning
   const onlyNeededActive = filters.requiredCodenames != null
   const hasFacetFilters =
     filters.categories.length > 0 ||
@@ -138,7 +144,7 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={bulkDisabled || acquireDisabled}
+              disabled={bulkDisabled || acquireDisabled || acquireBusy}
               onClick={onAcquire}
               aria-label={acquireLabel}
             >
@@ -150,7 +156,7 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={bulkDisabled}
+              disabled={bulkDisabled || acquireBusy}
               onClick={onCheckUpdates}
               aria-label="Check for updates"
             >
@@ -284,26 +290,36 @@ export function ModsToolbar({
               Clear filters
             </button>
           ) : null}
-          <button
-            type="button"
-            className={`filter-chip mods-only-needed${onlyNeededActive ? ' active' : ''}`}
-            aria-pressed={onlyNeededActive}
-            disabled={neededCodenames.length === 0 && !onlyNeededActive}
-            onClick={toggleOnlyNeeded}
-          >
-            Only needed
-          </button>
+          <span className="mods-action-icon-wrap mods-only-needed has-icon-tip">
+            <button
+              type="button"
+              className={`mods-action-icon-btn mods-only-needed-btn${
+                onlyNeededActive ? ' active' : ''
+              }`}
+              aria-pressed={onlyNeededActive}
+              aria-label={ONLY_NEEDED_TIP}
+              disabled={neededCodenames.length === 0 && !onlyNeededActive}
+              onClick={toggleOnlyNeeded}
+            >
+              <OnlyNeededIcon />
+            </button>
+            <IconTip>{ONLY_NEEDED_TIP}</IconTip>
+          </span>
         </div>
       ) : (
         <div className="mods-facets mods-facets-locked">
-          <button
-            type="button"
-            className="filter-chip mods-only-needed active"
-            aria-pressed={true}
-            disabled
-          >
-            Only needed
-          </button>
+          <span className="mods-action-icon-wrap mods-only-needed has-icon-tip">
+            <button
+              type="button"
+              className="mods-action-icon-btn mods-only-needed-btn active"
+              aria-pressed={true}
+              aria-label={ONLY_NEEDED_TIP}
+              disabled
+            >
+              <OnlyNeededIcon />
+            </button>
+            <IconTip>{ONLY_NEEDED_TIP}</IconTip>
+          </span>
         </div>
       )}
     </div>

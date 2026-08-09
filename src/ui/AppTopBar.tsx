@@ -1,4 +1,5 @@
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
+import { IconTip } from './IconTip'
 import { SelectionPresetsBar } from './SelectionPresetsBar'
 import { PhaseNav, type AppPhase } from './PhaseNav'
 
@@ -96,9 +97,7 @@ export function AppTopBar({
       >
         <span className="brand-title">Infinity Express</span>
         <span className="brand-tagline">Your mod route</span>
-        <span className="icon-tip icon-tip-below" role="tooltip">
-          About
-        </span>
+        <IconTip>About</IconTip>
       </button>
       <PhaseNav phase={phase} onPhaseChange={onPhaseChange} />
       <div className="top-bar-actions">
@@ -130,9 +129,7 @@ export function AppTopBar({
           onClick={onOpenSettings}
         >
           <SettingsGearIcon />
-          <span className="icon-tip icon-tip-below" role="tooltip">
-            Settings
-          </span>
+          <IconTip>Settings</IconTip>
         </button>
         <button
           type="button"
@@ -143,21 +140,19 @@ export function AppTopBar({
           onClick={onOpenKeyboardHelp}
         >
           <KeyboardIcon />
-          <span className="icon-tip icon-tip-below" role="tooltip">
-            Keyboard shortcuts
-          </span>
+          <IconTip>Keyboard shortcuts</IconTip>
         </button>
-        <button
-          type="button"
-          className="btn has-icon-tip"
-          disabled={selectedCount === 0}
-          onClick={onExport}
-        >
-          Export
-          <span className="icon-tip icon-tip-below" role="tooltip">
-            Preview and save install order
-          </span>
-        </button>
+        <span className="has-icon-tip">
+          <button
+            type="button"
+            className="btn"
+            disabled={selectedCount === 0}
+            onClick={onExport}
+          >
+            Export
+          </button>
+          <IconTip align="end">Preview and save install order</IconTip>
+        </span>
       </div>
     </header>
   )

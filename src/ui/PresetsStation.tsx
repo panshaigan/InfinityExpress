@@ -1,4 +1,5 @@
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
+import { IconTip } from './IconTip'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
 interface Props {
@@ -26,17 +27,17 @@ export function PresetsStation({
     <section className="engine-station presets-station">
       <div className="engine-station-header">
         <h2>Choose your initial selection</h2>
-        <button
-          type="button"
-          className="btn engine-start-btn has-icon-tip"
-          disabled={!canContinue}
-          onClick={onContinue}
-        >
-          Continue
-          <span className="icon-tip icon-tip-below" role="tooltip">
-            Continue to the first unfinished stop
-          </span>
-        </button>
+        <span className="has-icon-tip">
+          <button
+            type="button"
+            className="btn engine-start-btn"
+            disabled={!canContinue}
+            onClick={onContinue}
+          >
+            Continue
+          </button>
+          <IconTip>Continue to the first unfinished stop</IconTip>
+        </span>
       </div>
       <div className="engine-preselect">
         <LevelSelectStrip

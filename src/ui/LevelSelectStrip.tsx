@@ -8,6 +8,7 @@ import {
   type LadderLevel,
   type LevelInfo,
 } from '../lib/levels'
+import { IconTip } from './IconTip'
 
 interface Props {
   enabled: boolean
@@ -62,7 +63,7 @@ function LevelCard({
         ) : null}
       </span>
       {showTip && info ? (
-        <span className="level-card-tip" role="tooltip">
+        <IconTip variant="level-card" hostSelector=".has-tip">
           <span className="level-card-tip-section">
             <span className="level-card-tip-heading">Type & Depth of Changes</span>
             <span className="level-card-tip-body">{info.typeAndDepth}</span>
@@ -71,7 +72,7 @@ function LevelCard({
             <span className="level-card-tip-heading">Who It&apos;s Recommended For</span>
             <span className="level-card-tip-body">{info.recommendedFor}</span>
           </span>
-        </span>
+        </IconTip>
       ) : null}
     </label>
   )
