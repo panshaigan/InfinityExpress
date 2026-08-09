@@ -17,3 +17,8 @@ commands.allow = ["probe_mod_remote"]
 identifier = "allow-acquire-mod"
 description = "Download and extract a mod into the mods download directory"
 commands.allow = ["acquire_mod"]
+
+[[permission]]
+identifier = "allow-cancel-mod-acquire"
+description = "Abort the in-flight mod download"
+commands.allow = ["cancel_mod_acquire"]

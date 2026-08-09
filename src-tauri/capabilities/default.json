@@ -13,6 +13,7 @@
     "allow-list-subdir-names",
     "allow-remove-mod-dir",
     "allow-probe-mod-remote",
-    "allow-acquire-mod"
+    "allow-acquire-mod",
+    "allow-cancel-mod-acquire"
   ]
 }

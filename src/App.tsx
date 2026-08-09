@@ -96,6 +96,9 @@ export default function App() {
   )
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [settingsFocusField, setSettingsFocusField] = useState<
+    'modsDownloadDir' | null
+  >(null)
   const [showRouteTip, setShowRouteTip] = useState(() => !readRouteTipDismissed())
   const [railCollapsed, setRailCollapsed] = useState(() => readRailCollapsed())
   const [detailCollapsed, setDetailCollapsed] = useState(() => readDetailCollapsed())
@@ -521,7 +524,14 @@ export default function App() {
   )
 
   const openKeyboardHelp = useCallback(() => setKeyboardHelpOpen(true), [])
-  const openSettings = useCallback(() => setSettingsOpen(true), [])
+  const openSettings = useCallback(() => {
+    setSettingsFocusField(null)
+    setSettingsOpen(true)
+  }, [])
+  const openSettingsModsDownload = useCallback(() => {
+    setSettingsFocusField('modsDownloadDir')
+    setSettingsOpen(true)
+  }, [])
 
   useChromeHotkeys({
     keyboardHelpOpen,
@@ -595,6 +605,7 @@ export default function App() {
               onApplyAcquireSuccess={userCatalog.applyAcquireSuccess}
               onRefreshDiskStatus={userCatalog.refreshDiskStatus}
               onRemoveFromDisk={userCatalog.removeFromDisk}
+              onOpenSettings={openSettingsModsDownload}
             />
           </div>
         </div>
@@ -830,7 +841,11 @@ export default function App() {
       />
       <SettingsDialog
         open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
+        focusField={settingsFocusField}
+        onClose={() => {
+          setSettingsOpen(false)
+          setSettingsFocusField(null)
+        }}
       />
       <ExportDialog
         open={exportOpen}

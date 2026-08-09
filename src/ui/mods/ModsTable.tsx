@@ -1,4 +1,5 @@
 import {
+  memo,
   useCallback,
   useEffect,
   useRef,
@@ -7,6 +8,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from 'react'
+import { openExternalUrl } from '../../lib/desktop/openExternalUrl'
 import {
   displayModName,
   diskStatusLabel,
@@ -116,6 +118,128 @@ function UrlCopyButton({ url }: { url: string }) {
   )
 }
 
+type RowProgress = { pct: number | null; label: string }
+
+interface ModsTableRowProps {
+  mod: WorkingMod
+  checked: boolean
+  focused: boolean
+  selectionLocked: boolean
+  progress: RowProgress | undefined
+  onToggle: (codename: string, want: boolean) => void
+  onFocusRow: (codename: string) => void
+  setRowEl: (codename: string, el: HTMLTableRowElement | null) => void
+}
+
+const ModsTableRow = memo(function ModsTableRow({
+  mod,
+  checked,
+  focused,
+  selectionLocked,
+  progress,
+  onToggle,
+  onFocusRow,
+  setRowEl,
+}: ModsTableRowProps) {
+  const eff = effectiveModFields(mod)
+  const author = primaryAuthorLabel(eff.author)
+
+  return (
+    <tr
+      ref={(el) => setRowEl(mod.codename, el)}
+      className={`mods-row${focused ? ' focused' : ''}${
+        checked ? ' selected' : ''
+      }${progress ? ' busy' : ''}`}
+      role="row"
+      tabIndex={focused ? 0 : -1}
+      aria-selected={checked}
+      onClick={() => {
+        onFocusRow(mod.codename)
+      }}
+      onDoubleClick={() => {
+        if (selectionLocked) return
+        onToggle(mod.codename, !checked)
+      }}
+      onFocus={() => {
+        if (!focused) onFocusRow(mod.codename)
+      }}
+    >
+      <td className="mods-col-check" onClick={(e) => e.stopPropagation()}>
+        <input
+          type="checkbox"
+          checked={checked}
+          disabled={selectionLocked}
+          tabIndex={-1}
+          aria-label={`Select ${displayModName(mod)}`}
+          onChange={(e) => onToggle(mod.codename, e.target.checked)}
+        />
+      </td>
+      <td className="mods-col-name">
+        <span className="mods-name">{displayModName(mod)}</span>
+        {mod.origin === 'user' ? (
+          <span className="mods-origin-tag">Added</span>
+        ) : null}
+        {progress ? (
+          <span className="mods-row-progress">
+            <span
+              className="mods-row-progress-bar"
+              style={
+                progress.pct != null ? { width: `${progress.pct}%` } : undefined
+              }
+              data-indeterminate={progress.pct == null ? 'true' : undefined}
+            />
+            <span className="mods-row-progress-label">{progress.label}</span>
+          </span>
+        ) : null}
+      </td>
+      <td className="mods-col-category">{eff.category || '—'}</td>
+      <TipCell
+        className="mods-col-url"
+        display={
+          isHttpUrl(eff.url) ? (
+            <span className="mods-url-cell">
+              <a
+                href={eff.url}
+                target="_blank"
+                rel="noreferrer"
+                tabIndex={-1}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  void openExternalUrl(eff.url)
+                }}
+              >
+                {eff.url.replace(/^https?:\/\//, '')}
+              </a>
+              <UrlCopyButton url={eff.url} />
+            </span>
+          ) : (
+            eff.url || '—'
+          )
+        }
+        tip={eff.url.trim() || undefined}
+      />
+      <td className="mods-col-release">{eff.release || '—'}</td>
+      <TipCell
+        className="mods-col-version"
+        display={eff.version || '—'}
+        tip={eff.version.trim() || undefined}
+      />
+      <td className="mods-col-size">{formatModSize(eff.sizeBytes)}</td>
+      <TipCell
+        className="mods-col-author"
+        display={author.display}
+        tip={author.title}
+      />
+      <td className="mods-col-status">
+        <span className={statusClass(mod.diskStatus)}>
+          {diskStatusLabel(mod.diskStatus)}
+        </span>
+      </td>
+    </tr>
+  )
+})
+
 export function ModsTable({
   rows,
   selected,
@@ -136,13 +260,22 @@ export function ModsTable({
   const someSelected =
     !allSelected && rows.some((r) => selected.has(r.codename))
 
+  const setRowEl = useCallback(
+    (codename: string, el: HTMLTableRowElement | null) => {
+      if (el) rowRefs.current.set(codename, el)
+      else rowRefs.current.delete(codename)
+    },
+    [],
+  )
+
   const focusIndex = useCallback(
     (index: number) => {
       const row = rows[index]
       if (!row) return
       onFocusRow(row.codename)
       requestAnimationFrame(() => {
-        rowRefs.current.get(row.codename)?.focus()
+        const el = rowRefs.current.get(row.codename)
+        if (el && document.activeElement !== el) el.focus()
       })
     },
     [onFocusRow, rows],
@@ -265,118 +398,19 @@ export function ModsTable({
               </td>
             </tr>
           ) : (
-            rows.map((mod) => {
-              const eff = effectiveModFields(mod)
-              const checked = selected.has(mod.codename)
-              const focused = focusedCodename === mod.codename
-              const author = primaryAuthorLabel(eff.author)
-              return (
-                <tr
-                  key={mod.codename}
-                  ref={(el) => {
-                    if (el) rowRefs.current.set(mod.codename, el)
-                    else rowRefs.current.delete(mod.codename)
-                  }}
-                  className={`mods-row${focused ? ' focused' : ''}${
-                    checked ? ' selected' : ''
-                  }${rowProgress?.has(mod.codename) ? ' busy' : ''}`}
-                  role="row"
-                  tabIndex={focused ? 0 : -1}
-                  aria-selected={checked}
-                  onClick={() => {
-                    onFocusRow(mod.codename)
-                    requestAnimationFrame(() => {
-                      rowRefs.current.get(mod.codename)?.focus()
-                    })
-                  }}
-                  onFocus={() => onFocusRow(mod.codename)}
-                >
-                  <td
-                    className="mods-col-check"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      disabled={selectionLocked}
-                      tabIndex={-1}
-                      aria-label={`Select ${displayModName(mod)}`}
-                      onChange={(e) =>
-                        onToggle(mod.codename, e.target.checked)
-                      }
-                    />
-                  </td>
-                  <td className="mods-col-name">
-                    <span className="mods-name">{displayModName(mod)}</span>
-                    {mod.origin === 'user' ? (
-                      <span className="mods-origin-tag">Added</span>
-                    ) : null}
-                    {rowProgress?.get(mod.codename) ? (
-                      <span className="mods-row-progress">
-                        <span
-                          className="mods-row-progress-bar"
-                          style={
-                            rowProgress.get(mod.codename)!.pct != null
-                              ? {
-                                  width: `${rowProgress.get(mod.codename)!.pct}%`,
-                                }
-                              : undefined
-                          }
-                          data-indeterminate={
-                            rowProgress.get(mod.codename)!.pct == null
-                              ? 'true'
-                              : undefined
-                          }
-                        />
-                        <span className="mods-row-progress-label">
-                          {rowProgress.get(mod.codename)!.label}
-                        </span>
-                      </span>
-                    ) : null}
-                  </td>
-                  <td className="mods-col-category">{eff.category || '—'}</td>
-                  <TipCell
-                    className="mods-col-url"
-                    display={
-                      isHttpUrl(eff.url) ? (
-                        <span className="mods-url-cell">
-                          <a
-                            href={eff.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            tabIndex={-1}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {eff.url.replace(/^https?:\/\//, '')}
-                          </a>
-                          <UrlCopyButton url={eff.url} />
-                        </span>
-                      ) : (
-                        eff.url || '—'
-                      )
-                    }
-                    tip={eff.url.trim() || undefined}
-                  />
-                  <td className="mods-col-release">{eff.release || '—'}</td>
-                  <TipCell
-                    className="mods-col-version"
-                    display={eff.version || '—'}
-                    tip={eff.version.trim() || undefined}
-                  />
-                  <td className="mods-col-size">{formatModSize(eff.sizeBytes)}</td>
-                  <TipCell
-                    className="mods-col-author"
-                    display={author.display}
-                    tip={author.title}
-                  />
-                  <td className="mods-col-status">
-                    <span className={statusClass(mod.diskStatus)}>
-                      {diskStatusLabel(mod.diskStatus)}
-                    </span>
-                  </td>
-                </tr>
-              )
-            })
+            rows.map((mod) => (
+              <ModsTableRow
+                key={mod.codename}
+                mod={mod}
+                checked={selected.has(mod.codename)}
+                focused={focusedCodename === mod.codename}
+                selectionLocked={selectionLocked}
+                progress={rowProgress?.get(mod.codename)}
+                onToggle={onToggle}
+                onFocusRow={onFocusRow}
+                setRowEl={setRowEl}
+              />
+            ))
           )}
         </tbody>
       </table>

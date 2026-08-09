@@ -18,7 +18,7 @@ alwaysApply: false
 | Need | Use |
 | --- | --- |
 | Native open/save/pick-dir dialogs | `tauri-plugin-dialog` (`@tauri-apps/plugin-dialog`) |
-| Open http(s) links in the system browser | `tauri-plugin-opener` (`opener:default` — intercepts `target="_blank"`) |
+| Open http(s) links in the system browser | `tauri-plugin-opener` (`opener:default` — intercepts `target="_blank"`). If the click is under `stopPropagation` (table rows, dialog panels), call `openUrl` via [`openExternalUrl.ts`](src/lib/desktop/openExternalUrl.ts) instead |
 | Write a file the user just picked in **this session** | `tauri-plugin-fs` `writeTextFile` — dialog path is **auto-scoped for the session only** |
 | Read/list/delete under a **persisted** user path (e.g. `D:\games\…` after restart) | App `#[tauri::command]` + **`std::fs`** — do **not** fight static `plugin-fs` scopes |
 | Persist prefs (paths, catalog) | **localStorage** — do not add `tauri-plugin-store` unless storage must live outside the webview |
@@ -31,7 +31,7 @@ Official note: for Rust-side file work, prefer `std::fs` / `tokio::fs` over stre
 
 - `core:default`, `dialog:default`, `fs:allow-write-text-file`, `opener:default`
 - App commands: `allow-list-subdir-names`, `allow-remove-mod-dir` → [`permissions/mod-fs.toml`](src-tauri/permissions/mod-fs.toml)
-- Acquire: `allow-probe-mod-remote`, `allow-acquire-mod`
+- Acquire: `allow-probe-mod-remote`, `allow-acquire-mod`, `allow-cancel-mod-acquire`
 
 By default, commands registered with `invoke_handler` are callable; still declare explicit `permissions/*.toml` + capability entries when adding commands (clear ACL, matches this repo).
 

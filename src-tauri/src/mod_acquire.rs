@@ -8,11 +8,39 @@ use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::OnceLock;
-use tauri::{AppHandle, Emitter};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, OnceLock};
+use tauri::{AppHandle, Emitter, State};
 
 const PROGRESS_EVENT: &str = "mod-acquire-progress";
 const USER_AGENT: &str = "InfinityExpress/0.1 (mod-acquire)";
+const CANCELLED: &str = "Cancelled";
+
+/// Shared abort flag for the in-flight `acquire_mod` download.
+pub struct AcquireCancelFlag(pub Arc<AtomicBool>);
+
+impl AcquireCancelFlag {
+  pub fn new() -> Self {
+    Self(Arc::new(AtomicBool::new(false)))
+  }
+
+  pub fn clear(&self) {
+    self.0.store(false, Ordering::SeqCst);
+  }
+
+  pub fn request(&self) {
+    self.0.store(true, Ordering::SeqCst);
+  }
+
+  pub fn is_requested(&self) -> bool {
+    self.0.load(Ordering::SeqCst)
+  }
+}
+
+#[tauri::command]
+pub fn cancel_mod_acquire(flag: State<'_, AcquireCancelFlag>) {
+  flag.request();
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -878,6 +906,7 @@ async fn download_to_file(
   url: &str,
   dest: &Path,
   token: Option<&str>,
+  cancel: &AcquireCancelFlag,
 ) -> Result<u64, String> {
   let client = http_client()?;
   let mut req = client.get(url);
@@ -896,6 +925,9 @@ async fn download_to_file(
       bytes_total: None,
     },
   );
+  if cancel.is_requested() {
+    return Err(CANCELLED.into());
+  }
   let res = req.send().await.map_err(|e| e.to_string())?;
   if !res.status().is_success() {
     return Err(format!("Download failed HTTP {} for {url}", res.status()));
@@ -905,6 +937,9 @@ async fn download_to_file(
   let mut stream = res.bytes_stream();
   let mut received: u64 = 0;
   while let Some(chunk) = stream.next().await {
+    if cancel.is_requested() {
+      return Err(CANCELLED.into());
+    }
     let chunk = chunk.map_err(|e| e.to_string())?;
     file.write_all(&chunk).map_err(|e| e.to_string())?;
     received += chunk.len() as u64;
@@ -1120,9 +1155,13 @@ fn strip_git_dirs(root: &Path) -> Result<(), String> {
 pub async fn acquire_mod(
   app: AppHandle,
   input: AcquireModInput,
+  cancel_state: State<'_, AcquireCancelFlag>,
 ) -> Result<AcquireModResult, String> {
-  let codename = input.codename.trim();
-  validate_folder_name(codename)?;
+  let cancel = AcquireCancelFlag(Arc::clone(&cancel_state.0));
+  cancel.clear();
+
+  let codename = input.codename.trim().to_string();
+  validate_folder_name(&codename)?;
   let download = PathBuf::from(input.download_dir.trim());
   if download.as_os_str().is_empty() {
     return Err("Mods download directory is not set".into());
@@ -1156,13 +1195,17 @@ pub async fn acquire_mod(
   emit_progress(
     &app,
     ProgressPayload {
-      codename: codename.to_string(),
+      codename: codename.clone(),
       phase: "prepare".into(),
       message: "Preparing download…".into(),
       bytes_received: None,
       bytes_total: None,
     },
   );
+
+  if cancel.is_requested() {
+    return Err(CANCELLED.into());
+  }
 
   let staging_parent = download.join(".ie-acquire-tmp");
   fs::create_dir_all(&staging_parent).map_err(|e| e.to_string())?;
@@ -1176,75 +1219,90 @@ pub async fn acquire_mod(
   let extract_dir = work.join("extract");
   fs::create_dir_all(&extract_dir).map_err(|e| e.to_string())?;
 
-  let size = download_to_file(
-    &app,
-    codename,
-    &download_url,
-    &archive_path,
-    input.github_token.as_deref(),
-  )
-  .await?;
+  let result = async {
+    let size = download_to_file(
+      &app,
+      &codename,
+      &download_url,
+      &archive_path,
+      input.github_token.as_deref(),
+      &cancel,
+    )
+    .await?;
 
-  emit_progress(
-    &app,
-    ProgressPayload {
-      codename: codename.to_string(),
-      phase: "extract".into(),
-      message: "Extracting archive…".into(),
-      bytes_received: Some(size),
-      bytes_total: Some(size),
-    },
-  );
+    if cancel.is_requested() {
+      return Err(CANCELLED.into());
+    }
 
-  extract_archive(&archive_path, &extract_dir, &ext)?;
-  let _ = unwrap_single_root(&extract_dir);
-  strip_setup_exes(&extract_dir)?;
-  strip_git_dirs(&extract_dir)?;
+    emit_progress(
+      &app,
+      ProgressPayload {
+        codename: codename.clone(),
+        phase: "extract".into(),
+        message: "Extracting archive…".into(),
+        bytes_received: Some(size),
+        bytes_total: Some(size),
+      },
+    );
 
-  // Remove existing target (CI match), then move extract → codename.
-  if let Some(existing) = find_subdir_ci(&download, codename)? {
-    let old = download.join(&existing);
-    ensure_under_parent(&download, &old)?;
-    fs::remove_dir_all(&old).map_err(|e| e.to_string())?;
+    extract_archive(&archive_path, &extract_dir, &ext)?;
+    let _ = unwrap_single_root(&extract_dir);
+    strip_setup_exes(&extract_dir)?;
+    strip_git_dirs(&extract_dir)?;
+
+    if cancel.is_requested() {
+      return Err(CANCELLED.into());
+    }
+
+    // Remove existing target (CI match), then move extract → codename.
+    if let Some(existing) = find_subdir_ci(&download, &codename)? {
+      let old = download.join(&existing);
+      ensure_under_parent(&download, &old)?;
+      fs::remove_dir_all(&old).map_err(|e| e.to_string())?;
+    }
+
+    let target = download.join(&codename);
+    ensure_under_parent(&download, &target)?;
+    if target.exists() {
+      fs::remove_dir_all(&target).map_err(|e| e.to_string())?;
+    }
+
+    emit_progress(
+      &app,
+      ProgressPayload {
+        codename: codename.clone(),
+        phase: "install".into(),
+        message: "Installing into mods folder…".into(),
+        bytes_received: Some(size),
+        bytes_total: Some(size),
+      },
+    );
+
+    if fs::rename(&extract_dir, &target).is_err() {
+      copy_recursive(&extract_dir, &target)?;
+    }
+
+    emit_progress(
+      &app,
+      ProgressPayload {
+        codename: codename.clone(),
+        phase: "done".into(),
+        message: "Done".into(),
+        bytes_received: Some(size),
+        bytes_total: Some(size),
+      },
+    );
+
+    Ok(AcquireModResult {
+      size_bytes: Some(size),
+    })
   }
+  .await;
 
-  let target = download.join(codename);
-  ensure_under_parent(&download, &target)?;
-  if target.exists() {
-    fs::remove_dir_all(&target).map_err(|e| e.to_string())?;
-  }
-
-  emit_progress(
-    &app,
-    ProgressPayload {
-      codename: codename.to_string(),
-      phase: "install".into(),
-      message: "Installing into mods folder…".into(),
-      bytes_received: Some(size),
-      bytes_total: Some(size),
-    },
-  );
-
-  if fs::rename(&extract_dir, &target).is_err() {
-    copy_recursive(&extract_dir, &target)?;
-  }
-
+  // Always clean staging (success leaves archive leftovers; cancel/fail leave partial downloads).
   let _ = fs::remove_dir_all(&work);
 
-  emit_progress(
-    &app,
-    ProgressPayload {
-      codename: codename.to_string(),
-      phase: "done".into(),
-      message: "Done".into(),
-      bytes_received: Some(size),
-      bytes_total: Some(size),
-    },
-  );
-
-  Ok(AcquireModResult {
-    size_bytes: Some(size),
-  })
+  result
 }
 
 #[cfg(test)]

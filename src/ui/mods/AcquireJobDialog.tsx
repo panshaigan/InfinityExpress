@@ -5,6 +5,7 @@ import { formatBytes } from '../../lib/mods/loadMods'
 interface Props {
   job: AcquireJobState
   onMinimize: () => void
+  onCancel: () => void
   onClose: () => void
 }
 
@@ -29,7 +30,7 @@ function statusLabel(status: string, kind: JobKind): string {
   }
 }
 
-export function AcquireJobDialog({ job, onMinimize, onClose }: Props) {
+export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) {
   const titleId = useId()
   const closeRef = useRef<HTMLButtonElement>(null)
   const logRef = useRef<HTMLDivElement>(null)
@@ -54,13 +55,13 @@ export function AcquireJobDialog({ job, onMinimize, onClose }: Props) {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault()
-        if (job.running) onMinimize()
+        if (job.running) onCancel()
         else onClose()
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [job.open, job.running, onClose, onMinimize])
+  }, [job.open, job.running, onCancel, onClose])
 
   useEffect(() => {
     if (!job.open) return
@@ -95,14 +96,26 @@ export function AcquireJobDialog({ job, onMinimize, onClose }: Props) {
         <div className="keyboard-help-header">
           <h2 id={titleId}>{title}</h2>
           <div className="acquire-job-header-actions">
-            <button
-              type="button"
-              className="btn secondary"
-              onClick={onMinimize}
-              title="Minimize and keep the job running"
-            >
-              Minimize
-            </button>
+            {job.running ? (
+              <>
+                <button
+                  type="button"
+                  className="btn secondary"
+                  onClick={onCancel}
+                  title="Stop the job and skip remaining mods"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn secondary"
+                  onClick={onMinimize}
+                  title="Minimize and keep the job running"
+                >
+                  Minimize
+                </button>
+              </>
+            ) : null}
             <button
               ref={closeRef}
               type="button"

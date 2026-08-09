@@ -1,7 +1,9 @@
 import {
   useCallback,
+  useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type CSSProperties,
 } from 'react'
@@ -23,6 +25,8 @@ import {
 } from '../../lib/mods/modsTable'
 import type { UserModInput } from '../../lib/mods/userCatalog'
 import { saveTextFile, isDesktopApp } from '../../lib/desktop/fsDialogs'
+import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
+import { PATHS_CHANGED_EVENT } from '../../lib/ui/pathPrefsEvents'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { AcquireJobDialog } from './AcquireJobDialog'
 import { AcquireSizeConfirmDialog } from './AcquireSizeConfirmDialog'
@@ -57,6 +61,7 @@ interface Props {
   onRemoveFromDisk: (
     codenames: string[],
   ) => Promise<{ removed: string[]; errors: string[] }>
+  onOpenSettings: () => void
 }
 
 export function ModsStation({
@@ -75,6 +80,7 @@ export function ModsStation({
   onApplyAcquireSuccess,
   onRefreshDiskStatus,
   onRemoveFromDisk,
+  onOpenSettings,
 }: Props) {
   const journeyLocked = !!journey?.locked
   const [filters, setFilters] = useState<ModsTableFilters>(() =>
@@ -84,6 +90,7 @@ export function ModsStation({
   const [sortDir, setSortDir] = useState<ModsSortDir>('asc')
   const [selected, setSelected] = useState<Set<string>>(() => new Set())
   const [focusedCodename, setFocusedCodename] = useState<string | null>(null)
+  const deferredFocusedCodename = useDeferredValue(focusedCodename)
   const [notice, setNotice] = useState<string | null>(null)
   const [editor, setEditor] = useState<
     | { mode: 'create'; initial: null }
@@ -93,13 +100,43 @@ export function ModsStation({
   const [pendingDelete, setPendingDelete] = useState<string | null>(null)
   const [pendingRemove, setPendingRemove] = useState<string[] | null>(null)
   const [removing, setRemoving] = useState(false)
+  const promptedMissingDirRef = useRef(false)
+
+  const clearSelection = useCallback((codename: string) => {
+    setSelected((prev) => {
+      if (!prev.has(codename)) return prev
+      const next = new Set(prev)
+      next.delete(codename)
+      return next
+    })
+  }, [])
 
   const acquire = useModAcquireJob({
     mods,
     patchDiskStatus: onSetDiskStatus,
     applyAcquireSuccess: onApplyAcquireSuccess,
     refreshDiskStatus: onRefreshDiskStatus,
+    clearSelection,
+    onMissingDownloadDir: onOpenSettings,
   })
+
+  useEffect(() => {
+    function maybePromptDownloadDir() {
+      if (!isDesktopApp()) return
+      const dir = readAppDirPaths().modsDownloadDir.trim()
+      if (dir) {
+        promptedMissingDirRef.current = false
+        return
+      }
+      if (promptedMissingDirRef.current) return
+      promptedMissingDirRef.current = true
+      onOpenSettings()
+    }
+    maybePromptDownloadDir()
+    window.addEventListener(PATHS_CHANGED_EVENT, maybePromptDownloadDir)
+    return () =>
+      window.removeEventListener(PATHS_CHANGED_EVENT, maybePromptDownloadDir)
+  }, [onOpenSettings])
 
   useEffect(() => {
     if (!journey?.locked) return
@@ -139,9 +176,9 @@ export function ModsStation({
   )
 
   const focusedMod = useMemo(() => {
-    if (!focusedCodename) return null
-    return mods.find((m) => m.codename === focusedCodename) ?? null
-  }, [focusedCodename, mods])
+    if (!deferredFocusedCodename) return null
+    return mods.find((m) => m.codename === deferredFocusedCodename) ?? null
+  }, [deferredFocusedCodename, mods])
 
   const existingCodenames = useMemo(
     () => new Set(mods.map((m) => m.codename)),
@@ -436,6 +473,7 @@ export function ModsStation({
       <AcquireJobDialog
         job={acquire.job}
         onMinimize={acquire.minimizeJob}
+        onCancel={acquire.cancelJob}
         onClose={acquire.dismissJob}
       />
     </div>

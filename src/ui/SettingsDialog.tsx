@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
+import { openExternalUrl } from '../lib/desktop/openExternalUrl'
 import {
   readAppDirPaths,
   writeAppDirPaths,
@@ -21,12 +22,16 @@ import { DirectoryField } from './DirectoryField'
 
 const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
 
+export type SettingsFocusField = 'modsDownloadDir'
+
 interface Props {
   open: boolean
   onClose: () => void
+  /** When set, focus this field instead of Close on open. */
+  focusField?: SettingsFocusField | null
 }
 
-export function SettingsDialog({ open, onClose }: Props) {
+export function SettingsDialog({ open, onClose, focusField = null }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
   const [appDirs, setAppDirs] = useState(readAppDirPaths)
@@ -37,7 +42,13 @@ export function SettingsDialog({ open, onClose }: Props) {
     setFolderPaths(readGameFolderPaths())
     setAppDirs(readAppDirPaths())
     setGithubToken(readGithubToken())
-    closeRef.current?.focus()
+    requestAnimationFrame(() => {
+      if (focusField === 'modsDownloadDir') {
+        document.getElementById('settings-mods-download-dir')?.focus()
+      } else {
+        closeRef.current?.focus()
+      }
+    })
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault()
@@ -46,7 +57,7 @@ export function SettingsDialog({ open, onClose }: Props) {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open, onClose])
+  }, [open, onClose, focusField])
 
   useEffect(() => {
     if (!open) return
@@ -175,7 +186,16 @@ export function SettingsDialog({ open, onClose }: Props) {
               />
             </div>
             <p className="settings-help">
-              <a href={GITHUB_TOKEN_HELP_URL} target="_blank" rel="noreferrer">
+              <a
+                href={GITHUB_TOKEN_HELP_URL}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e: ReactMouseEvent<HTMLAnchorElement>) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  void openExternalUrl(GITHUB_TOKEN_HELP_URL)
+                }}
+              >
                 Open GitHub token page
               </a>
             </p>

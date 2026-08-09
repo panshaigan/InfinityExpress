@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   acquireMod,
+  cancelModAcquire,
   listenModAcquireProgress,
   pendingToRemote,
   probeModRemote,
@@ -72,6 +73,19 @@ export interface SizeConfirmState {
   detail: string
 }
 
+function isCancelledError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err)
+  return /cancell?ed/i.test(message)
+}
+
+function markRemainingSkipped(entries: JobLogEntry[]): JobLogEntry[] {
+  return entries.map((e) =>
+    e.status === 'pending' || e.status === 'running'
+      ? { ...e, status: 'skipped', message: 'Cancelled' }
+      : e,
+  )
+}
+
 export function useModAcquireJob(args: {
   mods: WorkingMod[]
   patchDiskStatus: (
@@ -83,8 +97,17 @@ export function useModAcquireJob(args: {
     overlays: { version: string; release: string; sizeBytes: number | null },
   ) => void
   refreshDiskStatus: () => Promise<void>
+  clearSelection?: (codename: string) => void
+  onMissingDownloadDir?: () => void
 }) {
-  const { mods, patchDiskStatus, applyAcquireSuccess, refreshDiskStatus } = args
+  const {
+    mods,
+    patchDiskStatus,
+    applyAcquireSuccess,
+    refreshDiskStatus,
+    clearSelection,
+    onMissingDownloadDir,
+  } = args
   const [job, setJob] = useState<AcquireJobState>(IDLE)
   const [pendingRemotes, setPendingRemotes] = useState<
     Map<string, PendingRemoteMeta>
@@ -95,6 +118,10 @@ export function useModAcquireJob(args: {
   const modsRef = useRef(mods)
   modsRef.current = mods
   const cancelRef = useRef(false)
+  const clearSelectionRef = useRef(clearSelection)
+  clearSelectionRef.current = clearSelection
+  const onMissingDownloadDirRef = useRef(onMissingDownloadDir)
+  onMissingDownloadDirRef.current = onMissingDownloadDir
 
   useEffect(() => {
     let unlisten: (() => void) | undefined
@@ -125,7 +152,7 @@ export function useModAcquireJob(args: {
   )
 
   const minimizeJob = useCallback(() => {
-    setJob((prev) => ({ ...prev, minimized: true, open: false }))
+    setJob((prev) => (prev.running ? { ...prev, minimized: true, open: false } : prev))
   }, [])
 
   const restoreJob = useCallback(() => {
@@ -139,6 +166,33 @@ export function useModAcquireJob(args: {
     }
     setJob(IDLE)
   }, [job.running, minimizeJob])
+
+  const cancelJob = useCallback(() => {
+    if (!cancelRef.current) {
+      cancelRef.current = true
+      void cancelModAcquire()
+    }
+  }, [])
+
+  const finishCancelled = useCallback(
+    async (kind: JobKind) => {
+      setJob((prev) => ({
+        ...prev,
+        running: false,
+        activeCodename: null,
+        progress: null,
+        entries: markRemainingSkipped(prev.entries),
+        summary:
+          kind === 'check'
+            ? 'Check cancelled'
+            : 'Download cancelled',
+      }))
+      if (kind === 'acquire') {
+        await refreshDiskStatus()
+      }
+    },
+    [refreshDiskStatus],
+  )
 
   const runCheck = useCallback(
     async (codenames: string[]) => {
@@ -209,6 +263,10 @@ export function useModAcquireJob(args: {
             },
             token,
           )
+          if (cancelRef.current) {
+            setEntry(mod.codename, 'skipped', 'Cancelled')
+            break
+          }
           if (remote.rateLimited || remote.usedScrapeFallback) {
             rateLimitHint = true
           }
@@ -251,6 +309,10 @@ export function useModAcquireJob(args: {
             upToDate += 1
           }
         } catch (err) {
+          if (cancelRef.current || isCancelledError(err)) {
+            setEntry(mod.codename, 'skipped', 'Cancelled')
+            break
+          }
           failed += 1
           const message = err instanceof Error ? err.message : String(err)
           setEntry(mod.codename, 'failed', message)
@@ -263,6 +325,10 @@ export function useModAcquireJob(args: {
       }
 
       setPendingRemotes(nextPending)
+      if (cancelRef.current) {
+        await finishCancelled('check')
+        return
+      }
       setJob((prev) => ({
         ...prev,
         running: false,
@@ -272,77 +338,60 @@ export function useModAcquireJob(args: {
         summary: `Check done: ${updated} update(s), ${available} available, ${upToDate} up to date, ${failed} failed`,
       }))
     },
-    [patchDiskStatus, setEntry],
+    [finishCancelled, patchDiskStatus, setEntry],
   )
 
-  const requestAcquire = useCallback(
-    (codenames: string[]) => {
-      const targets = modsNeedingAcquire(modsRef.current, codenames)
-      if (targets.length === 0) return
+  const requestAcquire = useCallback((codenames: string[]) => {
+    const targets = modsNeedingAcquire(modsRef.current, codenames)
+    if (targets.length === 0) return
 
-      const downloadDir = readAppDirPaths().modsDownloadDir.trim()
-      if (!downloadDir) {
-        setJob({
-          ...IDLE,
-          open: true,
-          kind: 'acquire',
-          entries: [
-            {
-              codename: '—',
-              status: 'failed',
-              message: 'Set a mods download directory in Settings first.',
-            },
-          ],
-          totalCount: 1,
-          doneCount: 1,
-          summary: 'Missing download directory',
-        })
-        return
-      }
-      if (!isDesktopApp()) {
-        setJob({
-          ...IDLE,
-          open: true,
-          kind: 'acquire',
-          entries: [
-            {
-              codename: '—',
-              status: 'failed',
-              message: 'Downloading mods requires the desktop app.',
-            },
-          ],
-          totalCount: 1,
-          doneCount: 1,
-          summary: 'Desktop app required',
-        })
-        return
-      }
+    const downloadDir = readAppDirPaths().modsDownloadDir.trim()
+    if (!downloadDir) {
+      onMissingDownloadDirRef.current?.()
+      return
+    }
+    if (!isDesktopApp()) {
+      setJob({
+        ...IDLE,
+        open: true,
+        kind: 'acquire',
+        entries: [
+          {
+            codename: '—',
+            status: 'failed',
+            message: 'Downloading mods requires the desktop app.',
+          },
+        ],
+        totalCount: 1,
+        doneCount: 1,
+        summary: 'Desktop app required',
+      })
+      return
+    }
 
-      const estimate = estimateAcquireTotal({
-        targets,
-        pending: pendingRemotesRef.current,
-      })
-      const parts: string[] = []
-      if (estimate.totalBytes != null) {
-        const estNote =
-          estimate.estimateCount > 0
-            ? ` (includes ${estimate.estimateCount} catalog estimate${estimate.estimateCount === 1 ? '' : 's'})`
-            : ''
-        parts.push(`${formatBytes(estimate.totalBytes)}${estNote}`)
-      } else {
-        parts.push('size unknown')
-      }
-      if (estimate.unknownCount > 0) {
-        parts.push(`${estimate.unknownCount} without size data`)
-      }
-      setSizeConfirm({
-        targets,
-        totalLabel: parts[0] ?? 'unknown',
-        detail: parts.slice(1).join(' · '),
-      })
-    },
-    [],
-  )
+    const estimate = estimateAcquireTotal({
+      targets,
+      pending: pendingRemotesRef.current,
+    })
+    const parts: string[] = []
+    if (estimate.totalBytes != null) {
+      const estNote =
+        estimate.estimateCount > 0
+          ? ` (includes ${estimate.estimateCount} catalog estimate${estimate.estimateCount === 1 ? '' : 's'})`
+          : ''
+      parts.push(`${formatBytes(estimate.totalBytes)}${estNote}`)
+    } else {
+      parts.push('size unknown')
+    }
+    if (estimate.unknownCount > 0) {
+      parts.push(`${estimate.unknownCount} without size data`)
+    }
+    setSizeConfirm({
+      targets,
+      totalLabel: parts[0] ?? 'unknown',
+      detail: parts.slice(1).join(' · '),
+    })
+  }, [])
 
   const confirmAcquire = useCallback(async () => {
     const confirm = sizeConfirm
@@ -350,6 +399,10 @@ export function useModAcquireJob(args: {
     if (!confirm) return
     const targets = confirm.targets
     const downloadDir = readAppDirPaths().modsDownloadDir.trim()
+    if (!downloadDir) {
+      onMissingDownloadDirRef.current?.()
+      return
+    }
     const token = readGithubToken()
 
     cancelRef.current = false
@@ -401,6 +454,14 @@ export function useModAcquireJob(args: {
             },
             token,
           )
+          if (cancelRef.current) {
+            patchDiskStatus(
+              mod.codename,
+              wasUpdate ? 'update_available' : 'not_present',
+            )
+            setEntry(mod.codename, 'skipped', 'Cancelled')
+            break
+          }
           pending = remoteToPending(remote)
           const catalogSize = effectiveModFields(mod).sizeBytes
           if (pending.sizeBytes == null && catalogSize != null) {
@@ -424,6 +485,10 @@ export function useModAcquireJob(args: {
           githubToken: token || null,
         })
 
+        if (cancelRef.current) {
+          // Acquire finished just as cancel was requested — keep success.
+        }
+
         const sizeBytes =
           result.sizeBytes ??
           pending.sizeBytes ??
@@ -435,6 +500,7 @@ export function useModAcquireJob(args: {
           sizeBytes: sizeBytes ?? null,
         })
         nextPending.delete(mod.codename)
+        clearSelectionRef.current?.(mod.codename)
 
         if (wasUpdate) {
           updated += 1
@@ -444,10 +510,17 @@ export function useModAcquireJob(args: {
           setEntry(mod.codename, 'ok', `Downloaded ${pending.version}`)
         }
       } catch (err) {
+        if (cancelRef.current || isCancelledError(err)) {
+          setEntry(mod.codename, 'skipped', 'Cancelled')
+          patchDiskStatus(
+            mod.codename,
+            wasUpdate ? 'update_available' : 'not_present',
+          )
+          break
+        }
         failed += 1
         const message = err instanceof Error ? err.message : String(err)
         setEntry(mod.codename, 'failed', message)
-        // Restore prior status best-effort
         patchDiskStatus(
           mod.codename,
           wasUpdate ? 'update_available' : 'not_present',
@@ -458,6 +531,10 @@ export function useModAcquireJob(args: {
     }
 
     setPendingRemotes(nextPending)
+    if (cancelRef.current) {
+      await finishCancelled('acquire')
+      return
+    }
     await refreshDiskStatus()
     setJob((prev) => ({
       ...prev,
@@ -468,6 +545,7 @@ export function useModAcquireJob(args: {
     }))
   }, [
     applyAcquireSuccess,
+    finishCancelled,
     patchDiskStatus,
     refreshDiskStatus,
     setEntry,
@@ -484,6 +562,7 @@ export function useModAcquireJob(args: {
     requestAcquire,
     confirmAcquire,
     cancelSizeConfirm,
+    cancelJob,
     minimizeJob,
     restoreJob,
     dismissJob,

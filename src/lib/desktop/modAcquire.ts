@@ -87,6 +87,11 @@ export async function acquireMod(
   return invoke<AcquireModResult>('acquire_mod', { input })
 }
 
+export async function cancelModAcquire(): Promise<void> {
+  if (!isDesktopApp()) return
+  await invoke('cancel_mod_acquire')
+}
+
 export async function listenModAcquireProgress(
   handler: (payload: ModAcquireProgress) => void,
 ): Promise<UnlistenFn> {
