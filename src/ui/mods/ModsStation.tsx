@@ -325,91 +325,111 @@ export function ModsStation({
     onClearJourneyLock()
   }
 
+  const jobMinimized = acquire.job.minimized
+  const jobRunning = acquire.job.running
+  const jobSummary = acquire.job.summary
+  const jobBarActive = jobMinimized || !!notice
+
   return (
-    <div
-      className={`workspace mods-workspace${
-        detailCollapsed ? ' detail-collapsed' : ''
-      }`}
-      style={{ '--detail-width': `${detailWidth}px` } as CSSProperties}
-    >
-      <div className="list-pane mods-list-pane">
-        <div className="list-pane-header mods-list-header">
-          <div className="list-pane-header-title">
-            <h2>Mods</h2>
+    <div className="mods-workspace-shell">
+      <div
+        className={`workspace mods-workspace${
+          detailCollapsed ? ' detail-collapsed' : ''
+        }`}
+        style={{ '--detail-width': `${detailWidth}px` } as CSSProperties}
+      >
+        <div className="list-pane mods-list-pane">
+          <div className="list-pane-header mods-list-header">
+            <ModsToolbar
+              filters={filters}
+              onChange={handleFiltersChange}
+              facets={facets}
+              neededCodenames={neededCodenames}
+              journeyLocked={journeyLocked}
+              selectedCount={selected.size}
+              visibleCount={rows.length}
+              totalCount={mods.length}
+              acquireLabel={acquireButtonLabel(selectedAcquireKind)}
+              acquireDisabled={selectedAcquireKind === 'none'}
+              onAcquire={() => acquire.requestAcquire(selectedList)}
+              onCheckUpdates={() => {
+                void acquire.runCheck(selectedList)
+              }}
+              onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
+              onExportCsv={() => {
+                void exportCsv()
+              }}
+              onAddMod={() => setEditor({ mode: 'create', initial: null })}
+              onContinueBrowsing={handleContinueBrowsing}
+            />
           </div>
-          <ModsToolbar
-            filters={filters}
-            onChange={handleFiltersChange}
-            facets={facets}
-            neededCodenames={neededCodenames}
-            journeyLocked={journeyLocked}
-            selectedCount={selected.size}
-            visibleCount={rows.length}
-            totalCount={mods.length}
-            acquireLabel={acquireButtonLabel(selectedAcquireKind)}
-            acquireDisabled={selectedAcquireKind === 'none'}
-            onAcquire={() => acquire.requestAcquire(selectedList)}
-            onCheckUpdates={() => {
-              void acquire.runCheck(selectedList)
-            }}
-            onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
-            onExportCsv={() => {
-              void exportCsv()
-            }}
-            onAddMod={() => setEditor({ mode: 'create', initial: null })}
-            onContinueBrowsing={handleContinueBrowsing}
-            notice={notice}
-            jobMinimized={acquire.job.minimized}
-            jobRunning={acquire.job.running}
-            jobSummary={acquire.job.summary}
-            onRestoreJob={acquire.restoreJob}
-          />
+          <div className="list-pane-scroll mods-table-scroll">
+            <ModsTable
+              rows={rows}
+              selected={selected}
+              focusedCodename={focusedCodename}
+              selectionLocked={journeyLocked}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={onSort}
+              onToggle={onToggle}
+              onToggleAllVisible={onToggleAllVisible}
+              onFocusRow={setFocusedCodename}
+              rowProgress={rowProgress}
+            />
+          </div>
         </div>
-        <div className="list-pane-scroll mods-table-scroll">
-          <ModsTable
-            rows={rows}
-            selected={selected}
-            focusedCodename={focusedCodename}
-            selectionLocked={journeyLocked}
-            sortKey={sortKey}
-            sortDir={sortDir}
-            onSort={onSort}
-            onToggle={onToggle}
-            onToggleAllVisible={onToggleAllVisible}
-            onFocusRow={setFocusedCodename}
-            rowProgress={rowProgress}
-          />
-        </div>
+
+        <ModDetail
+          mod={focusedMod}
+          collapsed={detailCollapsed}
+          width={detailWidth}
+          onWidthChange={onDetailWidthChange}
+          onToggleCollapsed={onToggleDetailCollapsed}
+          onEdit={() => {
+            if (focusedMod) {
+              setEditor({ mode: 'edit', initial: focusedMod })
+            }
+          }}
+          onDeleteFromCatalog={() => {
+            if (focusedMod) {
+              setPendingDelete(focusedMod.codename)
+            }
+          }}
+          acquireLabel={acquireButtonLabel(focusedAcquireKind)}
+          acquireDisabled={focusedAcquireKind === 'none'}
+          onAcquire={() =>
+            focusedMod && acquire.requestAcquire([focusedMod.codename])
+          }
+          onCheckUpdates={() => {
+            if (focusedMod) void acquire.runCheck([focusedMod.codename])
+          }}
+          onRemoveFromDisk={() =>
+            focusedMod && requestRemoveFromDisk([focusedMod.codename])
+          }
+        />
       </div>
 
-      <ModDetail
-        mod={focusedMod}
-        collapsed={detailCollapsed}
-        width={detailWidth}
-        onWidthChange={onDetailWidthChange}
-        onToggleCollapsed={onToggleDetailCollapsed}
-        onEdit={() => {
-          if (focusedMod) {
-            setEditor({ mode: 'edit', initial: focusedMod })
-          }
-        }}
-        onDeleteFromCatalog={() => {
-          if (focusedMod) {
-            setPendingDelete(focusedMod.codename)
-          }
-        }}
-        acquireLabel={acquireButtonLabel(focusedAcquireKind)}
-        acquireDisabled={focusedAcquireKind === 'none'}
-        onAcquire={() =>
-          focusedMod && acquire.requestAcquire([focusedMod.codename])
-        }
-        onCheckUpdates={() => {
-          if (focusedMod) void acquire.runCheck([focusedMod.codename])
-        }}
-        onRemoveFromDisk={() =>
-          focusedMod && requestRemoveFromDisk([focusedMod.codename])
-        }
-      />
+      <div className="mods-job-bar" role="status" aria-live="polite">
+        {jobMinimized ? (
+          <button
+            type="button"
+            className={`mods-job-chip${jobRunning ? ' running' : ''}`}
+            onClick={acquire.restoreJob}
+          >
+            {jobRunning
+              ? 'Job running — show progress'
+              : jobSummary
+                ? `Job finished — ${jobSummary}`
+                : 'Show job log'}
+          </button>
+        ) : null}
+        {notice ? (
+          <p className="mods-job-bar-notice">{notice}</p>
+        ) : !jobBarActive ? (
+          <span className="mods-job-bar-idle">No active job</span>
+        ) : null}
+      </div>
 
       <ModEditorDialog
         open={editor != null}

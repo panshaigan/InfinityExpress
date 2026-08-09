@@ -1384,6 +1384,10 @@ body.is-resizing-detail * {
   position: relative;
 }
 
+.icon-tip-anchor {
+  display: none;
+}
+
 .icon-tip {
   position: absolute;
   left: 50%;
@@ -1415,6 +1419,27 @@ body.is-resizing-detail * {
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.08s ease, transform 0.08s ease, visibility 0.08s ease;
+}
+
+/* Portaled tips escape overflow:hidden / auto ancestors. */
+.icon-tip.icon-tip-portal {
+  position: fixed;
+  bottom: auto;
+  top: auto;
+  z-index: 60;
+  transform: translateX(-50%);
+  transition: none;
+}
+
+.icon-tip.icon-tip-portal.icon-tip-below {
+  top: auto;
+  bottom: auto;
+  transform: translateX(-50%);
+}
+
+.icon-tip.icon-tip-portal.icon-tip-visible {
+  opacity: 1;
+  visibility: visible;
 }
 
 .icon-tip::after {
@@ -4075,6 +4100,14 @@ body.is-resizing-detail * {
   min-height: 0;
 }
 
+.mods-workspace-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
 .mods-workspace {
   flex: 1;
   min-height: 0;
@@ -4095,7 +4128,7 @@ body.is-resizing-detail * {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
-  margin-top: 0.55rem;
+  margin-top: 0;
 }
 
 .mods-journey-banner {
@@ -4165,8 +4198,49 @@ body.is-resizing-detail * {
 .mods-toolbar-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  align-items: center;
+  gap: 0.25rem;
   margin-left: auto;
+}
+
+.mods-action-icon-wrap {
+  display: inline-flex;
+  position: relative;
+}
+
+.mods-action-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--panel) 70%, #000);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.mods-action-icon-btn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent-soft) 55%, var(--panel));
+}
+
+.mods-action-icon-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.mods-action-icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.mods-action-icon-btn.primary {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent) 22%, var(--panel));
+  color: var(--ink);
 }
 
 .mods-facets {
@@ -4209,31 +4283,46 @@ body.is-resizing-detail * {
   letter-spacing: 0.04em;
 }
 
-.mods-stub-notice {
-  margin: 0;
-  padding: 0.4rem 0.55rem;
-  border-radius: 0.3rem;
-  border: 1px dashed color-mix(in srgb, var(--accent) 30%, var(--line));
-  background: color-mix(in srgb, var(--accent-soft) 45%, transparent);
-  color: var(--ink);
-  font-size: 0.8rem;
+.mods-job-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2rem;
+  padding: 0.2rem 0.85rem;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 92%, #000);
+  font-size: 0.78rem;
 }
 
-.mods-job-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.35rem;
+.mods-job-bar-idle {
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+.mods-job-bar-notice {
+  margin: 0;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
 }
 
 .mods-job-chip {
+  flex-shrink: 0;
   border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
   background: color-mix(in srgb, var(--accent-soft) 70%, transparent);
   color: var(--ink);
   border-radius: 999px;
-  padding: 0.3rem 0.75rem;
-  font-size: 0.78rem;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.76rem;
   cursor: pointer;
+  max-width: min(28rem, 55vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mods-job-chip.running {
@@ -4250,7 +4339,7 @@ body.is-resizing-detail * {
   }
 }
 
-.mods-row.busy .mods-col-name {
+.mods-row.busy .mods-col-status {
   position: relative;
 }
 
@@ -4259,7 +4348,11 @@ body.is-resizing-detail * {
   flex-direction: column;
   gap: 0.15rem;
   margin-top: 0.25rem;
-  max-width: 14rem;
+  max-width: 9.5rem;
+}
+
+.mods-col-status .mods-row-progress {
+  margin-top: 0.3rem;
 }
 
 .mods-row-progress-bar {
@@ -4296,8 +4389,26 @@ body.is-resizing-detail * {
 }
 
 .acquire-job-dialog {
+  display: flex;
+  flex-direction: column;
   width: min(40rem, 100%);
   max-height: min(36rem, 90vh);
+  overflow: hidden;
+}
+
+.acquire-job-dialog .keyboard-help-header {
+  flex-shrink: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+.acquire-job-dialog-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
 }
 
 .acquire-job-header-actions {
@@ -4665,6 +4776,11 @@ body.is-resizing-detail * {
 
 .mods-col-status {
   white-space: nowrap;
+  vertical-align: top;
+}
+
+.mods-col-status .mods-row-progress {
+  white-space: normal;
 }
 
 /* Keep clipped cells from painting over neighboring columns; tip escapes. */

@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { AcquireJobState, JobKind } from '../../hooks/useModAcquireJob'
 import { formatBytes } from '../../lib/mods/loadMods'
+import { IconTip } from '../IconTip'
 
 interface Props {
   job: AcquireJobState
@@ -104,9 +105,7 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
                   onClick={onCancel}
                 >
                   Cancel
-                  <span className="icon-tip" role="tooltip">
-                    Stop the job and skip remaining mods
-                  </span>
+                  <IconTip>Stop the job and skip remaining mods</IconTip>
                 </button>
                 <button
                   type="button"
@@ -114,9 +113,7 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
                   onClick={onMinimize}
                 >
                   Minimize
-                  <span className="icon-tip" role="tooltip">
-                    Minimize and keep the job running
-                  </span>
+                  <IconTip>Minimize and keep the job running</IconTip>
                 </button>
               </>
             ) : null}
@@ -134,70 +131,77 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
           </div>
         </div>
 
-        <div className="acquire-job-overall" aria-live="polite">
-          <div className="acquire-job-overall-meta">
-            <span>
-              {job.doneCount} / {job.totalCount}
-            </span>
-            {job.running && job.activeCodename ? (
-              <span className="acquire-job-active">{job.activeCodename}</span>
+        <div className="acquire-job-dialog-body">
+          <div className="acquire-job-overall" aria-live="polite">
+            <div className="acquire-job-overall-meta">
+              <span>
+                {job.doneCount} / {job.totalCount}
+              </span>
+              {job.running && job.activeCodename ? (
+                <span className="acquire-job-active">{job.activeCodename}</span>
+              ) : null}
+            </div>
+            <div className="acquire-job-bar" aria-hidden="true">
+              <div
+                className="acquire-job-bar-fill"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            {job.progress?.message ? (
+              <p className="acquire-job-progress-msg">
+                {job.progress.message}
+                {byteLine ? ` · ${byteLine}` : ''}
+              </p>
             ) : null}
           </div>
-          <div className="acquire-job-bar" aria-hidden="true">
-            <div className="acquire-job-bar-fill" style={{ width: `${pct}%` }} />
+
+          <label className="acquire-job-filter">
+            <input
+              type="checkbox"
+              checked={hideUpToDate}
+              onChange={(e) => setHideUpToDate(e.target.checked)}
+            />
+            Hide up to date
+            {upToDateCount > 0 ? (
+              <span className="acquire-job-filter-count">({upToDateCount})</span>
+            ) : null}
+          </label>
+
+          <div className="acquire-job-log" ref={logRef} role="log">
+            {visibleEntries.map((entry) => (
+              <div
+                key={entry.codename}
+                className={`acquire-job-entry acquire-job-entry-${entry.status}`}
+              >
+                <strong className="acquire-job-entry-code">
+                  {entry.codename}
+                </strong>
+                <span className="acquire-job-entry-status">
+                  {statusLabel(entry.status, job.kind)}
+                </span>
+                <span className="acquire-job-entry-msg">{entry.message}</span>
+              </div>
+            ))}
+            {visibleEntries.length === 0 && job.entries.length > 0 ? (
+              <p className="acquire-job-filter-empty">
+                All checked mods are up to date.
+              </p>
+            ) : null}
           </div>
-          {job.progress?.message ? (
-            <p className="acquire-job-progress-msg">
-              {job.progress.message}
-              {byteLine ? ` · ${byteLine}` : ''}
+
+          {job.rateLimitHint ? (
+            <p className="acquire-job-hint" role="status">
+              GitHub rate limits may apply. Add a personal access token in
+              Settings for full-catalog checks.
+            </p>
+          ) : null}
+
+          {job.summary ? (
+            <p className="acquire-job-summary" role="status">
+              {job.summary}
             </p>
           ) : null}
         </div>
-
-        <label className="acquire-job-filter">
-          <input
-            type="checkbox"
-            checked={hideUpToDate}
-            onChange={(e) => setHideUpToDate(e.target.checked)}
-          />
-          Hide up to date
-          {upToDateCount > 0 ? (
-            <span className="acquire-job-filter-count">({upToDateCount})</span>
-          ) : null}
-        </label>
-
-        <div className="acquire-job-log" ref={logRef} role="log">
-          {visibleEntries.map((entry) => (
-            <div
-              key={entry.codename}
-              className={`acquire-job-entry acquire-job-entry-${entry.status}`}
-            >
-              <strong className="acquire-job-entry-code">{entry.codename}</strong>
-              <span className="acquire-job-entry-status">
-                {statusLabel(entry.status, job.kind)}
-              </span>
-              <span className="acquire-job-entry-msg">{entry.message}</span>
-            </div>
-          ))}
-          {visibleEntries.length === 0 && job.entries.length > 0 ? (
-            <p className="acquire-job-filter-empty">
-              All checked mods are up to date.
-            </p>
-          ) : null}
-        </div>
-
-        {job.rateLimitHint ? (
-          <p className="acquire-job-hint" role="status">
-            GitHub rate limits may apply. Add a personal access token in Settings
-            for full-catalog checks.
-          </p>
-        ) : null}
-
-        {job.summary ? (
-          <p className="acquire-job-summary" role="status">
-            {job.summary}
-          </p>
-        ) : null}
       </div>
     </div>
   )

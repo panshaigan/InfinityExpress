@@ -19,6 +19,7 @@ import {
 } from '../../lib/mods/modsTable'
 import { effectiveModFields, type WorkingMod } from '../../lib/mods/loadMods'
 import { isHttpUrl } from '../../lib/url'
+import { IconTip } from '../IconTip'
 
 export const MODS_TABLE_ID = 'mods-table'
 
@@ -66,11 +67,7 @@ function TipCell({
   return (
     <td className={`${className}${showTip ? ' has-icon-tip' : ''}`}>
       <span className="mods-cell-clip">{display}</span>
-      {showTip ? (
-        <span className="icon-tip" role="tooltip">
-          {tip}
-        </span>
-      ) : null}
+      {showTip ? <IconTip>{tip}</IconTip> : null}
     </td>
   )
 }
@@ -113,9 +110,7 @@ function UrlCopyButton({ url }: { url: string }) {
           />
         </svg>
       )}
-      <span className="icon-tip" role="tooltip">
-        {copied ? 'Copied' : 'Copy URL'}
-      </span>
+      <IconTip>{copied ? 'Copied' : 'Copy URL'}</IconTip>
     </button>
   )
 }
@@ -181,18 +176,6 @@ const ModsTableRow = memo(function ModsTableRow({
         {mod.origin === 'user' ? (
           <span className="mods-origin-tag">Added</span>
         ) : null}
-        {progress ? (
-          <span className="mods-row-progress">
-            <span
-              className="mods-row-progress-bar"
-              style={
-                progress.pct != null ? { width: `${progress.pct}%` } : undefined
-              }
-              data-indeterminate={progress.pct == null ? 'true' : undefined}
-            />
-            <span className="mods-row-progress-label">{progress.label}</span>
-          </span>
-        ) : null}
       </td>
       <td className="mods-col-category">{eff.category || '—'}</td>
       <TipCell
@@ -237,6 +220,18 @@ const ModsTableRow = memo(function ModsTableRow({
         <span className={statusClass(mod.diskStatus)}>
           {diskStatusLabel(mod.diskStatus)}
         </span>
+        {progress ? (
+          <span className="mods-row-progress">
+            <span
+              className="mods-row-progress-bar"
+              style={
+                progress.pct != null ? { width: `${progress.pct}%` } : undefined
+              }
+              data-indeterminate={progress.pct == null ? 'true' : undefined}
+            />
+            <span className="mods-row-progress-label">{progress.label}</span>
+          </span>
+        ) : null}
       </td>
     </tr>
   )

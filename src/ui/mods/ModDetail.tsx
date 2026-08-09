@@ -7,6 +7,12 @@ import {
 } from '../../lib/mods/modsTable'
 import { isHttpUrl } from '../../lib/url'
 import { DetailResizeHandle } from '../DetailResizeHandle'
+import { IconTip } from '../IconTip'
+import {
+  CheckUpdatesIcon,
+  DownloadIcon,
+  RemoveFromDiskIcon,
+} from './ModsActionIcons'
 
 interface Props {
   mod: WorkingMod | null
@@ -89,9 +95,7 @@ export function ModDetail({
             aria-label="Show details"
           >
             <span className="detail-pane-expand-label">Details</span>
-            <span className="icon-tip" role="tooltip">
-              Show details (;)
-            </span>
+            <IconTip>Show details (;)</IconTip>
           </button>
         ) : (
           <>
@@ -105,9 +109,7 @@ export function ModDetail({
                 aria-label="Hide details"
               >
                 »
-                <span className="icon-tip" role="tooltip">
-                  Hide details (;)
-                </span>
+                <IconTip>Hide details (;)</IconTip>
               </button>
             </div>
             <div className="detail-pane-scroll">
@@ -198,29 +200,41 @@ function ModDetailBody({
       </dl>
 
       <div className="mod-detail-actions">
-        <button
-          type="button"
-          className="btn secondary"
-          disabled={acquireDisabled}
-          onClick={onAcquire}
-        >
-          {acquireLabel}
-        </button>
-        <button
-          type="button"
-          className="btn secondary"
-          onClick={onCheckUpdates}
-        >
-          Check for updates
-        </button>
-        <button
-          type="button"
-          className="btn secondary"
-          onClick={onRemoveFromDisk}
-          disabled={mod.diskStatus === 'not_present'}
-        >
-          Remove from disk
-        </button>
+        <span className="mods-action-icon-wrap has-icon-tip">
+          <button
+            type="button"
+            className="mods-action-icon-btn"
+            disabled={acquireDisabled}
+            onClick={onAcquire}
+            aria-label={acquireLabel}
+          >
+            <DownloadIcon />
+          </button>
+          <IconTip>{acquireLabel}</IconTip>
+        </span>
+        <span className="mods-action-icon-wrap has-icon-tip">
+          <button
+            type="button"
+            className="mods-action-icon-btn"
+            onClick={onCheckUpdates}
+            aria-label="Check for updates"
+          >
+            <CheckUpdatesIcon />
+          </button>
+          <IconTip>Check for updates</IconTip>
+        </span>
+        <span className="mods-action-icon-wrap has-icon-tip">
+          <button
+            type="button"
+            className="mods-action-icon-btn"
+            onClick={onRemoveFromDisk}
+            disabled={mod.diskStatus === 'not_present'}
+            aria-label="Remove from disk"
+          >
+            <RemoveFromDiskIcon />
+          </button>
+          <IconTip>Remove from disk</IconTip>
+        </span>
         <button type="button" className="btn" onClick={onEdit}>
           Edit
         </button>

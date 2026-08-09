@@ -5,7 +5,15 @@ import {
   type ModsTableFilters,
 } from '../../lib/mods/modsTable'
 import type { DiskStatus } from '../../lib/mods/loadMods'
+import { IconTip } from '../IconTip'
 import { OutlinedSelect } from '../OutlinedSelect'
+import {
+  AddModIcon,
+  CheckUpdatesIcon,
+  DownloadIcon,
+  ExportCsvIcon,
+  RemoveFromDiskIcon,
+} from './ModsActionIcons'
 
 interface FacetOptions {
   categories: string[]
@@ -29,11 +37,6 @@ interface Props {
   onExportCsv: () => void
   onAddMod: () => void
   onContinueBrowsing: () => void
-  notice: string | null
-  jobMinimized: boolean
-  jobRunning: boolean
-  jobSummary: string | null
-  onRestoreJob: () => void
 }
 
 const ALL_STATUSES: DiskStatus[] = [
@@ -64,11 +67,6 @@ export function ModsToolbar({
   onExportCsv,
   onAddMod,
   onContinueBrowsing,
-  notice,
-  jobMinimized,
-  jobRunning,
-  jobSummary,
-  onRestoreJob,
 }: Props) {
   const bulkDisabled = selectedCount === 0
   const onlyNeededActive = filters.requiredCodenames != null
@@ -136,75 +134,67 @@ export function ModsToolbar({
           {selectedCount > 0 ? ` · ${selectedCount} selected` : ''}
         </span>
         <div className="mods-toolbar-actions">
-          <button
-            type="button"
-            className="btn secondary has-icon-tip"
-            disabled={bulkDisabled || acquireDisabled}
-            onClick={onAcquire}
-          >
-            {acquireLabel}
-            <span className="icon-tip" role="tooltip">
-              Download missing mods and update outdated ones in the selection
-            </span>
-          </button>
-          <button
-            type="button"
-            className="btn secondary has-icon-tip"
-            disabled={bulkDisabled}
-            onClick={onCheckUpdates}
-          >
-            Check for updates
-            <span className="icon-tip" role="tooltip">
-              Probe remote versions for the selection
-            </span>
-          </button>
-          <button
-            type="button"
-            className="btn secondary has-icon-tip"
-            disabled={bulkDisabled}
-            onClick={onRemoveFromDisk}
-          >
-            Remove from disk
-            <span className="icon-tip" role="tooltip">
-              Delete selected mod folders from the download directory
-            </span>
-          </button>
-          <button
-            type="button"
-            className="btn secondary has-icon-tip"
-            onClick={onExportCsv}
-          >
-            Export CSV
-            <span className="icon-tip" role="tooltip">
-              Export the current catalog (with overlays) as CSV
-            </span>
-          </button>
-          <button
-            type="button"
-            className="btn"
-            disabled={journeyLocked}
-            onClick={onAddMod}
-          >
-            Add mod
-          </button>
+          <span className="mods-action-icon-wrap has-icon-tip">
+            <button
+              type="button"
+              className="mods-action-icon-btn"
+              disabled={bulkDisabled || acquireDisabled}
+              onClick={onAcquire}
+              aria-label={acquireLabel}
+            >
+              <DownloadIcon />
+            </button>
+            <IconTip>{acquireLabel}</IconTip>
+          </span>
+          <span className="mods-action-icon-wrap has-icon-tip">
+            <button
+              type="button"
+              className="mods-action-icon-btn"
+              disabled={bulkDisabled}
+              onClick={onCheckUpdates}
+              aria-label="Check for updates"
+            >
+              <CheckUpdatesIcon />
+            </button>
+            <IconTip>Check for updates</IconTip>
+          </span>
+          <span className="mods-action-icon-wrap has-icon-tip">
+            <button
+              type="button"
+              className="mods-action-icon-btn"
+              disabled={bulkDisabled}
+              onClick={onRemoveFromDisk}
+              aria-label="Remove from disk"
+            >
+              <RemoveFromDiskIcon />
+            </button>
+            <IconTip>Remove from disk</IconTip>
+          </span>
+          <span className="mods-action-icon-wrap has-icon-tip">
+            <button
+              type="button"
+              className="mods-action-icon-btn"
+              onClick={onExportCsv}
+              aria-label="Export CSV"
+            >
+              <ExportCsvIcon />
+            </button>
+            <IconTip>Export CSV</IconTip>
+          </span>
+          <span className="mods-action-icon-wrap has-icon-tip">
+            <button
+              type="button"
+              className="mods-action-icon-btn primary"
+              disabled={journeyLocked}
+              onClick={onAddMod}
+              aria-label="Add mod"
+            >
+              <AddModIcon />
+            </button>
+            <IconTip>Add mod</IconTip>
+          </span>
         </div>
       </div>
-
-      {jobMinimized ? (
-        <div className="mods-job-chip-row">
-          <button
-            type="button"
-            className={`mods-job-chip${jobRunning ? ' running' : ''}`}
-            onClick={onRestoreJob}
-          >
-            {jobRunning
-              ? 'Job running — show progress'
-              : jobSummary
-                ? `Job finished — ${jobSummary}`
-                : 'Show job log'}
-          </button>
-        </div>
-      ) : null}
 
       {!journeyLocked ? (
         <div className="mods-facets">
@@ -316,12 +306,6 @@ export function ModsToolbar({
           </button>
         </div>
       )}
-
-      {notice ? (
-        <p className="mods-stub-notice" role="status">
-          {notice}
-        </p>
-      ) : null}
     </div>
   )
 }
