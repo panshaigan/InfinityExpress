@@ -65,6 +65,23 @@ describe('mergeBaseIntoWorkingCopy', () => {
     expect(merged.some((m) => m.codename === 'C')).toBe(true)
   })
 
+  it('preserves scrape-filled author when base CSV author is empty', () => {
+    const existing: StoredModEntry[] = [
+      {
+        ...baseMod({ codename: 'A', author: '' }),
+        origin: 'base',
+        diskStatus: 'present',
+        overlays: {},
+        author: 'GitHubOwner',
+      },
+    ]
+    const base = new Map([
+      ['A', baseMod({ codename: 'A', author: '', version: 'v2' })],
+    ])
+    const merged = mergeBaseIntoWorkingCopy(base, existing)
+    expect(merged.find((m) => m.codename === 'A')?.author).toBe('GitHubOwner')
+  })
+
   it('keeps rows removed from base and preserves user-origin rows', () => {
     const existing: StoredModEntry[] = [
       {

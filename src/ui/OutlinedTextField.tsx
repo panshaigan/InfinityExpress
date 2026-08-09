@@ -1,0 +1,85 @@
+import { useId, type ReactNode, type Ref } from 'react'
+
+interface Props {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  type?: 'text' | 'password' | 'url'
+  placeholder?: string
+  required?: boolean
+  autoFocus?: boolean
+  disabled?: boolean
+  id?: string
+  inputRef?: Ref<HTMLInputElement>
+  spellCheck?: boolean
+  autoComplete?: string
+  onBlur?: () => void
+  /** Extra class on the root (e.g. layout spans). */
+  className?: string
+  /** Trailing control (e.g. Browse). */
+  trailing?: ReactNode
+}
+
+export function OutlinedTextField({
+  label,
+  value,
+  onChange,
+  type = 'text',
+  placeholder,
+  required = false,
+  autoFocus = false,
+  disabled = false,
+  id: idProp,
+  inputRef,
+  spellCheck,
+  autoComplete,
+  onBlur,
+  className = '',
+  trailing,
+}: Props) {
+  const genId = useId()
+  const id = idProp ?? genId
+  const withAction = trailing != null
+
+  return (
+    <div
+      className={[
+        'outlined-field',
+        'outlined-field-control',
+        'outlined-text-field',
+        withAction ? 'outlined-text-field-with-action' : '',
+        disabled ? 'disabled' : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <label className="outlined-field-label" htmlFor={id}>
+        {label}
+        {required ? (
+          <>
+            {' '}
+            <abbr title="required">*</abbr>
+          </>
+        ) : null}
+      </label>
+      <div className="outlined-text-field-row">
+        <input
+          ref={inputRef}
+          id={id}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          required={required}
+          autoFocus={autoFocus}
+          disabled={disabled}
+          spellCheck={spellCheck}
+          autoComplete={autoComplete}
+        />
+        {trailing}
+      </div>
+    </div>
+  )
+}

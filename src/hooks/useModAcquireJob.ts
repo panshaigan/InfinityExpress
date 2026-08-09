@@ -95,6 +95,7 @@ export function useModAcquireJob(args: {
   applyAcquireSuccess: (
     codename: string,
     overlays: { version: string; release: string; sizeBytes: number | null },
+    meta?: { author?: string | null },
   ) => void
   refreshDiskStatus: () => Promise<void>
   clearSelection?: (codename: string) => void
@@ -494,11 +495,15 @@ export function useModAcquireJob(args: {
           pending.sizeBytes ??
           effectiveModFields(mod).sizeBytes
 
-        applyAcquireSuccess(mod.codename, {
-          version: pending.version,
-          release: pending.release || effectiveModFields(mod).release,
-          sizeBytes: sizeBytes ?? null,
-        })
+        applyAcquireSuccess(
+          mod.codename,
+          {
+            version: pending.version,
+            release: pending.release || effectiveModFields(mod).release,
+            sizeBytes: sizeBytes ?? null,
+          },
+          { author: pending.owner },
+        )
         nextPending.delete(mod.codename)
         clearSelectionRef.current?.(mod.codename)
 

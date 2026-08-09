@@ -22,3 +22,8 @@ commands.allow = ["acquire_mod"]
 identifier = "allow-cancel-mod-acquire"
 description = "Abort the in-flight mod download"
 commands.allow = ["cancel_mod_acquire"]
+
+[[permission]]
+identifier = "allow-scrape-mod-page-meta"
+description = "Fetch page title and readme hints from a mod URL"
+commands.allow = ["scrape_mod_page_meta"]

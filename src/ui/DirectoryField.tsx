@@ -1,4 +1,5 @@
 import { isDesktopApp, pickDirectory } from '../lib/desktop/fsDialogs'
+import { OutlinedTextField } from './OutlinedTextField'
 
 interface Props {
   id: string
@@ -26,24 +27,18 @@ export function DirectoryField({
   }
 
   return (
-    <div className="engine-folder-field">
-      <label className="engine-folder-label" htmlFor={id}>
-        {label}
-      </label>
-      <div className="engine-folder-controls">
-        <input
-          id={id}
-          type="text"
-          className="engine-folder-input"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          spellCheck={false}
-          autoComplete="off"
-        />
+    <OutlinedTextField
+      id={id}
+      label={label}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      spellCheck={false}
+      autoComplete="off"
+      trailing={
         <button
           type="button"
-          className="btn secondary"
+          className="btn secondary outlined-text-field-action"
           onClick={() => void browse()}
           disabled={!canBrowse}
           title={
@@ -54,7 +49,7 @@ export function DirectoryField({
         >
           Browse
         </button>
-      </div>
-    </div>
+      }
+    />
   )
 }

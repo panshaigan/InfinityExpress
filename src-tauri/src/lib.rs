@@ -12,6 +12,7 @@ pub fn run() {
       mod_fs::list_subdir_names,
       mod_fs::remove_mod_dir,
       mod_acquire::probe_mod_remote,
+      mod_acquire::scrape_mod_page_meta,
       mod_acquire::acquire_mod,
       mod_acquire::cancel_mod_acquire,
     ])

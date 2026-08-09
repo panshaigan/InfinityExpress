@@ -56,21 +56,29 @@ export function collectModsFacetOptions(mods: readonly WorkingMod[]): {
   categories: string[]
   games: string[]
   authors: string[]
+  types: string[]
+  stabilities: string[]
 } {
   const categories = new Set<string>()
   const games = new Set<string>()
   const authors = new Set<string>()
+  const types = new Set<string>()
+  const stabilities = new Set<string>()
   for (const mod of mods) {
     const eff = effectiveModFields(mod)
     if (eff.category) categories.add(eff.category)
     if (eff.game) games.add(eff.game)
     if (eff.author) authors.add(eff.author)
+    if (eff.type) types.add(eff.type)
+    if (eff.stability) stabilities.add(eff.stability)
   }
   const collator = new Intl.Collator(undefined, { sensitivity: 'base' })
   return {
     categories: [...categories].sort(collator.compare),
     games: [...games].sort(collator.compare),
     authors: [...authors].sort(collator.compare),
+    types: [...types].sort(collator.compare),
+    stabilities: [...stabilities].sort(collator.compare),
   }
 }
 

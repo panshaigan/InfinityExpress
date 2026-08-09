@@ -107,6 +107,8 @@ export function mergeBaseIntoWorkingCopy(
         diskStatus: prev.diskStatus,
         overlays: prev.overlays ?? {},
       }),
+      // Keep acquire-filled author when CSV left it blank
+      author: info.author.trim() || prev.author,
     })
   }
 
@@ -306,7 +308,7 @@ export function removeUserMod(
 export function patchWorkingMod(
   store: UserCatalogStore,
   codename: string,
-  patch: Partial<Pick<StoredModEntry, 'diskStatus' | 'overlays'>>,
+  patch: Partial<Pick<StoredModEntry, 'diskStatus' | 'overlays' | 'author'>>,
 ): UserCatalogStore {
   const idx = store.mods.findIndex((m) => m.codename === codename)
   if (idx < 0) throw new Error(`Unknown mod "${codename}"`)
@@ -318,6 +320,7 @@ export function patchWorkingMod(
     overlays: patch.overlays
       ? { ...prev.overlays, ...patch.overlays }
       : prev.overlays,
+    author: patch.author !== undefined ? patch.author : prev.author,
   }
   return { version: 1, mods }
 }

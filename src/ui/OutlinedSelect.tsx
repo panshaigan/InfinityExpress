@@ -22,6 +22,8 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   onChange: (value: string) => void
+  /** Extra class on the root (e.g. full-width in forms). */
+  className?: string
 }
 
 export function OutlinedSelect({
@@ -33,6 +35,7 @@ export function OutlinedSelect({
   open,
   onOpenChange,
   onChange,
+  className = '',
 }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
@@ -101,7 +104,16 @@ export function OutlinedSelect({
   return (
     <div
       ref={rootRef}
-      className={`outlined-field outlined-field-control outlined-select${open ? ' open' : ''}${disabled ? ' disabled' : ''}`}
+      className={[
+        'outlined-field',
+        'outlined-field-control',
+        'outlined-select',
+        open ? 'open' : '',
+        disabled ? 'disabled' : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       <span className="outlined-field-label">{label}</span>
       <button

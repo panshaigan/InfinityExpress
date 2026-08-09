@@ -19,6 +19,7 @@ import {
 import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 import { GAME_LABELS } from '../lib/xml/schema'
 import { DirectoryField } from './DirectoryField'
+import { OutlinedTextField } from './OutlinedTextField'
 
 const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
 
@@ -170,21 +171,16 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
             public repositories).
           </p>
           <div className="settings-fields">
-            <div className="engine-folder-field">
-              <label className="engine-folder-label" htmlFor="settings-github-token">
-                GitHub token
-              </label>
-              <input
-                id="settings-github-token"
-                type="password"
-                className="engine-folder-input"
-                autoComplete="off"
-                spellCheck={false}
-                placeholder="ghp_… (optional)"
-                value={githubToken}
-                onChange={(e) => onGithubTokenChange(e.target.value)}
-              />
-            </div>
+            <OutlinedTextField
+              id="settings-github-token"
+              label="GitHub token"
+              type="password"
+              autoComplete="off"
+              spellCheck={false}
+              placeholder="ghp_… (optional)"
+              value={githubToken}
+              onChange={onGithubTokenChange}
+            />
             <p className="settings-help">
               <a
                 href={GITHUB_TOKEN_HELP_URL}

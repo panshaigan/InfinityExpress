@@ -122,6 +122,7 @@ export function useUserCatalog() {
         release: string
         sizeBytes: number | null
       },
+      meta?: { author?: string | null },
     ) => {
       setStore((prev) => {
         const mod = prev.mods.find((m) => m.codename === codename)
@@ -131,9 +132,13 @@ export function useUserCatalog() {
           release: overlays.release,
           sizeBytes: overlays.sizeBytes,
         }
+        const authorHint = meta?.author?.trim() ?? ''
         const next = patchWorkingMod(prev, codename, {
           diskStatus: 'present',
           overlays: merged,
+          ...(mod && !mod.author.trim() && authorHint
+            ? { author: authorHint }
+            : {}),
         })
         writeUserCatalogStore(next)
         return next

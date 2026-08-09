@@ -89,6 +89,14 @@ pub struct AcquireModResult {
   pub size_bytes: Option<u64>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModPageMeta {
+  pub name: String,
+  pub readme: String,
+  pub author: String,
+}
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct ProgressPayload {
@@ -898,6 +906,198 @@ pub async fn probe_mod_remote(
   github_token: Option<String>,
 ) -> Result<RemoteProbeResult, String> {
   probe_mod_inner(&mod_input, github_token.as_deref()).await
+}
+
+const META_HTML_CAP: usize = 512 * 1024;
+
+fn clean_page_title(raw: &str) -> String {
+  let mut t = raw.trim().to_string();
+  for suffix in [
+    " · GitHub",
+    " - GitHub",
+    " | GitHub",
+    " · GitLab",
+    " - GitLab",
+  ] {
+    if let Some(stripped) = t.strip_suffix(suffix) {
+      t = stripped.trim().to_string();
+    }
+  }
+  // "owner/repo: Description" → prefer description when present
+  if let Some((_, rest)) = t.split_once(": ") {
+    let rest = rest.trim();
+    if !rest.is_empty() {
+      return rest.to_string();
+    }
+  }
+  t
+}
+
+fn html_title(html: &str) -> Option<String> {
+  let re = Regex::new(r"(?is)<title[^>]*>(.*?)</title>").ok()?;
+  let caps = re.captures(html)?;
+  let raw = caps.get(1)?.as_str();
+  let decoded = raw
+    .replace("&amp;", "&")
+    .replace("&lt;", "<")
+    .replace("&gt;", ">")
+    .replace("&quot;", "\"")
+    .replace("&#39;", "'");
+  let cleaned = clean_page_title(&decoded);
+  if cleaned.is_empty() {
+    None
+  } else {
+    Some(cleaned)
+  }
+}
+
+fn absolutize_link(base: &str, href: &str) -> Option<String> {
+  let h = href.trim();
+  if h.is_empty() || h.starts_with('#') || h.starts_with("javascript:") {
+    return None;
+  }
+  if h.starts_with("https://") || h.starts_with("http://") {
+    return Some(h.to_string());
+  }
+  if h.starts_with("//") {
+    return Some(format!("https:{h}"));
+  }
+  let base = base.trim().trim_end_matches('/');
+  if h.starts_with('/') {
+    // scheme://host/path → scheme://host
+    let without_scheme = base
+      .strip_prefix("https://")
+      .or_else(|| base.strip_prefix("http://"))?;
+    let host = without_scheme.split('/').next()?;
+    let scheme = if base.starts_with("https://") {
+      "https"
+    } else {
+      "http"
+    };
+    return Some(format!("{scheme}://{host}{h}"));
+  }
+  // relative path: append to base directory
+  if let Some(idx) = base.rfind('/') {
+    Some(format!("{}/{}", &base[..idx], h))
+  } else {
+    Some(format!("{base}/{h}"))
+  }
+}
+
+fn find_readme_link(html: &str, page_url: &str) -> Option<String> {
+  let re =
+    Regex::new(r#"(?is)<a\s[^>]*href\s*=\s*"([^"]+)"[^>]*>(.*?)</a>"#).ok()?;
+  for caps in re.captures_iter(html) {
+    let href = caps.get(1)?.as_str();
+    let text = caps.get(2)?.as_str();
+    let text_plain = Regex::new(r"<[^>]+>")
+      .ok()
+      .map(|r| r.replace_all(text, "").to_string())
+      .unwrap_or_else(|| text.to_string());
+    let href_l = href.to_ascii_lowercase();
+    let text_l = text_plain.to_ascii_lowercase();
+    if href_l.contains("readme") || text_l.contains("readme") {
+      if let Some(abs) = absolutize_link(page_url, href) {
+        if abs.starts_with("http://") || abs.starts_with("https://") {
+          return Some(abs);
+        }
+      }
+    }
+  }
+  None
+}
+
+async fn scrape_github_page_meta(
+  owner: &str,
+  repo: &str,
+  token: Option<&str>,
+) -> Result<ModPageMeta, String> {
+  let api = format!("https://api.github.com/repos/{owner}/{repo}");
+  match fetch_json(&api, token).await {
+    Ok((json, _)) => {
+      let name = json
+        .get("description")
+        .and_then(|v| v.as_str())
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
+        .or_else(|| {
+          json
+            .get("name")
+            .and_then(|v| v.as_str())
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+        })
+        .unwrap_or_else(|| repo.to_string());
+      let readme = json
+        .get("homepage")
+        .and_then(|v| v.as_str())
+        .map(str::trim)
+        .filter(|s| s.starts_with("http://") || s.starts_with("https://"))
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| format!("https://github.com/{owner}/{repo}#readme"));
+      Ok(ModPageMeta {
+        name,
+        readme,
+        author: owner.to_string(),
+      })
+    }
+    Err(_) => {
+      let page = format!("https://github.com/{owner}/{repo}");
+      let (html, _) = fetch_text(&page, None).await?;
+      let html = if html.len() > META_HTML_CAP {
+        &html[..META_HTML_CAP]
+      } else {
+        &html
+      };
+      let name = html_title(html).unwrap_or_else(|| repo.to_string());
+      let readme = find_readme_link(html, &page)
+        .unwrap_or_else(|| format!("https://github.com/{owner}/{repo}#readme"));
+      Ok(ModPageMeta {
+        name,
+        readme,
+        author: owner.to_string(),
+      })
+    }
+  }
+}
+
+async fn scrape_generic_page_meta(url: &str) -> Result<ModPageMeta, String> {
+  let (html, _) = fetch_text(url, None).await?;
+  let html = if html.len() > META_HTML_CAP {
+    &html[..META_HTML_CAP]
+  } else {
+    &html
+  };
+  let name = html_title(html).unwrap_or_default();
+  let readme = find_readme_link(html, url).unwrap_or_default();
+  Ok(ModPageMeta {
+    name,
+    readme,
+    author: String::new(),
+  })
+}
+
+async fn scrape_mod_page_meta_inner(
+  url: &str,
+  token: Option<&str>,
+) -> Result<ModPageMeta, String> {
+  let trimmed = url.trim();
+  if trimmed.is_empty() {
+    return Err("URL is required".into());
+  }
+  if let Ok((owner, repo)) = parse_github_owner_repo(trimmed) {
+    return scrape_github_page_meta(&owner, &repo, token).await;
+  }
+  scrape_generic_page_meta(trimmed).await
+}
+
+#[tauri::command]
+pub async fn scrape_mod_page_meta(
+  url: String,
+  github_token: Option<String>,
+) -> Result<ModPageMeta, String> {
+  scrape_mod_page_meta_inner(&url, github_token.as_deref()).await
 }
 
 async fn download_to_file(

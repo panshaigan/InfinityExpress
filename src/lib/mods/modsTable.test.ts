@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { WorkingMod } from './loadMods'
 import {
+  collectModsFacetOptions,
   createDefaultModsTableFilters,
   filterAndSortWorkingMods,
   filterWorkingMods,
@@ -21,8 +22,8 @@ function mod(partial: Partial<WorkingMod> & { codename: string }): WorkingMod {
     version: partial.version ?? 'v1',
     sizeBytes: partial.sizeBytes ?? 10,
     author: partial.author ?? 'A',
-    type: '',
-    stability: '',
+    type: partial.type ?? '',
+    stability: partial.stability ?? '',
     origin: partial.origin ?? 'base',
     diskStatus: partial.diskStatus ?? 'not_present',
     overlays: partial.overlays ?? {},
@@ -98,5 +99,31 @@ describe('primaryAuthorLabel', () => {
       display: 'K4thos',
       title: 'K4thos',
     })
+  })
+})
+
+describe('collectModsFacetOptions', () => {
+  it('collects type and stability alongside other facets', () => {
+    const facets = collectModsFacetOptions([
+      mod({
+        codename: 'A',
+        category: 'NPC',
+        game: 'BG2',
+        author: 'X',
+        type: 'major',
+        stability: 'beta',
+      }),
+      mod({
+        codename: 'B',
+        category: 'QUEST',
+        game: 'BG1',
+        author: 'Y',
+        type: 'minor',
+        stability: '',
+      }),
+    ])
+    expect(facets.types).toEqual(['major', 'minor'])
+    expect(facets.stabilities).toEqual(['beta'])
+    expect(facets.categories).toEqual(['NPC', 'QUEST'])
   })
 })

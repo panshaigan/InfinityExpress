@@ -56,6 +56,7 @@ interface Props {
   onApplyAcquireSuccess: (
     codename: string,
     overlays: { version: string; release: string; sizeBytes: number | null },
+    meta?: { author?: string | null },
   ) => void
   onRefreshDiskStatus: () => Promise<void>
   onRemoveFromDisk: (
@@ -415,6 +416,12 @@ export function ModsStation({
         mode={editor?.mode ?? 'create'}
         initial={editor?.mode === 'edit' ? editor.initial : null}
         existingCodenames={existingCodenames}
+        facetOptions={{
+          categories: facets.categories,
+          games: facets.games,
+          types: facets.types,
+          stabilities: facets.stabilities,
+        }}
         onCancel={() => setEditor(null)}
         onSave={(input) => {
           if (editor?.mode === 'edit') {

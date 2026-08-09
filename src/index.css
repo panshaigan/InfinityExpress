@@ -3040,6 +3040,63 @@ body.is-resizing-detail * {
   padding-bottom: 0.38rem;
 }
 
+.outlined-text-field.outlined-field-control,
+.outlined-select.outlined-field-wide {
+  max-width: none;
+  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.outlined-text-field.disabled {
+  opacity: 0.55;
+}
+
+.outlined-text-field .outlined-field-label {
+  pointer-events: auto;
+}
+
+.outlined-text-field .outlined-field-label abbr {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.outlined-text-field-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.outlined-text-field-row > input {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  color-scheme: dark;
+}
+
+.outlined-text-field-row > input::placeholder {
+  color: var(--muted);
+}
+
+.outlined-text-field-action {
+  flex-shrink: 0;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.78rem;
+}
+
 .outlined-select {
   position: relative;
 }
@@ -3467,7 +3524,8 @@ body.is-resizing-detail * {
 .settings-fields {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 1rem;
+  padding-top: 0.35rem;
 }
 
 .settings-help {
@@ -4599,74 +4657,66 @@ body.is-resizing-detail * {
 }
 
 .mod-editor-dialog {
-  width: min(36rem, calc(100vw - 2rem));
+  width: min(34rem, calc(100vw - 2rem));
   max-height: calc(100vh - 2rem);
   overflow: auto;
-  padding: 1rem 1.1rem 1.1rem;
-  border: 1px solid var(--line);
-  border-radius: 0.45rem;
-  background: var(--panel);
+  padding: 1.05rem 1.15rem 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--line) 85%, var(--accent));
+  border-radius: var(--radius-lg, 0.55rem);
+  background:
+    radial-gradient(
+      120% 80% at 0% 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent),
+      transparent 55%
+    ),
+    var(--panel);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.mod-editor-dialog .confirm-dialog-header {
+  margin-bottom: 0.85rem;
+}
+
+.mod-editor-dialog .confirm-dialog-header h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
 }
 
 .mod-editor-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.65rem 0.75rem;
+  gap: 0.85rem 0.75rem;
+  padding-top: 0.35rem;
 }
 
-.mod-editor-form label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  color: var(--muted);
-}
-
-.mod-editor-form label span {
-  letter-spacing: 0.03em;
-}
-
-.mod-editor-form label abbr {
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.mod-editor-hint {
-  color: var(--muted);
-  font-weight: 400;
-  letter-spacing: 0;
-  text-transform: none;
-  font-size: 0.9em;
-}
-
-.mod-editor-form input {
-  padding: 0.4rem 0.5rem;
-  border: 1px solid var(--line);
-  border-radius: 0.3rem;
-  background: color-mix(in srgb, var(--panel) 70%, #000);
-  color: var(--ink);
-  font: inherit;
-  font-size: 0.86rem;
-}
-
-.mod-editor-form input:focus {
-  outline: 1px solid var(--accent);
-  border-color: var(--accent);
-}
-
-.mod-editor-form label:nth-child(1),
-.mod-editor-form label:nth-child(2),
+.mod-editor-form .mod-editor-span-2,
 .mod-editor-form .mod-editor-error,
 .mod-editor-form .confirm-dialog-actions {
   grid-column: 1 / -1;
+}
+
+.mod-editor-form .outlined-field {
+  --outlined-field-bg: color-mix(in srgb, var(--panel) 72%, #000);
+}
+
+.mod-editor-form .outlined-select-popover {
+  z-index: 50;
 }
 
 .mod-editor-error {
   margin: 0;
   color: color-mix(in srgb, #e08070 70%, var(--ink));
   font-size: 0.82rem;
+}
+
+.mod-editor-form .confirm-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
+  padding-top: 0.35rem;
 }
 
 @media (max-width: 900px) {
