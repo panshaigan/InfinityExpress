@@ -432,7 +432,6 @@ export function ModEditorDialog({
             autoComplete="off"
           />
           <OutlinedTextField
-            className="mod-editor-span-2"
             label="Name"
             value={form.name}
             onChange={(v) => setField('name', v)}
@@ -447,6 +446,16 @@ export function ModEditorDialog({
             label="Author"
             value={form.author}
             onChange={(v) => setField('author', v)}
+          />
+          <OutlinedSelect
+            className="outlined-field-wide"
+            label="Stability"
+            value={form.stability}
+            options={stabilityOptions}
+            emptyLabel="Released"
+            open={openSelect === 'stability'}
+            onOpenChange={(o) => setOpenSelect(o ? 'stability' : null)}
+            onChange={(v) => setField('stability', v)}
           />
           <OutlinedSelect
             className="outlined-field-wide"
@@ -468,35 +477,6 @@ export function ModEditorDialog({
             onOpenChange={(o) => setOpenSelect(o ? 'type' : null)}
             onChange={(v) => setField('type', v)}
           />
-          <OutlinedSelect
-            className="outlined-field-wide"
-            label="Stability"
-            value={form.stability}
-            options={stabilityOptions}
-            emptyLabel="Released"
-            open={openSelect === 'stability'}
-            onOpenChange={(o) => setOpenSelect(o ? 'stability' : null)}
-            onChange={(v) => setField('stability', v)}
-          />
-          <fieldset className="mod-editor-check-group mod-editor-span-2">
-            <legend id={gameFieldId}>Game</legend>
-            <div
-              className="mod-editor-check-row mod-editor-game-row"
-              role="group"
-              aria-labelledby={gameFieldId}
-            >
-              {GAME_TOKENS.map((token) => (
-                <label key={token} className="mod-editor-check">
-                  <input
-                    type="checkbox"
-                    checked={games.has(token)}
-                    onChange={(e) => toggleGameToken(token, e.target.checked)}
-                  />
-                  {token}
-                </label>
-              ))}
-            </div>
-          </fieldset>
           {showGithubSource ? (
             <div className="mod-editor-github-flags mod-editor-span-2">
               <OutlinedSelect
@@ -533,6 +513,25 @@ export function ModEditorDialog({
               />
             </div>
           ) : null}
+          <fieldset className="mod-editor-check-group mod-editor-span-2">
+            <legend id={gameFieldId}>Game</legend>
+            <div
+              className="mod-editor-check-row mod-editor-game-row"
+              role="group"
+              aria-labelledby={gameFieldId}
+            >
+              {GAME_TOKENS.map((token) => (
+                <label key={token} className="mod-editor-check">
+                  <input
+                    type="checkbox"
+                    checked={games.has(token)}
+                    onChange={(e) => toggleGameToken(token, e.target.checked)}
+                  />
+                  {token}
+                </label>
+              ))}
+            </div>
+          </fieldset>
           {error ? <p className="mod-editor-error">{error}</p> : null}
           <div className="confirm-dialog-actions">
             <button type="button" className="btn secondary" onClick={onCancel}>
