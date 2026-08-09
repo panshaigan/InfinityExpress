@@ -53,6 +53,7 @@ import { StationListToolbar } from './ui/StationListToolbar'
 import { GlobalSearchList } from './ui/GlobalSearchList'
 import { GlobalSearchToolbar } from './ui/GlobalSearchToolbar'
 import { FiltersStrip } from './ui/FiltersStrip'
+import { AboutDialog } from './ui/AboutDialog'
 import { KeyboardHelp } from './ui/KeyboardHelp'
 import { RouteGuideTip } from './ui/RouteGuideTip'
 import { RouteCaughtUp } from './ui/RouteCaughtUp'
@@ -96,6 +97,7 @@ export default function App() {
     ),
   )
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [settingsFocusField, setSettingsFocusField] = useState<
     'modsDownloadDir' | null
@@ -562,6 +564,7 @@ export default function App() {
   )
 
   const openKeyboardHelp = useCallback(() => setKeyboardHelpOpen(true), [])
+  const openAbout = useCallback(() => setAboutOpen(true), [])
   const openSettings = useCallback(() => {
     setSettingsFocusField(null)
     setSettingsOpen(true)
@@ -615,6 +618,8 @@ export default function App() {
         onDelete={presets.deleteSelectionPreset}
         keyboardHelpOpen={keyboardHelpOpen}
         onOpenKeyboardHelp={openKeyboardHelp}
+        aboutOpen={aboutOpen}
+        onOpenAbout={openAbout}
         settingsOpen={settingsOpen}
         onOpenSettings={openSettings}
         onExport={handleExport}
@@ -881,6 +886,7 @@ export default function App() {
       </div>
       )}
 
+      <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
       <KeyboardHelp
         open={keyboardHelpOpen}
         phase={appPhase}

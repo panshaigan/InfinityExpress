@@ -71,25 +71,56 @@ body {
 .brand {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.05rem;
   min-width: 0;
+  margin: 0;
+  padding: 0.15rem 0.2rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--ease), color var(--ease);
 }
 
-.brand h1 {
+.brand:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.brand:focus {
+  outline: none;
+}
+
+.brand:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.brand-title {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.2rem;
   letter-spacing: 0.06em;
   font-weight: 700;
+  line-height: 1.2;
   white-space: nowrap;
   color: color-mix(in srgb, var(--ink) 92%, var(--accent));
+  transition: color var(--ease);
 }
 
-.brand p {
+.brand:hover .brand-title,
+.brand:focus-visible .brand-title {
+  color: color-mix(in srgb, var(--ink) 78%, var(--accent));
+}
+
+.brand-tagline {
   margin: 0;
   color: var(--muted);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
+  line-height: 1.2;
 }
 
 .top-bar-actions {
@@ -3533,6 +3564,70 @@ body.is-resizing-detail * {
   font: inherit;
   font-weight: 600;
   color: color-mix(in srgb, var(--ink) 90%, var(--accent));
+}
+
+/* —— About (reuses keyboard-help chrome) —— */
+
+.about-dialog {
+  width: min(24rem, 100%);
+}
+
+.about-meta {
+  margin: 0 0 0.55rem;
+  color: color-mix(in srgb, var(--ink) 88%, var(--accent));
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.about-section {
+  margin-top: 0.85rem;
+}
+
+.about-section-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.about-link-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-link-list li + li {
+  margin-top: 0.2rem;
+}
+
+.about-link-list a {
+  display: inline-block;
+  padding: 0.2rem 0;
+  color: color-mix(in srgb, var(--ink) 90%, var(--accent));
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-bottom: 1px solid transparent;
+  transition: color var(--ease), border-color var(--ease);
+}
+
+.about-link-list a:hover,
+.about-link-list a:focus-visible {
+  color: var(--accent);
+  border-bottom-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  outline: none;
+}
+
+.about-disclaimer {
+  margin: 1rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
 }
 
 /* —— Settings (reuses keyboard-help chrome) —— */

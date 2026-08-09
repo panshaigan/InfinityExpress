@@ -27,6 +27,8 @@ interface Props {
   onOpenSettings: () => void
   keyboardHelpOpen: boolean
   onOpenKeyboardHelp: () => void
+  aboutOpen: boolean
+  onOpenAbout: () => void
   onExport: () => void
 }
 
@@ -78,14 +80,26 @@ export function AppTopBar({
   onOpenSettings,
   keyboardHelpOpen,
   onOpenKeyboardHelp,
+  aboutOpen,
+  onOpenAbout,
   onExport,
 }: Props) {
   return (
     <header className="top-bar">
-      <div className="brand">
-        <h1>Infinity Express</h1>
-        <p>Your mod route</p>
-      </div>
+      <button
+        type="button"
+        className="brand has-icon-tip"
+        aria-haspopup="dialog"
+        aria-expanded={aboutOpen}
+        aria-label="About Infinity Express"
+        onClick={onOpenAbout}
+      >
+        <span className="brand-title">Infinity Express</span>
+        <span className="brand-tagline">Your mod route</span>
+        <span className="icon-tip icon-tip-below" role="tooltip">
+          About
+        </span>
+      </button>
       <PhaseNav phase={phase} onPhaseChange={onPhaseChange} />
       <div className="top-bar-actions">
         <span className="engine-badge">
