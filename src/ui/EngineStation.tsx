@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import {
   readGameFolderPaths,
   writeGameFolderPaths,
@@ -8,7 +7,6 @@ import {
 import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import { DirectoryField } from './DirectoryField'
-import { LevelSelectStrip } from './LevelSelectStrip'
 
 const GAME_BLURBS: Record<SelectedGame, string> = {
   bg1: "Baldur's Gate with Siege of Dragonspear (SoD)",
@@ -36,25 +34,15 @@ const FOLDERS_BY_GAME: Record<SelectedGame, GameFolderKey[]> = {
 interface Props {
   game: SelectedGame | null
   onChoose: (game: SelectedGame) => void
-  checkedLadderLevels: ReadonlySet<LadderLevel>
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
-  onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
-  onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
-  canStart: boolean
-  onStart: () => void
+  canContinue: boolean
+  onContinue: () => void
 }
 
 export function EngineStation({
   game,
   onChoose,
-  checkedLadderLevels,
-  lowerDifficulty,
-  higherDifficulty,
-  onLadderToggle,
-  onDifficultyChange,
-  canStart,
-  onStart,
+  canContinue,
+  onContinue,
 }: Props) {
   const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
   const visibleFolders = game ? FOLDERS_BY_GAME[game] : []
@@ -82,11 +70,11 @@ export function EngineStation({
         <button
           type="button"
           className="btn engine-start-btn"
-          disabled={!canStart}
-          onClick={onStart}
-          title="Continue to the first unfinished stop"
+          disabled={!canContinue}
+          onClick={onContinue}
+          title="Continue to Levels"
         >
-          Start
+          Continue
         </button>
       </div>
       <div className="engine-grid">
@@ -130,17 +118,6 @@ export function EngineStation({
           </div>
         </div>
       ) : null}
-
-      <div className="engine-preselect">
-        <LevelSelectStrip
-          enabled={!!game}
-          checkedLadderLevels={checkedLadderLevels}
-          lowerDifficulty={lowerDifficulty}
-          higherDifficulty={higherDifficulty}
-          onLadderToggle={onLadderToggle}
-          onDifficultyChange={onDifficultyChange}
-        />
-      </div>
     </section>
   )
 }

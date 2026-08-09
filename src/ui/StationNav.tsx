@@ -4,12 +4,14 @@ import {
   type SelectedGame,
   type StationId,
 } from '../lib/xml/schema'
-import type { StationSlot } from '../lib/ui/chromeHotkeys'
+import { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
 
-export type AppNavSlot = 'engine' | StationId
+export type AppNavSlot = StationSlot
+export { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
 
 const SHORT_LABELS: Record<AppNavSlot, string> = {
   engine: 'Eng',
+  levels: 'Lvl',
   base: 'Base',
   ui: 'UI',
   campaigns: 'Camp',
@@ -26,6 +28,11 @@ const SHORT_LABELS: Record<AppNavSlot, string> = {
   adjustements: 'Adj',
 }
 
+const SETUP_LABELS: Record<'engine' | 'levels', string> = {
+  engine: 'Engine',
+  levels: 'Levels',
+}
+
 interface Props {
   game: SelectedGame | null
   activeStation: AppNavSlot
@@ -35,6 +42,7 @@ interface Props {
   totalCount: number
   collapsed: boolean
   onSelectEngine: () => void
+  onSelectLevels: () => void
   onSelectStation: (id: StationId) => void
 }
 
@@ -51,14 +59,14 @@ function stationClass(
 
 function labelFor(id: AppNavSlot, collapsed: boolean): string {
   if (!collapsed) {
-    if (id === 'engine') return 'Engine'
+    if (isSetupSlot(id)) return SETUP_LABELS[id]
     return STATION_LABELS[id]
   }
   return SHORT_LABELS[id]
 }
 
 function titleFor(id: AppNavSlot): string {
-  if (id === 'engine') return 'Engine'
+  if (isSetupSlot(id)) return SETUP_LABELS[id]
   return STATION_LABELS[id]
 }
 
@@ -106,6 +114,7 @@ export function StationNav({
   totalCount,
   collapsed,
   onSelectEngine,
+  onSelectLevels,
   onSelectStation,
 }: Props) {
   const progressRatio = totalCount > 0 ? finishedCount / totalCount : 0
@@ -123,6 +132,14 @@ export function StationNav({
           finishedStations={finishedStations}
           collapsed={collapsed}
           onClick={onSelectEngine}
+        />
+        <StationStop
+          id="levels"
+          activeStation={activeStation}
+          finishedStations={finishedStations}
+          collapsed={collapsed}
+          disabled={!game}
+          onClick={onSelectLevels}
         />
         {STATION_ORDER.filter((id) => visibleStations.includes(id)).map((id) => (
           <StationStop

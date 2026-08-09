@@ -13,6 +13,7 @@ import {
 } from '../lib/selection/stationDisplayTree'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { buildNavigableScreens, type NavScreen } from '../lib/ui/screenCycle'
+import { isSetupSlot } from '../lib/ui/chromeHotkeys'
 import type { AppNavSlot } from '../ui/StationNav'
 
 /** Flat (non-branch) expandStationToScreens only checks `.length` — used when filters are inactive. */
@@ -108,7 +109,7 @@ export function useStationTrees(args: {
   }, [filters, filterSeed, game, model, modsByCodename, treeSelectionKey])
 
   const displayNodes = useMemo(() => {
-    if (!game || activeStation === 'engine') return []
+    if (!game || isSetupSlot(activeStation)) return []
     if (activeStation === 'content') return contentDisplayNodes
     if (activeStation === 'mechanics') return mechanicsDisplayNodes
     const block = model.stations.find((s) => s.stationId === activeStation)

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { SelectedGame, StationId } from '../lib/xml/schema'
-import type { StationSlot } from '../lib/ui/chromeHotkeys'
+import { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
 import { cycleScreen, type NavScreen } from '../lib/ui/screenCycle'
 import type { AppNavSlot } from '../ui/StationNav'
 
@@ -46,7 +46,7 @@ export function useRouteNav(args: {
   const [hideCaughtUp, setHideCaughtUp] = useState(false)
 
   const routeProgress = useMemo(() => {
-    const slots: StationSlot[] = ['engine', ...visibleStations]
+    const slots: StationSlot[] = ['engine', 'levels', ...visibleStations]
     const finishedCount = slots.filter((id) => finishedStations.has(id)).length
     return { finishedCount, totalCount: slots.length }
   }, [finishedStations, visibleStations])
@@ -63,7 +63,7 @@ export function useRouteNav(args: {
   const currentFinished = finishedStations.has(activeStation)
 
   const currentNavScreen = useMemo((): NavScreen | null => {
-    if (activeStation === 'engine' || !game) return null
+    if (isSetupSlot(activeStation) || !game) return null
     if (activeStation === 'content') {
       if (contentMainKey == null || contentSubKey == null) return null
       return {
@@ -83,7 +83,7 @@ export function useRouteNav(args: {
   const canCycleScreens =
     !!game && navigableScreens.some((s) => !finishedStations.has(s.stationId))
 
-  const canMarkFinished = activeStation === 'engine' ? !!game : true
+  const canMarkFinished = isSetupSlot(activeStation) ? !!game : true
 
   function applyNavScreen(screen: NavScreen) {
     setActiveStation(screen.stationId)

@@ -126,9 +126,8 @@ export function LevelSelectStrip({
   return (
     <div
       className={`level-preselect${!enabled ? ' disabled' : ''}`}
-      aria-label="Choose your base components"
+      aria-label="Choose your initial selection"
     >
-      <h3 className="level-preselect-title">Choose your initial selection</h3>
       <div className="level-preselect-layout" role="group" aria-label="Ladder levels">
         {LADDER_ROWS.map((row) => (
           <div

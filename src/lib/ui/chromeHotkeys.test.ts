@@ -9,15 +9,22 @@ import {
 } from './chromeHotkeys'
 
 describe('stationCycleOrder / cycleStation', () => {
-  it('puts engine first then visible stations', () => {
-    expect(stationCycleOrder(['base', 'ui'])).toEqual(['engine', 'base', 'ui'])
+  it('puts engine then levels then visible stations', () => {
+    expect(stationCycleOrder(['base', 'ui'])).toEqual([
+      'engine',
+      'levels',
+      'base',
+      'ui',
+    ])
   })
 
   it('cycles with wrap', () => {
     const order = stationCycleOrder(['base', 'ui'])
-    expect(cycleStation(order, 'engine', 1)).toBe('base')
+    expect(cycleStation(order, 'engine', 1)).toBe('levels')
+    expect(cycleStation(order, 'levels', 1)).toBe('base')
     expect(cycleStation(order, 'ui', 1)).toBe('engine')
-    expect(cycleStation(order, 'base', -1)).toBe('engine')
+    expect(cycleStation(order, 'base', -1)).toBe('levels')
+    expect(cycleStation(order, 'levels', -1)).toBe('engine')
     expect(cycleStation(order, 'engine', -1)).toBe('ui')
   })
 })

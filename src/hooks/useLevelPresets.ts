@@ -8,6 +8,7 @@ import {
 } from '../lib/selection/selectionEngine'
 import { componentIdsForStation, type RelationIndex } from '../lib/selection/relations'
 import { emptyLiveStationPreset } from '../lib/presets/selectionPresets'
+import { isSetupSlot } from '../lib/ui/chromeHotkeys'
 import type { AppNavSlot } from '../ui/StationNav'
 
 export type StationLevelMap = Map<
@@ -40,7 +41,7 @@ export function useLevelPresets(args: {
   )
 
   const activeStationPreset =
-    activeStation === 'engine'
+    isSetupSlot(activeStation)
       ? emptyLiveStationPreset()
       : (stationLevelPresets.get(activeStation) ?? emptyLiveStationPreset())
 
@@ -73,7 +74,7 @@ export function useLevelPresets(args: {
   }
 
   function onStationLadderToggle(level: LadderLevel, wantChecked: boolean) {
-    if (!game || activeStation === 'engine') return
+    if (!game || isSetupSlot(activeStation)) return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setStationLevelPresets((prev) => {
@@ -97,7 +98,7 @@ export function useLevelPresets(args: {
     token: 'lowerDifficulty' | 'higherDifficulty',
     want: boolean,
   ) {
-    if (!game || activeStation === 'engine') return
+    if (!game || isSetupSlot(activeStation)) return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setStationLevelPresets((prev) => {
@@ -116,7 +117,7 @@ export function useLevelPresets(args: {
   }
 
   function onClearToGlobal() {
-    if (!game || activeStation === 'engine') return
+    if (!game || isSetupSlot(activeStation)) return
     const stationId = activeStation
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setSelectedIds((prev) =>
@@ -151,6 +152,19 @@ export function useLevelPresets(args: {
     setStationLevelPresets(new Map())
   }
 
+  /** Default Engine/Levels baseline: Fixes checked, difficulty off. */
+  function seedFixesBaseline(game: SelectedGame) {
+    const fixes = new Set<LadderLevel>(['fixes'])
+    setLadderChecked(new Set(fixes))
+    setLastGlobalLadder(new Set(fixes))
+    setLowerDifficultyPreset(false)
+    setHigherDifficultyPreset(false)
+    setLastGlobalLowerDifficulty(false)
+    setLastGlobalHigherDifficulty(false)
+    setStationLevelPresets(new Map())
+    setSelectedIds((prev) => applyLadderLevelSelection(model, prev, game, fixes))
+  }
+
   return {
     ladderChecked,
     setLadderChecked,
@@ -173,5 +187,6 @@ export function useLevelPresets(args: {
     onStationDifficultyChange,
     onClearToGlobal,
     resetLevelPresets,
+    seedFixesBaseline,
   }
 }

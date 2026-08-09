@@ -29,7 +29,7 @@ import {
   modsByCodename,
 } from './lib/mods/catalog'
 import { buildRelationIndex } from './lib/selection/relations'
-import { type StationSlot } from './lib/ui/chromeHotkeys'
+import { isSetupSlot, type StationSlot } from './lib/ui/chromeHotkeys'
 import {
   readDetailCollapsed,
   writeDetailCollapsed,
@@ -44,6 +44,7 @@ import {
 import { listEmptyCopy } from './lib/ui/listEmptyCopy'
 import { StationNav, type AppNavSlot } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
+import { LevelsStation } from './ui/LevelsStation'
 import { RailCollapseButton } from './ui/RailCollapseButton'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
@@ -255,7 +256,7 @@ export default function App() {
   }
 
   const stationDesc = useMemo(() => {
-    if (activeStation === 'engine') return undefined
+    if (isSetupSlot(activeStation)) return undefined
     const block = model.stations.find((s) => s.stationId === activeStation)
     return block?.roots.find((r) => r.attrs.desc)?.attrs.desc
   }, [activeStation, model.stations])
@@ -305,7 +306,7 @@ export default function App() {
     return listSelectionState(nodes, selectedIds, game)
   }, [game, globalSearchHits, selectedIds])
 
-  const showDetail = activeStation !== 'engine' && !!game
+  const showDetail = !isSetupSlot(activeStation) && !!game
   const showComponentsChrome = appPhase === 'components'
 
   function isSelectionDirty(): boolean {
@@ -323,7 +324,7 @@ export default function App() {
   function applyChooseGame(next: SelectedGame) {
     setGame(next)
     setSelectedIds(createInitialSelection(model, next))
-    levels.resetLevelPresets()
+    levels.seedFixesBaseline(next)
     presets.resetPresetSelection()
     route.resetFinishedStations()
     route.markStationFinished('engine')
@@ -340,7 +341,7 @@ export default function App() {
     applyChooseGame(next)
   }
 
-  function onEngineLadderToggle(level: LadderLevel, wantChecked: boolean) {
+  function onLevelsLadderToggle(level: LadderLevel, wantChecked: boolean) {
     if (isSelectionDirty()) {
       setPendingSelectionReset({ type: 'ladder', level, wantChecked })
       return
@@ -348,7 +349,7 @@ export default function App() {
     levels.onLadderToggle(level, wantChecked)
   }
 
-  function onEngineDifficultyChange(token: DifficultyLevel, want: boolean) {
+  function onLevelsDifficultyChange(token: DifficultyLevel, want: boolean) {
     if (isSelectionDirty()) {
       setPendingSelectionReset({ type: 'difficulty', token, want })
       return
@@ -412,6 +413,26 @@ export default function App() {
     setActiveStation('engine')
     setSearchScope('section')
     clearFocus()
+  }
+
+  function selectLevels() {
+    if (!game) return
+    setActiveStation('levels')
+    setSearchScope('section')
+    clearFocus()
+  }
+
+  function continueFromEngine() {
+    if (!game) return
+    route.markStationFinished('engine')
+    setActiveStation('levels')
+    setSearchScope('section')
+    clearFocus()
+  }
+
+  function continueFromLevels() {
+    route.markStationFinished('levels')
+    route.goNextScreen()
   }
 
   function selectStation(id: StationId) {
@@ -490,6 +511,10 @@ export default function App() {
       document.querySelector<HTMLElement>('.engine-card')?.focus()
       return
     }
+    if (activeStation === 'levels') {
+      document.querySelector<HTMLElement>('.levels-station .level-card input')?.focus()
+      return
+    }
     focusComponentTree()
   }
 
@@ -504,23 +529,29 @@ export default function App() {
   const stationTitle =
     activeStation === 'engine'
       ? 'Engine'
-      : activeStation === 'content' || activeStation === 'mechanics'
-        ? (() => {
-            const sectionLabel =
-              selectedMain?.node.attrs.label ?? selectedMain?.node.tag
-            return sectionLabel
-              ? `${sectionLabel} ${STATION_LABELS[activeStation]}`
-              : STATION_LABELS[activeStation]
-          })()
-        : STATION_LABELS[activeStation]
+      : activeStation === 'levels'
+        ? 'Levels'
+        : activeStation === 'content' || activeStation === 'mechanics'
+          ? (() => {
+              const sectionLabel =
+                selectedMain?.node.attrs.label ?? selectedMain?.node.tag
+              return sectionLabel
+                ? `${sectionLabel} ${STATION_LABELS[activeStation]}`
+                : STATION_LABELS[activeStation]
+            })()
+          : STATION_LABELS[activeStation]
 
   const applyStationSlot = useCallback(
     (slot: StationSlot) => {
-      setActiveStation(slot === 'engine' ? 'engine' : slot)
+      if (slot === 'levels' && !game) {
+        setActiveStation('engine')
+      } else {
+        setActiveStation(slot)
+      }
       setSearchScope('section')
       clearFocus()
     },
-    [clearFocus],
+    [clearFocus, game],
   )
 
   const openKeyboardHelp = useCallback(() => setKeyboardHelpOpen(true), [])
@@ -620,6 +651,7 @@ export default function App() {
           totalCount={route.routeProgress.totalCount}
           collapsed={railCollapsed}
           onSelectEngine={selectEngine}
+          onSelectLevels={selectLevels}
           onSelectStation={selectStation}
         />
 
@@ -651,18 +683,26 @@ export default function App() {
           >
             <div className="list-pane">
               <div className="list-pane-body">
-                {activeStation === 'engine' || !game ? (
+                {!game || activeStation === 'engine' ? (
                   <div className="list-pane-scroll engine-pane-scroll">
                     <EngineStation
                       game={game}
                       onChoose={chooseGame}
+                      canContinue={!!game}
+                      onContinue={continueFromEngine}
+                    />
+                  </div>
+                ) : activeStation === 'levels' ? (
+                  <div className="list-pane-scroll engine-pane-scroll">
+                    <LevelsStation
+                      enabled
                       checkedLadderLevels={levels.ladderChecked}
                       lowerDifficulty={levels.lowerDifficultyPreset}
                       higherDifficulty={levels.higherDifficultyPreset}
-                      onLadderToggle={onEngineLadderToggle}
-                      onDifficultyChange={onEngineDifficultyChange}
-                      canStart={route.canCycleScreens}
-                      onStart={route.goNextScreen}
+                      onLadderToggle={onLevelsLadderToggle}
+                      onDifficultyChange={onLevelsDifficultyChange}
+                      canContinue={route.canCycleScreens}
+                      onContinue={continueFromLevels}
                     />
                   </div>
                 ) : isAllSections ? (
@@ -813,7 +853,7 @@ export default function App() {
               />
             )}
           </div>
-          {game != null && activeStation !== 'engine' && (
+          {game != null && !isSetupSlot(activeStation) && (
             <FiltersStrip
               criteria={filters}
               onChange={setFilters}
