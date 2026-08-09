@@ -1453,7 +1453,7 @@ body.is-resizing-detail * {
   top: calc(100% + 0.35rem);
   right: 0;
   z-index: 30;
-  width: min(28rem, 90vw);
+  width: min(34rem, 92vw);
   padding: 0.75rem;
   background:
     radial-gradient(ellipse at top left, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%),
@@ -1465,13 +1465,14 @@ body.is-resizing-detail * {
 
 .station-list-toolbar-levels {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.45rem 0.65rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.55rem;
   min-width: 0;
 }
 
 .station-clear-to-global {
+  align-self: flex-end;
   flex-shrink: 0;
 }
 
@@ -2104,10 +2105,9 @@ body.is-resizing-detail * {
 }
 
 .level-preselect.compact .level-preselect-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.3rem;
-  grid-template-columns: none;
 }
 
 .level-preselect.compact .level-card {
@@ -2115,6 +2115,7 @@ body.is-resizing-detail * {
   align-items: center;
   gap: 0.35rem;
   min-height: 0;
+  min-width: 0;
   padding: 0.25rem 0.45rem;
   border-radius: 4px;
   border-left-width: 1px;
@@ -2130,6 +2131,8 @@ body.is-resizing-detail * {
   font-size: 0.72rem;
   font-weight: 600;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* —— Component tree —— */
@@ -2526,6 +2529,7 @@ body.is-resizing-detail * {
 }
 
 .tree-row .badge-level,
+.tree-row .badge-mod-abbr,
 .tree-row .badge-status-chooseOne,
 .tree-row .badge-status-required,
 .tree-row .badge-status-hidden {
@@ -2619,6 +2623,17 @@ body.is-resizing-detail * {
 .badge-mod-type-unknown {
   color: #6f7f96;
   border-color: #6f7f96;
+}
+
+/* —— Mod abbreviation (lone / noBranches picks) —— */
+
+.badge-mod-abbr {
+  position: relative;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--muted) 70%, var(--ink));
+  border-color: color-mix(in srgb, var(--muted) 55%, var(--line));
 }
 
 /* —— Stability warnings (filled) —— */

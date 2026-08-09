@@ -1,0 +1,24 @@
+---
+description: Use the app's immediate icon-tip tooltips; never native browser title tooltips
+alwaysApply: true
+---
+
+# UI tooltips
+
+When the user asks for a tooltip (or hover tip / help text on hover), use **our** immediate tooltip — not the browser's native `title` tooltip.
+
+## Do
+
+- Prefer `has-icon-tip` on the host + `<span className="icon-tip" role="tooltip">…</span>` for short tips.
+- Use `level-card-tip` only where that richer pattern already applies (Engine level cards).
+- Tips should appear immediately on hover / focus-visible (see `.icon-tip` in `src/index.css`).
+
+## Don't
+
+- Do **not** use `title=` / native browser tooltips for hover help (delayed, inconsistent look).
+- Do not invent a third tooltip system without an explicit request.
+
+## References
+
+- CSS: `src/index.css` — “Immediate hover tips (engine-style; no native title delay).”
+- Examples: `StationListToolbar` fold toggle, `ComponentTreeRow` randomise / fold-all, `ModsTable` `TipCell`.

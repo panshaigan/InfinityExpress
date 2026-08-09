@@ -95,7 +95,7 @@ export function LevelSelectStrip({
     return (
       <div
         className={`level-preselect compact${!enabled ? ' disabled' : ''}`}
-        aria-label="Preselect levels for this stop"
+        aria-label="Presets for this stop"
       >
         <div className="level-preselect-grid" role="group" aria-label="Levels">
           {FILTER_LADDER_LEVELS.map((level) => (

@@ -139,7 +139,7 @@ export function StationListToolbar({
             onClick={() => setLevelsOpen((v) => !v)}
           >
             <span className="station-levels-trigger-label">
-              Preselect levels
+              Presets
               {levelOverrideCount > 0 ? ` (${levelOverrideCount})` : ''}
             </span>
             <span className="station-levels-caret" aria-hidden="true">
@@ -160,11 +160,13 @@ export function StationListToolbar({
                 />
                 <button
                   type="button"
-                  className="filter-inline-action station-clear-to-global"
+                  className="btn secondary station-clear-to-global has-icon-tip"
                   onClick={onClearToGlobal}
-                  title="Clear this stop’s level picks back to the last Engine preset"
                 >
                   Reset to global
+                  <span className="icon-tip" role="tooltip">
+                    Clear this stop’s level picks back to the last Engine preset
+                  </span>
                 </button>
               </div>
             </div>

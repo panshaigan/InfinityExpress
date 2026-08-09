@@ -20,6 +20,9 @@ import {
   stabilityBadgeLabel,
 } from '../lib/selection/filterDisplayTree'
 import {
+  findEnclosingMod,
+  hasModField,
+  resolveModLookupKey,
   type ModInfo,
   resolveModStability,
 } from '../lib/mods/loadMods'
@@ -69,6 +72,8 @@ export type CheckboxRowProps = {
   onCollapseSubtree: (key: string) => void
   /** When set, this row is a mutually exclusive option under an alternatives parent. */
   exclusiveGroupKey?: string
+  /** True when the display parent has noBranches (mod rows hoisted away). */
+  parentNoBranches?: boolean
   rowRefs: MutableRefObject<Map<string, HTMLDivElement>>
 }
 
@@ -141,6 +146,7 @@ function checkboxRowPropsAreEqual(
   if (prev.modsByCodename !== next.modsByCodename) return false
   if (prev.depth !== next.depth) return false
   if (prev.exclusiveGroupKey !== next.exclusiveGroupKey) return false
+  if (prev.parentNoBranches !== next.parentNoBranches) return false
   if (prev.onFocus !== next.onFocus) return false
   if (prev.onHover !== next.onHover) return false
   if (prev.onToggle !== next.onToggle) return false
@@ -194,6 +200,7 @@ export const CheckboxRow = memo(function CheckboxRow({
   onExpandSubtree,
   onCollapseSubtree,
   exclusiveGroupKey,
+  parentNoBranches = false,
   rowRefs,
 }: CheckboxRowProps) {
   const { node, collapsedComponent, children } = display
@@ -248,6 +255,18 @@ export const CheckboxRow = memo(function CheckboxRow({
   const stability = resolveModStability(model, modsByCodename, source)
   const stabilityLabel = stabilityBadgeLabel(stability)
   const stabilityClass = stabilityBadgeClass(stability)
+  const isComponentRow = source.tag === 'component'
+  const looksLone =
+    isComponentRow &&
+    (parentNoBranches || findEnclosingMod(model, source) === undefined)
+  const modCodename = looksLone ? resolveModLookupKey(model, source) : undefined
+  const loneMod = modCodename ? modsByCodename.get(modCodename) : undefined
+  const abbr =
+    looksLone && loneMod && hasModField(loneMod.abbreviation)
+      ? loneMod.abbreviation
+      : undefined
+  const abbrTip =
+    abbr && loneMod && hasModField(loneMod.name) ? loneMod.name : undefined
 
   function handleFoldClick(e: MouseEvent) {
     e.preventDefault()
@@ -439,6 +458,16 @@ export const CheckboxRow = memo(function CheckboxRow({
           {isAlternatives && (
             <span className={statusBadgeClass('chooseOne')}>choose one</span>
           )}
+          {abbr && (
+            <span className={`badge badge-mod-abbr${abbrTip ? ' has-icon-tip' : ''}`}>
+              {abbr}
+              {abbrTip ? (
+                <span className="icon-tip" role="tooltip">
+                  {abbrTip}
+                </span>
+              ) : null}
+            </span>
+          )}
           {level && (
             <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
@@ -483,6 +512,7 @@ export const CheckboxRow = memo(function CheckboxRow({
               onExpandSubtree={onExpandSubtree}
               onCollapseSubtree={onCollapseSubtree}
               exclusiveGroupKey={childExclusiveKey}
+              parentNoBranches={!!node.attrs.noBranches}
               rowRefs={rowRefs}
             />
           ))}

@@ -66,20 +66,19 @@ export function SelectionPresetsBar({
   }
 
   const triggerLabel = dirty
-    ? 'Preset *'
+    ? 'User preset *'
     : activePresetName
       ? activePresetName
-      : 'Presets'
+      : 'User presets'
 
   return (
-    <div ref={rootRef} className="selection-presets-bar" aria-label="Selection presets">
+    <div ref={rootRef} className="selection-presets-bar" aria-label="User presets">
       <button
         type="button"
         className={`btn secondary selection-presets-trigger${open ? ' open' : ''}${dirty ? ' dirty' : ''}`}
         disabled={disabled}
         aria-expanded={open}
         aria-controls={panelId}
-        title="Save and load selection presets"
         onClick={() => setOpen((v) => !v)}
       >
         <span className="selection-presets-trigger-label">{triggerLabel}</span>
