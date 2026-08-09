@@ -124,6 +124,7 @@ export function ModsToolbar({
             type="search"
             placeholder="Search name, author, download id…"
             value={filters.search}
+            autoComplete="off"
             disabled={journeyLocked}
             onChange={(e) =>
               onChange({ ...filters, search: e.target.value })
