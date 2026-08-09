@@ -1,10 +1,10 @@
 import type { StationId } from '../xml/schema'
 
-export type StationSlot = 'engine' | 'levels' | StationId
+export type StationSlot = 'engine' | 'presets' | StationId
 
-/** Setup stops with no component tree (Engine + Levels). */
-export function isSetupSlot(slot: StationSlot | string): slot is 'engine' | 'levels' {
-  return slot === 'engine' || slot === 'levels'
+/** Setup stops with no component tree (Engine + Presets). */
+export function isSetupSlot(slot: StationSlot | string): slot is 'engine' | 'presets' {
+  return slot === 'engine' || slot === 'presets'
 }
 
 export type ChromeCommand =
@@ -61,10 +61,10 @@ export function isDocumentShellFocused(el: Element | null): boolean {
 }
 
 /**
- * Build ordered station slots: Engine → Levels, then visible content stations.
+ * Build ordered station slots: Engine → Presets, then visible content stations.
  */
 export function stationCycleOrder(visibleStations: readonly StationId[]): StationSlot[] {
-  return ['engine', 'levels', ...visibleStations]
+  return ['engine', 'presets', ...visibleStations]
 }
 
 /** Next/previous station with wrap-around. */

@@ -12,7 +12,7 @@ interface Props {
   onContinue: () => void
 }
 
-export function LevelsStation({
+export function PresetsStation({
   enabled,
   checkedLadderLevels,
   lowerDifficulty,
@@ -23,7 +23,7 @@ export function LevelsStation({
   onContinue,
 }: Props) {
   return (
-    <section className="engine-station levels-station">
+    <section className="engine-station presets-station">
       <div className="engine-station-header">
         <h2>Choose your initial selection</h2>
         <button

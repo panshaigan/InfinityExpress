@@ -152,7 +152,7 @@ export function useLevelPresets(args: {
     setStationLevelPresets(new Map())
   }
 
-  /** Default Engine/Levels baseline: Fixes checked, difficulty off. */
+  /** Default Engine/Presets baseline: Fixes checked, difficulty off. */
   function seedFixesBaseline(game: SelectedGame) {
     const fixes = new Set<LadderLevel>(['fixes'])
     setLadderChecked(new Set(fixes))

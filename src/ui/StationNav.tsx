@@ -11,7 +11,7 @@ export { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
 
 const SHORT_LABELS: Record<AppNavSlot, string> = {
   engine: 'Eng',
-  levels: 'Lvl',
+  presets: 'Pre',
   base: 'Base',
   ui: 'UI',
   campaigns: 'Camp',
@@ -28,9 +28,9 @@ const SHORT_LABELS: Record<AppNavSlot, string> = {
   adjustements: 'Adj',
 }
 
-const SETUP_LABELS: Record<'engine' | 'levels', string> = {
+const SETUP_LABELS: Record<'engine' | 'presets', string> = {
   engine: 'Engine',
-  levels: 'Levels',
+  presets: 'Presets',
 }
 
 interface Props {
@@ -42,7 +42,7 @@ interface Props {
   totalCount: number
   collapsed: boolean
   onSelectEngine: () => void
-  onSelectLevels: () => void
+  onSelectPresets: () => void
   onSelectStation: (id: StationId) => void
 }
 
@@ -114,7 +114,7 @@ export function StationNav({
   totalCount,
   collapsed,
   onSelectEngine,
-  onSelectLevels,
+  onSelectPresets,
   onSelectStation,
 }: Props) {
   const progressRatio = totalCount > 0 ? finishedCount / totalCount : 0
@@ -134,12 +134,12 @@ export function StationNav({
           onClick={onSelectEngine}
         />
         <StationStop
-          id="levels"
+          id="presets"
           activeStation={activeStation}
           finishedStations={finishedStations}
           collapsed={collapsed}
           disabled={!game}
-          onClick={onSelectLevels}
+          onClick={onSelectPresets}
         />
         {STATION_ORDER.filter((id) => visibleStations.includes(id)).map((id) => (
           <StationStop

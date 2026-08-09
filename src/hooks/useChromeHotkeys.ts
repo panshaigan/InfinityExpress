@@ -84,6 +84,11 @@ export function useChromeHotkeys(args: {
         else onFocusMainDisplay()
         return
       }
+      if (!keyboardHelpOpen && e.key === 'F1') {
+        e.preventDefault()
+        onOpenKeyboardHelp()
+        return
+      }
       if (
         !keyboardHelpOpen &&
         !isTypingTarget(e.target) &&

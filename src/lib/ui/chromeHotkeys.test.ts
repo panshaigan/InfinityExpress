@@ -9,10 +9,10 @@ import {
 } from './chromeHotkeys'
 
 describe('stationCycleOrder / cycleStation', () => {
-  it('puts engine then levels then visible stations', () => {
+  it('puts engine then presets then visible stations', () => {
     expect(stationCycleOrder(['base', 'ui'])).toEqual([
       'engine',
-      'levels',
+      'presets',
       'base',
       'ui',
     ])
@@ -20,11 +20,11 @@ describe('stationCycleOrder / cycleStation', () => {
 
   it('cycles with wrap', () => {
     const order = stationCycleOrder(['base', 'ui'])
-    expect(cycleStation(order, 'engine', 1)).toBe('levels')
-    expect(cycleStation(order, 'levels', 1)).toBe('base')
+    expect(cycleStation(order, 'engine', 1)).toBe('presets')
+    expect(cycleStation(order, 'presets', 1)).toBe('base')
     expect(cycleStation(order, 'ui', 1)).toBe('engine')
-    expect(cycleStation(order, 'base', -1)).toBe('levels')
-    expect(cycleStation(order, 'levels', -1)).toBe('engine')
+    expect(cycleStation(order, 'base', -1)).toBe('presets')
+    expect(cycleStation(order, 'presets', -1)).toBe('engine')
     expect(cycleStation(order, 'engine', -1)).toBe('ui')
   })
 })

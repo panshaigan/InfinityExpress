@@ -46,7 +46,7 @@ export function useRouteNav(args: {
   const [hideCaughtUp, setHideCaughtUp] = useState(false)
 
   const routeProgress = useMemo(() => {
-    const slots: StationSlot[] = ['engine', 'levels', ...visibleStations]
+    const slots: StationSlot[] = ['engine', 'presets', ...visibleStations]
     const finishedCount = slots.filter((id) => finishedStations.has(id)).length
     return { finishedCount, totalCount: slots.length }
   }, [finishedStations, visibleStations])

@@ -72,7 +72,7 @@ export function EngineStation({
           className="btn engine-start-btn"
           disabled={!canContinue}
           onClick={onContinue}
-          title="Continue to Levels"
+          title="Continue to Presets"
         >
           Continue
         </button>

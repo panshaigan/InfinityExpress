@@ -44,7 +44,7 @@ import {
 import { listEmptyCopy } from './lib/ui/listEmptyCopy'
 import { StationNav, type AppNavSlot } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
-import { LevelsStation } from './ui/LevelsStation'
+import { PresetsStation } from './ui/PresetsStation'
 import { RailCollapseButton } from './ui/RailCollapseButton'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
@@ -238,6 +238,13 @@ export default function App() {
     },
   })
 
+  // Mark Presets finished the first time the user lands on it.
+  useEffect(() => {
+    if (activeStation !== 'presets' || !game) return
+    if (route.finishedStations.has('presets')) return
+    route.markStationFinished('presets')
+  }, [activeStation, game, route.finishedStations, route.markStationFinished])
+
   function openModsJourneyFromBanner() {
     const required = listSelectedModCodenames(model, selectedIds)
     setModsJourney({ locked: true, requiredCodenames: required })
@@ -341,7 +348,7 @@ export default function App() {
     applyChooseGame(next)
   }
 
-  function onLevelsLadderToggle(level: LadderLevel, wantChecked: boolean) {
+  function onPresetsLadderToggle(level: LadderLevel, wantChecked: boolean) {
     if (isSelectionDirty()) {
       setPendingSelectionReset({ type: 'ladder', level, wantChecked })
       return
@@ -349,7 +356,7 @@ export default function App() {
     levels.onLadderToggle(level, wantChecked)
   }
 
-  function onLevelsDifficultyChange(token: DifficultyLevel, want: boolean) {
+  function onPresetsDifficultyChange(token: DifficultyLevel, want: boolean) {
     if (isSelectionDirty()) {
       setPendingSelectionReset({ type: 'difficulty', token, want })
       return
@@ -415,9 +422,9 @@ export default function App() {
     clearFocus()
   }
 
-  function selectLevels() {
+  function selectPresets() {
     if (!game) return
-    setActiveStation('levels')
+    setActiveStation('presets')
     setSearchScope('section')
     clearFocus()
   }
@@ -425,13 +432,13 @@ export default function App() {
   function continueFromEngine() {
     if (!game) return
     route.markStationFinished('engine')
-    setActiveStation('levels')
+    setActiveStation('presets')
     setSearchScope('section')
     clearFocus()
   }
 
-  function continueFromLevels() {
-    route.markStationFinished('levels')
+  function continueFromPresets() {
+    route.markStationFinished('presets')
     route.goNextScreen()
   }
 
@@ -511,8 +518,8 @@ export default function App() {
       document.querySelector<HTMLElement>('.engine-card')?.focus()
       return
     }
-    if (activeStation === 'levels') {
-      document.querySelector<HTMLElement>('.levels-station .level-card input')?.focus()
+    if (activeStation === 'presets') {
+      document.querySelector<HTMLElement>('.presets-station .level-card input')?.focus()
       return
     }
     focusComponentTree()
@@ -529,8 +536,8 @@ export default function App() {
   const stationTitle =
     activeStation === 'engine'
       ? 'Engine'
-      : activeStation === 'levels'
-        ? 'Levels'
+      : activeStation === 'presets'
+        ? 'Presets'
         : activeStation === 'content' || activeStation === 'mechanics'
           ? (() => {
               const sectionLabel =
@@ -543,7 +550,7 @@ export default function App() {
 
   const applyStationSlot = useCallback(
     (slot: StationSlot) => {
-      if (slot === 'levels' && !game) {
+      if (slot === 'presets' && !game) {
         setActiveStation('engine')
       } else {
         setActiveStation(slot)
@@ -651,7 +658,7 @@ export default function App() {
           totalCount={route.routeProgress.totalCount}
           collapsed={railCollapsed}
           onSelectEngine={selectEngine}
-          onSelectLevels={selectLevels}
+          onSelectPresets={selectPresets}
           onSelectStation={selectStation}
         />
 
@@ -692,17 +699,17 @@ export default function App() {
                       onContinue={continueFromEngine}
                     />
                   </div>
-                ) : activeStation === 'levels' ? (
+                ) : activeStation === 'presets' ? (
                   <div className="list-pane-scroll engine-pane-scroll">
-                    <LevelsStation
+                    <PresetsStation
                       enabled
                       checkedLadderLevels={levels.ladderChecked}
                       lowerDifficulty={levels.lowerDifficultyPreset}
                       higherDifficulty={levels.higherDifficultyPreset}
-                      onLadderToggle={onLevelsLadderToggle}
-                      onDifficultyChange={onLevelsDifficultyChange}
+                      onLadderToggle={onPresetsLadderToggle}
+                      onDifficultyChange={onPresetsDifficultyChange}
                       canContinue={route.canCycleScreens}
-                      onContinue={continueFromLevels}
+                      onContinue={continueFromPresets}
                     />
                   </div>
                 ) : isAllSections ? (
