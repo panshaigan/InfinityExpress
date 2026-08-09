@@ -6,8 +6,8 @@ import type { PendingRemoteMeta } from '../mods/acquireTargets'
 export interface ProbeModInput {
   codename: string
   url: string
-  useMaster: boolean
-  useAssets: boolean
+  track: string
+  download: string
   catalogSizeBytes?: number | null
 }
 
@@ -29,8 +29,8 @@ export interface RemoteProbeResult {
 export interface AcquireModInput {
   codename: string
   url: string
-  useMaster: boolean
-  useAssets: boolean
+  track: string
+  download: string
   downloadDir: string
   remote: RemoteProbeResult
   githubToken?: string | null

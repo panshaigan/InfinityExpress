@@ -1,6 +1,11 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { scrapeModPageMeta } from '../../lib/desktop/modPageMeta'
-import type { ModInfo } from '../../lib/mods/loadMods'
+import {
+  isGithubModUrl,
+  normalizeDownload,
+  normalizeTrack,
+  type ModInfo,
+} from '../../lib/mods/loadMods'
 import {
   GAME_TOKENS,
   joinGameTokens,
@@ -42,8 +47,8 @@ const EMPTY: UserModInput = {
   url: '',
   readme: '',
   game: '',
-  useMaster: false,
-  useAssets: false,
+  track: '',
+  download: '',
   release: '',
   version: '',
   sizeBytes: null,
@@ -52,11 +57,38 @@ const EMPTY: UserModInput = {
   stability: '',
 }
 
-type OpenSelect = 'category' | 'type' | 'stability' | null
+type OpenSelect = 'category' | 'type' | 'stability' | 'track' | 'download' | null
+
+type TrackMode = 'release' | 'main' | 'custom'
+
+const TRACK_MODE_OPTIONS: OutlinedSelectOption[] = [
+  { value: 'release', label: 'Release' },
+  { value: 'main', label: 'Main branch' },
+  { value: 'custom', label: 'Custom branch' },
+]
+
+const DOWNLOAD_OPTIONS: OutlinedSelectOption[] = [
+  { value: '', label: 'Zipball' },
+  { value: 'asset', label: 'Asset' },
+]
+
+function trackModeFromTrack(track: string): TrackMode {
+  const t = normalizeTrack(track)
+  if (!t) return 'release'
+  if (t === 'main') return 'main'
+  return 'custom'
+}
+
+function customBranchFromTrack(track: string): string {
+  const t = normalizeTrack(track)
+  if (!t || t === 'main') return ''
+  return t
+}
 
 function toForm(initial: Partial<ModInfo> | null): UserModInput {
   if (!initial) return { ...EMPTY }
   const readme = initial.readme ?? ''
+  const track = normalizeTrack(initial.track)
   return {
     codename: initial.codename ?? '',
     name: initial.name ?? '',
@@ -65,8 +97,8 @@ function toForm(initial: Partial<ModInfo> | null): UserModInput {
     url: initial.url ?? '',
     readme: readme ? withHtmlPreviewIfNeeded(readme) : '',
     game: initial.game ?? '',
-    useMaster: initial.useMaster ?? false,
-    useAssets: initial.useAssets ?? false,
+    track,
+    download: normalizeDownload(initial.download, track),
     release: initial.release ?? '',
     version: initial.version ?? '',
     sizeBytes: initial.sizeBytes ?? null,
@@ -111,6 +143,9 @@ export function ModEditorDialog({
   const [form, setForm] = useState<UserModInput>(() => toForm(initial))
   const [error, setError] = useState<string | null>(null)
   const [openSelect, setOpenSelect] = useState<OpenSelect>(null)
+  const [trackMode, setTrackModeUi] = useState<TrackMode>(() =>
+    trackModeFromTrack(initial?.track ?? ''),
+  )
   const [scraping, setScraping] = useState(false)
   const scrapeCacheRef = useRef<{ url: string; name: string; readme: string; author: string } | null>(
     null,
@@ -124,6 +159,7 @@ export function ModEditorDialog({
   useEffect(() => {
     if (!open) return
     setForm(toForm(initial))
+    setTrackModeUi(trackModeFromTrack(initial?.track ?? ''))
     setError(null)
     setOpenSelect(null)
     setScraping(false)
@@ -151,6 +187,39 @@ export function ModEditorDialog({
 
   function setField<K extends keyof UserModInput>(key: K, value: UserModInput[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function setTrackMode(mode: TrackMode) {
+    setTrackModeUi(mode)
+    setForm((prev) => {
+      let track = ''
+      if (mode === 'main') track = 'main'
+      else if (mode === 'custom') {
+        const prevCustom = customBranchFromTrack(prev.track)
+        track = prevCustom || ''
+      }
+      return {
+        ...prev,
+        track,
+        download: mode === 'release' ? prev.download : '',
+      }
+    })
+  }
+
+  function setCustomBranch(branch: string) {
+    setTrackModeUi('custom')
+    setForm((prev) => ({
+      ...prev,
+      track: branch,
+      download: '',
+    }))
+  }
+
+  function setDownloadMode(download: string) {
+    setForm((prev) => ({
+      ...prev,
+      download: normalizeDownload(download, prev.track),
+    }))
   }
 
   function toggleGameToken(token: GameToken, checked: boolean) {
@@ -279,6 +348,24 @@ export function ModEditorDialog({
       setForm(next)
       return
     }
+
+    const github = isGithubModUrl(url)
+    let track = ''
+    let download = ''
+    if (github) {
+      if (trackMode === 'main') track = 'main'
+      else if (trackMode === 'custom') {
+        const branch = next.track.trim()
+        if (!branch || branch.toLowerCase() === 'release') {
+          setError('Custom branch name is required')
+          setForm(next)
+          return
+        }
+        track = branch
+      }
+      download = normalizeDownload(next.download, track)
+    }
+
     setError(null)
     onSave({
       ...next,
@@ -286,6 +373,8 @@ export function ModEditorDialog({
       readme,
       game: joinGameTokens(splitGameTokens(next.game)),
       codename: code,
+      track,
+      download,
       sizeBytes:
         next.sizeBytes != null && Number.isFinite(next.sizeBytes)
           ? Math.floor(next.sizeBytes)
@@ -297,6 +386,10 @@ export function ModEditorDialog({
   const typeOptions = withEmptyOption(facetOptions.types, '—')
   const stabilityOptions = withEmptyOption(facetOptions.stabilities, 'Released')
   const games = selectedGameTokens(form.game)
+  const showGithubSource = isGithubModUrl(form.url)
+  const customBranch = form.track
+  const downloadValue =
+    trackMode === 'release' ? normalizeDownload(form.download, '') : ''
 
   return (
     <div
@@ -313,24 +406,42 @@ export function ModEditorDialog({
       >
         <div className="confirm-dialog-header mod-editor-header">
           <h2 id={titleId}>{mode === 'create' ? 'Add mod' : 'Edit mod'}</h2>
-          <div className="mod-editor-header-flags">
-            <label className="mod-editor-check">
-              <input
-                type="checkbox"
-                checked={form.useMaster}
-                onChange={(e) => setField('useMaster', e.target.checked)}
+          {showGithubSource ? (
+            <div className="mod-editor-header-flags">
+              <OutlinedSelect
+                className="mod-editor-source-select"
+                label="Track"
+                value={trackMode}
+                options={TRACK_MODE_OPTIONS}
+                emptyLabel="Release"
+                open={openSelect === 'track'}
+                onOpenChange={(o) => setOpenSelect(o ? 'track' : null)}
+                onChange={(v) => setTrackMode(v as TrackMode)}
               />
-              Use master
-            </label>
-            <label className="mod-editor-check">
-              <input
-                type="checkbox"
-                checked={form.useAssets}
-                onChange={(e) => setField('useAssets', e.target.checked)}
+              {trackMode === 'custom' ? (
+                <OutlinedTextField
+                  className="mod-editor-branch-field"
+                  label="Branch"
+                  value={customBranch}
+                  onChange={setCustomBranch}
+                  placeholder="branch-name"
+                  spellCheck={false}
+                  autoComplete="off"
+                />
+              ) : null}
+              <OutlinedSelect
+                className="mod-editor-source-select"
+                label="Download"
+                value={downloadValue}
+                options={DOWNLOAD_OPTIONS}
+                emptyLabel="Zipball"
+                disabled={trackMode !== 'release'}
+                open={openSelect === 'download'}
+                onOpenChange={(o) => setOpenSelect(o ? 'download' : null)}
+                onChange={setDownloadMode}
               />
-              Use assets
-            </label>
-          </div>
+            </div>
+          ) : null}
         </div>
         <form className="mod-editor-form" onSubmit={(e) => void handleSubmit(e)}>
           <OutlinedTextField

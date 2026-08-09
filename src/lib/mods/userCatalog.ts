@@ -4,6 +4,7 @@ import type {
   ModInfo,
   WorkingMod,
 } from './loadMods'
+import { normalizeDownload, normalizeTrack } from './loadMods'
 
 export const USER_CATALOG_STORAGE_KEY = 'infinity-express.mods-catalog'
 
@@ -16,8 +17,8 @@ export interface StoredModEntry {
   url: string
   readme: string
   game: string
-  useMaster: boolean
-  useAssets: boolean
+  track: string
+  download: string
   release: string
   version: string
   sizeBytes: number | null
@@ -31,11 +32,53 @@ export interface StoredModEntry {
   localEdit?: boolean
 }
 
+/** Legacy localStorage shape before Track/Download replaced UseMaster/UseAssets. */
+type LegacyStoredModEntry = Partial<StoredModEntry> & {
+  useMaster?: boolean
+  useAssets?: boolean
+}
+
 export interface UserCatalogStore {
   version: 1
   mods: StoredModEntry[]
   /** Base codenames removed from the working catalog (not re-added on merge). */
   hiddenBaseCodenames?: string[]
+}
+
+/** Migrate a persisted row from legacy booleans to track/download. */
+export function migrateStoredModEntry(row: LegacyStoredModEntry): StoredModEntry {
+  const hasNewFields =
+    typeof row.track === 'string' || typeof row.download === 'string'
+  let track = normalizeTrack(typeof row.track === 'string' ? row.track : '')
+  let download = normalizeDownload(
+    typeof row.download === 'string' ? row.download : '',
+    track,
+  )
+  if (!hasNewFields) {
+    if (row.useMaster) track = 'main'
+    else if (row.useAssets) download = 'asset'
+  }
+  return {
+    codename: row.codename ?? '',
+    name: row.name ?? '',
+    abbreviation: row.abbreviation ?? '',
+    category: row.category ?? '',
+    url: row.url ?? '',
+    readme: row.readme ?? '',
+    game: row.game ?? '',
+    track,
+    download,
+    release: row.release ?? '',
+    version: row.version ?? '',
+    sizeBytes: row.sizeBytes ?? null,
+    author: row.author ?? '',
+    type: row.type ?? '',
+    stability: row.stability ?? '',
+    origin: row.origin === 'user' ? 'user' : 'base',
+    diskStatus: row.diskStatus ?? 'not_present',
+    overlays: row.overlays ?? {},
+    ...(row.localEdit ? { localEdit: true } : {}),
+  }
 }
 
 function modInfoToStored(
@@ -45,6 +88,8 @@ function modInfoToStored(
 ): StoredModEntry {
   return {
     ...info,
+    track: normalizeTrack(info.track),
+    download: normalizeDownload(info.download, info.track),
     origin,
     diskStatus: extras?.diskStatus ?? 'not_present',
     overlays: extras?.overlays ?? {},
@@ -52,25 +97,26 @@ function modInfoToStored(
 }
 
 function storedToWorking(entry: StoredModEntry): WorkingMod {
+  const migrated = migrateStoredModEntry(entry)
   return {
-    codename: entry.codename,
-    name: entry.name,
-    abbreviation: entry.abbreviation,
-    category: entry.category,
-    url: entry.url,
-    readme: entry.readme,
-    game: entry.game,
-    useMaster: entry.useMaster ?? false,
-    useAssets: entry.useAssets ?? false,
-    release: entry.release,
-    version: entry.version,
-    sizeBytes: entry.sizeBytes,
-    author: entry.author,
-    type: entry.type,
-    stability: entry.stability,
-    origin: entry.origin,
-    diskStatus: entry.diskStatus,
-    overlays: entry.overlays ?? {},
+    codename: migrated.codename,
+    name: migrated.name,
+    abbreviation: migrated.abbreviation,
+    category: migrated.category,
+    url: migrated.url,
+    readme: migrated.readme,
+    game: migrated.game,
+    track: migrated.track,
+    download: migrated.download,
+    release: migrated.release,
+    version: migrated.version,
+    sizeBytes: migrated.sizeBytes,
+    author: migrated.author,
+    type: migrated.type,
+    stability: migrated.stability,
+    origin: migrated.origin,
+    diskStatus: migrated.diskStatus,
+    overlays: migrated.overlays ?? {},
   }
 }
 
@@ -89,13 +135,7 @@ export function mergeBaseIntoWorkingCopy(
   const hidden = new Set(hiddenBaseCodenames ?? [])
   const byCode = new Map<string, StoredModEntry>()
   for (const row of existing ?? []) {
-    byCode.set(row.codename, {
-      ...row,
-      useMaster: row.useMaster ?? false,
-      useAssets: row.useAssets ?? false,
-      overlays: row.overlays ?? {},
-      diskStatus: row.diskStatus ?? 'not_present',
-    })
+    byCode.set(row.codename, migrateStoredModEntry(row))
   }
 
   for (const [codename, info] of base) {
@@ -163,9 +203,15 @@ export function readUserCatalogStore(): UserCatalogStore | null {
   try {
     const raw = localStorage.getItem(USER_CATALOG_STORAGE_KEY)
     if (!raw) return null
-    const parsed = JSON.parse(raw) as UserCatalogStore
+    const parsed = JSON.parse(raw) as UserCatalogStore & {
+      mods: LegacyStoredModEntry[]
+    }
     if (parsed?.version !== 1 || !Array.isArray(parsed.mods)) return null
-    return parsed
+    return {
+      version: 1,
+      mods: parsed.mods.map(migrateStoredModEntry),
+      hiddenBaseCodenames: parsed.hiddenBaseCodenames,
+    }
   } catch {
     return null
   }
@@ -247,6 +293,7 @@ export function addUserMod(
   if (store.mods.some((m) => m.codename === codename)) {
     throw new Error(`Download ID "${codename}" already exists`)
   }
+  const track = normalizeTrack(input.track)
   const entry = modInfoToStored(
     {
       codename,
@@ -256,8 +303,8 @@ export function addUserMod(
       url: input.url.trim(),
       readme: input.readme.trim(),
       game: input.game.trim(),
-      useMaster: !!input.useMaster,
-      useAssets: !!input.useAssets,
+      track,
+      download: normalizeDownload(input.download, track),
       release: input.release.trim(),
       version: input.version.trim(),
       sizeBytes: input.sizeBytes,
@@ -295,6 +342,7 @@ export function updateUserMod(
   ) {
     throw new Error(`Download ID "${nextCode}" already exists`)
   }
+  const track = normalizeTrack(input.track)
   const entry: StoredModEntry = {
     ...prev,
     codename: nextCode,
@@ -304,8 +352,8 @@ export function updateUserMod(
     url: input.url.trim(),
     readme: input.readme.trim(),
     game: input.game.trim(),
-    useMaster: !!input.useMaster,
-    useAssets: !!input.useAssets,
+    track,
+    download: normalizeDownload(input.download, track),
     release: input.release.trim(),
     version: input.version.trim(),
     sizeBytes: input.sizeBytes,

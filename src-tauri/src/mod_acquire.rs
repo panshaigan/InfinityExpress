@@ -47,8 +47,10 @@ pub fn cancel_mod_acquire(flag: State<'_, AcquireCancelFlag>) {
 pub struct ProbeModInput {
   pub codename: String,
   pub url: String,
-  pub use_master: bool,
-  pub use_assets: bool,
+  /// GitHub track: empty/`release` = latest release; `main` = default branch tip; else branch name.
+  pub track: String,
+  /// GitHub download: empty/`zipball` = ref zipball; `asset` = release archive asset.
+  pub download: String,
   /// Catalog size used only as a hint when remote size is unknown (frontend).
   pub catalog_size_bytes: Option<u64>,
 }
@@ -76,8 +78,8 @@ pub struct RemoteProbeResult {
 pub struct AcquireModInput {
   pub codename: String,
   pub url: String,
-  pub use_master: bool,
-  pub use_assets: bool,
+  pub track: String,
+  pub download: String,
   pub download_dir: String,
   pub remote: RemoteProbeResult,
   pub github_token: Option<String>,
@@ -355,18 +357,103 @@ fn date_prefix(s: &str) -> String {
   }
 }
 
+fn normalize_track(raw: &str) -> String {
+  let s = raw.trim();
+  if s.is_empty() || s.eq_ignore_ascii_case("release") {
+    String::new()
+  } else {
+    s.to_string()
+  }
+}
+
+fn wants_asset_download(download: &str, track: &str) -> bool {
+  let is_release = normalize_track(track).is_empty();
+  is_release && download.trim().eq_ignore_ascii_case("asset")
+}
+
+async fn github_probe_named_branch_api(
+  owner: &str,
+  repo: &str,
+  branch: &str,
+  token: Option<&str>,
+  rate_limited: bool,
+) -> Result<RemoteProbeResult, String> {
+  let api = format!("https://api.github.com/repos/{owner}/{repo}");
+  let mut rl = rate_limited;
+  let mut commits_url =
+    reqwest::Url::parse(&format!("{api}/commits")).map_err(|e| e.to_string())?;
+  {
+    let mut qp = commits_url.query_pairs_mut();
+    qp.append_pair("sha", branch);
+    qp.append_pair("per_page", "1");
+  }
+  let (json, commits_rl) = fetch_json(commits_url.as_str(), token).await?;
+  rl |= commits_rl;
+  let commit = json
+    .as_array()
+    .and_then(|a| a.first())
+    .ok_or_else(|| format!("No commits returned for branch {branch}"))?;
+  let sha = commit
+    .get("sha")
+    .and_then(|v| v.as_str())
+    .ok_or_else(|| "Missing commit sha".to_string())?;
+  let short = sha[..sha.len().min(7)].to_string();
+  let date = commit
+    .pointer("/commit/author/date")
+    .and_then(|v| v.as_str())
+    .unwrap_or("");
+  let zip_url = resolve_github_branch_zipball(owner, repo, branch, token).await?;
+  let resolved = zip_url
+    .rsplit("/heads/")
+    .next()
+    .unwrap_or(branch)
+    .to_string();
+  Ok(branch_tip_result(
+    owner,
+    repo,
+    &resolved,
+    short,
+    date_prefix(date),
+    false,
+    rl,
+  ))
+}
+
+async fn github_probe_named_branch_scrape(
+  owner: &str,
+  repo: &str,
+  branch: &str,
+) -> Result<RemoteProbeResult, String> {
+  let url = format!("https://github.com/{owner}/{repo}/commits/{branch}");
+  let (html, _) = fetch_text(&url, None).await?;
+  let re = Regex::new(r#"/commit/([0-9a-f]{40})"#).map_err(|e| e.to_string())?;
+  let caps = re
+    .captures(&html)
+    .ok_or_else(|| format!("Could not scrape tip for branch {branch}"))?;
+  let sha = caps.get(1).unwrap().as_str();
+  let short = sha[..7].to_string();
+  Ok(branch_tip_result(
+    owner, repo, branch, short, String::new(), true, true,
+  ))
+}
+
 async fn github_probe_api(
   owner: &str,
   repo: &str,
-  use_master: bool,
-  use_assets: bool,
+  track: &str,
+  download: &str,
   token: Option<&str>,
 ) -> Result<RemoteProbeResult, String> {
   let api = format!("https://api.github.com/repos/{owner}/{repo}");
   let mut rate_limited = false;
+  let track_norm = normalize_track(track);
+  let use_assets = wants_asset_download(download, track);
 
-  if use_master {
+  if track_norm == "main" {
     return github_probe_branch_tip_api(owner, repo, token, rate_limited).await;
+  }
+  if !track_norm.is_empty() {
+    return github_probe_named_branch_api(owner, repo, &track_norm, token, rate_limited).await;
   }
 
   match fetch_json(&format!("{api}/releases/latest"), token).await {
@@ -442,7 +529,7 @@ async fn github_probe_api(
           });
         }
         return Err(
-          "UseAssets set but no .zip/.7z/.rar assets or description links found on latest release"
+          "Download=asset but no .zip/.7z/.rar assets or description links found on latest release"
             .into(),
         );
       }
@@ -466,7 +553,7 @@ async fn github_probe_api(
     }
     Err(e) if use_assets => Err(e),
     Err(_) => {
-      // No releases: fall back to main/master branch tip (no UseMaster required).
+      // No releases: fall back to main/master branch tip (release+zipball only).
       github_probe_branch_tip_api(owner, repo, token, rate_limited).await
     }
   }
@@ -475,11 +562,17 @@ async fn github_probe_api(
 async fn github_probe_scrape(
   owner: &str,
   repo: &str,
-  use_master: bool,
-  use_assets: bool,
+  track: &str,
+  download: &str,
 ) -> Result<RemoteProbeResult, String> {
-  if use_master {
+  let track_norm = normalize_track(track);
+  let use_assets = wants_asset_download(download, track);
+
+  if track_norm == "main" {
     return github_probe_branch_tip_scrape(owner, repo).await;
+  }
+  if !track_norm.is_empty() {
+    return github_probe_named_branch_scrape(owner, repo, &track_norm).await;
   }
 
   let latest = format!("https://github.com/{owner}/{repo}/releases/latest");
@@ -504,7 +597,7 @@ async fn github_probe_scrape(
   let Some(tag) = tag else {
     if use_assets {
       return Err(format!(
-        "UseAssets set but no releases found for {owner}/{repo} (HTTP {status})"
+        "Download=asset but no releases found for {owner}/{repo} (HTTP {status})"
       ));
     }
     return github_probe_branch_tip_scrape(owner, repo).await;
@@ -558,7 +651,7 @@ async fn github_probe_scrape(
         });
       }
     }
-    return Err("UseAssets set but no archive links found on release page".into());
+    return Err("Download=asset but no archive links found on release page".into());
   }
 
   Ok(RemoteProbeResult {
@@ -585,13 +678,13 @@ async fn resolve_github_branch_zipball(
   preferred: &str,
   token: Option<&str>,
 ) -> Result<String, String> {
-  // Try preferred, then alternate.
-  let alts = if preferred == "main" {
-    vec!["main", "master"]
-  } else {
-    vec![preferred, "main", "master"]
+  // Default-branch tip (`main`): try main then master. Custom branch: exact only.
+  let alts: Vec<&str> = match preferred {
+    "main" | "master" => vec!["main", "master"],
+    other if !other.is_empty() => vec![other],
+    _ => vec!["main", "master"],
   };
-  for branch in alts {
+  for branch in &alts {
     let url = format!("https://codeload.github.com/{owner}/{repo}/zip/refs/heads/{branch}");
     let client = http_client()?;
     let mut req = client.head(&url);
@@ -612,28 +705,26 @@ async fn resolve_github_branch_zipball(
     }
   }
   Err(format!(
-    "Could not resolve default branch zipball for {owner}/{repo}"
+    "Could not resolve branch zipball for {owner}/{repo} (tried {})",
+    alts.join(", ")
   ))
 }
 
 async fn probe_github(
   url: &str,
-  use_master: bool,
-  use_assets: bool,
+  track: &str,
+  download: &str,
   token: Option<&str>,
 ) -> Result<RemoteProbeResult, String> {
   let (owner, repo) = parse_github_owner_repo(url)?;
-  match github_probe_api(&owner, &repo, use_master, use_assets, token).await {
+  match github_probe_api(&owner, &repo, track, download, token).await {
     Ok(mut remote) => {
       if remote.strategy == "github_zipball_branch" {
-        if let Ok(u) =
-          resolve_github_branch_zipball(&owner, &repo, "main", token).await
-        {
+        let preferred = remote.zipball_ref.as_deref().unwrap_or("main");
+        if let Ok(u) = resolve_github_branch_zipball(&owner, &repo, preferred, token).await {
           remote.download_url = Some(u.clone());
-          if u.contains("/heads/master") {
-            remote.zipball_ref = Some("master".into());
-          } else {
-            remote.zipball_ref = Some("main".into());
+          if let Some(branch) = u.rsplit("/heads/").next() {
+            remote.zipball_ref = Some(branch.to_string());
           }
         }
       }
@@ -642,7 +733,7 @@ async fn probe_github(
     Err(e) => {
       let rate = e.contains("403") || e.contains("429") || e.contains("rate_limited");
       if rate || token.is_none() {
-        let mut remote = github_probe_scrape(&owner, &repo, use_master, use_assets).await?;
+        let mut remote = github_probe_scrape(&owner, &repo, track, download).await?;
         remote.rate_limited = remote.rate_limited || rate;
         Ok(remote)
       } else {
@@ -883,7 +974,7 @@ async fn probe_mod_inner(
   }
   let lower = url.to_ascii_lowercase();
   if lower.contains("github.com") {
-    return probe_github(url, input.use_master, input.use_assets, github_token).await;
+    return probe_github(url, &input.track, &input.download, github_token).await;
   }
   if lower.contains("downloads.weaselmods.net") {
     return probe_weasel(url).await;
@@ -1381,11 +1472,12 @@ pub async fn acquire_mod(
     .unwrap_or_else(|| "zip".into())
     .to_ascii_lowercase();
 
-  // Fix main→master if needed for branch zipballs at acquire time.
+  // Fix main→master (or confirm custom branch) for branch zipballs at acquire time.
   if remote.strategy == "github_zipball_branch" {
     if let (Some(owner), Some(repo)) = (remote.owner.as_deref(), remote.repo.as_deref()) {
+      let preferred = remote.zipball_ref.as_deref().unwrap_or("main");
       if let Ok(u) =
-        resolve_github_branch_zipball(owner, repo, "main", input.github_token.as_deref()).await
+        resolve_github_branch_zipball(owner, repo, preferred, input.github_token.as_deref()).await
       {
         download_url = u;
       }

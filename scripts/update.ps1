@@ -80,13 +80,13 @@ if (-not (Get-Module -ListAvailable -Name 7Zip4PowerShell))
     Install-Module -Name 7Zip4PowerShell -Force
 }
 
-"Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version" | Out-File -FilePath $script:outputCsv -Encoding UTF8
+"Codename,Category,URL,Game,Track,Download,Release,Version" | Out-File -FilePath $script:outputCsv -Encoding UTF8
 
 function DownloadGithub
 {
     param (
         [string]$URL,
-        [switch]$UseMaster
+        [string]$Track = ''
     )
 
     $Codename = $URL.Split('/')[-1]
@@ -99,16 +99,26 @@ function DownloadGithub
     Push-Location -Path $script:modsFolder
     & "$script:gitPath" clone --depth 1 $URL $modPath > $null 2>&1
 
-    if ($UseMaster) {
-        $branch = & "$script:gitPath" rev-parse --verify master 2>$null
-        if ($branch) {
-            & "$script:gitPath" checkout master > $null 2>&1
-            Write-Host "Checked out branch: master"
+    $trackNorm = if ($Track) { $Track.Trim() } else { '' }
+    if ($trackNorm -and $trackNorm -ine 'release') {
+        Push-Location -Path $modPath
+        if ($trackNorm -ieq 'main') {
+            $branch = & "$script:gitPath" rev-parse --verify master 2>$null
+            if ($branch) {
+                & "$script:gitPath" checkout master > $null 2>&1
+                Write-Host "Checked out branch: master"
+            }
+            else {
+                & "$script:gitPath" checkout main > $null 2>&1
+                Write-Host "Checked out branch: main (master not found)"
+            }
         }
         else {
-            & "$script:gitPath" checkout main > $null 2>&1
-            Write-Host "Checked out branch: main (master not found)"
+            & "$script:gitPath" fetch origin $trackNorm > $null 2>&1
+            & "$script:gitPath" checkout $trackNorm > $null 2>&1
+            Write-Host "Checked out branch: $trackNorm"
         }
+        Pop-Location
     }
     else
     {
@@ -116,6 +126,7 @@ function DownloadGithub
         & "$script:gitPath" fetch --tags > $null 2>&1
         $latestTag = & "$script:gitPath" describe --tags $( & "$script:gitPath" rev-list --tags --max-count=1 )
         & "$script:gitPath" checkout $latestTag > $null 2>&1
+        Pop-Location
     }
 
     Set-Location -Path $script:scriptDir
@@ -175,7 +186,7 @@ $reset = "${esc}[0m"
 
 Import-Csv -Path $script:csvFile | ForEach-Object {
 
-    foreach ($property in @('URL', 'Category', 'Codename', 'Version', 'Release', 'UseMaster', 'UseAssets', 'Game')) {
+    foreach ($property in @('URL', 'Category', 'Codename', 'Version', 'Release', 'Track', 'Download', 'UseMaster', 'UseAssets', 'Game')) {
         if ($_.PSObject.Properties[$property] -and $_.$property) {
             Set-Variable -Name $property -Value ($_.($property).Trim('"').Trim().TrimEnd('/'))
         } else {
@@ -183,8 +194,15 @@ Import-Csv -Path $script:csvFile | ForEach-Object {
         }
     }
 
-    $useMasterFlag = [bool]$UseMaster
-    $useAssetsFlag = $UseAssets -eq '1' -or $UseAssets -ieq 'true'
+    # Prefer Track/Download; fall back to legacy UseMaster/UseAssets.
+    if ($null -eq $Track -and $null -eq $Download -and ($UseMaster -or $UseAssets)) {
+        if ($UseMaster) { $Track = 'main' }
+        elseif ($UseAssets -eq '1' -or $UseAssets -ieq 'true') { $Download = 'asset' }
+    }
+    $trackNorm = if ($Track) { $Track.Trim() } else { '' }
+    if ($trackNorm -ieq 'release') { $trackNorm = '' }
+    $trackBranch = $trackNorm -and $trackNorm -ne ''
+    $useAssetsFlag = -not $trackBranch -and ($Download -ieq 'asset')
 
     # Skip if Game doesn't match any of the preferred games
     if ($preferredGames -and $Game) {
@@ -199,7 +217,7 @@ Import-Csv -Path $script:csvFile | ForEach-Object {
             }
         }
         if (-not $hasMatch) {
-            "$Codename,$Category,`"$URL`",$Game,$UseMaster,$UseAssets,$Release,`"$Version`"" | Out-File -FilePath $script:outputCsv -Append -Encoding UTF8
+            "$Codename,$Category,`"$URL`",$Game,$Track,$Download,$Release,`"$Version`"" | Out-File -FilePath $script:outputCsv -Append -Encoding UTF8
             return
         }
     }
@@ -312,8 +330,14 @@ Import-Csv -Path $script:csvFile | ForEach-Object {
                 $apiUrl = "https://api.github.com/repos/$author/$Codename"
                 $auth = @{ Authorization = "token $script:githubToken" }
 
-                if ($useMasterFlag) {
-                    $response = Invoke-RestMethod -Uri "$apiUrl/commits" -Headers $auth -UseBasicParsing
+                if ($trackBranch) {
+                    if ($trackNorm -ieq 'main') {
+                        $response = Invoke-RestMethod -Uri "$apiUrl/commits?per_page=1" -Headers $auth -UseBasicParsing
+                    }
+                    else {
+                        $shaQ = [uri]::EscapeDataString($trackNorm)
+                        $response = Invoke-RestMethod -Uri "$apiUrl/commits?sha=$shaQ&per_page=1" -Headers $auth -UseBasicParsing
+                    }
                     $currentVersion = $response[0].sha.Substring(0, 7) # short hash
                     $Release = $response[0].commit.author.date.Substring(0, 10)
                 } else
@@ -340,7 +364,7 @@ Import-Csv -Path $script:csvFile | ForEach-Object {
                                     [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
                                 )
                                 if (-not $bodyMatch.Success) {
-                                    throw "UseAssets set but no .zip/.7z/.rar assets or description links found on latest release"
+                                    throw "Download=asset but no .zip/.7z/.rar assets or description links found on latest release"
                                 }
                                 $downloadLink = $bodyMatch.Value
                                 $extension = [System.IO.Path]::GetExtension($downloadLink).TrimStart('.').ToLowerInvariant()
@@ -370,9 +394,9 @@ Import-Csv -Path $script:csvFile | ForEach-Object {
 
                     if ($URL -match "github\.com")
                     {
-                        if ($useMasterFlag)
+                        if ($trackBranch)
                         {
-                            DownloadGithub -url $URL -UseMaster
+                            DownloadGithub -url $URL -Track $trackNorm
                         }
                         elseif ($useAssetsFlag)
                         {
@@ -400,9 +424,9 @@ Import-Csv -Path $script:csvFile | ForEach-Object {
 
                 if ($URL -match "github\.com")
                 {
-                    if ($useMasterFlag)
+                    if ($trackBranch)
                     {
-                        DownloadGithub -url $URL -UseMaster
+                        DownloadGithub -url $URL -Track $trackNorm
                     }
                     elseif ($useAssetsFlag)
                     {
@@ -433,7 +457,7 @@ Import-Csv -Path $script:csvFile | ForEach-Object {
         Write-Host "[SKIPPING] ${reset}"
     }
 
-    "$Codename,$Category,`"$URL`",$Game,$UseMaster,$UseAssets,$Release,`"$Version`"" | Out-File -FilePath $script:outputCsv -Append -Encoding UTF8
+    "$Codename,$Category,`"$URL`",$Game,$Track,$Download,$Release,`"$Version`"" | Out-File -FilePath $script:outputCsv -Append -Encoding UTF8
 
     Write-Host ""
 }

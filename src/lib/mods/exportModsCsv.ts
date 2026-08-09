@@ -3,17 +3,13 @@ import { effectiveModFields, type WorkingMod } from './loadMods'
 
 /** Full catalog header matching shipped `src/data/mods.csv`. */
 export const MODS_CSV_HEADER =
-  'Codename,Name,Abbreviation,Type,Category,URL,Game,UseMaster,UseAssets,Release,Version,Stability,Size,Author,Readme'
+  'Codename,Name,Abbreviation,Type,Category,URL,Game,Track,Download,Release,Version,Stability,Size,Author,Readme'
 
 function csvEscape(value: string): string {
   if (/[",\n\r]/.test(value)) {
     return `"${value.replace(/"/g, '""')}"`
   }
   return value
-}
-
-function flagCell(on: boolean): string {
-  return on ? '1' : ''
 }
 
 function sizeCell(n: number | null): string {
@@ -59,8 +55,8 @@ export function serializeModsCsv(
         csvEscape(e.category),
         csvEscape(e.url),
         csvEscape(e.game),
-        flagCell(e.useMaster),
-        flagCell(e.useAssets),
+        csvEscape(e.track),
+        csvEscape(e.download),
         csvEscape(e.release),
         csvEscape(e.version),
         csvEscape(e.stability),

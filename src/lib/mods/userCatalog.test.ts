@@ -3,6 +3,7 @@ import type { ModInfo } from './loadMods'
 import {
   addUserMod,
   mergeBaseIntoWorkingCopy,
+  migrateStoredModEntry,
   provisionalCodenameFromUrl,
   removeUserMod,
   replaceOverlays,
@@ -19,8 +20,8 @@ function baseMod(partial: Partial<ModInfo> & { codename: string }): ModInfo {
     url: partial.url ?? 'https://example.com',
     readme: partial.readme ?? '',
     game: partial.game ?? 'BG2',
-    useMaster: partial.useMaster ?? false,
-    useAssets: partial.useAssets ?? false,
+    track: partial.track ?? '',
+    download: partial.download ?? '',
     release: partial.release ?? '2020-01-01',
     version: partial.version ?? 'v1',
     sizeBytes: partial.sizeBytes ?? 100,
@@ -30,6 +31,37 @@ function baseMod(partial: Partial<ModInfo> & { codename: string }): ModInfo {
     codename: partial.codename,
   }
 }
+
+describe('migrateStoredModEntry', () => {
+  it('maps legacy useMaster/useAssets to track/download', () => {
+    expect(
+      migrateStoredModEntry({
+        codename: 'A',
+        useMaster: true,
+        useAssets: true,
+      } as never).track,
+    ).toBe('main')
+    expect(
+      migrateStoredModEntry({
+        codename: 'B',
+        useMaster: false,
+        useAssets: true,
+      } as never).download,
+    ).toBe('asset')
+  })
+
+  it('prefers track/download when already present', () => {
+    const row = migrateStoredModEntry({
+      codename: 'C',
+      track: 'develop',
+      download: 'asset',
+      useMaster: true,
+      useAssets: true,
+    } as never)
+    expect(row.track).toBe('develop')
+    expect(row.download).toBe('')
+  })
+})
 
 describe('mergeBaseIntoWorkingCopy', () => {
   it('clones base on first run', () => {

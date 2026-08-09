@@ -16,7 +16,7 @@ import {
 import type { ComponentNode, InstallSequenceModel, TreeNode } from '../xml/schema'
 
 const HEADER =
-  'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme,Type'
+  'Codename,Category,URL,Game,Track,Download,Release,Version,Size,Author,Readme,Type'
 
 describe('parseModsCsv', () => {
   it('parses header and quoted fields including Size, Author, and Readme', () => {
@@ -36,8 +36,8 @@ describe('parseModsCsv', () => {
       url: 'https://github.com/Gibberlings3/Totemic_Cernd',
       readme: '',
       game: 'BG2',
-      useMaster: false,
-      useAssets: false,
+      track: '',
+      download: '',
       release: '2017-06-06',
       version: 'v3',
       sizeBytes: 12345,
@@ -55,7 +55,7 @@ describe('parseModsCsv', () => {
 
   it('parses Name and Abbreviation when present', () => {
     const raw = [
-      'Codename,Name,Abbreviation,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme,Type',
+      'Codename,Name,Abbreviation,Category,URL,Game,Track,Download,Release,Version,Size,Author,Readme,Type',
       'SotSC,"Shades of the Sword Coast",SotSC,QUEST,"https://x",BG1,,,2026-01-01,"v1",10,Lava,,compilation',
       'NoName,,,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA,,',
     ].join('\n')
@@ -68,7 +68,7 @@ describe('parseModsCsv', () => {
 
   it('treats missing Name and Abbreviation columns as empty string', () => {
     const raw = [
-      'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme,Type',
+      'Codename,Category,URL,Game,Track,Download,Release,Version,Size,Author,Readme,Type',
       'Bare,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA,,',
     ].join('\n')
     const map = parseModsCsv(raw)
@@ -115,7 +115,7 @@ describe('parseModsCsv', () => {
 
   it('treats missing Readme column as empty string', () => {
     const raw = [
-      'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author',
+      'Codename,Category,URL,Game,Track,Download,Release,Version,Size,Author',
       'NoReadmeCol,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA,',
     ].join('\n')
     const map = parseModsCsv(raw)
@@ -125,7 +125,7 @@ describe('parseModsCsv', () => {
 
   it('treats missing Category and Type columns as empty string', () => {
     const raw = [
-      'Codename,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme',
+      'Codename,URL,Game,Track,Download,Release,Version,Size,Author,Readme',
       'Bare,NPC,"https://x",BG2,,,2020-01-01,"v1",10,AuthorA,',
     ].join('\n')
     const map = parseModsCsv(raw)
@@ -135,7 +135,7 @@ describe('parseModsCsv', () => {
 
   it('parses Stability when present and defaults to empty', () => {
     const raw = [
-      'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Stability,Size,Author,Readme,Type',
+      'Codename,Category,URL,Game,Track,Download,Release,Version,Stability,Size,Author,Readme,Type',
       'BetaMod,NPC,"https://x",BG2,,,2020-01-01,"v1",beta,10,AuthorA,,minor',
       'EmptyStab,NPC,"https://x",BG2,,,2020-01-01,"v1",,10,AuthorB,,minor',
     ].join('\n')
@@ -152,20 +152,49 @@ describe('parseModsCsv', () => {
     const map = parseModsCsv(raw)
     expect(map.get('NoStabCol')?.stability).toBe('')
   })
-  it('parses UseMaster and UseAssets flags', () => {
+  it('parses Track and Download columns', () => {
     const raw = [
       HEADER,
+      'Art,NPC,"https://x",BG2,main,,2020-01-01,"abc",10,A,,minor',
+      'Asset,NPC,"https://x",BG2,,asset,2020-01-01,"v1",10,B,,minor',
+      'Custom,NPC,"https://x",BG2,develop,,2020-01-01,"v1",10,C,,minor',
+      'ReleaseZip,NPC,"https://x",BG2,release,zipball,2020-01-01,"v1",10,D,,minor',
+    ].join('\n')
+    const map = parseModsCsv(raw)
+    expect(map.get('Art')?.track).toBe('main')
+    expect(map.get('Art')?.download).toBe('')
+    expect(map.get('Asset')?.track).toBe('')
+    expect(map.get('Asset')?.download).toBe('asset')
+    expect(map.get('Custom')?.track).toBe('develop')
+    expect(map.get('Custom')?.download).toBe('')
+    expect(map.get('ReleaseZip')?.track).toBe('')
+    expect(map.get('ReleaseZip')?.download).toBe('')
+  })
+
+  it('maps legacy UseMaster and UseAssets columns', () => {
+    const raw = [
+      'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Size,Author,Readme,Type',
       'Art,NPC,"https://x",BG2,1,,2020-01-01,"abc",10,A,,minor',
       'Asset,NPC,"https://x",BG2,,1,2020-01-01,"v1",10,B,,minor',
       'Both,NPC,"https://x",BG2,1,true,2020-01-01,"v1",10,C,,minor',
     ].join('\n')
     const map = parseModsCsv(raw)
-    expect(map.get('Art')?.useMaster).toBe(true)
-    expect(map.get('Art')?.useAssets).toBe(false)
-    expect(map.get('Asset')?.useMaster).toBe(false)
-    expect(map.get('Asset')?.useAssets).toBe(true)
-    expect(map.get('Both')?.useMaster).toBe(true)
-    expect(map.get('Both')?.useAssets).toBe(true)
+    expect(map.get('Art')?.track).toBe('main')
+    expect(map.get('Art')?.download).toBe('')
+    expect(map.get('Asset')?.track).toBe('')
+    expect(map.get('Asset')?.download).toBe('asset')
+    expect(map.get('Both')?.track).toBe('main')
+    expect(map.get('Both')?.download).toBe('')
+  })
+
+  it('coerces Download=asset off when Track is a branch', () => {
+    const raw = [
+      HEADER,
+      'Bad,NPC,"https://x",BG2,main,asset,2020-01-01,"v1",10,A,,minor',
+    ].join('\n')
+    const map = parseModsCsv(raw)
+    expect(map.get('Bad')?.track).toBe('main')
+    expect(map.get('Bad')?.download).toBe('')
   })
 })
 
@@ -821,7 +850,7 @@ describe('resolveModStability', () => {
 
   const modsByCodename = parseModsCsv(
     [
-      'Codename,Category,URL,Game,UseMaster,UseAssets,Release,Version,Stability,Size,Author,Readme,Type',
+      'Codename,Category,URL,Game,Track,Download,Release,Version,Stability,Size,Author,Readme,Type',
       'BetaMod,NPC,"https://x",BG2,,,2020-01-01,"v1",beta,10,A,,minor',
       'AlphaMod,NPC,"https://x",BG2,,,2020-01-01,"v1",alpha,10,A,,minor',
       'ReleasedMod,NPC,"https://x",BG2,,,2020-01-01,"v1",,10,A,,minor',

@@ -10,8 +10,8 @@ function mod(partial: Partial<WorkingMod> & { codename: string }): WorkingMod {
     url: 'https://example.com/m',
     readme: '',
     game: 'BG2',
-    useMaster: false,
-    useAssets: false,
+    track: '',
+    download: '',
     release: '2020-01-01',
     version: 'v1',
     sizeBytes: 10,
@@ -33,14 +33,14 @@ describe('serializeModsCsv', () => {
           codename: 'Zed',
           overlays: { version: 'v9', sizeBytes: 99 },
         }),
-        mod({ codename: 'Aye', useMaster: true }),
+        mod({ codename: 'Aye', track: 'main' }),
       ],
       ['Aye', 'Zed'],
     )
     const lines = csv.trimEnd().split('\n')
     expect(lines[0]).toBe(MODS_CSV_HEADER)
     expect(lines[1]).toContain('Aye')
-    expect(lines[1]).toMatch(/,1,,/)
+    expect(lines[1]).toMatch(/,main,,/)
     expect(lines[2]).toContain('v9')
     expect(lines[2]).toContain(',99,')
   })

@@ -258,8 +258,8 @@ export function useModAcquireJob(args: {
             {
               codename: mod.codename,
               url: mod.url,
-              useMaster: mod.useMaster,
-              useAssets: mod.useAssets,
+              track: mod.track,
+              download: mod.download,
               catalogSizeBytes: effectiveModFields(mod).sizeBytes,
             },
             token,
@@ -449,8 +449,8 @@ export function useModAcquireJob(args: {
             {
               codename: mod.codename,
               url: mod.url,
-              useMaster: mod.useMaster,
-              useAssets: mod.useAssets,
+              track: mod.track,
+              download: mod.download,
               catalogSizeBytes: effectiveModFields(mod).sizeBytes,
             },
             token,
@@ -479,8 +479,8 @@ export function useModAcquireJob(args: {
         const result = await acquireMod({
           codename: mod.codename,
           url: mod.url,
-          useMaster: mod.useMaster,
-          useAssets: mod.useAssets,
+          track: mod.track,
+          download: mod.download,
           downloadDir,
           remote: pendingToRemote(pending),
           githubToken: token || null,

@@ -9,10 +9,16 @@ export interface ModInfo {
   url: string
   readme: string
   game: string
-  /** Track default-branch tip (SHA) instead of releases — Artisan-style. */
-  useMaster: boolean
-  /** Prefer GitHub release archive assets (or zip URL in release body). */
-  useAssets: boolean
+  /**
+   * GitHub track target: empty/`release` (stored empty) = latest release;
+   * `main` = default-branch tip; any other non-empty value = that branch name.
+   */
+  track: string
+  /**
+   * GitHub download mode: empty/`zipball` (stored empty) = ref zipball;
+   * `asset` = release archive asset (only valid when tracking a release).
+   */
+  download: string
   release: string
   version: string
   sizeBytes: number | null
@@ -91,12 +97,67 @@ function parseSizeBytes(raw: string): number | null {
   return Math.floor(n)
 }
 
-/** Truthy CSV flags: non-empty UseMaster; UseAssets only `1` / `true`. */
+/** Truthy CSV flags: non-empty for `any`; only `1` / `true` for `strict`. */
 export function parseCsvFlag(raw: string | undefined, mode: 'any' | 'strict'): boolean {
   const s = (raw ?? '').trim()
   if (!s) return false
   if (mode === 'any') return true
   return s === '1' || s.toLowerCase() === 'true'
+}
+
+/** Normalize Track: empty / `release` → `''`; otherwise keep trimmed value. */
+export function normalizeTrack(raw: string | undefined): string {
+  const s = (raw ?? '').trim()
+  if (!s || s.toLowerCase() === 'release') return ''
+  return s
+}
+
+/**
+ * Normalize Download: `asset` only when tracking a release; otherwise zipball (`''`).
+ * Empty / `zipball` → `''`.
+ */
+export function normalizeDownload(
+  raw: string | undefined,
+  track: string,
+): string {
+  const s = (raw ?? '').trim().toLowerCase()
+  const isRelease = !normalizeTrack(track)
+  if (s === 'asset' && isRelease) return 'asset'
+  return ''
+}
+
+/** Whether a mod URL is a GitHub host (flags apply only then). */
+export function isGithubModUrl(url: string): boolean {
+  try {
+    const host = new URL(url.trim()).hostname.replace(/^www\./i, '').toLowerCase()
+    return host === 'github.com'
+  } catch {
+    return /github\.com/i.test(url)
+  }
+}
+
+function resolveTrackDownloadFromCsv(
+  cols: string[],
+  iTrack: number,
+  iDownload: number,
+  iUseMaster: number,
+  iUseAssets: number,
+): { track: string; download: string } {
+  if (iTrack >= 0 || iDownload >= 0) {
+    const track = normalizeTrack(iTrack >= 0 ? cols[iTrack] : '')
+    const download = normalizeDownload(
+      iDownload >= 0 ? cols[iDownload] : '',
+      track,
+    )
+    return { track, download }
+  }
+  const useMaster =
+    iUseMaster >= 0 ? parseCsvFlag(cols[iUseMaster], 'any') : false
+  const useAssets =
+    iUseAssets >= 0 ? parseCsvFlag(cols[iUseAssets], 'strict') : false
+  const track = useMaster ? 'main' : ''
+  const download = !useMaster && useAssets ? 'asset' : ''
+  return { track, download }
 }
 
 /**
@@ -118,6 +179,8 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
   const iUrl = idx('URL')
   const iReadme = idx('Readme')
   const iGame = idx('Game')
+  const iTrack = idx('Track')
+  const iDownload = idx('Download')
   const iUseMaster = idx('UseMaster')
   const iUseAssets = idx('UseAssets')
   const iRelease = idx('Release')
@@ -132,6 +195,13 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
     const cols = parseCsvLine(lines[li])
     const codename = (cols[iCodename] ?? '').trim()
     if (!codename || map.has(codename)) continue
+    const { track, download } = resolveTrackDownloadFromCsv(
+      cols,
+      iTrack,
+      iDownload,
+      iUseMaster,
+      iUseAssets,
+    )
     map.set(codename, {
       codename,
       name: (iName >= 0 ? cols[iName] ?? '' : '').trim(),
@@ -140,10 +210,8 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
       url: (iUrl >= 0 ? cols[iUrl] ?? '' : '').trim(),
       readme: (iReadme >= 0 ? cols[iReadme] ?? '' : '').trim(),
       game: (iGame >= 0 ? cols[iGame] ?? '' : '').trim(),
-      useMaster:
-        iUseMaster >= 0 ? parseCsvFlag(cols[iUseMaster], 'any') : false,
-      useAssets:
-        iUseAssets >= 0 ? parseCsvFlag(cols[iUseAssets], 'strict') : false,
+      track,
+      download,
       release: (iRelease >= 0 ? cols[iRelease] ?? '' : '').trim(),
       version: (iVersion >= 0 ? cols[iVersion] ?? '' : '').trim(),
       sizeBytes: iSize >= 0 ? parseSizeBytes(cols[iSize] ?? '') : null,
@@ -165,8 +233,8 @@ export function effectiveModFields(mod: WorkingMod): ModInfo {
     url: mod.url,
     readme: mod.readme,
     game: mod.game,
-    useMaster: mod.useMaster,
-    useAssets: mod.useAssets,
+    track: mod.track,
+    download: mod.download,
     release: mod.overlays.release ?? mod.release,
     version: mod.overlays.version ?? mod.version,
     sizeBytes:
