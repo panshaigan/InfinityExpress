@@ -185,11 +185,11 @@ export function GlobalSearchList({
         const path = formatSearchPath(hit.pathLabels)
 
         function handleRowClick() {
-          if (focused) {
-            if (hit.checkable) onToggle(display, !checked)
-          } else {
-            onFocus(id)
-          }
+          onFocus(id)
+        }
+
+        function handleRowDoubleClick() {
+          if (hit.checkable) onToggle(display, !checked)
         }
 
         function handleRowFocus() {
@@ -222,6 +222,7 @@ export function GlobalSearchList({
               !hit.checkable ? ' gated' : ''
             }`}
             onClick={handleRowClick}
+            onDoubleClick={handleRowDoubleClick}
             onFocus={handleRowFocus}
             onMouseEnter={() => onHover(id)}
             ref={(el) => {

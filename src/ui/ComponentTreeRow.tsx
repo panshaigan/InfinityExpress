@@ -283,12 +283,12 @@ export const CheckboxRow = memo(function CheckboxRow({
     onRandomizeMenuKeyChange(null)
   }
 
-  function handleRowActivate() {
-    if (focused) {
-      onToggle(display, !checked)
-    } else {
-      onFocus(node.key)
-    }
+  function handleRowClick() {
+    onFocus(node.key)
+  }
+
+  function handleRowDoubleClick() {
+    onToggle(display, !checked)
   }
 
   function handleRowFocus() {
@@ -321,7 +321,8 @@ export const CheckboxRow = memo(function CheckboxRow({
         aria-expanded={foldable ? expanded : undefined}
         aria-selected={focused}
         aria-label={label}
-        onClick={handleRowActivate}
+        onClick={handleRowClick}
+        onDoubleClick={handleRowDoubleClick}
         onFocus={handleRowFocus}
         onMouseEnter={() => onHover(node.key)}
         ref={(el) => {

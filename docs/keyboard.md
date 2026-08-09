@@ -86,5 +86,5 @@ Mechanics has no subbranch level, so `<` / `>` do nothing here.
 | Action | Effect |
 | --- | --- |
 | Single click on a row | Focus the row (detail pane); does **not** toggle check |
-| Second click on the focused row | Check / uncheck like the checkbox or Space |
+| Double-click on a row | Check / uncheck like the checkbox or Space |
 | Click the fold chevron | Expand / collapse only |

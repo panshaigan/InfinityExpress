@@ -66,7 +66,7 @@ function ledeForPhase(phase: AppPhase) {
   return (
     <>
       Walk with <strong>Done</strong> for a guided path, or jump from the left
-      rail anytime. Click a row to focus details; click again to check it. Hover
+      rail anytime. Click a row to focus details; double-click to check it. Hover
       previews details without changing focus.
     </>
   )
