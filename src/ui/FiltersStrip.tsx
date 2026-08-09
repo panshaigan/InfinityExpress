@@ -229,6 +229,7 @@ export function FiltersStrip({
           className="filters-search"
           placeholder={searchPlaceholder}
           value={criteria.search}
+          autoComplete="off"
           onChange={(e) => patch({ search: e.target.value })}
           aria-label={searchPlaceholder}
         />
