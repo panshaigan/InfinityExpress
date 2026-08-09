@@ -11,6 +11,8 @@ type HelpRow = { keys: string; action: string }
 
 const SHARED: HelpRow[] = [
   { keys: 'Tab', action: 'When nothing focused: first item on this display' },
+  { keys: 'F3', action: 'Jump to search in this window (desktop)' },
+  { keys: 'F6', action: 'Focus the list / table on this display (desktop)' },
   { keys: '?', action: 'Open this keys guide' },
   { keys: ';', action: 'Collapse / expand the details pane' },
   { keys: '/', action: 'Jump to search in this window' },
@@ -64,8 +66,8 @@ function ledeForPhase(phase: AppPhase) {
   return (
     <>
       Walk with <strong>Done</strong> for a guided path, or jump from the left
-      rail anytime. Click a row to check it and focus details; hover previews
-      details without changing focus.
+      rail anytime. Click a row to focus details; click again to check it. Hover
+      previews details without changing focus.
     </>
   )
 }

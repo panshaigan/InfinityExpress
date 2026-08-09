@@ -69,6 +69,22 @@ describe('buildInstallOrderLines', () => {
     )
     expect(buildInstallOrderText(model, new Set(['pre:only']), 'eet')).toBe('')
   })
+
+  it('prefers WeiDU name over curated label for export labels', () => {
+    const xml = `<?xml version="1.0"?>
+<installSequence>
+  <base label="Base">
+    <component id="named:one" name="Real WeiDU Title" label="Short UI" engine="eet" />
+    <component id="label:only" label="Label only" engine="eet" />
+  </base>
+</installSequence>`
+    const { model: namedModel } = parseInstallSequence(xml)
+    const selected = new Set(['named:one', 'label:only'])
+    expect(buildInstallOrderLines(namedModel, selected, 'eet')).toEqual([
+      'named:one;Real WeiDU Title',
+      'label:only;Label only',
+    ])
+  })
 })
 
 describe('normalizeExportFilename', () => {

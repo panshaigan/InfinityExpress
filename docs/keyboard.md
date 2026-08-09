@@ -39,6 +39,8 @@ These work globally except where noted. Station and most chrome keys are ignored
 | Key | Action |
 | --- | --- |
 | `Tab` | When nothing is focused, jump to the first item on the current display (first engine card on Engine; otherwise the component list / search results) |
+| `F3` | Desktop: focus the search field on this display (components or mods) and select its contents |
+| `F6` | Desktop: focus the list / table on this display (component tree, mods table, or engine cards) |
 | `?` | Open the keys guide |
 | `\` | Collapse / expand the station rail |
 | `;` | Collapse / expand the details pane |
@@ -84,5 +86,5 @@ Mechanics has no subbranch level, so `<` / `>` do nothing here.
 | Action | Effect |
 | --- | --- |
 | Single click on a row | Focus the row (detail pane); does **not** toggle check |
-| Double-click on a row | Check / uncheck like the checkbox or Space |
+| Second click on the focused row | Check / uncheck like the checkbox or Space |
 | Click the fold chevron | Expand / collapse only |

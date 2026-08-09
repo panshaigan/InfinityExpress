@@ -284,8 +284,11 @@ export const CheckboxRow = memo(function CheckboxRow({
   }
 
   function handleRowActivate() {
-    onFocus(node.key)
-    onToggle(display, !checked)
+    if (focused) {
+      onToggle(display, !checked)
+    } else {
+      onFocus(node.key)
+    }
   }
 
   function handleRowFocus() {

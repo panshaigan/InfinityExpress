@@ -10,6 +10,7 @@ import {
   stationCycleOrder,
   type StationSlot,
 } from '../lib/ui/chromeHotkeys'
+import { isDesktopApp } from '../lib/desktop/fsDialogs'
 import { FILTERS_SEARCH_ID } from '../ui/FiltersStrip'
 import { MODS_SEARCH_ID } from '../ui/mods/ModsToolbar'
 import type { AppNavSlot } from '../ui/StationNav'
@@ -73,6 +74,16 @@ export function useChromeHotkeys(args: {
 
     function onKeyDown(e: KeyboardEvent) {
       if (e.altKey || e.ctrlKey || e.metaKey) return
+      if (
+        isDesktopApp() &&
+        !keyboardHelpOpen &&
+        (e.key === 'F3' || e.key === 'F6')
+      ) {
+        e.preventDefault()
+        if (e.key === 'F3') focusAppSearch()
+        else onFocusMainDisplay()
+        return
+      }
       if (
         !keyboardHelpOpen &&
         !isTypingTarget(e.target) &&

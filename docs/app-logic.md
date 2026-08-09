@@ -453,7 +453,7 @@ When the selected game is **EET**, the dialog has two tabs, each with its own pr
 - Empty / missing `engine` (matches every game) is included only in the **EET** tab.
 - Token checks use the same `parseEngineTokens` allow-list as eligibility matching.
 
-Label fallback: `attrs.label`, else the component id.
+Label fallback: `attrs.name` (WeiDU title), else `attrs.label`, else the component id.
 
 ---
 

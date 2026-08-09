@@ -28,7 +28,7 @@ export function buildInstallOrderLines(
     if (!componentMatchesExportPhase(c, phase)) continue
     if (seen.has(c.componentId)) continue
     seen.add(c.componentId)
-    lines.push(`${c.componentId};${c.attrs.label ?? c.componentId}`)
+    lines.push(`${c.componentId};${c.attrs.name ?? c.attrs.label ?? c.componentId}`)
   }
   return lines
 }

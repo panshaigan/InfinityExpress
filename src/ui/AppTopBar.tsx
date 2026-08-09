@@ -44,6 +44,20 @@ function SettingsGearIcon() {
   )
 }
 
+function KeyboardIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      fill="currentColor"
+    >
+      <path d="M1.5 3.5A1.5 1.5 0 0 1 3 2h10a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 13 12H3A1.5 1.5 0 0 1 1.5 10.5v-7ZM3 3a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5v-7A.5.5 0 0 0 13 3H3Zm1 2h1v1H4V5Zm2 0h1v1H6V5Zm2 0h1v1H8V5Zm2 0h1v1h-1V5Zm2 0h1v1h-1V5ZM4 7h1v1H4V7Zm2 0h1v1H6V7Zm2 0h1v1H8V7Zm2 0h1v1h-1V7Zm2 0h1v1h-1V7ZM5 9h6v1H5V9Z" />
+    </svg>
+  )
+}
+
 export function AppTopBar({
   phase,
   onPhaseChange,
@@ -105,13 +119,13 @@ export function AppTopBar({
         </button>
         <button
           type="button"
-          className="btn secondary top-bar-help"
+          className="btn secondary top-bar-help top-bar-settings"
           aria-haspopup="dialog"
           aria-expanded={keyboardHelpOpen}
           title="Keyboard shortcuts"
           onClick={onOpenKeyboardHelp}
         >
-          ?
+          <KeyboardIcon />
         </button>
         <button
           type="button"

@@ -185,8 +185,11 @@ export function GlobalSearchList({
         const path = formatSearchPath(hit.pathLabels)
 
         function handleRowClick() {
-          onFocus(id)
-          if (hit.checkable) onToggle(display, !checked)
+          if (focused) {
+            if (hit.checkable) onToggle(display, !checked)
+          } else {
+            onFocus(id)
+          }
         }
 
         function handleRowFocus() {
