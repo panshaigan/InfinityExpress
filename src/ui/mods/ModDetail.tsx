@@ -83,12 +83,15 @@ export function ModDetail({
         {collapsed ? (
           <button
             type="button"
-            className="detail-pane-expand"
+            className="detail-pane-expand has-icon-tip"
             onClick={onToggleCollapsed}
-            title="Show details (;)"
             aria-expanded={false}
+            aria-label="Show details"
           >
             <span className="detail-pane-expand-label">Details</span>
+            <span className="icon-tip" role="tooltip">
+              Show details (;)
+            </span>
           </button>
         ) : (
           <>
@@ -96,13 +99,15 @@ export function ModDetail({
               <span className="detail-pane-chrome-label">Details</span>
               <button
                 type="button"
-                className="detail-pane-collapse"
+                className="detail-pane-collapse has-icon-tip"
                 onClick={onToggleCollapsed}
-                title="Hide details (;)"
                 aria-expanded={true}
                 aria-label="Hide details"
               >
                 »
+                <span className="icon-tip" role="tooltip">
+                  Hide details (;)
+                </span>
               </button>
             </div>
             <div className="detail-pane-scroll">

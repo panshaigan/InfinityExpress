@@ -219,21 +219,25 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
           <div className="export-dialog-icons">
             <button
               type="button"
-              className="export-dialog-icon-btn"
+              className="export-dialog-icon-btn has-icon-tip"
               onClick={() => void onCopy()}
               aria-label={copied ? 'Copied' : 'Copy install order'}
-              title={copied ? 'Copied' : 'Copy'}
             >
               <CopyIcon copied={copied} />
+              <span className="icon-tip" role="tooltip">
+                {copied ? 'Copied' : 'Copy'}
+              </span>
             </button>
             <button
               type="button"
-              className="export-dialog-icon-btn"
+              className="export-dialog-icon-btn has-icon-tip"
               onClick={() => void onSave()}
               aria-label="Save install order"
-              title="Save"
             >
               <SaveIcon />
+              <span className="icon-tip" role="tooltip">
+                Save
+              </span>
             </button>
           </div>
         </div>

@@ -90,11 +90,13 @@ export function AuthorFilterPanel({
               {opt.name}
               {opt.name === 'Morpheus562' && (
                 <span
-                  className="filter-author-warning"
-                  title={MORPHEUS_WARNING}
+                  className="filter-author-warning has-icon-tip"
                   aria-label={MORPHEUS_WARNING}
                 >
                   !
+                  <span className="icon-tip" role="tooltip">
+                    {MORPHEUS_WARNING}
+                  </span>
                 </span>
               )}
             </span>

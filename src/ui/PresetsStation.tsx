@@ -28,12 +28,14 @@ export function PresetsStation({
         <h2>Choose your initial selection</h2>
         <button
           type="button"
-          className="btn engine-start-btn"
+          className="btn engine-start-btn has-icon-tip"
           disabled={!canContinue}
           onClick={onContinue}
-          title="Continue to the first unfinished stop"
         >
           Continue
+          <span className="icon-tip icon-tip-below" role="tooltip">
+            Continue to the first unfinished stop
+          </span>
         </button>
       </div>
       <div className="engine-preselect">

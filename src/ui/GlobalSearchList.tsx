@@ -254,22 +254,26 @@ export function GlobalSearchList({
             )}
             {!hit.checkable && (
               <span
-                className="badge badge-gated"
-                title="Needs another component first"
+                className="badge badge-gated has-icon-tip"
               >
                 locked
+                <span className="icon-tip" role="tooltip">
+                  Needs another component first
+                </span>
               </span>
             )}
             {hit.checkable && (
               <button
                 type="button"
-                className="global-search-jump"
+                className="global-search-jump has-icon-tip"
                 tabIndex={-1}
                 aria-label={`Jump to ${label} in its station`}
-                title="Jump to station"
                 onClick={handleJump}
               >
                 <JumpIcon />
+                <span className="icon-tip" role="tooltip">
+                  Jump to station
+                </span>
               </button>
             )}
           </div>

@@ -141,32 +141,34 @@ export function SelectionPresetsBar({
           <div className="selection-presets-actions">
             <button
               type="button"
-              className="btn"
+              className="btn has-icon-tip"
               disabled={!canSave}
               onClick={() => {
                 onSave()
               }}
-              title={
-                activePresetId
+            >
+              {activePresetId && dirty ? 'Update' : 'Save'}
+              <span className="icon-tip icon-tip-below" role="tooltip">
+                {activePresetId
                   ? dirty
                     ? 'Update current preset'
                     : 'No changes to save'
-                  : 'Save current selection as a new preset'
-              }
-            >
-              {activePresetId && dirty ? 'Update' : 'Save'}
+                  : 'Save current selection as a new preset'}
+              </span>
             </button>
             <button
               type="button"
-              className="btn secondary"
+              className="btn secondary has-icon-tip"
               disabled={!canDelete}
               onClick={() => {
                 onDelete()
                 setOpen(false)
               }}
-              title="Delete current preset"
             >
               Delete
+              <span className="icon-tip icon-tip-below" role="tooltip">
+                Delete current preset
+              </span>
             </button>
           </div>
         </div>

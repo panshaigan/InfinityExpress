@@ -109,32 +109,40 @@ export function AppTopBar({
         />
         <button
           type="button"
-          className="btn secondary top-bar-help top-bar-settings"
+          className="btn secondary top-bar-help top-bar-settings has-icon-tip"
           aria-haspopup="dialog"
           aria-expanded={settingsOpen}
-          title="Settings"
+          aria-label="Settings"
           onClick={onOpenSettings}
         >
           <SettingsGearIcon />
+          <span className="icon-tip icon-tip-below" role="tooltip">
+            Settings
+          </span>
         </button>
         <button
           type="button"
-          className="btn secondary top-bar-help top-bar-settings"
+          className="btn secondary top-bar-help top-bar-settings has-icon-tip"
           aria-haspopup="dialog"
           aria-expanded={keyboardHelpOpen}
-          title="Keyboard shortcuts"
+          aria-label="Keyboard shortcuts"
           onClick={onOpenKeyboardHelp}
         >
           <KeyboardIcon />
+          <span className="icon-tip icon-tip-below" role="tooltip">
+            Keyboard shortcuts
+          </span>
         </button>
         <button
           type="button"
-          className="btn"
+          className="btn has-icon-tip"
           disabled={selectedCount === 0}
-          title="Preview and save install order"
           onClick={onExport}
         >
           Export
+          <span className="icon-tip icon-tip-below" role="tooltip">
+            Preview and save install order
+          </span>
         </button>
       </div>
     </header>

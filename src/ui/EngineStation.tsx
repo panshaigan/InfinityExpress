@@ -69,12 +69,14 @@ export function EngineStation({
         <h2>Choose your engine</h2>
         <button
           type="button"
-          className="btn engine-start-btn"
+          className="btn engine-start-btn has-icon-tip"
           disabled={!canContinue}
           onClick={onContinue}
-          title="Continue to Presets"
         >
           Continue
+          <span className="icon-tip icon-tip-below" role="tooltip">
+            Continue to Presets
+          </span>
         </button>
       </div>
       <div className="engine-grid">

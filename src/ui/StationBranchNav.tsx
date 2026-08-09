@@ -143,13 +143,15 @@ function BranchMenu({
     <div ref={menuRef} className="branch-menu">
       <button
         type="button"
-        className="branch-menu-step"
+        className="branch-menu-step has-icon-tip"
         disabled={!canCycle}
         aria-label={`Previous ${ariaLabel.toLowerCase()}`}
-        title={prevTitle}
         onClick={() => cycle(-1)}
       >
         ‹
+        <span className="icon-tip" role="tooltip">
+          {prevTitle}
+        </span>
       </button>
       <button
         type="button"
@@ -177,13 +179,15 @@ function BranchMenu({
       </button>
       <button
         type="button"
-        className="branch-menu-step"
+        className="branch-menu-step has-icon-tip"
         disabled={!canCycle}
         aria-label={`Next ${ariaLabel.toLowerCase()}`}
-        title={nextTitle}
         onClick={() => cycle(1)}
       >
         ›
+        <span className="icon-tip" role="tooltip">
+          {nextTitle}
+        </span>
       </button>
       {open && (
         <div

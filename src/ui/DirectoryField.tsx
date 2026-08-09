@@ -38,16 +38,16 @@ export function DirectoryField({
       trailing={
         <button
           type="button"
-          className="btn secondary outlined-text-field-action"
+          className="btn secondary outlined-text-field-action has-icon-tip"
           onClick={() => void browse()}
           disabled={!canBrowse}
-          title={
-            canBrowse
-              ? browseTitle
-              : 'Browse is available in the desktop app'
-          }
         >
           Browse
+          <span className="icon-tip" role="tooltip">
+            {canBrowse
+              ? browseTitle
+              : 'Browse is available in the desktop app'}
+          </span>
         </button>
       }
     />

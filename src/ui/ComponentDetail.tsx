@@ -83,10 +83,9 @@ function CopyButton({ value, label }: { value: string; label: string }) {
   return (
     <button
       type="button"
-      className="detail-copy-name"
+      className="detail-copy-name has-icon-tip"
       onClick={() => void onCopy()}
       aria-label={copied ? 'Copied' : label}
-      title={copied ? 'Copied' : label}
     >
       {copied ? (
         <svg
@@ -115,6 +114,9 @@ function CopyButton({ value, label }: { value: string; label: string }) {
           />
         </svg>
       )}
+      <span className="icon-tip" role="tooltip">
+        {copied ? 'Copied' : label}
+      </span>
     </button>
   )
 }
@@ -143,13 +145,15 @@ function DetailLinks({ links }: { links: { href: string; label: string }[] }) {
       {links.map((link) => (
         <li key={link.href + link.label}>
           <a
-            className="detail-url"
+            className="detail-url has-icon-tip"
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            title={link.href}
           >
             {link.label}
+            <span className="icon-tip" role="tooltip">
+              {link.href}
+            </span>
           </a>
         </li>
       ))}
@@ -284,12 +288,14 @@ export function ComponentDetail({
           {componentId && onNavigateToComponent && (
             <button
               type="button"
-              className="detail-jump"
+              className="detail-jump has-icon-tip"
               aria-label={`Jump to ${title} in its station`}
-              title="Jump to station"
               onClick={() => onNavigateToComponent(componentId)}
             >
               <JumpIcon />
+              <span className="icon-tip" role="tooltip">
+                Jump to station
+              </span>
             </button>
           )}
         </div>

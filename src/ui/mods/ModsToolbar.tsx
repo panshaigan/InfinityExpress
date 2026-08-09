@@ -138,38 +138,46 @@ export function ModsToolbar({
         <div className="mods-toolbar-actions">
           <button
             type="button"
-            className="btn secondary"
+            className="btn secondary has-icon-tip"
             disabled={bulkDisabled || acquireDisabled}
-            title="Download missing mods and update outdated ones in the selection"
             onClick={onAcquire}
           >
             {acquireLabel}
+            <span className="icon-tip" role="tooltip">
+              Download missing mods and update outdated ones in the selection
+            </span>
           </button>
           <button
             type="button"
-            className="btn secondary"
+            className="btn secondary has-icon-tip"
             disabled={bulkDisabled}
-            title="Probe remote versions for the selection"
             onClick={onCheckUpdates}
           >
             Check for updates
+            <span className="icon-tip" role="tooltip">
+              Probe remote versions for the selection
+            </span>
           </button>
           <button
             type="button"
-            className="btn secondary"
+            className="btn secondary has-icon-tip"
             disabled={bulkDisabled}
-            title="Delete selected mod folders from the download directory"
             onClick={onRemoveFromDisk}
           >
             Remove from disk
+            <span className="icon-tip" role="tooltip">
+              Delete selected mod folders from the download directory
+            </span>
           </button>
           <button
             type="button"
-            className="btn secondary"
-            title="Export the current catalog (with overlays) as CSV"
+            className="btn secondary has-icon-tip"
             onClick={onExportCsv}
           >
             Export CSV
+            <span className="icon-tip" role="tooltip">
+              Export the current catalog (with overlays) as CSV
+            </span>
           </button>
           <button
             type="button"

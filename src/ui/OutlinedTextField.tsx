@@ -59,7 +59,12 @@ export function OutlinedTextField({
         {required ? (
           <>
             {' '}
-            <abbr title="required">*</abbr>
+            <abbr className="has-icon-tip" aria-label="required">
+              *
+              <span className="icon-tip" role="tooltip">
+                required
+              </span>
+            </abbr>
           </>
         ) : null}
       </label>

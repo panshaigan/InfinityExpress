@@ -100,19 +100,23 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
               <>
                 <button
                   type="button"
-                  className="btn secondary"
+                  className="btn secondary has-icon-tip"
                   onClick={onCancel}
-                  title="Stop the job and skip remaining mods"
                 >
                   Cancel
+                  <span className="icon-tip" role="tooltip">
+                    Stop the job and skip remaining mods
+                  </span>
                 </button>
                 <button
                   type="button"
-                  className="btn secondary"
+                  className="btn secondary has-icon-tip"
                   onClick={onMinimize}
-                  title="Minimize and keep the job running"
                 >
                   Minimize
+                  <span className="icon-tip" role="tooltip">
+                    Minimize and keep the job running
+                  </span>
                 </button>
               </>
             ) : null}

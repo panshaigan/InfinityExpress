@@ -27,13 +27,12 @@ export function PhaseNav({ phase, onPhaseChange }: Props) {
             <li key={item.id} className="phase-nav-item">
               <button
                 type="button"
-                className={`phase-nav-btn${active ? ' active' : ''}${
-                  item.disabled ? ' disabled' : ''
-                }`}
+                className={`phase-nav-btn${item.title ? ' has-icon-tip' : ''}${
+                  active ? ' active' : ''
+                }${item.disabled ? ' disabled' : ''}`}
                 aria-current={active ? 'page' : undefined}
                 aria-disabled={item.disabled || undefined}
                 disabled={item.disabled}
-                title={item.title}
                 onClick={() => {
                   if (!item.disabled) onPhaseChange(item.id)
                 }}
@@ -42,6 +41,11 @@ export function PhaseNav({ phase, onPhaseChange }: Props) {
                   {index + 1}
                 </span>
                 <span className="phase-nav-label">{item.label}</span>
+                {item.title ? (
+                  <span className="icon-tip icon-tip-below" role="tooltip">
+                    {item.title}
+                  </span>
+                ) : null}
               </button>
             </li>
           )

@@ -10,8 +10,9 @@ When the user asks for a tooltip (or hover tip / help text on hover), use **our*
 ## Do
 
 - Prefer `has-icon-tip` on the host + `<span className="icon-tip" role="tooltip">…</span>` for short tips.
+- Add `icon-tip-below` on the tip when upward placement would clip (top bar, header nav, phase nav).
 - Use `level-card-tip` only where that richer pattern already applies (Engine level cards).
-- Tips should appear immediately on hover / focus-visible (see `.icon-tip` in `src/index.css`).
+- Tips should appear immediately on hover / focus-visible (see `.icon-tip` in `src/index.css`), including on disabled hosts.
 
 ## Don't
 

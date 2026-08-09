@@ -204,12 +204,7 @@ export function FiltersStrip({
         <span className="filters-label">Filters</span>
         <button
           type="button"
-          className={`filters-scope${searchScope === 'all' ? ' all' : ''}`}
-          title={
-            searchScope === 'all'
-              ? 'Matches components across every station'
-              : 'Matches only what is listed in this window'
-          }
+          className={`filters-scope has-icon-tip${searchScope === 'all' ? ' all' : ''}`}
           aria-pressed={searchScope === 'all'}
           aria-label={
             searchScope === 'all'
@@ -221,6 +216,11 @@ export function FiltersStrip({
           }
         >
           {searchScope === 'all' ? 'All sections' : 'This section'}
+          <span className="icon-tip" role="tooltip">
+            {searchScope === 'all'
+              ? 'Matches components across every station'
+              : 'Matches only what is listed in this window'}
+          </span>
         </button>
         <input
           ref={searchRef}
@@ -356,12 +356,14 @@ export function FiltersStrip({
         {active && (
           <button
             type="button"
-            className="filter-clear"
+            className="filter-clear has-icon-tip"
             onClick={clearFilters}
-            title="Clear filters"
             aria-label="Clear filters"
           >
             <ClearFiltersIcon />
+            <span className="icon-tip" role="tooltip">
+              Clear filters
+            </span>
           </button>
         )}
       </div>

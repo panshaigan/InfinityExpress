@@ -7,13 +7,15 @@ export function RailCollapseButton({ collapsed, onToggle }: Props) {
   return (
     <button
       type="button"
-      className="rail-collapse"
+      className="rail-collapse has-icon-tip"
       onClick={onToggle}
-      title={collapsed ? 'Expand station rail (\\)' : 'Collapse station rail (\\)'}
       aria-expanded={!collapsed}
       aria-label={collapsed ? 'Expand station rail' : 'Collapse station rail'}
     >
       {collapsed ? '»' : '«'}
+      <span className="icon-tip" role="tooltip">
+        {collapsed ? 'Expand station rail (\\)' : 'Collapse station rail (\\)'}
+      </span>
     </button>
   )
 }

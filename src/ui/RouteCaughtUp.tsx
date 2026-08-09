@@ -34,16 +34,16 @@ export function RouteCaughtUp({
         </button>
         <button
           type="button"
-          className="btn secondary"
+          className="btn secondary has-icon-tip"
           disabled={selectedCount === 0}
           onClick={onExport}
-          title={
-            selectedCount === 0
-              ? 'Select at least one component to export'
-              : 'Preview and save install order'
-          }
         >
           Export
+          <span className="icon-tip" role="tooltip">
+            {selectedCount === 0
+              ? 'Select at least one component to export'
+              : 'Preview and save install order'}
+          </span>
         </button>
         <button
           type="button"

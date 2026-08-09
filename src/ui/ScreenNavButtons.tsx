@@ -24,40 +24,48 @@ export function ScreenNavButtons({
     <div className="screen-nav-buttons" role="group" aria-label="Station progress">
       <button
         type="button"
-        className="btn secondary"
+        className="btn secondary has-icon-tip"
         disabled={!canCycle}
         onClick={onPrevious}
-        title="Go to the previous unfinished stop"
       >
         Previous
+        <span className="icon-tip icon-tip-below" role="tooltip">
+          Go to the previous unfinished stop
+        </span>
       </button>
       <button
         type="button"
-        className="btn secondary"
+        className="btn secondary has-icon-tip"
         disabled={!canCycle}
         onClick={onNext}
-        title="Go to the next unfinished stop"
       >
         Next
+        <span className="icon-tip icon-tip-below" role="tooltip">
+          Go to the next unfinished stop
+        </span>
       </button>
       {finished ? (
         <button
           type="button"
-          className="btn screen-nav-ok-btn"
+          className="btn screen-nav-ok-btn has-icon-tip"
           onClick={onCancel}
-          title="Mark this stop unfinished again"
         >
           Reopen
+          <span className="icon-tip icon-tip-below" role="tooltip">
+            Mark this stop unfinished again
+          </span>
         </button>
       ) : (
         <button
           type="button"
-          className="btn screen-nav-ok-btn"
+          className="btn screen-nav-ok-btn has-icon-tip"
           disabled={!canOk}
           onClick={onOk}
-          title="Mark this stop finished and continue"
         >
           Done
+          <span className="icon-tip icon-tip-below" role="tooltip">
+            Mark this stop finished and continue
+          </span>
         </button>
       )}
     </div>
