@@ -50,6 +50,7 @@ pub struct WeiduComponentInfo {
   pub index: i32,
   pub number: i32,
   pub name: String,
+  #[serde(default)]
   pub label: Vec<String>,
 }
 
