@@ -42,6 +42,11 @@ export function joinGameTokens(tokens: readonly string[]): string {
     .join('-')
 }
 
+/** Display form: stored `BG1-BG2` → `BG1, BG2`. */
+export function formatGameDisplay(game: string): string {
+  return splitGameTokens(game).join(', ')
+}
+
 export function modMatchesGameFilter(
   modGame: string,
   filter: string,

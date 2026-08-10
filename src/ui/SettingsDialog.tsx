@@ -150,10 +150,6 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
             Close
           </button>
         </div>
-        <p className="keyboard-help-lede">
-          Paths for unmodded installs, mod downloads, and backups. Changes are
-          saved as you edit.
-        </p>
 
         <section className="settings-section">
           <h3 className="engine-folders-title">Unmodded game paths</h3>
@@ -186,7 +182,7 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
             />
             <DirectoryField
               id="settings-backup-dir"
-              label="Backup directory"
+              label="Backup & logs directory"
               value={appDirs.backupDir}
               onChange={(value) => setAppDir('backupDir', value)}
               placeholder="Select backup folder…"
@@ -221,7 +217,7 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
         <section className="settings-section">
           <h3 className="engine-folders-title">GitHub</h3>
           <p className="settings-help">
-            Optional personal access token raises API rate limits for Check for
+            Optional personal access token raises API rate limits for checking for
             updates on large catalogs. Without a token the app still works via
             public API and HTML scrape fallback. Create a classic token with{' '}
             <code>public_repo</code> (or a fine-grained token with read access to

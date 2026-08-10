@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react'
 import { effectiveModFields, type WorkingMod } from '../../lib/mods/loadMods'
-import { withHtmlPreviewIfNeeded } from '../../lib/mods/modFieldParse'
+import {
+  formatGameDisplay,
+  withHtmlPreviewIfNeeded,
+} from '../../lib/mods/modFieldParse'
 import {
   diskStatusLabel,
   formatModSize,
@@ -224,7 +227,9 @@ function ModDetailBody({ mod }: { mod: WorkingMod }) {
           <Field label="Abbreviation">{eff.abbreviation}</Field>
         ) : null}
         <Field label="Category">{eff.category || '—'}</Field>
-        <Field label="Game">{eff.game || '—'}</Field>
+        <Field label="Game">
+          {eff.game ? formatGameDisplay(eff.game) : '—'}
+        </Field>
         <Field label="Type">{eff.type || '—'}</Field>
         <Field label="Stability">{eff.stability || '—'}</Field>
         <Field label="Author">{eff.author || '—'}</Field>

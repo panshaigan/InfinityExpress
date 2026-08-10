@@ -20,6 +20,7 @@ import {
   type ModsSortDir,
   type ModsSortKey,
 } from '../../lib/mods/modsTable'
+import { formatGameDisplay } from '../../lib/mods/modFieldParse'
 import { effectiveModFields, type WorkingMod } from '../../lib/mods/loadMods'
 import { isHttpUrl } from '../../lib/url'
 import { IconTip } from '../IconTip'
@@ -215,7 +216,11 @@ const ModsTableRow = memo(function ModsTableRow({
         ) : null}
       </td>
       <td className="mods-col-category">{eff.category || '—'}</td>
-      <td className="mods-col-game">{eff.game || '—'}</td>
+      <TipCell
+        className="mods-col-game"
+        display={eff.game ? formatGameDisplay(eff.game) : '—'}
+        tip={eff.game ? formatGameDisplay(eff.game) : undefined}
+      />
       <TipCell
         className="mods-col-url"
         display={

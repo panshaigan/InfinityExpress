@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   authorFromModUrl,
+  formatGameDisplay,
   joinGameTokens,
   modMatchesGameFilter,
   splitAuthorNames,
@@ -21,6 +22,11 @@ describe('splitGameTokens / joinGameTokens', () => {
 
   it('drops unknown tokens', () => {
     expect(joinGameTokens(['BG1', 'B2', 'PST'])).toBe('BG1-PST')
+  })
+
+  it('formats games for display with comma separators', () => {
+    expect(formatGameDisplay('BG1-BG2-IWD')).toBe('BG1, BG2, IWD')
+    expect(formatGameDisplay('')).toBe('')
   })
 })
 
