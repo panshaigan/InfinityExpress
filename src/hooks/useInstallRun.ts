@@ -101,6 +101,10 @@ export function useInstallRun(options: {
         setInputPrompt(ev.prompt)
         setRun((r) => (r ? { ...r, runState: 'waitingForInput' } : r))
       } else if (ev.kind === 'classified') {
+        setConsoleLines((prev) => [
+          ...prev.slice(-4999),
+          `[${ev.level}] ${ev.message}`,
+        ])
         appendInstallLog('', `${ev.level}: ${ev.message}`)
       } else if (ev.kind === 'stepStarted') {
         setRun((r) => {
@@ -230,79 +234,98 @@ export function useInstallRun(options: {
             continue
           }
 
-          step = await prepareStep(step, i)
-          current = {
-            ...current,
-            steps: current.steps.map((s, idx) => (idx === i ? step : s)),
-            cursor: i,
-          }
-          setRun({ ...current, runState: 'running' })
+          try {
+            step = await prepareStep(step, i)
+            current = {
+              ...current,
+              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+              cursor: i,
+            }
+            setRun({ ...current, runState: 'running' })
 
-          if (step.status === 'needsInput') {
-            setRun({ ...current, runState: 'waitingForInput' })
-            runningRef.current = false
-            return
-          }
+            if (step.status === 'needsInput') {
+              setRun({ ...current, runState: 'waitingForInput' })
+              runningRef.current = false
+              return
+            }
 
-          const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
-          const log = await readGameWeiduLog(gameDir)
-          if (
-            step.languageIndex != null &&
-            step.weiduNumbers.every((n) =>
-              isComponentInstalledInLog(log, step.tp2Path, step.languageIndex!, n),
-            )
-          ) {
-            step = { ...step, status: 'alreadyInstalled' }
+            const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
+            const log = await readGameWeiduLog(gameDir)
+            if (
+              step.languageIndex != null &&
+              step.weiduNumbers.every((n) =>
+                isComponentInstalledInLog(log, step.tp2Path, step.languageIndex!, n),
+              )
+            ) {
+              step = { ...step, status: 'alreadyInstalled' }
+              current = {
+                ...current,
+                steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+                cursor: i + 1,
+              }
+              setRun({ ...current, runState: 'running' })
+              continue
+            }
+
+            const result = await runWeiduStep({
+              weiduPath: readWeiduPath(),
+              tp2Path: step.tp2Path,
+              gameDir,
+              componentNumbers: step.weiduNumbers,
+              languageIndex: step.languageIndex ?? 0,
+              stepId: step.stepId,
+              logDir: current.logDir,
+              stepFolder: stepFolderName(step, i),
+            })
+
+            let status: InstallStep['status'] = 'failed'
+            if (result.cancelled) status = 'failed'
+            else if (result.timedOut) status = 'failed'
+            else if (result.exitCode === 0 && result.logVerified) status = 'succeeded'
+            else if (result.exitCode === 0) status = 'succeededWithWarnings'
+            else status = 'failed'
+
+            step = {
+              ...step,
+              status,
+              debugLogPath: result.debugPath ?? undefined,
+              warnings:
+                result.logVerified || status === 'succeeded'
+                  ? step.warnings
+                  : [...step.warnings, 'WeiDU.log verification incomplete'],
+              errors:
+                status === 'failed'
+                  ? [...step.errors, `Exit code ${result.exitCode ?? 'unknown'}`]
+                  : step.errors,
+              finishedAt: new Date().toISOString(),
+            }
+
             current = {
               ...current,
               steps: current.steps.map((s, idx) => (idx === i ? step : s)),
               cursor: i + 1,
             }
-            setRun({ ...current, runState: 'running' })
-            continue
-          }
+            setRun({ ...current, runState: status === 'failed' ? 'failed' : 'running' })
 
-          const result = await runWeiduStep({
-            weiduPath: readWeiduPath(),
-            tp2Path: step.tp2Path,
-            gameDir,
-            componentNumbers: step.weiduNumbers,
-            languageIndex: step.languageIndex ?? 0,
-            stepId: step.stepId,
-            logDir: current.logDir,
-            stepFolder: stepFolderName(step, i),
-          })
-
-          let status: InstallStep['status'] = 'failed'
-          if (result.cancelled) status = 'failed'
-          else if (result.timedOut) status = 'failed'
-          else if (result.exitCode === 0 && result.logVerified) status = 'succeeded'
-          else if (result.exitCode === 0) status = 'succeededWithWarnings'
-          else status = 'failed'
-
-          step = {
-            ...step,
-            status,
-            debugLogPath: result.debugPath ?? undefined,
-            warnings:
-              result.logVerified || status === 'succeeded'
-                ? step.warnings
-                : [...step.warnings, 'WeiDU.log verification incomplete'],
-            errors:
-              status === 'failed'
-                ? [...step.errors, `Exit code ${result.exitCode ?? 'unknown'}`]
-                : step.errors,
-            finishedAt: new Date().toISOString(),
-          }
-
-          current = {
-            ...current,
-            steps: current.steps.map((s, idx) => (idx === i ? step : s)),
-            cursor: i + 1,
-          }
-          setRun({ ...current, runState: status === 'failed' ? 'failed' : 'running' })
-
-          if (status === 'failed') {
+            if (status === 'failed') {
+              runningRef.current = false
+              return
+            }
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err)
+            setConsoleLines((prev) => [...prev.slice(-4999), `[error] ${message}`])
+            step = {
+              ...step,
+              status: 'failed',
+              errors: [...step.errors, message],
+              finishedAt: new Date().toISOString(),
+            }
+            current = {
+              ...current,
+              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+              cursor: i,
+            }
+            setRun({ ...current, runState: 'failed' })
             runningRef.current = false
             return
           }

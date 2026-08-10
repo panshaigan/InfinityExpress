@@ -103,6 +103,31 @@ fn emit_event(app: &AppHandle, payload: InstallEventPayload) {
   let _ = app.emit(INSTALL_EVENT, &payload);
 }
 
+fn emit_captured_output(app: &AppHandle, text: &str) {
+  for line in text.lines() {
+    if line.is_empty() {
+      continue;
+    }
+    emit_event(
+      app,
+      InstallEventPayload::Output {
+        stream: "stdout".into(),
+        text: line.to_string(),
+      },
+    );
+  }
+}
+
+fn emit_classified_error(app: &AppHandle, message: &str) {
+  emit_event(
+    app,
+    InstallEventPayload::Classified {
+      level: "error".into(),
+      message: message.to_string(),
+    },
+  );
+}
+
 fn validate_weidu_path(path: &str) -> Result<PathBuf, String> {
   let p = PathBuf::from(path.trim());
   if p.as_os_str().is_empty() {
@@ -166,6 +191,7 @@ fn parse_json_array<T: for<'de> Deserialize<'de>>(text: &str) -> Result<Vec<T>, 
 
 #[tauri::command]
 pub fn list_weidu_components(
+  app: AppHandle,
   weidu_path: String,
   tp2_path: String,
   lang: i32,
@@ -184,8 +210,18 @@ pub fn list_weidu_components(
     tp2_arg,
     lang.to_string(),
   ];
-  let out = run_weidu_capture(&weidu, &cwd, &args)?;
-  parse_json_array(&out)
+  let out = match run_weidu_capture(&weidu, &cwd, &args) {
+    Ok(text) => text,
+    Err(e) => {
+      emit_classified_error(&app, &e);
+      return Err(e);
+    }
+  };
+  emit_captured_output(&app, &out);
+  parse_json_array(&out).map_err(|e| {
+    emit_classified_error(&app, &e);
+    e
+  })
 }
 
 fn parse_languages_output(text: &str) -> Result<Vec<WeiduLanguageInfo>, String> {
@@ -244,6 +280,7 @@ fn parse_languages_output(text: &str) -> Result<Vec<WeiduLanguageInfo>, String> 
 
 #[tauri::command]
 pub fn list_weidu_languages(
+  app: AppHandle,
   weidu_path: String,
   tp2_path: String,
 ) -> Result<Vec<WeiduLanguageInfo>, String> {
@@ -260,8 +297,18 @@ pub fn list_weidu_languages(
     "--list-languages".into(),
     tp2_arg,
   ];
-  let out = run_weidu_capture(&weidu, &cwd, &args)?;
-  parse_languages_output(&out)
+  let out = match run_weidu_capture(&weidu, &cwd, &args) {
+    Ok(text) => text,
+    Err(e) => {
+      emit_classified_error(&app, &e);
+      return Err(e);
+    }
+  };
+  emit_captured_output(&app, &out);
+  parse_languages_output(&out).map_err(|e| {
+    emit_classified_error(&app, &e);
+    e
+  })
 }
 
 fn classify_line(line: &str) -> Option<&'static str> {
