@@ -1,4 +1,5 @@
 import { componentMatchesExportPhase, type ExportPhase } from '../export/installOrder'
+import { resolveModLookupKey } from '../mods/loadMods'
 import type { ComponentNode, InstallSequenceModel, SelectedGame } from '../xml/schema'
 import type { InstallPhase, InstallStep } from './types'
 
@@ -77,7 +78,7 @@ export function buildInstallPlan(
     }
 
     for (const c of components) {
-      const modId = c.attrs.modId?.trim() ?? c.componentId
+      const modId = resolveModLookupKey(model, c)?.trim() || c.componentId
       if (batchModId != null && modId !== batchModId) flush()
       batchModId = modId
       batchComponentIds.push(c.componentId)
