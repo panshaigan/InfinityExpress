@@ -130,6 +130,14 @@ export function useRouteNav(args: {
     })
   }
 
+  function markStationsFinished(slots: readonly StationSlot[]) {
+    setFinishedStations((prev) => {
+      const next = new Set(prev)
+      for (const slot of slots) next.add(slot)
+      return next
+    })
+  }
+
   function unmarkStationFinished() {
     setFinishedStations((prev) => {
       if (!prev.has(activeStation)) return prev
@@ -157,6 +165,14 @@ export function useRouteNav(args: {
     onRouteJustCompleted?.()
   }
 
+  /** Tick every stop and open Mods the same way Done does on the last unfinished station. */
+  function finishEntireRoute() {
+    if (showRouteTip) dismissRouteTip()
+    const slots: StationSlot[] = ['engine', 'presets', ...visibleStations]
+    setFinishedStations(new Set(slots))
+    onRouteJustCompleted?.()
+  }
+
   function resetFinishedStations() {
     setFinishedStations(new Set())
   }
@@ -174,6 +190,8 @@ export function useRouteNav(args: {
     goNextScreen,
     onOk,
     markStationFinished,
+    markStationsFinished,
+    finishEntireRoute,
     unmarkStationFinished,
     resetFinishedStations,
   }

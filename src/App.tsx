@@ -15,7 +15,13 @@ import {
   toggleListSelection,
   type RandomizeOptions,
 } from './lib/selection/selectionEngine'
-import type { DifficultyLevel, LadderLevel } from './lib/levels'
+import {
+  DIFFICULTY_LEVELS,
+  LADDER_LEVELS,
+  type DifficultyLevel,
+  type LadderLevel,
+} from './lib/levels'
+import { countAllLevelContent } from './lib/selection/levelCounts'
 import { type DisplayNode } from './lib/selection/visibility'
 import {
   collectFilterOptions,
@@ -45,7 +51,6 @@ import { listEmptyCopy } from './lib/ui/listEmptyCopy'
 import { StationNav, type AppNavSlot } from './ui/StationNav'
 import { EngineStation } from './ui/EngineStation'
 import { PresetsStation } from './ui/PresetsStation'
-import { RailCollapseButton } from './ui/RailCollapseButton'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
 import { StationBranchNav } from './ui/StationBranchNav'
@@ -84,6 +89,7 @@ export default function App() {
   const { model, warnings } = parsed
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
   const [game, setGame] = useState<SelectedGame | null>(null)
+  const [routeUnlocked, setRouteUnlocked] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const [activeStation, setActiveStation] = useState<AppNavSlot>('engine')
   const [appPhase, setAppPhase] = useState<AppPhase>('components')
@@ -242,13 +248,6 @@ export default function App() {
     },
   })
 
-  // Mark Presets finished the first time the user lands on it.
-  useEffect(() => {
-    if (activeStation !== 'presets' || !game) return
-    if (route.finishedStations.has('presets')) return
-    route.markStationFinished('presets')
-  }, [activeStation, game, route.finishedStations, route.markStationFinished])
-
   function openModsJourneyFromBanner() {
     const required = listSelectedModCodenames(model, selectedIds)
     setModsJourney({ locked: true, requiredCodenames: required })
@@ -307,6 +306,11 @@ export default function App() {
   )
   const selectedModsCount = neededCodenames.length
 
+  const presetLevelCounts = useMemo(() => {
+    if (!game) return undefined
+    return countAllLevelContent(model, game, [...LADDER_LEVELS, ...DIFFICULTY_LEVELS])
+  }, [game, model])
+
   const installPhaseReady = useMemo(() => {
     if (!game || !isDesktopApp()) return false
     const map = new Map(userCatalog.mods.map((m) => [m.codename.toLowerCase(), m]))
@@ -350,11 +354,11 @@ export default function App() {
 
   function applyChooseGame(next: SelectedGame) {
     setGame(next)
+    setRouteUnlocked(false)
     setSelectedIds(createInitialSelection(model, next))
     levels.seedFixesBaseline(next)
     presets.resetPresetSelection()
     route.resetFinishedStations()
-    route.markStationFinished('engine')
     setActiveStation('engine')
     setSearchScope('section')
     clearFocus()
@@ -443,7 +447,7 @@ export default function App() {
   }
 
   function selectPresets() {
-    if (!game) return
+    if (!game || !routeUnlocked) return
     setActiveStation('presets')
     setSearchScope('section')
     clearFocus()
@@ -451,7 +455,8 @@ export default function App() {
 
   function continueFromEngine() {
     if (!game) return
-    route.markStationFinished('engine')
+    setRouteUnlocked(true)
+    route.markStationsFinished(['engine', 'presets'])
     setActiveStation('presets')
     setSearchScope('section')
     clearFocus()
@@ -463,9 +468,14 @@ export default function App() {
   }
 
   function selectStation(id: StationId) {
+    if (!routeUnlocked) return
     setActiveStation(id)
     setSearchScope('section')
     clearFocus()
+  }
+
+  function finishRoute() {
+    route.finishEntireRoute()
   }
 
   const onNavigateToComponent = useCallback(
@@ -570,7 +580,7 @@ export default function App() {
 
   const applyStationSlot = useCallback(
     (slot: StationSlot) => {
-      if (slot === 'presets' && !game) {
+      if (slot !== 'engine' && (!game || !routeUnlocked)) {
         setActiveStation('engine')
       } else {
         setActiveStation(slot)
@@ -578,7 +588,7 @@ export default function App() {
       setSearchScope('section')
       clearFocus()
     },
-    [clearFocus, game],
+    [clearFocus, game, routeUnlocked],
   )
 
   const openKeyboardHelp = useCallback(() => setKeyboardHelpOpen(true), [])
@@ -643,6 +653,8 @@ export default function App() {
         settingsOpen={settingsOpen}
         onOpenSettings={openSettings}
         onExport={handleExport}
+        railCollapsed={railCollapsed}
+        onToggleRailCollapsed={toggleRailCollapsed}
       />
 
       {appPhase === 'mods' ? (
@@ -693,6 +705,7 @@ export default function App() {
       <div className="app-body">
         <StationNav
           game={game}
+          routeUnlocked={routeUnlocked}
           activeStation={activeStation}
           visibleStations={visibleStations}
           finishedStations={route.finishedStations}
@@ -702,10 +715,11 @@ export default function App() {
           onSelectEngine={selectEngine}
           onSelectPresets={selectPresets}
           onSelectStation={selectStation}
+          onFinishRoute={finishRoute}
         />
 
         <div className="app-main">
-          <RouteGuideTip visible={showRouteTip && !!game} onDismiss={dismissRouteTip} />
+          <RouteGuideTip visible={showRouteTip && routeUnlocked} onDismiss={dismissRouteTip} />
           <RouteCaughtUp
             visible={route.routeComplete && !route.hideCaughtUp && !showRouteTip}
             selectedCount={selectedIds.size}
@@ -750,6 +764,7 @@ export default function App() {
                       higherDifficulty={levels.higherDifficultyPreset}
                       onLadderToggle={onPresetsLadderToggle}
                       onDifficultyChange={onPresetsDifficultyChange}
+                      levelCounts={presetLevelCounts}
                       canContinue={route.canCycleScreens}
                       onContinue={continueFromPresets}
                     />
@@ -758,10 +773,6 @@ export default function App() {
                   <>
                     <div className="list-pane-header">
                       <div className="list-pane-header-title">
-                        <RailCollapseButton
-                          collapsed={railCollapsed}
-                          onToggle={toggleRailCollapsed}
-                        />
                         <h2>Search</h2>
                       </div>
                       <p className="lede">
@@ -799,10 +810,6 @@ export default function App() {
                   <>
                     <div className="list-pane-header">
                       <div className="list-pane-header-title">
-                        <RailCollapseButton
-                          collapsed={railCollapsed}
-                          onToggle={toggleRailCollapsed}
-                        />
                         <h2>
                           {stationTitle}
                           {route.currentFinished && (

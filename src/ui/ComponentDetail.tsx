@@ -329,51 +329,52 @@ export function ComponentDetail({
             <span className={statusBadgeClass('default')}>default</span>
           )}
         </div>
+        {desc ? (
+          <p className="detail-desc">{desc}</p>
+        ) : aboutSummary ? (
+          <p className="detail-empty">{aboutSummary}</p>
+        ) : null}
       </div>
 
       <div className="detail-blocks">
-        <DetailBlock kind="component" title="Component">
-          {desc ? (
-            <p className="detail-desc">{desc}</p>
-          ) : aboutSummary ? (
-            <p className="detail-empty">{aboutSummary}</p>
-          ) : null}
+        {(hasComponentMeta || tagList.length > 0 || componentLinks.length > 0) && (
+          <DetailBlock kind="component" title="Component">
+            {hasComponentMeta && (
+              <dl className="outlined-fields">
+                {componentId && (
+                  <div className="outlined-field">
+                    <dt>Id</dt>
+                    <dd className="detail-name-value">
+                      <span>{componentId}</span>
+                      <CopyButton value={componentId} label="Copy id" />
+                    </dd>
+                  </div>
+                )}
+                {attrs.name && (
+                  <div className="outlined-field">
+                    <dt>WeiDU Label</dt>
+                    <dd className="detail-name-value">
+                      <span>{attrs.name}</span>
+                      <CopyButton value={attrs.name} label="Copy WeiDU label" />
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            )}
 
-          {hasComponentMeta && (
-            <dl className="outlined-fields">
-              {componentId && (
-                <div className="outlined-field">
-                  <dt>Id</dt>
-                  <dd className="detail-name-value">
-                    <span>{componentId}</span>
-                    <CopyButton value={componentId} label="Copy id" />
-                  </dd>
-                </div>
-              )}
-              {attrs.name && (
-                <div className="outlined-field">
-                  <dt>WeiDU Label</dt>
-                  <dd className="detail-name-value">
-                    <span>{attrs.name}</span>
-                    <CopyButton value={attrs.name} label="Copy WeiDU label" />
-                  </dd>
-                </div>
-              )}
-            </dl>
-          )}
+            {tagList.length > 0 && (
+              <ul className="detail-tags">
+                {tagList.map((tag) => (
+                  <li key={tag} className="detail-tag">
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            )}
 
-          {tagList.length > 0 && (
-            <ul className="detail-tags">
-              {tagList.map((tag) => (
-                <li key={tag} className="detail-tag">
-                  {tag}
-                </li>
-              ))}
-            </ul>
-          )}
-
-          <DetailLinks links={componentLinks} />
-        </DetailBlock>
+            <DetailLinks links={componentLinks} />
+          </DetailBlock>
+        )}
 
         {hasModSection && (
           <DetailBlock kind="mod" title="Mod">

@@ -1,4 +1,5 @@
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
+import type { LevelContentCounts } from '../lib/selection/levelCounts'
 import { IconTip } from './IconTip'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
@@ -9,6 +10,7 @@ interface Props {
   higherDifficulty: boolean
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
   onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
+  levelCounts?: Readonly<Record<string, LevelContentCounts>>
   canContinue: boolean
   onContinue: () => void
 }
@@ -20,13 +22,29 @@ export function PresetsStation({
   higherDifficulty,
   onLadderToggle,
   onDifficultyChange,
+  levelCounts,
   canContinue,
   onContinue,
 }: Props) {
   return (
     <section className="engine-station presets-station">
       <div className="engine-station-header">
-        <h2>Start with a preset</h2>
+        <h2 className="presets-station-heading">
+          <span>Start with a preset</span>
+          <span className="has-icon-tip">
+            <button
+              type="button"
+              className="btn icon-only presets-help-btn"
+              aria-label="About presets"
+            >
+              ?
+            </button>
+            <IconTip>
+              Choose a starting configuration. Presets provide an initial selection of
+              components. You can customize individual components afterwards.
+            </IconTip>
+          </span>
+        </h2>
         <span className="has-icon-tip">
           <button
             type="button"
@@ -47,6 +65,7 @@ export function PresetsStation({
           higherDifficulty={higherDifficulty}
           onLadderToggle={onLadderToggle}
           onDifficultyChange={onDifficultyChange}
+          levelCounts={levelCounts}
         />
       </div>
     </section>

@@ -5,6 +5,7 @@ import {
   type StationId,
 } from '../lib/xml/schema'
 import { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
+import { IconTip } from './IconTip'
 
 export type AppNavSlot = StationSlot
 export { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
@@ -35,6 +36,7 @@ const SETUP_LABELS: Record<'engine' | 'presets', string> = {
 
 interface Props {
   game: SelectedGame | null
+  routeUnlocked: boolean
   activeStation: AppNavSlot
   visibleStations: StationId[]
   finishedStations: ReadonlySet<StationSlot>
@@ -44,6 +46,7 @@ interface Props {
   onSelectEngine: () => void
   onSelectPresets: () => void
   onSelectStation: (id: StationId) => void
+  onFinishRoute: () => void
 }
 
 function stationClass(
@@ -107,6 +110,7 @@ function StationStop({
 
 export function StationNav({
   game,
+  routeUnlocked,
   activeStation,
   visibleStations,
   finishedStations,
@@ -116,9 +120,11 @@ export function StationNav({
   onSelectEngine,
   onSelectPresets,
   onSelectStation,
+  onFinishRoute,
 }: Props) {
   const progressRatio = totalCount > 0 ? finishedCount / totalCount : 0
   const allDone = totalCount > 0 && finishedCount === totalCount
+  const showRouteChrome = routeUnlocked && !!game && totalCount > 0
 
   return (
     <nav
@@ -133,52 +139,71 @@ export function StationNav({
           collapsed={collapsed}
           onClick={onSelectEngine}
         />
-        <StationStop
-          id="presets"
-          activeStation={activeStation}
-          finishedStations={finishedStations}
-          collapsed={collapsed}
-          disabled={!game}
-          onClick={onSelectPresets}
-        />
-        {STATION_ORDER.filter((id) => visibleStations.includes(id)).map((id) => (
-          <StationStop
-            key={id}
-            id={id}
-            activeStation={activeStation}
-            finishedStations={finishedStations}
-            collapsed={collapsed}
-            disabled={!game}
-            onClick={() => onSelectStation(id)}
-          />
-        ))}
-      </div>
-      {game && totalCount > 0 && (
-        <div
-          className={`station-nav-progress${allDone ? ' complete' : ''}`}
-          aria-label={
-            allDone
-              ? `Route complete: all ${totalCount} stops done`
-              : `Route progress: ${finishedCount} of ${totalCount} stops done`
-          }
-        >
-          <div className="station-nav-progress-bar" aria-hidden="true">
-            <div
-              className="station-nav-progress-fill"
-              style={{ width: `${Math.round(progressRatio * 100)}%` }}
+        {routeUnlocked ? (
+          <>
+            <StationStop
+              id="presets"
+              activeStation={activeStation}
+              finishedStations={finishedStations}
+              collapsed={collapsed}
+              onClick={onSelectPresets}
             />
+            {STATION_ORDER.filter((id) => visibleStations.includes(id)).map((id) => (
+              <StationStop
+                key={id}
+                id={id}
+                activeStation={activeStation}
+                finishedStations={finishedStations}
+                collapsed={collapsed}
+                onClick={() => onSelectStation(id)}
+              />
+            ))}
+          </>
+        ) : null}
+      </div>
+      {showRouteChrome ? (
+        <>
+          <div
+            className={`station-nav-progress${allDone ? ' complete' : ''}`}
+            aria-label={
+              allDone
+                ? `Route complete: all ${totalCount} stops done`
+                : `Route progress: ${finishedCount} of ${totalCount} stops done`
+            }
+          >
+            <div className="station-nav-progress-bar" aria-hidden="true">
+              <div
+                className="station-nav-progress-fill"
+                style={{ width: `${Math.round(progressRatio * 100)}%` }}
+              />
+            </div>
+            <span className="station-nav-progress-label">
+              {collapsed
+                ? allDone
+                  ? '✓'
+                  : `${finishedCount}/${totalCount}`
+                : allDone
+                  ? 'All done'
+                  : `${finishedCount}/${totalCount} done`}
+            </span>
           </div>
-          <span className="station-nav-progress-label">
-            {collapsed
-              ? allDone
-                ? '✓'
-                : `${finishedCount}/${totalCount}`
-              : allDone
-                ? 'All done'
-                : `${finishedCount}/${totalCount} done`}
-          </span>
-        </div>
-      )}
+          {!allDone ? (
+            <div className="station-nav-finish">
+              <span className="has-icon-tip">
+                <button
+                  type="button"
+                  className="btn secondary station-nav-finish-btn"
+                  onClick={onFinishRoute}
+                  aria-label="Finish route"
+                >
+                  {collapsed ? '✓' : 'Finish route'}
+                </button>
+                <IconTip>Mark all stations done</IconTip>
+              </span>
+            </div>
+          ) : null}
+        </>
+      ) : null}
     </nav>
   )
 }
