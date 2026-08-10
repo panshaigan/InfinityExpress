@@ -74,6 +74,8 @@ import { useTreeFocus } from './hooks/useTreeFocus'
 import { useUserCatalog } from './hooks/useUserCatalog'
 import { type AppPhase } from './ui/PhaseNav'
 import { ModsStation, type ModsJourneyState } from './ui/mods/ModsStation'
+import { InstallStation } from './ui/install/InstallStation'
+import { isDesktopApp } from './lib/desktop/fsDialogs'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
@@ -100,7 +102,7 @@ export default function App() {
   const [aboutOpen, setAboutOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [settingsFocusField, setSettingsFocusField] = useState<
-    'modsDownloadDir' | null
+    'modsDownloadDir' | 'weiduPath' | null
   >(null)
   const [showRouteTip, setShowRouteTip] = useState(() => !readRouteTipDismissed())
   const [railCollapsed, setRailCollapsed] = useState(() => readRailCollapsed())
@@ -255,7 +257,7 @@ export default function App() {
   }
 
   function onPhaseChange(phase: AppPhase) {
-    if (phase === 'install') return
+    if (phase === 'install' && !installPhaseReady) return
     if (phase === appPhase) return
     if (phase === 'mods') {
       // Phase nav opens the library; journey lock only from Done / Open Mods.
@@ -304,6 +306,22 @@ export default function App() {
     [model, selectedIds],
   )
   const selectedModsCount = neededCodenames.length
+
+  const installPhaseReady = useMemo(() => {
+    if (!game || !isDesktopApp()) return false
+    const map = new Map(userCatalog.mods.map((m) => [m.codename.toLowerCase(), m]))
+    return neededCodenames.every((c) => {
+      const m = map.get(c.toLowerCase())
+      return m != null && m.diskStatus !== 'not_present'
+    })
+  }, [game, neededCodenames, userCatalog.mods])
+
+  const installPhaseTitle = useMemo(() => {
+    if (!isDesktopApp()) return 'Requires the desktop app'
+    if (!game) return 'Choose an engine first'
+    if (!installPhaseReady) return 'Download all required mods first'
+    return undefined
+  }, [game, installPhaseReady])
 
   const globalSearchCheckState = useMemo(() => {
     if (!game) return 'unchecked' as const
@@ -599,6 +617,8 @@ export default function App() {
       <AppTopBar
         phase={appPhase}
         onPhaseChange={onPhaseChange}
+        installDisabled={!installPhaseReady}
+        installTitle={installPhaseTitle}
         game={game}
         selectedModsCount={selectedModsCount}
         selectedCount={selectedIds.size}
@@ -649,6 +669,23 @@ export default function App() {
               onRefreshDiskStatus={userCatalog.refreshDiskStatus}
               onRemoveFromDisk={userCatalog.removeFromDisk}
               onOpenSettings={openSettingsModsDownload}
+            />
+          </div>
+        </div>
+      ) : appPhase === 'install' ? (
+        <div className="app-body mods-app-body install-app-body">
+          <div className="app-main mods-app-main install-app-main">
+            <InstallStation
+              model={model}
+              selectedIds={selectedIds}
+              game={game}
+              neededCodenames={neededCodenames}
+              mods={userCatalog.mods}
+              detailCollapsed={detailCollapsed}
+              detailWidth={detailWidth}
+              onDetailWidthChange={setDetailWidth}
+              onToggleDetailCollapsed={toggleDetailCollapsed}
+              onOpenSettings={openSettings}
             />
           </div>
         </div>

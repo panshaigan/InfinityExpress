@@ -27,3 +27,27 @@ commands.allow = ["cancel_mod_acquire"]
 identifier = "allow-scrape-mod-page-meta"
 description = "Fetch page title and readme hints from a mod URL"
 commands.allow = ["scrape_mod_page_meta"]
+
+[[permission]]
+identifier = "allow-weidu-install"
+description = "List WeiDU components, run install steps, stage mods, cleanup"
+commands.allow = [
+  "list_weidu_components",
+  "list_weidu_languages",
+  "run_weidu_step",
+  "send_weidu_stdin",
+  "cancel_weidu_step",
+  "stage_mod_into_game_dir",
+  "cleanup_install_artifacts",
+  "read_game_weidu_log",
+]
+
+[[permission]]
+identifier = "allow-weidu-backup"
+description = "Backup and restore game directories for installation"
+commands.allow = [
+  "backup_game_dir",
+  "restore_game_dir",
+  "list_backups",
+  "create_named_backup",
+]

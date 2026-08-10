@@ -99,6 +99,22 @@ pub(crate) fn validate_folder_name(name: &str) -> Result<(), String> {
   }
 }
 
+pub(crate) fn copy_recursive(from: &Path, to: &Path) -> Result<(), String> {
+  if from.is_dir() {
+    std::fs::create_dir_all(to).map_err(|e| e.to_string())?;
+    for entry in std::fs::read_dir(from).map_err(|e| e.to_string())? {
+      let entry = entry.map_err(|e| e.to_string())?;
+      copy_recursive(&entry.path(), &to.join(entry.file_name()))?;
+    }
+  } else {
+    if let Some(parent) = to.parent() {
+      std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    std::fs::copy(from, to).map_err(|e| e.to_string())?;
+  }
+  Ok(())
+}
+
 pub(crate) fn ensure_under_parent(parent: &Path, child: &Path) -> Result<(), String> {
   let parent_canon = fs::canonicalize(parent).map_err(|e| e.to_string())?;
   let child_canon = if child.exists() {

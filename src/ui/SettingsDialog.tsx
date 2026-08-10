@@ -5,6 +5,7 @@ import {
   writeAppDirPaths,
   type AppDirPaths,
 } from '../lib/ui/appDirPrefs'
+import { readWeiduPath, writeWeiduPath } from '../lib/ui/weiduPrefs'
 import {
   GITHUB_TOKEN_HELP_URL,
   readGithubToken,
@@ -19,11 +20,12 @@ import {
 import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 import { GAME_LABELS } from '../lib/xml/schema'
 import { DirectoryField } from './DirectoryField'
+import { isDesktopApp, pickFile } from '../lib/desktop/fsDialogs'
 import { OutlinedTextField } from './OutlinedTextField'
 
 const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
 
-export type SettingsFocusField = 'modsDownloadDir'
+export type SettingsFocusField = 'modsDownloadDir' | 'weiduPath'
 
 interface Props {
   open: boolean
@@ -37,15 +39,19 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
   const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
   const [appDirs, setAppDirs] = useState(readAppDirPaths)
   const [githubToken, setGithubToken] = useState(readGithubToken)
+  const [weiduPath, setWeiduPath] = useState(readWeiduPath)
 
   useEffect(() => {
     if (!open) return
     setFolderPaths(readGameFolderPaths())
     setAppDirs(readAppDirPaths())
     setGithubToken(readGithubToken())
+    setWeiduPath(readWeiduPath())
     requestAnimationFrame(() => {
       if (focusField === 'modsDownloadDir') {
         document.getElementById('settings-mods-download-dir')?.focus()
+      } else if (focusField === 'weiduPath') {
+        document.getElementById('settings-weidu-path')?.focus()
       } else {
         closeRef.current?.focus()
       }
@@ -89,6 +95,11 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
   function onGithubTokenChange(value: string) {
     setGithubToken(value)
     writeGithubToken(value)
+  }
+
+  function onWeiduPathChange(value: string) {
+    setWeiduPath(value)
+    writeWeiduPath(value)
   }
 
   if (!open) return null
@@ -157,6 +168,29 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
               onChange={(value) => setAppDir('backupDir', value)}
               placeholder="Select backup folder…"
               browseTitle="Select backup folder"
+            />
+            <OutlinedTextField
+              id="settings-weidu-path"
+              label="WeiDU executable"
+              value={weiduPath}
+              onChange={onWeiduPathChange}
+              placeholder="Path to weidu.exe"
+              spellCheck={false}
+              autoComplete="off"
+              trailing={
+                <button
+                  type="button"
+                  className="btn secondary outlined-text-field-action"
+                  disabled={!isDesktopApp()}
+                  onClick={() => {
+                    void pickFile('Select WeiDU executable').then((path) => {
+                      if (path) onWeiduPathChange(path)
+                    })
+                  }}
+                >
+                  Browse
+                </button>
+              }
             />
           </div>
         </section>

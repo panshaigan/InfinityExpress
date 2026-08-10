@@ -1,0 +1,325 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { CSSProperties } from 'react'
+import { useInstallRun } from '../../hooks/useInstallRun'
+import { collectAdjustementsModIds } from '../../lib/install/weiduResolution'
+import { cleanupInstallArtifacts, gameDirForPhase, listBackups } from '../../lib/desktop/weiduInstall'
+import { isDesktopApp } from '../../lib/desktop/fsDialogs'
+import type { WorkingMod } from '../../lib/mods/loadMods'
+import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
+import { readGameFolderPaths } from '../../lib/ui/gameFolderPrefs'
+import { readWeiduPath } from '../../lib/ui/weiduPrefs'
+import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
+import { BackupManagerDialog, type BackupDialogMode } from './BackupManagerDialog'
+import { InstallConsoleDock } from './InstallConsoleDock'
+import { InstallDetailPane } from './InstallDetailPane'
+import { InstallTable } from './InstallTable'
+import { IconTip } from '../IconTip'
+
+interface Props {
+  model: InstallSequenceModel
+  selectedIds: ReadonlySet<string>
+  game: SelectedGame | null
+  neededCodenames: string[]
+  mods: WorkingMod[]
+  detailCollapsed: boolean
+  detailWidth: number
+  onDetailWidthChange: (width: number) => void
+  onToggleDetailCollapsed: () => void
+  onOpenSettings: () => void
+}
+
+function allModsPresent(needed: string[], mods: WorkingMod[]): boolean {
+  const map = new Map(mods.map((m) => [m.codename.toLowerCase(), m]))
+  return needed.every((c) => {
+    const m = map.get(c.toLowerCase())
+    return m != null && m.diskStatus !== 'not_present'
+  })
+}
+
+export function InstallStation({
+  model,
+  selectedIds,
+  game,
+  neededCodenames,
+  mods,
+  detailCollapsed,
+  detailWidth,
+  onDetailWidthChange,
+  onToggleDetailCollapsed,
+  onOpenSettings,
+}: Props) {
+  const gameFolders = readGameFolderPaths()
+  const appDirs = readAppDirPaths()
+  const weiduPath = readWeiduPath()
+  const adjustementsModIds = useMemo(
+    () => collectAdjustementsModIds(model),
+    [model],
+  )
+
+  const {
+    run,
+    planSteps,
+    consoleLines,
+    inputPrompt,
+    initRun,
+    start,
+    continueRun,
+    pause,
+    stop,
+    skipCurrent,
+    restartFromBackup,
+    sendInput,
+  } = useInstallRun({ model, selectedIds, game, gameFolders })
+
+  const [selectedStepId, setSelectedStepId] = useState<string | null>(null)
+  const [consoleCollapsed, setConsoleCollapsed] = useState(false)
+  const [backupDialog, setBackupDialog] = useState<BackupDialogMode | null>(null)
+  const [backupGameKey, setBackupGameKey] = useState('bg2')
+  const [backupSourceDir, setBackupSourceDir] = useState('')
+  const [cleanupOffer, setCleanupOffer] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
+
+  const steps = run?.steps ?? planSteps.map((s) => ({
+    ...s,
+    tp2Path: '',
+    stagedFolderName: '',
+    weiduNumbers: [],
+    languageIndex: null,
+  }))
+
+  const selectedStep = useMemo(
+    () => steps.find((s) => s.stepId === selectedStepId) ?? steps[0] ?? null,
+    [steps, selectedStepId],
+  )
+
+  useEffect(() => {
+    if (!selectedStepId && steps[0]) setSelectedStepId(steps[0].stepId)
+  }, [steps, selectedStepId])
+
+  useEffect(() => {
+    if (run?.runState === 'completed') setCleanupOffer(true)
+  }, [run?.runState])
+
+  const modsReady = allModsPresent(neededCodenames, mods)
+  const canRun = isDesktopApp() && !!game && modsReady && !!weiduPath && !!appDirs.backupDir
+
+  const statusText = useMemo(() => {
+    if (!run) return `${planSteps.length} steps planned`
+    const done = run.steps.filter(
+      (s) =>
+        s.status === 'succeeded' ||
+        s.status === 'alreadyInstalled' ||
+        s.status === 'skipped',
+    ).length
+    return `${done}/${run.steps.length} - ${run.runState}`
+  }, [run, planSteps.length])
+
+  const ensureBaselines = useCallback(async (): Promise<boolean> => {
+    if (!game || !appDirs.backupDir) return false
+    const keys =
+      game === 'eet' ? (['bg1', 'bg2'] as const) : ([game] as const)
+    for (const key of keys) {
+      const manifest = await listBackups(appDirs.backupDir, key)
+      if (!manifest.baseline) {
+        const dir =
+          key === 'bg1'
+            ? gameFolders.bg1
+            : key === 'bg2'
+              ? gameFolders.bg2
+              : key === 'iwd'
+                ? gameFolders.iwd
+                : gameFolders.pst
+        if (!dir) {
+          setNotice(`Set ${key} game folder in Settings.`)
+          return false
+        }
+        setBackupGameKey(key)
+        setBackupSourceDir(dir)
+        setBackupDialog('baseline')
+        return false
+      }
+    }
+    return true
+  }, [game, appDirs.backupDir, gameFolders])
+
+  const onStart = useCallback(async () => {
+    if (!canRun) return
+    initRun()
+    const ok = await ensureBaselines()
+    if (!ok) return
+    await start()
+  }, [canRun, initRun, ensureBaselines, start])
+
+  const onRestart = useCallback(() => {
+    if (!game || !run) return
+    const step = run.steps[run.cursor] ?? run.steps[0]
+    const phase = step?.phase ?? 'single'
+    const targetDir = gameDirForPhase(game, phase, gameFolders)
+    const gameKey = game === 'eet' ? (phase === 'eet1' ? 'bg1' : 'bg2') : game
+    setBackupGameKey(gameKey)
+    setBackupSourceDir(targetDir)
+    setBackupDialog('restore')
+  }, [game, run, gameFolders])
+
+  const onRestoreDone = useCallback(
+    async (_backupPath: string) => {
+      if (!game || !run) return
+      const step = run.steps[run.cursor] ?? run.steps[0]
+      const phase = step?.phase ?? 'single'
+      const targetDir = gameDirForPhase(game, phase, gameFolders)
+      await restartFromBackup(targetDir)
+    },
+    [game, run, gameFolders, restartFromBackup],
+  )
+
+  const onCleanup = useCallback(async () => {
+    if (!game || !run) return
+    const staged = [...new Set(run.steps.map((s) => s.stagedFolderName).filter(Boolean))]
+    const keep = [...adjustementsModIds].filter((id) => staged.includes(id))
+    const phase = run.steps[0]?.phase ?? 'single'
+    const gameDir = gameDirForPhase(game, phase, gameFolders)
+    try {
+      await cleanupInstallArtifacts({
+        gameDir,
+        stagedFolders: staged,
+        keepFolders: keep,
+        weiduPath,
+        logDir: run.logDir,
+      })
+      setCleanupOffer(false)
+      setNotice('Cleanup finished.')
+    } catch (e) {
+      setNotice(String(e))
+    }
+  }, [game, run, adjustementsModIds, gameFolders, weiduPath])
+
+  return (
+    <div className="install-station">
+      <div className="install-toolbar">
+        <button type="button" className="btn primary" disabled={!canRun || run?.runState === 'running'} onClick={() => void onStart()}>
+          Start
+        </button>
+        <button type="button" className="btn secondary" disabled={!run || run.runState !== 'running'} onClick={pause}>
+          Pause
+        </button>
+        <button type="button" className="btn secondary" disabled={!run || (run.runState !== 'paused' && run.runState !== 'failed' && run.runState !== 'waitingForInput')} onClick={() => void continueRun()}>
+          Continue
+        </button>
+        <button type="button" className="btn secondary" disabled={!run} onClick={onRestart}>
+          Restart
+        </button>
+        <button type="button" className="btn secondary" disabled={!run || run.runState !== 'running'} onClick={() => void stop()}>
+          Stop
+        </button>
+        <button type="button" className="btn secondary" disabled={!run || run.runState !== 'waitingForInput'} onClick={() => void skipCurrent()}>
+          Skip
+        </button>
+        <button
+          type="button"
+          className="btn secondary"
+          disabled={!game || !appDirs.backupDir}
+          onClick={() => {
+            if (!game) return
+            const dir = gameDirForPhase(game, 'single', gameFolders)
+            setBackupGameKey(game === 'eet' ? 'bg2' : game)
+            setBackupSourceDir(dir)
+            setBackupDialog('snapshot')
+          }}
+        >
+          Back up now
+        </button>
+        {!modsReady ? (
+          <span className="install-toolbar-note">Missing mods on disk</span>
+        ) : null}
+        {!weiduPath ? (
+          <span className="install-toolbar-note">
+            <button type="button" className="btn link" onClick={onOpenSettings}>
+              Set WeiDU path
+            </button>
+          </span>
+        ) : null}
+        <span className="has-icon-tip">
+          <button type="button" className="btn icon-only install-help-btn" aria-label="Help">
+            ?
+          </button>
+          <IconTip>Pause waits between steps. Stop cancels the current WeiDU process.</IconTip>
+        </span>
+      </div>
+
+      {notice ? <p className="install-notice">{notice}</p> : null}
+
+      {cleanupOffer ? (
+        <div className="install-cleanup-offer">
+          <span>Run finished.</span>
+          <button type="button" className="btn secondary" onClick={() => void onCleanup()}>
+            Clean up mod folders
+          </button>
+          <button type="button" className="btn secondary" onClick={() => setCleanupOffer(false)}>
+            Dismiss
+          </button>
+        </div>
+      ) : null}
+
+      <div
+        className={`install-workspace${detailCollapsed ? ' detail-collapsed' : ''}`}
+        style={
+          !detailCollapsed
+            ? ({ '--detail-width': `${detailWidth}px` } as CSSProperties)
+            : undefined
+        }
+      >
+        <div className="install-main">
+          <InstallTable
+            steps={steps}
+            selectedStepId={selectedStep?.stepId ?? null}
+            onSelectStep={setSelectedStepId}
+          />
+        </div>
+        {!detailCollapsed ? (
+          <>
+            <div className="detail-resize-handle" aria-hidden="true" />
+            <InstallDetailPane
+              step={selectedStep}
+              model={model}
+              collapsed={detailCollapsed}
+              width={detailWidth}
+              onWidthChange={onDetailWidthChange}
+              onToggleCollapsed={onToggleDetailCollapsed}
+            />
+          </>
+        ) : (
+          <InstallDetailPane
+            step={selectedStep}
+            model={model}
+            collapsed={detailCollapsed}
+            width={detailWidth}
+            onWidthChange={onDetailWidthChange}
+            onToggleCollapsed={onToggleDetailCollapsed}
+          />
+        )}
+      </div>
+
+      <InstallConsoleDock
+        lines={consoleLines}
+        statusText={statusText}
+        collapsed={consoleCollapsed}
+        onToggleCollapsed={() => setConsoleCollapsed((v) => !v)}
+        waitingForInput={run?.runState === 'waitingForInput'}
+        inputPrompt={inputPrompt}
+        onSendInput={(text) => void sendInput(text)}
+      />
+
+      <BackupManagerDialog
+        open={backupDialog != null}
+        mode={backupDialog ?? 'baseline'}
+        backupRoot={appDirs.backupDir}
+        gameKey={backupGameKey}
+        sourceDir={backupSourceDir}
+        targetDir={backupSourceDir}
+        onClose={() => setBackupDialog(null)}
+        onBaselineDone={() => void onStart()}
+        onRestoreDone={(path) => void onRestoreDone(path)}
+      />
+    </div>
+  )
+}

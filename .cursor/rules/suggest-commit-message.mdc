@@ -18,7 +18,7 @@ Use this structure:
 
 1. **Type** — one of: `feat`, `fix`, `ui`, `refactor`, `docs`, `test`, `chore`, `perf`, `build`, `ci`
 2. **Title** — short imperative summary on the same line as the type (`type: title`)
-3. **Body** — blank line, then 1–4 short bullets or sentences with what changed and why
+3. **Body** — blank line, then short bullets or sentences with what changed and why
 
 Put the **entire** commit message inside a fenced code block (so the UI shows a copy control). Label it above the block; do not put prose inside the block.
 

@@ -1,41 +1,45 @@
 import { IconTip } from './IconTip'
+import type { AppPhase } from './PhaseNav.types'
 
-export type AppPhase = 'components' | 'mods' | 'install'
+export type { AppPhase } from './PhaseNav.types'
 
 interface Props {
   phase: AppPhase
   onPhaseChange: (phase: AppPhase) => void
+  installDisabled?: boolean
+  installTitle?: string
 }
 
-const PHASES: { id: AppPhase; label: string; disabled?: boolean; title?: string }[] =
-  [
-    { id: 'components', label: 'Components' },
-    { id: 'mods', label: 'Mods' },
-    {
-      id: 'install',
-      label: 'Install',
-      disabled: true,
-      title: 'Coming with the desktop app',
-    },
-  ]
+const BASE_PHASES: { id: AppPhase; label: string }[] = [
+  { id: 'components', label: 'Components' },
+  { id: 'mods', label: 'Mods' },
+  { id: 'install', label: 'Install' },
+]
 
-export function PhaseNav({ phase, onPhaseChange }: Props) {
+export function PhaseNav({
+  phase,
+  onPhaseChange,
+  installDisabled = false,
+  installTitle,
+}: Props) {
   return (
     <nav className="phase-nav" aria-label="App phases">
       <ol className="phase-nav-list">
-        {PHASES.map((item, index) => {
+        {BASE_PHASES.map((item, index) => {
           const active = phase === item.id
+          const disabled = item.id === 'install' ? installDisabled : false
+          const title = item.id === 'install' ? installTitle : undefined
           const button = (
             <button
               type="button"
               className={`phase-nav-btn${active ? ' active' : ''}${
-                item.disabled ? ' disabled' : ''
+                disabled ? ' disabled' : ''
               }`}
               aria-current={active ? 'page' : undefined}
-              aria-disabled={item.disabled || undefined}
-              disabled={item.disabled}
+              aria-disabled={disabled || undefined}
+              disabled={disabled}
               onClick={() => {
-                if (!item.disabled) onPhaseChange(item.id)
+                if (!disabled) onPhaseChange(item.id)
               }}
             >
               <span className="phase-nav-index" aria-hidden="true">
@@ -46,10 +50,10 @@ export function PhaseNav({ phase, onPhaseChange }: Props) {
           )
           return (
             <li key={item.id} className="phase-nav-item">
-              {item.title ? (
+              {title ? (
                 <span className="has-icon-tip phase-nav-tip-host">
                   {button}
-                  <IconTip>{item.title}</IconTip>
+                  <IconTip>{title}</IconTip>
                 </span>
               ) : (
                 button

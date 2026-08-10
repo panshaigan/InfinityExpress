@@ -11,6 +11,8 @@ interface PresetItem {
 interface Props {
   phase: AppPhase
   onPhaseChange: (phase: AppPhase) => void
+  installDisabled?: boolean
+  installTitle?: string
   game: SelectedGame | null
   selectedModsCount: number
   selectedCount: number
@@ -64,6 +66,8 @@ function KeyboardIcon() {
 export function AppTopBar({
   phase,
   onPhaseChange,
+  installDisabled,
+  installTitle,
   game,
   selectedModsCount,
   selectedCount,
@@ -99,7 +103,12 @@ export function AppTopBar({
         <span className="brand-tagline">Your mod route</span>
         <IconTip>About</IconTip>
       </button>
-      <PhaseNav phase={phase} onPhaseChange={onPhaseChange} />
+      <PhaseNav
+        phase={phase}
+        onPhaseChange={onPhaseChange}
+        installDisabled={installDisabled}
+        installTitle={installTitle}
+      />
       <div className="top-bar-actions">
         <span className="engine-badge">
           Engine: <strong>{game ? GAME_LABELS[game] : 'not set'}</strong>

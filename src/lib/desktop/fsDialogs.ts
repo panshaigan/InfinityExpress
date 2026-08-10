@@ -24,6 +24,18 @@ export async function saveTextFile(
   return true
 }
 
+/** Opens a native file picker. Returns null if cancelled or not in Tauri. */
+export async function pickFile(title?: string): Promise<string | null> {
+  if (!isDesktopApp()) return null
+  const selected = await open({
+    directory: false,
+    multiple: false,
+    title,
+  })
+  if (typeof selected !== 'string') return null
+  return selected
+}
+
 /** Opens a native directory picker. Returns null if cancelled or not in Tauri. */
 export async function pickDirectory(title?: string): Promise<string | null> {
   if (!isDesktopApp()) return null
