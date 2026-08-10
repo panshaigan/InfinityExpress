@@ -39,4 +39,31 @@ describe('resolveComponentNumber', () => {
     ])
     expect(result.weiduNumber).toBe(1)
   })
+
+  it('resolves WeiDU LABEL from component id', () => {
+    const dlc: ComponentNode = {
+      key: 'A7-DLCMERGER-MERGE_SOD',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'A7-DLCMERGER-MERGE_SOD',
+      orderIndex: 0,
+      attrs: {
+        id: 'A7-DLCMERGER-MERGE_SOD',
+        label: 'Merge SoD DLC',
+        name: 'Merge "Siege of Dragonspear" DLC',
+        modId: 'A7-DlcMerger',
+      },
+      effectiveEngine: '',
+      children: [],
+    }
+    const result = resolveComponentNumber(dlc, [
+      {
+        index: 0,
+        number: 1,
+        name: 'Merge "Siege of Dragonspear" DLC',
+        label: ['A7-DLCMERGER-MERGE_SOD'],
+      },
+    ])
+    expect(result).toEqual({ weiduNumber: 1, error: null })
+  })
 })

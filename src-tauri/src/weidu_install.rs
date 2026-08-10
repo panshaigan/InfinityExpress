@@ -139,20 +139,78 @@ fn validate_weidu_path(path: &str) -> Result<PathBuf, String> {
   Ok(p)
 }
 
-fn tp2_working_dir(tp2: &Path) -> PathBuf {
-  tp2.parent()
-    .map(|p| p.to_path_buf())
-    .unwrap_or_else(|| PathBuf::from("."))
+/// Strip Windows `\\?\` verbatim prefix so canonicalize'd paths strip_prefix cleanly.
+fn strip_verbatim_prefix(path: &Path) -> PathBuf {
+  let s = path.to_string_lossy();
+  if let Some(rest) = s.strip_prefix(r"\\?\") {
+    PathBuf::from(rest)
+  } else {
+    path.to_path_buf()
+  }
 }
 
-fn tp2_arg_for_cwd(tp2: &Path, cwd: &Path) -> String {
-  if let Ok(rel) = tp2.strip_prefix(cwd) {
-    rel.to_string_lossy().into_owned()
-  } else if let Some(name) = tp2.file_name() {
-    name.to_string_lossy().into_owned()
-  } else {
-    tp2.to_string_lossy().into_owned()
+/// WeiDU TRA / %MOD_FOLDER% resolve relative to the parent of the folder that
+/// contains the tp2 (e.g. cwd=`…/A7-DlcMerger`, tp2=`DlcMerger/DlcMerger.tp2`),
+/// not always the game root. Nested download layouts need that parent cwd.
+/// `game_dir` is still required so we refuse tp2 paths outside the game tree.
+fn weidu_game_cwd_and_tp2_arg(game_dir: &Path, tp2: &Path) -> Result<(PathBuf, String), String> {
+  let game = PathBuf::from(game_dir);
+  if !game.is_dir() {
+    return Err(format!("Game directory not found: {}", game.display()));
   }
+  if !tp2.is_file() {
+    return Err(format!("TP2 not found: {}", tp2.display()));
+  }
+
+  let game_canon = fs::canonicalize(&game)
+    .map_err(|e| format!("Cannot resolve game directory: {e}"))?;
+  let tp2_canon = fs::canonicalize(tp2).map_err(|e| format!("Cannot resolve TP2 path: {e}"))?;
+  let game_clean = strip_verbatim_prefix(&game_canon);
+  let tp2_clean = strip_verbatim_prefix(&tp2_canon);
+
+  if !tp2_clean.starts_with(&game_clean) {
+    return Err(format!(
+      "TP2 is not under game directory (tp2={}, game={})",
+      tp2.display(),
+      game.display()
+    ));
+  }
+
+  let mod_folder = tp2_clean
+    .parent()
+    .ok_or_else(|| format!("TP2 has no parent directory: {}", tp2.display()))?;
+  // Parent of the folder that contains the tp2. For `game/MyMod/setup.tp2` that is
+  // the game dir; for `game/A7-DlcMerger/DlcMerger/DlcMerger.tp2` it is A7-DlcMerger
+  // (required so LANGUAGE paths like `DlcMerger/languages/...` resolve).
+  let cwd_clean = mod_folder
+    .parent()
+    .filter(|p| *p == game_clean.as_path() || p.starts_with(&game_clean))
+    .unwrap_or(game_clean.as_path());
+
+  let rel = tp2_clean.strip_prefix(cwd_clean).map_err(|_| {
+    format!(
+      "TP2 is not under WeiDU cwd (tp2={}, cwd={})",
+      tp2.display(),
+      cwd_clean.display()
+    )
+  })?;
+  let tp2_arg = rel.to_string_lossy().replace('\\', "/");
+  if tp2_arg.is_empty() || tp2_arg.split('/').any(|p| p == "..") {
+    return Err("Invalid relative TP2 path".into());
+  }
+
+  // Prefer the non-verbatim path for process cwd (WeiDU is picky on Windows).
+  let cwd = if cwd_clean == game_clean.as_path() {
+    game
+  } else {
+    let rel_cwd = cwd_clean
+      .strip_prefix(&game_clean)
+      .map(|p| game.join(p))
+      .unwrap_or_else(|_| cwd_clean.to_path_buf());
+    rel_cwd
+  };
+
+  Ok((cwd, tp2_arg))
 }
 
 fn run_weidu_capture(weidu: &Path, cwd: &Path, args: &[String]) -> Result<String, String> {
@@ -161,14 +219,21 @@ fn run_weidu_capture(weidu: &Path, cwd: &Path, args: &[String]) -> Result<String
     .args(args)
     .output()
     .map_err(|e| e.to_string())?;
-  let mut combined = String::new();
-  combined.push_str(&String::from_utf8_lossy(&output.stdout));
-  if !output.stderr.is_empty() {
-    if !combined.is_empty() {
-      combined.push('\n');
+  let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
+  let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+  let combined = if !stdout.trim().is_empty() {
+    let stderr_trim = stderr.trim();
+    if stderr_trim.is_empty()
+      || stdout.trim() == stderr_trim
+      || stdout.contains(stderr_trim)
+    {
+      stdout
+    } else {
+      format!("{stdout}\n{stderr}")
     }
-    combined.push_str(&String::from_utf8_lossy(&output.stderr));
-  }
+  } else {
+    stderr
+  };
   if !output.status.success() && combined.trim().is_empty() {
     return Err(format!(
       "WeiDU exited with status {} without output",
@@ -178,15 +243,66 @@ fn run_weidu_capture(weidu: &Path, cwd: &Path, args: &[String]) -> Result<String
   Ok(combined)
 }
 
+/// Find the closing `]` matching `text[start]` (`[`), ignoring brackets inside JSON strings.
+fn find_matching_array_end(text: &str, start: usize) -> Option<usize> {
+  let bytes = text.as_bytes();
+  if start >= bytes.len() || bytes[start] != b'[' {
+    return None;
+  }
+  let mut depth = 0i32;
+  let mut in_string = false;
+  let mut escape = false;
+  for (idx, &b) in bytes.iter().enumerate().skip(start) {
+    if in_string {
+      if escape {
+        escape = false;
+      } else if b == b'\\' {
+        escape = true;
+      } else if b == b'"' {
+        in_string = false;
+      }
+      continue;
+    }
+    match b {
+      b'"' => in_string = true,
+      b'[' => depth += 1,
+      b']' => {
+        depth -= 1;
+        if depth == 0 {
+          return Some(idx);
+        }
+      }
+      _ => {}
+    }
+  }
+  None
+}
+
 fn parse_json_array<T: for<'de> Deserialize<'de>>(text: &str) -> Result<Vec<T>, String> {
-  let trimmed = text.trim();
-  let start = trimmed
-    .find('[')
-    .ok_or_else(|| "No JSON array in WeiDU output".to_string())?;
-  let end = trimmed
-    .rfind(']')
-    .ok_or_else(|| "Unclosed JSON array in WeiDU output".to_string())?;
-  serde_json::from_str(&trimmed[start..=end]).map_err(|e| format!("Invalid JSON: {e}"))
+  // Do not use bare find('[') — WeiDU banners look like `[D:\path\weidu.exe] version …`.
+  let bytes = text.as_bytes();
+  let mut last_err: Option<String> = None;
+  let mut i = 0usize;
+  while i < bytes.len() {
+    if bytes[i] == b'[' {
+      let mut j = i + 1;
+      while j < bytes.len() && bytes[j].is_ascii_whitespace() {
+        j += 1;
+      }
+      // Real JSON arrays start with `{`, `"`, or `]` (empty). Path banners start with a drive letter.
+      if j < bytes.len() && matches!(bytes[j], b'{' | b'"' | b']') {
+        if let Some(end) = find_matching_array_end(text, i) {
+          let slice = &text[i..=end];
+          match serde_json::from_str::<Vec<T>>(slice) {
+            Ok(v) => return Ok(v),
+            Err(e) => last_err = Some(format!("Invalid JSON: {e}")),
+          }
+        }
+      }
+    }
+    i += 1;
+  }
+  Err(last_err.unwrap_or_else(|| "No JSON array in WeiDU output".into()))
 }
 
 #[tauri::command]
@@ -194,15 +310,12 @@ pub fn list_weidu_components(
   app: AppHandle,
   weidu_path: String,
   tp2_path: String,
+  game_dir: String,
   lang: i32,
 ) -> Result<Vec<WeiduComponentInfo>, String> {
   let weidu = validate_weidu_path(&weidu_path)?;
   let tp2 = PathBuf::from(tp2_path.trim());
-  if !tp2.is_file() {
-    return Err(format!("TP2 not found: {}", tp2.display()));
-  }
-  let cwd = tp2_working_dir(&tp2);
-  let tp2_arg = tp2_arg_for_cwd(&tp2, &cwd);
+  let (cwd, tp2_arg) = weidu_game_cwd_and_tp2_arg(Path::new(game_dir.trim()), &tp2)?;
   let args = vec![
     "--nogame".into(),
     "--noautoupdate".into(),
@@ -283,14 +396,11 @@ pub fn list_weidu_languages(
   app: AppHandle,
   weidu_path: String,
   tp2_path: String,
+  game_dir: String,
 ) -> Result<Vec<WeiduLanguageInfo>, String> {
   let weidu = validate_weidu_path(&weidu_path)?;
   let tp2 = PathBuf::from(tp2_path.trim());
-  if !tp2.is_file() {
-    return Err(format!("TP2 not found: {}", tp2.display()));
-  }
-  let cwd = tp2_working_dir(&tp2);
-  let tp2_arg = tp2_arg_for_cwd(&tp2, &cwd);
+  let (cwd, tp2_arg) = weidu_game_cwd_and_tp2_arg(Path::new(game_dir.trim()), &tp2)?;
   let args = vec![
     "--nogame".into(),
     "--noautoupdate".into(),
@@ -320,6 +430,11 @@ fn classify_line(line: &str) -> Option<&'static str> {
     "do you want",
     "would you like",
     "please enter",
+    "please choose",
+    "please select",
+    "select your language",
+    "choose your language",
+    "choose one of the following",
     "press any key",
   ];
   for p in CHOICE_PHRASES {
@@ -508,16 +623,22 @@ pub async fn run_weidu_step(
   let _ = fs::write(&stdout_path, "");
   let _ = fs::write(&stderr_path, "");
 
-  let cwd = tp2_working_dir(&tp2);
-  let tp2_arg = tp2_arg_for_cwd(&tp2, &cwd);
-  let mut args: Vec<String> = vec![tp2_arg, "--force-install-list".into()];
+  let cwd_tp2 = weidu_game_cwd_and_tp2_arg(&game_dir, &tp2)?;
+  let cwd = cwd_tp2.0;
+  let tp2_arg = cwd_tp2.1;
+  // --language must come early so WeiDU does not interactively prompt.
+  let mut args: Vec<String> = vec![
+    tp2_arg,
+    "--language".into(),
+    input.language_index.to_string(),
+    "--force-install-list".into(),
+  ];
   for n in &input.component_numbers {
     args.push(n.to_string());
   }
   args.push("--yes".into());
   args.push("--safe-exit".into());
-  args.push("--language".into());
-  args.push(input.language_index.to_string());
+  args.push("--no-exit-pause".into());
 
   emit_event(
     &app,
@@ -650,7 +771,8 @@ pub fn send_weidu_stdin(state: State<'_, RunningWeidu>, text: String) -> Result<
   } else {
     format!("{text}\n")
   };
-  stdin.write_all(line.as_bytes()).map_err(|e| e.to_string())
+  stdin.write_all(line.as_bytes()).map_err(|e| e.to_string())?;
+  stdin.flush().map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -709,8 +831,21 @@ pub fn stage_mod_into_game_dir(
 
   let source_name = find_subdir_ci(&download, codename)?
     .ok_or_else(|| format!("Mod folder \"{codename}\" not found in download directory"))?;
-  let source = download.join(&source_name);
-  let target = game.join(&source_name);
+  let source_root = download.join(&source_name);
+  // Copy the folder that actually contains the tp2 (e.g. DlcMerger inside
+  // A7-DlcMerger), not the download wrapper — LANGUAGE paths expect that layout.
+  let tp2_in_source = find_tp2_in_dir(&source_root)?;
+  let mod_folder = tp2_in_source
+    .parent()
+    .ok_or_else(|| format!("TP2 has no parent directory: {}", tp2_in_source.display()))?;
+  let staged_name = mod_folder
+    .file_name()
+    .ok_or_else(|| format!("Invalid mod folder name for {}", mod_folder.display()))?
+    .to_string_lossy()
+    .into_owned();
+  validate_folder_name(&staged_name)?;
+
+  let target = game.join(&staged_name);
   if target.exists() {
     if target.is_dir() {
       fs::remove_dir_all(&target).map_err(|e| e.to_string())?;
@@ -718,7 +853,7 @@ pub fn stage_mod_into_game_dir(
       fs::remove_file(&target).map_err(|e| e.to_string())?;
     }
   }
-  copy_recursive(&source, &target)?;
+  copy_recursive(mod_folder, &target)?;
   let tp2 = find_tp2_in_dir(&target)?;
   Ok(tp2.to_string_lossy().into_owned())
 }

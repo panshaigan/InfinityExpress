@@ -76,12 +76,14 @@ function requireDesktop() {
 export async function listWeiduComponents(
   weiduPath: string,
   tp2Path: string,
+  gameDir: string,
   lang: number,
 ): Promise<WeiduComponentInfo[]> {
   requireDesktop()
   return invoke<WeiduComponentInfo[]>('list_weidu_components', {
     weiduPath,
     tp2Path,
+    gameDir,
     lang,
   })
 }
@@ -89,11 +91,13 @@ export async function listWeiduComponents(
 export async function listWeiduLanguages(
   weiduPath: string,
   tp2Path: string,
+  gameDir: string,
 ): Promise<WeiduLanguageInfo[]> {
   requireDesktop()
   return invoke<WeiduLanguageInfo[]>('list_weidu_languages', {
     weiduPath,
     tp2Path,
+    gameDir,
   })
 }
 

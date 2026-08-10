@@ -44,10 +44,15 @@ export async function resolveModForInstall(
     const parts = normalized.split('/').filter(Boolean)
     stagedFolderName = parts.length >= 2 ? parts[parts.length - 2]! : modId
 
-    const languages = await listWeiduLanguages(weiduPath, tp2Path)
+    const languages = await listWeiduLanguages(weiduPath, tp2Path, gameDir)
     const { language, error: languageError } = pickEnglishLanguage(languages)
     const langIndex = language?.index ?? 0
-    const componentsListing = await listWeiduComponents(weiduPath, tp2Path, langIndex)
+    const componentsListing = await listWeiduComponents(
+      weiduPath,
+      tp2Path,
+      gameDir,
+      langIndex,
+    )
     entry = {
       tp2Path,
       components: componentsListing,

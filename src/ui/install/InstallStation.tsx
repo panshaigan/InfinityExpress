@@ -304,7 +304,9 @@ export function InstallStation({
         statusText={statusText}
         collapsed={consoleCollapsed}
         onToggleCollapsed={() => setConsoleCollapsed((v) => !v)}
-        waitingForInput={run?.runState === 'waitingForInput'}
+        waitingForInput={
+          run?.runState === 'waitingForInput' || run?.runState === 'running'
+        }
         inputPrompt={inputPrompt}
         onSendInput={(text) => void sendInput(text)}
       />

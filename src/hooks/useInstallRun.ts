@@ -93,7 +93,8 @@ export function useInstallRun(options: {
   }, [game, planSteps])
 
   useEffect(() => {
-    let unlisten: (() => void) | undefined
+    let cancelled = false
+    let unlisten: { current?: () => void } = {}
     void listenWeiduInstallEvents((ev: WeiduInstallEvent) => {
       if (ev.kind === 'output') {
         setConsoleLines((prev) => [...prev.slice(-4999), ev.text])
@@ -135,9 +136,16 @@ export function useInstallRun(options: {
         })
       }
     }).then((fn) => {
-      unlisten = fn
+      if (cancelled) {
+        fn()
+        return
+      }
+      unlisten.current = fn
     })
-    return () => unlisten?.()
+    return () => {
+      cancelled = true
+      unlisten.current?.()
+    }
   }, [])
 
   const markAlreadyInstalledFromLog = useCallback(
@@ -161,10 +169,14 @@ export function useInstallRun(options: {
   )
 
   const prepareStep = useCallback(
-    async (step: InstallStep, stepIndex: number): Promise<InstallStep> => {
+    async (
+      activeRun: InstallRun,
+      step: InstallStep,
+      stepIndex: number,
+    ): Promise<InstallStep> => {
       const weiduPath = readWeiduPath()
       const appDirs = readAppDirPaths()
-      const gameDir = gameDirForPhase(run!.game, step.phase, gameFolders)
+      const gameDir = gameDirForPhase(activeRun.game, step.phase, gameFolders)
       const componentNodes = step.componentIds
         .map((id) => model.componentsById.get(id))
         .filter((n): n is NonNullable<typeof n> => !!n)
@@ -193,6 +205,9 @@ export function useInstallRun(options: {
         status = 'needsInput'
       }
 
+      const stepLogDir = activeRun.logDir
+        ? `${activeRun.logDir}/${stepFolderName(step, stepIndex)}`
+        : ''
       return {
         ...step,
         tp2Path: resolved.tp2Path,
@@ -201,15 +216,11 @@ export function useInstallRun(options: {
         languageIndex: resolved.languageIndex,
         status,
         errors: [...step.errors, ...errors],
-        stdoutLogPath: run?.logDir
-          ? `${run.logDir}/${stepFolderName(step, stepIndex)}/stdout.log`
-          : undefined,
-        stderrLogPath: run?.logDir
-          ? `${run.logDir}/${stepFolderName(step, stepIndex)}/stderr.log`
-          : undefined,
+        stdoutLogPath: stepLogDir ? `${stepLogDir}/stdout.log` : undefined,
+        stderrLogPath: stepLogDir ? `${stepLogDir}/stderr.log` : undefined,
       }
     },
-    [gameFolders, model.componentsById, run],
+    [gameFolders, model.componentsById],
   )
 
   const executeFromCursor = useCallback(
@@ -235,7 +246,7 @@ export function useInstallRun(options: {
           }
 
           try {
-            step = await prepareStep(step, i)
+            step = await prepareStep(current, step, i)
             current = {
               ...current,
               steps: current.steps.map((s, idx) => (idx === i ? step : s)),
@@ -412,6 +423,9 @@ export function useInstallRun(options: {
   const sendInput = useCallback(async (text: string) => {
     await sendWeiduStdin(text)
     setInputPrompt(null)
+    setRun((r) =>
+      r && r.runState === 'waitingForInput' ? { ...r, runState: 'running' } : r,
+    )
   }, [])
 
   return {

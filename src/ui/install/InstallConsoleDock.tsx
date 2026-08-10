@@ -92,7 +92,11 @@ export function InstallConsoleDock({
             >
               {inputPrompt ? (
                 <div className="install-console-prompt">{inputPrompt}</div>
-              ) : null}
+              ) : (
+                <div className="install-console-prompt">
+                  WeiDU may be waiting — type a response (e.g. 0 for English) and Send
+                </div>
+              )}
               <input
                 type="text"
                 value={input}

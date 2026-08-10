@@ -75,6 +75,18 @@ export function resolveComponentNumber(
     }
   }
 
+  // Prefer WeiDU LABEL == component id (InstallSequence often uses LABEL as id).
+  {
+    const hits = findByLabel(listing, component.componentId)
+    if (hits.length === 1) return { weiduNumber: hits[0]!.number, error: null }
+    if (hits.length > 1) {
+      return {
+        weiduNumber: null,
+        error: `Ambiguous label match for ${component.componentId}`,
+      }
+    }
+  }
+
   const name = component.attrs.name?.trim()
   if (name) {
     const hits = findByName(listing, name)
