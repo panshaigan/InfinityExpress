@@ -239,7 +239,6 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
             role="tabpanel"
             aria-labelledby="settings-tab-games"
           >
-            <h3 className="engine-folders-title">Unmodded game paths</h3>
             <div className="settings-fields">
               {GAME_FOLDER_KEYS.map((key) => (
                 <DirectoryField
@@ -249,7 +248,7 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
                   value={folderPaths[key]}
                   onChange={(value) => setFolderPath(key, value)}
                   onValidate={(value) => validateFolderPath(key, value)}
-                  placeholder="Select game folder…"
+                  placeholder="Path to unmodded game…"
                   browseTitle={`Select ${GAME_LABELS[key]} folder`}
                   hint={folderVersions[key] ? `v${folderVersions[key]}` : null}
                   error={folderErrors[key] ?? null}
@@ -266,7 +265,6 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
             role="tabpanel"
             aria-labelledby="settings-tab-app"
           >
-            <h3 className="engine-folders-title">App directories</h3>
             <div className="settings-fields">
               <DirectoryField
                 id="settings-mods-download-dir"
@@ -318,7 +316,6 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
             role="tabpanel"
             aria-labelledby="settings-tab-github"
           >
-            <h3 className="engine-folders-title">GitHub</h3>
             <div className="settings-fields">
               <OutlinedTextField
                 id="settings-github-token"

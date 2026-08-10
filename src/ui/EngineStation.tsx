@@ -202,7 +202,7 @@ export function EngineStation({
                 value={folderPaths[key]}
                 onChange={(value) => setFolderPath(key, value)}
                 onValidate={(value) => validateFolderPath(key, value)}
-                placeholder="Select game folder…"
+                placeholder="Path to the unmodded game…"
                 browseTitle={`Select ${GAME_LABELS[key]} folder`}
                 hint={folderVersions[key] ? `v${folderVersions[key]}` : null}
                 error={folderErrors[key] ?? null}

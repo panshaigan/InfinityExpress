@@ -3936,7 +3936,7 @@ body.is-resizing-detail * {
 }
 
 .settings-section:first-of-type {
-  margin-top: 0.35rem;
+  margin-top: 2rem;
 }
 
 .settings-fields {
