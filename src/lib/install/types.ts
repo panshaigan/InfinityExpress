@@ -31,10 +31,17 @@ export type InstallPhase = 'eet1' | 'eet' | 'single'
 export interface InstallStep {
   stepId: string
   phase: InstallPhase
+  /**
+   * XML download / lookup key (`<mod id>` or `<component modId>`).
+   * Not the WeiDU mod id — that is `stagedFolderName` (tp2 parent folder).
+   */
   modId: string
   /** Absolute path to tp2 after staging. */
   tp2Path: string
-  /** Folder name under the game dir (mod codename on disk). */
+  /**
+   * WeiDU mod id: folder name under the game dir that contains the tp2
+   * (also the stem for `setup-{stagedFolderName}.exe`).
+   */
   stagedFolderName: string
   componentIds: string[]
   /** Display labels for table (parallel to componentIds). */
@@ -112,3 +119,4 @@ export type WeiduInstallEvent =
   | { kind: 'inputRequired'; prompt: string }
   | { kind: 'stepStarted'; stepId: string }
   | { kind: 'stepFinished'; stepId: string; success: boolean; exitCode: number | null }
+  | { kind: 'commandLogged'; command: string }

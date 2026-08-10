@@ -1,0 +1,31 @@
+---
+description: XML modId vs WeiDU mod id vs component LABEL / designated numbers — install identity rules
+globs: src/lib/install/**/*,src-tauri/src/weidu_install.rs,src/hooks/useInstallRun.ts,src/data/InstallSequence.xml
+alwaysApply: false
+---
+
+# WeiDU mod / component identity
+
+## Never confuse these IDs
+
+| Concept | Meaning | Example |
+| --- | --- | --- |
+| XML `<mod id>` / `<component modId>` | **Download folder** under the mods download dir only | `Tweaks-Anthology` |
+| WeiDU mod id | Folder that contains the `.tp2` after staging (`stagedFolderName`) | `cdtweaks` |
+| Component id `weiduFolder:N` | Designated WeiDU component **number** `N` | `stratagems:6020` |
+| Component id without `:N` | WeiDU **LABEL**; resolve to `number` via `--list-components-json` | `cd_tweaks_adjust_evil_npc_reactions` → `4000` |
+
+**Never** treat XML modId as the WeiDU mod id, as the `setup-*.exe` stem, or as a tp2 path segment.
+
+## Install
+
+1. Stage by XML modId (download folder) → discover tp2 → WeiDU id = tp2 parent folder.
+2. List: configured `weidu.exe --nogame --noautoupdate --list-components-json <tp2> <lang>`.
+3. Resolve labels to numbers from JSON `label[]` matching the component id (not XML display `label` / `name`).
+4. Copy `weidu.exe` → `{gameDir}/setup-{weiduId}.exe` and run that exe (no tp2 argv) with `--language`, `--use-lang`, `--force-install-list`, etc.
+
+## Resolution
+
+- Prefer `:N` suffix → designated number.
+- Else match WeiDU `label[]` to `componentId` (InstallSequence LABEL-as-id).
+- Do not fall back to XML UI `label` / `name` for label-style ids.

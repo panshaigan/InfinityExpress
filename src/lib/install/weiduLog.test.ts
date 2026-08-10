@@ -67,6 +67,23 @@ describe('resolveComponentNumber', () => {
     expect(result.weiduNumber).toBe(1)
   })
 
+  it('uses designated number when listing is empty', () => {
+    expect(resolveComponentNumber(component, [])).toEqual({
+      weiduNumber: 1,
+      error: null,
+    })
+  })
+
+  it('errors when designated number is missing from listing', () => {
+    const result = resolveComponentNumber(component, [
+      { index: 0, number: 99, name: 'other', label: [] },
+    ])
+    expect(result).toEqual({
+      weiduNumber: null,
+      error: 'WeiDU number 1 not found for EEex:1',
+    })
+  })
+
   it('resolves WeiDU LABEL from component id', () => {
     const dlc: ComponentNode = {
       key: 'A7-DLCMERGER-MERGE_SOD',
@@ -92,6 +109,68 @@ describe('resolveComponentNumber', () => {
       },
     ])
     expect(result).toEqual({ weiduNumber: 1, error: null })
+  })
+
+  it('resolves Tweaks-style LABEL to designated number', () => {
+    const tweaks: ComponentNode = {
+      key: 'cd_tweaks_adjust_evil_npc_reactions',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'cd_tweaks_adjust_evil_npc_reactions',
+      orderIndex: 0,
+      attrs: {
+        id: 'cd_tweaks_adjust_evil_npc_reactions',
+        label: 'Adjust evil joinable NPC reaction rolls',
+        name: 'Adjust Evil Joinable NPC Reaction Rolls',
+        modId: 'Tweaks-Anthology',
+      },
+      effectiveEngine: '',
+      children: [],
+    }
+    const result = resolveComponentNumber(tweaks, [
+      {
+        index: 10,
+        number: 4000,
+        name: 'Adjust Evil Joinable NPC Reaction Rolls',
+        label: ['cd_tweaks_adjust_evil_npc_reactions'],
+      },
+    ])
+    expect(result).toEqual({ weiduNumber: 4000, error: null })
+  })
+
+  it('does not match XML display label or name as WeiDU LABEL', () => {
+    const tweaks: ComponentNode = {
+      key: 'cd_tweaks_adjust_evil_npc_reactions',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'cd_tweaks_adjust_evil_npc_reactions',
+      orderIndex: 0,
+      attrs: {
+        id: 'cd_tweaks_adjust_evil_npc_reactions',
+        label: 'Adjust evil joinable NPC reaction rolls',
+        name: 'Adjust Evil Joinable NPC Reaction Rolls',
+        modId: 'Tweaks-Anthology',
+      },
+      effectiveEngine: '',
+      children: [],
+    }
+    // Listing has wrong LABEL but matching display name — must not resolve via name.
+    const result = resolveComponentNumber(tweaks, [
+      {
+        index: 0,
+        number: 1,
+        name: 'Adjust Evil Joinable NPC Reaction Rolls',
+        label: ['some_other_label'],
+      },
+      {
+        index: 1,
+        number: 2,
+        name: 'Adjust evil joinable NPC reaction rolls',
+        label: ['yet_another'],
+      },
+    ])
+    expect(result.weiduNumber).toBeNull()
+    expect(result.error).toMatch(/Could not resolve WeiDU LABEL/)
   })
 })
 

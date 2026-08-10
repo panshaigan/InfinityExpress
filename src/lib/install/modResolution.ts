@@ -68,6 +68,7 @@ export async function resolveModForInstall(
     })
     const normalized = tp2Path.replace(/\\/g, '/')
     const parts = normalized.split('/').filter(Boolean)
+    // WeiDU id = tp2 parent folder (not XML download modId).
     stagedFolderName = parts.length >= 2 ? parts[parts.length - 2]! : modId
 
     const languages = await listWeiduLanguages(weiduPath, tp2Path, gameDir)
@@ -108,6 +109,7 @@ export async function resolveModForInstall(
     tp2Path = entry.tp2Path
     const normalized = tp2Path.replace(/\\/g, '/')
     const parts = normalized.split('/').filter(Boolean)
+    // WeiDU id = tp2 parent folder (not XML download modId).
     stagedFolderName = parts.length >= 2 ? parts[parts.length - 2]! : modId
   }
 

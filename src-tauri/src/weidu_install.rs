@@ -44,13 +44,23 @@ impl RunningWeidu {
   }
 }
 
+fn deserialize_null_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+  D: serde::Deserializer<'de>,
+  T: Default + Deserialize<'de>,
+{
+  let opt = Option::<T>::deserialize(deserializer)?;
+  Ok(opt.unwrap_or_default())
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct WeiduComponentInfo {
   pub index: i32,
   pub number: i32,
   pub name: String,
-  #[serde(default)]
+  /// WeiDU may emit `"label": null` when a component has no LABEL flags.
+  #[serde(default, deserialize_with = "deserialize_null_default")]
   pub label: Vec<String>,
 }
 
@@ -156,10 +166,41 @@ enum InstallEventPayload {
     success: bool,
     exit_code: Option<i32>,
   },
+  /// Full command line about to run (exe + args); no process output.
+  CommandLogged { command: String },
 }
 
 fn emit_event(app: &AppHandle, payload: InstallEventPayload) {
   let _ = app.emit(INSTALL_EVENT, &payload);
+}
+
+fn format_weidu_command(exe: &Path, cwd: &Path, args: &[String]) -> String {
+  fn quote_arg(s: &str) -> String {
+    if s.is_empty() || s.chars().any(|c| c.is_whitespace() || c == '"') {
+      format!("\"{}\"", s.replace('"', "\\\""))
+    } else {
+      s.to_string()
+    }
+  }
+  let mut parts = Vec::with_capacity(args.len() + 1);
+  parts.push(quote_arg(&exe.to_string_lossy()));
+  for a in args {
+    parts.push(quote_arg(a));
+  }
+  format!(
+    "[{}] {}",
+    cwd.to_string_lossy(),
+    parts.join(" ")
+  )
+}
+
+fn emit_command_logged(app: &AppHandle, exe: &Path, cwd: &Path, args: &[String]) {
+  emit_event(
+    app,
+    InstallEventPayload::CommandLogged {
+      command: format_weidu_command(exe, cwd, args),
+    },
+  );
 }
 
 fn emit_captured_output(app: &AppHandle, text: &str) {
@@ -272,7 +313,13 @@ fn weidu_game_cwd_and_tp2_arg(game_dir: &Path, tp2: &Path) -> Result<(PathBuf, S
   Ok((cwd, tp2_arg))
 }
 
-fn run_weidu_capture(weidu: &Path, cwd: &Path, args: &[String]) -> Result<String, String> {
+fn run_weidu_capture(
+  app: &AppHandle,
+  weidu: &Path,
+  cwd: &Path,
+  args: &[String],
+) -> Result<String, String> {
+  emit_command_logged(app, weidu, cwd, args);
   let output = Command::new(weidu)
     .current_dir(cwd)
     .args(args)
@@ -382,7 +429,7 @@ pub fn list_weidu_components(
     tp2_arg,
     lang.to_string(),
   ];
-  let out = match run_weidu_capture(&weidu, &cwd, &args) {
+  let out = match run_weidu_capture(&app, &weidu, &cwd, &args) {
     Ok(text) => text,
     Err(e) => {
       emit_classified_error(&app, &e);
@@ -466,7 +513,7 @@ pub fn list_weidu_languages(
     "--list-languages".into(),
     tp2_arg,
   ];
-  let out = match run_weidu_capture(&weidu, &cwd, &args) {
+  let out = match run_weidu_capture(&app, &weidu, &cwd, &args) {
     Ok(text) => text,
     Err(e) => {
       emit_classified_error(&app, &e);
@@ -655,6 +702,19 @@ fn stream_pipe(
   });
 }
 
+/// WeiDU mod id = folder that contains the tp2 → `setup-{weiduId}.exe` in the game dir.
+fn setup_exe_for_tp2(game_dir: &Path, tp2: &Path) -> Result<(String, PathBuf), String> {
+  let weidu_id = tp2
+    .parent()
+    .and_then(|p| p.file_name())
+    .map(|n| n.to_string_lossy().into_owned())
+    .filter(|s| !s.is_empty())
+    .ok_or_else(|| format!("Cannot derive WeiDU id from tp2: {}", tp2.display()))?;
+  validate_folder_name(&weidu_id)?;
+  let setup_name = format!("setup-{weidu_id}.exe");
+  Ok((weidu_id, game_dir.join(&setup_name)))
+}
+
 #[tauri::command]
 pub async fn run_weidu_step(
   app: AppHandle,
@@ -682,12 +742,17 @@ pub async fn run_weidu_step(
   let _ = fs::write(&stdout_path, "");
   let _ = fs::write(&stderr_path, "");
 
-  let cwd_tp2 = weidu_game_cwd_and_tp2_arg(&game_dir, &tp2)?;
-  let cwd = cwd_tp2.0;
-  let tp2_arg = cwd_tp2.1;
+  let (cwd, _tp2_arg) = weidu_game_cwd_and_tp2_arg(&game_dir, &tp2)?;
+  let (weidu_id, setup_exe) = setup_exe_for_tp2(&game_dir, &tp2)?;
+  fs::copy(&weidu, &setup_exe).map_err(|e| {
+    format!(
+      "Failed to copy WeiDU to setup-{weidu_id}.exe: {e}"
+    )
+  })?;
+
+  // setup-{weiduId}.exe auto-binds the tp2; do not pass the tp2 path as argv.
   // --language = mod TRA; --use-lang = EE game lang/ folder (avoids weidu.conf prompt).
   let mut args: Vec<String> = vec![
-    tp2_arg,
     "--language".into(),
     input.language_index.to_string(),
     "--use-lang".into(),
@@ -697,9 +762,6 @@ pub async fn run_weidu_step(
   for n in &input.component_numbers {
     args.push(n.to_string());
   }
-  args.push("--yes".into());
-  args.push("--safe-exit".into());
-  args.push("--no-exit-pause".into());
 
   emit_event(
     &app,
@@ -708,10 +770,12 @@ pub async fn run_weidu_step(
     },
   );
 
+  emit_command_logged(&app, &setup_exe, &cwd, &args);
+
   let timeout = Duration::from_secs(input.timeout_secs.unwrap_or(DEFAULT_TIMEOUT_SECS));
   let cancel = Arc::clone(&state.cancel);
 
-  let mut child = Command::new(&weidu)
+  let mut child = Command::new(&setup_exe)
     .current_dir(&cwd)
     .stdin(Stdio::piped())
     .stdout(Stdio::piped())
@@ -1159,6 +1223,11 @@ pub fn cleanup_install_artifacts(input: CleanupInput) -> Result<(), String> {
     if path.is_dir() {
       fs::remove_dir_all(&path).map_err(|e| e.to_string())?;
     }
+    // Install copies weidu.exe → setup-{weiduId}.exe in the game dir.
+    let setup_exe = game.join(format!("setup-{name}.exe"));
+    if setup_exe.is_file() {
+      let _ = fs::remove_file(&setup_exe);
+    }
   }
 
   let weidu_src = validate_weidu_path(&input.weidu_path)?;
@@ -1195,4 +1264,61 @@ pub fn read_game_weidu_log(game_dir: String) -> Result<String, String> {
     return Ok(String::new());
   }
   fs::read_to_string(&path).map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use serde_json::json;
+
+  #[test]
+  fn setup_exe_name_from_tp2_parent() {
+    let game = PathBuf::from(r"D:\games\bg\eet");
+    let tp2 = game.join("cdtweaks").join("setup-cdtweaks.tp2");
+    let (weidu_id, setup) = setup_exe_for_tp2(&game, &tp2).expect("setup path");
+    assert_eq!(weidu_id, "cdtweaks");
+    assert_eq!(setup, game.join("setup-cdtweaks.exe"));
+  }
+
+  #[test]
+  fn weidu_component_label_null_deserializes() {
+    let v = json!({
+      "index": 0,
+      "number": 4000,
+      "name": "Adjust Evil Joinable NPC Reaction Rolls",
+      "label": null
+    });
+    let info: WeiduComponentInfo = serde_json::from_value(v).expect("parse");
+    assert_eq!(info.number, 4000);
+    assert!(info.label.is_empty());
+  }
+
+  #[test]
+  fn weidu_component_label_array_deserializes() {
+    let v = json!({
+      "index": 0,
+      "number": 4000,
+      "name": "Adjust Evil Joinable NPC Reaction Rolls",
+      "label": ["cd_tweaks_adjust_evil_npc_reactions"]
+    });
+    let info: WeiduComponentInfo = serde_json::from_value(v).expect("parse");
+    assert_eq!(info.label, vec!["cd_tweaks_adjust_evil_npc_reactions"]);
+  }
+
+  #[test]
+  fn format_weidu_command_includes_cwd_and_args() {
+    let exe = PathBuf::from(r"D:\dev\weidu.exe");
+    let cwd = PathBuf::from(r"D:\games\bg\eet");
+    let args = vec![
+      "--nogame".into(),
+      "--list-components-json".into(),
+      r"cdtweaks\setup-cdtweaks.tp2".into(),
+      "0".into(),
+    ];
+    let line = format_weidu_command(&exe, &cwd, &args);
+    assert!(line.starts_with(r"[D:\games\bg\eet]"));
+    assert!(line.contains(r"D:\dev\weidu.exe"));
+    assert!(line.contains("--list-components-json"));
+    assert!(line.contains("0"));
+  }
 }

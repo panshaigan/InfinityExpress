@@ -58,6 +58,7 @@ export function useInstallRun(options: {
   const { model, selectedIds, game, gameFolders } = options
   const [run, setRun] = useState<InstallRun | null>(null)
   const [consoleLines, setConsoleLines] = useState<string[]>([])
+  const [commandLines, setCommandLines] = useState<string[]>([])
   const [inputPrompt, setInputPrompt] = useState<string | null>(null)
   const [paused, setPaused] = useState(false)
   const [activeStepId, setActiveStepId] = useState<string | null>(null)
@@ -104,6 +105,7 @@ export function useInstallRun(options: {
     }
     setRun(next)
     setConsoleLines([])
+    setCommandLines([])
     setInputPrompt(null)
     setPaused(false)
     setActiveStepId(null)
@@ -117,6 +119,8 @@ export function useInstallRun(options: {
     void listenWeiduInstallEvents((ev: WeiduInstallEvent) => {
       if (ev.kind === 'output') {
         setConsoleLines((prev) => [...prev.slice(-4999), ev.text])
+      } else if (ev.kind === 'commandLogged') {
+        setCommandLines((prev) => [...prev.slice(-999), ev.command])
       } else if (ev.kind === 'inputRequired') {
         setInputPrompt(ev.prompt)
         setRun((r) => (r ? { ...r, runState: 'waitingForInput' } : r))
@@ -345,6 +349,16 @@ export function useInstallRun(options: {
               else if (r.weiduNumber != null) weiduNumbers.push(r.weiduNumber)
             }
 
+            if (weiduNumbers.length === step.componentIds.length && errors.length === 0) {
+              const mapping = step.componentIds
+                .map((id, idx) => `${id}→${weiduNumbers[idx]}`)
+                .join(', ')
+              setConsoleLines((prev) => [
+                ...prev.slice(-4999),
+                `[resolve] ${resolved.stagedFolderName} (xml modId=${step.modId}): ${mapping}`,
+              ])
+            }
+
             const stepLogDir = current.logDir
               ? `${current.logDir}/${stepFolderName(step, i)}`
               : ''
@@ -561,6 +575,7 @@ export function useInstallRun(options: {
       }
       setRun(next)
       setConsoleLines([])
+      setCommandLines([])
       setInputPrompt(null)
       setActiveStepId(null)
       cacheRef.current = new Map()
@@ -581,6 +596,7 @@ export function useInstallRun(options: {
     run,
     planSteps,
     consoleLines,
+    commandLines,
     inputPrompt,
     paused,
     activeStepId,

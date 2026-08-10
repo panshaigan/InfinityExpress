@@ -5353,6 +5353,34 @@ body.is-resizing-detail * {
   font-size: 0.78rem;
 }
 
+.install-console-tabs {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.install-console-tab {
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.install-console-tab:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+
+.install-console-tab.active {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+}
+
 .install-console-status {
   color: var(--muted);
   overflow: hidden;

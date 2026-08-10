@@ -50,24 +50,28 @@ function findByNumber(
   return listing.filter((c) => c.number === number)
 }
 
-function findByName(listing: WeiduComponentInfo[], name: string): WeiduComponentInfo[] {
-  const target = name.trim()
-  if (!target) return []
-  return listing.filter((c) => c.name.trim() === target)
-}
-
 function findByLabel(listing: WeiduComponentInfo[], label: string): WeiduComponentInfo[] {
   const target = label.trim()
   if (!target) return []
   return listing.filter((c) => c.label.some((l) => l.trim() === target))
 }
 
+/**
+ * Map an InstallSequence component to a WeiDU component number.
+ *
+ * - `mod:N` ids → designated number N (verified against listing when present).
+ * - Otherwise treat `componentId` as a WeiDU LABEL and look it up in listing `label[]`.
+ * - Never match XML display `attrs.label` / `attrs.name` (UI strings, not WeiDU LABELs).
+ */
 export function resolveComponentNumber(
   component: ComponentNode,
   listing: WeiduComponentInfo[],
 ): ResolutionResult {
   const suffix = numericSuffixFromId(component.componentId)
   if (suffix != null) {
+    if (listing.length === 0) {
+      return { weiduNumber: suffix, error: null }
+    }
     const hits = findByNumber(listing, suffix)
     if (hits.length === 1) return { weiduNumber: hits[0]!.number, error: null }
     if (hits.length > 1) {
@@ -76,35 +80,19 @@ export function resolveComponentNumber(
         error: `Ambiguous WeiDU number ${suffix} for ${component.componentId}`,
       }
     }
-  }
-
-  // Prefer WeiDU LABEL == component id (InstallSequence often uses LABEL as id).
-  {
-    const hits = findByLabel(listing, component.componentId)
-    if (hits.length === 1) return { weiduNumber: hits[0]!.number, error: null }
-    if (hits.length > 1) {
-      return {
-        weiduNumber: null,
-        error: `Ambiguous label match for ${component.componentId}`,
-      }
+    return {
+      weiduNumber: null,
+      error: `WeiDU number ${suffix} not found for ${component.componentId}`,
     }
   }
 
-  const name = component.attrs.name?.trim()
-  if (name) {
-    const hits = findByName(listing, name)
-    if (hits.length === 1) return { weiduNumber: hits[0]!.number, error: null }
-    if (hits.length > 1) {
-      return {
-        weiduNumber: null,
-        error: `Ambiguous name match for ${component.componentId}`,
-      }
-    }
-  }
+  const labelKeys = [component.componentId, component.attrs.id]
+    .map((s) => s?.trim())
+    .filter((s): s is string => !!s)
+  const uniqueKeys = [...new Set(labelKeys)]
 
-  const label = component.attrs.label?.trim()
-  if (label) {
-    const hits = findByLabel(listing, label)
+  for (const key of uniqueKeys) {
+    const hits = findByLabel(listing, key)
     if (hits.length === 1) return { weiduNumber: hits[0]!.number, error: null }
     if (hits.length > 1) {
       return {
@@ -116,7 +104,7 @@ export function resolveComponentNumber(
 
   return {
     weiduNumber: null,
-    error: `Could not resolve WeiDU component number for ${component.componentId}`,
+    error: `Could not resolve WeiDU LABEL for ${component.componentId}`,
   }
 }
 
@@ -131,7 +119,7 @@ export function resolveModComponents(
   return out
 }
 
-/** Collect unique modIds from component nodes. */
+/** Collect unique XML download modIds from component nodes. */
 export function uniqueModIds(components: ComponentNode[]): string[] {
   const seen = new Set<string>()
   const out: string[] = []

@@ -60,6 +60,7 @@ export function InstallStation({
     run,
     planSteps,
     consoleLines,
+    commandLines,
     inputPrompt,
     activeStepId,
     initRun,
@@ -322,6 +323,7 @@ export function InstallStation({
 
       <InstallConsoleDock
         lines={consoleLines}
+        commandLines={commandLines}
         statusText={statusText}
         collapsed={consoleCollapsed}
         onToggleCollapsed={() => setConsoleCollapsed((v) => !v)}

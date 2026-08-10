@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { readInstallConsoleHeight, writeInstallConsoleHeight } from '../../lib/ui/installConsolePrefs'
 
+type ConsoleTab = 'output' | 'commands'
+
 interface Props {
   lines: string[]
+  commandLines: string[]
   statusText: string
   collapsed: boolean
   onToggleCollapsed: () => void
@@ -13,6 +16,7 @@ interface Props {
 
 export function InstallConsoleDock({
   lines,
+  commandLines,
   statusText,
   collapsed,
   onToggleCollapsed,
@@ -22,13 +26,16 @@ export function InstallConsoleDock({
 }: Props) {
   const [height, setHeight] = useState(() => readInstallConsoleHeight())
   const [input, setInput] = useState('')
+  const [tab, setTab] = useState<ConsoleTab>('output')
   const preRef = useRef<HTMLPreElement>(null)
   const dragRef = useRef<{ startY: number; startH: number } | null>(null)
+
+  const activeLines = tab === 'output' ? lines : commandLines
 
   useEffect(() => {
     const el = preRef.current
     if (el) el.scrollTop = el.scrollHeight
-  }, [lines])
+  }, [activeLines, tab])
 
   const onResizeStart = useCallback(
     (clientY: number) => {
@@ -71,16 +78,57 @@ export function InstallConsoleDock({
         <button type="button" className="btn secondary" onClick={onToggleCollapsed}>
           {collapsed ? 'Show output' : 'Hide output'}
         </button>
+        {!collapsed ? (
+          <div className="install-console-tabs" role="tablist" aria-label="Install console">
+            <button
+              type="button"
+              role="tab"
+              id="install-console-tab-output"
+              aria-selected={tab === 'output'}
+              aria-controls="install-console-panel"
+              className={`install-console-tab${tab === 'output' ? ' active' : ''}`}
+              onClick={() => setTab('output')}
+            >
+              Output
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="install-console-tab-commands"
+              aria-selected={tab === 'commands'}
+              aria-controls="install-console-panel"
+              className={`install-console-tab${tab === 'commands' ? ' active' : ''}`}
+              onClick={() => setTab('commands')}
+            >
+              Commands{commandLines.length > 0 ? ` (${commandLines.length})` : ''}
+            </button>
+          </div>
+        ) : null}
         <span className="install-console-status" role="status" aria-live="polite">
           {statusText}
         </span>
       </div>
       {!collapsed ? (
         <>
-          <pre ref={preRef} className="install-console-output" aria-live="polite">
-            {lines.join('\n')}
+          <pre
+            ref={preRef}
+            id="install-console-panel"
+            role="tabpanel"
+            aria-labelledby={
+              tab === 'output'
+                ? 'install-console-tab-output'
+                : 'install-console-tab-commands'
+            }
+            className="install-console-output"
+            aria-live="polite"
+          >
+            {activeLines.length > 0
+              ? activeLines.join('\n')
+              : tab === 'commands'
+                ? '(No WeiDU commands logged yet)'
+                : ''}
           </pre>
-          {waitingForInput ? (
+          {waitingForInput && tab === 'output' ? (
             <form
               className="install-console-input"
               onSubmit={(e) => {
