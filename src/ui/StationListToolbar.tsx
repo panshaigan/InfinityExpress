@@ -107,6 +107,18 @@ export function StationListToolbar({
   return (
     <div className="station-list-toolbar">
       <div className="station-list-toolbar-primary">
+        <span className="has-icon-tip">
+          <button
+              type="button"
+              className="station-fold-toggle"
+              disabled={foldDisabled}
+              aria-label={`${foldLabel} on this list`}
+              onClick={handleFoldToggle}
+          >
+            {allUnfolded ? <FoldAllIcon /> : <UnfoldAllIcon />}
+          </button>
+          <IconTip>{foldLabel}</IconTip>
+        </span>
         <label className={`station-select-all${empty ? ' disabled' : ''}`}>
           <input
             ref={selectAllRef}
@@ -118,18 +130,6 @@ export function StationListToolbar({
           />
           <span>Select all</span>
         </label>
-        <span className="has-icon-tip">
-          <button
-            type="button"
-            className="station-fold-toggle"
-            disabled={foldDisabled}
-            aria-label={`${foldLabel} on this list`}
-            onClick={handleFoldToggle}
-          >
-            {allUnfolded ? <FoldAllIcon /> : <UnfoldAllIcon />}
-          </button>
-          <IconTip>{foldLabel}</IconTip>
-        </span>
         {children}
         <div ref={levelsMenuRef} className="station-levels-menu">
           <button

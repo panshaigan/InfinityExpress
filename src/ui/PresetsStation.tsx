@@ -26,7 +26,7 @@ export function PresetsStation({
   return (
     <section className="engine-station presets-station">
       <div className="engine-station-header">
-        <h2>Choose your initial selection</h2>
+        <h2>Start with a preset</h2>
         <span className="has-icon-tip">
           <button
             type="button"
@@ -36,7 +36,7 @@ export function PresetsStation({
           >
             Continue
           </button>
-          <IconTip>Continue to the first unfinished stop</IconTip>
+          <IconTip>Start selecting components</IconTip>
         </span>
       </div>
       <div className="engine-preselect">

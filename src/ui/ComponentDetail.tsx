@@ -277,7 +277,7 @@ export function ComponentDetail({
     kind === 'Component'
       ? null
       : kind === 'Alternatives'
-        ? `Alternatives · ${componentCount} option${componentCount === 1 ? '' : 's'}`
+        ? `${componentCount} option${componentCount === 1 ? '' : 's'}`
         : `Group · ${componentCount} component${componentCount === 1 ? '' : 's'}`
 
   return (

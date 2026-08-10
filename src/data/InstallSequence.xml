@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <installSequence>
-	<base desc="Base game fixes and modifications">
+	<base>
 		<component id="A7-DLCMERGER-MERGE_SOD" name="Merge &quot;Siege of Dragonspear&quot; DLC" label='Merge SoD DLC' desc="Required for further BG1 modding" modId="A7-DlcMerger" engine="bg1,eet1" required="1" noDisplay="1" />
 		<component id="bubb_revert_pathfinding:0" name="Bubb's v2.6.6.0+ Pathfinding Revert" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,iwd,pst" required="1" noDisplay="1" />
 		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" desc="The Enhanced Edition Fixpack is an unofficial collection of fixes for the Enhanced Editions of Baldur's Gate, Baldur's Gate II, Icewind Dale, and Planescape: Torment." level="fixes">
@@ -1344,7 +1344,7 @@
 		</bg2>
 	</content>
 
-	<npcChoices desc="Make some NPC more useful, especially in BG2" engine="bg,eet" displayIfNot="IE_focus_dedicated_campaigns">
+	<npcChoices engine="bg,eet" displayIfNot="IE_focus_dedicated_campaigns">
 		<group label="Class/kit">
 			<component id="ajantisbg2:5" name="Ajantis kit choice: make Ajantis Cavalier" label="Make Ajantis a Cavalier in BG2" modId="Ajantis_BG2" displayIf="ajantisbg2:0" />
 			<component id="totemiccernd:0" name="Totemic Cernd" label="Make Cernd a Totemic Druid" modId="Totemic_Cernd" />
