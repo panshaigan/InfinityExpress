@@ -67,3 +67,14 @@ describe('resolveComponentNumber', () => {
     expect(result).toEqual({ weiduNumber: 1, error: null })
   })
 })
+
+describe('tp2SearchHintFromComponentId', () => {
+  it('extracts folder hint from numbered component ids', async () => {
+    const { tp2SearchHintFromComponentId } = await import('./modResolution')
+    expect(tp2SearchHintFromComponentId('bubb_revert_pathfinding:0')).toBe(
+      'bubb_revert_pathfinding',
+    )
+    expect(tp2SearchHintFromComponentId('EEex:1')).toBe('EEex')
+    expect(tp2SearchHintFromComponentId('A7-DLCMERGER-MERGE_SOD')).toBeNull()
+  })
+})

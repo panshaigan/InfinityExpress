@@ -20,8 +20,26 @@ export interface ModResolutionResult {
   listing: WeiduComponentInfo[]
 }
 
-function cacheKey(gameDir: string, modId: string): string {
-  return `${gameDir.replace(/\\/g, '/').toLowerCase()}::${modId.toLowerCase()}`
+function cacheKey(gameDir: string, modId: string, tp2Hint: string, gameVersion: string): string {
+  return `${gameDir.replace(/\\/g, '/').toLowerCase()}::${modId.toLowerCase()}::${tp2Hint.toLowerCase()}::${gameVersion}`
+}
+
+/** `bubb_revert_pathfinding:0` → `bubb_revert_pathfinding`; bare ids → null. */
+export function tp2SearchHintFromComponentId(componentId: string): string | null {
+  const idx = componentId.lastIndexOf(':')
+  if (idx < 0) return null
+  const head = componentId.slice(0, idx).trim()
+  const tail = componentId.slice(idx + 1)
+  if (!head || !/^\d+$/.test(tail)) return null
+  return head
+}
+
+function tp2HintForComponents(components: ComponentNode[]): string | null {
+  for (const c of components) {
+    const hint = tp2SearchHintFromComponentId(c.componentId)
+    if (hint) return hint
+  }
+  return null
 }
 
 /** Resolve tp2 + WeiDU numbers for one mod's components. Uses per-run cache. */
@@ -32,14 +50,19 @@ export async function resolveModForInstall(
   gameDir: string,
   modId: string,
   components: ComponentNode[],
+  gameVersion = '',
 ): Promise<ModResolutionResult> {
-  const key = cacheKey(gameDir, modId)
+  const tp2Hint = tp2HintForComponents(components) ?? ''
+  const key = cacheKey(gameDir, modId, tp2Hint, gameVersion)
   let entry = cache.get(key)
   let tp2Path = entry?.tp2Path ?? ''
   let stagedFolderName = ''
 
   if (!entry) {
-    tp2Path = await stageModIntoGameDir(modsDownloadDir, modId, gameDir)
+    tp2Path = await stageModIntoGameDir(modsDownloadDir, modId, gameDir, {
+      tp2Hint: tp2Hint || null,
+      gameVersion: gameVersion || null,
+    })
     const normalized = tp2Path.replace(/\\/g, '/')
     const parts = normalized.split('/').filter(Boolean)
     stagedFolderName = parts.length >= 2 ? parts[parts.length - 2]! : modId

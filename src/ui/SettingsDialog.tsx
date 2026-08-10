@@ -13,7 +13,9 @@ import {
 } from '../lib/ui/githubTokenPrefs'
 import {
   readGameFolderPaths,
+  readGameFolderVersions,
   writeGameFolderPaths,
+  writeGameFolderVersions,
   type GameFolderKey,
   type GameFolderPaths,
 } from '../lib/ui/gameFolderPrefs'
@@ -21,9 +23,19 @@ import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 import { GAME_LABELS } from '../lib/xml/schema'
 import { DirectoryField } from './DirectoryField'
 import { isDesktopApp, pickFile } from '../lib/desktop/fsDialogs'
+import { readGameExeVersion } from '../lib/desktop/weiduInstall'
 import { OutlinedTextField } from './OutlinedTextField'
 
 const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
+
+async function probeGameVersion(path: string): Promise<string> {
+  if (!path.trim() || !isDesktopApp()) return ''
+  try {
+    return await readGameExeVersion(path.trim())
+  } catch {
+    return ''
+  }
+}
 
 export type SettingsFocusField = 'modsDownloadDir' | 'weiduPath'
 
@@ -37,6 +49,7 @@ interface Props {
 export function SettingsDialog({ open, onClose, focusField = null }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
+  const [folderVersions, setFolderVersions] = useState(readGameFolderVersions)
   const [appDirs, setAppDirs] = useState(readAppDirPaths)
   const [githubToken, setGithubToken] = useState(readGithubToken)
   const [weiduPath, setWeiduPath] = useState(readWeiduPath)
@@ -44,6 +57,7 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
   useEffect(() => {
     if (!open) return
     setFolderPaths(readGameFolderPaths())
+    setFolderVersions(readGameFolderVersions())
     setAppDirs(readAppDirPaths())
     setGithubToken(readGithubToken())
     setWeiduPath(readWeiduPath())
@@ -70,6 +84,7 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
     if (!open) return
     function sync() {
       setFolderPaths(readGameFolderPaths())
+      setFolderVersions(readGameFolderVersions())
       setAppDirs(readAppDirPaths())
     }
     window.addEventListener(PATHS_CHANGED_EVENT, sync)
@@ -81,6 +96,13 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
       const next: GameFolderPaths = { ...prev, [key]: value }
       writeGameFolderPaths(next)
       return next
+    })
+    void probeGameVersion(value).then((version) => {
+      setFolderVersions((prev) => {
+        const next = { ...prev, [key]: version }
+        writeGameFolderVersions(next)
+        return next
+      })
     })
   }
 
@@ -145,6 +167,7 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
                 onChange={(value) => setFolderPath(key, value)}
                 placeholder="Select game folder…"
                 browseTitle={`Select ${GAME_LABELS[key]} folder`}
+                hint={folderVersions[key] ? `v${folderVersions[key]}` : null}
               />
             ))}
           </div>

@@ -8,6 +8,8 @@ interface Props {
   onChange: (value: string) => void
   placeholder?: string
   browseTitle: string
+  /** Optional secondary text (e.g. detected exe FileVersion). */
+  hint?: string | null
 }
 
 export function DirectoryField({
@@ -17,8 +19,10 @@ export function DirectoryField({
   onChange,
   placeholder = 'Select folder…',
   browseTitle,
+  hint,
 }: Props) {
   const canBrowse = isDesktopApp()
+  const labelWithHint = hint?.trim() ? `${label} (${hint.trim()})` : label
 
   async function browse() {
     if (!canBrowse) return
@@ -29,7 +33,7 @@ export function DirectoryField({
   return (
     <OutlinedTextField
       id={id}
-      label={label}
+      label={labelWithHint}
       value={value}
       onChange={onChange}
       placeholder={placeholder}

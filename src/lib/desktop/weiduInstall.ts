@@ -132,12 +132,15 @@ export async function stageModIntoGameDir(
   modsDownloadDir: string,
   codename: string,
   gameDir: string,
+  options?: { tp2Hint?: string | null; gameVersion?: string | null },
 ): Promise<string> {
   requireDesktop()
   return invoke<string>('stage_mod_into_game_dir', {
     modsDownloadDir,
     codename,
     gameDir,
+    tp2Hint: options?.tp2Hint ?? null,
+    gameVersion: options?.gameVersion ?? null,
   })
 }
 
@@ -149,6 +152,11 @@ export async function cleanupInstallArtifacts(input: CleanupInput): Promise<void
 export async function readGameWeiduLog(gameDir: string): Promise<string> {
   if (!isDesktopApp()) return ''
   return invoke<string>('read_game_weidu_log', { gameDir })
+}
+
+export async function readGameExeVersion(gameDir: string): Promise<string> {
+  requireDesktop()
+  return invoke<string>('read_game_exe_version', { gameDir })
 }
 
 export async function backupGameDir(input: BackupGameInput): Promise<BackupGameResult> {

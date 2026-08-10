@@ -2,6 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import type { GameFolderPaths } from '../lib/ui/gameFolderPrefs'
 import { readAppDirPaths } from '../lib/ui/appDirPrefs'
+import {
+  gameFolderKeyForPhase,
+  readGameFolderVersions,
+} from '../lib/ui/gameFolderPrefs'
 import { readWeiduPath } from '../lib/ui/weiduPrefs'
 import { buildInstallPlan } from '../lib/install/planBuilder'
 import type {
@@ -177,6 +181,8 @@ export function useInstallRun(options: {
       const weiduPath = readWeiduPath()
       const appDirs = readAppDirPaths()
       const gameDir = gameDirForPhase(activeRun.game, step.phase, gameFolders)
+      const gameVersion =
+        readGameFolderVersions()[gameFolderKeyForPhase(activeRun.game, step.phase)] ?? ''
       const componentNodes = step.componentIds
         .map((id) => model.componentsById.get(id))
         .filter((n): n is NonNullable<typeof n> => !!n)
@@ -188,6 +194,7 @@ export function useInstallRun(options: {
         gameDir,
         step.modId,
         componentNodes,
+        gameVersion,
       )
 
       const weiduNumbers: number[] = []

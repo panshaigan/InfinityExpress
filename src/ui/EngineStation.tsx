@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
+import { isDesktopApp } from '../lib/desktop/fsDialogs'
+import { readGameExeVersion } from '../lib/desktop/weiduInstall'
 import {
   readGameFolderPaths,
+  readGameFolderVersions,
   writeGameFolderPaths,
+  writeGameFolderVersions,
   type GameFolderKey,
 } from '../lib/ui/gameFolderPrefs'
 import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
@@ -39,6 +43,15 @@ interface Props {
   onContinue: () => void
 }
 
+async function probeGameVersion(path: string): Promise<string> {
+  if (!path.trim() || !isDesktopApp()) return ''
+  try {
+    return await readGameExeVersion(path.trim())
+  } catch {
+    return ''
+  }
+}
+
 export function EngineStation({
   game,
   onChoose,
@@ -46,14 +59,43 @@ export function EngineStation({
   onContinue,
 }: Props) {
   const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
+  const [folderVersions, setFolderVersions] = useState(readGameFolderVersions)
   const visibleFolders = game ? FOLDERS_BY_GAME[game] : []
 
   useEffect(() => {
     function sync() {
       setFolderPaths(readGameFolderPaths())
+      setFolderVersions(readGameFolderVersions())
     }
     window.addEventListener(PATHS_CHANGED_EVENT, sync)
     return () => window.removeEventListener(PATHS_CHANGED_EVENT, sync)
+  }, [])
+
+  // Backfill FileVersion for paths that were saved before version probing existed.
+  useEffect(() => {
+    let cancelled = false
+    const paths = readGameFolderPaths()
+    const versions = readGameFolderVersions()
+    void (async () => {
+      let next = { ...versions }
+      let changed = false
+      for (const key of Object.keys(paths) as GameFolderKey[]) {
+        if (!paths[key]?.trim() || next[key]?.trim()) continue
+        const version = await probeGameVersion(paths[key])
+        if (cancelled) return
+        if (version) {
+          next = { ...next, [key]: version }
+          changed = true
+        }
+      }
+      if (!cancelled && changed) {
+        writeGameFolderVersions(next)
+        setFolderVersions(next)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   function setFolderPath(key: GameFolderKey, value: string) {
@@ -61,6 +103,13 @@ export function EngineStation({
       const next = { ...prev, [key]: value }
       writeGameFolderPaths(next)
       return next
+    })
+    void probeGameVersion(value).then((version) => {
+      setFolderVersions((prev) => {
+        const next = { ...prev, [key]: version }
+        writeGameFolderVersions(next)
+        return next
+      })
     })
   }
 
@@ -116,6 +165,7 @@ export function EngineStation({
                 onChange={(value) => setFolderPath(key, value)}
                 placeholder="Select game folder…"
                 browseTitle={`Select ${GAME_LABELS[key]} folder`}
+                hint={folderVersions[key] ? `v${folderVersions[key]}` : null}
               />
             ))}
           </div>

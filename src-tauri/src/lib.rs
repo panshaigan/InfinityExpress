@@ -26,6 +26,7 @@ pub fn run() {
       weidu_install::stage_mod_into_game_dir,
       weidu_install::cleanup_install_artifacts,
       weidu_install::read_game_weidu_log,
+      weidu_install::read_game_exe_version,
       weidu_backup::backup_game_dir,
       weidu_backup::restore_game_dir,
       weidu_backup::list_backups,

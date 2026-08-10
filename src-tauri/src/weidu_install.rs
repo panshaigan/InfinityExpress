@@ -626,11 +626,13 @@ pub async fn run_weidu_step(
   let cwd_tp2 = weidu_game_cwd_and_tp2_arg(&game_dir, &tp2)?;
   let cwd = cwd_tp2.0;
   let tp2_arg = cwd_tp2.1;
-  // --language must come early so WeiDU does not interactively prompt.
+  // --language = mod TRA; --use-lang = EE game lang/ folder (avoids weidu.conf prompt).
   let mut args: Vec<String> = vec![
     tp2_arg,
     "--language".into(),
     input.language_index.to_string(),
+    "--use-lang".into(),
+    "en_US".into(),
     "--force-install-list".into(),
   ];
   for n in &input.component_numbers {
@@ -781,8 +783,13 @@ pub fn cancel_weidu_step(state: State<'_, RunningWeidu>) {
 }
 
 fn find_tp2_in_dir(dir: &Path) -> Result<PathBuf, String> {
-  fn walk(dir: &Path, depth: usize, best: &mut Option<PathBuf>) -> Result<(), String> {
-    if depth > 4 {
+  let candidates = collect_tp2_candidates(dir)?;
+  pick_tp2_candidate(candidates, None, None)
+}
+
+fn collect_tp2_candidates(dir: &Path) -> Result<Vec<PathBuf>, String> {
+  fn walk(dir: &Path, depth: usize, out: &mut Vec<PathBuf>) -> Result<(), String> {
+    if depth > 8 {
       return Ok(());
     }
     let entries = fs::read_dir(dir).map_err(|e| e.to_string())?;
@@ -790,25 +797,152 @@ fn find_tp2_in_dir(dir: &Path) -> Result<PathBuf, String> {
       let entry = entry.map_err(|e| e.to_string())?;
       let path = entry.path();
       if path.is_dir() {
-        walk(&path, depth + 1, best)?;
+        walk(&path, depth + 1, out)?;
         continue;
       }
       let name = entry.file_name().to_string_lossy().to_ascii_lowercase();
       if name.ends_with(".tp2") {
-        if name.starts_with("setup-") {
-          *best = Some(path);
-          return Ok(());
-        }
-        if best.is_none() {
-          *best = Some(path);
-        }
+        out.push(path);
       }
     }
     Ok(())
   }
-  let mut best = None;
-  walk(dir, 0, &mut best)?;
-  best.ok_or_else(|| format!("No .tp2 found under {}", dir.display()))
+  let mut out = Vec::new();
+  walk(dir, 0, &mut out)?;
+  if out.is_empty() {
+    return Err(format!("No .tp2 found under {}", dir.display()));
+  }
+  Ok(out)
+}
+
+fn path_has_segment(path: &Path, segment: &str) -> bool {
+  let target = segment.to_ascii_lowercase();
+  path.components().any(|c| {
+    c.as_os_str()
+      .to_string_lossy()
+      .to_ascii_lowercase()
+      == target
+  })
+}
+
+fn windows_engine_folder_from_version(version: &str) -> Option<String> {
+  let parts: Vec<&str> = version
+    .trim()
+    .split(|c: char| !c.is_ascii_digit())
+    .filter(|p| !p.is_empty())
+    .collect();
+  if parts.len() >= 2 {
+    Some(format!("windows-engine-v{}.{}", parts[0], parts[1]))
+  } else {
+    None
+  }
+}
+
+fn parse_windows_engine_rank(path: &Path) -> Option<(u32, u32)> {
+  for c in path.components() {
+    let name = c.as_os_str().to_string_lossy().to_ascii_lowercase();
+    let Some(rest) = name.strip_prefix("windows-engine-v") else {
+      continue;
+    };
+    let mut parts = rest.split('.');
+    let major = parts.next()?.parse().ok()?;
+    let minor = parts.next()?.parse().ok()?;
+    return Some((major, minor));
+  }
+  None
+}
+
+fn pick_bubb_pathfinding_candidates(
+  candidates: Vec<PathBuf>,
+  game_version: Option<&str>,
+) -> Vec<PathBuf> {
+  let bubb: Vec<PathBuf> = candidates
+    .iter()
+    .filter(|p| path_has_segment(p, "bubb_revert_pathfinding"))
+    .cloned()
+    .collect();
+  let pool = if bubb.is_empty() { candidates } else { bubb };
+
+  if let Some(folder) = game_version.and_then(windows_engine_folder_from_version) {
+    let matched: Vec<PathBuf> = pool
+      .iter()
+      .filter(|p| path_has_segment(p, &folder))
+      .cloned()
+      .collect();
+    if !matched.is_empty() {
+      return matched;
+    }
+  }
+
+  // Fall back to highest windows-engine-v* present.
+  let mut ranked: Vec<(u32, u32, PathBuf)> = pool
+    .iter()
+    .filter_map(|p| parse_windows_engine_rank(p).map(|(maj, min)| (maj, min, p.clone())))
+    .collect();
+  if ranked.is_empty() {
+    return pool;
+  }
+  ranked.sort_by(|a, b| (b.0, b.1).cmp(&(a.0, a.1)));
+  let (best_maj, best_min, _) = ranked[0];
+  ranked
+    .into_iter()
+    .filter(|(maj, min, _)| *maj == best_maj && *min == best_min)
+    .map(|(_, _, p)| p)
+    .collect()
+}
+
+fn pick_tp2_candidate(
+  candidates: Vec<PathBuf>,
+  tp2_hint: Option<&str>,
+  game_version: Option<&str>,
+) -> Result<PathBuf, String> {
+  let mut pool = candidates;
+  if let Some(hint) = tp2_hint.map(str::trim).filter(|h| !h.is_empty()) {
+    let hinted: Vec<PathBuf> = pool
+      .iter()
+      .filter(|p| path_has_segment(p, hint))
+      .cloned()
+      .collect();
+    if !hinted.is_empty() {
+      pool = hinted;
+    }
+  }
+
+  let hint_is_bubb = tp2_hint
+    .map(|h| h.eq_ignore_ascii_case("bubb_revert_pathfinding"))
+    .unwrap_or(false);
+  if hint_is_bubb
+    || pool
+      .iter()
+      .all(|p| path_has_segment(p, "bubb_revert_pathfinding"))
+  {
+    // Engine-folder picking is only for bubb_revert_pathfinding.
+    pool = pick_bubb_pathfinding_candidates(pool, game_version);
+  }
+
+  // Prefer setup-*.tp2, then shallowest path, then lexical.
+  pool.sort_by(|a, b| {
+    let a_setup = a
+      .file_name()
+      .map(|n| n.to_string_lossy().to_ascii_lowercase().starts_with("setup-"))
+      .unwrap_or(false);
+    let b_setup = b
+      .file_name()
+      .map(|n| n.to_string_lossy().to_ascii_lowercase().starts_with("setup-"))
+      .unwrap_or(false);
+    b_setup
+      .cmp(&a_setup)
+      .then_with(|| a.components().count().cmp(&b.components().count()))
+      .then_with(|| {
+        a.to_string_lossy()
+          .to_ascii_lowercase()
+          .cmp(&b.to_string_lossy().to_ascii_lowercase())
+      })
+  });
+  pool
+    .into_iter()
+    .next()
+    .ok_or_else(|| "No .tp2 candidate remaining after filters".to_string())
 }
 
 #[tauri::command]
@@ -816,6 +950,8 @@ pub fn stage_mod_into_game_dir(
   mods_download_dir: String,
   codename: String,
   game_dir: String,
+  tp2_hint: Option<String>,
+  game_version: Option<String>,
 ) -> Result<String, String> {
   let codename = codename.trim();
   validate_folder_name(codename)?;
@@ -832,9 +968,12 @@ pub fn stage_mod_into_game_dir(
   let source_name = find_subdir_ci(&download, codename)?
     .ok_or_else(|| format!("Mod folder \"{codename}\" not found in download directory"))?;
   let source_root = download.join(&source_name);
-  // Copy the folder that actually contains the tp2 (e.g. DlcMerger inside
-  // A7-DlcMerger), not the download wrapper — LANGUAGE paths expect that layout.
-  let tp2_in_source = find_tp2_in_dir(&source_root)?;
+  let candidates = collect_tp2_candidates(&source_root)?;
+  let tp2_in_source = pick_tp2_candidate(
+    candidates,
+    tp2_hint.as_deref(),
+    game_version.as_deref(),
+  )?;
   let mod_folder = tp2_in_source
     .parent()
     .ok_or_else(|| format!("TP2 has no parent directory: {}", tp2_in_source.display()))?;
@@ -856,6 +995,53 @@ pub fn stage_mod_into_game_dir(
   copy_recursive(mod_folder, &target)?;
   let tp2 = find_tp2_in_dir(&target)?;
   Ok(tp2.to_string_lossy().into_owned())
+}
+
+fn find_game_exe(game: &Path) -> Option<PathBuf> {
+  const NAMES: &[&str] = &["Baldur.exe", "Torment.exe", "idmain.exe"];
+  for name in NAMES {
+    let p = game.join(name);
+    if p.is_file() {
+      return Some(p);
+    }
+  }
+  // Case-insensitive fallback on Windows.
+  let Ok(entries) = fs::read_dir(game) else {
+    return None;
+  };
+  for entry in entries.flatten() {
+    let name = entry.file_name().to_string_lossy().to_ascii_lowercase();
+    if matches!(name.as_str(), "baldur.exe" | "torment.exe" | "idmain.exe") {
+      return Some(entry.path());
+    }
+  }
+  None
+}
+
+#[tauri::command]
+pub fn read_game_exe_version(game_dir: String) -> Result<String, String> {
+  let game = PathBuf::from(game_dir.trim());
+  if !game.is_dir() {
+    return Err("Game directory does not exist".into());
+  }
+  let exe = find_game_exe(&game).ok_or_else(|| {
+    "No Baldur.exe / Torment.exe / idmain.exe found in game directory".to_string()
+  })?;
+  let exe_str = exe.to_string_lossy().replace('\'', "''");
+  let script = format!("(Get-Item -LiteralPath '{exe_str}').VersionInfo.FileVersion");
+  let output = Command::new("powershell")
+    .args(["-NoProfile", "-NonInteractive", "-Command", &script])
+    .output()
+    .map_err(|e| format!("Failed to read exe version: {e}"))?;
+  if !output.status.success() {
+    let err = String::from_utf8_lossy(&output.stderr);
+    return Err(format!("Failed to read exe version: {}", err.trim()));
+  }
+  let version = String::from_utf8_lossy(&output.stdout).trim().to_string();
+  if version.is_empty() {
+    return Err("Exe FileVersion was empty".into());
+  }
+  Ok(version)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
