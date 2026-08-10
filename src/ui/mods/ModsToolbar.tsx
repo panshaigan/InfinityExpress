@@ -11,6 +11,7 @@ import {
   AddModIcon,
   CheckUpdatesIcon,
   ClearFiltersIcon,
+  DeleteFromCatalogIcon,
   DownloadIcon,
   ExportCsvIcon,
   OnlyNeededIcon,
@@ -39,6 +40,7 @@ interface Props {
   onAcquire: () => void
   onCheckUpdates: () => void
   onRemoveFromDisk: () => void
+  onDeleteFromCatalog: () => void
   onExportCsv: () => void
   onAddMod: () => void
   onContinueBrowsing: () => void
@@ -70,6 +72,7 @@ export function ModsToolbar({
   onAcquire,
   onCheckUpdates,
   onRemoveFromDisk,
+  onDeleteFromCatalog,
   onExportCsv,
   onAddMod,
   onContinueBrowsing,
@@ -100,6 +103,27 @@ export function ModsToolbar({
     setOpenFacet(open ? id : null)
   }
 
+  const onlyNeededButton = (
+    <span className="mods-action-icon-wrap mods-only-needed has-icon-tip">
+      <button
+        type="button"
+        className={`mods-action-icon-btn mods-only-needed-btn${
+          onlyNeededActive ? ' active' : ''
+        }`}
+        aria-pressed={onlyNeededActive}
+        aria-label={ONLY_NEEDED_TIP}
+        disabled={
+          journeyLocked ||
+          (neededCodenames.length === 0 && !onlyNeededActive)
+        }
+        onClick={toggleOnlyNeeded}
+      >
+        <OnlyNeededIcon />
+      </button>
+      <IconTip>{ONLY_NEEDED_TIP}</IconTip>
+    </span>
+  )
+
   return (
     <div className="mods-toolbar">
       {journeyLocked ? (
@@ -122,34 +146,18 @@ export function ModsToolbar({
       ) : null}
 
       <div className="mods-toolbar-row">
-        <span className="mods-count" aria-live="polite">
-          {visibleCount} of {totalCount} mods
-          {selectedCount > 0 ? ` · ${selectedCount} selected` : ''}
-        </span>
         <div className="mods-toolbar-actions">
           <span className="mods-action-icon-wrap has-icon-tip">
             <button
               type="button"
-              className="mods-action-icon-btn"
-              disabled={bulkDisabled || acquireDisabled || acquireBusy}
-              onClick={onAcquire}
-              aria-label={acquireLabel}
+              className="mods-action-icon-btn primary"
+              disabled={journeyLocked}
+              onClick={onAddMod}
+              aria-label="Add mod"
             >
-              <DownloadIcon />
+              <AddModIcon />
             </button>
-            <IconTip>{acquireLabel}</IconTip>
-          </span>
-          <span className="mods-action-icon-wrap has-icon-tip">
-            <button
-              type="button"
-              className="mods-action-icon-btn"
-              disabled={bulkDisabled || acquireBusy}
-              onClick={onCheckUpdates}
-              aria-label="Check for updates"
-            >
-              <CheckUpdatesIcon />
-            </button>
-            <IconTip>Check for updates</IconTip>
+            <IconTip>Add mod</IconTip>
           </span>
           <span className="mods-action-icon-wrap has-icon-tip">
             <button
@@ -167,6 +175,18 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
+              disabled={bulkDisabled || journeyLocked}
+              onClick={onDeleteFromCatalog}
+              aria-label="Remove from catalog"
+            >
+              <DeleteFromCatalogIcon />
+            </button>
+            <IconTip>Remove from catalog</IconTip>
+          </span>
+          <span className="mods-action-icon-wrap has-icon-tip">
+            <button
+              type="button"
+              className="mods-action-icon-btn"
               onClick={onExportCsv}
               aria-label="Export CSV"
             >
@@ -177,16 +197,33 @@ export function ModsToolbar({
           <span className="mods-action-icon-wrap has-icon-tip">
             <button
               type="button"
-              className="mods-action-icon-btn primary"
-              disabled={journeyLocked}
-              onClick={onAddMod}
-              aria-label="Add mod"
+              className="mods-action-icon-btn"
+              disabled={bulkDisabled || acquireBusy}
+              onClick={onCheckUpdates}
+              aria-label="Check for updates"
             >
-              <AddModIcon />
+              <CheckUpdatesIcon />
             </button>
-            <IconTip>Add mod</IconTip>
+            <IconTip>Check for updates</IconTip>
           </span>
+          <span className="mods-action-icon-wrap has-icon-tip">
+            <button
+              type="button"
+              className="mods-action-icon-btn"
+              disabled={bulkDisabled || acquireDisabled || acquireBusy}
+              onClick={onAcquire}
+              aria-label={acquireLabel}
+            >
+              <DownloadIcon />
+            </button>
+            <IconTip>{acquireLabel}</IconTip>
+          </span>
+          {onlyNeededButton}
         </div>
+        <span className="mods-count" aria-live="polite">
+          {visibleCount} of {totalCount} mods
+          {selectedCount > 0 ? ` · ${selectedCount} selected` : ''}
+        </span>
       </div>
 
       {!journeyLocked ? (
@@ -294,21 +331,6 @@ export function ModsToolbar({
               </span>
             </button>
           ) : null}
-          <span className="mods-action-icon-wrap mods-only-needed has-icon-tip">
-            <button
-              type="button"
-              className={`mods-action-icon-btn mods-only-needed-btn${
-                onlyNeededActive ? ' active' : ''
-              }`}
-              aria-pressed={onlyNeededActive}
-              aria-label={ONLY_NEEDED_TIP}
-              disabled={neededCodenames.length === 0 && !onlyNeededActive}
-              onClick={toggleOnlyNeeded}
-            >
-              <OnlyNeededIcon />
-            </button>
-            <IconTip>{ONLY_NEEDED_TIP}</IconTip>
-          </span>
         </div>
       ) : (
         <div className="mods-facets mods-facets-locked">
@@ -326,18 +348,6 @@ export function ModsToolbar({
               }
             />
           </label>
-          <span className="mods-action-icon-wrap mods-only-needed has-icon-tip">
-            <button
-              type="button"
-              className="mods-action-icon-btn mods-only-needed-btn active"
-              aria-pressed={true}
-              aria-label={ONLY_NEEDED_TIP}
-              disabled
-            >
-              <OnlyNeededIcon />
-            </button>
-            <IconTip>{ONLY_NEEDED_TIP}</IconTip>
-          </span>
         </div>
       )}
     </div>

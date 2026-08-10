@@ -95,11 +95,14 @@ export function ModDetail({
             type="button"
             className="detail-pane-expand has-icon-tip"
             onClick={onToggleCollapsed}
+            disabled={!mod}
             aria-expanded={false}
-            aria-label="Show details"
+            aria-label={mod ? 'Show details' : 'Select a mod to show details'}
           >
             <span className="detail-pane-expand-label">Details</span>
-            <IconTip>Show details (;)</IconTip>
+            <IconTip>
+              {mod ? 'Show details (;)' : 'Select a mod to show details'}
+            </IconTip>
           </button>
         ) : (
           <>
@@ -111,25 +114,12 @@ export function ModDetail({
                     <button
                       type="button"
                       className="mods-action-icon-btn"
-                      disabled={acquireDisabled || jobRunning}
-                      onClick={onAcquire}
-                      aria-label={acquireLabel}
+                      onClick={onEdit}
+                      aria-label="Edit"
                     >
-                      <DownloadIcon />
+                      <EditModIcon />
                     </button>
-                    <IconTip>{acquireLabel}</IconTip>
-                  </span>
-                  <span className="mods-action-icon-wrap has-icon-tip">
-                    <button
-                      type="button"
-                      className="mods-action-icon-btn"
-                      disabled={jobRunning}
-                      onClick={onCheckUpdates}
-                      aria-label="Check for updates"
-                    >
-                      <CheckUpdatesIcon />
-                    </button>
-                    <IconTip>Check for updates</IconTip>
+                    <IconTip>Edit</IconTip>
                   </span>
                   <span className="mods-action-icon-wrap has-icon-tip">
                     <button
@@ -147,23 +137,36 @@ export function ModDetail({
                     <button
                       type="button"
                       className="mods-action-icon-btn"
-                      onClick={onEdit}
-                      aria-label="Edit"
-                    >
-                      <EditModIcon />
-                    </button>
-                    <IconTip>Edit</IconTip>
-                  </span>
-                  <span className="mods-action-icon-wrap has-icon-tip">
-                    <button
-                      type="button"
-                      className="mods-action-icon-btn"
                       onClick={onDeleteFromCatalog}
                       aria-label="Remove from catalog"
                     >
                       <DeleteFromCatalogIcon />
                     </button>
                     <IconTip>Remove from catalog</IconTip>
+                  </span>
+                  <span className="mods-action-icon-wrap has-icon-tip">
+                    <button
+                      type="button"
+                      className="mods-action-icon-btn"
+                      disabled={jobRunning}
+                      onClick={onCheckUpdates}
+                      aria-label="Check for updates"
+                    >
+                      <CheckUpdatesIcon />
+                    </button>
+                    <IconTip>Check for updates</IconTip>
+                  </span>
+                  <span className="mods-action-icon-wrap has-icon-tip">
+                    <button
+                      type="button"
+                      className="mods-action-icon-btn"
+                      disabled={acquireDisabled || jobRunning}
+                      onClick={onAcquire}
+                      aria-label={acquireLabel}
+                    >
+                      <DownloadIcon />
+                    </button>
+                    <IconTip>{acquireLabel}</IconTip>
                   </span>
                 </div>
               ) : null}

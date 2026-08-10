@@ -1859,6 +1859,16 @@ body.is-resizing-detail * {
   background: var(--accent-soft);
 }
 
+.detail-pane-expand:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.detail-pane-expand:disabled:hover {
+  color: var(--muted);
+  background: transparent;
+}
+
 .detail-pane-expand:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
@@ -4361,7 +4371,6 @@ body.is-resizing-detail * {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.25rem;
-  margin-left: auto;
 }
 
 .mods-action-icon-wrap {
@@ -4412,11 +4421,6 @@ body.is-resizing-detail * {
   padding-top: 0.45rem;
   position: relative;
   z-index: 5;
-}
-
-.mods-facets > .mods-only-needed {
-  align-self: center;
-  margin-left: auto;
 }
 
 .mods-only-needed-btn.active {
@@ -4965,7 +4969,8 @@ body.is-resizing-detail * {
 
 .mods-col-size,
 .mods-col-release,
-.mods-col-category {
+.mods-col-category,
+.mods-col-game {
   white-space: nowrap;
 }
 
@@ -5289,7 +5294,6 @@ body.is-resizing-detail * {
   }
 
   .mods-toolbar-actions {
-    margin-left: 0;
     width: 100%;
   }
 

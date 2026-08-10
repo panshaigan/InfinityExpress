@@ -63,6 +63,7 @@ interface Props {
 const COLUMNS: { key: ModsSortKey; label: string; className?: string }[] = [
   { key: 'name', label: 'Name', className: 'mods-col-name' },
   { key: 'category', label: 'Category', className: 'mods-col-category' },
+  { key: 'game', label: 'Game', className: 'mods-col-game' },
   { key: 'url', label: 'Url', className: 'mods-col-url' },
   { key: 'release', label: 'Release', className: 'mods-col-release' },
   { key: 'version', label: 'Version', className: 'mods-col-version' },
@@ -214,6 +215,7 @@ const ModsTableRow = memo(function ModsTableRow({
         ) : null}
       </td>
       <td className="mods-col-category">{eff.category || '—'}</td>
+      <td className="mods-col-game">{eff.game || '—'}</td>
       <TipCell
         className="mods-col-url"
         display={

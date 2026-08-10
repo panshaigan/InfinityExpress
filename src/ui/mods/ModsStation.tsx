@@ -98,7 +98,7 @@ export function ModsStation({
     | { mode: 'edit'; initial: WorkingMod }
     | null
   >(null)
-  const [pendingDelete, setPendingDelete] = useState<string | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<string[] | null>(null)
   const [pendingRemove, setPendingRemove] = useState<string[] | null>(null)
   const [removing, setRemoving] = useState(false)
   const promptedMissingDirRef = useRef(false)
@@ -315,6 +315,21 @@ export function ModsStation({
     return `Permanently delete ${pendingRemove.length} mod folders from the mods download directory? Catalog entries are kept.`
   }, [pendingRemove])
 
+  const deleteConfirmMessage = useMemo(() => {
+    if (!pendingDelete || pendingDelete.length === 0) return ''
+    if (pendingDelete.length === 1) {
+      return 'This removes the mod from your working catalog. It does not delete files from disk.'
+    }
+    return `This removes ${pendingDelete.length} mods from your working catalog. It does not delete files from disk.`
+  }, [pendingDelete])
+
+  const deleteConfirmTitle = useMemo(() => {
+    if (!pendingDelete || pendingDelete.length <= 1) {
+      return 'Delete mod from catalog?'
+    }
+    return `Delete ${pendingDelete.length} mods from catalog?`
+  }, [pendingDelete])
+
   function handleFiltersChange(next: ModsTableFilters) {
     if (journeyLocked) return
     setFilters(next)
@@ -334,7 +349,7 @@ export function ModsStation({
     <div className="mods-workspace-shell">
       <div
         className={`workspace mods-workspace${
-          detailCollapsed ? ' detail-collapsed' : ''
+          detailCollapsed || !focusedMod ? ' detail-collapsed' : ''
         }`}
         style={{ '--detail-width': `${detailWidth}px` } as CSSProperties}
       >
@@ -357,6 +372,7 @@ export function ModsStation({
                 void acquire.runCheck(selectedList)
               }}
               onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
+              onDeleteFromCatalog={() => setPendingDelete(selectedList)}
               onExportCsv={() => {
                 void exportCsv()
               }}
@@ -393,7 +409,8 @@ export function ModsStation({
                 },
                 onRemoveFromDisk: (codename) =>
                   requestRemoveFromDisk([codename]),
-                onDeleteFromCatalog: (codename) => setPendingDelete(codename),
+                onDeleteFromCatalog: (codename) =>
+                  setPendingDelete([codename]),
               }}
             />
           </div>
@@ -401,7 +418,7 @@ export function ModsStation({
 
         <ModDetail
           mod={focusedMod}
-          collapsed={detailCollapsed}
+          collapsed={detailCollapsed || !focusedMod}
           width={detailWidth}
           onWidthChange={onDetailWidthChange}
           onToggleCollapsed={onToggleDetailCollapsed}
@@ -412,7 +429,7 @@ export function ModsStation({
           }}
           onDeleteFromCatalog={() => {
             if (focusedMod) {
-              setPendingDelete(focusedMod.codename)
+              setPendingDelete([focusedMod.codename])
             }
           }}
           acquireLabel={acquireButtonLabel(focusedAcquireKind)}
@@ -477,19 +494,26 @@ export function ModsStation({
 
       <ConfirmDialog
         open={pendingDelete != null}
-        title="Delete mod from catalog?"
-        message="This removes the mod from your working catalog. It does not delete files from disk."
+        title={deleteConfirmTitle}
+        message={deleteConfirmMessage}
         confirmLabel="Delete"
         onCancel={() => setPendingDelete(null)}
         onConfirm={() => {
           if (pendingDelete) {
-            onDeleteMod(pendingDelete)
+            for (const codename of pendingDelete) {
+              onDeleteMod(codename)
+            }
             setSelected((prev) => {
               const next = new Set(prev)
-              next.delete(pendingDelete)
+              for (const codename of pendingDelete) next.delete(codename)
               return next
             })
-            if (focusedCodename === pendingDelete) setFocusedCodename(null)
+            if (
+              focusedCodename &&
+              pendingDelete.includes(focusedCodename)
+            ) {
+              setFocusedCodename(null)
+            }
           }
           setPendingDelete(null)
         }}
