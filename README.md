@@ -46,8 +46,9 @@ npm run tauri:dev
 | `npm run tauri:build` | Production desktop bundle |
 | `npm run build` | Typecheck (`tsc --noEmit`) then production web build |
 | `npm run preview` | Serve the production build locally |
-| `npm test` | Run the test suite once |
+| `npm test` | Run the frontend (Vitest) suite once |
 | `npm run test:watch` | Run Vitest in watch mode |
+| `cd src-tauri; cargo test` | Run Rust unit tests for the Tauri backend (PowerShell) |
 
 ### WSL / cross-OS installs
 
@@ -61,6 +62,8 @@ Otherwise `npm test` / `npm run dev` may fail looking for the wrong `@rollup/rol
 
 ## Testing
 
+### Frontend (Vitest)
+
 ```bash
 npm test
 npm run test:watch
@@ -72,6 +75,26 @@ Tests live next to the code as `src/**/*.test.ts` and cover:
 - `alwaysIf` / `displayIf` condition parsing and evaluation
 - Selection, station merge, alternatives, visibility, and install-order export
 - Parsing the curated `InstallSequence.xml`
+
+### Desktop / Rust (`src-tauri`)
+
+Unit tests for Tauri backend logic live as `#[cfg(test)]` modules next to the Rust sources (not a separate `tests/` crate). From the repo root on Windows/PowerShell:
+
+```powershell
+cd src-tauri; cargo test
+```
+
+On bash/WSL: `cd src-tauri && cargo test`.
+
+Covered modules today:
+
+| File | Focus |
+| --- | --- |
+| `src-tauri/src/mod_fs.rs` | Safe folder-name validation for mod dirs |
+| `src-tauri/src/mod_acquire.rs` | GitHub release asset URL picking / href absolutizing |
+| `src-tauri/src/weidu_install.rs` | Setup exe path from tp2, component JSON labels, WeiDU command formatting |
+
+There is no npm script for these; run `cargo test` directly under `src-tauri/`.
 
 ## Export
 
