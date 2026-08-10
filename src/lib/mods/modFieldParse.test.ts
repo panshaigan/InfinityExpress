@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  authorFromModUrl,
   joinGameTokens,
   modMatchesGameFilter,
   splitAuthorNames,
@@ -53,6 +54,22 @@ describe('splitAuthorNames', () => {
       'vanatos',
       'T.C Dale',
     ])
+  })
+})
+
+describe('authorFromModUrl', () => {
+  it('maps known download hosts to catalog authors', () => {
+    expect(
+      authorFromModUrl('https://downloads.weaselmods.net/download/gahesh'),
+    ).toBe('Lava')
+    expect(authorFromModUrl('https://www.morpheus-mart.com/crucible')).toBe(
+      'Morpheus562',
+    )
+  })
+
+  it('returns null for other hosts', () => {
+    expect(authorFromModUrl('https://github.com/org/repo')).toBeNull()
+    expect(authorFromModUrl('not-a-url')).toBeNull()
   })
 })
 

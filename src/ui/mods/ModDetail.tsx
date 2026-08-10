@@ -10,7 +10,9 @@ import { DetailResizeHandle } from '../DetailResizeHandle'
 import { IconTip } from '../IconTip'
 import {
   CheckUpdatesIcon,
+  DeleteFromCatalogIcon,
   DownloadIcon,
+  EditModIcon,
   RemoveFromDiskIcon,
 } from './ModsActionIcons'
 
@@ -141,16 +143,28 @@ export function ModDetail({
                     </button>
                     <IconTip>Remove from disk</IconTip>
                   </span>
-                  <button type="button" className="btn" onClick={onEdit}>
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    className="btn secondary"
-                    onClick={onDeleteFromCatalog}
-                  >
-                    Delete
-                  </button>
+                  <span className="mods-action-icon-wrap has-icon-tip">
+                    <button
+                      type="button"
+                      className="mods-action-icon-btn"
+                      onClick={onEdit}
+                      aria-label="Edit"
+                    >
+                      <EditModIcon />
+                    </button>
+                    <IconTip>Edit</IconTip>
+                  </span>
+                  <span className="mods-action-icon-wrap has-icon-tip">
+                    <button
+                      type="button"
+                      className="mods-action-icon-btn"
+                      onClick={onDeleteFromCatalog}
+                      aria-label="Remove from catalog"
+                    >
+                      <DeleteFromCatalogIcon />
+                    </button>
+                    <IconTip>Remove from catalog</IconTip>
+                  </span>
                 </div>
               ) : null}
               <button

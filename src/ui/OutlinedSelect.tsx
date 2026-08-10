@@ -1,10 +1,14 @@
 import {
+  useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react'
+import { createPortal } from 'react-dom'
 import { cycleTabIndex } from '../lib/ui/chromeHotkeys'
 
 export interface OutlinedSelectOption {
@@ -26,6 +30,9 @@ interface Props {
   className?: string
 }
 
+const GAP_PX = 6
+const EDGE_PAD = 8
+
 export function OutlinedSelect({
   label,
   value,
@@ -45,6 +52,44 @@ export function OutlinedSelect({
   const selected = options.find((o) => o.value === value)
   const displayLabel = selected?.label ?? emptyLabel
   const [highlight, setHighlight] = useState(value)
+  const [popoverStyle, setPopoverStyle] = useState<CSSProperties>({
+    top: 0,
+    left: 0,
+    width: 0,
+  })
+
+  const positionPopover = useCallback(() => {
+    const root = rootRef.current
+    const list = listRef.current
+    if (!root || !list) return
+    const trigger =
+      root.querySelector<HTMLElement>('.outlined-select-trigger') ?? root
+    const rect = trigger.getBoundingClientRect()
+    const listHeight = list.offsetHeight
+    const spaceBelow = window.innerHeight - rect.bottom - GAP_PX - EDGE_PAD
+    const placeAbove =
+      spaceBelow < Math.min(listHeight, 16 * 16) &&
+      rect.top > spaceBelow + EDGE_PAD
+
+    const width = Math.max(rect.width, 8 * 16)
+    let left = rect.left
+    left = Math.min(
+      window.innerWidth - EDGE_PAD - width,
+      Math.max(EDGE_PAD, left),
+    )
+    const top = placeAbove
+      ? Math.max(EDGE_PAD, rect.top - GAP_PX - listHeight)
+      : rect.bottom + GAP_PX
+
+    setPopoverStyle({
+      top,
+      left,
+      width,
+      maxHeight: placeAbove
+        ? Math.min(16 * 16, rect.top - GAP_PX - EDGE_PAD)
+        : Math.min(16 * 16, window.innerHeight - top - EDGE_PAD),
+    })
+  }, [])
 
   useEffect(() => {
     if (!open) return
@@ -54,7 +99,10 @@ export function OutlinedSelect({
   useEffect(() => {
     if (!open) return
     function onPointerDown(e: PointerEvent) {
-      if (!rootRef.current?.contains(e.target as Node)) onOpenChange(false)
+      const target = e.target as Node
+      if (rootRef.current?.contains(target)) return
+      if (listRef.current?.contains(target)) return
+      onOpenChange(false)
     }
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
@@ -69,6 +117,24 @@ export function OutlinedSelect({
       window.removeEventListener('keydown', onKeyDown)
     }
   }, [open, onOpenChange])
+
+  useLayoutEffect(() => {
+    if (!open) return
+    positionPopover()
+  }, [open, options.length, positionPopover])
+
+  useEffect(() => {
+    if (!open) return
+    function onReposition() {
+      positionPopover()
+    }
+    window.addEventListener('scroll', onReposition, true)
+    window.addEventListener('resize', onReposition)
+    return () => {
+      window.removeEventListener('scroll', onReposition, true)
+      window.removeEventListener('resize', onReposition)
+    }
+  }, [open, positionPopover])
 
   useEffect(() => {
     if (!open) return
@@ -138,35 +204,39 @@ export function OutlinedSelect({
           ▾
         </span>
       </button>
-      {open ? (
-        <div
-          ref={listRef}
-          id={panelId}
-          className="outlined-select-popover"
-          role="listbox"
-          aria-label={label}
-          onKeyDown={handleListKeyDown}
-        >
-          {options.map((option) => {
-            const isActive = option.value === value
-            const isHighlighted = option.value === highlight
-            return (
-              <button
-                key={option.value === '' ? '__all__' : option.value}
-                type="button"
-                role="option"
-                data-option-value={option.value}
-                aria-selected={isActive}
-                className={`outlined-select-option${isActive ? ' active' : ''}${isHighlighted ? ' highlighted' : ''}`}
-                tabIndex={isHighlighted ? 0 : -1}
-                onClick={() => pick(option.value)}
-              >
-                {option.label}
-              </button>
-            )
-          })}
-        </div>
-      ) : null}
+      {open
+        ? createPortal(
+            <div
+              ref={listRef}
+              id={panelId}
+              className="outlined-select-popover outlined-select-popover-portal"
+              role="listbox"
+              aria-label={label}
+              style={popoverStyle}
+              onKeyDown={handleListKeyDown}
+            >
+              {options.map((option) => {
+                const isActive = option.value === value
+                const isHighlighted = option.value === highlight
+                return (
+                  <button
+                    key={option.value === '' ? '__all__' : option.value}
+                    type="button"
+                    role="option"
+                    data-option-value={option.value}
+                    aria-selected={isActive}
+                    className={`outlined-select-option${isActive ? ' active' : ''}${isHighlighted ? ' highlighted' : ''}`}
+                    tabIndex={isHighlighted ? 0 : -1}
+                    onClick={() => pick(option.value)}
+                  >
+                    {option.label}
+                  </button>
+                )
+              })}
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   )
 }

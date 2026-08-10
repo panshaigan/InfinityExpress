@@ -377,6 +377,24 @@ export function ModsStation({
               onToggleAllVisible={onToggleAllVisible}
               onFocusRow={setFocusedCodename}
               rowProgress={rowProgress}
+              rowActions={{
+                acquireLabel: (mod) =>
+                  acquireButtonLabel(acquireButtonKind([mod.diskStatus])),
+                acquireDisabled: (mod) =>
+                  acquireButtonKind([mod.diskStatus]) === 'none',
+                jobRunning,
+                onAcquire: (codename) => acquire.requestAcquire([codename]),
+                onCheckUpdates: (codename) => {
+                  void acquire.runCheck([codename])
+                },
+                onEdit: (codename) => {
+                  const mod = mods.find((m) => m.codename === codename)
+                  if (mod) setEditor({ mode: 'edit', initial: mod })
+                },
+                onRemoveFromDisk: (codename) =>
+                  requestRemoveFromDisk([codename]),
+                onDeleteFromCatalog: (codename) => setPendingDelete(codename),
+              }}
             />
           </div>
         </div>

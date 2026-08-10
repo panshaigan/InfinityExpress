@@ -654,8 +654,6 @@ export default function App() {
         settingsOpen={settingsOpen}
         onOpenSettings={openSettings}
         onExport={handleExport}
-        railCollapsed={railCollapsed}
-        onToggleRailCollapsed={toggleRailCollapsed}
       />
 
       {appPhase === 'mods' ? (
@@ -713,6 +711,7 @@ export default function App() {
           finishedCount={route.routeProgress.finishedCount}
           totalCount={route.routeProgress.totalCount}
           collapsed={railCollapsed}
+          onToggleCollapsed={toggleRailCollapsed}
           onSelectEngine={selectEngine}
           onSelectPresets={selectPresets}
           onSelectStation={selectStation}

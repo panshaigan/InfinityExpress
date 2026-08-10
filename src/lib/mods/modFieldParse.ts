@@ -64,6 +64,25 @@ export function splitAuthorNames(author: string): string[] {
 }
 
 /**
+ * Known download hosts → default catalog author when the form field is blank.
+ * Does not scrape; GitHub and other hosts return null.
+ */
+export function authorFromModUrl(url: string): string | null {
+  try {
+    const host = new URL(url.trim()).hostname.replace(/^www\./i, '').toLowerCase()
+    if (host === 'weaselmods.net' || host.endsWith('.weaselmods.net')) {
+      return 'Lava'
+    }
+    if (host === 'morpheus-mart.com' || host.endsWith('.morpheus-mart.com')) {
+      return 'Morpheus562'
+    }
+  } catch {
+    /* ignore */
+  }
+  return null
+}
+
+/**
  * Wrap raw GitHub HTML readmes with htmlpreview so they open as HTML in-browser.
  * Idempotent for URLs already under htmlpreview.github.io.
  */

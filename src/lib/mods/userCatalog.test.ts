@@ -207,16 +207,22 @@ describe('user catalog CRUD', () => {
 })
 
 describe('provisionalCodenameFromUrl', () => {
-  it('derives an id from host and path and avoids collisions', () => {
-    const existing = new Set(['github.com-MyMod'])
+  it('derives an id from the last path segment and avoids collisions', () => {
+    expect(
+      provisionalCodenameFromUrl(
+        'https://downloads.weaselmods.net/download/gahesh',
+        new Set(),
+      ),
+    ).toBe('gahesh')
     expect(
       provisionalCodenameFromUrl(
         'https://github.com/org/MyMod/releases',
         new Set(),
       ),
-    ).toBe('github.com-releases')
+    ).toBe('releases')
+    const existing = new Set(['MyMod'])
     expect(
       provisionalCodenameFromUrl('https://github.com/org/MyMod', existing),
-    ).toBe('github.com-MyMod-2')
+    ).toBe('MyMod-2')
   })
 })

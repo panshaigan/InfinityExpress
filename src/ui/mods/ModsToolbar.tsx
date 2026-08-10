@@ -10,6 +10,7 @@ import { OutlinedSelect } from '../OutlinedSelect'
 import {
   AddModIcon,
   CheckUpdatesIcon,
+  ClearFiltersIcon,
   DownloadIcon,
   ExportCsvIcon,
   OnlyNeededIcon,
@@ -273,7 +274,7 @@ export function ModsToolbar({
           {hasFacetFilters ? (
             <button
               type="button"
-              className="btn secondary mods-clear-filters"
+              className="filter-clear has-icon-tip mods-clear-filters"
               onClick={() =>
                 onChange({
                   ...filters,
@@ -285,8 +286,12 @@ export function ModsToolbar({
                   requiredCodenames: null,
                 })
               }
+              aria-label="Clear filters"
             >
-              Clear filters
+              <ClearFiltersIcon />
+              <span className="icon-tip" role="tooltip">
+                Clear filters
+              </span>
             </button>
           ) : null}
           <span className="mods-action-icon-wrap mods-only-needed has-icon-tip">

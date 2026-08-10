@@ -8,7 +8,7 @@ export interface ModPageMeta {
   author: string
 }
 
-/** Fetch display name / readme hints from a mod page. Desktop only. */
+/** Fetch display name (first page heading) from a mod URL. Desktop only. */
 export async function scrapeModPageMeta(url: string): Promise<ModPageMeta | null> {
   if (!isDesktopApp()) return null
   const trimmed = url.trim()

@@ -2,12 +2,15 @@ import {
   memo,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from 'react'
+import { createPortal } from 'react-dom'
 import { openExternalUrl } from '../../lib/desktop/openExternalUrl'
 import {
   displayModName,
@@ -20,8 +23,26 @@ import {
 import { effectiveModFields, type WorkingMod } from '../../lib/mods/loadMods'
 import { isHttpUrl } from '../../lib/url'
 import { IconTip } from '../IconTip'
+import {
+  CheckUpdatesIcon,
+  DeleteFromCatalogIcon,
+  DownloadIcon,
+  EditModIcon,
+  RemoveFromDiskIcon,
+} from './ModsActionIcons'
 
 export const MODS_TABLE_ID = 'mods-table'
+
+export interface ModsRowActions {
+  acquireLabel: (mod: WorkingMod) => string
+  acquireDisabled: (mod: WorkingMod) => boolean
+  jobRunning: boolean
+  onAcquire: (codename: string) => void
+  onCheckUpdates: (codename: string) => void
+  onEdit: (codename: string) => void
+  onRemoveFromDisk: (codename: string) => void
+  onDeleteFromCatalog: (codename: string) => void
+}
 
 interface Props {
   rows: WorkingMod[]
@@ -36,6 +57,7 @@ interface Props {
   onFocusRow: (codename: string) => void
   /** Active acquire/check progress by codename (0–100 or indeterminate). */
   rowProgress?: ReadonlyMap<string, { pct: number | null; label: string }>
+  rowActions?: ModsRowActions
 }
 
 const COLUMNS: { key: ModsSortKey; label: string; className?: string }[] = [
@@ -117,6 +139,12 @@ function UrlCopyButton({ url }: { url: string }) {
 
 type RowProgress = { pct: number | null; label: string }
 
+interface ContextMenuState {
+  mod: WorkingMod
+  x: number
+  y: number
+}
+
 interface ModsTableRowProps {
   mod: WorkingMod
   checked: boolean
@@ -126,6 +154,7 @@ interface ModsTableRowProps {
   onToggle: (codename: string, want: boolean) => void
   onFocusRow: (codename: string) => void
   setRowEl: (codename: string, el: HTMLTableRowElement | null) => void
+  onContextMenu?: (e: ReactMouseEvent, mod: WorkingMod) => void
 }
 
 const ModsTableRow = memo(function ModsTableRow({
@@ -137,6 +166,7 @@ const ModsTableRow = memo(function ModsTableRow({
   onToggle,
   onFocusRow,
   setRowEl,
+  onContextMenu,
 }: ModsTableRowProps) {
   const eff = effectiveModFields(mod)
   const author = primaryAuthorLabel(eff.author)
@@ -156,6 +186,12 @@ const ModsTableRow = memo(function ModsTableRow({
       onDoubleClick={() => {
         if (selectionLocked) return
         onToggle(mod.codename, !checked)
+      }}
+      onContextMenu={(e) => {
+        if (!onContextMenu) return
+        e.preventDefault()
+        onFocusRow(mod.codename)
+        onContextMenu(e, mod)
       }}
       onFocus={() => {
         if (!focused) onFocusRow(mod.codename)
@@ -237,6 +273,124 @@ const ModsTableRow = memo(function ModsTableRow({
   )
 })
 
+function ModsRowContextMenu({
+  menu,
+  actions,
+  onClose,
+}: {
+  menu: ContextMenuState
+  actions: ModsRowActions
+  onClose: () => void
+}) {
+  const menuRef = useRef<HTMLDivElement>(null)
+  const [style, setStyle] = useState<CSSProperties>({
+    top: menu.y,
+    left: menu.x,
+  })
+  const { mod } = menu
+  const acquireLabel = actions.acquireLabel(mod)
+  const acquireDisabled = actions.acquireDisabled(mod) || actions.jobRunning
+  const removeDisabled = mod.diskStatus === 'not_present'
+
+  useLayoutEffect(() => {
+    const el = menuRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    let left = menu.x
+    let top = menu.y
+    if (left + rect.width > window.innerWidth - 8) {
+      left = Math.max(8, window.innerWidth - rect.width - 8)
+    }
+    if (top + rect.height > window.innerHeight - 8) {
+      top = Math.max(8, window.innerHeight - rect.height - 8)
+    }
+    setStyle({ top, left })
+  }, [menu.x, menu.y])
+
+  useEffect(() => {
+    function onPointerDown(e: PointerEvent) {
+      if (!menuRef.current?.contains(e.target as Node)) onClose()
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose()
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [onClose])
+
+  function run(action: () => void) {
+    action()
+    onClose()
+  }
+
+  return createPortal(
+    <div
+      ref={menuRef}
+      className="mods-row-context-menu"
+      role="menu"
+      aria-label="Mod actions"
+      style={style}
+    >
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={acquireDisabled}
+        onClick={() => run(() => actions.onAcquire(mod.codename))}
+      >
+        <DownloadIcon />
+        <span>{acquireLabel}</span>
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={actions.jobRunning}
+        onClick={() => run(() => actions.onCheckUpdates(mod.codename))}
+      >
+        <CheckUpdatesIcon />
+        <span>Check for updates</span>
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        onClick={() => run(() => actions.onEdit(mod.codename))}
+      >
+        <EditModIcon />
+        <span>Edit</span>
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={removeDisabled}
+        onClick={() => run(() => actions.onRemoveFromDisk(mod.codename))}
+      >
+        <RemoveFromDiskIcon />
+        <span>Remove from disk</span>
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        onClick={() => run(() => actions.onDeleteFromCatalog(mod.codename))}
+      >
+        <DeleteFromCatalogIcon />
+        <span>Remove from catalog</span>
+      </button>
+    </div>,
+    document.body,
+  )
+}
+
 export function ModsTable({
   rows,
   selected,
@@ -249,8 +403,10 @@ export function ModsTable({
   onToggleAllVisible,
   onFocusRow,
   rowProgress,
+  rowActions,
 }: Props) {
   const rowRefs = useRef(new Map<string, HTMLTableRowElement>())
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
 
   const allSelected =
     rows.length > 0 && rows.every((r) => selected.has(r.codename))
@@ -406,11 +562,24 @@ export function ModsTable({
                 onToggle={onToggle}
                 onFocusRow={onFocusRow}
                 setRowEl={setRowEl}
+                onContextMenu={
+                  rowActions
+                    ? (e, m) =>
+                        setContextMenu({ mod: m, x: e.clientX, y: e.clientY })
+                    : undefined
+                }
               />
             ))
           )}
         </tbody>
       </table>
+      {contextMenu && rowActions ? (
+        <ModsRowContextMenu
+          menu={contextMenu}
+          actions={rowActions}
+          onClose={() => setContextMenu(null)}
+        />
+      ) : null}
     </div>
   )
 }

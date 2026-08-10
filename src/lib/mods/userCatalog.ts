@@ -247,7 +247,8 @@ export type UserModInput = Omit<
 
 /**
  * Build a provisional catalog id from a download URL when the user leaves
- * Download ID blank. Collisions get -2, -3, … suffixes.
+ * Download ID blank. Uses the last path segment only (no hostname). Collisions
+ * get -2, -3, … suffixes.
  */
 export function provisionalCodenameFromUrl(
   url: string,
@@ -256,14 +257,13 @@ export function provisionalCodenameFromUrl(
   let base = 'user-mod'
   try {
     const parsed = new URL(url.trim())
-    const host = parsed.hostname.replace(/^www\./i, '')
     const segments = parsed.pathname
       .split('/')
       .map((s) => s.trim())
       .filter(Boolean)
-    const last = segments[segments.length - 1]?.replace(/\.[a-z0-9]+$/i, '') ?? ''
-    const raw = [host, last].filter(Boolean).join('-') || host || 'user-mod'
-    const cleaned = raw
+    const last =
+      segments[segments.length - 1]?.replace(/\.[a-z0-9]+$/i, '') ?? ''
+    const cleaned = last
       .replace(/[^a-zA-Z0-9._-]+/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '')

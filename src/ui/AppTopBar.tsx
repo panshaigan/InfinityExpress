@@ -1,6 +1,5 @@
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import { IconTip } from './IconTip'
-import { RailCollapseButton } from './RailCollapseButton'
 import { SelectionPresetsBar } from './SelectionPresetsBar'
 import { PhaseNav, type AppPhase } from './PhaseNav'
 
@@ -34,8 +33,6 @@ interface Props {
   aboutOpen: boolean
   onOpenAbout: () => void
   onExport: () => void
-  railCollapsed?: boolean
-  onToggleRailCollapsed?: () => void
 }
 
 function SettingsGearIcon() {
@@ -91,37 +88,20 @@ export function AppTopBar({
   aboutOpen,
   onOpenAbout,
   onExport,
-  railCollapsed,
-  onToggleRailCollapsed,
 }: Props) {
-  const showRailToggle =
-    phase === 'components' &&
-    railCollapsed != null &&
-    onToggleRailCollapsed != null
-
   return (
     <header className="top-bar">
-      <div className="brand-block">
-        <button
-          type="button"
-          className="brand has-icon-tip"
-          aria-haspopup="dialog"
-          aria-expanded={aboutOpen}
-          aria-label="About Infinity Express"
-          onClick={onOpenAbout}
-        >
-          <span className="brand-title">Infinity Express</span>
-          <IconTip>About</IconTip>
-        </button>
-        {showRailToggle ? (
-          <div className="brand-rail-toggle">
-            <RailCollapseButton
-              collapsed={railCollapsed}
-              onToggle={onToggleRailCollapsed}
-            />
-          </div>
-        ) : null}
-      </div>
+      <button
+        type="button"
+        className="brand has-icon-tip"
+        aria-haspopup="dialog"
+        aria-expanded={aboutOpen}
+        aria-label="About Infinity Express"
+        onClick={onOpenAbout}
+      >
+        <span className="brand-title">Infinity Express</span>
+        <IconTip>About</IconTip>
+      </button>
       <PhaseNav
         phase={phase}
         onPhaseChange={onPhaseChange}

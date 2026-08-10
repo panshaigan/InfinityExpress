@@ -70,3 +70,43 @@ export function OnlyNeededIcon({ size = 16 }: { size?: number }) {
     </svg>
   )
 }
+
+export function EditModIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M11.8 1.6a1.6 1.6 0 0 1 2.26 2.26l-.4.4-2.26-2.26.4-.4ZM2.5 11.5 10.9 3.1l2.26 2.26L4.76 13.76H2.5V11.5Z"
+      />
+    </svg>
+  )
+}
+
+export function DeleteFromCatalogIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M6 2.5h4a.5.5 0 0 1 .5.5v1H5.5V3a.5.5 0 0 1 .5-.5Zm-2 2h8l-.55 8.1A1.5 1.5 0 0 1 9.96 14H6.04a1.5 1.5 0 0 1-1.49-1.4L4 4.5Z"
+      />
+    </svg>
+  )
+}
+
+export function ClearFiltersIcon({ size = 12 }: { size?: number }) {
+  return (
+    <svg
+      className="filter-clear-icon"
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M3.5 3.5 8 8l4.5-4.5.9.9L8.9 8.9l4.5 4.5-.9.9L8 9.8l-4.5 4.5-.9-.9 4.5-4.5L2.6 4.4z"
+      />
+    </svg>
+  )
+}

@@ -509,10 +509,10 @@ export function useModAcquireJob(args: {
 
         if (wasUpdate) {
           updated += 1
-          setEntry(mod.codename, 'updated', `Updated to ${pending.version}`)
+          setEntry(mod.codename, 'updated', pending.version)
         } else {
           downloaded += 1
-          setEntry(mod.codename, 'ok', `Downloaded ${pending.version}`)
+          setEntry(mod.codename, 'ok', pending.version)
         }
       } catch (err) {
         if (cancelRef.current || isCancelledError(err)) {

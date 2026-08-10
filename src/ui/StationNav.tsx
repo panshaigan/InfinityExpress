@@ -6,6 +6,7 @@ import {
 } from '../lib/xml/schema'
 import { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
 import { IconTip } from './IconTip'
+import { RailCollapseButton } from './RailCollapseButton'
 
 export type AppNavSlot = StationSlot
 export { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
@@ -43,6 +44,7 @@ interface Props {
   finishedCount: number
   totalCount: number
   collapsed: boolean
+  onToggleCollapsed: () => void
   onSelectEngine: () => void
   onSelectPresets: () => void
   onSelectStation: (id: StationId) => void
@@ -117,6 +119,7 @@ export function StationNav({
   finishedCount,
   totalCount,
   collapsed,
+  onToggleCollapsed,
   onSelectEngine,
   onSelectPresets,
   onSelectStation,
@@ -160,6 +163,9 @@ export function StationNav({
             ))}
           </>
         ) : null}
+      </div>
+      <div className="station-nav-footer">
+        <RailCollapseButton collapsed={collapsed} onToggle={onToggleCollapsed} />
       </div>
       {showRouteChrome ? (
         <>

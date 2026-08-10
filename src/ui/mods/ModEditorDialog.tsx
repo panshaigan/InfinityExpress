@@ -8,6 +8,7 @@ import {
 } from '../../lib/mods/loadMods'
 import {
   GAME_TOKENS,
+  authorFromModUrl,
   joinGameTokens,
   splitGameTokens,
   withHtmlPreviewIfNeeded,
@@ -147,10 +148,8 @@ export function ModEditorDialog({
     trackModeFromTrack(initial?.track ?? ''),
   )
   const [scraping, setScraping] = useState(false)
-  const scrapeCacheRef = useRef<{ url: string; name: string; readme: string; author: string } | null>(
-    null,
-  )
-  const scrapePromiseRef = useRef<Map<string, Promise<{ name: string; readme: string; author: string } | null>>>(
+  const scrapeCacheRef = useRef<{ url: string; name: string } | null>(null)
+  const scrapePromiseRef = useRef<Map<string, Promise<{ name: string } | null>>>(
     new Map(),
   )
   const formRef = useRef(form)
@@ -231,29 +230,23 @@ export function ModEditorDialog({
     })
   }
 
-  function resolvedCodename(url: string, current: UserModInput): string {
-    const code = current.codename.trim()
-    if (code) return code
-    if (mode === 'create') {
-      return provisionalCodenameFromUrl(url, existingCodenames)
-    }
-    return ''
-  }
-
   async function fillEmptyFromUrl(
     url: string,
     current: UserModInput,
   ): Promise<UserModInput> {
-    const needName = !current.name.trim()
-    const needReadme = !current.readme.trim()
-    if (!needName && !needReadme) return current
-
     let next = { ...current }
+
+    if (!next.author.trim()) {
+      const fromHost = authorFromModUrl(url)
+      if (fromHost) next = { ...next, author: fromHost }
+    }
+
+    const needName = !next.name.trim()
+    if (!needName) return next
+
     const cached = scrapeCacheRef.current
     let meta =
-      cached && cached.url === url
-        ? { name: cached.name, readme: cached.readme, author: cached.author }
-        : null
+      cached && cached.url === url ? { name: cached.name } : null
 
     if (!meta) {
       let pending = scrapePromiseRef.current.get(url)
@@ -262,11 +255,7 @@ export function ModEditorDialog({
         pending = scrapeModPageMeta(url)
           .then((scraped) => {
             if (!scraped) return null
-            const result = {
-              name: scraped.name.trim(),
-              readme: scraped.readme.trim(),
-              author: scraped.author.trim(),
-            }
+            const result = { name: scraped.name.trim() }
             scrapeCacheRef.current = { url, ...result }
             return result
           })
@@ -279,17 +268,8 @@ export function ModEditorDialog({
       meta = await pending
     }
 
-    if (meta && !next.author.trim() && meta.author) {
-      next = { ...next, author: meta.author }
-    }
-    if (needName) {
-      const fromScrape = meta?.name?.trim() ?? ''
-      const code = resolvedCodename(url, next)
-      next = { ...next, name: fromScrape || code }
-    }
-    if (needReadme && meta?.readme && isHttpUrl(meta.readme)) {
-      next = { ...next, readme: withHtmlPreviewIfNeeded(meta.readme) }
-    }
+    const fromScrape = meta?.name?.trim() ?? ''
+    if (fromScrape) next = { ...next, name: fromScrape }
     return next
   }
 
@@ -297,9 +277,18 @@ export function ModEditorDialog({
     const url = formRef.current.url.trim()
     if (!isHttpUrl(url)) return
     const current = formRef.current
-    if (current.name.trim() && current.readme.trim()) return
+    if (current.name.trim() && current.author.trim()) return
     const next = await fillEmptyFromUrl(url, current)
     setForm(next)
+  }
+
+  function onReadmeBlur() {
+    const raw = formRef.current.readme.trim()
+    if (!raw) return
+    const next = withHtmlPreviewIfNeeded(raw)
+    if (next !== formRef.current.readme) {
+      setField('readme', next)
+    }
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -314,11 +303,7 @@ export function ModEditorDialog({
       return
     }
 
-    let next = await fillEmptyFromUrl(url, form)
-    if (!next.name.trim()) {
-      const code = resolvedCodename(url, next)
-      next = { ...next, name: code }
-    }
+    const next = await fillEmptyFromUrl(url, form)
 
     const readmeRaw = next.readme.trim()
     const readme = readmeRaw ? withHtmlPreviewIfNeeded(readmeRaw) : ''
@@ -427,6 +412,7 @@ export function ModEditorDialog({
             type="url"
             value={form.readme}
             onChange={(v) => setField('readme', v)}
+            onBlur={onReadmeBlur}
             placeholder="https://…"
             spellCheck={false}
             autoComplete="off"
