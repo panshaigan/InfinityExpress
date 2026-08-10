@@ -4,7 +4,9 @@ import {
   backupGameDir,
   createNamedBackup,
   listBackups,
+  listenBackupProgress,
   restoreGameDir,
+  type BackupProgress,
 } from '../../lib/desktop/weiduInstall'
 
 export type BackupDialogMode = 'baseline' | 'snapshot' | 'restore'
@@ -25,6 +27,12 @@ function defaultSnapshotName(): string {
   return `snapshot-${Date.now()}`
 }
 
+function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`
+}
+
 export function BackupManagerDialog({
   open,
   mode,
@@ -42,7 +50,7 @@ export function BackupManagerDialog({
   const [selectedPath, setSelectedPath] = useState<string>('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [progress, setProgress] = useState<string | null>(null)
+  const [progress, setProgress] = useState<BackupProgress | null>(null)
 
   useEffect(() => {
     if (!open || mode !== 'restore') return
@@ -56,11 +64,31 @@ export function BackupManagerDialog({
     if (mode === 'snapshot') setSnapshotName(defaultSnapshotName())
   }, [open, mode])
 
+  useEffect(() => {
+    if (!open || !busy) return
+    let cancelled = false
+    let unlisten: (() => void) | undefined
+    void listenBackupProgress((payload) => {
+      if (!cancelled) setProgress(payload)
+    }).then((fn) => {
+      if (cancelled) {
+        fn()
+        return
+      }
+      unlisten = fn
+    })
+    return () => {
+      cancelled = true
+      unlisten?.()
+    }
+  }, [open, busy])
+
   if (!open) return null
 
   async function runBaseline() {
     setBusy(true)
     setError(null)
+    setProgress({ phase: 'start', message: 'Starting baseline…', filesDone: 0, bytesDone: 0 })
     try {
       await backupGameDir({
         sourceDir,
@@ -75,12 +103,14 @@ export function BackupManagerDialog({
       setError(String(e))
     } finally {
       setBusy(false)
+      setProgress(null)
     }
   }
 
   async function runSnapshot() {
     setBusy(true)
     setError(null)
+    setProgress({ phase: 'start', message: 'Starting snapshot…', filesDone: 0, bytesDone: 0 })
     try {
       await createNamedBackup({
         sourceDir,
@@ -95,6 +125,7 @@ export function BackupManagerDialog({
       setError(String(e))
     } finally {
       setBusy(false)
+      setProgress(null)
     }
   }
 
@@ -102,7 +133,7 @@ export function BackupManagerDialog({
     if (!selectedPath) return
     setBusy(true)
     setError(null)
-    setProgress('Restoring…')
+    setProgress({ phase: 'restore', message: 'Restoring…', filesDone: 0, bytesDone: 0 })
     try {
       await restoreGameDir(selectedPath, targetDir)
       onRestoreDone(selectedPath)
@@ -120,8 +151,14 @@ export function BackupManagerDialog({
     ...(manifest?.snapshots ?? []),
   ]
 
+  const progressLabel = progress
+    ? progress.filesDone > 0
+      ? `${progress.message} — ${progress.filesDone} files · ${formatBytes(progress.bytesDone)}`
+      : progress.message
+    : null
+
   return (
-    <div className="keyboard-help-backdrop" role="presentation" onClick={onClose}>
+    <div className="keyboard-help-backdrop" role="presentation" onClick={busy ? undefined : onClose}>
       <div
         className="keyboard-help settings-dialog backup-dialog"
         role="dialog"
@@ -193,7 +230,17 @@ export function BackupManagerDialog({
           </div>
         )}
 
-        {progress ? <p className="install-dialog-progress">{progress}</p> : null}
+        {progress ? (
+          <div className="install-dialog-progress-block">
+            <div
+              className="mods-row-progress-bar"
+              data-indeterminate="true"
+              role="progressbar"
+              aria-valuetext={progressLabel ?? undefined}
+            />
+            <p className="install-dialog-progress">{progressLabel}</p>
+          </div>
+        ) : null}
         {error ? <p className="install-dialog-error">{error}</p> : null}
 
         <div className="install-dialog-actions">

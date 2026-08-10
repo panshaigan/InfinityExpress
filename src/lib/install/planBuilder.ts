@@ -67,7 +67,7 @@ export function buildInstallPlan(
         modId: batchModId,
         componentIds: [...batchComponentIds],
         componentLabels: [...batchLabels],
-        status: 'pending',
+        status: 'queued',
         warnings: [],
         errors: [],
       })

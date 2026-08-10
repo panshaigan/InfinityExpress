@@ -61,6 +61,7 @@ export function InstallStation({
     planSteps,
     consoleLines,
     inputPrompt,
+    activeStepId,
     initRun,
     start,
     continueRun,
@@ -93,8 +94,12 @@ export function InstallStation({
   )
 
   useEffect(() => {
+    if (activeStepId) {
+      setSelectedStepId(activeStepId)
+      return
+    }
     if (!selectedStepId && steps[0]) setSelectedStepId(steps[0].stepId)
-  }, [steps, selectedStepId])
+  }, [steps, selectedStepId, activeStepId])
 
   useEffect(() => {
     if (run?.runState === 'completed') setCleanupOffer(true)
@@ -102,6 +107,18 @@ export function InstallStation({
 
   const modsReady = allModsPresent(neededCodenames, mods)
   const canRun = isDesktopApp() && !!game && modsReady && !!weiduPath && !!appDirs.backupDir
+  const canBackup = !!game && !!appDirs.backupDir
+
+  const openRestoreDialog = useCallback(() => {
+    if (!game) return
+    const step = run?.steps[run.cursor] ?? run?.steps[0]
+    const phase = step?.phase ?? 'single'
+    const targetDir = gameDirForPhase(game, phase, gameFolders)
+    const gameKey = game === 'eet' ? (phase === 'eet1' ? 'bg1' : 'bg2') : game
+    setBackupGameKey(gameKey)
+    setBackupSourceDir(targetDir)
+    setBackupDialog('restore')
+  }, [game, run, gameFolders])
 
   const statusText = useMemo(() => {
     if (!run) return `${planSteps.length} steps planned`
@@ -151,19 +168,14 @@ export function InstallStation({
   }, [canRun, initRun, ensureBaselines, start])
 
   const onRestart = useCallback(() => {
-    if (!game || !run) return
-    const step = run.steps[run.cursor] ?? run.steps[0]
-    const phase = step?.phase ?? 'single'
-    const targetDir = gameDirForPhase(game, phase, gameFolders)
-    const gameKey = game === 'eet' ? (phase === 'eet1' ? 'bg1' : 'bg2') : game
-    setBackupGameKey(gameKey)
-    setBackupSourceDir(targetDir)
-    setBackupDialog('restore')
-  }, [game, run, gameFolders])
+    openRestoreDialog()
+  }, [openRestoreDialog])
 
   const onRestoreDone = useCallback(
     async (_backupPath: string) => {
-      if (!game || !run) return
+      if (!game) return
+      setNotice('Backup restored.')
+      if (!run) return
       const step = run.steps[run.cursor] ?? run.steps[0]
       const phase = step?.phase ?? 'single'
       const targetDir = gameDirForPhase(game, phase, gameFolders)
@@ -217,7 +229,7 @@ export function InstallStation({
         <button
           type="button"
           className="btn secondary"
-          disabled={!game || !appDirs.backupDir}
+          disabled={!canBackup}
           onClick={() => {
             if (!game) return
             const dir = gameDirForPhase(game, 'single', gameFolders)
@@ -227,6 +239,14 @@ export function InstallStation({
           }}
         >
           Back up now
+        </button>
+        <button
+          type="button"
+          className="btn secondary"
+          disabled={!canBackup}
+          onClick={openRestoreDialog}
+        >
+          Restore
         </button>
         {!modsReady ? (
           <span className="install-toolbar-note">Missing mods on disk</span>
@@ -272,6 +292,7 @@ export function InstallStation({
           <InstallTable
             steps={steps}
             selectedStepId={selectedStep?.stepId ?? null}
+            activeStepId={activeStepId}
             onSelectStep={setSelectedStepId}
           />
         </div>
@@ -305,7 +326,9 @@ export function InstallStation({
         collapsed={consoleCollapsed}
         onToggleCollapsed={() => setConsoleCollapsed((v) => !v)}
         waitingForInput={
-          run?.runState === 'waitingForInput' || run?.runState === 'running'
+          !!inputPrompt ||
+          (run?.runState === 'running' &&
+            run.steps[run.cursor]?.status === 'installing')
         }
         inputPrompt={inputPrompt}
         onSendInput={(text) => void sendInput(text)}

@@ -19,6 +19,7 @@ import { resolveModForInstall } from '../lib/install/modResolution'
 import {
   cancelWeiduStep,
   gameDirForPhase,
+  listenStageProgress,
   listenWeiduInstallEvents,
   readGameWeiduLog,
   runWeiduStep,
@@ -42,6 +43,12 @@ function appendInstallLog(logDir: string, line: string) {
   void line
 }
 
+function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`
+}
+
 export function useInstallRun(options: {
   model: InstallSequenceModel
   selectedIds: ReadonlySet<string>
@@ -53,13 +60,19 @@ export function useInstallRun(options: {
   const [consoleLines, setConsoleLines] = useState<string[]>([])
   const [inputPrompt, setInputPrompt] = useState<string | null>(null)
   const [paused, setPaused] = useState(false)
+  const [activeStepId, setActiveStepId] = useState<string | null>(null)
   const cacheRef = useRef<ModListingCache>(new Map())
   const runningRef = useRef(false)
   const pausedRef = useRef(false)
+  const activeStepIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     pausedRef.current = paused
   }, [paused])
+
+  useEffect(() => {
+    activeStepIdRef.current = activeStepId
+  }, [activeStepId])
 
   const planSteps = useMemo(() => {
     if (!game) return []
@@ -79,6 +92,7 @@ export function useInstallRun(options: {
       stagedFolderName: '',
       weiduNumbers: [],
       languageIndex: null,
+      progress: null,
     }))
     const next: InstallRun = {
       runId,
@@ -92,6 +106,7 @@ export function useInstallRun(options: {
     setConsoleLines([])
     setInputPrompt(null)
     setPaused(false)
+    setActiveStepId(null)
     cacheRef.current = new Map()
     return next
   }, [game, planSteps])
@@ -112,12 +127,24 @@ export function useInstallRun(options: {
         ])
         appendInstallLog('', `${ev.level}: ${ev.message}`)
       } else if (ev.kind === 'stepStarted') {
+        setActiveStepId(ev.stepId)
         setRun((r) => {
           if (!r) return r
           return {
             ...r,
             steps: r.steps.map((s) =>
-              s.stepId === ev.stepId ? { ...s, status: 'installing' } : s,
+              s.stepId === ev.stepId
+                ? {
+                    ...s,
+                    status: 'installing',
+                    progress: {
+                      filesDone: 0,
+                      bytesDone: 0,
+                      indeterminate: true,
+                      label: 'Installing…',
+                    },
+                  }
+                : s,
             ),
             runState: 'running',
           }
@@ -134,7 +161,12 @@ export function useInstallRun(options: {
                 : s.status === 'needsInput'
                   ? 'needsInput'
                   : 'failed'
-              return { ...s, status, finishedAt: new Date().toISOString() }
+              return {
+                ...s,
+                status,
+                progress: null,
+                finishedAt: new Date().toISOString(),
+              }
             }),
           }
         })
@@ -152,6 +184,54 @@ export function useInstallRun(options: {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    let unlisten: (() => void) | undefined
+    void listenStageProgress((payload) => {
+      const stepId = activeStepIdRef.current
+      if (!stepId) return
+      const label =
+        payload.phase === 'done'
+          ? `Copied ${payload.filesDone} files · ${formatBytes(payload.bytesDone)}`
+          : payload.filesDone > 0
+            ? `${payload.filesDone} files · ${formatBytes(payload.bytesDone)}`
+            : payload.message || 'Copying…'
+      setRun((r) => {
+        if (!r) return r
+        return {
+          ...r,
+          steps: r.steps.map((s) =>
+            s.stepId === stepId
+              ? {
+                  ...s,
+                  status: s.status === 'copying' ? 'copying' : s.status,
+                  progress: {
+                    filesDone: payload.filesDone,
+                    bytesDone: payload.bytesDone,
+                    indeterminate: true,
+                    label,
+                  },
+                }
+              : s,
+          ),
+        }
+      })
+      if (payload.phase === 'start' || payload.phase === 'done') {
+        setConsoleLines((prev) => [...prev.slice(-4999), `[stage] ${payload.message}`])
+      }
+    }).then((fn) => {
+      if (cancelled) {
+        fn()
+        return
+      }
+      unlisten = fn
+    })
+    return () => {
+      cancelled = true
+      unlisten?.()
+    }
+  }, [])
+
   const markAlreadyInstalledFromLog = useCallback(
     async (steps: InstallStep[], gameDir: string): Promise<InstallStep[]> => {
       const log = await readGameWeiduLog(gameDir)
@@ -163,71 +243,13 @@ export function useInstallRun(options: {
         const allInstalled = step.weiduNumbers.every((n) =>
           isComponentInstalledInLog(log, step.tp2Path, step.languageIndex!, n),
         )
-        if (allInstalled && step.status === 'pending') {
-          return { ...step, status: 'alreadyInstalled' }
+        if (allInstalled && (step.status === 'queued' || step.status === 'copying')) {
+          return { ...step, status: 'alreadyInstalled', progress: null }
         }
         return step
       })
     },
     [],
-  )
-
-  const prepareStep = useCallback(
-    async (
-      activeRun: InstallRun,
-      step: InstallStep,
-      stepIndex: number,
-    ): Promise<InstallStep> => {
-      const weiduPath = readWeiduPath()
-      const appDirs = readAppDirPaths()
-      const gameDir = gameDirForPhase(activeRun.game, step.phase, gameFolders)
-      const gameVersion =
-        readGameFolderVersions()[gameFolderKeyForPhase(activeRun.game, step.phase)] ?? ''
-      const componentNodes = step.componentIds
-        .map((id) => model.componentsById.get(id))
-        .filter((n): n is NonNullable<typeof n> => !!n)
-
-      const resolved = await resolveModForInstall(
-        cacheRef.current,
-        weiduPath,
-        appDirs.modsDownloadDir,
-        gameDir,
-        step.modId,
-        componentNodes,
-        gameVersion,
-      )
-
-      const weiduNumbers: number[] = []
-      const errors: string[] = []
-      if (resolved.languageError) errors.push(resolved.languageError)
-      for (const id of step.componentIds) {
-        const r = resolved.componentResults.get(id)
-        if (!r) continue
-        if (r.error) errors.push(r.error)
-        else if (r.weiduNumber != null) weiduNumbers.push(r.weiduNumber)
-      }
-
-      let status = step.status
-      if (errors.length > 0 || weiduNumbers.length !== step.componentIds.length) {
-        status = 'needsInput'
-      }
-
-      const stepLogDir = activeRun.logDir
-        ? `${activeRun.logDir}/${stepFolderName(step, stepIndex)}`
-        : ''
-      return {
-        ...step,
-        tp2Path: resolved.tp2Path,
-        stagedFolderName: resolved.stagedFolderName,
-        weiduNumbers,
-        languageIndex: resolved.languageIndex,
-        status,
-        errors: [...step.errors, ...errors],
-        stdoutLogPath: stepLogDir ? `${stepLogDir}/stdout.log` : undefined,
-        stderrLogPath: stepLogDir ? `${stepLogDir}/stderr.log` : undefined,
-      }
-    },
-    [gameFolders, model.componentsById],
   )
 
   const executeFromCursor = useCallback(
@@ -253,7 +275,128 @@ export function useInstallRun(options: {
           }
 
           try {
-            step = await prepareStep(current, step, i)
+            const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
+            setActiveStepId(step.stepId)
+            step = {
+              ...step,
+              status: 'copying',
+              startedAt: new Date().toISOString(),
+              progress: {
+                filesDone: 0,
+                bytesDone: 0,
+                indeterminate: true,
+                label: 'Preparing…',
+              },
+            }
+            current = {
+              ...current,
+              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+              cursor: i,
+            }
+            setRun({ ...current, runState: 'running' })
+            setConsoleLines((prev) => [
+              ...prev.slice(-4999),
+              `[stage] Resolving ${step.modId} for ${gameDir || '(no game dir)'}…`,
+            ])
+
+            const weiduPath = readWeiduPath()
+            const appDirs = readAppDirPaths()
+            const gameVersion =
+              readGameFolderVersions()[
+                gameFolderKeyForPhase(current.game, step.phase)
+              ] ?? ''
+            const componentNodes = step.componentIds
+              .map((id) => model.componentsById.get(id))
+              .filter((n): n is NonNullable<typeof n> => !!n)
+
+            const resolved = await resolveModForInstall(
+              cacheRef.current,
+              weiduPath,
+              appDirs.modsDownloadDir,
+              gameDir,
+              step.modId,
+              componentNodes,
+              gameVersion,
+            )
+
+            if (resolved.didStage) {
+              setConsoleLines((prev) => [
+                ...prev.slice(-4999),
+                `[stage] Copied ${step.modId} → ${gameDir}/${resolved.stagedFolderName}`,
+                `[stage] tp2: ${resolved.tp2Path}`,
+              ])
+            } else {
+              setConsoleLines((prev) => [
+                ...prev.slice(-4999),
+                `[stage] Reusing staged ${resolved.stagedFolderName} (${resolved.tp2Path})`,
+              ])
+            }
+
+            const weiduNumbers: number[] = []
+            const errors: string[] = []
+            if (resolved.languageError) errors.push(resolved.languageError)
+            for (const id of step.componentIds) {
+              const r = resolved.componentResults.get(id)
+              if (!r) {
+                errors.push(`Could not resolve component ${id}`)
+                continue
+              }
+              if (r.error) errors.push(r.error)
+              else if (r.weiduNumber != null) weiduNumbers.push(r.weiduNumber)
+            }
+
+            const stepLogDir = current.logDir
+              ? `${current.logDir}/${stepFolderName(step, i)}`
+              : ''
+
+            if (errors.length > 0 || weiduNumbers.length !== step.componentIds.length) {
+              step = {
+                ...step,
+                tp2Path: resolved.tp2Path,
+                stagedFolderName: resolved.stagedFolderName,
+                weiduNumbers,
+                languageIndex: resolved.languageIndex,
+                status: 'needsInput',
+                progress: null,
+                errors: [...step.errors, ...errors],
+                stdoutLogPath: stepLogDir ? `${stepLogDir}/stdout.log` : undefined,
+                stderrLogPath: stepLogDir ? `${stepLogDir}/stderr.log` : undefined,
+              }
+              current = {
+                ...current,
+                steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+                cursor: i,
+              }
+              for (const err of errors) {
+                setConsoleLines((prev) => [...prev.slice(-4999), `[error] ${err}`])
+              }
+              if (errors.length === 0) {
+                setConsoleLines((prev) => [
+                  ...prev.slice(-4999),
+                  `[error] Could not resolve all WeiDU component numbers for ${step.modId}`,
+                ])
+              }
+              setRun({ ...current, runState: 'waitingForInput' })
+              runningRef.current = false
+              return
+            }
+
+            step = {
+              ...step,
+              tp2Path: resolved.tp2Path,
+              stagedFolderName: resolved.stagedFolderName,
+              weiduNumbers,
+              languageIndex: resolved.languageIndex,
+              status: 'installing',
+              progress: {
+                filesDone: 0,
+                bytesDone: 0,
+                indeterminate: true,
+                label: 'Installing…',
+              },
+              stdoutLogPath: stepLogDir ? `${stepLogDir}/stdout.log` : undefined,
+              stderrLogPath: stepLogDir ? `${stepLogDir}/stderr.log` : undefined,
+            }
             current = {
               ...current,
               steps: current.steps.map((s, idx) => (idx === i ? step : s)),
@@ -261,13 +404,6 @@ export function useInstallRun(options: {
             }
             setRun({ ...current, runState: 'running' })
 
-            if (step.status === 'needsInput') {
-              setRun({ ...current, runState: 'waitingForInput' })
-              runningRef.current = false
-              return
-            }
-
-            const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
             const log = await readGameWeiduLog(gameDir)
             if (
               step.languageIndex != null &&
@@ -275,7 +411,7 @@ export function useInstallRun(options: {
                 isComponentInstalledInLog(log, step.tp2Path, step.languageIndex!, n),
               )
             ) {
-              step = { ...step, status: 'alreadyInstalled' }
+              step = { ...step, status: 'alreadyInstalled', progress: null }
               current = {
                 ...current,
                 steps: current.steps.map((s, idx) => (idx === i ? step : s)),
@@ -306,6 +442,7 @@ export function useInstallRun(options: {
             step = {
               ...step,
               status,
+              progress: null,
               debugLogPath: result.debugPath ?? undefined,
               warnings:
                 result.logVerified || status === 'succeeded'
@@ -335,6 +472,7 @@ export function useInstallRun(options: {
             step = {
               ...step,
               status: 'failed',
+              progress: null,
               errors: [...step.errors, message],
               finishedAt: new Date().toISOString(),
             }
@@ -343,18 +481,20 @@ export function useInstallRun(options: {
               steps: current.steps.map((s, idx) => (idx === i ? step : s)),
               cursor: i,
             }
+            setActiveStepId(step.stepId)
             setRun({ ...current, runState: 'failed' })
             runningRef.current = false
             return
           }
         }
 
+        setActiveStepId(null)
         setRun({ ...current, runState: 'completed', cursor: current.steps.length })
       } finally {
         runningRef.current = false
       }
     },
-    [gameFolders, prepareStep],
+    [gameFolders, model.componentsById],
   )
 
   const start = useCallback(async () => {
@@ -384,7 +524,7 @@ export function useInstallRun(options: {
     if (!run) return
     const i = run.cursor
     const steps = run.steps.map((s, idx) =>
-      idx === i ? { ...s, status: 'skipped' as const } : s,
+      idx === i ? { ...s, status: 'skipped' as const, progress: null } : s,
     )
     const next = { ...run, steps, cursor: i + 1, runState: 'running' as InstallRunState }
     setRun(next)
@@ -398,7 +538,8 @@ export function useInstallRun(options: {
       let steps: InstallStep[] = run.steps.map(
         (s): InstallStep => ({
           ...s,
-          status: 'pending',
+          status: 'queued',
+          progress: null,
           warnings: [],
           errors: [],
           finishedAt: undefined,
@@ -421,6 +562,7 @@ export function useInstallRun(options: {
       setRun(next)
       setConsoleLines([])
       setInputPrompt(null)
+      setActiveStepId(null)
       cacheRef.current = new Map()
       await executeFromCursor({ ...next, runState: 'running' })
     },
@@ -441,6 +583,7 @@ export function useInstallRun(options: {
     consoleLines,
     inputPrompt,
     paused,
+    activeStepId,
     initRun,
     start,
     continueRun,

@@ -1,19 +1,20 @@
 //! WeiDU process spawning, listing, staging, and cleanup.
 
-use crate::mod_fs::{copy_recursive, find_subdir_ci, validate_folder_name};
+use crate::mod_fs::{find_subdir_ci, validate_folder_name};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::fs::{self, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, State};
 
 const INSTALL_EVENT: &str = "weidu-install-event";
+const STAGE_PROGRESS_EVENT: &str = "weidu-stage-progress";
 const DEFAULT_TIMEOUT_SECS: u64 = 3600;
 
 pub struct RunningWeidu {
@@ -83,6 +84,63 @@ pub struct StepResult {
   pub log_verified: bool,
   pub timed_out: bool,
   pub cancelled: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StageProgress {
+  pub phase: String,
+  pub message: String,
+  pub files_done: u64,
+  pub bytes_done: u64,
+}
+
+fn emit_stage_progress(app: &AppHandle, payload: StageProgress) {
+  let _ = app.emit(STAGE_PROGRESS_EVENT, &payload);
+}
+
+fn copy_recursive_with_progress(
+  app: &AppHandle,
+  from: &Path,
+  to: &Path,
+  files: &Arc<AtomicU64>,
+  bytes: &Arc<AtomicU64>,
+) -> Result<(), String> {
+  if from.is_dir() {
+    fs::create_dir_all(to).map_err(|e| e.to_string())?;
+    for entry in fs::read_dir(from).map_err(|e| e.to_string())? {
+      let entry = entry.map_err(|e| e.to_string())?;
+      copy_recursive_with_progress(
+        app,
+        &entry.path(),
+        &to.join(entry.file_name()),
+        files,
+        bytes,
+      )?;
+    }
+  } else {
+    if let Some(parent) = to.parent() {
+      fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    let meta = from.metadata().map_err(|e| e.to_string())?;
+    fs::copy(from, to).map_err(|e| e.to_string())?;
+    let name = from
+      .file_name()
+      .map(|n| n.to_string_lossy().into_owned())
+      .unwrap_or_default();
+    let fd = files.fetch_add(1, Ordering::SeqCst) + 1;
+    let bd = bytes.fetch_add(meta.len(), Ordering::SeqCst) + meta.len();
+    emit_stage_progress(
+      app,
+      StageProgress {
+        phase: "copy".into(),
+        message: name,
+        files_done: fd,
+        bytes_done: bd,
+      },
+    );
+  }
+  Ok(())
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -947,6 +1005,7 @@ fn pick_tp2_candidate(
 
 #[tauri::command]
 pub fn stage_mod_into_game_dir(
+  app: AppHandle,
   mods_download_dir: String,
   codename: String,
   game_dir: String,
@@ -985,6 +1044,20 @@ pub fn stage_mod_into_game_dir(
   validate_folder_name(&staged_name)?;
 
   let target = game.join(&staged_name);
+  emit_stage_progress(
+    &app,
+    StageProgress {
+      phase: "start".into(),
+      message: format!(
+        "Copying {} → {}",
+        mod_folder.display(),
+        target.display()
+      ),
+      files_done: 0,
+      bytes_done: 0,
+    },
+  );
+
   if target.exists() {
     if target.is_dir() {
       fs::remove_dir_all(&target).map_err(|e| e.to_string())?;
@@ -992,8 +1065,19 @@ pub fn stage_mod_into_game_dir(
       fs::remove_file(&target).map_err(|e| e.to_string())?;
     }
   }
-  copy_recursive(mod_folder, &target)?;
+  let files = Arc::new(AtomicU64::new(0));
+  let bytes = Arc::new(AtomicU64::new(0));
+  copy_recursive_with_progress(&app, mod_folder, &target, &files, &bytes)?;
   let tp2 = find_tp2_in_dir(&target)?;
+  emit_stage_progress(
+    &app,
+    StageProgress {
+      phase: "done".into(),
+      message: format!("Staged {}", tp2.display()),
+      files_done: files.load(Ordering::SeqCst),
+      bytes_done: bytes.load(Ordering::SeqCst),
+    },
+  );
   Ok(tp2.to_string_lossy().into_owned())
 }
 

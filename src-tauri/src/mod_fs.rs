@@ -99,6 +99,7 @@ pub(crate) fn validate_folder_name(name: &str) -> Result<(), String> {
   }
 }
 
+#[allow(dead_code)] // Prefer progress-emitting copy helpers in install/backup paths.
 pub(crate) fn copy_recursive(from: &Path, to: &Path) -> Result<(), String> {
   if from.is_dir() {
     std::fs::create_dir_all(to).map_err(|e| e.to_string())?;

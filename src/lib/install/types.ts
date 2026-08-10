@@ -1,7 +1,8 @@
 import type { SelectedGame } from '../xml/schema'
 
 export type ComponentRunStatus =
-  | 'pending'
+  | 'queued'
+  | 'copying'
   | 'installing'
   | 'succeeded'
   | 'succeededWithWarnings'
@@ -9,6 +10,13 @@ export type ComponentRunStatus =
   | 'skipped'
   | 'alreadyInstalled'
   | 'needsInput'
+
+export interface StepProgress {
+  filesDone: number
+  bytesDone: number
+  indeterminate?: boolean
+  label?: string
+}
 
 export type InstallRunState =
   | 'idle'
@@ -34,6 +42,7 @@ export interface InstallStep {
   weiduNumbers: number[]
   languageIndex: number | null
   status: ComponentRunStatus
+  progress?: StepProgress | null
   startedAt?: string
   finishedAt?: string
   warnings: string[]

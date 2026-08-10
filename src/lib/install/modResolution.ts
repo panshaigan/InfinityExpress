@@ -18,6 +18,8 @@ export interface ModResolutionResult {
   languageError: string | null
   componentResults: Map<string, ResolutionResult>
   listing: WeiduComponentInfo[]
+  didStage: boolean
+  gameDir: string
 }
 
 function cacheKey(gameDir: string, modId: string, tp2Hint: string, gameVersion: string): string {
@@ -54,6 +56,7 @@ export async function resolveModForInstall(
 ): Promise<ModResolutionResult> {
   const tp2Hint = tp2HintForComponents(components) ?? ''
   const key = cacheKey(gameDir, modId, tp2Hint, gameVersion)
+  const cacheHadEntry = cache.has(key)
   let entry = cache.get(key)
   let tp2Path = entry?.tp2Path ?? ''
   let stagedFolderName = ''
@@ -97,6 +100,8 @@ export async function resolveModForInstall(
           ]),
         ),
         listing: componentsListing,
+        didStage: true,
+        gameDir,
       }
     }
   } else {
@@ -121,5 +126,7 @@ export async function resolveModForInstall(
     languageError: entry.language ? null : 'No language resolved',
     componentResults,
     listing: entry.components,
+    didStage: !cacheHadEntry,
+    gameDir,
   }
 }

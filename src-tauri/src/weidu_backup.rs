@@ -1,6 +1,5 @@
 //! Game directory backup and restore.
 
-use crate::mod_fs::copy_recursive;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -294,15 +293,17 @@ pub async fn restore_game_dir(
   );
 
   wipe_dir_contents(&target)?;
-  copy_recursive(&backup, &target)?;
+  let files = Arc::new(AtomicU64::new(0));
+  let bytes = Arc::new(AtomicU64::new(0));
+  copy_filtered(&app, &backup, &target, false, &files, &bytes)?;
 
   emit_progress(
     &app,
     BackupProgress {
       phase: "done".into(),
       message: "Restore complete".into(),
-      files_done: 0,
-      bytes_done: 0,
+      files_done: files.load(Ordering::SeqCst),
+      bytes_done: bytes.load(Ordering::SeqCst),
     },
   );
   Ok(())

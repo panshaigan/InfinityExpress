@@ -5232,6 +5232,7 @@ body.is-resizing-detail * {
 }
 
 .install-table-toolbar {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -5250,12 +5251,14 @@ body.is-resizing-detail * {
   user-select: none;
 }
 
-.install-table-wrap .install-table {
+.install-table-wrap .install-table-scroll {
   flex: 1;
   min-height: 0;
+  height: auto;
+  border-top: none;
 }
 
-.install-table-wrap .mods-table-wrap {
+.install-table-wrap .install-table {
   flex: 1;
   min-height: 0;
 }
@@ -5264,8 +5267,38 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
+.install-row.active {
+  box-shadow: inset 3px 0 0 var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.install-row.active.selected {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.install-row-progress {
+  min-width: 9rem;
+}
+
+.install-status-copying,
 .install-status-installing {
   color: color-mix(in srgb, var(--accent) 70%, var(--ink));
+}
+
+.install-status-queued {
+  color: var(--muted);
+}
+
+.install-dialog-progress-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.install-dialog-progress-block .mods-row-progress-bar {
+  width: 100%;
+  min-height: 0.45rem;
 }
 
 .install-status-failed,

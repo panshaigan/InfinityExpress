@@ -59,6 +59,8 @@ export interface BackupProgress {
   bytesDone: number
 }
 
+export type StageProgress = BackupProgress
+
 export interface CleanupInput {
   gameDir: string
   stagedFolders: string[]
@@ -203,6 +205,15 @@ export async function listenBackupProgress(
 ): Promise<UnlistenFn> {
   if (!isDesktopApp()) return () => {}
   return listen<BackupProgress>('weidu-backup-progress', (ev) => {
+    handler(ev.payload)
+  })
+}
+
+export async function listenStageProgress(
+  handler: (payload: StageProgress) => void,
+): Promise<UnlistenFn> {
+  if (!isDesktopApp()) return () => {}
+  return listen<StageProgress>('weidu-stage-progress', (ev) => {
     handler(ev.payload)
   })
 }

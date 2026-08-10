@@ -1291,7 +1291,7 @@
 			<component id="stratagems:2510" name="d" label="Add 6 new divine spells" level="blendWell" modId="SwordCoastStratagems" />
 		</add>
 		<update label="Spell Corrections" noBranches="1">
-			<!--ac-miscellaneous-breathfix;AC Miscellaneous Tweaks - Dragon Breath Fix-->
+			<component id="ac-miscellaneous-breathfix" name="Dragon Breath Fix" label="Dragon Breath Fix" modId="AC-Miscellaneous-Tweaks" level="vanillaPlus" />
 			<component id="cd_tweaks_make_grease_ignitable" name="Make Grease ignitable [Luke]" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2650" />
 			<component id="cd_tweaks_restoration_no_fatigue" name="Remove Fatigue from Restoration Spells" label="Remove fatigue from Restoration Spells" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3050" />
 			<component id="A7-CHAOSSORCERER-RECREATE_SPELL_LIST" name="Recreate &quot;Chaos Weave&quot; spell selection lists" label="Recreate Chaos Weave spell selection lists" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" />
@@ -1897,6 +1897,7 @@
 		</multi>
 		<universal label="Universal">
 			<weapons label="Weapon Tweaks">
+				<component id="ac-miscellaneous-bgarchery" name="BG-style archery for SoA/ToB" label="BG-style archery" modId="AC-Miscellaneous-Tweaks" engine="bg,eet"/>
 				<component id="SkillsAndAbilitiesSTR" name="2H Weapon Additional Strength Bonus" label="2H weapon additional STR bonus" modId="skills-and-abilities" level="lowerDifficulty" />
 			</weapons>
 			<group label="HLAs">

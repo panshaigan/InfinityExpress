@@ -5,7 +5,8 @@ import { IconTip } from '../IconTip'
 import { isHttpUrl } from '../../lib/url'
 
 const STATUS_LABEL: Record<InstallStep['status'], string> = {
-  pending: 'Pending',
+  queued: 'Queued',
+  copying: 'Copying',
   installing: 'Installing',
   succeeded: 'Done',
   succeededWithWarnings: 'Warnings',

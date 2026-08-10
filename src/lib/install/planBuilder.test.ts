@@ -42,6 +42,7 @@ describe('buildInstallPlan', () => {
     const steps = buildInstallPlan(model, selected, 'bg2')
     expect(steps).toHaveLength(3)
     expect(steps[0]?.modId).toBe('ModA')
+    expect(steps[0]?.status).toBe('queued')
     expect(steps[0]?.componentIds).toEqual(['a:0', 'a:1'])
     expect(steps[1]?.modId).toBe('ModB')
     expect(steps[2]?.modId).toBe('ModA')
