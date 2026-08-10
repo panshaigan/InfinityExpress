@@ -55,6 +55,7 @@ import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
 import { StationBranchNav } from './ui/StationBranchNav'
 import { StationListToolbar } from './ui/StationListToolbar'
+import { StationPresetsMenu } from './ui/StationPresetsMenu'
 import { GlobalSearchList } from './ui/GlobalSearchList'
 import { GlobalSearchToolbar } from './ui/GlobalSearchToolbar'
 import { FiltersStrip } from './ui/FiltersStrip'
@@ -818,15 +819,25 @@ export default function App() {
                             </span>
                           )}
                         </h2>
-                        <ScreenNavButtons
-                          canCycle={route.canCycleScreens}
-                          canOk={route.canMarkFinished}
-                          finished={route.currentFinished}
-                          onPrevious={route.goPrevScreen}
-                          onNext={route.goNextScreen}
-                          onOk={route.onOk}
-                          onCancel={route.unmarkStationFinished}
-                        />
+                        <div className="list-pane-header-actions">
+                          <StationPresetsMenu
+                            checkedLadderLevels={levels.activeStationPreset.ladder}
+                            lowerDifficulty={levels.activeStationPreset.lowerDifficulty}
+                            higherDifficulty={levels.activeStationPreset.higherDifficulty}
+                            onLadderToggle={levels.onStationLadderToggle}
+                            onDifficultyChange={levels.onStationDifficultyChange}
+                            onClearToGlobal={levels.onClearToGlobal}
+                          />
+                          <ScreenNavButtons
+                            canCycle={route.canCycleScreens}
+                            canOk={route.canMarkFinished}
+                            finished={route.currentFinished}
+                            onPrevious={route.goPrevScreen}
+                            onNext={route.goNextScreen}
+                            onOk={route.onOk}
+                            onCancel={route.unmarkStationFinished}
+                          />
+                        </div>
                       </div>
                       {stationDesc ? (
                         <p className="lede">{stationDesc}</p>
@@ -834,13 +845,7 @@ export default function App() {
                       <StationListToolbar
                         listNodes={listNodes}
                         listState={listCheckState}
-                        checkedLadderLevels={levels.activeStationPreset.ladder}
-                        lowerDifficulty={levels.activeStationPreset.lowerDifficulty}
-                        higherDifficulty={levels.activeStationPreset.higherDifficulty}
                         onToggleAll={onToggleAll}
-                        onLadderToggle={levels.onStationLadderToggle}
-                        onDifficultyChange={levels.onStationDifficultyChange}
-                        onClearToGlobal={levels.onClearToGlobal}
                         onFoldAll={onFoldAll}
                         onUnfoldAll={onUnfoldAll}
                       >

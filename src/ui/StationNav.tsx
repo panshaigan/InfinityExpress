@@ -163,8 +163,23 @@ export function StationNav({
       </div>
       {showRouteChrome ? (
         <>
+          {!allDone ? (
+            <div className="station-nav-finish">
+              <span className="has-icon-tip">
+                <button
+                  type="button"
+                  className="btn station-nav-finish-btn"
+                  onClick={onFinishRoute}
+                  aria-label="Finish route"
+                >
+                  {collapsed ? '✓' : 'Finish route'}
+                </button>
+                <IconTip>Mark all stations done</IconTip>
+              </span>
+            </div>
+          ) : null}
           <div
-            className={`station-nav-progress${allDone ? ' complete' : ''}`}
+            className={`station-nav-progress${allDone ? ' complete solo' : ''}`}
             aria-label={
               allDone
                 ? `Route complete: all ${totalCount} stops done`
@@ -187,21 +202,6 @@ export function StationNav({
                   : `${finishedCount}/${totalCount} done`}
             </span>
           </div>
-          {!allDone ? (
-            <div className="station-nav-finish">
-              <span className="has-icon-tip">
-                <button
-                  type="button"
-                  className="btn secondary station-nav-finish-btn"
-                  onClick={onFinishRoute}
-                  aria-label="Finish route"
-                >
-                  {collapsed ? '✓' : 'Finish route'}
-                </button>
-                <IconTip>Mark all stations done</IconTip>
-              </span>
-            </div>
-          ) : null}
         </>
       ) : null}
     </nav>

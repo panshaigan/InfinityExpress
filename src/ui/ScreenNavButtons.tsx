@@ -12,7 +12,7 @@ interface Props {
   onCancel: () => void
 }
 
-/** Previous / Next / Done|Reopen cluster for station headers and Engine. */
+/** Previous / Done|Reopen / Next cluster for station headers. */
 export function ScreenNavButtons({
   canCycle,
   canOk,
@@ -27,31 +27,21 @@ export function ScreenNavButtons({
       <span className="has-icon-tip">
         <button
           type="button"
-          className="btn secondary"
+          className="btn secondary screen-nav-step-btn"
           disabled={!canCycle}
+          aria-label="Previous"
           onClick={onPrevious}
         >
-          Previous
+          ‹
         </button>
         <IconTip>Go to the previous unfinished stop</IconTip>
-      </span>
-      <span className="has-icon-tip">
-        <button
-          type="button"
-          className="btn secondary"
-          disabled={!canCycle}
-          onClick={onNext}
-        >
-          Next
-        </button>
-        <IconTip>Go to the next unfinished stop</IconTip>
       </span>
       {finished ? (
         <span className="has-icon-tip">
           <button type="button" className="btn screen-nav-ok-btn" onClick={onCancel}>
             Reopen
           </button>
-          <IconTip align="end">Mark this stop unfinished again</IconTip>
+          <IconTip>Mark this stop unfinished again</IconTip>
         </span>
       ) : (
         <span className="has-icon-tip">
@@ -63,9 +53,21 @@ export function ScreenNavButtons({
           >
             Done
           </button>
-          <IconTip align="end">Mark this stop finished and continue</IconTip>
+          <IconTip>Mark this stop finished and continue</IconTip>
         </span>
       )}
+      <span className="has-icon-tip">
+        <button
+          type="button"
+          className="btn secondary screen-nav-step-btn"
+          disabled={!canCycle}
+          aria-label="Next"
+          onClick={onNext}
+        >
+          ›
+        </button>
+        <IconTip align="end">Go to the next unfinished stop</IconTip>
+      </span>
     </div>
   )
 }
