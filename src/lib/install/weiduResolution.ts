@@ -19,6 +19,11 @@ export interface ModResolutionBundle {
 }
 
 
+/**
+ * Prefer an English TRA entry when present; otherwise use the first listed
+ * language. Textless mods often declare a single non-English (or placeholder)
+ * LANGUAGE block — WeiDU still needs a valid --language index to install.
+ */
 export function pickEnglishLanguage(
   languages: WeiduLanguageInfo[],
 ): { language: ResolvedLanguage | null; error: string | null } {
@@ -26,10 +31,8 @@ export function pickEnglishLanguage(
     return { language: null, error: 'No languages listed for mod tp2' }
   }
   const english = languages.find((l) => l.name.toLowerCase().includes('english'))
-  if (!english) {
-    return { language: null, error: 'No English language entry found' }
-  }
-  return { language: { index: english.index, source: 'auto' }, error: null }
+  const chosen = english ?? languages[0]!
+  return { language: { index: chosen.index, source: 'auto' }, error: null }
 }
 
 function numericSuffixFromId(componentId: string): number | null {

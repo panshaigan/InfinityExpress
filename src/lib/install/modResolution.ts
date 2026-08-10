@@ -118,7 +118,7 @@ export async function resolveModForInstall(
     tp2Path,
     stagedFolderName,
     languageIndex: entry.language?.index ?? null,
-    languageError: entry.language ? null : 'No English language resolved',
+    languageError: entry.language ? null : 'No language resolved',
     componentResults,
     listing: entry.components,
   }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { isComponentInstalledInLog, parseWeiduLogLine } from './weiduLog'
-import { resolveComponentNumber } from './weiduResolution'
+import { pickEnglishLanguage, resolveComponentNumber } from './weiduResolution'
 import type { ComponentNode } from '../xml/schema'
 
 describe('weiduLog', () => {
@@ -18,6 +18,33 @@ describe('weiduLog', () => {
     const log = '~foo/setup-foo.tp2~ #0 #1\n~foo/setup-foo.tp2~ #0 #2\n'
     expect(isComponentInstalledInLog(log, 'foo/setup-foo.tp2', 0, 2)).toBe(true)
     expect(isComponentInstalledInLog(log, 'foo/setup-foo.tp2', 0, 9)).toBe(false)
+  })
+})
+
+describe('pickEnglishLanguage', () => {
+  it('prefers English when present', () => {
+    expect(
+      pickEnglishLanguage([
+        { index: 0, name: 'French' },
+        { index: 1, name: 'English' },
+      ]),
+    ).toEqual({ language: { index: 1, source: 'auto' }, error: null })
+  })
+
+  it('falls back to the first language when English is absent', () => {
+    expect(
+      pickEnglishLanguage([
+        { index: 0, name: 'None' },
+        { index: 1, name: 'French' },
+      ]),
+    ).toEqual({ language: { index: 0, source: 'auto' }, error: null })
+  })
+
+  it('errors only when no languages are listed', () => {
+    expect(pickEnglishLanguage([])).toEqual({
+      language: null,
+      error: 'No languages listed for mod tp2',
+    })
   })
 })
 
