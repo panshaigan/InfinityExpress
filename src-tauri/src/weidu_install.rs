@@ -1146,21 +1146,23 @@ pub fn stage_mod_into_game_dir(
   Ok(tp2.to_string_lossy().into_owned())
 }
 
-fn find_game_exe(game: &Path) -> Option<PathBuf> {
-  const NAMES: &[&str] = &["Baldur.exe", "Torment.exe", "idmain.exe"];
-  for name in NAMES {
-    let p = game.join(name);
-    if p.is_file() {
-      return Some(p);
-    }
+fn find_named_game_exe(game: &Path, exe_name: &str) -> Option<PathBuf> {
+  let trimmed = exe_name.trim();
+  if trimmed.is_empty() {
+    return None;
+  }
+  let p = game.join(trimmed);
+  if p.is_file() {
+    return Some(p);
   }
   // Case-insensitive fallback on Windows.
+  let want = trimmed.to_ascii_lowercase();
   let Ok(entries) = fs::read_dir(game) else {
     return None;
   };
   for entry in entries.flatten() {
     let name = entry.file_name().to_string_lossy().to_ascii_lowercase();
-    if matches!(name.as_str(), "baldur.exe" | "torment.exe" | "idmain.exe") {
+    if name == want {
       return Some(entry.path());
     }
   }
@@ -1168,13 +1170,13 @@ fn find_game_exe(game: &Path) -> Option<PathBuf> {
 }
 
 #[tauri::command]
-pub fn read_game_exe_version(game_dir: String) -> Result<String, String> {
+pub fn read_game_exe_version(game_dir: String, exe_name: String) -> Result<String, String> {
   let game = PathBuf::from(game_dir.trim());
   if !game.is_dir() {
     return Err("Game directory does not exist".into());
   }
-  let exe = find_game_exe(&game).ok_or_else(|| {
-    "No Baldur.exe / Torment.exe / idmain.exe found in game directory".to_string()
+  let exe = find_named_game_exe(&game, &exe_name).ok_or_else(|| {
+    format!("No {} found in game directory", exe_name.trim())
   })?;
   let exe_str = exe.to_string_lossy().replace('\'', "''");
   let script = format!("(Get-Item -LiteralPath '{exe_str}').VersionInfo.FileVersion");

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { IconTip } from './IconTip'
+import { OutlinedSelect } from './OutlinedSelect'
 
 export interface SelectionPresetsBarProps {
   disabled: boolean
@@ -29,6 +30,7 @@ export function SelectionPresetsBar({
   onDelete,
 }: SelectionPresetsBarProps) {
   const [open, setOpen] = useState(false)
+  const [loadSelectOpen, setLoadSelectOpen] = useState(false)
   const [draftName, setDraftName] = useState(activePresetName ?? '')
   const rootRef = useRef<HTMLDivElement>(null)
   const panelId = useId()
@@ -38,9 +40,17 @@ export function SelectionPresetsBar({
   }, [activePresetId, activePresetName])
 
   useEffect(() => {
-    if (!open) return
+    if (!open) {
+      setLoadSelectOpen(false)
+      return
+    }
     function onPointerDown(e: PointerEvent) {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false)
+      const target = e.target as Node & Element
+      if (rootRef.current?.contains(target)) return
+      if (target instanceof Element && target.closest('.outlined-select-popover')) {
+        return
+      }
+      setOpen(false)
     }
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
@@ -72,6 +82,9 @@ export function SelectionPresetsBar({
       ? activePresetName
       : 'User presets'
 
+  const emptyLoadLabel =
+    presets.length === 0 ? 'No presets yet' : 'Select preset…'
+
   return (
     <div ref={rootRef} className="selection-presets-bar" aria-label="User presets">
       <button
@@ -90,28 +103,24 @@ export function SelectionPresetsBar({
 
       {open && (
         <div className="selection-presets-popover" id={panelId} role="group">
-          <label className="selection-presets-field">
-            <span className="selection-presets-field-label">Load</span>
-            <select
-              className="selection-presets-select"
+          <div className="selection-presets-field">
+            <OutlinedSelect
+              className="selection-presets-outlined-select"
+              label="Load"
               value={dirty ? '' : (activePresetId ?? '')}
+              emptyLabel={emptyLoadLabel}
               disabled={disabled}
-              aria-label="Load selection preset"
-              onChange={(e) => {
-                const value = e.target.value
+              open={loadSelectOpen}
+              onOpenChange={setLoadSelectOpen}
+              onChange={(value) => {
                 onSelectPreset(value === '' ? null : value)
               }}
-            >
-              <option value="">
-                {presets.length === 0 ? 'No presets yet' : 'Select preset…'}
-              </option>
-              {presets.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </label>
+              options={[
+                { value: '', label: emptyLoadLabel },
+                ...presets.map((p) => ({ value: p.id, label: p.name })),
+              ]}
+            />
+          </div>
 
           {activePresetId != null && activePresetName != null && !dirty ? (
             <label className="selection-presets-field">

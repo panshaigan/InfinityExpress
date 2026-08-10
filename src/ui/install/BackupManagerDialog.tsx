@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { BackupManifest } from '../../lib/install/types'
 import {
   backupGameDir,
@@ -8,6 +8,7 @@ import {
   restoreGameDir,
   type BackupProgress,
 } from '../../lib/desktop/weiduInstall'
+import { useBackdropDismiss } from '../backdropDismiss'
 
 export type BackupDialogMode = 'baseline' | 'snapshot' | 'restore'
 
@@ -51,6 +52,8 @@ export function BackupManagerDialog({
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState<BackupProgress | null>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const backdrop = useBackdropDismiss(busy ? undefined : onClose)
 
   useEffect(() => {
     if (!open || mode !== 'restore') return
@@ -62,6 +65,7 @@ export function BackupManagerDialog({
     setError(null)
     setProgress(null)
     if (mode === 'snapshot') setSnapshotName(defaultSnapshotName())
+    panelRef.current?.focus()
   }, [open, mode])
 
   useEffect(() => {
@@ -158,12 +162,14 @@ export function BackupManagerDialog({
     : null
 
   return (
-    <div className="keyboard-help-backdrop" role="presentation" onClick={busy ? undefined : onClose}>
+    <div className="keyboard-help-backdrop" role="presentation" {...backdrop}>
       <div
+        ref={panelRef}
         className="keyboard-help settings-dialog backup-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby="backup-dialog-title"
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="keyboard-help-header">
@@ -174,9 +180,6 @@ export function BackupManagerDialog({
                 ? 'Save snapshot'
                 : 'Restore backup'}
           </h2>
-          <button type="button" className="btn secondary" onClick={onClose} disabled={busy}>
-            Close
-          </button>
         </div>
 
         {mode !== 'restore' ? (
@@ -203,7 +206,7 @@ export function BackupManagerDialog({
             ) : null}
           </div>
         ) : (
-          <div className="backup-restore-list">
+        <div className="backup-restore-list ie-scroll">
             {entries.length === 0 ? (
               <p>No backups found for this game folder.</p>
             ) : (

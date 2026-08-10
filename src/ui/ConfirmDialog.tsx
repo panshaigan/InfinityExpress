@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useBackdropDismiss } from './backdropDismiss'
 
 interface Props {
   open: boolean
@@ -20,6 +21,7 @@ export function ConfirmDialog({
   onCancel,
 }: Props) {
   const cancelRef = useRef<HTMLButtonElement>(null)
+  const backdrop = useBackdropDismiss(onCancel)
 
   useEffect(() => {
     if (!open) return
@@ -40,7 +42,7 @@ export function ConfirmDialog({
     <div
       className="confirm-dialog-backdrop"
       role="presentation"
-      onClick={onCancel}
+      {...backdrop}
     >
       <div
         className="confirm-dialog"

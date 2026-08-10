@@ -1,4 +1,5 @@
 import { parseEngineTokens } from '../engine/matchEngine'
+import { resolveModLookupKey } from '../mods/loadMods'
 import type { ComponentNode, InstallSequenceModel } from '../xml/schema'
 
 /** `all` = full flat list; EET tabs filter by engine token. */
@@ -40,6 +41,25 @@ export function buildInstallOrderText(
 ): string {
   const lines = buildInstallOrderLines(model, selectedIds, phase)
   return lines.length ? lines.join('\n') + '\n' : ''
+}
+
+/** Distinct mods represented by the current export phase list. */
+export function countInstallOrderMods(
+  model: InstallSequenceModel,
+  selectedIds: ReadonlySet<string>,
+  phase: ExportPhase = 'all',
+): number {
+  const seenComponents = new Set<string>()
+  const mods = new Set<string>()
+  for (const c of model.componentsInOrder) {
+    if (!selectedIds.has(c.componentId)) continue
+    if (c.attrs.noExport) continue
+    if (!componentMatchesExportPhase(c, phase)) continue
+    if (seenComponents.has(c.componentId)) continue
+    seenComponents.add(c.componentId)
+    mods.add(resolveModLookupKey(model, c) ?? c.componentId)
+  }
+  return mods.size
 }
 
 /** Ensure a downloadable name ends with `.txt`. */

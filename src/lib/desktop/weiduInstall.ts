@@ -156,9 +156,12 @@ export async function readGameWeiduLog(gameDir: string): Promise<string> {
   return invoke<string>('read_game_weidu_log', { gameDir })
 }
 
-export async function readGameExeVersion(gameDir: string): Promise<string> {
+export async function readGameExeVersion(
+  gameDir: string,
+  exeName: string,
+): Promise<string> {
   requireDesktop()
-  return invoke<string>('read_game_exe_version', { gameDir })
+  return invoke<string>('read_game_exe_version', { gameDir, exeName })
 }
 
 export async function backupGameDir(input: BackupGameInput): Promise<BackupGameResult> {

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from 'react'
 import type { SizeConfirmState } from '../../hooks/useModAcquireJob'
+import { useBackdropDismiss } from '../backdropDismiss'
 
 interface Props {
   state: SizeConfirmState | null
@@ -14,6 +15,7 @@ export function AcquireSizeConfirmDialog({
 }: Props) {
   const titleId = useId()
   const confirmRef = useRef<HTMLButtonElement>(null)
+  const backdrop = useBackdropDismiss(onCancel)
 
   useEffect(() => {
     if (!state) return
@@ -34,7 +36,7 @@ export function AcquireSizeConfirmDialog({
     <div
       className="keyboard-help-backdrop"
       role="presentation"
-      onClick={onCancel}
+      {...backdrop}
     >
       <div
         className="keyboard-help acquire-size-dialog"
@@ -52,7 +54,7 @@ export function AcquireSizeConfirmDialog({
           <strong>{state.totalLabel}</strong>
           {state.detail ? `. ${state.detail}` : ''}.
         </p>
-        <ul className="acquire-size-list">
+        <ul className="acquire-size-list ie-scroll">
           {state.targets.slice(0, 12).map((m) => (
             <li key={m.codename}>{m.codename}</li>
           ))}

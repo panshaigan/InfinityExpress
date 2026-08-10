@@ -226,6 +226,10 @@ body {
   min-width: 0;
 }
 
+.selection-presets-outlined-select {
+  width: 100%;
+}
+
 .selection-presets-actions {
   display: flex;
   gap: 0.45rem;
@@ -1782,6 +1786,63 @@ body.is-resizing-detail * {
   padding: 0.75rem 1rem 1.5rem;
 }
 
+/* Shared thin scrollbars (mods table, list panes, dialogs). */
+.ie-scroll,
+.list-pane-scroll,
+.mods-table-wrap,
+.export-dialog-code,
+.acquire-size-list,
+.backup-restore-list,
+.acquire-job-dialog-body {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted) 50%, var(--line))
+    color-mix(in srgb, var(--panel) 70%, #000);
+}
+
+.ie-scroll::-webkit-scrollbar,
+.list-pane-scroll::-webkit-scrollbar,
+.mods-table-wrap::-webkit-scrollbar,
+.export-dialog-code::-webkit-scrollbar,
+.acquire-size-list::-webkit-scrollbar,
+.backup-restore-list::-webkit-scrollbar,
+.acquire-job-dialog-body::-webkit-scrollbar {
+  width: 0.55rem;
+  height: 0.55rem;
+}
+
+.ie-scroll::-webkit-scrollbar-track,
+.list-pane-scroll::-webkit-scrollbar-track,
+.mods-table-wrap::-webkit-scrollbar-track,
+.export-dialog-code::-webkit-scrollbar-track,
+.acquire-size-list::-webkit-scrollbar-track,
+.backup-restore-list::-webkit-scrollbar-track,
+.acquire-job-dialog-body::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--panel) 70%, #000);
+  border-radius: var(--radius-sm);
+}
+
+.ie-scroll::-webkit-scrollbar-thumb,
+.list-pane-scroll::-webkit-scrollbar-thumb,
+.mods-table-wrap::-webkit-scrollbar-thumb,
+.export-dialog-code::-webkit-scrollbar-thumb,
+.acquire-size-list::-webkit-scrollbar-thumb,
+.backup-restore-list::-webkit-scrollbar-thumb,
+.acquire-job-dialog-body::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted) 50%, var(--line));
+  border-radius: var(--radius-sm);
+  border: 2px solid color-mix(in srgb, var(--panel) 70%, #000);
+}
+
+.ie-scroll::-webkit-scrollbar-thumb:hover,
+.list-pane-scroll::-webkit-scrollbar-thumb:hover,
+.mods-table-wrap::-webkit-scrollbar-thumb:hover,
+.export-dialog-code::-webkit-scrollbar-thumb:hover,
+.acquire-size-list::-webkit-scrollbar-thumb:hover,
+.backup-restore-list::-webkit-scrollbar-thumb:hover,
+.acquire-job-dialog-body::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--accent) 45%, var(--muted));
+}
+
 .detail-pane {
   display: flex;
   flex-direction: column;
@@ -3334,6 +3395,22 @@ body.is-resizing-detail * {
   font-size: 0.78rem;
 }
 
+.outlined-field-invalid {
+  border-color: color-mix(in srgb, #c44 55%, var(--line));
+}
+
+.outlined-field-invalid:focus-within {
+  border-color: color-mix(in srgb, #c44 70%, var(--line));
+  outline: 1px solid color-mix(in srgb, #c44 55%, transparent);
+}
+
+.outlined-field-error {
+  margin: 0.35rem 0 0;
+  color: color-mix(in srgb, #c44 75%, var(--ink));
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
 .outlined-select {
   position: relative;
 }
@@ -3686,8 +3763,8 @@ body.is-resizing-detail * {
 
 .keyboard-help {
   width: min(28rem, 100%);
-  max-height: min(34rem, 90vh);
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
   padding: 1.1rem 1.2rem 1.25rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -3821,11 +3898,41 @@ body.is-resizing-detail * {
 
 .settings-dialog {
   width: min(36rem, 100%);
-  max-height: min(40rem, 90vh);
+  max-height: none;
+  overflow: visible;
+}
+
+.settings-dialog-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.settings-dialog-tab {
+  flex: 1;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+
+.settings-dialog-tab:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+
+.settings-dialog-tab.active {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
 }
 
 .settings-section {
-  margin-top: 2rem;
+  margin-top: 0.35rem;
 }
 
 .settings-section:first-of-type {
@@ -4723,29 +4830,6 @@ body.is-resizing-detail * {
   overflow: auto;
   height: 100%;
   border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--muted) 50%, var(--line))
-    color-mix(in srgb, var(--panel) 70%, #000);
-}
-
-.mods-table-wrap::-webkit-scrollbar {
-  width: 0.55rem;
-  height: 0.55rem;
-}
-
-.mods-table-wrap::-webkit-scrollbar-track {
-  background: color-mix(in srgb, var(--panel) 70%, #000);
-  border-radius: var(--radius-sm);
-}
-
-.mods-table-wrap::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--muted) 50%, var(--line));
-  border-radius: var(--radius-sm);
-  border: 2px solid color-mix(in srgb, var(--panel) 70%, #000);
-}
-
-.mods-table-wrap::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--accent) 45%, var(--muted));
 }
 
 .mods-table {
@@ -5599,6 +5683,11 @@ body.is-resizing-detail * {
 .install-dialog-progress {
   font-size: 0.82rem;
   color: var(--muted);
+}
+
+.backup-restore-list {
+  max-height: 14rem;
+  overflow: auto;
 }
 
 .backup-restore-list ul {

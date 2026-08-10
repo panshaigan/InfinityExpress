@@ -2,11 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { isDesktopApp, saveTextFile } from '../lib/desktop/fsDialogs'
 import {
   buildInstallOrderText,
+  countInstallOrderMods,
   downloadText,
   normalizeExportFilename,
   type ExportPhase,
 } from '../lib/export/installOrder'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
+import { useBackdropDismiss } from './backdropDismiss'
 import { IconTip } from './IconTip'
 
 type EetTab = 'eet1' | 'eet'
@@ -57,7 +59,8 @@ function SaveIcon() {
 
 export function ExportDialog({ open, onClose, model, selectedIds, game }: Props) {
   const isEet = game === 'eet'
-  const closeRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const backdrop = useBackdropDismiss(onClose)
   const [tab, setTab] = useState<EetTab>('eet1')
   const [filenameAll, setFilenameAll] = useState(DEFAULT_FILENAME)
   const [filenamePreEet, setFilenamePreEet] = useState(DEFAULT_PRE_EET_FILENAME)
@@ -71,7 +74,7 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
     setFilenamePreEet(DEFAULT_PRE_EET_FILENAME)
     setFilenameEet(DEFAULT_EET_FILENAME)
     setCopied(false)
-    closeRef.current?.focus()
+    panelRef.current?.focus()
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault()
@@ -92,6 +95,11 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
   const lineCount = useMemo(
     () => (text ? text.trimEnd().split('\n').length : 0),
     [text],
+  )
+
+  const modCount = useMemo(
+    () => countInstallOrderMods(model, selectedIds, phase),
+    [model, selectedIds, phase],
   )
 
   const filename =
@@ -139,25 +147,19 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
     <div
       className="export-dialog-backdrop"
       role="presentation"
-      onClick={onClose}
+      {...backdrop}
     >
       <div
+        ref={panelRef}
         className="export-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby="export-dialog-title"
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="export-dialog-header">
           <h2 id="export-dialog-title">Export install order</h2>
-          <button
-            ref={closeRef}
-            type="button"
-            className="btn secondary export-dialog-close"
-            onClick={onClose}
-          >
-            Close
-          </button>
         </div>
 
         {isEet ? (
@@ -190,12 +192,12 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
         <p className="export-dialog-meta">
           {lineCount === 0
             ? 'No components in this list.'
-            : `${lineCount} component${lineCount === 1 ? '' : 's'}`}
+            : `${modCount} mod${modCount === 1 ? '' : 's'} · ${lineCount} component${lineCount === 1 ? '' : 's'}`}
         </p>
 
         <textarea
           id="export-dialog-preview"
-          className="export-dialog-code"
+          className="export-dialog-code ie-scroll"
           readOnly
           spellCheck={false}
           value={text}

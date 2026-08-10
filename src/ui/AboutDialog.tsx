@@ -1,6 +1,7 @@
 import { useEffect, useRef, type MouseEvent as ReactMouseEvent } from 'react'
 import { APP_VERSION } from '../lib/appVersion'
 import { openExternalUrl } from '../lib/desktop/openExternalUrl'
+import { useBackdropDismiss } from './backdropDismiss'
 
 interface Props {
   open: boolean
@@ -46,11 +47,12 @@ function ExternalLink({ href, children }: { href: string; children: string }) {
 }
 
 export function AboutDialog({ open, onClose }: Props) {
-  const closeRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const backdrop = useBackdropDismiss(onClose)
 
   useEffect(() => {
     if (!open) return
-    closeRef.current?.focus()
+    panelRef.current?.focus()
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault()
@@ -67,25 +69,19 @@ export function AboutDialog({ open, onClose }: Props) {
     <div
       className="keyboard-help-backdrop"
       role="presentation"
-      onClick={onClose}
+      {...backdrop}
     >
       <div
+        ref={panelRef}
         className="keyboard-help about-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby="about-dialog-title"
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="keyboard-help-header">
           <h2 id="about-dialog-title">Infinity Express</h2>
-          <button
-            ref={closeRef}
-            type="button"
-            className="btn secondary keyboard-help-close"
-            onClick={onClose}
-          >
-            Close
-          </button>
         </div>
         <p className="about-meta">
           Version {APP_VERSION} · by shaigan

@@ -6,10 +6,14 @@ interface Props {
   label: string
   value: string
   onChange: (value: string) => void
+  /** Fires on blur and after Browse with the current value (validate / persist). */
+  onValidate?: (value: string) => void
   placeholder?: string
   browseTitle: string
   /** Optional secondary text (e.g. detected exe FileVersion). */
   hint?: string | null
+  /** Validation message when the folder is not a valid game dir. */
+  error?: string | null
 }
 
 export function DirectoryField({
@@ -17,9 +21,11 @@ export function DirectoryField({
   label,
   value,
   onChange,
+  onValidate,
   placeholder = 'Select folder…',
   browseTitle,
   hint,
+  error = null,
 }: Props) {
   const canBrowse = isDesktopApp()
   const labelWithHint = hint?.trim() ? `${label} (${hint.trim()})` : label
@@ -27,7 +33,10 @@ export function DirectoryField({
   async function browse() {
     if (!canBrowse) return
     const path = await pickDirectory(browseTitle)
-    if (path) onChange(path)
+    if (path) {
+      onChange(path)
+      onValidate?.(path)
+    }
   }
 
   return (
@@ -36,9 +45,11 @@ export function DirectoryField({
       label={labelWithHint}
       value={value}
       onChange={onChange}
+      onBlur={() => onValidate?.(value)}
       placeholder={placeholder}
       spellCheck={false}
       autoComplete="off"
+      error={error}
       trailing={
         <button
           type="button"

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   buildInstallOrderLines,
   buildInstallOrderText,
+  countInstallOrderMods,
   normalizeExportFilename,
 } from './installOrder'
 import { parseInstallSequence } from '../xml/parseInstallSequence'
@@ -84,6 +85,27 @@ describe('buildInstallOrderLines', () => {
       'named:one;Real WeiDU Title',
       'label:only;Label only',
     ])
+  })
+})
+
+describe('countInstallOrderMods', () => {
+  it('counts distinct mods for the export phase', () => {
+    const xml = `<?xml version="1.0"?>
+<installSequence>
+  <base label="Base">
+    <mod id="ModA" label="A">
+      <component id="a:1" label="A1" modId="ModA" />
+      <component id="a:2" label="A2" modId="ModA" />
+    </mod>
+    <mod id="ModB" label="B">
+      <component id="b:1" label="B1" modId="ModB" />
+    </mod>
+  </base>
+</installSequence>`
+    const { model } = parseInstallSequence(xml)
+    const selected = new Set(['a:1', 'a:2', 'b:1'])
+    expect(countInstallOrderMods(model, selected)).toBe(2)
+    expect(countInstallOrderMods(model, new Set(['a:1']))).toBe(1)
   })
 })
 

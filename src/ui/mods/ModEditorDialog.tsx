@@ -19,6 +19,7 @@ import {
   type UserModInput,
 } from '../../lib/mods/userCatalog'
 import { isHttpUrl } from '../../lib/url'
+import { useBackdropDismiss } from '../backdropDismiss'
 import { OutlinedSelect, type OutlinedSelectOption } from '../OutlinedSelect'
 import { OutlinedTextField } from '../OutlinedTextField'
 
@@ -154,6 +155,7 @@ export function ModEditorDialog({
   )
   const formRef = useRef(form)
   formRef.current = form
+  const backdrop = useBackdropDismiss(onCancel)
 
   useEffect(() => {
     if (!open) return
@@ -380,7 +382,7 @@ export function ModEditorDialog({
     <div
       className="confirm-dialog-backdrop"
       role="presentation"
-      onClick={onCancel}
+      {...backdrop}
     >
       <div
         className="mod-editor-dialog"

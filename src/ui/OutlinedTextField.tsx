@@ -1,7 +1,7 @@
 import { useId, type ReactNode, type Ref } from 'react'
 
 interface Props {
-  label: string
+  label: ReactNode
   value: string
   onChange: (value: string) => void
   type?: 'text' | 'password' | 'url'
@@ -18,6 +18,8 @@ interface Props {
   className?: string
   /** Trailing control (e.g. Browse). */
   trailing?: ReactNode
+  /** Validation message; marks the field invalid when set. */
+  error?: string | null
 }
 
 export function OutlinedTextField({
@@ -36,10 +38,13 @@ export function OutlinedTextField({
   onBlur,
   className = '',
   trailing,
+  error = null,
 }: Props) {
   const genId = useId()
   const id = idProp ?? genId
+  const errorId = `${id}-error`
   const withAction = trailing != null
+  const invalid = Boolean(error?.trim())
 
   return (
     <div
@@ -49,6 +54,7 @@ export function OutlinedTextField({
         'outlined-text-field',
         withAction ? 'outlined-text-field-with-action' : '',
         disabled ? 'disabled' : '',
+        invalid ? 'outlined-field-invalid' : '',
         className,
       ]
         .filter(Boolean)
@@ -82,9 +88,16 @@ export function OutlinedTextField({
           disabled={disabled}
           spellCheck={spellCheck}
           autoComplete={autoComplete}
+          aria-invalid={invalid || undefined}
+          aria-describedby={invalid ? errorId : undefined}
         />
         {trailing}
       </div>
+      {invalid ? (
+        <p id={errorId} className="outlined-field-error">
+          {error}
+        </p>
+      ) : null}
     </div>
   )
 }

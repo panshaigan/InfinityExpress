@@ -153,7 +153,7 @@ export function AppTopBar({
         <span className="has-icon-tip">
           <button
             type="button"
-            className="btn"
+            className="btn secondary"
             disabled={selectedCount === 0}
             onClick={onExport}
           >

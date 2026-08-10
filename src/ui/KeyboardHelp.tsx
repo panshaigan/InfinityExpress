@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useBackdropDismiss } from './backdropDismiss'
 import type { AppPhase } from './PhaseNav'
 
 interface Props {
@@ -74,12 +75,13 @@ function ledeForPhase(phase: AppPhase) {
 }
 
 export function KeyboardHelp({ open, phase, onClose }: Props) {
-  const closeRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const backdrop = useBackdropDismiss(onClose)
   const rows = rowsForPhase(phase)
 
   useEffect(() => {
     if (!open) return
-    closeRef.current?.focus()
+    panelRef.current?.focus()
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault()
@@ -96,25 +98,19 @@ export function KeyboardHelp({ open, phase, onClose }: Props) {
     <div
       className="keyboard-help-backdrop"
       role="presentation"
-      onClick={onClose}
+      {...backdrop}
     >
       <div
+        ref={panelRef}
         className="keyboard-help"
         role="dialog"
         aria-modal="true"
         aria-labelledby="keyboard-help-title"
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="keyboard-help-header">
           <h2 id="keyboard-help-title">Keys &amp; rhythm</h2>
-          <button
-            ref={closeRef}
-            type="button"
-            className="btn secondary keyboard-help-close"
-            onClick={onClose}
-          >
-            Close
-          </button>
         </div>
         <p className="keyboard-help-lede">{ledeForPhase(phase)}</p>
         <table className="keyboard-help-table">

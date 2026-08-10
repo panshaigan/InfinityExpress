@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { isDesktopApp } from '../lib/desktop/fsDialogs'
-import { readGameExeVersion } from '../lib/desktop/weiduInstall'
+import { probeGameFolder } from '../lib/desktop/gameExe'
 import {
   readGameFolderPaths,
   readGameFolderVersions,
@@ -43,15 +42,6 @@ interface Props {
   onContinue: () => void
 }
 
-async function probeGameVersion(path: string): Promise<string> {
-  if (!path.trim() || !isDesktopApp()) return ''
-  try {
-    return await readGameExeVersion(path.trim())
-  } catch {
-    return ''
-  }
-}
-
 export function EngineStation({
   game,
   onChoose,
@@ -60,6 +50,9 @@ export function EngineStation({
 }: Props) {
   const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
   const [folderVersions, setFolderVersions] = useState(readGameFolderVersions)
+  const [folderErrors, setFolderErrors] = useState<Partial<Record<GameFolderKey, string>>>(
+    {},
+  )
   const visibleFolders = game ? FOLDERS_BY_GAME[game] : []
 
   useEffect(() => {
@@ -81,10 +74,10 @@ export function EngineStation({
       let changed = false
       for (const key of Object.keys(paths) as GameFolderKey[]) {
         if (!paths[key]?.trim() || next[key]?.trim()) continue
-        const version = await probeGameVersion(paths[key])
+        const result = await probeGameFolder(key, paths[key])
         if (cancelled) return
-        if (version) {
-          next = { ...next, [key]: version }
+        if (result.ok && result.version) {
+          next = { ...next, [key]: result.version }
           changed = true
         }
       }
@@ -99,15 +92,60 @@ export function EngineStation({
   }, [])
 
   function setFolderPath(key: GameFolderKey, value: string) {
-    setFolderPaths((prev) => {
-      const next = { ...prev, [key]: value }
-      writeGameFolderPaths(next)
-      return next
-    })
-    void probeGameVersion(value).then((version) => {
+    setFolderPaths((prev) => ({ ...prev, [key]: value }))
+    if (!value.trim()) {
+      setFolderPaths((prev) => {
+        const next = { ...prev, [key]: '' }
+        writeGameFolderPaths(next)
+        return next
+      })
       setFolderVersions((prev) => {
-        const next = { ...prev, [key]: version }
+        const next = { ...prev, [key]: '' }
         writeGameFolderVersions(next)
+        return next
+      })
+      setFolderErrors((prev) => {
+        if (!prev[key]) return prev
+        const next = { ...prev }
+        delete next[key]
+        return next
+      })
+    }
+  }
+
+  function validateFolderPath(key: GameFolderKey, value: string) {
+    const trimmed = value.trim()
+    if (!trimmed) {
+      setFolderPath(key, '')
+      return
+    }
+
+    void probeGameFolder(key, trimmed).then((result) => {
+      if (!result.ok) {
+        setFolderErrors((prev) => ({
+          ...prev,
+          [key]: result.error,
+        }))
+        setFolderPaths((prev) => ({
+          ...prev,
+          [key]: readGameFolderPaths()[key],
+        }))
+        return
+      }
+      setFolderPaths((prev) => {
+        const next = { ...prev, [key]: trimmed }
+        writeGameFolderPaths(next)
+        return next
+      })
+      setFolderVersions((prev) => {
+        const next = { ...prev, [key]: result.version }
+        writeGameFolderVersions(next)
+        return next
+      })
+      setFolderErrors((prev) => {
+        if (!prev[key]) return prev
+        const next = { ...prev }
+        delete next[key]
         return next
       })
     })
@@ -163,9 +201,11 @@ export function EngineStation({
                 label={GAME_LABELS[key]}
                 value={folderPaths[key]}
                 onChange={(value) => setFolderPath(key, value)}
+                onValidate={(value) => validateFolderPath(key, value)}
                 placeholder="Select game folder…"
                 browseTitle={`Select ${GAME_LABELS[key]} folder`}
                 hint={folderVersions[key] ? `v${folderVersions[key]}` : null}
+                error={folderErrors[key] ?? null}
               />
             ))}
           </div>
