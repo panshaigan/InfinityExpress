@@ -5714,7 +5714,7 @@ body.is-resizing-detail * {
 }
 
 .install-run-duration {
-  min-width: 2.75rem;
+  min-width: 4.25rem;
   padding: 0 0.15rem;
   font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
   font-size: 0.82rem;
@@ -5886,7 +5886,7 @@ body.is-resizing-detail * {
 }
 
 .install-table col.install-col-duration {
-  width: 6.5rem;
+  width: 8.5rem;
 }
 
 .install-table col.install-col-status {
