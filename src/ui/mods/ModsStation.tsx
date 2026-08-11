@@ -13,7 +13,6 @@ import {
   acquireButtonLabel,
   modsNeedingAcquire,
 } from '../../lib/mods/acquireTargets'
-import { serializeModsCsv } from '../../lib/mods/exportModsCsv'
 import type { WorkingMod } from '../../lib/mods/loadMods'
 import {
   collectModsFacetOptions,
@@ -25,7 +24,7 @@ import {
 } from '../../lib/mods/modsTable'
 import { modsByCodename as shippedMods } from '../../lib/mods/catalog'
 import type { UserModInput } from '../../lib/mods/userCatalog'
-import { saveTextFile, isDesktopApp } from '../../lib/desktop/fsDialogs'
+import { isDesktopApp } from '../../lib/desktop/fsDialogs'
 import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
 import { PATHS_CHANGED_EVENT } from '../../lib/ui/pathPrefsEvents'
 import { ConfirmDialog } from '../ConfirmDialog'
@@ -403,17 +402,6 @@ export function ModsStation({
     }
   }, [flashNotice, onRemoveFromDisk, pendingRemove, removing])
 
-  const exportCsv = useCallback(async () => {
-    if (!isDesktopApp()) {
-      flashNotice('Export CSV requires the desktop app.')
-      return
-    }
-    const text = serializeModsCsv(mods)
-    const ok = await saveTextFile('mods-export.csv', text)
-    if (ok) flashNotice('Catalog exported.')
-    else flashNotice('Export cancelled.')
-  }, [flashNotice, mods])
-
   const removeConfirmMessage = useMemo(() => {
     if (!pendingRemove || pendingRemove.length === 0) return ''
     if (pendingRemove.length === 1) {
@@ -480,9 +468,6 @@ export function ModsStation({
               removeFromDiskDisabled={removeFromDiskDisabled}
               onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
               onDeleteFromCatalog={() => requestDeleteFromCatalog(selectedList)}
-              onExportCsv={() => {
-                void exportCsv()
-              }}
               onAddMod={() => setEditor({ mode: 'create', initial: null })}
               allRequiredDownloaded={allRequiredDownloaded}
               onProceedToInstall={onProceedToInstall}

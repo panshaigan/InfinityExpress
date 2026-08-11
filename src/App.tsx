@@ -65,6 +65,11 @@ import { RouteGuideTip } from './ui/RouteGuideTip'
 import { RouteCaughtUp } from './ui/RouteCaughtUp'
 import { SettingsDialog } from './ui/SettingsDialog'
 import { ExportDialog } from './ui/ExportDialog'
+import { ModsCsvExportDialog } from './ui/ModsCsvExportDialog'
+import {
+  WeiduLogExportDialog,
+  hasAnyWeiduLog,
+} from './ui/WeiduLogExportDialog'
 import { ConfirmDialog } from './ui/ConfirmDialog'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { AppTopBar } from './ui/AppTopBar'
@@ -140,6 +145,8 @@ function AppShell() {
   const [detailCollapsed, setDetailCollapsed] = useState(() => readDetailCollapsed())
   const [detailWidth, setDetailWidth] = useState(() => readDetailWidth())
   const [exportOpen, setExportOpen] = useState(false)
+  const [csvExportOpen, setCsvExportOpen] = useState(false)
+  const [weiduExportOpen, setWeiduExportOpen] = useState(false)
   type PendingSelectionReset =
     | { type: 'chooseGame'; game: SelectedGame }
     | { type: 'ladder'; level: LadderLevel; wantChecked: boolean }
@@ -487,8 +494,38 @@ function AppShell() {
   }, [])
 
   function handleExport() {
+    if (appPhase === 'mods') {
+      setCsvExportOpen(true)
+      return
+    }
+    if (appPhase === 'install') {
+      if (!game) {
+        setExportOpen(true)
+        return
+      }
+      void (async () => {
+        const hasLog = await hasAnyWeiduLog(game)
+        if (hasLog) setWeiduExportOpen(true)
+        else setExportOpen(true)
+      })()
+      return
+    }
     setExportOpen(true)
   }
+
+  const exportTip =
+    appPhase === 'mods'
+      ? 'Preview and save mods CSV'
+      : appPhase === 'install'
+        ? 'Preview and save WeiDU.log'
+        : 'Preview and save install order'
+
+  const exportDisabled =
+    appPhase === 'mods'
+      ? userCatalog.mods.length === 0
+      : appPhase === 'install'
+        ? false
+        : selectedIds.size === 0
 
   function selectEngine() {
     setActiveStation('engine')
@@ -738,6 +775,8 @@ function AppShell() {
         settingsOpen={settingsOpen}
         onOpenSettings={openSettings}
         onExport={handleExport}
+        exportDisabled={exportDisabled}
+        exportTip={exportTip}
       />
 
       {mountedPhases.mods ? (
@@ -1050,6 +1089,18 @@ function AppShell() {
         selectedIds={selectedIds}
         game={game}
       />
+      <ModsCsvExportDialog
+        open={csvExportOpen}
+        onClose={() => setCsvExportOpen(false)}
+        mods={userCatalog.mods}
+      />
+      {game ? (
+        <WeiduLogExportDialog
+          open={weiduExportOpen}
+          onClose={() => setWeiduExportOpen(false)}
+          game={game}
+        />
+      ) : null}
       <ConfirmDialog
         open={pendingSelectionReset != null}
         title="Discard selection?"

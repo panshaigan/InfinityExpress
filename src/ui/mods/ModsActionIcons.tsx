@@ -37,17 +37,6 @@ export function RemoveFromDiskIcon({ size = 16 }: { size?: number }) {
   )
 }
 
-export function ExportCsvIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M3 1.5h6.2L13.5 5.8V13A1.5 1.5 0 0 1 12 14.5H3A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5Zm0 1a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V6.2L8.8 2.5H3Zm1.5 3h5v1.25h-5V5.5Zm0 2.5h5V9.25h-5V8Zm0 2.5h3.5v1.25H4.5V10.5Z"
-      />
-    </svg>
-  )
-}
-
 export function AddModIcon({ size = 16 }: { size?: number }) {
   return (
     <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">

@@ -34,6 +34,8 @@ interface Props {
   aboutOpen: boolean
   onOpenAbout: () => void
   onExport: () => void
+  exportDisabled?: boolean
+  exportTip?: string
 }
 
 function SettingsGearIcon() {
@@ -64,6 +66,20 @@ function KeyboardIcon() {
   )
 }
 
+function ExportIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      fill="currentColor"
+    >
+      <path d="M3 1.5h6.2L13.5 5.8V13A1.5 1.5 0 0 1 12 14.5H3A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5Zm0 1a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V6.2L8.8 2.5H3Zm1.5 3h5v1.25h-5V5.5Zm0 2.5h5V9.25h-5V8Zm0 2.5h3.5v1.25H4.5V10.5Z" />
+    </svg>
+  )
+}
+
 export function AppTopBar({
   phase,
   onPhaseChange,
@@ -90,6 +106,8 @@ export function AppTopBar({
   aboutOpen,
   onOpenAbout,
   onExport,
+  exportDisabled = false,
+  exportTip = 'Preview and save install order',
 }: Props) {
   return (
     <header className="top-bar">
@@ -153,17 +171,16 @@ export function AppTopBar({
           <KeyboardIcon />
           <IconTip>Keyboard shortcuts</IconTip>
         </button>
-        <span className="has-icon-tip">
-          <button
-            type="button"
-            className="btn secondary"
-            disabled={selectedCount === 0}
-            onClick={onExport}
-          >
-            Export
-          </button>
-          <IconTip align="end">Preview and save install order</IconTip>
-        </span>
+        <button
+          type="button"
+          className="btn secondary top-bar-help top-bar-settings has-icon-tip"
+          disabled={exportDisabled}
+          aria-label={exportTip}
+          onClick={onExport}
+        >
+          <ExportIcon />
+          <IconTip align="end">{exportTip}</IconTip>
+        </button>
       </div>
     </header>
   )

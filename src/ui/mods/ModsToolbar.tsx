@@ -13,7 +13,6 @@ import {
   ClearFiltersIcon,
   DeleteFromCatalogIcon,
   DownloadIcon,
-  ExportCsvIcon,
   OnlyNeededIcon,
   RemoveFromDiskIcon,
 } from './ModsActionIcons'
@@ -43,7 +42,6 @@ interface Props {
   removeFromDiskDisabled: boolean
   onRemoveFromDisk: () => void
   onDeleteFromCatalog: () => void
-  onExportCsv: () => void
   onAddMod: () => void
   allRequiredDownloaded: boolean
   onProceedToInstall?: () => void
@@ -78,7 +76,6 @@ export function ModsToolbar({
   removeFromDiskDisabled,
   onRemoveFromDisk,
   onDeleteFromCatalog,
-  onExportCsv,
   onAddMod,
   allRequiredDownloaded,
   onProceedToInstall,
@@ -200,17 +197,6 @@ export function ModsToolbar({
               <DeleteFromCatalogIcon />
             </button>
             <IconTip>Remove from catalog</IconTip>
-          </span>
-          <span className="mods-action-icon-wrap has-icon-tip">
-            <button
-              type="button"
-              className="mods-action-icon-btn"
-              onClick={onExportCsv}
-              aria-label="Export CSV"
-            >
-              <ExportCsvIcon />
-            </button>
-            <IconTip>Export CSV</IconTip>
           </span>
           <span className="mods-action-icon-wrap has-icon-tip">
             <button

@@ -115,4 +115,14 @@ describe('normalizeExportFilename', () => {
     expect(normalizeExportFilename('order', 'install-order.txt')).toBe('order.txt')
     expect(normalizeExportFilename('  ', 'install-order.txt')).toBe('install-order.txt')
   })
+
+  it('uses the fallback extension for csv and log', () => {
+    expect(normalizeExportFilename('mods', 'mods-export.csv')).toBe('mods.csv')
+    expect(normalizeExportFilename('mods-export.csv', 'mods-export.csv')).toBe(
+      'mods-export.csv',
+    )
+    expect(normalizeExportFilename('WeiDU-bg1', 'WeiDU-bg1.log')).toBe(
+      'WeiDU-bg1.log',
+    )
+  })
 })

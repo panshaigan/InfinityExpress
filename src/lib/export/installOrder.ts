@@ -62,11 +62,14 @@ export function countInstallOrderMods(
   return mods.size
 }
 
-/** Ensure a downloadable name ends with `.txt`. */
+/** Ensure a downloadable name ends with the fallback’s extension (default `.txt`). */
 export function normalizeExportFilename(name: string, fallback: string): string {
   const trimmed = name.trim()
   const base = trimmed || fallback
-  return /\.txt$/i.test(base) ? base : `${base}.txt`
+  const extMatch = fallback.match(/(\.[^.]+)$/)
+  const ext = extMatch ? extMatch[1] : '.txt'
+  const re = new RegExp(`${ext.replace('.', '\\.')}$`, 'i')
+  return re.test(base) ? base : `${base}${ext}`
 }
 
 export function downloadText(text: string, filename: string) {

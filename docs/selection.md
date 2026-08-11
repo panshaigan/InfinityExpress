@@ -60,9 +60,13 @@ In-memory, game-scoped: selected ids + level-strip UI. Not stored: filters, stat
 
 ## Export
 
-`componentId;label` — selected ids (incl. hidden autos), skip `noExport`, sort by `orderIndex`, first occurrence wins. Label: `name` → `label` → id.
+Top-bar export is phase-aware:
 
-**EET tabs:** Pre-EET = token `eet1`; EET = token `eet`; both tokens → both lists; empty engine → EET tab only.
+- **Components** — install order preview (`componentId;label`): selected ids (incl. hidden autos), skip `noExport`, sort by `orderIndex`, first occurrence wins. Label: `name` → `label` → id.
+- **Mods** — catalog CSV preview (same dialog chrome).
+- **Install** — game-dir `WeiDU.log` preview (EET: BG1 + BG2 tabs). If no log is available yet, falls back to install order.
+
+**EET tabs (install order / WeiDU.log):** Pre-EET = token `eet1` / BG1 folder; EET = token `eet` / BG2 folder; both tokens → both lists; empty engine → EET tab only.
 
 ## Key modules
 
