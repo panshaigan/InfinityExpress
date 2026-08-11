@@ -370,19 +370,21 @@ function AppShell() {
 
   const installPhaseReady = useMemo(() => {
     if (!game || !isDesktopApp()) return false
+    if (!route.routeComplete) return false
     const map = new Map(userCatalog.mods.map((m) => [m.codename.toLowerCase(), m]))
     return neededCodenames.every((c) => {
       const m = map.get(c.toLowerCase())
       return m != null && m.diskStatus !== 'not_present'
     })
-  }, [game, neededCodenames, userCatalog.mods])
+  }, [game, neededCodenames, route.routeComplete, userCatalog.mods])
 
   const installPhaseTitle = useMemo(() => {
     if (!isDesktopApp()) return 'Requires the desktop app'
     if (!game) return 'Choose an engine first'
+    if (!route.routeComplete) return 'Finish every components station first'
     if (!installPhaseReady) return 'Download all required mods first'
     return undefined
-  }, [game, installPhaseReady])
+  }, [game, installPhaseReady, route.routeComplete])
 
   const globalSearchCheckState = useMemo(() => {
     if (!game) return 'unchecked' as const
