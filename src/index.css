@@ -5821,33 +5821,105 @@ body.is-resizing-detail * {
   min-height: 0;
 }
 
-.install-row.batch-hover:not(.selected):not(.active) {
+.install-table col.install-col-num {
+  width: 2.75rem;
+}
+
+.install-table col.install-col-mod {
+  width: 9rem;
+}
+
+.install-table col.install-col-component {
+  width: auto;
+}
+
+.install-table col.install-col-component-id {
+  width: 11rem;
+}
+
+.install-table col.install-col-category {
+  width: 7.25rem;
+}
+
+.install-table col.install-col-type {
+  width: 6.25rem;
+}
+
+.install-table col.install-col-duration {
+  width: 6.5rem;
+}
+
+.install-table col.install-col-status {
+  width: 6.75rem;
+}
+
+.install-col-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.install-col-category,
+.install-col-type,
+.install-col-duration,
+.install-col-status {
+  white-space: nowrap;
+}
+
+.install-id-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.install-id-cell .mods-cell-clip {
+  flex: 1;
+  min-width: 0;
+}
+
+.install-row.batch-hover:not(.selected):not(.active):not(.focused) {
   background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
 }
 
-.install-row.selected {
+.install-row.selected:not(.focused) {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
-.install-row.selected.batch-hover {
+.install-row.selected:not(.focused).batch-hover {
   background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
-.install-row.active {
+.install-row.active:not(.focused) {
   box-shadow: inset 3px 0 0 var(--accent);
   background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
-.install-row.active.selected {
+.install-row.active.selected:not(.focused) {
   background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
-.install-row.component-focused {
-  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
+.install-row:focus {
+  outline: none;
 }
 
-.install-row.active.component-focused {
+.install-row:focus-visible,
+.install-row.focused {
+  outline: none;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.install-row.focused:hover,
+.install-row:focus-visible:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.install-row.active.focused,
+.install-row.active:focus-visible {
   box-shadow: inset 3px 0 0 var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .install-row.install-row-batch-start > td,
@@ -5863,15 +5935,13 @@ body.is-resizing-detail * {
   border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
 }
 
-.install-col-num {
-  width: 2.5rem;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  color: var(--muted);
+.install-row-progress {
+  min-width: 0;
+  max-width: 100%;
 }
 
-.install-row-progress {
-  min-width: 9rem;
+.install-row-progress .mods-row-progress-label {
+  display: none;
 }
 
 .install-status-copying,

@@ -5,8 +5,10 @@ import {
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from 'react'
+import { stepDurationLabel } from '../../lib/install/formatDuration'
 import type { InstallStep, StepProgress } from '../../lib/install/types'
 import { expandStepsToTableRows } from '../../lib/install/planBuilder'
 import {
@@ -51,6 +53,49 @@ function TipCell({
       <span className="mods-cell-clip">{display}</span>
       {showTip ? <IconTip>{tip}</IconTip> : null}
     </td>
+  )
+}
+
+function IdCopyButton({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false)
+
+  async function onCopy(e: ReactMouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1500)
+    } catch {
+      /* clipboard may be unavailable */
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      className="mods-url-copy has-icon-tip"
+      tabIndex={-1}
+      onClick={(e) => void onCopy(e)}
+      aria-label={copied ? 'Copied' : 'Copy id'}
+    >
+      {copied ? (
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 4.6-4.6L12.2 5.5z"
+          />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M5.5 2A1.5 1.5 0 0 0 4 3.5v7A1.5 1.5 0 0 0 5.5 12h5A1.5 1.5 0 0 0 12 10.5v-7A1.5 1.5 0 0 0 10.5 2zm0 1h5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5zM2.5 5v7.5A1.5 1.5 0 0 0 4 14h6.5v-1H4a.5.5 0 0 1-.5-.5V5z"
+          />
+        </svg>
+      )}
+      <IconTip>{copied ? 'Copied' : 'Copy id'}</IconTip>
+    </button>
   )
 }
 
@@ -135,8 +180,20 @@ export function InstallTable({
   )
 
   const [hoveredStepId, setHoveredStepId] = useState<string | null>(null)
+  const [nowMs, setNowMs] = useState(() => Date.now())
   const rowRefs = useRef(new Map<string, HTMLTableRowElement>())
-  const tableWrapRef = useRef<HTMLDivElement>(null)
+
+  const anyRunning = useMemo(
+    () => steps.some((s) => !!s.startedAt && !s.finishedAt),
+    [steps],
+  )
+
+  useEffect(() => {
+    if (!anyRunning) return
+    setNowMs(Date.now())
+    const id = window.setInterval(() => setNowMs(Date.now()), 1000)
+    return () => window.clearInterval(id)
+  }, [anyRunning])
 
   const rowKey = (stepId: string, componentId: string) =>
     `${stepId}\0${componentId}`
@@ -218,22 +275,28 @@ export function InstallTable({
     <div className="install-table-wrap">
       <div
         id={INSTALL_TABLE_ID}
-        ref={tableWrapRef}
         className="mods-table-wrap install-table-scroll"
         role="grid"
         aria-label="Install steps"
         tabIndex={visible.length === 0 ? 0 : -1}
         onKeyDown={handleTableKeyDown}
         onFocus={() => {
-          if (
-            (!selectedStepId || !selectedComponentId) &&
-            visible[0]
-          ) {
+          if ((!selectedStepId || !selectedComponentId) && visible[0]) {
             onSelectStep(visible[0].stepId, visible[0].componentId)
           }
         }}
       >
         <table className="install-table mods-table">
+          <colgroup>
+            <col className="install-col-num" />
+            <col className="install-col-mod" />
+            <col className="install-col-component" />
+            <col className="install-col-component-id" />
+            <col className="install-col-category" />
+            <col className="install-col-type" />
+            <col className="install-col-duration" />
+            <col className="install-col-status" />
+          </colgroup>
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -242,6 +305,7 @@ export function InstallTable({
               <th scope="col">Component id</th>
               <th scope="col">Category</th>
               <th scope="col">Type</th>
+              <th scope="col">Duration</th>
               <th scope="col">Status</th>
             </tr>
           </thead>
@@ -250,9 +314,8 @@ export function InstallTable({
               const selected = row.stepId === selectedStepId
               const active = row.stepId === activeStepId
               const batchHover = row.stepId === hoveredStepId
-              const componentFocused =
-                selected &&
-                row.componentId === selectedComponentId
+              const focused =
+                selected && row.componentId === selectedComponentId
               const step = stepById.get(row.stepId)
               const mod = modsByCodename.get(row.modId.toLowerCase())
               const eff = mod ? effectiveModFields(mod) : null
@@ -263,6 +326,8 @@ export function InstallTable({
                 ?.attrs.name?.trim()
               const category = eff?.category?.trim() || ''
               const type = eff?.type?.trim() || ''
+              const duration =
+                step != null ? stepDurationLabel(step, nowMs) : null
               const batchClass =
                 row.batchSize > 1
                   ? row.isFirstInStep
@@ -275,8 +340,8 @@ export function InstallTable({
                   key={`${row.stepId}-${row.componentId}`}
                   ref={(el) => setRowEl(row.stepId, row.componentId, el)}
                   role="row"
-                  tabIndex={componentFocused ? 0 : -1}
-                  className={`install-row${selected ? ' selected' : ''}${active ? ' active' : ''}${batchHover ? ' batch-hover' : ''}${componentFocused ? ' component-focused' : ''}${batchClass} install-status-${row.status}`}
+                  tabIndex={focused ? 0 : -1}
+                  className={`install-row${selected ? ' selected' : ''}${active ? ' active' : ''}${batchHover ? ' batch-hover' : ''}${focused ? ' focused' : ''}${batchClass} install-status-${row.status}`}
                   onClick={() => selectRow(row.stepId, row.componentId)}
                   onMouseEnter={() => setHoveredStepId(row.stepId)}
                 >
@@ -297,11 +362,25 @@ export function InstallTable({
                     display={row.componentLabel}
                     tip={weiduName || undefined}
                   />
-                  <td className="install-col-component-id">{row.componentId}</td>
-                  <td className="install-col-category">
-                    {row.isFirstInStep ? category || '—' : null}
+                  <td className="install-col-component-id">
+                    <span className="install-id-cell">
+                      <span className="mods-cell-clip">{row.componentId}</span>
+                      <IdCopyButton value={row.componentId} />
+                    </span>
                   </td>
-                  <td className="install-col-type">{type || '—'}</td>
+                  <td className="install-col-category">
+                    {row.isFirstInStep ? (
+                      <span className="mods-cell-clip">
+                        {category || '—'}
+                      </span>
+                    ) : null}
+                  </td>
+                  <td className="install-col-type">
+                    <span className="mods-cell-clip">{type || '—'}</span>
+                  </td>
+                  <td className="install-col-duration">
+                    <span className="mods-cell-clip">{duration ?? '—'}</span>
+                  </td>
                   <td className="install-col-status">
                     <StatusCell status={row.status} progress={step?.progress} />
                   </td>

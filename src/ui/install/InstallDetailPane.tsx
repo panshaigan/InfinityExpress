@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import type { InstallStep } from '../../lib/install/types'
+import { stepDurationLabel } from '../../lib/install/formatDuration'
 import { readTextFile } from '../../lib/desktop/fsDialogs'
 import {
   effectiveModFields,
@@ -125,36 +126,6 @@ const LOG_LABELS: Record<LogKind, string> = {
   stdout: 'Standard output',
   stderr: 'Standard error',
   debug: 'Debug log',
-}
-
-function formatDurationMs(ms: number): string {
-  if (!Number.isFinite(ms) || ms < 0) return '—'
-  if (ms < 1000) return `${Math.round(ms)}ms`
-  const totalSec = ms / 1000
-  if (totalSec < 60) {
-    const rounded = totalSec < 10 ? totalSec.toFixed(1) : totalSec.toFixed(0)
-    return `${rounded}s`
-  }
-  const minutes = Math.floor(totalSec / 60)
-  const seconds = Math.round(totalSec % 60)
-  if (minutes < 60) return `${minutes}m ${seconds}s`
-  const hours = Math.floor(minutes / 60)
-  const remMin = minutes % 60
-  return `${hours}h ${remMin}m`
-}
-
-function stepDurationLabel(
-  step: InstallStep,
-  nowMs: number,
-): string | null {
-  if (!step.startedAt) return null
-  const start = Date.parse(step.startedAt)
-  if (!Number.isFinite(start)) return null
-  const end = step.finishedAt ? Date.parse(step.finishedAt) : nowMs
-  if (!Number.isFinite(end)) return null
-  const label = formatDurationMs(end - start)
-  if (!step.finishedAt) return `${label} (running)`
-  return label
 }
 
 export function InstallDetailPane({
