@@ -1,0 +1,18 @@
+---
+description: InstallSequence XML parse/merge/schema — read architecture + schema docs before nontrivial changes
+globs: src/lib/xml/**/*,src/data/InstallSequence.xml
+alwaysApply: false
+---
+
+# XML / InstallSequence docs
+
+Before nontrivial changes here, **Read**:
+
+- [docs/install-sequence-schema.md](docs/install-sequence-schema.md) — tags / attrs
+- [docs/architecture.md](docs/architecture.md) — parse, station merge, content remap
+
+Invariants:
+
+- Duplicate station tags merge for **UI only**; export/install keep document `orderIndex`.
+- Nested same-tag fold except `group` / `mod` / `component` / `alternatives`.
+- XML `modId` is the download folder key — not the WeiDU mod id (see [docs/weidu-install.md](docs/weidu-install.md)).

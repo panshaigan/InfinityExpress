@@ -6,6 +6,8 @@ alwaysApply: false
 
 # Tauri 2 desktop (Infinity Express)
 
+App map: [docs/architecture.md](docs/architecture.md). WeiDU / backups: [docs/weidu-install.md](docs/weidu-install.md).
+
 ## Stack
 
 - Shell is **Tauri 2** (not Electron). Frontend: Vite + React under `src/`.

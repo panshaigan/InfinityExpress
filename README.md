@@ -1,23 +1,16 @@
 # Infinity Express
 
-Desktop-oriented mod route planner for Infinity Engine Enhanced Edition games.
+Desktop mod route planner for Infinity Engine Enhanced Edition games.
 
-## Milestone 1
-
-Station-based component picker driven by curated data:
+Station-based component picker, mods catalog, and WeiDU install runner driven by curated data:
 
 - `src/data/InstallSequence.xml`
-- `src/data/mods.csv` (detail panel lookup for Codename / URL / Release / Version; download support later)
+- `src/data/mods.csv` (detail panel + Mods phase catalog)
 
 ## Tech stack
 
-**Current (Milestone 1 + Tauri shell):**
-
-- React 18
-- TypeScript
-- Vite
-- Vitest + jsdom
-- **Tauri 2** (`src-tauri/`) — same React UI in a native webview; FS / menus / installers come later
+- React 18 + TypeScript + Vite + Vitest
+- **Tauri 2** (`src-tauri/`) — native webview; dialogs, FS, WeiDU install, backups, mod acquire
 
 Domain and keyboard command resolution stay in pure TypeScript under `src/lib/` so the web and Tauri hosts share behaviour.
 
@@ -75,6 +68,7 @@ Tests live next to the code as `src/**/*.test.ts` and cover:
 - `alwaysIf` / `displayIf` condition parsing and evaluation
 - Selection, station merge, alternatives, visibility, and install-order export
 - Parsing the curated `InstallSequence.xml`
+- Install plan builder / WeiDU resolution helpers where present
 
 ### Desktop / Rust (`src-tauri`)
 
@@ -108,8 +102,12 @@ Lines follow XML document order (duplicate stations merged in the UI only). For 
 
 ## Documentation
 
-- [docs/app-logic.md](docs/app-logic.md) — runtime selection / station / export behaviour
+Agent entry point: [AGENTS.md](AGENTS.md) (when to load which doc).
+
+- [docs/architecture.md](docs/architecture.md) — stack, phases, data flow, key modules
+- [docs/selection.md](docs/selection.md) — visibility, selection rules, levels, presets, export
 - [docs/install-sequence-schema.md](docs/install-sequence-schema.md) — XML tags and attributes
+- [docs/weidu-install.md](docs/weidu-install.md) — install plan, WeiDU IDs, run, backups
 - [docs/keyboard.md](docs/keyboard.md) — tree and chrome keyboard bindings
 
 ## Data and scripts

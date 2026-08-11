@@ -6,6 +6,8 @@ alwaysApply: false
 
 # WeiDU mod / component identity
 
+Full narrative: [docs/weidu-install.md](docs/weidu-install.md).
+
 ## Never confuse these IDs
 
 | Concept | Meaning | Example |

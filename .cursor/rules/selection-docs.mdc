@@ -1,0 +1,16 @@
+---
+description: Selection / visibility behaviour — read docs/selection.md before nontrivial changes
+globs: src/lib/selection/**/*,src/lib/export/installOrder.ts,src/lib/presets/**/*,src/ui/ComponentTree*.tsx,src/ui/FiltersStrip.tsx,src/ui/LevelSelectionStrip.tsx
+alwaysApply: false
+---
+
+# Selection docs
+
+Before nontrivial changes here, **Read** [docs/selection.md](docs/selection.md).
+
+Invariants:
+
+- Selection is a `Set` of XML **component ids**, not tree keys.
+- `displayIf` / filters affect visibility; level strip mass-checks; filters never clear selection.
+- Alternatives-aware parent checked state; `core` off clears the whole `<mod>`; prune gated-out non-required after `alwaysIf`.
+- Export / install order = document `orderIndex`, first id wins, skip `noExport`.
