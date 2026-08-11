@@ -109,6 +109,8 @@ function BranchMenu({
       position: 'fixed',
       top: rect.bottom + 4,
       left: rect.left,
+      minWidth: rect.width,
+      maxWidth: Math.min(420, window.innerWidth - 24),
       zIndex: 30,
     })
   }, [open])
