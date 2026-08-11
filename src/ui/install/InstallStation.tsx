@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useInstallRun } from '../../hooks/useInstallRun'
 import { collectAdjustementsModIds } from '../../lib/install/weiduResolution'
@@ -14,6 +14,7 @@ import { InstallConsoleDock } from './InstallConsoleDock'
 import { InstallDetailPane } from './InstallDetailPane'
 import { InstallTable } from './InstallTable'
 import { IconTip } from '../IconTip'
+import { useToast } from '../toasts/toastContext'
 
 interface Props {
   model: InstallSequenceModel
@@ -26,6 +27,7 @@ interface Props {
   onDetailWidthChange: (width: number) => void
   onToggleDetailCollapsed: () => void
   onOpenSettings: () => void
+  onBusyChange?: (busy: boolean) => void
 }
 
 function allModsPresent(needed: string[], mods: WorkingMod[]): boolean {
@@ -47,7 +49,9 @@ export function InstallStation({
   onDetailWidthChange,
   onToggleDetailCollapsed,
   onOpenSettings,
+  onBusyChange,
 }: Props) {
+  const { pushToast } = useToast()
   const gameFolders = readGameFolderPaths()
   const appDirs = readAppDirPaths()
   const weiduPath = readWeiduPath()
@@ -78,8 +82,10 @@ export function InstallStation({
   const [backupDialog, setBackupDialog] = useState<BackupDialogMode | null>(null)
   const [backupGameKey, setBackupGameKey] = useState('bg2')
   const [backupSourceDir, setBackupSourceDir] = useState('')
+  const [backupBusy, setBackupBusy] = useState(false)
   const [cleanupOffer, setCleanupOffer] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
+  const prevRunStateRef = useRef(run?.runState ?? null)
 
   const steps = run?.steps ?? planSteps.map((s) => ({
     ...s,
@@ -105,6 +111,25 @@ export function InstallStation({
   useEffect(() => {
     if (run?.runState === 'completed') setCleanupOffer(true)
   }, [run?.runState])
+
+  useEffect(() => {
+    const next = run?.runState ?? null
+    const prev = prevRunStateRef.current
+    if (next === prev) return
+    prevRunStateRef.current = next
+    if (next === 'completed') {
+      pushToast({ tone: 'success', message: 'Install completed.' })
+    } else if (next === 'failed') {
+      pushToast({ tone: 'error', message: 'Install failed.' })
+    } else if (next === 'waitingForInput') {
+      pushToast({ tone: 'success', message: 'Install needs your input.' })
+    }
+  }, [run?.runState, pushToast])
+
+  useEffect(() => {
+    onBusyChange?.(run?.runState === 'running' || backupBusy)
+    return () => onBusyChange?.(false)
+  }, [run?.runState, backupBusy, onBusyChange])
 
   const modsReady = allModsPresent(neededCodenames, mods)
   const canRun = isDesktopApp() && !!game && modsReady && !!weiduPath && !!appDirs.backupDir
@@ -201,10 +226,13 @@ export function InstallStation({
       })
       setCleanupOffer(false)
       setNotice('Cleanup finished.')
+      pushToast({ tone: 'success', message: 'Cleanup finished.' })
     } catch (e) {
-      setNotice(String(e))
+      const message = String(e)
+      setNotice(message)
+      pushToast({ tone: 'error', message })
     }
-  }, [game, run, adjustementsModIds, gameFolders, weiduPath])
+  }, [game, run, adjustementsModIds, gameFolders, weiduPath, pushToast])
 
   return (
     <div className="install-station">
@@ -346,6 +374,7 @@ export function InstallStation({
         onClose={() => setBackupDialog(null)}
         onBaselineDone={() => void onStart()}
         onRestoreDone={(path) => void onRestoreDone(path)}
+        onBusyChange={setBackupBusy}
       />
     </div>
   )

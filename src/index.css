@@ -256,6 +256,11 @@ body {
   overflow: hidden;
 }
 
+/* Author `display: flex` overrides the UA [hidden] rule — force hide. */
+.app-body[hidden] {
+  display: none !important;
+}
+
 .app-main {
   display: flex;
   flex-direction: column;
@@ -4424,6 +4429,116 @@ body.is-resizing-detail * {
 .phase-nav-btn.active .phase-nav-index {
   background: var(--accent);
   color: #1a120c;
+}
+
+.phase-nav-index.processing {
+  background: transparent;
+  border: 2px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-top-color: var(--accent);
+  color: transparent;
+  animation: phase-nav-spin 0.75s linear infinite;
+}
+
+.phase-nav-btn.active .phase-nav-index.processing {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--accent) 35%, #1a120c);
+  border-top-color: var(--accent);
+  color: transparent;
+}
+
+.phase-nav-btn.processing {
+  color: var(--ink);
+}
+
+@keyframes phase-nav-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phase-nav-index.processing {
+    animation: mods-job-pulse 1.4s ease-in-out infinite;
+    border-top-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+    background: color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+}
+
+.app-toast-host {
+  position: fixed;
+  top: 3.4rem;
+  right: 0.85rem;
+  z-index: 12000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+  max-width: min(22rem, calc(100vw - 1.5rem));
+  pointer-events: none;
+}
+
+.app-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.55rem 0.65rem 0.55rem 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 92%, var(--bg));
+  box-shadow: 0 8px 24px color-mix(in srgb, #000 35%, transparent);
+  color: var(--ink);
+}
+
+.app-toast.tone-success {
+  border-color: color-mix(in srgb, var(--ok) 55%, var(--line));
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ok) 16%, transparent),
+      color-mix(in srgb, var(--panel) 88%, transparent) 55%
+    );
+}
+
+.app-toast.tone-error {
+  border-color: color-mix(in srgb, var(--err) 55%, var(--line));
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--err) 16%, transparent),
+      color-mix(in srgb, var(--panel) 88%, transparent) 55%
+    );
+}
+
+.app-toast-message {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.app-toast-dismiss {
+  flex-shrink: 0;
+  margin: -0.15rem -0.1rem 0 0;
+  padding: 0 0.35rem;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.app-toast-dismiss:hover {
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .app-toast {
+    animation: export-flash-in 0.22s ease;
+  }
 }
 
 .mods-app-body {

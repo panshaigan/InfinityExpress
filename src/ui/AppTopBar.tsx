@@ -13,6 +13,7 @@ interface Props {
   onPhaseChange: (phase: AppPhase) => void
   installDisabled?: boolean
   installTitle?: string
+  processingPhases?: Partial<Record<AppPhase, boolean>>
   game: SelectedGame | null
   selectedModsCount: number
   selectedCount: number
@@ -68,6 +69,7 @@ export function AppTopBar({
   onPhaseChange,
   installDisabled,
   installTitle,
+  processingPhases,
   game,
   selectedModsCount,
   selectedCount,
@@ -107,6 +109,7 @@ export function AppTopBar({
         onPhaseChange={onPhaseChange}
         installDisabled={installDisabled}
         installTitle={installTitle}
+        processingPhases={processingPhases}
       />
       <div className="top-bar-actions">
         <span className="engine-badge">

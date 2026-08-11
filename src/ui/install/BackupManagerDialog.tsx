@@ -9,6 +9,7 @@ import {
   type BackupProgress,
 } from '../../lib/desktop/weiduInstall'
 import { useBackdropDismiss } from '../backdropDismiss'
+import { useToast } from '../toasts/toastContext'
 
 export type BackupDialogMode = 'baseline' | 'snapshot' | 'restore'
 
@@ -22,6 +23,7 @@ interface Props {
   onClose: () => void
   onBaselineDone: () => void
   onRestoreDone: (backupPath: string) => void
+  onBusyChange?: (busy: boolean) => void
 }
 
 function defaultSnapshotName(): string {
@@ -44,7 +46,9 @@ export function BackupManagerDialog({
   onClose,
   onBaselineDone,
   onRestoreDone,
+  onBusyChange,
 }: Props) {
+  const { pushToast } = useToast()
   const [excludeSafeDirs, setExcludeSafeDirs] = useState(false)
   const [snapshotName, setSnapshotName] = useState(defaultSnapshotName)
   const [manifest, setManifest] = useState<BackupManifest | null>(null)
@@ -54,6 +58,11 @@ export function BackupManagerDialog({
   const [progress, setProgress] = useState<BackupProgress | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const backdrop = useBackdropDismiss(busy ? undefined : onClose)
+
+  useEffect(() => {
+    onBusyChange?.(busy)
+    return () => onBusyChange?.(false)
+  }, [busy, onBusyChange])
 
   useEffect(() => {
     if (!open || mode !== 'restore') return
@@ -101,10 +110,13 @@ export function BackupManagerDialog({
         kind: 'baseline',
         excludeSafeDirs,
       })
+      pushToast({ tone: 'success', message: 'Baseline backup created.' })
       onBaselineDone()
       onClose()
     } catch (e) {
-      setError(String(e))
+      const message = String(e)
+      setError(message)
+      pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
       setProgress(null)
@@ -124,9 +136,12 @@ export function BackupManagerDialog({
         name: snapshotName.trim() || defaultSnapshotName(),
         excludeSafeDirs,
       })
+      pushToast({ tone: 'success', message: 'Snapshot saved.' })
       onClose()
     } catch (e) {
-      setError(String(e))
+      const message = String(e)
+      setError(message)
+      pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
       setProgress(null)
@@ -140,10 +155,13 @@ export function BackupManagerDialog({
     setProgress({ phase: 'restore', message: 'Restoring…', filesDone: 0, bytesDone: 0 })
     try {
       await restoreGameDir(selectedPath, targetDir)
+      pushToast({ tone: 'success', message: 'Backup restored.' })
       onRestoreDone(selectedPath)
       onClose()
     } catch (e) {
-      setError(String(e))
+      const message = String(e)
+      setError(message)
+      pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
       setProgress(null)

@@ -8,6 +8,7 @@ interface Props {
   onPhaseChange: (phase: AppPhase) => void
   installDisabled?: boolean
   installTitle?: string
+  processingPhases?: Partial<Record<AppPhase, boolean>>
 }
 
 const BASE_PHASES: { id: AppPhase; label: string }[] = [
@@ -21,29 +22,40 @@ export function PhaseNav({
   onPhaseChange,
   installDisabled = false,
   installTitle,
+  processingPhases,
 }: Props) {
   return (
     <nav className="phase-nav" aria-label="App phases">
       <ol className="phase-nav-list">
         {BASE_PHASES.map((item, index) => {
           const active = phase === item.id
-          const disabled = item.id === 'install' ? installDisabled : false
-          const title = item.id === 'install' ? installTitle : undefined
+          const processing = !!processingPhases?.[item.id]
+          const disabled =
+            item.id === 'install' ? installDisabled && !processing : false
+          const title = item.id === 'install' && !processing ? installTitle : undefined
           const button = (
             <button
               type="button"
               className={`phase-nav-btn${active ? ' active' : ''}${
                 disabled ? ' disabled' : ''
-              }`}
+              }${processing ? ' processing' : ''}`}
               aria-current={active ? 'page' : undefined}
               aria-disabled={disabled || undefined}
+              aria-label={
+                processing
+                  ? `${item.label}, processing`
+                  : undefined
+              }
               disabled={disabled}
               onClick={() => {
                 if (!disabled) onPhaseChange(item.id)
               }}
             >
-              <span className="phase-nav-index" aria-hidden="true">
-                {index + 1}
+              <span
+                className={`phase-nav-index${processing ? ' processing' : ''}`}
+                aria-hidden="true"
+              >
+                {processing ? null : index + 1}
               </span>
               <span className="phase-nav-label">{item.label}</span>
             </button>

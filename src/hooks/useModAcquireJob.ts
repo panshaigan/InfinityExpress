@@ -100,6 +100,10 @@ export function useModAcquireJob(args: {
   refreshDiskStatus: () => Promise<void>
   clearSelection?: (codename: string) => void
   onMissingDownloadDir?: () => void
+  onJobFinished?: (result: {
+    tone: 'success' | 'error'
+    message: string
+  }) => void
 }) {
   const {
     mods,
@@ -108,6 +112,7 @@ export function useModAcquireJob(args: {
     refreshDiskStatus,
     clearSelection,
     onMissingDownloadDir,
+    onJobFinished,
   } = args
   const [job, setJob] = useState<AcquireJobState>(IDLE)
   const [pendingRemotes, setPendingRemotes] = useState<
@@ -123,6 +128,15 @@ export function useModAcquireJob(args: {
   clearSelectionRef.current = clearSelection
   const onMissingDownloadDirRef = useRef(onMissingDownloadDir)
   onMissingDownloadDirRef.current = onMissingDownloadDir
+  const onJobFinishedRef = useRef(onJobFinished)
+  onJobFinishedRef.current = onJobFinished
+
+  const notifyFinished = useCallback(
+    (tone: 'success' | 'error', message: string) => {
+      onJobFinishedRef.current?.({ tone, message })
+    },
+    [],
+  )
 
   useEffect(() => {
     let unlisten: (() => void) | undefined
@@ -177,28 +191,29 @@ export function useModAcquireJob(args: {
 
   const finishCancelled = useCallback(
     async (kind: JobKind) => {
+      const summary =
+        kind === 'check' ? 'Check cancelled' : 'Download cancelled'
       setJob((prev) => ({
         ...prev,
         running: false,
         activeCodename: null,
         progress: null,
         entries: markRemainingSkipped(prev.entries),
-        summary:
-          kind === 'check'
-            ? 'Check cancelled'
-            : 'Download cancelled',
+        summary,
       }))
+      notifyFinished('success', summary)
       if (kind === 'acquire') {
         await refreshDiskStatus()
       }
     },
-    [refreshDiskStatus],
+    [notifyFinished, refreshDiskStatus],
   )
 
   const runCheck = useCallback(
     async (codenames: string[]) => {
       if (codenames.length === 0) return
       if (!isDesktopApp()) {
+        const summary = 'Desktop app required'
         setJob({
           ...IDLE,
           open: true,
@@ -212,8 +227,9 @@ export function useModAcquireJob(args: {
           ],
           totalCount: 1,
           doneCount: 1,
-          summary: 'Desktop app required',
+          summary,
         })
+        notifyFinished('error', summary)
         return
       }
 
@@ -330,16 +346,21 @@ export function useModAcquireJob(args: {
         await finishCancelled('check')
         return
       }
+      const summary = `Check done: ${updated} update(s), ${available} available, ${upToDate} up to date, ${failed} failed`
       setJob((prev) => ({
         ...prev,
         running: false,
         activeCodename: null,
         progress: null,
         rateLimitHint: prev.rateLimitHint || rateLimitHint,
-        summary: `Check done: ${updated} update(s), ${available} available, ${upToDate} up to date, ${failed} failed`,
+        summary,
       }))
+      notifyFinished(
+        failed > 0 && updated + available + upToDate === 0 ? 'error' : 'success',
+        summary,
+      )
     },
-    [finishCancelled, patchDiskStatus, setEntry],
+    [finishCancelled, notifyFinished, patchDiskStatus, setEntry],
   )
 
   const requestAcquire = useCallback((codenames: string[]) => {
@@ -352,6 +373,7 @@ export function useModAcquireJob(args: {
       return
     }
     if (!isDesktopApp()) {
+      const summary = 'Desktop app required'
       setJob({
         ...IDLE,
         open: true,
@@ -365,8 +387,9 @@ export function useModAcquireJob(args: {
         ],
         totalCount: 1,
         doneCount: 1,
-        summary: 'Desktop app required',
+        summary,
       })
+      notifyFinished('error', summary)
       return
     }
 
@@ -392,7 +415,7 @@ export function useModAcquireJob(args: {
       totalLabel: parts[0] ?? 'unknown',
       detail: parts.slice(1).join(' · '),
     })
-  }, [])
+  }, [notifyFinished])
 
   const confirmAcquire = useCallback(async () => {
     const confirm = sizeConfirm
@@ -541,16 +564,22 @@ export function useModAcquireJob(args: {
       return
     }
     await refreshDiskStatus()
+    const summary = `Finished: ${downloaded} downloaded, ${updated} updated, ${failed} failed`
     setJob((prev) => ({
       ...prev,
       running: false,
       activeCodename: null,
       progress: null,
-      summary: `Finished: ${downloaded} downloaded, ${updated} updated, ${failed} failed`,
+      summary,
     }))
+    notifyFinished(
+      failed > 0 && downloaded + updated === 0 ? 'error' : 'success',
+      summary,
+    )
   }, [
     applyAcquireSuccess,
     finishCancelled,
+    notifyFinished,
     patchDiskStatus,
     refreshDiskStatus,
     setEntry,

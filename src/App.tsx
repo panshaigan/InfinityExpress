@@ -81,12 +81,21 @@ import { useUserCatalog } from './hooks/useUserCatalog'
 import { type AppPhase } from './ui/PhaseNav'
 import { ModsStation, type ModsJourneyState } from './ui/mods/ModsStation'
 import { InstallStation } from './ui/install/InstallStation'
+import { ToastProvider } from './ui/toasts/toastContext'
 import { isDesktopApp } from './lib/desktop/fsDialogs'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
 
 export default function App() {
+  return (
+    <ToastProvider>
+      <AppShell />
+    </ToastProvider>
+  )
+}
+
+function AppShell() {
   const { model, warnings } = parsed
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
   const [game, setGame] = useState<SelectedGame | null>(null)
@@ -94,6 +103,12 @@ export default function App() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const [activeStation, setActiveStation] = useState<AppNavSlot>('engine')
   const [appPhase, setAppPhase] = useState<AppPhase>('components')
+  const [mountedPhases, setMountedPhases] = useState<Record<AppPhase, boolean>>({
+    components: true,
+    mods: false,
+    install: false,
+  })
+  const [phaseBusy, setPhaseBusy] = useState<Partial<Record<AppPhase, boolean>>>({})
   const [modsJourney, setModsJourney] = useState<ModsJourneyState | null>(null)
   const [searchScope, setSearchScope] = useState<'section' | 'all'>('section')
   const userCatalog = useUserCatalog()
@@ -227,6 +242,21 @@ export default function App() {
     writeRouteTipDismissed()
   }
 
+  const goToPhase = useCallback((phase: AppPhase) => {
+    setMountedPhases((prev) => (prev[phase] ? prev : { ...prev, [phase]: true }))
+    setAppPhase(phase)
+  }, [])
+
+  const onModsBusyChange = useCallback((busy: boolean) => {
+    setPhaseBusy((prev) => (prev.mods === busy ? prev : { ...prev, mods: busy }))
+  }, [])
+
+  const onInstallBusyChange = useCallback((busy: boolean) => {
+    setPhaseBusy((prev) =>
+      prev.install === busy ? prev : { ...prev, install: busy },
+    )
+  }, [])
+
   const route = useRouteNav({
     game,
     activeStation,
@@ -246,7 +276,7 @@ export default function App() {
       const required = listSelectedModCodenames(model, selectedIds)
       setModsJourney({ locked: true, requiredCodenames: required })
       setDetailCollapsed(true)
-      setAppPhase('mods')
+      goToPhase('mods')
     },
   })
 
@@ -254,18 +284,18 @@ export default function App() {
     const required = listSelectedModCodenames(model, selectedIds)
     setModsJourney({ locked: true, requiredCodenames: required })
     setDetailCollapsed(true)
-    setAppPhase('mods')
+    goToPhase('mods')
     route.setHideCaughtUp(true)
   }
 
   function onPhaseChange(phase: AppPhase) {
-    if (phase === 'install' && !installPhaseReady) return
+    if (phase === 'install' && !installPhaseReady && !phaseBusy.install) return
     if (phase === appPhase) return
     if (phase === 'mods') {
       // Phase nav opens the library; keep journey state intact so the banner
       // persists as long as the route is complete.
     }
-    setAppPhase(phase)
+    goToPhase(phase)
   }
 
   const stationDesc = useMemo(() => {
@@ -632,6 +662,7 @@ export default function App() {
         onPhaseChange={onPhaseChange}
         installDisabled={!installPhaseReady}
         installTitle={installPhaseTitle}
+        processingPhases={phaseBusy}
         game={game}
         selectedModsCount={selectedModsCount}
         selectedCount={selectedIds.size}
@@ -658,8 +689,8 @@ export default function App() {
         onExport={handleExport}
       />
 
-      {appPhase === 'mods' ? (
-        <div className="app-body mods-app-body">
+      {mountedPhases.mods ? (
+        <div className="app-body mods-app-body" hidden={appPhase !== 'mods'}>
           <div className="app-main mods-app-main">
             <ModsStation
               mods={userCatalog.mods}
@@ -679,11 +710,17 @@ export default function App() {
               onRemoveFromDisk={userCatalog.removeFromDisk}
               onOpenSettings={openSettingsModsDownload}
               onProceedToInstall={() => onPhaseChange('install')}
+              onBusyChange={onModsBusyChange}
             />
           </div>
         </div>
-      ) : appPhase === 'install' ? (
-        <div className="app-body mods-app-body install-app-body">
+      ) : null}
+
+      {mountedPhases.install ? (
+        <div
+          className="app-body mods-app-body install-app-body"
+          hidden={appPhase !== 'install'}
+        >
           <div className="app-main mods-app-main install-app-main">
             <InstallStation
               model={model}
@@ -696,11 +733,14 @@ export default function App() {
               onDetailWidthChange={setDetailWidth}
               onToggleDetailCollapsed={toggleDetailCollapsed}
               onOpenSettings={openSettings}
+              onBusyChange={onInstallBusyChange}
             />
           </div>
         </div>
-      ) : (
-      <div className="app-body">
+      ) : null}
+
+      {mountedPhases.components ? (
+      <div className="app-body" hidden={appPhase !== 'components'}>
         <StationNav
           game={game}
           routeUnlocked={routeUnlocked}
@@ -932,7 +972,7 @@ export default function App() {
           )}
         </div>
       </div>
-      )}
+      ) : null}
 
       <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
       <KeyboardHelp

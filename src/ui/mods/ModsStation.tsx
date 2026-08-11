@@ -29,6 +29,7 @@ import { saveTextFile, isDesktopApp } from '../../lib/desktop/fsDialogs'
 import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
 import { PATHS_CHANGED_EVENT } from '../../lib/ui/pathPrefsEvents'
 import { ConfirmDialog } from '../ConfirmDialog'
+import { useToast } from '../toasts/toastContext'
 import { AcquireJobDialog } from './AcquireJobDialog'
 import { AcquireSizeConfirmDialog } from './AcquireSizeConfirmDialog'
 import { ModDetail } from './ModDetail'
@@ -65,6 +66,7 @@ interface Props {
   ) => Promise<{ removed: string[]; errors: string[] }>
   onOpenSettings: () => void
   onProceedToInstall?: () => void
+  onBusyChange?: (busy: boolean) => void
 }
 
 export function ModsStation({
@@ -85,7 +87,9 @@ export function ModsStation({
   onRemoveFromDisk,
   onOpenSettings,
   onProceedToInstall,
+  onBusyChange,
 }: Props) {
+  const { pushToast } = useToast()
   const journeyLocked = routeComplete && !!journey
   const [filters, setFilters] = useState<ModsTableFilters>(() =>
     createDefaultModsTableFilters(),
@@ -122,7 +126,13 @@ export function ModsStation({
     refreshDiskStatus: onRefreshDiskStatus,
     clearSelection,
     onMissingDownloadDir: onOpenSettings,
+    onJobFinished: pushToast,
   })
+
+  useEffect(() => {
+    onBusyChange?.(acquire.job.running)
+    return () => onBusyChange?.(false)
+  }, [acquire.job.running, onBusyChange])
 
   useEffect(() => {
     function maybePromptDownloadDir() {
