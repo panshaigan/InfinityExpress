@@ -157,7 +157,9 @@ export function ModDetail({
                     <button
                       type="button"
                       className="mods-action-icon-btn"
-                      disabled={jobRunning}
+                      disabled={
+                        jobRunning || mod.diskStatus === 'not_present'
+                      }
                       onClick={onCheckUpdates}
                       aria-label="Check for updates"
                     >

@@ -100,12 +100,6 @@ export function InstallTable({
           />
           <span>Hide installed</span>
         </label>
-        <span className="has-icon-tip install-table-help">
-          <button type="button" className="btn icon-only install-help-btn" aria-label="Help">
-            ?
-          </button>
-          <IconTip>Rows follow install order. Status reflects the WeiDU step that contains the component.</IconTip>
-        </span>
       </div>
       <div className="mods-table-wrap install-table-scroll">
         <table className="install-table mods-table">

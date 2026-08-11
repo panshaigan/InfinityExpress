@@ -309,7 +309,7 @@ export function useModAcquireJob(args: {
             setEntry(
               mod.codename,
               'ok',
-              `Remote ${remote.version} (not on disk)`,
+              `Remote ${remote.version} (N/A)`,
             )
             available += 1
           } else if (remote.version !== localVersion) {

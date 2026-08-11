@@ -5151,13 +5151,22 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
 }
 
+.mods-row.selected:not(.focused) {
+  background: color-mix(in srgb, var(--accent-soft) 40%, transparent);
+}
+
+.mods-row.selected:not(.focused):hover,
+.mods-row:nth-child(even):hover {
+  background: color-mix(in srgb, var(--accent-soft) 90%, transparent);
+}
+
 .mods-row.focused {
   background: color-mix(in srgb, var(--accent) 16%, transparent);
   box-shadow: inset 2px 0 0 var(--accent);
 }
 
-.mods-row.selected:not(.focused) {
-  background: color-mix(in srgb, var(--accent-soft) 40%, transparent);
+.mods-row.focused:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .mods-row-context-menu {

@@ -99,6 +99,7 @@ export function ModsStation({
   const [selected, setSelected] = useState<Set<string>>(() => new Set())
   const [focusedCodename, setFocusedCodename] = useState<string | null>(null)
   const deferredFocusedCodename = useDeferredValue(focusedCodename)
+  const selectionAnchorRef = useRef<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [editor, setEditor] = useState<
     | { mode: 'create'; initial: null }
@@ -153,7 +154,14 @@ export function ModsStation({
   }, [onOpenSettings])
 
   useEffect(() => {
-    if (!journey) return
+    if (!journey) {
+      setFilters((prev) =>
+        prev.requiredCodenames == null
+          ? prev
+          : { ...prev, requiredCodenames: null },
+      )
+      return
+    }
     if (!journey.locked && !routeComplete) return
     setFilters((prev) => ({
       ...prev,
@@ -166,6 +174,7 @@ export function ModsStation({
     }))
     setSelected(new Set(journey.requiredCodenames))
     setFocusedCodename(journey.requiredCodenames[0] ?? null)
+    selectionAnchorRef.current = journey.requiredCodenames[0] ?? null
   }, [journey, routeComplete])
 
   useEffect(() => {
@@ -220,6 +229,17 @@ export function ModsStation({
     })
   }, [mods, selectedList])
 
+  const checkableSelectedList = useMemo(
+    () =>
+      selectedList.filter((code) => {
+        const mod = mods.find((m) => m.codename === code)
+        return mod != null && mod.diskStatus !== 'not_present'
+      }),
+    [mods, selectedList],
+  )
+
+  const checkUpdatesDisabled = checkableSelectedList.length === 0
+
   const selectedAcquireKind = useMemo(() => {
     const targets = modsNeedingAcquire(mods, selectedList)
     return acquireButtonKind(targets.map((m) => m.diskStatus))
@@ -267,6 +287,7 @@ export function ModsStation({
 
   const onToggle = useCallback(
     (codename: string, want: boolean) => {
+      selectionAnchorRef.current = codename
       setSelected((prev) => {
         const next = new Set(prev)
         if (want) next.add(codename)
@@ -287,6 +308,52 @@ export function ModsStation({
         }
         return next
       })
+      selectionAnchorRef.current = rows[0]?.codename ?? null
+    },
+    [rows],
+  )
+
+  const onRowModifierClick = useCallback(
+    (codename: string, e: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) => {
+      setFocusedCodename(codename)
+      if (e.shiftKey) {
+        const endIdx = rows.findIndex((r) => r.codename === codename)
+        const anchor = selectionAnchorRef.current
+        const startIdx = anchor
+          ? rows.findIndex((r) => r.codename === anchor)
+          : -1
+        if (endIdx < 0) return
+        if (startIdx < 0) {
+          selectionAnchorRef.current = codename
+          setSelected((prev) => {
+            const next = new Set(prev)
+            if (next.has(codename)) next.delete(codename)
+            else next.add(codename)
+            return next
+          })
+          return
+        }
+        const lo = Math.min(startIdx, endIdx)
+        const hi = Math.max(startIdx, endIdx)
+        setSelected((prev) => {
+          const next = new Set(prev)
+          for (let i = lo; i <= hi; i++) {
+            const row = rows[i]
+            if (row) next.add(row.codename)
+          }
+          return next
+        })
+        return
+      }
+      if (e.ctrlKey || e.metaKey) {
+        selectionAnchorRef.current = codename
+        setSelected((prev) => {
+          const next = new Set(prev)
+          if (next.has(codename)) next.delete(codename)
+          else next.add(codename)
+          return next
+        })
+      }
     },
     [rows],
   )
@@ -407,8 +474,9 @@ export function ModsStation({
               jobRunning={jobRunning}
               onAcquire={() => acquire.requestAcquire(selectedList)}
               onCheckUpdates={() => {
-                void acquire.runCheck(selectedList)
+                void acquire.runCheck(checkableSelectedList)
               }}
+              checkUpdatesDisabled={checkUpdatesDisabled}
               removeFromDiskDisabled={removeFromDiskDisabled}
               onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
               onDeleteFromCatalog={() => requestDeleteFromCatalog(selectedList)}
@@ -432,6 +500,7 @@ export function ModsStation({
               onToggle={onToggle}
               onToggleAllVisible={onToggleAllVisible}
               onFocusRow={setFocusedCodename}
+              onRowModifierClick={onRowModifierClick}
               rowProgress={rowProgress}
               rowActions={{
                 acquireLabel: (mod) =>
@@ -441,6 +510,8 @@ export function ModsStation({
                 jobRunning,
                 onAcquire: (codename) => acquire.requestAcquire([codename]),
                 onCheckUpdates: (codename) => {
+                  const mod = mods.find((m) => m.codename === codename)
+                  if (!mod || mod.diskStatus === 'not_present') return
                   void acquire.runCheck([codename])
                 },
                 editDisabled: journeyLocked,
@@ -484,7 +555,8 @@ export function ModsStation({
             focusedMod && acquire.requestAcquire([focusedMod.codename])
           }
           onCheckUpdates={() => {
-            if (focusedMod) void acquire.runCheck([focusedMod.codename])
+            if (!focusedMod || focusedMod.diskStatus === 'not_present') return
+            void acquire.runCheck([focusedMod.codename])
           }}
           onRemoveFromDisk={() =>
             focusedMod && requestRemoveFromDisk([focusedMod.codename])

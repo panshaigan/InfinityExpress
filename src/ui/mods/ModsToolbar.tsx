@@ -39,6 +39,7 @@ interface Props {
   jobRunning?: boolean
   onAcquire: () => void
   onCheckUpdates: () => void
+  checkUpdatesDisabled: boolean
   removeFromDiskDisabled: boolean
   onRemoveFromDisk: () => void
   onDeleteFromCatalog: () => void
@@ -73,6 +74,7 @@ export function ModsToolbar({
   jobRunning = false,
   onAcquire,
   onCheckUpdates,
+  checkUpdatesDisabled,
   removeFromDiskDisabled,
   onRemoveFromDisk,
   onDeleteFromCatalog,
@@ -214,7 +216,7 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={bulkDisabled || acquireBusy}
+              disabled={checkUpdatesDisabled || acquireBusy}
               onClick={onCheckUpdates}
               aria-label="Check for updates"
             >

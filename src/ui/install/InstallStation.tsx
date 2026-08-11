@@ -280,19 +280,6 @@ export function InstallStation({
         {!modsReady ? (
           <span className="install-toolbar-note">Missing mods on disk</span>
         ) : null}
-        {!weiduPath ? (
-          <span className="install-toolbar-note">
-            <button type="button" className="btn link" onClick={onOpenSettings}>
-              Set WeiDU path
-            </button>
-          </span>
-        ) : null}
-        <span className="has-icon-tip">
-          <button type="button" className="btn icon-only install-help-btn" aria-label="Help">
-            ?
-          </button>
-          <IconTip>Pause waits between steps. Stop cancels the current WeiDU process.</IconTip>
-        </span>
       </div>
 
       {notice ? <p className="install-notice">{notice}</p> : null}

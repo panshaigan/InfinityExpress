@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { AcquireJobState, JobKind } from '../../hooks/useModAcquireJob'
 import { formatBytes } from '../../lib/mods/loadMods'
+import { useBackdropDismiss } from '../backdropDismiss'
 import { IconTip } from '../IconTip'
 
 interface Props {
@@ -33,9 +34,13 @@ function statusLabel(status: string, kind: JobKind): string {
 
 export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) {
   const titleId = useId()
-  const closeRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const cancelRef = useRef<HTMLButtonElement>(null)
   const logRef = useRef<HTMLDivElement>(null)
   const [hideUpToDate, setHideUpToDate] = useState(true)
+
+  const dismiss = job.running ? onMinimize : onClose
+  const backdrop = useBackdropDismiss(dismiss)
 
   const visibleEntries = useMemo(
     () =>
@@ -52,17 +57,17 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
 
   useEffect(() => {
     if (!job.open) return
-    closeRef.current?.focus()
+    if (job.running) cancelRef.current?.focus()
+    else panelRef.current?.focus()
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault()
-        if (job.running) onCancel()
-        else onClose()
+        dismiss()
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [job.open, job.running, onCancel, onClose])
+  }, [job.open, job.running, dismiss])
 
   useEffect(() => {
     if (!job.open) return
@@ -86,48 +91,34 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
       : null
 
   return (
-    <div className="keyboard-help-backdrop" role="presentation">
+    <div
+      className="keyboard-help-backdrop"
+      role="presentation"
+      {...backdrop}
+    >
       <div
+        ref={panelRef}
         className="keyboard-help acquire-job-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="keyboard-help-header">
           <h2 id={titleId}>{title}</h2>
           <div className="acquire-job-header-actions">
             {job.running ? (
-              <>
-                <button
-                  type="button"
-                  className="btn secondary has-icon-tip"
-                  onClick={onCancel}
-                >
-                  Cancel
-                  <IconTip>Stop the job and skip remaining mods</IconTip>
-                </button>
-                <button
-                  type="button"
-                  className="btn secondary has-icon-tip"
-                  onClick={onMinimize}
-                >
-                  Minimize
-                  <IconTip>Minimize and keep the job running</IconTip>
-                </button>
-              </>
+              <button
+                ref={cancelRef}
+                type="button"
+                className="btn secondary has-icon-tip"
+                onClick={onCancel}
+              >
+                Cancel
+                <IconTip>Stop the job and skip remaining mods</IconTip>
+              </button>
             ) : null}
-            <button
-              ref={closeRef}
-              type="button"
-              className="btn secondary keyboard-help-close"
-              onClick={() => {
-                if (job.running) onMinimize()
-                else onClose()
-              }}
-            >
-              {job.running ? 'Hide' : 'Close'}
-            </button>
           </div>
         </div>
 

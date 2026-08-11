@@ -49,6 +49,7 @@ interface Props {
   onSelectPresets: () => void
   onSelectStation: (id: StationId) => void
   onFinishRoute: () => void
+  onReopenRoute: () => void
 }
 
 function stationClass(
@@ -124,6 +125,7 @@ export function StationNav({
   onSelectPresets,
   onSelectStation,
   onFinishRoute,
+  onReopenRoute,
 }: Props) {
   const progressRatio = totalCount > 0 ? finishedCount / totalCount : 0
   const allDone = totalCount > 0 && finishedCount === totalCount
@@ -169,9 +171,18 @@ export function StationNav({
       </div>
       {showRouteChrome ? (
         <>
-          {!allDone ? (
-            <div className="station-nav-finish">
-              <span className="has-icon-tip">
+          <div className="station-nav-finish">
+            <span className="has-icon-tip">
+              {allDone ? (
+                <button
+                  type="button"
+                  className="btn station-nav-finish-btn"
+                  onClick={onReopenRoute}
+                  aria-label="Reopen route"
+                >
+                  {collapsed ? '↺' : 'Reopen route'}
+                </button>
+              ) : (
                 <button
                   type="button"
                   className="btn station-nav-finish-btn"
@@ -180,12 +191,14 @@ export function StationNav({
                 >
                   {collapsed ? '✓' : 'Finish route'}
                 </button>
-                <IconTip>Mark all stations done</IconTip>
-              </span>
-            </div>
-          ) : null}
+              )}
+              <IconTip>
+                {allDone ? 'Clear all station done marks' : 'Mark all stations done'}
+              </IconTip>
+            </span>
+          </div>
           <div
-            className={`station-nav-progress${allDone ? ' complete solo' : ''}`}
+            className={`station-nav-progress${allDone ? ' complete' : ''}`}
             aria-label={
               allDone
                 ? `Route complete: all ${totalCount} stops done`

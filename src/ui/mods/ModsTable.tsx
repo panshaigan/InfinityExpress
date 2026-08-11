@@ -59,6 +59,8 @@ interface Props {
   onToggle: (codename: string, want: boolean) => void
   onToggleAllVisible: (want: boolean) => void
   onFocusRow: (codename: string) => void
+  /** Ctrl/Cmd or Shift+click row selection (plain click stays focus-only). */
+  onRowModifierClick?: (codename: string, e: ReactMouseEvent) => void
   /** Active acquire/check progress by codename (0–100 or indeterminate). */
   rowProgress?: ReadonlyMap<string, { pct: number | null; label: string }>
   rowActions?: ModsRowActions
@@ -158,6 +160,7 @@ interface ModsTableRowProps {
   progress: RowProgress | undefined
   onToggle: (codename: string, want: boolean) => void
   onFocusRow: (codename: string) => void
+  onRowModifierClick?: (codename: string, e: ReactMouseEvent) => void
   setRowEl: (codename: string, el: HTMLTableRowElement | null) => void
   onContextMenu?: (e: ReactMouseEvent, mod: WorkingMod) => void
 }
@@ -170,6 +173,7 @@ const ModsTableRow = memo(function ModsTableRow({
   progress,
   onToggle,
   onFocusRow,
+  onRowModifierClick,
   setRowEl,
   onContextMenu,
 }: ModsTableRowProps) {
@@ -185,8 +189,13 @@ const ModsTableRow = memo(function ModsTableRow({
       role="row"
       tabIndex={focused ? 0 : -1}
       aria-selected={checked}
-      onClick={() => {
+      onClick={(e) => {
         onFocusRow(mod.codename)
+        if (selectionLocked) return
+        if (e.shiftKey || e.ctrlKey || e.metaKey) {
+          e.preventDefault()
+          onRowModifierClick?.(mod.codename, e)
+        }
       }}
       onDoubleClick={() => {
         if (selectionLocked) return
@@ -301,6 +310,8 @@ function ModsRowContextMenu({
   const acquireLabel = actions.acquireLabel(mod)
   const acquireDisabled = actions.acquireDisabled(mod) || actions.jobRunning
   const removeDisabled = mod.diskStatus === 'not_present'
+  const checkDisabled =
+    mod.diskStatus === 'not_present' || actions.jobRunning
 
   useLayoutEffect(() => {
     const el = menuRef.current
@@ -362,7 +373,7 @@ function ModsRowContextMenu({
         type="button"
         role="menuitem"
         className="mods-row-context-item"
-        disabled={actions.jobRunning}
+        disabled={checkDisabled}
         onClick={() => run(() => actions.onCheckUpdates(mod.codename))}
       >
         <CheckUpdatesIcon />
@@ -414,6 +425,7 @@ export function ModsTable({
   onToggle,
   onToggleAllVisible,
   onFocusRow,
+  onRowModifierClick,
   rowProgress,
   rowActions,
 }: Props) {
@@ -579,6 +591,7 @@ export function ModsTable({
                 progress={rowProgress?.get(mod.codename)}
                 onToggle={onToggle}
                 onFocusRow={onFocusRow}
+                onRowModifierClick={onRowModifierClick}
                 setRowEl={setRowEl}
                 onContextMenu={
                   rowActions

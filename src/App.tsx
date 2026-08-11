@@ -511,6 +511,11 @@ function AppShell() {
     route.finishEntireRoute()
   }
 
+  function reopenRoute() {
+    route.resetFinishedStations()
+    setModsJourney(null)
+  }
+
   const onNavigateToComponent = useCallback(
     (componentId: string) => {
       // Leave global search so the station tree / jump target is visible.
@@ -755,6 +760,7 @@ function AppShell() {
           onSelectPresets={selectPresets}
           onSelectStation={selectStation}
           onFinishRoute={finishRoute}
+          onReopenRoute={reopenRoute}
         />
 
         <div className="app-main">
