@@ -20,7 +20,7 @@ import {
   type ModsSortDir,
   type ModsSortKey,
 } from '../../lib/mods/modsTable'
-import { formatGameDisplay } from '../../lib/mods/modFieldParse'
+import { formatGameDisplay, formatUrlForTable } from '../../lib/mods/modFieldParse'
 import { effectiveModFields, type WorkingMod } from '../../lib/mods/loadMods'
 import { isHttpUrl } from '../../lib/url'
 import { IconTip } from '../IconTip'
@@ -240,7 +240,7 @@ const ModsTableRow = memo(function ModsTableRow({
                   void openExternalUrl(eff.url)
                 }}
               >
-                {eff.url.replace(/^https?:\/\//, '')}
+                {formatUrlForTable(eff.url)}
               </a>
               <UrlCopyButton url={eff.url} />
             </span>
@@ -508,6 +508,12 @@ export function ModsTable({
       }}
     >
       <table className="mods-table">
+        <colgroup>
+          <col className="mods-col-check" />
+          {COLUMNS.map((col) => (
+            <col key={col.key} className={col.className} />
+          ))}
+        </colgroup>
         <thead>
           <tr>
             <th className="mods-col-check" scope="col">

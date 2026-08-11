@@ -118,3 +118,8 @@ export function withHtmlPreviewIfNeeded(url: string): string {
     return trimmed
   }
 }
+
+/** Compact URL label for table cells (scheme stripped; CSS ellipsis when narrow). */
+export function formatUrlForTable(url: string): string {
+  return url.trim().replace(/^https?:\/\//i, '').replace(/\/$/, '')
+}

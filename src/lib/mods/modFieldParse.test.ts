@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   authorFromModUrl,
   formatGameDisplay,
+  formatUrlForTable,
   joinGameTokens,
   modMatchesGameFilter,
   splitAuthorNames,
@@ -76,6 +77,14 @@ describe('authorFromModUrl', () => {
   it('returns null for other hosts', () => {
     expect(authorFromModUrl('https://github.com/org/repo')).toBeNull()
     expect(authorFromModUrl('not-a-url')).toBeNull()
+  })
+})
+
+describe('formatUrlForTable', () => {
+  it('strips scheme and trailing slash for compact display', () => {
+    expect(
+      formatUrlForTable('https://github.com/Spellhold-Studios/Some-Mod/'),
+    ).toBe('github.com/Spellhold-Studios/Some-Mod')
   })
 })
 
