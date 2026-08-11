@@ -75,6 +75,8 @@ export type CheckboxRowProps = {
   /** True when the display parent has noBranches (mod rows hoisted away). */
   parentNoBranches?: boolean
   rowRefs: MutableRefObject<Map<string, HTMLDivElement>>
+  /** When true, checkboxes and editing controls are disabled (station finished). */
+  readonly?: boolean
 }
 
 function subtreeSelectionChanged(
@@ -147,6 +149,7 @@ function checkboxRowPropsAreEqual(
   if (prev.depth !== next.depth) return false
   if (prev.exclusiveGroupKey !== next.exclusiveGroupKey) return false
   if (prev.parentNoBranches !== next.parentNoBranches) return false
+  if (prev.readonly !== next.readonly) return false
   if (prev.onFocus !== next.onFocus) return false
   if (prev.onHover !== next.onHover) return false
   if (prev.onToggle !== next.onToggle) return false
@@ -202,6 +205,7 @@ export const CheckboxRow = memo(function CheckboxRow({
   exclusiveGroupKey,
   parentNoBranches = false,
   rowRefs,
+  readonly = false,
 }: CheckboxRowProps) {
   const { node, collapsedComponent, children } = display
   const state = displaySelectionState(display, selectedIds, game)
@@ -307,6 +311,7 @@ export const CheckboxRow = memo(function CheckboxRow({
   }
 
   function handleRowDoubleClick() {
+    if (readonly) return
     onToggle(display, !checked)
   }
 
@@ -370,13 +375,14 @@ export const CheckboxRow = memo(function CheckboxRow({
             type={isExclusiveOption ? 'radio' : 'checkbox'}
             name={isExclusiveOption ? exclusiveGroupKey : undefined}
             checked={checked}
+            disabled={readonly}
             tabIndex={-1}
             aria-label={label}
             onChange={handleInputChange}
             onClick={handleInputClick}
           />
           <span className="tree-label">{label}</span>
-          {foldable && (
+          {foldable && !readonly && (
             <span className="tree-randomize" ref={menuRef}>
               <button
                 type="button"
@@ -514,6 +520,7 @@ export const CheckboxRow = memo(function CheckboxRow({
               exclusiveGroupKey={childExclusiveKey}
               parentNoBranches={!!node.attrs.noBranches}
               rowRefs={rowRefs}
+              readonly={readonly}
             />
           ))}
         </div>

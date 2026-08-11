@@ -8,6 +8,7 @@
   --accent-soft: #3a281c;
   --line: #3d3228;
   --ok: #6b8f71;
+  --err: #c44040;
   --detail-width: 340px;
   --font-ui: "Source Sans 3", "Segoe UI", sans-serif;
   --font-display: "Cinzel", "Palatino Linotype", serif;
@@ -1724,10 +1725,6 @@ body.is-resizing-detail * {
 }
 
 .branch-menu-popover {
-  position: absolute;
-  top: calc(100% + 0.35rem);
-  left: 1.5rem;
-  z-index: 30;
   display: flex;
   flex-direction: column;
   gap: 0.12rem;
@@ -2459,6 +2456,10 @@ body.is-resizing-detail * {
   padding: 0.1rem 0.25rem 0.1rem 0;
   outline: none;
   user-select: none;
+}
+
+.tree-row-wrap:hover {
+  background: color-mix(in srgb, var(--accent-soft) 60%, transparent);
 }
 
 .tree-row-wrap.focused {

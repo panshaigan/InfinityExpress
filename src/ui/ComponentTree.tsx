@@ -53,6 +53,8 @@ interface Props {
   /** Optional explanation when the list is empty. */
   emptyTitle?: string
   emptyBody?: string
+  /** When true, checkboxes and editing controls are disabled (station finished). */
+  readonly?: boolean
 }
 /** Session-scoped expand/collapse per tree; survives remount, resets on page reload. */
 const expandedKeysCache = new Map<string, Set<string>>()
@@ -287,6 +289,7 @@ export function ComponentTree(props: Props) {
         break
       }
       case 'toggleCheck': {
+        if (props.readonly) break
         const row = keyboardCtx.visibleRows.find((r) => r.key === cmd.key)
         if (!row) break
         const state = displaySelectionState(row.display, props.selectedIds, props.game)
@@ -350,6 +353,7 @@ export function ComponentTree(props: Props) {
           onExpandSubtree={expandSubtree}
           onCollapseSubtree={collapseSubtree}
           rowRefs={rowRefs}
+          readonly={props.readonly}
         />
       ))}
     </div>

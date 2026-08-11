@@ -1,10 +1,12 @@
 import {
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react'
+import { createPortal } from 'react-dom'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { cycleTabIndex } from '../lib/ui/chromeHotkeys'
 import type { BranchNavStationId } from '../lib/stationBranchNav'
@@ -63,8 +65,10 @@ function BranchMenu({
   onSelect: (key: string) => void
 }) {
   const menuRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const panelId = useId()
+  const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({})
   const keys = branches.map((b) => b.node.key)
   const keysSignature = keys.join('\0')
   const firstKey = keys[0] ?? null
@@ -81,7 +85,8 @@ function BranchMenu({
   useEffect(() => {
     if (!open) return
     function onPointerDown(e: PointerEvent) {
-      if (!menuRef.current?.contains(e.target as Node)) onOpenChange(false)
+      const t = e.target as Node
+      if (!menuRef.current?.contains(t) && !listRef.current?.contains(t)) onOpenChange(false)
     }
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
@@ -96,6 +101,17 @@ function BranchMenu({
       window.removeEventListener('keydown', onKeyDown)
     }
   }, [open, onOpenChange])
+
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    setPopoverStyle({
+      position: 'fixed',
+      top: rect.bottom + 4,
+      left: rect.left,
+      zIndex: 30,
+    })
+  }, [open])
 
   useEffect(() => {
     if (!open || !highlightKey) return
@@ -154,6 +170,7 @@ function BranchMenu({
         </span>
       </button>
       <button
+        ref={triggerRef}
         type="button"
         className={`btn secondary branch-menu-trigger${open ? ' open' : ''}`}
         aria-label={ariaLabel}
@@ -189,13 +206,14 @@ function BranchMenu({
           {nextTitle}
         </span>
       </button>
-      {open && (
+      {open && createPortal(
         <div
           ref={listRef}
           id={panelId}
           className="branch-menu-popover"
           role="listbox"
           aria-label={ariaLabel}
+          style={popoverStyle}
           onKeyDown={handleListKeyDown}
         >
           {branches.map((branch) => {
@@ -216,7 +234,8 @@ function BranchMenu({
               </button>
             )
           })}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   )

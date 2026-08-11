@@ -3,6 +3,9 @@ export const GAME_TOKENS = ['BG', 'BG1', 'BG2', 'IWD', 'PST'] as const
 
 export type GameToken = (typeof GAME_TOKENS)[number]
 
+/** Tokens shown in the mod editor form (excludes "BG" — auto-merged from BG1+BG2). */
+export const GAME_FORM_TOKENS = ['BG1', 'BG2', 'IWD', 'PST'] as const
+
 /** Fixed Mods toolbar Game filter options (plus UI "All"). */
 export const GAME_FILTER_OPTIONS = [
   'BG1',

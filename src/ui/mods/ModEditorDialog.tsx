@@ -7,6 +7,7 @@ import {
   type ModInfo,
 } from '../../lib/mods/loadMods'
 import {
+  GAME_FORM_TOKENS,
   GAME_TOKENS,
   authorFromModUrl,
   joinGameTokens,
@@ -121,11 +122,27 @@ function withEmptyOption(
   return [{ value: '', label: emptyLabel }, ...toSelectOptions(values)]
 }
 
+/** If both BG1 and BG2 are present, replace them with BG. */
+function collapseGameTokens(tokens: string[]): string[] {
+  const set = new Set(tokens)
+  if (set.has('BG1') && set.has('BG2')) {
+    set.delete('BG1')
+    set.delete('BG2')
+    set.add('BG')
+  }
+  return [...set]
+}
+
 function selectedGameTokens(game: string): Set<GameToken> {
   const selected = new Set<GameToken>()
   for (const token of splitGameTokens(game)) {
     if ((GAME_TOKENS as readonly string[]).includes(token)) {
-      selected.add(token as GameToken)
+      if (token === 'BG') {
+        selected.add('BG1')
+        selected.add('BG2')
+      } else {
+        selected.add(token as GameToken)
+      }
     }
   }
   return selected
@@ -358,7 +375,7 @@ export function ModEditorDialog({
       ...next,
       url,
       readme,
-      game: joinGameTokens(splitGameTokens(next.game)),
+      game: joinGameTokens(collapseGameTokens(splitGameTokens(next.game))),
       codename: code,
       track,
       download,
@@ -508,7 +525,7 @@ export function ModEditorDialog({
               role="group"
               aria-labelledby={gameFieldId}
             >
-              {GAME_TOKENS.map((token) => (
+              {GAME_FORM_TOKENS.map((token) => (
                 <label key={token} className="mod-editor-check">
                   <input
                     type="checkbox"

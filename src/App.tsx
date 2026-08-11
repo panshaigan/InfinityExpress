@@ -880,6 +880,7 @@ export default function App() {
                         onExpandKeysApplied={focus.clearPendingExpandKeys}
                         emptyTitle={emptyCopy?.title}
                         emptyBody={emptyCopy?.body}
+                        readonly={route.currentFinished}
                       />
                     </div>
                   </>

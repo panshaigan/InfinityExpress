@@ -74,6 +74,7 @@ export function useChromeHotkeys(args: {
 
     function onKeyDown(e: KeyboardEvent) {
       if (e.altKey || e.ctrlKey || e.metaKey) return
+      if (document.querySelector('[aria-modal="true"]')) return
       if (
         isDesktopApp() &&
         !keyboardHelpOpen &&
