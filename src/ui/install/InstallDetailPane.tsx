@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { InstallStep } from '../../lib/install/types'
 import { readTextFile } from '../../lib/desktop/fsDialogs'
 import {
@@ -127,6 +127,36 @@ const LOG_LABELS: Record<LogKind, string> = {
   debug: 'Debug log',
 }
 
+function formatDurationMs(ms: number): string {
+  if (!Number.isFinite(ms) || ms < 0) return '—'
+  if (ms < 1000) return `${Math.round(ms)}ms`
+  const totalSec = ms / 1000
+  if (totalSec < 60) {
+    const rounded = totalSec < 10 ? totalSec.toFixed(1) : totalSec.toFixed(0)
+    return `${rounded}s`
+  }
+  const minutes = Math.floor(totalSec / 60)
+  const seconds = Math.round(totalSec % 60)
+  if (minutes < 60) return `${minutes}m ${seconds}s`
+  const hours = Math.floor(minutes / 60)
+  const remMin = minutes % 60
+  return `${hours}h ${remMin}m`
+}
+
+function stepDurationLabel(
+  step: InstallStep,
+  nowMs: number,
+): string | null {
+  if (!step.startedAt) return null
+  const start = Date.parse(step.startedAt)
+  if (!Number.isFinite(start)) return null
+  const end = step.finishedAt ? Date.parse(step.finishedAt) : nowMs
+  if (!Number.isFinite(end)) return null
+  const label = formatDurationMs(end - start)
+  if (!step.finishedAt) return `${label} (running)`
+  return label
+}
+
 export function InstallDetailPane({
   step,
   selectedComponentId,
@@ -145,6 +175,7 @@ export function InstallDetailPane({
   const [logContents, setLogContents] = useState<string | null>(null)
   const [logLoading, setLogLoading] = useState(false)
   const [logError, setLogError] = useState<string | null>(null)
+  const [nowMs, setNowMs] = useState(() => Date.now())
 
   const componentId =
     selectedComponentId ??
@@ -154,6 +185,15 @@ export function InstallDetailPane({
     ? mods.find((m) => m.codename.toLowerCase() === step.modId.toLowerCase())
     : undefined
   const eff = mod ? effectiveModFields(mod) : null
+  const durationLive = !!step?.startedAt && !step.finishedAt
+  const durationLabel = step ? stepDurationLabel(step, nowMs) : null
+
+  useEffect(() => {
+    if (!durationLive) return
+    setNowMs(Date.now())
+    const id = window.setInterval(() => setNowMs(Date.now()), 1000)
+    return () => window.clearInterval(id)
+  }, [durationLive, step?.stepId, step?.startedAt])
 
   async function openLog(kind: LogKind, path: string) {
     const label = component?.attrs.label ?? step?.modId ?? 'step'
@@ -250,6 +290,7 @@ export function InstallDetailPane({
                           </Field>
                         ) : null}
                         <Field label="Status">{STATUS_LABEL[step.status]}</Field>
+                        <Field label="Duration">{durationLabel ?? '—'}</Field>
                         {step.weiduNumbers.length > 0 ? (
                           <Field label="WeiDU #">{step.weiduNumbers.join(', ')}</Field>
                         ) : null}

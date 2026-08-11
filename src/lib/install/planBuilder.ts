@@ -94,7 +94,10 @@ export function buildInstallPlan(
 export interface InstallTableRow {
   stepId: string
   stepIndex: number
+  /** 1-based install step number (shared by all components in a batch). */
   order: number
+  isFirstInStep: boolean
+  batchSize: number
   modId: string
   componentId: string
   componentLabel: string
@@ -106,11 +109,15 @@ export function expandStepsToTableRows(steps: InstallStep[]): InstallTableRow[] 
   const rows: InstallTableRow[] = []
   let order = 1
   steps.forEach((step, stepIndex) => {
+    const batchSize = step.componentIds.length
+    const stepOrder = order++
     step.componentIds.forEach((componentId, i) => {
       rows.push({
         stepId: step.stepId,
         stepIndex,
-        order: order++,
+        order: stepOrder,
+        isFirstInStep: i === 0,
+        batchSize,
         modId: step.modId,
         componentId,
         componentLabel: step.componentLabels[i] ?? componentId,

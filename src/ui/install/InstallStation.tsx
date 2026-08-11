@@ -123,9 +123,20 @@ export function InstallStation({
   useEffect(() => {
     if (activeStepId) {
       setSelectedStepId(activeStepId)
+      const active = steps.find((s) => s.stepId === activeStepId)
+      if (active?.componentIds[0]) {
+        setSelectedComponentId((prev) =>
+          prev && active.componentIds.includes(prev)
+            ? prev
+            : active.componentIds[0] ?? null,
+        )
+      }
       return
     }
-    if (!selectedStepId && steps[0]) setSelectedStepId(steps[0].stepId)
+    if (!selectedStepId && steps[0]) {
+      setSelectedStepId(steps[0].stepId)
+      setSelectedComponentId(steps[0].componentIds[0] ?? null)
+    }
   }, [steps, selectedStepId, activeStepId])
 
   useEffect(() => {
@@ -400,7 +411,10 @@ export function InstallStation({
 
           <InstallTable
             steps={steps}
+            model={model}
+            mods={mods}
             selectedStepId={selectedStep?.stepId ?? null}
+            selectedComponentId={selectedComponentId}
             activeStepId={activeStepId}
             hideInstalled={hideInstalled}
             onSelectStep={onSelectStep}

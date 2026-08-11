@@ -594,9 +594,31 @@ function AppShell() {
     document.getElementById('mods-table')?.focus()
   }
 
+  function focusInstallTable() {
+    const focused = document.querySelector<HTMLElement>(
+      '#install-table [role="row"][tabindex="0"]',
+    )
+    if (focused) {
+      focused.focus()
+      return
+    }
+    const first = document.querySelector<HTMLElement>(
+      '#install-table tr.install-row',
+    )
+    if (first) {
+      first.focus()
+      return
+    }
+    document.getElementById('install-table')?.focus()
+  }
+
   function focusMainDisplay() {
     if (appPhase === 'mods') {
       focusModsTable()
+      return
+    }
+    if (appPhase === 'install') {
+      focusInstallTable()
       return
     }
     if (activeStation === 'engine') {

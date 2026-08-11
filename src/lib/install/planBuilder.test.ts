@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { buildInstallPlan } from './planBuilder'
+import { buildInstallPlan, expandStepsToTableRows } from './planBuilder'
+import type { InstallStep } from './types'
 import type {
   ComponentNode,
   ContainerNode,
@@ -106,5 +107,47 @@ describe('buildInstallPlan', () => {
     expect(steps).toHaveLength(1)
     expect(steps[0]?.modId).toBe('bg1ub')
     expect(steps[0]?.componentIds).toEqual(['bg1ub:11', 'bg1ub:16'])
+  })
+})
+
+describe('expandStepsToTableRows', () => {
+  function queuedStep(
+    partial: Pick<InstallStep, 'stepId' | 'modId' | 'componentIds' | 'componentLabels'> &
+      Partial<Pick<InstallStep, 'phase'>>,
+  ): InstallStep {
+    return {
+      phase: 'single',
+      tp2Path: '',
+      stagedFolderName: '',
+      weiduNumbers: [],
+      languageIndex: null,
+      status: 'queued',
+      warnings: [],
+      errors: [],
+      ...partial,
+    }
+  }
+
+  it('assigns one order per batch step and marks the first row', () => {
+    const steps = [
+      queuedStep({
+        stepId: 'single:0000',
+        modId: 'EEex',
+        componentIds: ['e:0', 'e:1', 'e:2'],
+        componentLabels: ['A', 'B', 'C'],
+      }),
+      queuedStep({
+        stepId: 'single:0001',
+        modId: 'Other',
+        componentIds: ['o:0'],
+        componentLabels: ['X'],
+      }),
+    ]
+    const rows = expandStepsToTableRows(steps)
+    expect(rows).toHaveLength(4)
+    expect(rows.map((r) => r.order)).toEqual([1, 1, 1, 2])
+    expect(rows.map((r) => r.isFirstInStep)).toEqual([true, false, false, true])
+    expect(rows[0]?.batchSize).toBe(3)
+    expect(rows[3]?.batchSize).toBe(1)
   })
 })

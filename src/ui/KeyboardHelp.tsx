@@ -40,7 +40,10 @@ const MODS_ROWS: HelpRow[] = [
   { keys: 'Enter', action: 'Show details (does not toggle)' },
 ]
 
-const INSTALL_ROWS: HelpRow[] = []
+const INSTALL_ROWS: HelpRow[] = [
+  { keys: '↑ ↓', action: 'Move in the install steps table' },
+  { keys: 'Home End', action: 'First / last visible step row' },
+]
 
 function rowsForPhase(phase: AppPhase): HelpRow[] {
   if (phase === 'mods') return [...SHARED, ...MODS_ROWS]
@@ -60,8 +63,8 @@ function ledeForPhase(phase: AppPhase) {
   if (phase === 'install') {
     return (
       <>
-        Install order and run controls live here once the desktop installer is
-        wired up.
+        Browse the install plan and follow run progress. Use arrow keys in the
+        table; Home and End jump to the first or last visible row.
       </>
     )
   }

@@ -5821,8 +5821,16 @@ body.is-resizing-detail * {
   min-height: 0;
 }
 
+.install-row.batch-hover:not(.selected):not(.active) {
+  background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
+}
+
 .install-row.selected {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.install-row.selected.batch-hover {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .install-row.active {
@@ -5832,6 +5840,34 @@ body.is-resizing-detail * {
 
 .install-row.active.selected {
   background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.install-row.component-focused {
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+.install-row.active.component-focused {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.install-row.install-row-batch-start > td,
+.install-row.install-row-batch-cont > td {
+  border-bottom-color: transparent;
+}
+
+.install-row.install-row-batch-cont:has(+ .install-row-batch-start) > td,
+.install-row.install-row-batch-cont:has(+ .install-row:not(.install-row-batch-cont)) > td,
+.install-row.install-row-batch-start:not(:has(+ .install-row-batch-cont)) > td,
+.install-row.install-row-batch-cont:last-child > td,
+.install-row.install-row-batch-start:last-child > td {
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+.install-col-num {
+  width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
 }
 
 .install-row-progress {

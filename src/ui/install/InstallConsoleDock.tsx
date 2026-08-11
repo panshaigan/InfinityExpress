@@ -89,7 +89,7 @@ export function InstallConsoleDock({
               className={`install-console-tab${tab === 'output' ? ' active' : ''}`}
               onClick={() => setTab('output')}
             >
-              Output
+              WeiDU
             </button>
             <button
               type="button"
