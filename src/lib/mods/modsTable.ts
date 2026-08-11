@@ -56,11 +56,11 @@ export function createDefaultModsTableFilters(): ModsTableFilters {
 export function diskStatusLabel(status: DiskStatus): string {
   switch (status) {
     case 'not_present':
-      return 'Not on disk'
+      return 'N/A'
     case 'present':
-      return 'On disk'
+      return 'Available'
     case 'update_available':
-      return 'Update available'
+      return 'Update'
     case 'busy':
       return 'Working…'
   }

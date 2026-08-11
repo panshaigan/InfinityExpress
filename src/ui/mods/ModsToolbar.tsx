@@ -131,17 +131,11 @@ export function ModsToolbar({
           <div className="mods-journey-banner-text">
             <strong>Needed for your route</strong>
             <span>
-              These mods are required by your component selection. Selection is
-              locked until you continue browsing.
+              These mods are required by your selected components.
+              Please make sure they are all downloaded. You can also
+              update the selected mods if needed.
             </span>
           </div>
-          <button
-            type="button"
-            className="btn secondary"
-            onClick={onContinueBrowsing}
-          >
-            Continue browsing
-          </button>
         </div>
       ) : null}
 

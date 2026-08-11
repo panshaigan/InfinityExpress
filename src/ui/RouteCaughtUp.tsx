@@ -27,35 +27,12 @@ export function RouteCaughtUp({
           {selectedCount > 0
             ? ` · ${selectedCount} component${selectedCount === 1 ? '' : 's'} selected`
             : ''}
-          . Next, review the mods your route needs — or export the install order.
+          . Next, review the mods your route needs.
         </p>
       </div>
       <div className="route-caught-up-actions">
         <button type="button" className="btn" onClick={onOpenMods}>
-          Open Mods
-        </button>
-        <span className="has-icon-tip">
-          <button
-            type="button"
-            className="btn secondary"
-            disabled={selectedCount === 0}
-            onClick={onExport}
-          >
-            Export
-          </button>
-          <IconTip>
-            {selectedCount === 0
-              ? 'Select at least one component to export'
-              : 'Preview and save install order'}
-          </IconTip>
-        </span>
-        <button
-          type="button"
-          className="btn secondary"
-          onClick={onDismiss}
-          aria-label="Dismiss completion message"
-        >
-          Hide
+          Checkout the mods
         </button>
       </div>
     </aside>
