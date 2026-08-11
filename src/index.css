@@ -6280,13 +6280,50 @@ body.is-resizing-detail * {
 }
 
 .backup-dialog {
-  width: min(36rem, 100%);
+  width: min(40rem, 100%);
 }
 
 .backup-dialog-body {
   min-height: 14rem;
   display: flex;
   flex-direction: column;
+}
+
+.backup-include-fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.backup-include-fieldset legend {
+  padding: 0;
+  margin-bottom: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.backup-progress-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.backup-progress-message {
+  flex: 1;
+  min-width: 0;
+}
+
+.backup-progress-bytes {
+  flex-shrink: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
 }
 
 .backup-restore-list {

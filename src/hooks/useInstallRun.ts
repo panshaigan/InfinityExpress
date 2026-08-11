@@ -335,23 +335,41 @@ export function useInstallRun(options: {
   }, [])
 
   const markAlreadyInstalledFromLog = useCallback(
-    async (steps: InstallStep[], gameDir: string): Promise<InstallStep[]> => {
-      const log = await readGameWeiduLog(gameDir)
-      if (!log.trim()) return steps
-      return steps.map((step): InstallStep => {
+    async (steps: InstallStep[], game: SelectedGame): Promise<InstallStep[]> => {
+      const logsByDir = new Map<string, string>()
+      async function logFor(dir: string): Promise<string> {
+        if (!dir) return ''
+        const cached = logsByDir.get(dir)
+        if (cached != null) return cached
+        const text = await readGameWeiduLog(dir)
+        logsByDir.set(dir, text)
+        return text
+      }
+
+      const out: InstallStep[] = []
+      for (const step of steps) {
         if (step.languageIndex == null || step.weiduNumbers.length === 0) {
-          return step
+          out.push(step)
+          continue
+        }
+        const gameDir = gameDirForPhase(game, step.phase, gameFolders)
+        const log = await logFor(gameDir)
+        if (!log.trim()) {
+          out.push(step)
+          continue
         }
         const allInstalled = step.weiduNumbers.every((n) =>
           isComponentInstalledInLog(log, step.tp2Path, step.languageIndex!, n),
         )
         if (allInstalled && (step.status === 'queued' || step.status === 'copying')) {
-          return { ...step, status: 'alreadyInstalled', progress: null }
+          out.push({ ...step, status: 'alreadyInstalled', progress: null })
+        } else {
+          out.push(step)
         }
-        return step
-      })
+      }
+      return out
     },
-    [],
+    [gameFolders],
   )
 
   const executeFromCursor = useCallback(
@@ -676,7 +694,7 @@ export function useInstallRun(options: {
   }, [run, executeFromCursor, appendCommandLine])
 
   const restartFromBackup = useCallback(
-    async (phaseGameDir: string) => {
+    async (_phaseGameDir: string) => {
       if (!run) return
       let steps: InstallStep[] = run.steps.map(
         (s): InstallStep => ({
@@ -690,7 +708,7 @@ export function useInstallRun(options: {
           startedAt: undefined,
         }),
       )
-      steps = await markAlreadyInstalledFromLog(steps, phaseGameDir)
+      steps = await markAlreadyInstalledFromLog(steps, run.game)
       const cursor = steps.findIndex(
         (s) =>
           s.status !== 'succeeded' &&

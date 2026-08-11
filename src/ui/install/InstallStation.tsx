@@ -262,13 +262,13 @@ export function InstallStation({
     return `${done}/${run.steps.length} - ${run.runState}`
   }, [run, planSteps.length])
 
-  const ensureBaselines = useCallback(async (): Promise<boolean> => {
+  const ensureVanillas = useCallback(async (): Promise<boolean> => {
     if (!game || !appDirs.backupDir) return false
     const keys =
       game === 'eet' ? (['bg1', 'bg2'] as const) : ([game] as const)
     for (const key of keys) {
       const manifest = await listBackups(appDirs.backupDir, key)
-      if (!manifest.baseline) {
+      if (!manifest.vanilla) {
         const dir =
           key === 'bg1'
             ? gameFolders.bg1
@@ -284,7 +284,7 @@ export function InstallStation({
         }
         setBackupGameKey(key)
         setBackupSourceDir(dir)
-        setBackupDialog('baseline')
+        setBackupDialog('vanilla')
         return false
       }
     }
@@ -294,10 +294,10 @@ export function InstallStation({
   const onStart = useCallback(async () => {
     if (!canRun || isRunning) return
     initRun()
-    const ok = await ensureBaselines()
+    const ok = await ensureVanillas()
     if (!ok) return
     await start()
-  }, [canRun, isRunning, initRun, ensureBaselines, start])
+  }, [canRun, isRunning, initRun, ensureVanillas, start])
 
   const onPauseToggle = useCallback(() => {
     if (!run) return
@@ -315,13 +315,25 @@ export function InstallStation({
   }, [run, pause, continueRun])
 
   const onRestoreDone = useCallback(
-    async (_backupPath: string) => {
+    async (_backupPath: string, restoredGameKey: string) => {
       if (!game) return
       setNotice('Backup restored.')
       if (!run) return
-      const step = run.steps[run.cursor] ?? run.steps[0]
-      const phase = step?.phase ?? 'single'
-      const targetDir = gameDirForPhase(game, phase, gameFolders)
+      const targetDir =
+        restoredGameKey === 'bg1'
+          ? gameFolders.bg1
+          : restoredGameKey === 'bg2'
+            ? gameFolders.bg2
+            : restoredGameKey === 'iwd'
+              ? gameFolders.iwd
+              : restoredGameKey === 'pst'
+                ? gameFolders.pst
+                : gameDirForPhase(
+                    game,
+                    run.steps[run.cursor]?.phase ?? run.steps[0]?.phase ?? 'single',
+                    gameFolders,
+                  )
+      if (!targetDir) return
       await restartFromBackup(targetDir)
     },
     [game, run, gameFolders, restartFromBackup],
@@ -340,6 +352,21 @@ export function InstallStation({
       setBackupDialog('manage')
     },
     [game, run, gameFolders],
+  )
+
+  const backupGameKeys = useMemo(
+    () => (game === 'eet' ? ['bg1', 'bg2'] : game ? [game] : [backupGameKey]),
+    [game, backupGameKey],
+  )
+
+  const backupDirsByKey = useMemo(
+    () => ({
+      bg1: gameFolders.bg1,
+      bg2: gameFolders.bg2,
+      iwd: gameFolders.iwd,
+      pst: gameFolders.pst,
+    }),
+    [gameFolders],
   )
 
   const onCleanup = useCallback(async () => {
@@ -515,15 +542,18 @@ export function InstallStation({
 
       <BackupManagerDialog
         open={backupDialog != null}
-        mode={backupDialog ?? 'baseline'}
+        mode={backupDialog ?? 'vanilla'}
         initialManageTab={backupManageTab}
         backupRoot={appDirs.backupDir}
+        gameKeys={backupGameKeys}
+        dirsByKey={backupDirsByKey}
         gameKey={backupGameKey}
         sourceDir={backupSourceDir}
         targetDir={backupSourceDir}
+        eetMode={game === 'eet'}
         onClose={() => setBackupDialog(null)}
-        onBaselineDone={() => void onStart()}
-        onRestoreDone={(path) => void onRestoreDone(path)}
+        onVanillaDone={() => void onStart()}
+        onRestoreDone={(path, key) => void onRestoreDone(path, key)}
         onBusyChange={setBackupBusy}
         onLog={appendCommandLine}
       />

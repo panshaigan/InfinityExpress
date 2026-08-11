@@ -24,7 +24,7 @@ Stack: React 18 + TypeScript + Vite + Vitest; Tauri 2 desktop shell. Pure domain
 
 1. **Components** — Engine station (game + folder prefs) then XML stations in `STATION_ORDER` (`base` … `adjustements`). Content has main/sub branch nav after remap.
 2. **Mods** — Working copy of `mods.csv` (localStorage overlays). Desktop: scan Settings **mods download dir** by Download ID (subdir name); acquire / remove-from-disk. Completing last Components station can open Mods in journey mode.
-3. **Install** — Plan/run WeiDU steps; backups under Settings backup path; console dock. EET splits Pre-EET (`eet1`) vs EET (`eet`). See [weidu-install.md](weidu-install.md).
+3. **Install** — Plan/run WeiDU steps; **vanilla** + named snapshots under Settings backup path (see [weidu-install.md](weidu-install.md)#backups); console dock. EET splits Pre-EET (`eet1`) vs EET (`eet`).
 
 Settings (top bar): game folders, mods download dir, backup dir, WeiDU path (`gameFolderPrefs`, `appDirPrefs`, `weiduPrefs`).
 

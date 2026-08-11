@@ -99,7 +99,7 @@ export interface ModListingCacheEntry {
 
 export type ModListingCache = Map<string, ModListingCacheEntry>
 
-export type BackupKind = 'baseline' | 'snapshot'
+export type BackupKind = 'vanilla' | 'snapshot'
 
 export interface BackupEntry {
   kind: BackupKind
@@ -111,7 +111,7 @@ export interface BackupEntry {
 
 export interface BackupManifest {
   gameKey: string
-  baseline: BackupEntry | null
+  vanilla: BackupEntry | null
   snapshots: BackupEntry[]
 }
 

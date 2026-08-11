@@ -12,6 +12,9 @@ const BACKUP_PROGRESS_EVENT: &str = "weidu-backup-progress";
 
 pub const SAFE_EXCLUDE_DIRS: &[&str] = &["movies", "music"];
 
+/// Folder / entry names that must not be used as snapshot names.
+const RESERVED_NAMES: &[&str] = &["vanilla", "baseline", "snapshots", "manifest.json"];
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BackupProgress {
@@ -37,7 +40,9 @@ pub struct BackupEntry {
 #[serde(rename_all = "camelCase")]
 pub struct BackupManifest {
   pub game_key: String,
-  pub baseline: Option<BackupEntry>,
+  /// Full unmodded game copy. Legacy JSON key `baseline` is accepted on read.
+  #[serde(default, alias = "baseline")]
+  pub vanilla: Option<BackupEntry>,
   pub snapshots: Vec<BackupEntry>,
 }
 
@@ -85,14 +90,18 @@ fn manifest_path(backup_root: &Path, game_key: &str) -> PathBuf {
   backup_root.join(game_key).join("manifest.json")
 }
 
-fn read_manifest(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
+fn empty_manifest(game_key: &str) -> BackupManifest {
+  BackupManifest {
+    game_key: game_key.to_string(),
+    vanilla: None,
+    snapshots: Vec::new(),
+  }
+}
+
+fn read_manifest_file(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
   let path = manifest_path(backup_root, game_key);
   if !path.is_file() {
-    return Ok(BackupManifest {
-      game_key: game_key.to_string(),
-      baseline: None,
-      snapshots: Vec::new(),
-    });
+    return Ok(empty_manifest(game_key));
   }
   let text = fs::read_to_string(&path).map_err(|e| e.to_string())?;
   serde_json::from_str(&text).map_err(|e| e.to_string())
@@ -104,6 +113,146 @@ fn write_manifest(backup_root: &Path, manifest: &BackupManifest) -> Result<(), S
   let path = dir.join("manifest.json");
   let text = serde_json::to_string_pretty(manifest).map_err(|e| e.to_string())?;
   fs::write(path, text).map_err(|e| e.to_string())
+}
+
+fn is_reserved_name(name: &str) -> bool {
+  let lower = name.to_ascii_lowercase();
+  RESERVED_NAMES.iter().any(|r| lower == *r)
+}
+
+fn normalize_kind(kind: &str) -> Result<&'static str, String> {
+  match kind.trim().to_ascii_lowercase().as_str() {
+    "vanilla" | "baseline" => Ok("vanilla"),
+    "snapshot" => Ok("snapshot"),
+    other => Err(format!("Unknown backup kind: {other}")),
+  }
+}
+
+/// Migrate legacy `baseline/` + `snapshots/` layout and rewrite manifest paths/kinds.
+fn migrate_layout(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
+  let game_root = backup_root.join(game_key);
+  if !game_root.exists() {
+    return Ok(empty_manifest(game_key));
+  }
+
+  let baseline_dir = game_root.join("baseline");
+  let vanilla_dir = game_root.join("vanilla");
+  if baseline_dir.is_dir() && !vanilla_dir.exists() {
+    fs::rename(&baseline_dir, &vanilla_dir).map_err(|e| e.to_string())?;
+  }
+
+  let snapshots_dir = game_root.join("snapshots");
+  if snapshots_dir.is_dir() {
+    for entry in fs::read_dir(&snapshots_dir).map_err(|e| e.to_string())? {
+      let entry = entry.map_err(|e| e.to_string())?;
+      let name = entry.file_name();
+      let name_str = name.to_string_lossy();
+      if is_reserved_name(&name_str) {
+        continue;
+      }
+      let dest = game_root.join(&name);
+      if !dest.exists() {
+        fs::rename(entry.path(), &dest).map_err(|e| e.to_string())?;
+      }
+    }
+    // Drop empty snapshots folder; ignore if not empty (collision left behind).
+    let _ = fs::remove_dir(&snapshots_dir);
+  }
+
+  let mut manifest = read_manifest_file(backup_root, game_key)?;
+  manifest.game_key = game_key.to_string();
+
+  if let Some(ref mut v) = manifest.vanilla {
+    v.kind = "vanilla".into();
+    v.name = "vanilla".into();
+    v.path = vanilla_dir.to_string_lossy().into_owned();
+  } else if vanilla_dir.is_dir() {
+    // On-disk vanilla without manifest entry (legacy or orphan).
+    let meta = vanilla_dir.metadata().ok();
+    let created = meta
+      .and_then(|m| m.created().ok())
+      .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
+      .map(|d| {
+        let secs = d.as_secs();
+        let days = secs / 86_400;
+        let day_secs = secs % 86_400;
+        let (y, m, d) = civil_from_days(days as i64);
+        let hh = day_secs / 3600;
+        let mm = (day_secs % 3600) / 60;
+        let ss = day_secs % 60;
+        format!("{y:04}-{m:02}-{d:02}T{hh:02}:{mm:02}:{ss:02}Z")
+      })
+      .unwrap_or_else(iso_timestamp);
+    manifest.vanilla = Some(BackupEntry {
+      kind: "vanilla".into(),
+      name: "vanilla".into(),
+      path: vanilla_dir.to_string_lossy().into_owned(),
+      created_at: created,
+      exclude_safe_dirs: false,
+    });
+  }
+
+  for snap in &mut manifest.snapshots {
+    snap.kind = "snapshot".into();
+    let flat = game_root.join(&snap.name);
+    let nested = game_root.join("snapshots").join(&snap.name);
+    if flat.is_dir() {
+      snap.path = flat.to_string_lossy().into_owned();
+    } else if nested.is_dir() {
+      snap.path = nested.to_string_lossy().into_owned();
+    } else {
+      snap.path = flat.to_string_lossy().into_owned();
+    }
+  }
+
+  // Discover flat snapshot dirs not listed in the manifest.
+  if game_root.is_dir() {
+    for entry in fs::read_dir(&game_root).map_err(|e| e.to_string())? {
+      let entry = entry.map_err(|e| e.to_string())?;
+      if !entry.path().is_dir() {
+        continue;
+      }
+      let name = entry.file_name().to_string_lossy().to_string();
+      if is_reserved_name(&name) {
+        continue;
+      }
+      if manifest.snapshots.iter().any(|s| s.name == name) {
+        continue;
+      }
+      let meta = entry.metadata().ok();
+      let created = meta
+        .and_then(|m| m.created().ok())
+        .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
+        .map(|d| {
+          let secs = d.as_secs();
+          let days = secs / 86_400;
+          let day_secs = secs % 86_400;
+          let (y, m, day) = civil_from_days(days as i64);
+          let hh = day_secs / 3600;
+          let mm = (day_secs % 3600) / 60;
+          let ss = day_secs % 60;
+          format!("{y:04}-{m:02}-{day:02}T{hh:02}:{mm:02}:{ss:02}Z")
+        })
+        .unwrap_or_else(iso_timestamp);
+      manifest.snapshots.push(BackupEntry {
+        kind: "snapshot".into(),
+        name: name.clone(),
+        path: entry.path().to_string_lossy().into_owned(),
+        created_at: created,
+        exclude_safe_dirs: false,
+      });
+    }
+  }
+
+  manifest
+    .snapshots
+    .sort_by(|a, b| a.created_at.cmp(&b.created_at));
+  write_manifest(backup_root, &manifest)?;
+  Ok(manifest)
+}
+
+fn read_manifest(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
+  migrate_layout(backup_root, game_key)
 }
 
 fn should_exclude(name: &str, exclude_safe: bool) -> bool {
@@ -205,14 +354,44 @@ fn wipe_dir_contents(dir: &Path) -> Result<(), String> {
   Ok(())
 }
 
+/// Run a blocking remove off the async runtime; UI shows indeterminate progress from the start emit.
+async fn remove_path_with_progress(
+  app: &AppHandle,
+  path: PathBuf,
+  phase: &str,
+  message: &str,
+) -> Result<(), String> {
+  emit_progress(app, progress(phase, message, 0, 0, 0, 0));
+  tauri::async_runtime::spawn_blocking(move || {
+    if path.is_dir() {
+      fs::remove_dir_all(&path).map_err(|e| e.to_string())
+    } else if path.exists() {
+      fs::remove_file(&path).map_err(|e| e.to_string())
+    } else {
+      Ok(())
+    }
+  })
+  .await
+  .map_err(|e| format!("Remove task failed: {e}"))?
+}
+
+async fn wipe_dir_with_progress(
+  app: &AppHandle,
+  dir: PathBuf,
+  phase: &str,
+  message: &str,
+) -> Result<(), String> {
+  emit_progress(app, progress(phase, message, 0, 0, 0, 0));
+  tauri::async_runtime::spawn_blocking(move || wipe_dir_contents(&dir))
+    .await
+    .map_err(|e| format!("Wipe task failed: {e}"))?
+}
+
 fn iso_timestamp() -> String {
   let secs = SystemTime::now()
     .duration_since(UNIX_EPOCH)
     .map(|d| d.as_secs())
     .unwrap_or(0);
-  // UTC wall clock without chrono: format via approximate civil time is awkward;
-  // store a sortable Unix-based ISO-ish stamp the UI can format.
-  // Prefer true ISO when possible via local offset-free Zulu from secs.
   let days = secs / 86_400;
   let day_secs = secs % 86_400;
   let (y, m, d) = civil_from_days(days as i64);
@@ -239,12 +418,10 @@ fn civil_from_days(z: i64) -> (i32, u32, u32) {
 
 fn fallback_snapshot_name() -> String {
   let stamp = iso_timestamp();
-  // snapshot-Ymd-His from ISO UTC
   let compact = stamp
     .chars()
     .filter(|c| c.is_ascii_digit())
     .collect::<String>();
-  // YYYYMMDDHHMMSS → YYYYMMDD-HHMMSS
   if compact.len() >= 14 {
     format!(
       "snapshot-{}-{}",
@@ -283,12 +460,14 @@ pub async fn backup_game_dir(
     return Err("Backup directory is not set".into());
   }
 
-  let kind = input.kind.trim().to_ascii_lowercase();
+  let kind = normalize_kind(&input.kind)?;
+  let _ = migrate_layout(&backup_root, game_key)?;
+
   let created_at = iso_timestamp();
-  let (dest, entry_name) = match kind.as_str() {
-    "baseline" => (
-      backup_root.join(game_key).join("baseline"),
-      "baseline".to_string(),
+  let (dest, entry_name) = match kind {
+    "vanilla" => (
+      backup_root.join(game_key).join("vanilla"),
+      "vanilla".to_string(),
     ),
     "snapshot" => {
       let name = input
@@ -298,16 +477,25 @@ pub async fn backup_game_dir(
         .filter(|s| !s.is_empty())
         .map(|s| s.to_string())
         .unwrap_or_else(fallback_snapshot_name);
-      (
-        backup_root.join(game_key).join("snapshots").join(&name),
-        name,
-      )
+      if is_reserved_name(&name) {
+        return Err(format!("Snapshot name \"{name}\" is reserved"));
+      }
+      if name.contains('/') || name.contains('\\') || name.contains("..") {
+        return Err("Snapshot name must be a single path segment".into());
+      }
+      (backup_root.join(game_key).join(&name), name)
     }
-    other => return Err(format!("Unknown backup kind: {other}")),
+    _ => unreachable!(),
   };
 
   if dest.exists() {
-    fs::remove_dir_all(&dest).map_err(|e| e.to_string())?;
+    remove_path_with_progress(
+      &app,
+      dest.clone(),
+      "delete",
+      "Removing previous backup…",
+    )
+    .await?;
   }
 
   emit_progress(
@@ -338,19 +526,29 @@ pub async fn backup_game_dir(
 
   let files = Arc::new(AtomicU64::new(0));
   let bytes = Arc::new(AtomicU64::new(0));
-  copy_filtered(
-    &app,
-    &source,
-    &dest,
-    input.exclude_safe_dirs,
-    &files,
-    &bytes,
-    files_total,
-    bytes_total,
-  )?;
+  let app_copy = app.clone();
+  let source_copy = source.clone();
+  let dest_copy = dest.clone();
+  let exclude = input.exclude_safe_dirs;
+  let files_c = Arc::clone(&files);
+  let bytes_c = Arc::clone(&bytes);
+  tauri::async_runtime::spawn_blocking(move || {
+    copy_filtered(
+      &app_copy,
+      &source_copy,
+      &dest_copy,
+      exclude,
+      &files_c,
+      &bytes_c,
+      files_total,
+      bytes_total,
+    )
+  })
+  .await
+  .map_err(|e| format!("Backup copy task failed: {e}"))??;
 
   let entry = BackupEntry {
-    kind: kind.clone(),
+    kind: kind.to_string(),
     name: entry_name.clone(),
     path: dest.to_string_lossy().into_owned(),
     created_at,
@@ -359,8 +557,8 @@ pub async fn backup_game_dir(
 
   let mut manifest = read_manifest(&backup_root, game_key)?;
   manifest.game_key = game_key.to_string();
-  match kind.as_str() {
-    "baseline" => manifest.baseline = Some(entry.clone()),
+  match kind {
+    "vanilla" => manifest.vanilla = Some(entry.clone()),
     "snapshot" => {
       manifest.snapshots.retain(|s| s.name != entry.name);
       manifest.snapshots.push(entry.clone());
@@ -411,6 +609,14 @@ pub async fn restore_game_dir(
   }
   fs::create_dir_all(&target).map_err(|e| e.to_string())?;
 
+  wipe_dir_with_progress(
+    &app,
+    target.clone(),
+    "delete",
+    "Cleaning game folder…",
+  )
+  .await?;
+
   emit_progress(
     &app,
     progress(
@@ -437,19 +643,27 @@ pub async fn restore_game_dir(
     ),
   );
 
-  wipe_dir_contents(&target)?;
   let files = Arc::new(AtomicU64::new(0));
   let bytes = Arc::new(AtomicU64::new(0));
-  copy_filtered(
-    &app,
-    &backup,
-    &target,
-    false,
-    &files,
-    &bytes,
-    files_total,
-    bytes_total,
-  )?;
+  let app_copy = app.clone();
+  let backup_copy = backup.clone();
+  let target_copy = target.clone();
+  let files_c = Arc::clone(&files);
+  let bytes_c = Arc::clone(&bytes);
+  tauri::async_runtime::spawn_blocking(move || {
+    copy_filtered(
+      &app_copy,
+      &backup_copy,
+      &target_copy,
+      false,
+      &files_c,
+      &bytes_c,
+      files_total,
+      bytes_total,
+    )
+  })
+  .await
+  .map_err(|e| format!("Restore copy task failed: {e}"))??;
 
   emit_progress(
     &app,
@@ -476,13 +690,14 @@ pub async fn create_named_backup(
 }
 
 #[tauri::command]
-pub fn delete_backup(
+pub async fn delete_backup(
+  app: AppHandle,
   backup_root: String,
   game_key: String,
   backup_path: String,
 ) -> Result<(), String> {
   let root = PathBuf::from(backup_root.trim());
-  let key = game_key.trim();
+  let key = game_key.trim().to_string();
   let path = PathBuf::from(backup_path.trim());
   if key.is_empty() {
     return Err("Game key is required".into());
@@ -494,27 +709,28 @@ pub fn delete_backup(
     return Err(format!("Backup not found: {}", path.display()));
   }
 
-  let game_root = root.join(key);
+  let _ = migrate_layout(&root, &key)?;
+  let game_root = root.join(&key);
   let safe = resolve_under(&game_root, &path)?;
 
-  let mut manifest = read_manifest(&root, key)?;
+  let mut manifest = read_manifest(&root, &key)?;
   let matches = |entry_path: &str| {
     Path::new(entry_path) == path
       || fs::canonicalize(entry_path)
         .ok()
         .is_some_and(|p| p == safe)
   };
-  if manifest.baseline.as_ref().is_some_and(|b| matches(&b.path)) {
-    manifest.baseline = None;
+  if manifest.vanilla.as_ref().is_some_and(|b| matches(&b.path)) {
+    manifest.vanilla = None;
   }
   manifest.snapshots.retain(|s| !matches(&s.path));
-
-  if safe.is_dir() {
-    fs::remove_dir_all(&safe).map_err(|e| e.to_string())?;
-  } else {
-    fs::remove_file(&safe).map_err(|e| e.to_string())?;
-  }
-
   write_manifest(&root, &manifest)?;
+
+  remove_path_with_progress(&app, safe, "delete", "Removing backup…").await?;
+
+  emit_progress(
+    &app,
+    progress("done", "Backup deleted", 0, 0, 0, 0),
+  );
   Ok(())
 }

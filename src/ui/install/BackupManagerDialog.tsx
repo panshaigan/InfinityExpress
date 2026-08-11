@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { BackupEntry, BackupManifest } from '../../lib/install/types'
 import {
   backupGameDir,
@@ -16,9 +16,13 @@ import { OutlinedTextField } from '../OutlinedTextField'
 import { DeleteFromCatalogIcon } from '../mods/ModsActionIcons'
 import { useToast } from '../toasts/toastContext'
 
-export type BackupDialogMode = 'baseline' | 'manage'
+export type BackupDialogMode = 'vanilla' | 'manage'
 
 type ManageTab = 'backup' | 'restore'
+
+interface ListedBackup extends BackupEntry {
+  gameKey: string
+}
 
 interface Props {
   open: boolean
@@ -26,12 +30,22 @@ interface Props {
   /** Initial tab when mode is manage. */
   initialManageTab?: ManageTab
   backupRoot: string
+  /** Keys to list / operate on (EET: bg1+bg2). */
+  gameKeys: string[]
+  /** Game folder paths keyed by game key. */
+  dirsByKey: Record<string, string>
+  /**
+   * Primary key for vanilla-gate dialogs and non-EET create.
+   * For EET manage, first missing vanilla is preferred when creating vanilla.
+   */
   gameKey: string
   sourceDir: string
   targetDir: string
+  /** When true, snapshot create shows BG1/BG2 include checkboxes. */
+  eetMode?: boolean
   onClose: () => void
-  onBaselineDone: () => void
-  onRestoreDone: (backupPath: string) => void
+  onVanillaDone: () => void
+  onRestoreDone: (backupPath: string, restoredGameKey: string) => void
   onBusyChange?: (busy: boolean) => void
   /** Optional install Commands-tab log (timestamped by caller). */
   onLog?: (message: string) => void
@@ -87,12 +101,18 @@ function formatCreatedAt(raw: string): string {
 }
 
 function typeLabel(entry: BackupEntry): string {
-  const base = entry.kind === 'baseline' ? 'Baseline' : 'Snapshot'
+  const base = entry.kind === 'vanilla' ? 'Vanilla' : 'Snapshot'
   return entry.excludeSafeDirs ? `${base} (partial)` : `${base} (full)`
 }
 
 function displayName(entry: BackupEntry): string {
-  return entry.kind === 'baseline' ? 'Baseline' : entry.name
+  return entry.kind === 'vanilla' ? 'Vanilla' : entry.name
+}
+
+function gameKeyLabel(key: string): string {
+  if (key === 'bg1') return 'BG1'
+  if (key === 'bg2') return 'BG2'
+  return key.toUpperCase()
 }
 
 export function BackupManagerDialog({
@@ -100,11 +120,14 @@ export function BackupManagerDialog({
   mode,
   initialManageTab = 'backup',
   backupRoot,
+  gameKeys,
+  dirsByKey,
   gameKey,
   sourceDir,
   targetDir,
+  eetMode = false,
   onClose,
-  onBaselineDone,
+  onVanillaDone,
   onRestoreDone,
   onBusyChange,
   onLog,
@@ -113,14 +136,23 @@ export function BackupManagerDialog({
   const [manageTab, setManageTab] = useState<ManageTab>(initialManageTab)
   const [excludeSafeDirs, setExcludeSafeDirs] = useState(false)
   const [snapshotName, setSnapshotName] = useState(defaultSnapshotName)
-  const [manifest, setManifest] = useState<BackupManifest | null>(null)
+  const [manifests, setManifests] = useState<Record<string, BackupManifest>>({})
   const [selectedPath, setSelectedPath] = useState<string>('')
+  const [selectedGameKey, setSelectedGameKey] = useState<string>('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState<BackupProgress | null>(null)
-  const [pendingDelete, setPendingDelete] = useState<BackupEntry | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<ListedBackup | null>(null)
+  const [includeBg1, setIncludeBg1] = useState(true)
+  const [includeBg2, setIncludeBg2] = useState(true)
+  const [vanillaTargetKey, setVanillaTargetKey] = useState(gameKey)
   const backdrop = useBackdropDismiss(
     busy || pendingDelete != null ? undefined : onClose,
+  )
+
+  const keys = useMemo(
+    () => (gameKeys.length > 0 ? gameKeys : [gameKey]),
+    [gameKeys, gameKey],
   )
 
   useEffect(() => {
@@ -128,10 +160,25 @@ export function BackupManagerDialog({
     return () => onBusyChange?.(false)
   }, [busy, onBusyChange])
 
+  async function loadManifests(): Promise<Record<string, BackupManifest>> {
+    const next: Record<string, BackupManifest> = {}
+    await Promise.all(
+      keys.map(async (key) => {
+        try {
+          next[key] = await listBackups(backupRoot, key)
+        } catch {
+          next[key] = { gameKey: key, vanilla: null, snapshots: [] }
+        }
+      }),
+    )
+    setManifests(next)
+    return next
+  }
+
   useEffect(() => {
-    if (!open || mode !== 'manage' || manageTab !== 'restore') return
-    void listBackups(backupRoot, gameKey).then(setManifest).catch(() => setManifest(null))
-  }, [open, mode, manageTab, backupRoot, gameKey])
+    if (!open) return
+    void loadManifests()
+  }, [open, backupRoot, keys.join('|')])
 
   useEffect(() => {
     if (!open) return
@@ -139,8 +186,13 @@ export function BackupManagerDialog({
     setProgress(null)
     setPendingDelete(null)
     setManageTab(initialManageTab)
+    setSelectedPath('')
+    setSelectedGameKey('')
     if (mode === 'manage') setSnapshotName(defaultSnapshotName())
-  }, [open, mode, initialManageTab])
+    setVanillaTargetKey(gameKey)
+    setIncludeBg1(Boolean(dirsByKey.bg1?.trim()))
+    setIncludeBg2(Boolean(dirsByKey.bg2?.trim()))
+  }, [open, mode, initialManageTab, gameKey])
 
   useEffect(() => {
     if (!open) return
@@ -178,36 +230,88 @@ export function BackupManagerDialog({
     }
   }, [open, busy])
 
+  const missingVanillaKeys = useMemo(
+    () => keys.filter((k) => !manifests[k]?.vanilla),
+    [keys, manifests],
+  )
+  const manifestsLoaded = keys.every((k) =>
+    Object.prototype.hasOwnProperty.call(manifests, k),
+  )
+  const forceVanillaOnly =
+    mode === 'vanilla' ||
+    (mode === 'manage' &&
+      manageTab === 'backup' &&
+      (!manifestsLoaded || missingVanillaKeys.length > 0))
+
+  useEffect(() => {
+    if (!forceVanillaOnly) return
+    const preferred =
+      missingVanillaKeys.find((k) => k === gameKey) ??
+      missingVanillaKeys[0] ??
+      gameKey
+    setVanillaTargetKey(preferred)
+  }, [forceVanillaOnly, missingVanillaKeys.join('|'), gameKey])
+
   if (!open) return null
 
-  async function refreshManifest() {
-    try {
-      setManifest(await listBackups(backupRoot, gameKey))
-    } catch {
-      setManifest(null)
-    }
-  }
+  const vanillaDir =
+    dirsByKey[vanillaTargetKey]?.trim() ||
+    (vanillaTargetKey === gameKey ? sourceDir : '') ||
+    ''
 
-  async function runBaseline() {
+  const entries: ListedBackup[] = keys.flatMap((key) => {
+    const m = manifests[key]
+    if (!m) return []
+    const list: ListedBackup[] = []
+    if (m.vanilla) list.push({ ...m.vanilla, gameKey: key })
+    for (const s of m.snapshots) list.push({ ...s, gameKey: key })
+    return list
+  })
+
+  const progressPct =
+    progress && progress.bytesTotal > 0
+      ? Math.min(100, Math.round((progress.bytesDone / progress.bytesTotal) * 100))
+      : null
+
+  const progressBytes =
+    progress && progress.bytesTotal > 0
+      ? `${formatBytes(progress.bytesDone)} / ${formatBytes(progress.bytesTotal)}`
+      : progress && progress.filesDone > 0
+        ? `${progress.filesDone} files · ${formatBytes(progress.bytesDone)}`
+        : null
+
+  const progressAria =
+    progress && progressBytes
+      ? `${progress.message} ${progressBytes}`
+      : progress?.message ?? undefined
+
+  async function runVanilla() {
+    if (!vanillaDir) {
+      setError(`Set ${gameKeyLabel(vanillaTargetKey)} game folder in Settings.`)
+      return
+    }
     setBusy(true)
     setError(null)
-    setProgress(emptyProgress('Starting baseline…'))
+    setProgress(emptyProgress('Starting vanilla backup…'))
     try {
       await backupGameDir({
-        sourceDir,
+        sourceDir: vanillaDir,
         backupRoot,
-        gameKey,
-        kind: 'baseline',
+        gameKey: vanillaTargetKey,
+        kind: 'vanilla',
         excludeSafeDirs,
       })
-      onLog?.(`Baseline backup created (${gameKey})`)
-      pushToast({ tone: 'success', message: 'Baseline backup created.' })
-      onBaselineDone()
-      onClose()
+      onLog?.(`Vanilla backup created (${vanillaTargetKey})`)
+      pushToast({ tone: 'success', message: 'Vanilla backup created.' })
+      await loadManifests()
+      if (mode === 'vanilla') {
+        onVanillaDone()
+        onClose()
+      }
     } catch (e) {
       const message = String(e)
       setError(message)
-      onLog?.(`Baseline backup failed: ${message}`)
+      onLog?.(`Vanilla backup failed: ${message}`)
       pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
@@ -216,21 +320,69 @@ export function BackupManagerDialog({
   }
 
   async function runSnapshot() {
+    const name = snapshotName.trim() || defaultSnapshotName()
+    const targets: { key: string; dir: string }[] = []
+    if (eetMode) {
+      if (includeBg1) {
+        const dir = dirsByKey.bg1?.trim()
+        if (!dir) {
+          setError('Set BG1 game folder in Settings.')
+          return
+        }
+        if (!manifests.bg1?.vanilla) {
+          setError('Create a BG1 vanilla backup before snapshots.')
+          return
+        }
+        targets.push({ key: 'bg1', dir })
+      }
+      if (includeBg2) {
+        const dir = dirsByKey.bg2?.trim()
+        if (!dir) {
+          setError('Set BG2 game folder in Settings.')
+          return
+        }
+        if (!manifests.bg2?.vanilla) {
+          setError('Create a BG2 vanilla backup before snapshots.')
+          return
+        }
+        targets.push({ key: 'bg2', dir })
+      }
+      if (targets.length === 0) {
+        setError('Select at least one game to include in the snapshot.')
+        return
+      }
+    } else {
+      const dir = dirsByKey[gameKey]?.trim() || sourceDir
+      if (!dir) {
+        setError('Game folder is not set.')
+        return
+      }
+      targets.push({ key: gameKey, dir })
+    }
+
     setBusy(true)
     setError(null)
     setProgress(emptyProgress('Starting snapshot…'))
     try {
-      const name = snapshotName.trim() || defaultSnapshotName()
-      await createNamedBackup({
-        sourceDir,
-        backupRoot,
-        gameKey,
-        kind: 'snapshot',
-        name,
-        excludeSafeDirs,
+      for (const t of targets) {
+        setProgress(emptyProgress(`Snapshot ${gameKeyLabel(t.key)}…`))
+        await createNamedBackup({
+          sourceDir: t.dir,
+          backupRoot,
+          gameKey: t.key,
+          kind: 'snapshot',
+          name,
+          excludeSafeDirs,
+        })
+        onLog?.(`Snapshot "${name}" saved (${t.key})`)
+      }
+      pushToast({
+        tone: 'success',
+        message:
+          targets.length > 1
+            ? `Snapshot saved for ${targets.map((t) => gameKeyLabel(t.key)).join(' + ')}.`
+            : 'Snapshot saved.',
       })
-      onLog?.(`Snapshot "${name}" saved (${gameKey})`)
-      pushToast({ tone: 'success', message: 'Snapshot saved.' })
       onClose()
     } catch (e) {
       const message = String(e)
@@ -244,15 +396,20 @@ export function BackupManagerDialog({
   }
 
   async function runRestore() {
-    if (!selectedPath) return
+    if (!selectedPath || !selectedGameKey) return
+    const dest = dirsByKey[selectedGameKey]?.trim() || targetDir
+    if (!dest) {
+      setError(`Set ${gameKeyLabel(selectedGameKey)} game folder in Settings.`)
+      return
+    }
     setBusy(true)
     setError(null)
-    setProgress(emptyProgress('Restoring…'))
+    setProgress(emptyProgress('Cleaning game folder…'))
     try {
-      await restoreGameDir(selectedPath, targetDir)
-      onLog?.(`Backup restored from ${selectedPath}`)
+      await restoreGameDir(selectedPath, dest)
+      onLog?.(`Backup restored from ${selectedPath} → ${selectedGameKey}`)
       pushToast({ tone: 'success', message: 'Backup restored.' })
-      onRestoreDone(selectedPath)
+      onRestoreDone(selectedPath, selectedGameKey)
       onClose()
     } catch (e) {
       const message = String(e)
@@ -271,11 +428,15 @@ export function BackupManagerDialog({
     setPendingDelete(null)
     setBusy(true)
     setError(null)
+    setProgress(emptyProgress('Removing backup…'))
     try {
-      await deleteBackup(backupRoot, gameKey, entry.path)
-      if (selectedPath === entry.path) setSelectedPath('')
-      await refreshManifest()
-      onLog?.(`Backup deleted: ${displayName(entry)}`)
+      await deleteBackup(backupRoot, entry.gameKey, entry.path)
+      if (selectedPath === entry.path) {
+        setSelectedPath('')
+        setSelectedGameKey('')
+      }
+      await loadManifests()
+      onLog?.(`Backup deleted: ${displayName(entry)} (${entry.gameKey})`)
       pushToast({ tone: 'success', message: 'Backup deleted.' })
     } catch (e) {
       const message = String(e)
@@ -284,26 +445,14 @@ export function BackupManagerDialog({
       pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
+      setProgress(null)
     }
   }
 
-  const entries = [
-    ...(manifest?.baseline ? [manifest.baseline] : []),
-    ...(manifest?.snapshots ?? []),
-  ]
-
-  const progressPct =
-    progress && progress.bytesTotal > 0
-      ? Math.min(100, Math.round((progress.bytesDone / progress.bytesTotal) * 100))
-      : null
-
-  const progressLabel = progress
-    ? progress.bytesTotal > 0
-      ? `${progress.message} — ${formatBytes(progress.bytesDone)} / ${formatBytes(progress.bytesTotal)}`
-      : progress.filesDone > 0
-        ? `${progress.message} — ${progress.filesDone} files · ${formatBytes(progress.bytesDone)}`
-        : progress.message
-    : null
+  const showBackupForm =
+    mode === 'vanilla' || (mode === 'manage' && manageTab === 'backup')
+  const showMultiVanillaPick =
+    forceVanillaOnly && manifestsLoaded && missingVanillaKeys.length > 1
 
   return (
     <div className="keyboard-help-backdrop" role="presentation" {...backdrop}>
@@ -316,7 +465,7 @@ export function BackupManagerDialog({
       >
         <div className="keyboard-help-header">
           <h2 id="backup-dialog-title">
-            {mode === 'baseline' ? 'Baseline backup' : 'Backups'}
+            {mode === 'vanilla' || forceVanillaOnly ? 'Vanilla backup' : 'Backups'}
           </h2>
         </div>
 
@@ -346,16 +495,66 @@ export function BackupManagerDialog({
         ) : null}
 
         <div className="backup-dialog-body">
-          {mode === 'baseline' || (mode === 'manage' && manageTab === 'backup') ? (
+          {showBackupForm ? (
             <div className="settings-fields">
-              {mode === 'manage' ? (
-                <OutlinedTextField
-                  label="Name"
-                  value={snapshotName}
-                  onChange={setSnapshotName}
-                  disabled={busy}
-                />
-              ) : null}
+              {forceVanillaOnly ? (
+                <>
+                  {showMultiVanillaPick ? (
+                    <fieldset className="backup-include-fieldset">
+                      <legend>Create vanilla for</legend>
+                      {missingVanillaKeys.map((key) => (
+                        <label key={key} className="install-filter-toggle">
+                          <input
+                            type="radio"
+                            name="vanilla-target"
+                            checked={vanillaTargetKey === key}
+                            onChange={() => setVanillaTargetKey(key)}
+                            disabled={busy}
+                          />
+                          <span>{gameKeyLabel(key)}</span>
+                        </label>
+                      ))}
+                    </fieldset>
+                  ) : (
+                    <p className="backup-restore-empty">
+                      Create a vanilla backup for {gameKeyLabel(vanillaTargetKey)} before
+                      snapshots.
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <OutlinedTextField
+                    label="Name"
+                    value={snapshotName}
+                    onChange={setSnapshotName}
+                    disabled={busy}
+                  />
+                  {eetMode ? (
+                    <fieldset className="backup-include-fieldset">
+                      <legend>Include in snapshot</legend>
+                      <label className="install-filter-toggle">
+                        <input
+                          type="checkbox"
+                          checked={includeBg1}
+                          onChange={(e) => setIncludeBg1(e.target.checked)}
+                          disabled={busy || !dirsByKey.bg1?.trim()}
+                        />
+                        <span>BG1</span>
+                      </label>
+                      <label className="install-filter-toggle">
+                        <input
+                          type="checkbox"
+                          checked={includeBg2}
+                          onChange={(e) => setIncludeBg2(e.target.checked)}
+                          disabled={busy || !dirsByKey.bg2?.trim()}
+                        />
+                        <span>BG2</span>
+                      </label>
+                    </fieldset>
+                  ) : null}
+                </>
+              )}
               <label className="install-filter-toggle">
                 <input
                   type="checkbox"
@@ -375,6 +574,7 @@ export function BackupManagerDialog({
                   <thead>
                     <tr>
                       <th scope="col">Name</th>
+                      {keys.length > 1 ? <th scope="col">Game</th> : null}
                       <th scope="col">Type</th>
                       <th scope="col">Created</th>
                       <th scope="col">
@@ -387,10 +587,13 @@ export function BackupManagerDialog({
                       const selected = selectedPath === entry.path
                       return (
                         <tr
-                          key={entry.path}
+                          key={`${entry.gameKey}:${entry.path}`}
                           className={selected ? 'selected' : undefined}
                           onClick={() => {
-                            if (!busy) setSelectedPath(entry.path)
+                            if (!busy) {
+                              setSelectedPath(entry.path)
+                              setSelectedGameKey(entry.gameKey)
+                            }
                           }}
                         >
                           <td>
@@ -399,12 +602,18 @@ export function BackupManagerDialog({
                                 type="radio"
                                 name="backup-choice"
                                 checked={selected}
-                                onChange={() => setSelectedPath(entry.path)}
+                                onChange={() => {
+                                  setSelectedPath(entry.path)
+                                  setSelectedGameKey(entry.gameKey)
+                                }}
                                 disabled={busy}
                               />
                               <span>{displayName(entry)}</span>
                             </label>
                           </td>
+                          {keys.length > 1 ? (
+                            <td>{gameKeyLabel(entry.gameKey)}</td>
+                          ) : null}
                           <td>{typeLabel(entry)}</td>
                           <td>{formatCreatedAt(entry.createdAt)}</td>
                           <td className="backup-restore-actions">
@@ -441,27 +650,44 @@ export function BackupManagerDialog({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={progressPct ?? undefined}
-                aria-valuetext={progressLabel ?? undefined}
+                aria-valuetext={progressAria}
               >
                 <div
                   className={`backup-progress-fill${progressPct == null ? ' indeterminate' : ''}`}
                   style={progressPct != null ? { width: `${progressPct}%` } : undefined}
                 />
               </div>
-              <p className="install-dialog-progress">{progressLabel}</p>
+              <div className="backup-progress-meta">
+                <p className="install-dialog-progress backup-progress-message">
+                  {progress.message}
+                </p>
+                {progressBytes ? (
+                  <p className="install-dialog-progress backup-progress-bytes">{progressBytes}</p>
+                ) : null}
+              </div>
             </>
           ) : null}
         </div>
         {error ? <p className="install-dialog-error">{error}</p> : null}
 
         <div className="install-dialog-actions">
-          {mode === 'baseline' ? (
-            <button type="button" className="btn primary" disabled={busy} onClick={() => void runBaseline()}>
-              Create baseline
+          {forceVanillaOnly ? (
+            <button
+              type="button"
+              className="btn primary"
+              disabled={busy || !vanillaDir}
+              onClick={() => void runVanilla()}
+            >
+              Create vanilla
             </button>
           ) : null}
-          {mode === 'manage' && manageTab === 'backup' ? (
-            <button type="button" className="btn primary" disabled={busy} onClick={() => void runSnapshot()}>
+          {!forceVanillaOnly && mode === 'manage' && manageTab === 'backup' ? (
+            <button
+              type="button"
+              className="btn primary"
+              disabled={busy}
+              onClick={() => void runSnapshot()}
+            >
               Save snapshot
             </button>
           ) : null}

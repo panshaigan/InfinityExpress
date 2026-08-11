@@ -34,16 +34,68 @@ Orchestration: `hooks/useInstallRun.ts` + `lib/desktop/weiduInstall.ts` → Rust
 
 ## Backups
 
-Settings **backup dir**. UI: `ui/install/BackupManagerDialog.tsx`. Rust: `weidu_backup.rs`. Baseline + named snapshots; restore/delete via desktop commands. Install logs under `backupDir/install-logs`.
+Settings **Backup & logs directory** (`appDirs.backupDir`). UI: [`BackupManagerDialog.tsx`](../src/ui/install/BackupManagerDialog.tsx). Rust: [`weidu_backup.rs`](../src-tauri/src/weidu_backup.rs). TS wrappers: [`weiduInstall.ts`](../src/lib/desktop/weiduInstall.ts). Types: `BackupKind` / `BackupManifest` in [`types.ts`](../src/lib/install/types.ts).
+
+### Layout
+
+```text
+{backupDir}/
+  {gameKey}/                 # bg1 | bg2 | iwd | pst  (never "eet")
+    manifest.json
+    vanilla/                 # required unmodded copy
+    {snapshotName}/          # named snapshots as siblings of vanilla
+  install-logs/
+    {runId}/                 # WeiDU run stdout/stderr (not game backups)
+```
+
+Legacy trees are migrated on `list_backups` / create / delete:
+
+- `baseline/` → `vanilla/`
+- `snapshots/{name}/` → `{gameKey}/{name}/`
+- Manifest field `baseline` is accepted on read; rewritten as `vanilla`
+
+### Vanilla vs snapshot
+
+| Kind | Path | Rules |
+| --- | --- | --- |
+| `vanilla` | `{gameKey}/vanilla/` | One per game key. Required before install Start. Recreate replaces existing. |
+| `snapshot` | `{gameKey}/{name}/` | Named; same name replaces. Only allowed after vanilla exists for that key. |
+
+**Create gate:** if vanilla is missing for the scoped keys, Back up UI only offers vanilla (no snapshot name). Once vanillas exist, named snapshots are available.
+
+**EET:** Start requires **both** `bg1` and `bg2` vanillas. A vanilla created earlier under a non-EET BG1/BG2 install counts. Snapshot create shows BG1/BG2 checkboxes; each checked key gets a folder with the **same snapshot name**. Restore list merges both keys (Game column).
+
+### Operations & progress
+
+Event: `weidu-backup-progress` (`phase`, `message`, `filesDone`/`bytesDone`, `filesTotal`/`bytesTotal`).
+
+| Op | Progress |
+| --- | --- |
+| Create | Measure → copy (per-file). Pre-delete of existing dest is async with indeterminate bar. |
+| Restore | Wipe live game folder (`Cleaning game folder…`) → measure → copy. |
+| Delete | Async `remove_dir_all` with indeterminate “Removing backup…”. |
+
+UI shows message on the left and `copied / total` bytes on the right (no em dash). Indeterminate animated bar when totals are 0.
+
+### Restore → install plan
+
+1. Wipe target game dir, then copy backup tree.
+2. If an install run is active, `restartFromBackup` resets steps to `queued`, then marks `alreadyInstalled` from each step’s phase game dir `weidu.log` (`parseWeiduLog` / `~tp2~ #lang #number`).
+3. Vanilla (no log) → none marked installed. Does **not** change Components-phase selection checkboxes.
+
+### Commands
+
+`backup_game_dir`, `create_named_backup`, `list_backups`, `restore_game_dir`, `delete_backup`.
 
 ## Key paths
 
 | Area | Path |
 | --- | --- |
 | Types / plan | `src/lib/install/types.ts`, `planBuilder.ts` |
+| WeiDU.log parse | `src/lib/install/weiduLog.ts` |
 | Label → number | `src/lib/install/weiduResolution.ts` |
 | Run hook | `src/hooks/useInstallRun.ts` |
-| UI | `src/ui/install/InstallStation.tsx`, console dock, log dialog |
+| UI | `src/ui/install/InstallStation.tsx`, `BackupManagerDialog.tsx`, console dock |
 | Rust install / backup | `src-tauri/src/weidu_install.rs`, `weidu_backup.rs` |
 
 Tauri FS boundary (dialogs vs persisted paths): `.cursor/rules/tauri-desktop.mdc`.

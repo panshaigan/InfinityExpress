@@ -34,7 +34,7 @@ export interface BackupGameInput {
   sourceDir: string
   backupRoot: string
   gameKey: string
-  kind: 'baseline' | 'snapshot'
+  kind: 'vanilla' | 'snapshot'
   name?: string | null
   excludeSafeDirs: boolean
 }
@@ -189,7 +189,7 @@ export async function listBackups(
   gameKey: string,
 ): Promise<BackupManifest> {
   if (!isDesktopApp()) {
-    return { gameKey, baseline: null, snapshots: [] }
+    return { gameKey, vanilla: null, snapshots: [] }
   }
   return invoke<BackupManifest>('list_backups', { backupRoot, gameKey })
 }
