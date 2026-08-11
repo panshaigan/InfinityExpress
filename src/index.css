@@ -5826,15 +5826,15 @@ body.is-resizing-detail * {
 }
 
 .install-table col.install-col-mod {
-  width: 9rem;
+  width: 12%;
 }
 
 .install-table col.install-col-component {
-  width: auto;
+  width: 40%;
 }
 
 .install-table col.install-col-component-id {
-  width: 11rem;
+  width: 14%;
 }
 
 .install-table col.install-col-category {
@@ -5858,6 +5858,16 @@ body.is-resizing-detail * {
   font-variant-numeric: tabular-nums;
   color: var(--muted);
   white-space: nowrap;
+}
+
+.install-col-mod,
+.install-col-component,
+.install-col-component-id {
+  min-width: 0;
+}
+
+.install-col-component {
+  min-width: 14rem;
 }
 
 .install-col-category,
