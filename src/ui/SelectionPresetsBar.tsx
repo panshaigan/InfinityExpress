@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { IconTip } from './IconTip'
 import { OutlinedSelect } from './OutlinedSelect'
+import { OutlinedTextField } from './OutlinedTextField'
 
 export interface SelectionPresetsBarProps {
   disabled: boolean
@@ -105,7 +106,7 @@ export function SelectionPresetsBar({
         <div className="selection-presets-popover" id={panelId} role="group">
           <div className="selection-presets-field">
             <OutlinedSelect
-              className="selection-presets-outlined-select"
+              className="outlined-field-wide"
               label="Load"
               value={dirty ? '' : (activePresetId ?? '')}
               emptyLabel={emptyLoadLabel}
@@ -123,29 +124,26 @@ export function SelectionPresetsBar({
           </div>
 
           {activePresetId != null && activePresetName != null && !dirty ? (
-            <label className="selection-presets-field">
-              <span className="selection-presets-field-label">Rename</span>
-              <input
-                type="text"
-                className="selection-presets-name"
+            <div className="selection-presets-field">
+              <OutlinedTextField
+                label="Rename"
                 value={draftName}
                 disabled={disabled}
-                aria-label="Rename preset"
-                onChange={(e) => setDraftName(e.target.value)}
+                onChange={setDraftName}
                 onBlur={commitRename}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()
-                    ;(e.target as HTMLInputElement).blur()
+                    e.currentTarget.blur()
                   }
                   if (e.key === 'Escape') {
                     e.preventDefault()
                     setDraftName(activePresetName)
-                    ;(e.target as HTMLInputElement).blur()
+                    e.currentTarget.blur()
                   }
                 }}
               />
-            </label>
+            </div>
           ) : null}
 
           <div className="selection-presets-actions">

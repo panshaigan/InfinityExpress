@@ -25,6 +25,7 @@ import { useBackdropDismiss } from './backdropDismiss'
 import { DirectoryField } from './DirectoryField'
 import { isDesktopApp, pickFile } from '../lib/desktop/fsDialogs'
 import { probeGameFolder } from '../lib/desktop/gameExe'
+import { IconTip } from './IconTip'
 import { OutlinedTextField } from './OutlinedTextField'
 
 const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
@@ -232,12 +233,13 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
           </button>
         </div>
 
-        {tab === 'games' ? (
+        <div className="settings-tab-panels">
           <section
-            className="settings-section"
+            className={`settings-section settings-tab-panel${tab === 'games' ? ' active' : ''}`}
             id="settings-panel-games"
             role="tabpanel"
             aria-labelledby="settings-tab-games"
+            aria-hidden={tab !== 'games'}
           >
             <div className="settings-fields">
               {GAME_FOLDER_KEYS.map((key) => (
@@ -256,14 +258,13 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
               ))}
             </div>
           </section>
-        ) : null}
 
-        {tab === 'app' ? (
           <section
-            className="settings-section"
+            className={`settings-section settings-tab-panel${tab === 'app' ? ' active' : ''}`}
             id="settings-panel-app"
             role="tabpanel"
             aria-labelledby="settings-tab-app"
+            aria-hidden={tab !== 'app'}
           >
             <div className="settings-fields">
               <DirectoryField
@@ -307,32 +308,36 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
               />
             </div>
           </section>
-        ) : null}
 
-        {tab === 'github' ? (
           <section
-            className="settings-section"
+            className={`settings-section settings-tab-panel${tab === 'github' ? ' active' : ''}`}
             id="settings-panel-github"
             role="tabpanel"
             aria-labelledby="settings-tab-github"
+            aria-hidden={tab !== 'github'}
           >
             <div className="settings-fields">
               <OutlinedTextField
                 id="settings-github-token"
-                label={
-                  <span className="has-icon-tip">
-                    GitHub token
-                    <span className="icon-tip icon-tip-below" role="tooltip">
-                      {GITHUB_TOKEN_TIP}
-                    </span>
-                  </span>
-                }
+                label="GitHub token"
                 type="password"
                 autoComplete="off"
                 spellCheck={false}
                 placeholder="ghp_… (optional)"
                 value={githubToken}
                 onChange={onGithubTokenChange}
+                trailing={
+                  <span className="has-icon-tip settings-github-tip-host">
+                    <button
+                      type="button"
+                      className="btn secondary outlined-text-field-action settings-github-tip-btn"
+                      aria-label="About GitHub token"
+                    >
+                      ?
+                    </button>
+                    <IconTip>{GITHUB_TOKEN_TIP}</IconTip>
+                  </span>
+                }
               />
               <p className="settings-help">
                 <a
@@ -350,7 +355,7 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
               </p>
             </div>
           </section>
-        ) : null}
+        </div>
       </div>
     </div>
   )

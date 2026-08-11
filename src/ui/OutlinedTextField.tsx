@@ -1,4 +1,9 @@
-import { useId, type ReactNode, type Ref } from 'react'
+import {
+  useId,
+  type KeyboardEventHandler,
+  type ReactNode,
+  type Ref,
+} from 'react'
 
 interface Props {
   label: ReactNode
@@ -14,6 +19,7 @@ interface Props {
   spellCheck?: boolean
   autoComplete?: string
   onBlur?: () => void
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>
   /** Extra class on the root (e.g. layout spans). */
   className?: string
   /** Trailing control (e.g. Browse). */
@@ -36,6 +42,7 @@ export function OutlinedTextField({
   spellCheck,
   autoComplete,
   onBlur,
+  onKeyDown,
   className = '',
   trailing,
   error = null,
@@ -82,6 +89,7 @@ export function OutlinedTextField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
+          onKeyDown={onKeyDown}
           placeholder={placeholder}
           required={required}
           autoFocus={autoFocus}
