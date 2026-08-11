@@ -512,7 +512,7 @@ function AppShell() {
   }
 
   function reopenRoute() {
-    route.resetFinishedStations()
+    route.reopenEntireRoute()
     setModsJourney(null)
   }
 

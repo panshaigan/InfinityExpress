@@ -177,6 +177,11 @@ export function useRouteNav(args: {
     setFinishedStations(new Set())
   }
 
+  /** Clear done marks on component stations; Engine and Presets stay finished. */
+  function reopenEntireRoute() {
+    setFinishedStations(new Set(['engine', 'presets']))
+  }
+
   return {
     finishedStations,
     hideCaughtUp,
@@ -194,5 +199,6 @@ export function useRouteNav(args: {
     finishEntireRoute,
     unmarkStationFinished,
     resetFinishedStations,
+    reopenEntireRoute,
   }
 }
