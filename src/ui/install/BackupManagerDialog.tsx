@@ -1,14 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
-import type { BackupManifest } from '../../lib/install/types'
+import { useEffect, useState } from 'react'
+import type { BackupEntry, BackupManifest } from '../../lib/install/types'
 import {
   backupGameDir,
   createNamedBackup,
+  deleteBackup,
   listBackups,
   listenBackupProgress,
   restoreGameDir,
   type BackupProgress,
 } from '../../lib/desktop/weiduInstall'
 import { useBackdropDismiss } from '../backdropDismiss'
+import { ConfirmDialog } from '../ConfirmDialog'
+import { IconTip } from '../IconTip'
+import { OutlinedTextField } from '../OutlinedTextField'
+import { DeleteFromCatalogIcon } from '../mods/ModsActionIcons'
 import { useToast } from '../toasts/toastContext'
 
 export type BackupDialogMode = 'baseline' | 'manage'
@@ -30,14 +35,62 @@ interface Props {
   onBusyChange?: (busy: boolean) => void
 }
 
-function defaultSnapshotName(): string {
-  return `snapshot-${Date.now()}`
+function pad2(n: number): string {
+  return String(n).padStart(2, '0')
+}
+
+/** Default snapshot name: snapshot-{Ymd-His} in local time. */
+function defaultSnapshotName(now = new Date()): string {
+  return `snapshot-${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}-${pad2(now.getHours())}${pad2(now.getMinutes())}${pad2(now.getSeconds())}`
 }
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`
   return `${(n / (1024 * 1024)).toFixed(1)} MB`
+}
+
+function emptyProgress(message: string): BackupProgress {
+  return {
+    phase: 'start',
+    message,
+    filesDone: 0,
+    bytesDone: 0,
+    filesTotal: 0,
+    bytesTotal: 0,
+  }
+}
+
+function parseCreatedAt(raw: string): Date | null {
+  const iso = Date.parse(raw)
+  if (!Number.isNaN(iso)) return new Date(iso)
+  const legacy = /^backup-(\d+)$/.exec(raw)
+  if (legacy) {
+    const secs = Number(legacy[1])
+    if (Number.isFinite(secs)) return new Date(secs * 1000)
+  }
+  return null
+}
+
+function formatCreatedAt(raw: string): string {
+  const d = parseCreatedAt(raw)
+  if (!d) return raw
+  return d.toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function typeLabel(entry: BackupEntry): string {
+  const base = entry.kind === 'baseline' ? 'Baseline' : 'Snapshot'
+  return entry.excludeSafeDirs ? `${base} (partial)` : `${base} (full)`
+}
+
+function displayName(entry: BackupEntry): string {
+  return entry.kind === 'baseline' ? 'Baseline' : entry.name
 }
 
 export function BackupManagerDialog({
@@ -62,8 +115,10 @@ export function BackupManagerDialog({
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState<BackupProgress | null>(null)
-  const panelRef = useRef<HTMLDivElement>(null)
-  const backdrop = useBackdropDismiss(busy ? undefined : onClose)
+  const [pendingDelete, setPendingDelete] = useState<BackupEntry | null>(null)
+  const backdrop = useBackdropDismiss(
+    busy || pendingDelete != null ? undefined : onClose,
+  )
 
   useEffect(() => {
     onBusyChange?.(busy)
@@ -79,10 +134,27 @@ export function BackupManagerDialog({
     if (!open) return
     setError(null)
     setProgress(null)
+    setPendingDelete(null)
     setManageTab(initialManageTab)
     if (mode === 'manage') setSnapshotName(defaultSnapshotName())
-    panelRef.current?.focus()
   }, [open, mode, initialManageTab])
+
+  useEffect(() => {
+    if (!open) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== 'Escape') return
+      e.preventDefault()
+      e.stopPropagation()
+      if (busy) return
+      if (pendingDelete) {
+        setPendingDelete(null)
+        return
+      }
+      onClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open, busy, pendingDelete, onClose])
 
   useEffect(() => {
     if (!open || !busy) return
@@ -105,10 +177,18 @@ export function BackupManagerDialog({
 
   if (!open) return null
 
+  async function refreshManifest() {
+    try {
+      setManifest(await listBackups(backupRoot, gameKey))
+    } catch {
+      setManifest(null)
+    }
+  }
+
   async function runBaseline() {
     setBusy(true)
     setError(null)
-    setProgress({ phase: 'start', message: 'Starting baseline…', filesDone: 0, bytesDone: 0 })
+    setProgress(emptyProgress('Starting baseline…'))
     try {
       await backupGameDir({
         sourceDir,
@@ -133,7 +213,7 @@ export function BackupManagerDialog({
   async function runSnapshot() {
     setBusy(true)
     setError(null)
-    setProgress({ phase: 'start', message: 'Starting snapshot…', filesDone: 0, bytesDone: 0 })
+    setProgress(emptyProgress('Starting snapshot…'))
     try {
       await createNamedBackup({
         sourceDir,
@@ -159,7 +239,7 @@ export function BackupManagerDialog({
     if (!selectedPath) return
     setBusy(true)
     setError(null)
-    setProgress({ phase: 'restore', message: 'Restoring…', filesDone: 0, bytesDone: 0 })
+    setProgress(emptyProgress('Restoring…'))
     try {
       await restoreGameDir(selectedPath, targetDir)
       pushToast({ tone: 'success', message: 'Backup restored.' })
@@ -175,26 +255,51 @@ export function BackupManagerDialog({
     }
   }
 
+  async function confirmDelete() {
+    if (!pendingDelete) return
+    const entry = pendingDelete
+    setPendingDelete(null)
+    setBusy(true)
+    setError(null)
+    try {
+      await deleteBackup(backupRoot, gameKey, entry.path)
+      if (selectedPath === entry.path) setSelectedPath('')
+      await refreshManifest()
+      pushToast({ tone: 'success', message: 'Backup deleted.' })
+    } catch (e) {
+      const message = String(e)
+      setError(message)
+      pushToast({ tone: 'error', message })
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const entries = [
     ...(manifest?.baseline ? [manifest.baseline] : []),
     ...(manifest?.snapshots ?? []),
   ]
 
+  const progressPct =
+    progress && progress.bytesTotal > 0
+      ? Math.min(100, Math.round((progress.bytesDone / progress.bytesTotal) * 100))
+      : null
+
   const progressLabel = progress
-    ? progress.filesDone > 0
-      ? `${progress.message} — ${progress.filesDone} files · ${formatBytes(progress.bytesDone)}`
-      : progress.message
+    ? progress.bytesTotal > 0
+      ? `${progress.message} — ${formatBytes(progress.bytesDone)} / ${formatBytes(progress.bytesTotal)}`
+      : progress.filesDone > 0
+        ? `${progress.message} — ${progress.filesDone} files · ${formatBytes(progress.bytesDone)}`
+        : progress.message
     : null
 
   return (
     <div className="keyboard-help-backdrop" role="presentation" {...backdrop}>
       <div
-        ref={panelRef}
         className="keyboard-help settings-dialog backup-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby="backup-dialog-title"
-        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="keyboard-help-header">
@@ -211,6 +316,7 @@ export function BackupManagerDialog({
               aria-selected={manageTab === 'backup'}
               className={`settings-dialog-tab${manageTab === 'backup' ? ' active' : ''}`}
               onClick={() => setManageTab('backup')}
+              disabled={busy}
             >
               Back up
             </button>
@@ -220,74 +326,120 @@ export function BackupManagerDialog({
               aria-selected={manageTab === 'restore'}
               className={`settings-dialog-tab${manageTab === 'restore' ? ' active' : ''}`}
               onClick={() => setManageTab('restore')}
+              disabled={busy}
             >
               Restore
             </button>
           </div>
         ) : null}
 
-        {mode === 'baseline' || (mode === 'manage' && manageTab === 'backup') ? (
-          <div className="settings-fields">
-            <label className="install-filter-toggle">
-              <input
-                type="checkbox"
-                checked={excludeSafeDirs}
-                onChange={(e) => setExcludeSafeDirs(e.target.checked)}
-                disabled={busy}
-              />
-              <span>Exclude movies and music</span>
-            </label>
-            {mode === 'manage' ? (
-              <label className="outlined-field">
-                <span>Name</span>
-                <input
-                  type="text"
+        <div className="backup-dialog-body">
+          {mode === 'baseline' || (mode === 'manage' && manageTab === 'backup') ? (
+            <div className="settings-fields">
+              {mode === 'manage' ? (
+                <OutlinedTextField
+                  label="Name"
                   value={snapshotName}
-                  onChange={(e) => setSnapshotName(e.target.value)}
+                  onChange={setSnapshotName}
                   disabled={busy}
                 />
+              ) : null}
+              <label className="install-filter-toggle">
+                <input
+                  type="checkbox"
+                  checked={excludeSafeDirs}
+                  onChange={(e) => setExcludeSafeDirs(e.target.checked)}
+                  disabled={busy}
+                />
+                <span>Exclude movies and music</span>
               </label>
-            ) : null}
-          </div>
-        ) : (
-          <div className="backup-restore-list ie-scroll">
-            {entries.length === 0 ? (
-              <p>No backups found for this game folder.</p>
-            ) : (
-              <ul>
-                {entries.map((entry) => (
-                  <li key={entry.path}>
-                    <label>
-                      <input
-                        type="radio"
-                        name="backup-choice"
-                        checked={selectedPath === entry.path}
-                        onChange={() => setSelectedPath(entry.path)}
-                        disabled={busy}
-                      />
-                      <span>
-                        {entry.kind === 'baseline' ? 'Baseline' : entry.name}
-                        {entry.excludeSafeDirs ? ' (partial)' : ' (full)'}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
+            </div>
+          ) : (
+            <div className="backup-restore-list ie-scroll">
+              {entries.length === 0 ? (
+                <p className="backup-restore-empty">No backups found for this game folder.</p>
+              ) : (
+                <table className="backup-restore-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Created</th>
+                      <th scope="col">
+                        <span className="visually-hidden">Delete</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {entries.map((entry) => {
+                      const selected = selectedPath === entry.path
+                      return (
+                        <tr
+                          key={entry.path}
+                          className={selected ? 'selected' : undefined}
+                          onClick={() => {
+                            if (!busy) setSelectedPath(entry.path)
+                          }}
+                        >
+                          <td>
+                            <label className="backup-restore-name">
+                              <input
+                                type="radio"
+                                name="backup-choice"
+                                checked={selected}
+                                onChange={() => setSelectedPath(entry.path)}
+                                disabled={busy}
+                              />
+                              <span>{displayName(entry)}</span>
+                            </label>
+                          </td>
+                          <td>{typeLabel(entry)}</td>
+                          <td>{formatCreatedAt(entry.createdAt)}</td>
+                          <td className="backup-restore-actions">
+                            <button
+                              type="button"
+                              className="btn secondary install-control-btn has-icon-tip"
+                              disabled={busy}
+                              aria-label={`Delete ${displayName(entry)}`}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setPendingDelete(entry)
+                              }}
+                            >
+                              <DeleteFromCatalogIcon />
+                              <IconTip>Delete</IconTip>
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
+        </div>
 
-        {progress ? (
-          <div className="install-dialog-progress-block">
-            <div
-              className="mods-row-progress-bar"
-              data-indeterminate="true"
-              role="progressbar"
-              aria-valuetext={progressLabel ?? undefined}
-            />
-            <p className="install-dialog-progress">{progressLabel}</p>
-          </div>
-        ) : null}
+        <div className="install-dialog-progress-block" aria-hidden={!progress}>
+          {progress ? (
+            <>
+              <div
+                className="backup-progress-track"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={progressPct ?? undefined}
+                aria-valuetext={progressLabel ?? undefined}
+              >
+                <div
+                  className={`backup-progress-fill${progressPct == null ? ' indeterminate' : ''}`}
+                  style={progressPct != null ? { width: `${progressPct}%` } : undefined}
+                />
+              </div>
+              <p className="install-dialog-progress">{progressLabel}</p>
+            </>
+          ) : null}
+        </div>
         {error ? <p className="install-dialog-error">{error}</p> : null}
 
         <div className="install-dialog-actions">
@@ -313,6 +465,22 @@ export function BackupManagerDialog({
           ) : null}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={pendingDelete != null}
+        title="Delete backup?"
+        message={
+          pendingDelete
+            ? `Delete "${displayName(pendingDelete)}"? This cannot be undone.`
+            : ''
+        }
+        confirmLabel="Delete"
+        danger
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={() => {
+          void confirmDelete()
+        }}
+      />
     </div>
   )
 }

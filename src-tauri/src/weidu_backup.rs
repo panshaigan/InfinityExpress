@@ -5,6 +5,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter};
 
 const BACKUP_PROGRESS_EVENT: &str = "weidu-backup-progress";
@@ -18,6 +19,8 @@ pub struct BackupProgress {
   pub message: String,
   pub files_done: u64,
   pub bytes_done: u64,
+  pub files_total: u64,
+  pub bytes_total: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -60,6 +63,24 @@ fn emit_progress(app: &AppHandle, payload: BackupProgress) {
   let _ = app.emit(BACKUP_PROGRESS_EVENT, &payload);
 }
 
+fn progress(
+  phase: impl Into<String>,
+  message: impl Into<String>,
+  files_done: u64,
+  bytes_done: u64,
+  files_total: u64,
+  bytes_total: u64,
+) -> BackupProgress {
+  BackupProgress {
+    phase: phase.into(),
+    message: message.into(),
+    files_done,
+    bytes_done,
+    files_total,
+    bytes_total,
+  }
+}
+
 fn manifest_path(backup_root: &Path, game_key: &str) -> PathBuf {
   backup_root.join(game_key).join("manifest.json")
 }
@@ -93,6 +114,37 @@ fn should_exclude(name: &str, exclude_safe: bool) -> bool {
   SAFE_EXCLUDE_DIRS.iter().any(|d| lower == *d)
 }
 
+fn measure_filtered(from: &Path, exclude_safe: bool) -> Result<(u64, u64), String> {
+  let mut files = 0u64;
+  let mut bytes = 0u64;
+  measure_filtered_into(from, exclude_safe, &mut files, &mut bytes)?;
+  Ok((files, bytes))
+}
+
+fn measure_filtered_into(
+  from: &Path,
+  exclude_safe: bool,
+  files: &mut u64,
+  bytes: &mut u64,
+) -> Result<(), String> {
+  for entry in fs::read_dir(from).map_err(|e| e.to_string())? {
+    let entry = entry.map_err(|e| e.to_string())?;
+    let name_str = entry.file_name().to_string_lossy().to_string();
+    if should_exclude(&name_str, exclude_safe) {
+      continue;
+    }
+    let src = entry.path();
+    if src.is_dir() {
+      measure_filtered_into(&src, exclude_safe, files, bytes)?;
+    } else {
+      let meta = src.metadata().map_err(|e| e.to_string())?;
+      *files += 1;
+      *bytes += meta.len();
+    }
+  }
+  Ok(())
+}
+
 fn copy_filtered(
   app: &AppHandle,
   from: &Path,
@@ -100,6 +152,8 @@ fn copy_filtered(
   exclude_safe: bool,
   files: &Arc<AtomicU64>,
   bytes: &Arc<AtomicU64>,
+  files_total: u64,
+  bytes_total: u64,
 ) -> Result<(), String> {
   fs::create_dir_all(to).map_err(|e| e.to_string())?;
   for entry in fs::read_dir(from).map_err(|e| e.to_string())? {
@@ -111,7 +165,16 @@ fn copy_filtered(
     let src = entry.path();
     let dst = to.join(entry.file_name());
     if src.is_dir() {
-      copy_filtered(app, &src, &dst, exclude_safe, files, bytes)?;
+      copy_filtered(
+        app,
+        &src,
+        &dst,
+        exclude_safe,
+        files,
+        bytes,
+        files_total,
+        bytes_total,
+      )?;
     } else {
       let meta = src.metadata().map_err(|e| e.to_string())?;
       fs::copy(&src, &dst).map_err(|e| e.to_string())?;
@@ -119,12 +182,7 @@ fn copy_filtered(
       let bd = bytes.fetch_add(meta.len(), Ordering::SeqCst) + meta.len();
       emit_progress(
         app,
-        BackupProgress {
-          phase: "copy".into(),
-          message: name_str,
-          files_done: fd,
-          bytes_done: bd,
-        },
+        progress("copy", name_str, fd, bd, files_total, bytes_total),
       );
     }
   }
@@ -147,13 +205,64 @@ fn wipe_dir_contents(dir: &Path) -> Result<(), String> {
   Ok(())
 }
 
-fn timestamp_name() -> String {
-  use std::time::{SystemTime, UNIX_EPOCH};
+fn iso_timestamp() -> String {
   let secs = SystemTime::now()
     .duration_since(UNIX_EPOCH)
     .map(|d| d.as_secs())
     .unwrap_or(0);
-  format!("backup-{secs}")
+  // UTC wall clock without chrono: format via approximate civil time is awkward;
+  // store a sortable Unix-based ISO-ish stamp the UI can format.
+  // Prefer true ISO when possible via local offset-free Zulu from secs.
+  let days = secs / 86_400;
+  let day_secs = secs % 86_400;
+  let (y, m, d) = civil_from_days(days as i64);
+  let hh = day_secs / 3600;
+  let mm = (day_secs % 3600) / 60;
+  let ss = day_secs % 60;
+  format!("{y:04}-{m:02}-{d:02}T{hh:02}:{mm:02}:{ss:02}Z")
+}
+
+/// Days since Unix epoch → Gregorian Y-M-D (Howard Hinnant algorithm).
+fn civil_from_days(z: i64) -> (i32, u32, u32) {
+  let z = z + 719_468;
+  let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
+  let doe = (z - era * 146_097) as u64;
+  let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146_096) / 365;
+  let y = (yoe as i64) + era * 400;
+  let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+  let mp = (5 * doy + 2) / 153;
+  let d = doy - (153 * mp + 2) / 5 + 1;
+  let m = if mp < 10 { mp + 3 } else { mp - 9 };
+  let y = if m <= 2 { y + 1 } else { y };
+  (y as i32, m as u32, d as u32)
+}
+
+fn fallback_snapshot_name() -> String {
+  let stamp = iso_timestamp();
+  // snapshot-Ymd-His from ISO UTC
+  let compact = stamp
+    .chars()
+    .filter(|c| c.is_ascii_digit())
+    .collect::<String>();
+  // YYYYMMDDHHMMSS → YYYYMMDD-HHMMSS
+  if compact.len() >= 14 {
+    format!(
+      "snapshot-{}-{}",
+      &compact[0..8],
+      &compact[8..14]
+    )
+  } else {
+    format!("snapshot-{stamp}")
+  }
+}
+
+fn resolve_under(parent: &Path, child: &Path) -> Result<PathBuf, String> {
+  let parent_canon = fs::canonicalize(parent).map_err(|e| e.to_string())?;
+  let child_canon = fs::canonicalize(child).map_err(|e| e.to_string())?;
+  if child_canon == parent_canon || !child_canon.starts_with(&parent_canon) {
+    return Err("Backup path escapes backup root".into());
+  }
+  Ok(child_canon)
 }
 
 #[tauri::command]
@@ -175,7 +284,7 @@ pub async fn backup_game_dir(
   }
 
   let kind = input.kind.trim().to_ascii_lowercase();
-  let timestamp = timestamp_name();
+  let created_at = iso_timestamp();
   let (dest, entry_name) = match kind.as_str() {
     "baseline" => (
       backup_root.join(game_key).join("baseline"),
@@ -187,8 +296,8 @@ pub async fn backup_game_dir(
         .as_deref()
         .map(str::trim)
         .filter(|s| !s.is_empty())
-        .unwrap_or(&timestamp)
-        .to_string();
+        .map(|s| s.to_string())
+        .unwrap_or_else(fallback_snapshot_name);
       (
         backup_root.join(game_key).join("snapshots").join(&name),
         name,
@@ -203,12 +312,28 @@ pub async fn backup_game_dir(
 
   emit_progress(
     &app,
-    BackupProgress {
-      phase: "start".into(),
-      message: format!("Backing up {}", source.display()),
-      files_done: 0,
-      bytes_done: 0,
-    },
+    progress(
+      "scan",
+      format!("Measuring {}", source.display()),
+      0,
+      0,
+      0,
+      0,
+    ),
+  );
+
+  let (files_total, bytes_total) = measure_filtered(&source, input.exclude_safe_dirs)?;
+
+  emit_progress(
+    &app,
+    progress(
+      "start",
+      format!("Backing up {}", source.display()),
+      0,
+      0,
+      files_total,
+      bytes_total,
+    ),
   );
 
   let files = Arc::new(AtomicU64::new(0));
@@ -220,13 +345,15 @@ pub async fn backup_game_dir(
     input.exclude_safe_dirs,
     &files,
     &bytes,
+    files_total,
+    bytes_total,
   )?;
 
   let entry = BackupEntry {
     kind: kind.clone(),
     name: entry_name.clone(),
     path: dest.to_string_lossy().into_owned(),
-    created_at: timestamp,
+    created_at,
     exclude_safe_dirs: input.exclude_safe_dirs,
   };
 
@@ -247,12 +374,14 @@ pub async fn backup_game_dir(
 
   emit_progress(
     &app,
-    BackupProgress {
-      phase: "done".into(),
-      message: "Backup complete".into(),
-      files_done: files.load(Ordering::SeqCst),
-      bytes_done: bytes.load(Ordering::SeqCst),
-    },
+    progress(
+      "done",
+      "Backup complete",
+      files.load(Ordering::SeqCst),
+      bytes.load(Ordering::SeqCst),
+      files_total,
+      bytes_total,
+    ),
   );
 
   Ok(BackupGameResult {
@@ -284,27 +413,54 @@ pub async fn restore_game_dir(
 
   emit_progress(
     &app,
-    BackupProgress {
-      phase: "restore".into(),
-      message: format!("Restoring to {}", target.display()),
-      files_done: 0,
-      bytes_done: 0,
-    },
+    progress(
+      "scan",
+      format!("Measuring {}", backup.display()),
+      0,
+      0,
+      0,
+      0,
+    ),
+  );
+
+  let (files_total, bytes_total) = measure_filtered(&backup, false)?;
+
+  emit_progress(
+    &app,
+    progress(
+      "restore",
+      format!("Restoring to {}", target.display()),
+      0,
+      0,
+      files_total,
+      bytes_total,
+    ),
   );
 
   wipe_dir_contents(&target)?;
   let files = Arc::new(AtomicU64::new(0));
   let bytes = Arc::new(AtomicU64::new(0));
-  copy_filtered(&app, &backup, &target, false, &files, &bytes)?;
+  copy_filtered(
+    &app,
+    &backup,
+    &target,
+    false,
+    &files,
+    &bytes,
+    files_total,
+    bytes_total,
+  )?;
 
   emit_progress(
     &app,
-    BackupProgress {
-      phase: "done".into(),
-      message: "Restore complete".into(),
-      files_done: files.load(Ordering::SeqCst),
-      bytes_done: bytes.load(Ordering::SeqCst),
-    },
+    progress(
+      "done",
+      "Restore complete",
+      files.load(Ordering::SeqCst),
+      bytes.load(Ordering::SeqCst),
+      files_total,
+      bytes_total,
+    ),
   );
   Ok(())
 }
@@ -317,4 +473,48 @@ pub async fn create_named_backup(
   let mut snapshot = input;
   snapshot.kind = "snapshot".into();
   backup_game_dir(app, snapshot).await
+}
+
+#[tauri::command]
+pub fn delete_backup(
+  backup_root: String,
+  game_key: String,
+  backup_path: String,
+) -> Result<(), String> {
+  let root = PathBuf::from(backup_root.trim());
+  let key = game_key.trim();
+  let path = PathBuf::from(backup_path.trim());
+  if key.is_empty() {
+    return Err("Game key is required".into());
+  }
+  if root.as_os_str().is_empty() {
+    return Err("Backup directory is not set".into());
+  }
+  if !path.exists() {
+    return Err(format!("Backup not found: {}", path.display()));
+  }
+
+  let game_root = root.join(key);
+  let safe = resolve_under(&game_root, &path)?;
+
+  let mut manifest = read_manifest(&root, key)?;
+  let matches = |entry_path: &str| {
+    Path::new(entry_path) == path
+      || fs::canonicalize(entry_path)
+        .ok()
+        .is_some_and(|p| p == safe)
+  };
+  if manifest.baseline.as_ref().is_some_and(|b| matches(&b.path)) {
+    manifest.baseline = None;
+  }
+  manifest.snapshots.retain(|s| !matches(&s.path));
+
+  if safe.is_dir() {
+    fs::remove_dir_all(&safe).map_err(|e| e.to_string())?;
+  } else {
+    fs::remove_file(&safe).map_err(|e| e.to_string())?;
+  }
+
+  write_manifest(&root, &manifest)?;
+  Ok(())
 }

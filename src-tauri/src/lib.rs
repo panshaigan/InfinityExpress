@@ -32,6 +32,7 @@ pub fn run() {
       weidu_backup::restore_game_dir,
       weidu_backup::list_backups,
       weidu_backup::create_named_backup,
+      weidu_backup::delete_backup,
     ])
     .setup(|app| {
       if cfg!(debug_assertions) {

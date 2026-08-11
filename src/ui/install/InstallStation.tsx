@@ -312,92 +312,92 @@ export function InstallStation({
 
   return (
     <div className="install-station">
-      <div className="install-toolbar">
-        <div className="install-toolbar-controls">
-          <button
-            type="button"
-            className="btn primary install-control-start has-icon-tip"
-            disabled={!canRun || isRunning}
-            onClick={() => void onStart()}
-            aria-label="Start"
-          >
-            <PlayIcon />
-            <IconTip>Start</IconTip>
-          </button>
-          <button
-            type="button"
-            className="btn secondary install-control-btn has-icon-tip"
-            disabled={!canPauseToggle}
-            onClick={onPauseToggle}
-            aria-label={pauseTip}
-          >
-            <PauseIcon />
-            <IconTip>{pauseTip}</IconTip>
-          </button>
-          <button
-            type="button"
-            className="btn secondary install-control-btn has-icon-tip"
-            disabled={!run || !isRunning}
-            onClick={() => void stop()}
-            aria-label="Stop"
-          >
-            <StopIcon />
-            <IconTip>Stop</IconTip>
-          </button>
-          <button
-            type="button"
-            className="btn secondary install-control-btn has-icon-tip"
-            disabled={!run || run.runState !== 'waitingForInput'}
-            onClick={() => void skipCurrent()}
-            aria-label="Skip"
-          >
-            <SkipNextIcon />
-            <IconTip>Skip</IconTip>
-          </button>
-          {!modsReady ? (
-            <span className="install-toolbar-note">Missing mods on disk</span>
-          ) : null}
-        </div>
-
-        <div className="install-toolbar-actions">
-          <label className="install-filter-toggle">
-            <input
-              type="checkbox"
-              checked={hideInstalled}
-              onChange={(e) => setHideInstalled(e.target.checked)}
-            />
-            <span>Hide installed</span>
-          </label>
-          <button
-            type="button"
-            className="btn secondary"
-            disabled={!canBackup}
-            onClick={() => openBackupsDialog('backup')}
-          >
-            Backups
-          </button>
-        </div>
-      </div>
-
-      {notice ? <p className="install-notice">{notice}</p> : null}
-
-      {cleanupOffer ? (
-        <div className="install-cleanup-offer">
-          <span>Run finished.</span>
-          <button type="button" className="btn secondary" onClick={() => void onCleanup()}>
-            Clean up mod folders
-          </button>
-          <button type="button" className="btn secondary" onClick={() => setCleanupOffer(false)}>
-            Dismiss
-          </button>
-        </div>
-      ) : null}
-
       <div
         className={`workspace install-workspace${detailCollapsed ? ' detail-collapsed' : ''}`}
         style={{ '--detail-width': `${detailWidth}px` } as CSSProperties}
       >
         <div className="install-main">
+          <div className="install-toolbar">
+            <div className="install-toolbar-controls">
+              <button
+                type="button"
+                className="btn secondary install-control-btn install-control-start has-icon-tip"
+                disabled={!canRun || isRunning}
+                onClick={() => void onStart()}
+                aria-label="Start"
+              >
+                <PlayIcon />
+                <IconTip>Start</IconTip>
+              </button>
+              <button
+                type="button"
+                className="btn secondary install-control-btn has-icon-tip"
+                disabled={!canPauseToggle}
+                onClick={onPauseToggle}
+                aria-label={pauseTip}
+              >
+                <PauseIcon />
+                <IconTip>{pauseTip}</IconTip>
+              </button>
+              <button
+                type="button"
+                className="btn secondary install-control-btn has-icon-tip"
+                disabled={!run || !isRunning}
+                onClick={() => void stop()}
+                aria-label="Stop"
+              >
+                <StopIcon />
+                <IconTip>Stop</IconTip>
+              </button>
+              <button
+                type="button"
+                className="btn secondary install-control-btn has-icon-tip"
+                disabled={!run || run.runState !== 'waitingForInput'}
+                onClick={() => void skipCurrent()}
+                aria-label="Skip"
+              >
+                <SkipNextIcon />
+                <IconTip>Skip</IconTip>
+              </button>
+              {!modsReady ? (
+                <span className="install-toolbar-note">Missing mods on disk</span>
+              ) : null}
+            </div>
+
+            <div className="install-toolbar-actions">
+              <label className="install-filter-toggle">
+                <input
+                  type="checkbox"
+                  checked={hideInstalled}
+                  onChange={(e) => setHideInstalled(e.target.checked)}
+                />
+                <span>Hide installed</span>
+              </label>
+              <button
+                type="button"
+                className="btn secondary"
+                disabled={!canBackup}
+                onClick={() => openBackupsDialog('backup')}
+              >
+                Backups
+              </button>
+            </div>
+          </div>
+
+          {notice ? <p className="install-notice">{notice}</p> : null}
+
+          {cleanupOffer ? (
+            <div className="install-cleanup-offer">
+              <span>Run finished.</span>
+              <button type="button" className="btn secondary" onClick={() => void onCleanup()}>
+                Clean up mod folders
+              </button>
+              <button type="button" className="btn secondary" onClick={() => setCleanupOffer(false)}>
+                Dismiss
+              </button>
+            </div>
+          ) : null}
+
           <InstallTable
             steps={steps}
             selectedStepId={selectedStep?.stepId ?? null}

@@ -1,0 +1,26 @@
+---
+description: Style text inputs with OutlinedTextField like the rest of the app
+alwaysApply: true
+---
+
+# UI text inputs
+
+When adding a text input (or editing one), use the shared outlined field pattern — not a bare `<input>` or a one-off style.
+
+## Do
+
+- Prefer `OutlinedTextField` from `src/ui/OutlinedTextField.tsx` for editable text fields (name, URL, path text, rename, etc.).
+- Prefer `OutlinedSelect` / `DirectoryField` when those match the control (select / browse-for-folder).
+- Keep labels, focus rings, disabled state, and validation via the shared component APIs (`error`, `trailing`, etc.).
+
+## Don't
+
+- Do **not** invent a new input look for dialogs or side panes.
+- Do **not** use a raw `<label className="outlined-field"><span>…</span><input>` unless you are matching an existing display-only detail pattern (`<dt>`/`<dd>`), not a free-typed control.
+- Console / WeiDU stdin is the intentional exception (`.install-console-input`).
+
+## References
+
+- Component: `src/ui/OutlinedTextField.tsx`
+- CSS: `src/index.css` — `.outlined-field`, `.outlined-text-field`
+- Examples: Settings path fields, SelectionPresetsBar rename, BackupManagerDialog snapshot name

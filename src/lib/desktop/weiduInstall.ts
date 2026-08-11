@@ -57,9 +57,16 @@ export interface BackupProgress {
   message: string
   filesDone: number
   bytesDone: number
+  filesTotal: number
+  bytesTotal: number
 }
 
-export type StageProgress = BackupProgress
+export interface StageProgress {
+  phase: string
+  message: string
+  filesDone: number
+  bytesDone: number
+}
 
 export interface CleanupInput {
   gameDir: string
@@ -192,6 +199,15 @@ export async function createNamedBackup(
 ): Promise<BackupGameResult> {
   requireDesktop()
   return invoke<BackupGameResult>('create_named_backup', { input })
+}
+
+export async function deleteBackup(
+  backupRoot: string,
+  gameKey: string,
+  backupPath: string,
+): Promise<void> {
+  requireDesktop()
+  await invoke('delete_backup', { backupRoot, gameKey, backupPath })
 }
 
 export async function listenWeiduInstallEvents(

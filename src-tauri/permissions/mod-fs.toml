@@ -56,4 +56,5 @@ commands.allow = [
   "restore_game_dir",
   "list_backups",
   "create_named_backup",
+  "delete_backup",
 ]
