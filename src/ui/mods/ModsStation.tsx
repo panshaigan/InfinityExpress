@@ -23,6 +23,7 @@ import {
   type ModsSortKey,
   type ModsTableFilters,
 } from '../../lib/mods/modsTable'
+import { modsByCodename as shippedMods } from '../../lib/mods/catalog'
 import type { UserModInput } from '../../lib/mods/userCatalog'
 import { saveTextFile, isDesktopApp } from '../../lib/desktop/fsDialogs'
 import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
@@ -44,6 +45,7 @@ interface Props {
   mods: WorkingMod[]
   neededCodenames: string[]
   journey: ModsJourneyState | null
+  routeComplete: boolean
   detailCollapsed: boolean
   detailWidth: number
   onDetailWidthChange: (width: number) => void
@@ -69,6 +71,7 @@ export function ModsStation({
   mods,
   neededCodenames,
   journey,
+  routeComplete,
   detailCollapsed,
   detailWidth,
   onDetailWidthChange,
@@ -83,7 +86,7 @@ export function ModsStation({
   onOpenSettings,
   onProceedToInstall,
 }: Props) {
-  const journeyLocked = !!journey?.locked
+  const journeyLocked = routeComplete && !!journey
   const [filters, setFilters] = useState<ModsTableFilters>(() =>
     createDefaultModsTableFilters(),
   )
@@ -140,7 +143,8 @@ export function ModsStation({
   }, [onOpenSettings])
 
   useEffect(() => {
-    if (!journey?.locked) return
+    if (!journey) return
+    if (!journey.locked && !routeComplete) return
     setFilters((prev) => ({
       ...prev,
       search: '',
@@ -152,7 +156,7 @@ export function ModsStation({
     }))
     setSelected(new Set(journey.requiredCodenames))
     setFocusedCodename(journey.requiredCodenames[0] ?? null)
-  }, [journey])
+  }, [journey, routeComplete])
 
   useEffect(() => {
     if (journeyLocked) return
@@ -287,6 +291,16 @@ export function ModsStation({
     setPendingRemove(codenames)
   }, [])
 
+  const requestDeleteFromCatalog = useCallback((codenames: string[]) => {
+    if (journeyLocked) return
+    const deletable = codenames.filter((c) => !shippedMods.has(c))
+    if (deletable.length === 0) {
+      flashNotice('Built-in mods cannot be removed from the catalog.')
+      return
+    }
+    setPendingDelete(deletable)
+  }, [flashNotice, journeyLocked])
+
   const confirmRemoveFromDisk = useCallback(async () => {
     if (!pendingRemove || removing) return
     const targets = pendingRemove
@@ -334,9 +348,9 @@ export function ModsStation({
   const deleteConfirmMessage = useMemo(() => {
     if (!pendingDelete || pendingDelete.length === 0) return ''
     if (pendingDelete.length === 1) {
-      return 'This removes the mod from your working catalog. It does not delete files from disk.'
+      return 'This removes the mod from your working catalog and deletes any downloaded files from disk.'
     }
-    return `This removes ${pendingDelete.length} mods from your working catalog. It does not delete files from disk.`
+    return `This removes ${pendingDelete.length} mods from your working catalog and deletes any downloaded files from disk.`
   }, [pendingDelete])
 
   const deleteConfirmTitle = useMemo(() => {
@@ -387,7 +401,7 @@ export function ModsStation({
               }}
               removeFromDiskDisabled={removeFromDiskDisabled}
               onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
-              onDeleteFromCatalog={() => setPendingDelete(selectedList)}
+              onDeleteFromCatalog={() => requestDeleteFromCatalog(selectedList)}
               onExportCsv={() => {
                 void exportCsv()
               }}
@@ -419,14 +433,18 @@ export function ModsStation({
                 onCheckUpdates: (codename) => {
                   void acquire.runCheck([codename])
                 },
+                editDisabled: journeyLocked,
+                catalogDeleteDisabled: journeyLocked,
+                isModProtected: (codename) => shippedMods.has(codename),
                 onEdit: (codename) => {
+                  if (journeyLocked) return
                   const mod = mods.find((m) => m.codename === codename)
                   if (mod) setEditor({ mode: 'edit', initial: mod })
                 },
                 onRemoveFromDisk: (codename) =>
                   requestRemoveFromDisk([codename]),
                 onDeleteFromCatalog: (codename) =>
-                  setPendingDelete([codename]),
+                  requestDeleteFromCatalog([codename]),
               }}
             />
           </div>
@@ -439,15 +457,16 @@ export function ModsStation({
           onWidthChange={onDetailWidthChange}
           onToggleCollapsed={onToggleDetailCollapsed}
           onEdit={() => {
+            if (journeyLocked) return
             if (focusedMod) {
               setEditor({ mode: 'edit', initial: focusedMod })
             }
           }}
           onDeleteFromCatalog={() => {
-            if (focusedMod) {
-              setPendingDelete([focusedMod.codename])
-            }
+            if (focusedMod) requestDeleteFromCatalog([focusedMod.codename])
           }}
+          editDisabled={journeyLocked}
+          catalogDeleteDisabled={journeyLocked || (focusedMod ? shippedMods.has(focusedMod.codename) : false)}
           acquireLabel={acquireButtonLabel(focusedAcquireKind)}
           acquireDisabled={focusedAcquireKind === 'none'}
           jobRunning={jobRunning}
@@ -513,20 +532,24 @@ export function ModsStation({
         title={deleteConfirmTitle}
         message={deleteConfirmMessage}
         confirmLabel="Delete"
+        danger
         onCancel={() => setPendingDelete(null)}
         onConfirm={() => {
           if (pendingDelete) {
-            for (const codename of pendingDelete) {
-              onDeleteMod(codename)
-            }
+            const toDelete = pendingDelete
+            void onRemoveFromDisk(toDelete).then(() => {
+              for (const codename of toDelete) {
+                onDeleteMod(codename)
+              }
+            })
             setSelected((prev) => {
               const next = new Set(prev)
-              for (const codename of pendingDelete) next.delete(codename)
+              for (const codename of toDelete) next.delete(codename)
               return next
             })
             if (
               focusedCodename &&
-              pendingDelete.includes(focusedCodename)
+              toDelete.includes(focusedCodename)
             ) {
               setFocusedCodename(null)
             }
@@ -540,6 +563,7 @@ export function ModsStation({
         title="Remove from disk?"
         message={removeConfirmMessage}
         confirmLabel={removing ? 'Removing…' : 'Remove'}
+        danger
         onCancel={() => {
           if (!removing) setPendingRemove(null)
         }}

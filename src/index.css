@@ -3758,6 +3758,15 @@ body.is-resizing-detail * {
   background: var(--accent-soft);
 }
 
+.btn.danger {
+  background: var(--err);
+  color: #fff;
+}
+
+.btn.danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--err) 85%, #000);
+}
+
 .warnings {
   flex-shrink: 0;
   margin: 0;

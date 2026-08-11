@@ -262,8 +262,8 @@ export default function App() {
     if (phase === 'install' && !installPhaseReady) return
     if (phase === appPhase) return
     if (phase === 'mods') {
-      // Phase nav opens the library; journey lock only from Done / Open Mods.
-      setModsJourney((prev) => (prev ? { ...prev, locked: false } : null))
+      // Phase nav opens the library; keep journey state intact so the banner
+      // persists as long as the route is complete.
     }
     setAppPhase(phase)
   }
@@ -665,6 +665,7 @@ export default function App() {
               mods={userCatalog.mods}
               neededCodenames={neededCodenames}
               journey={modsJourney}
+              routeComplete={route.routeComplete}
               detailCollapsed={detailCollapsed}
               detailWidth={detailWidth}
               onDetailWidthChange={setDetailWidth}

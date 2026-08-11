@@ -27,6 +27,8 @@ interface Props {
   onToggleCollapsed: () => void
   onEdit: () => void
   onDeleteFromCatalog: () => void
+  editDisabled?: boolean
+  catalogDeleteDisabled?: boolean
   acquireLabel: string
   acquireDisabled: boolean
   jobRunning?: boolean
@@ -77,6 +79,8 @@ export function ModDetail({
   onToggleCollapsed,
   onEdit,
   onDeleteFromCatalog,
+  editDisabled = false,
+  catalogDeleteDisabled = false,
   acquireLabel,
   acquireDisabled,
   jobRunning = false,
@@ -117,6 +121,7 @@ export function ModDetail({
                     <button
                       type="button"
                       className="mods-action-icon-btn"
+                      disabled={editDisabled}
                       onClick={onEdit}
                       aria-label="Edit"
                     >
@@ -140,6 +145,7 @@ export function ModDetail({
                     <button
                       type="button"
                       className="mods-action-icon-btn"
+                      disabled={catalogDeleteDisabled}
                       onClick={onDeleteFromCatalog}
                       aria-label="Remove from catalog"
                     >

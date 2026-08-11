@@ -38,6 +38,9 @@ export interface ModsRowActions {
   acquireLabel: (mod: WorkingMod) => string
   acquireDisabled: (mod: WorkingMod) => boolean
   jobRunning: boolean
+  editDisabled?: boolean
+  catalogDeleteDisabled?: boolean
+  isModProtected?: (codename: string) => boolean
   onAcquire: (codename: string) => void
   onCheckUpdates: (codename: string) => void
   onEdit: (codename: string) => void
@@ -369,6 +372,7 @@ function ModsRowContextMenu({
         type="button"
         role="menuitem"
         className="mods-row-context-item"
+        disabled={actions.editDisabled}
         onClick={() => run(() => actions.onEdit(mod.codename))}
       >
         <EditModIcon />
@@ -388,6 +392,7 @@ function ModsRowContextMenu({
         type="button"
         role="menuitem"
         className="mods-row-context-item"
+        disabled={actions.catalogDeleteDisabled || actions.isModProtected?.(mod.codename)}
         onClick={() => run(() => actions.onDeleteFromCatalog(mod.codename))}
       >
         <DeleteFromCatalogIcon />

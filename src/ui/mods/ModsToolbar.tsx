@@ -191,7 +191,7 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={bulkDisabled}
+              disabled={bulkDisabled || journeyLocked}
               onClick={onDeleteFromCatalog}
               aria-label="Remove from catalog"
             >
