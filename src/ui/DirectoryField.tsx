@@ -14,6 +14,7 @@ interface Props {
   hint?: string | null
   /** Validation message when the folder is not a valid game dir. */
   error?: string | null
+  required?: boolean
 }
 
 export function DirectoryField({
@@ -26,6 +27,7 @@ export function DirectoryField({
   browseTitle,
   hint,
   error = null,
+  required = false,
 }: Props) {
   const canBrowse = isDesktopApp()
   const labelWithHint = hint?.trim() ? `${label} (${hint.trim()})` : label
@@ -50,6 +52,7 @@ export function DirectoryField({
       spellCheck={false}
       autoComplete="off"
       error={error}
+      required={required}
       trailing={
         <button
           type="button"

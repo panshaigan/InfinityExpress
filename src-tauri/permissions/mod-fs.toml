@@ -4,6 +4,11 @@ description = "List immediate subdirectory names under a user-chosen path"
 commands.allow = ["list_subdir_names"]
 
 [[permission]]
+identifier = "allow-read-text-file"
+description = "Read a UTF-8 text file from an absolute path"
+commands.allow = ["read_text_file"]
+
+[[permission]]
 identifier = "allow-remove-mod-dir"
 description = "Recursively delete a named folder under the mods download directory"
 commands.allow = ["remove_mod_dir"]

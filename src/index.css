@@ -3963,6 +3963,10 @@ body.is-resizing-detail * {
 
 .settings-dialog-tab {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   padding: 0.45rem 0.65rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -3982,6 +3986,21 @@ body.is-resizing-detail * {
   color: var(--ink);
   border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
   background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+}
+
+.settings-tab-issue-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, #c97a00 85%, #000);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .settings-tab-panels {
@@ -5671,10 +5690,45 @@ body.is-resizing-detail * {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 0.4rem;
   padding: 0.45rem 0.75rem;
   border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 92%, #000);
+}
+
+.install-toolbar-controls,
+.install-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.install-toolbar-actions {
+  margin-left: auto;
+}
+
+.install-control-start {
+  color: #fff;
+  background: color-mix(in srgb, #2a9d4b 88%, #000);
+  border-color: color-mix(in srgb, #2a9d4b 70%, var(--line));
+}
+
+.install-control-start:hover:not(:disabled) {
+  background: color-mix(in srgb, #34b85a 90%, #000);
+}
+
+.install-control-start:disabled {
+  opacity: 0.45;
+}
+
+.install-control-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.35rem 0.5rem;
 }
 
 .install-toolbar-note {
@@ -5710,12 +5764,12 @@ body.is-resizing-detail * {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 1fr 0.35rem var(--detail-width, 18rem);
+  grid-template-columns: minmax(0, 1fr) 0.35rem var(--detail-width, 18rem);
   overflow: hidden;
 }
 
 .install-workspace.detail-collapsed {
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr) 2.65rem;
 }
 
 .install-main {
@@ -5825,6 +5879,32 @@ body.is-resizing-detail * {
 .install-detail-path {
   font-size: 0.75rem;
   word-break: break-all;
+}
+
+.install-detail-log-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.install-detail-log-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.install-detail-log-link:hover {
+  color: color-mix(in srgb, var(--accent) 80%, var(--ink));
 }
 
 .install-console-dock {

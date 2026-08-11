@@ -1,4 +1,4 @@
-import { isTauri } from '@tauri-apps/api/core'
+import { isTauri, invoke } from '@tauri-apps/api/core'
 import { open, save } from '@tauri-apps/plugin-dialog'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 
@@ -46,4 +46,14 @@ export async function pickDirectory(title?: string): Promise<string | null> {
   })
   if (typeof selected !== 'string') return null
   return selected
+}
+
+/** Read UTF-8 text from an absolute path. Returns null if unavailable or on error. */
+export async function readTextFile(path: string): Promise<string | null> {
+  if (!isDesktopApp() || !path.trim()) return null
+  try {
+    return await invoke<string>('read_text_file', { path: path.trim() })
+  } catch {
+    return null
+  }
 }

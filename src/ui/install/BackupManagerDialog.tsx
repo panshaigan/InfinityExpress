@@ -11,11 +11,15 @@ import {
 import { useBackdropDismiss } from '../backdropDismiss'
 import { useToast } from '../toasts/toastContext'
 
-export type BackupDialogMode = 'baseline' | 'snapshot' | 'restore'
+export type BackupDialogMode = 'baseline' | 'manage'
+
+type ManageTab = 'backup' | 'restore'
 
 interface Props {
   open: boolean
   mode: BackupDialogMode
+  /** Initial tab when mode is manage. */
+  initialManageTab?: ManageTab
   backupRoot: string
   gameKey: string
   sourceDir: string
@@ -39,6 +43,7 @@ function formatBytes(n: number): string {
 export function BackupManagerDialog({
   open,
   mode,
+  initialManageTab = 'backup',
   backupRoot,
   gameKey,
   sourceDir,
@@ -49,6 +54,7 @@ export function BackupManagerDialog({
   onBusyChange,
 }: Props) {
   const { pushToast } = useToast()
+  const [manageTab, setManageTab] = useState<ManageTab>(initialManageTab)
   const [excludeSafeDirs, setExcludeSafeDirs] = useState(false)
   const [snapshotName, setSnapshotName] = useState(defaultSnapshotName)
   const [manifest, setManifest] = useState<BackupManifest | null>(null)
@@ -65,17 +71,18 @@ export function BackupManagerDialog({
   }, [busy, onBusyChange])
 
   useEffect(() => {
-    if (!open || mode !== 'restore') return
+    if (!open || mode !== 'manage' || manageTab !== 'restore') return
     void listBackups(backupRoot, gameKey).then(setManifest).catch(() => setManifest(null))
-  }, [open, mode, backupRoot, gameKey])
+  }, [open, mode, manageTab, backupRoot, gameKey])
 
   useEffect(() => {
     if (!open) return
     setError(null)
     setProgress(null)
-    if (mode === 'snapshot') setSnapshotName(defaultSnapshotName())
+    setManageTab(initialManageTab)
+    if (mode === 'manage') setSnapshotName(defaultSnapshotName())
     panelRef.current?.focus()
-  }, [open, mode])
+  }, [open, mode, initialManageTab])
 
   useEffect(() => {
     if (!open || !busy) return
@@ -192,15 +199,34 @@ export function BackupManagerDialog({
       >
         <div className="keyboard-help-header">
           <h2 id="backup-dialog-title">
-            {mode === 'baseline'
-              ? 'Baseline backup'
-              : mode === 'snapshot'
-                ? 'Save snapshot'
-                : 'Restore backup'}
+            {mode === 'baseline' ? 'Baseline backup' : 'Backups'}
           </h2>
         </div>
 
-        {mode !== 'restore' ? (
+        {mode === 'manage' ? (
+          <div className="settings-dialog-tabs" role="tablist" aria-label="Backup actions">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={manageTab === 'backup'}
+              className={`settings-dialog-tab${manageTab === 'backup' ? ' active' : ''}`}
+              onClick={() => setManageTab('backup')}
+            >
+              Back up
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={manageTab === 'restore'}
+              className={`settings-dialog-tab${manageTab === 'restore' ? ' active' : ''}`}
+              onClick={() => setManageTab('restore')}
+            >
+              Restore
+            </button>
+          </div>
+        ) : null}
+
+        {mode === 'baseline' || (mode === 'manage' && manageTab === 'backup') ? (
           <div className="settings-fields">
             <label className="install-filter-toggle">
               <input
@@ -211,7 +237,7 @@ export function BackupManagerDialog({
               />
               <span>Exclude movies and music</span>
             </label>
-            {mode === 'snapshot' ? (
+            {mode === 'manage' ? (
               <label className="outlined-field">
                 <span>Name</span>
                 <input
@@ -224,7 +250,7 @@ export function BackupManagerDialog({
             ) : null}
           </div>
         ) : (
-        <div className="backup-restore-list ie-scroll">
+          <div className="backup-restore-list ie-scroll">
             {entries.length === 0 ? (
               <p>No backups found for this game folder.</p>
             ) : (
@@ -270,12 +296,12 @@ export function BackupManagerDialog({
               Create baseline
             </button>
           ) : null}
-          {mode === 'snapshot' ? (
+          {mode === 'manage' && manageTab === 'backup' ? (
             <button type="button" className="btn primary" disabled={busy} onClick={() => void runSnapshot()}>
               Save snapshot
             </button>
           ) : null}
-          {mode === 'restore' ? (
+          {mode === 'manage' && manageTab === 'restore' ? (
             <button
               type="button"
               className="btn primary"

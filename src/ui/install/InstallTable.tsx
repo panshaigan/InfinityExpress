@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import type { InstallStep, StepProgress } from '../../lib/install/types'
 import { expandStepsToTableRows } from '../../lib/install/planBuilder'
-import { IconTip } from '../IconTip'
 
 const STATUS_LABEL: Record<InstallStep['status'], string> = {
   queued: 'Queued',
@@ -63,16 +62,17 @@ interface Props {
   steps: InstallStep[]
   selectedStepId: string | null
   activeStepId: string | null
-  onSelectStep: (stepId: string) => void
+  hideInstalled: boolean
+  onSelectStep: (stepId: string, componentId: string) => void
 }
 
 export function InstallTable({
   steps,
   selectedStepId,
   activeStepId,
+  hideInstalled,
   onSelectStep,
 }: Props) {
-  const [hideInstalled, setHideInstalled] = useState(false)
   const rows = useMemo(() => expandStepsToTableRows(steps), [steps])
   const stepById = useMemo(() => {
     const map = new Map<string, InstallStep>()
@@ -91,16 +91,6 @@ export function InstallTable({
 
   return (
     <div className="install-table-wrap">
-      <div className="install-table-toolbar">
-        <label className="install-filter-toggle">
-          <input
-            type="checkbox"
-            checked={hideInstalled}
-            onChange={(e) => setHideInstalled(e.target.checked)}
-          />
-          <span>Hide installed</span>
-        </label>
-      </div>
       <div className="mods-table-wrap install-table-scroll">
         <table className="install-table mods-table">
           <thead>
@@ -120,7 +110,7 @@ export function InstallTable({
                 <tr
                   key={`${row.stepId}-${row.componentId}`}
                   className={`install-row${selected ? ' selected' : ''}${active ? ' active' : ''} install-status-${row.status}`}
-                  onClick={() => onSelectStep(row.stepId)}
+                  onClick={() => onSelectStep(row.stepId, row.componentId)}
                 >
                   <td>{row.order}</td>
                   <td>{row.modId}</td>

@@ -19,6 +19,14 @@ import {
   type GameFolderKey,
   type GameFolderPaths,
 } from '../lib/ui/gameFolderPrefs'
+import {
+  countMissingByTab,
+  focusElementIdForField,
+  isPathStillMissing,
+  settingsTabForMissing,
+  type MissingInstallPath,
+  type SettingsFocusField,
+} from '../lib/ui/installPathValidation'
 import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 import { GAME_LABELS } from '../lib/xml/schema'
 import { useBackdropDismiss } from './backdropDismiss'
@@ -30,21 +38,28 @@ import { OutlinedTextField } from './OutlinedTextField'
 
 const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
 
-type SettingsTab = 'games' | 'app' | 'github'
+export type { SettingsFocusField }
 
-export type SettingsFocusField = 'modsDownloadDir' | 'weiduPath'
+type SettingsTab = 'games' | 'app' | 'github'
 
 interface Props {
   open: boolean
   onClose: () => void
   /** When set, focus this field instead of the dialog panel on open. */
   focusField?: SettingsFocusField | null
+  /** Highlight empty required install paths at tab and field level. */
+  highlightMissing?: MissingInstallPath[]
 }
 
 const GITHUB_TOKEN_TIP =
   'Optional personal access token raises API rate limits for checking for updates on large catalogs. Without a token the app still works via public API and HTML scrape fallback. Create a classic token with public_repo (or a fine-grained token with read access to public repositories).'
 
-export function SettingsDialog({ open, onClose, focusField = null }: Props) {
+export function SettingsDialog({
+  open,
+  onClose,
+  focusField = null,
+  highlightMissing = [],
+}: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
   const backdrop = useBackdropDismiss(onClose)
   const [tab, setTab] = useState<SettingsTab>('games')
@@ -65,14 +80,15 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
     setAppDirs(readAppDirPaths())
     setGithubToken(readGithubToken())
     setWeiduPath(readWeiduPath())
-    const nextTab: SettingsTab =
-      focusField === 'modsDownloadDir' || focusField === 'weiduPath' ? 'app' : 'games'
+    const nextTab: SettingsTab = focusField
+      ? settingsTabForMissing(focusField)
+      : highlightMissing.length > 0
+        ? settingsTabForMissing(highlightMissing[0]!)
+        : 'games'
     setTab(nextTab)
     requestAnimationFrame(() => {
-      if (focusField === 'modsDownloadDir') {
-        document.getElementById('settings-mods-download-dir')?.focus()
-      } else if (focusField === 'weiduPath') {
-        document.getElementById('settings-weidu-path')?.focus()
+      if (focusField) {
+        document.getElementById(focusElementIdForField(focusField))?.focus()
       } else {
         panelRef.current?.focus()
       }
@@ -85,7 +101,7 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open, onClose, focusField])
+  }, [open, onClose, focusField, highlightMissing])
 
   useEffect(() => {
     if (!open) return
@@ -93,6 +109,7 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
       setFolderPaths(readGameFolderPaths())
       setFolderVersions(readGameFolderVersions())
       setAppDirs(readAppDirPaths())
+      setWeiduPath(readWeiduPath())
     }
     window.addEventListener(PATHS_CHANGED_EVENT, sync)
     return () => window.removeEventListener(PATHS_CHANGED_EVENT, sync)
@@ -176,6 +193,14 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
     writeWeiduPath(value)
   }
 
+  const activeMissing = highlightMissing.filter(isPathStillMissing)
+  const tabIssueCounts = countMissingByTab(activeMissing)
+
+  function missingFieldError(key: MissingInstallPath): string | null {
+    if (!activeMissing.includes(key)) return null
+    return 'Required'
+  }
+
   if (!open) return null
 
   return (
@@ -208,6 +233,11 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
             onClick={() => setTab('games')}
           >
             Games
+            {tabIssueCounts.games > 0 ? (
+              <span className="settings-tab-issue-badge" aria-label={`${tabIssueCounts.games} required`}>
+                {tabIssueCounts.games}
+              </span>
+            ) : null}
           </button>
           <button
             type="button"
@@ -219,6 +249,11 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
             onClick={() => setTab('app')}
           >
             App
+            {tabIssueCounts.app > 0 ? (
+              <span className="settings-tab-issue-badge" aria-label={`${tabIssueCounts.app} required`}>
+                {tabIssueCounts.app}
+              </span>
+            ) : null}
           </button>
           <button
             type="button"
@@ -253,7 +288,8 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
                   placeholder="Path to unmodded game…"
                   browseTitle={`Select ${GAME_LABELS[key]} folder`}
                   hint={folderVersions[key] ? `v${folderVersions[key]}` : null}
-                  error={folderErrors[key] ?? null}
+                  error={folderErrors[key] ?? missingFieldError(key)}
+                  required={activeMissing.includes(key)}
                 />
               ))}
             </div>
@@ -274,6 +310,8 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
                 onChange={(value) => setAppDir('modsDownloadDir', value)}
                 placeholder="Select download folder…"
                 browseTitle="Select mods download folder"
+                error={missingFieldError('modsDownloadDir')}
+                required={activeMissing.includes('modsDownloadDir')}
               />
               <DirectoryField
                 id="settings-backup-dir"
@@ -282,6 +320,8 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
                 onChange={(value) => setAppDir('backupDir', value)}
                 placeholder="Select backup folder…"
                 browseTitle="Select backup folder"
+                error={missingFieldError('backupDir')}
+                required={activeMissing.includes('backupDir')}
               />
               <OutlinedTextField
                 id="settings-weidu-path"
@@ -291,6 +331,8 @@ export function SettingsDialog({ open, onClose, focusField = null }: Props) {
                 placeholder="Path to weidu.exe"
                 spellCheck={false}
                 autoComplete="off"
+                error={missingFieldError('weiduPath')}
+                required={activeMissing.includes('weiduPath')}
                 trailing={
                   <button
                     type="button"

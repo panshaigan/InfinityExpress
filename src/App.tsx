@@ -83,6 +83,12 @@ import { ModsStation, type ModsJourneyState } from './ui/mods/ModsStation'
 import { InstallStation } from './ui/install/InstallStation'
 import { ToastProvider } from './ui/toasts/toastContext'
 import { isDesktopApp } from './lib/desktop/fsDialogs'
+import {
+  firstMissingFocusField,
+  getMissingInstallPaths,
+  type MissingInstallPath,
+  type SettingsFocusField,
+} from './lib/ui/installPathValidation'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
@@ -124,8 +130,11 @@ function AppShell() {
   const [aboutOpen, setAboutOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [settingsFocusField, setSettingsFocusField] = useState<
-    'modsDownloadDir' | 'weiduPath' | null
+    SettingsFocusField | null
   >(null)
+  const [settingsHighlightMissing, setSettingsHighlightMissing] = useState<
+    MissingInstallPath[]
+  >([])
   const [showRouteTip, setShowRouteTip] = useState(() => !readRouteTipDismissed())
   const [railCollapsed, setRailCollapsed] = useState(() => readRailCollapsed())
   const [detailCollapsed, setDetailCollapsed] = useState(() => readDetailCollapsed())
@@ -294,6 +303,14 @@ function AppShell() {
     if (phase === 'mods') {
       // Phase nav opens the library; keep journey state intact so the banner
       // persists as long as the route is complete.
+    }
+    if (phase === 'install') {
+      const missing = getMissingInstallPaths(game)
+      if (missing.length > 0) {
+        setSettingsFocusField(firstMissingFocusField(missing))
+        setSettingsHighlightMissing(missing)
+        setSettingsOpen(true)
+      }
     }
     goToPhase(phase)
   }
@@ -633,16 +650,23 @@ function AppShell() {
   const openAbout = useCallback(() => setAboutOpen(true), [])
   const openSettings = useCallback(() => {
     setSettingsFocusField(null)
+    setSettingsHighlightMissing([])
     setSettingsOpen(true)
   }, [])
   const openSettingsModsDownload = useCallback(() => {
     setSettingsFocusField('modsDownloadDir')
+    setSettingsHighlightMissing([])
+    setSettingsOpen(true)
+  }, [])
+  const openSettingsForMissing = useCallback((missing: MissingInstallPath[]) => {
+    setSettingsFocusField(firstMissingFocusField(missing))
+    setSettingsHighlightMissing(missing)
     setSettingsOpen(true)
   }, [])
 
   useChromeHotkeys({
     keyboardHelpOpen,
-    showDetail: (showComponentsChrome && showDetail) || appPhase === 'mods',
+    showDetail: (showComponentsChrome && showDetail) || appPhase === 'mods' || appPhase === 'install',
     activeStation,
     visibleStations,
     mainBranches: contentMainBranches,
@@ -738,6 +762,7 @@ function AppShell() {
               onDetailWidthChange={setDetailWidth}
               onToggleDetailCollapsed={toggleDetailCollapsed}
               onOpenSettings={openSettings}
+              onOpenSettingsForMissing={openSettingsForMissing}
               onBusyChange={onInstallBusyChange}
             />
           </div>
@@ -989,9 +1014,11 @@ function AppShell() {
       <SettingsDialog
         open={settingsOpen}
         focusField={settingsFocusField}
+        highlightMissing={settingsHighlightMissing}
         onClose={() => {
           setSettingsOpen(false)
           setSettingsFocusField(null)
+          setSettingsHighlightMissing([])
         }}
       />
       <ExportDialog

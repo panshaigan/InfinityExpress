@@ -13,6 +13,7 @@ pub fn run() {
     .manage(weidu_install::RunningWeidu::new())
     .invoke_handler(tauri::generate_handler![
       mod_fs::list_subdir_names,
+      mod_fs::read_text_file,
       mod_fs::remove_mod_dir,
       mod_acquire::probe_mod_remote,
       mod_acquire::scrape_mod_page_meta,

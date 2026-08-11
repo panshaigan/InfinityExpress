@@ -29,6 +29,20 @@ pub fn list_subdir_names(path: String) -> Result<Vec<String>, String> {
   Ok(names)
 }
 
+/// Read a UTF-8 text file from an absolute path (install logs, etc.).
+#[tauri::command]
+pub fn read_text_file(path: String) -> Result<String, String> {
+  let trimmed = path.trim();
+  if trimmed.is_empty() {
+    return Err("Path is required".into());
+  }
+  let p = PathBuf::from(trimmed);
+  if !p.is_file() {
+    return Err("File not found".into());
+  }
+  fs::read_to_string(&p).map_err(|e| e.to_string())
+}
+
 /// Recursively delete `download_dir/folder_name` after path-safety checks.
 /// Folder name match is case-insensitive (uses the on-disk spelling).
 #[tauri::command]

@@ -7,12 +7,23 @@ import { isDesktopApp } from '../../lib/desktop/fsDialogs'
 import type { WorkingMod } from '../../lib/mods/loadMods'
 import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
 import { readGameFolderPaths } from '../../lib/ui/gameFolderPrefs'
+import {
+  getMissingInstallPaths,
+  type MissingInstallPath,
+} from '../../lib/ui/installPathValidation'
+import { PATHS_CHANGED_EVENT } from '../../lib/ui/pathPrefsEvents'
 import { readWeiduPath } from '../../lib/ui/weiduPrefs'
 import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
 import { BackupManagerDialog, type BackupDialogMode } from './BackupManagerDialog'
 import { InstallConsoleDock } from './InstallConsoleDock'
 import { InstallDetailPane } from './InstallDetailPane'
 import { InstallTable } from './InstallTable'
+import {
+  PauseIcon,
+  PlayIcon,
+  SkipNextIcon,
+  StopIcon,
+} from './InstallControlIcons'
 import { IconTip } from '../IconTip'
 import { useToast } from '../toasts/toastContext'
 
@@ -27,6 +38,7 @@ interface Props {
   onDetailWidthChange: (width: number) => void
   onToggleDetailCollapsed: () => void
   onOpenSettings: () => void
+  onOpenSettingsForMissing: (missing: MissingInstallPath[]) => void
   onBusyChange?: (busy: boolean) => void
 }
 
@@ -49,12 +61,16 @@ export function InstallStation({
   onDetailWidthChange,
   onToggleDetailCollapsed,
   onOpenSettings,
+  onOpenSettingsForMissing,
   onBusyChange,
 }: Props) {
   const { pushToast } = useToast()
+  const [pathTick, setPathTick] = useState(0)
   const gameFolders = readGameFolderPaths()
   const appDirs = readAppDirPaths()
   const weiduPath = readWeiduPath()
+  void pathTick
+
   const adjustementsModIds = useMemo(
     () => collectAdjustementsModIds(model),
     [model],
@@ -78,14 +94,18 @@ export function InstallStation({
   } = useInstallRun({ model, selectedIds, game, gameFolders })
 
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null)
+  const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null)
+  const [hideInstalled, setHideInstalled] = useState(false)
   const [consoleCollapsed, setConsoleCollapsed] = useState(false)
   const [backupDialog, setBackupDialog] = useState<BackupDialogMode | null>(null)
+  const [backupManageTab, setBackupManageTab] = useState<'backup' | 'restore'>('backup')
   const [backupGameKey, setBackupGameKey] = useState('bg2')
   const [backupSourceDir, setBackupSourceDir] = useState('')
   const [backupBusy, setBackupBusy] = useState(false)
   const [cleanupOffer, setCleanupOffer] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const prevRunStateRef = useRef(run?.runState ?? null)
+  const promptedMissingPathsRef = useRef(false)
 
   const steps = run?.steps ?? planSteps.map((s) => ({
     ...s,
@@ -131,20 +151,37 @@ export function InstallStation({
     return () => onBusyChange?.(false)
   }, [run?.runState, backupBusy, onBusyChange])
 
+  useEffect(() => {
+    function maybePromptMissingPaths() {
+      if (!isDesktopApp() || !game) return
+      const missing = getMissingInstallPaths(game)
+      if (missing.length === 0) {
+        promptedMissingPathsRef.current = false
+        return
+      }
+      if (promptedMissingPathsRef.current) return
+      promptedMissingPathsRef.current = true
+      onOpenSettingsForMissing(missing)
+    }
+    maybePromptMissingPaths()
+    function onPathsChanged() {
+      setPathTick((n) => n + 1)
+      maybePromptMissingPaths()
+    }
+    window.addEventListener(PATHS_CHANGED_EVENT, onPathsChanged)
+    return () => window.removeEventListener(PATHS_CHANGED_EVENT, onPathsChanged)
+  }, [game, onOpenSettingsForMissing])
+
   const modsReady = allModsPresent(neededCodenames, mods)
   const canRun = isDesktopApp() && !!game && modsReady && !!weiduPath && !!appDirs.backupDir
   const canBackup = !!game && !!appDirs.backupDir
-
-  const openRestoreDialog = useCallback(() => {
-    if (!game) return
-    const step = run?.steps[run.cursor] ?? run?.steps[0]
-    const phase = step?.phase ?? 'single'
-    const targetDir = gameDirForPhase(game, phase, gameFolders)
-    const gameKey = game === 'eet' ? (phase === 'eet1' ? 'bg1' : 'bg2') : game
-    setBackupGameKey(gameKey)
-    setBackupSourceDir(targetDir)
-    setBackupDialog('restore')
-  }, [game, run, gameFolders])
+  const isRunning = run?.runState === 'running'
+  const canPauseToggle =
+    !!run &&
+    (run.runState === 'running' ||
+      run.runState === 'paused' ||
+      run.runState === 'failed' ||
+      run.runState === 'waitingForInput')
 
   const statusText = useMemo(() => {
     if (!run) return `${planSteps.length} steps planned`
@@ -174,6 +211,7 @@ export function InstallStation({
                 : gameFolders.pst
         if (!dir) {
           setNotice(`Set ${key} game folder in Settings.`)
+          onOpenSettings()
           return false
         }
         setBackupGameKey(key)
@@ -183,19 +221,30 @@ export function InstallStation({
       }
     }
     return true
-  }, [game, appDirs.backupDir, gameFolders])
+  }, [game, appDirs.backupDir, gameFolders, onOpenSettings])
 
   const onStart = useCallback(async () => {
-    if (!canRun) return
+    if (!canRun || isRunning) return
     initRun()
     const ok = await ensureBaselines()
     if (!ok) return
     await start()
-  }, [canRun, initRun, ensureBaselines, start])
+  }, [canRun, isRunning, initRun, ensureBaselines, start])
 
-  const onRestart = useCallback(() => {
-    openRestoreDialog()
-  }, [openRestoreDialog])
+  const onPauseToggle = useCallback(() => {
+    if (!run) return
+    if (run.runState === 'running') {
+      pause()
+      return
+    }
+    if (
+      run.runState === 'paused' ||
+      run.runState === 'failed' ||
+      run.runState === 'waitingForInput'
+    ) {
+      void continueRun()
+    }
+  }, [run, pause, continueRun])
 
   const onRestoreDone = useCallback(
     async (_backupPath: string) => {
@@ -208,6 +257,21 @@ export function InstallStation({
       await restartFromBackup(targetDir)
     },
     [game, run, gameFolders, restartFromBackup],
+  )
+
+  const openBackupsDialog = useCallback(
+    (tab: 'backup' | 'restore' = 'backup') => {
+      if (!game) return
+      const step = run?.steps[run.cursor] ?? run?.steps[0]
+      const phase = step?.phase ?? 'single'
+      const dir = gameDirForPhase(game, phase, gameFolders)
+      const gameKey = game === 'eet' ? (phase === 'eet1' ? 'bg1' : 'bg2') : game
+      setBackupGameKey(gameKey)
+      setBackupSourceDir(dir)
+      setBackupManageTab(tab)
+      setBackupDialog('manage')
+    },
+    [game, run, gameFolders],
   )
 
   const onCleanup = useCallback(async () => {
@@ -234,52 +298,85 @@ export function InstallStation({
     }
   }, [game, run, adjustementsModIds, gameFolders, weiduPath, pushToast])
 
+  const onSelectStep = useCallback((stepId: string, componentId: string) => {
+    setSelectedStepId(stepId)
+    setSelectedComponentId(componentId)
+  }, [])
+
+  const pauseTip =
+    run?.runState === 'running'
+      ? 'Pause'
+      : run?.runState === 'waitingForInput'
+        ? 'Continue'
+        : 'Resume'
+
   return (
     <div className="install-station">
       <div className="install-toolbar">
-        <button type="button" className="btn primary" disabled={!canRun || run?.runState === 'running'} onClick={() => void onStart()}>
-          Start
-        </button>
-        <button type="button" className="btn secondary" disabled={!run || run.runState !== 'running'} onClick={pause}>
-          Pause
-        </button>
-        <button type="button" className="btn secondary" disabled={!run || (run.runState !== 'paused' && run.runState !== 'failed' && run.runState !== 'waitingForInput')} onClick={() => void continueRun()}>
-          Continue
-        </button>
-        <button type="button" className="btn secondary" disabled={!run} onClick={onRestart}>
-          Restart
-        </button>
-        <button type="button" className="btn secondary" disabled={!run || run.runState !== 'running'} onClick={() => void stop()}>
-          Stop
-        </button>
-        <button type="button" className="btn secondary" disabled={!run || run.runState !== 'waitingForInput'} onClick={() => void skipCurrent()}>
-          Skip
-        </button>
-        <button
-          type="button"
-          className="btn secondary"
-          disabled={!canBackup}
-          onClick={() => {
-            if (!game) return
-            const dir = gameDirForPhase(game, 'single', gameFolders)
-            setBackupGameKey(game === 'eet' ? 'bg2' : game)
-            setBackupSourceDir(dir)
-            setBackupDialog('snapshot')
-          }}
-        >
-          Back up now
-        </button>
-        <button
-          type="button"
-          className="btn secondary"
-          disabled={!canBackup}
-          onClick={openRestoreDialog}
-        >
-          Restore
-        </button>
-        {!modsReady ? (
-          <span className="install-toolbar-note">Missing mods on disk</span>
-        ) : null}
+        <div className="install-toolbar-controls">
+          <button
+            type="button"
+            className="btn primary install-control-start has-icon-tip"
+            disabled={!canRun || isRunning}
+            onClick={() => void onStart()}
+            aria-label="Start"
+          >
+            <PlayIcon />
+            <IconTip>Start</IconTip>
+          </button>
+          <button
+            type="button"
+            className="btn secondary install-control-btn has-icon-tip"
+            disabled={!canPauseToggle}
+            onClick={onPauseToggle}
+            aria-label={pauseTip}
+          >
+            <PauseIcon />
+            <IconTip>{pauseTip}</IconTip>
+          </button>
+          <button
+            type="button"
+            className="btn secondary install-control-btn has-icon-tip"
+            disabled={!run || !isRunning}
+            onClick={() => void stop()}
+            aria-label="Stop"
+          >
+            <StopIcon />
+            <IconTip>Stop</IconTip>
+          </button>
+          <button
+            type="button"
+            className="btn secondary install-control-btn has-icon-tip"
+            disabled={!run || run.runState !== 'waitingForInput'}
+            onClick={() => void skipCurrent()}
+            aria-label="Skip"
+          >
+            <SkipNextIcon />
+            <IconTip>Skip</IconTip>
+          </button>
+          {!modsReady ? (
+            <span className="install-toolbar-note">Missing mods on disk</span>
+          ) : null}
+        </div>
+
+        <div className="install-toolbar-actions">
+          <label className="install-filter-toggle">
+            <input
+              type="checkbox"
+              checked={hideInstalled}
+              onChange={(e) => setHideInstalled(e.target.checked)}
+            />
+            <span>Hide installed</span>
+          </label>
+          <button
+            type="button"
+            className="btn secondary"
+            disabled={!canBackup}
+            onClick={() => openBackupsDialog('backup')}
+          >
+            Backups
+          </button>
+        </div>
       </div>
 
       {notice ? <p className="install-notice">{notice}</p> : null}
@@ -309,31 +406,21 @@ export function InstallStation({
             steps={steps}
             selectedStepId={selectedStep?.stepId ?? null}
             activeStepId={activeStepId}
-            onSelectStep={setSelectedStepId}
+            hideInstalled={hideInstalled}
+            onSelectStep={onSelectStep}
           />
         </div>
-        {!detailCollapsed ? (
-          <>
-            <div className="detail-resize-handle" aria-hidden="true" />
-            <InstallDetailPane
-              step={selectedStep}
-              model={model}
-              collapsed={detailCollapsed}
-              width={detailWidth}
-              onWidthChange={onDetailWidthChange}
-              onToggleCollapsed={onToggleDetailCollapsed}
-            />
-          </>
-        ) : (
-          <InstallDetailPane
-            step={selectedStep}
-            model={model}
-            collapsed={detailCollapsed}
-            width={detailWidth}
-            onWidthChange={onDetailWidthChange}
-            onToggleCollapsed={onToggleDetailCollapsed}
-          />
-        )}
+        {!detailCollapsed ? <div className="detail-resize-handle" aria-hidden="true" /> : null}
+        <InstallDetailPane
+          step={selectedStep}
+          selectedComponentId={selectedComponentId}
+          model={model}
+          mods={mods}
+          collapsed={detailCollapsed}
+          width={detailWidth}
+          onWidthChange={onDetailWidthChange}
+          onToggleCollapsed={onToggleDetailCollapsed}
+        />
       </div>
 
       <InstallConsoleDock
@@ -354,6 +441,7 @@ export function InstallStation({
       <BackupManagerDialog
         open={backupDialog != null}
         mode={backupDialog ?? 'baseline'}
+        initialManageTab={backupManageTab}
         backupRoot={appDirs.backupDir}
         gameKey={backupGameKey}
         sourceDir={backupSourceDir}
