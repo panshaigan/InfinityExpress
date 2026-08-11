@@ -5762,13 +5762,15 @@ body.is-resizing-detail * {
 
 .install-workspace {
   flex: 1;
+  min-width: 0;
   min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 0.35rem var(--detail-width, 18rem);
-  overflow: hidden;
 }
 
-.install-workspace.detail-collapsed {
+.workspace.install-workspace:not(.detail-collapsed) {
+  grid-template-columns: minmax(0, 1fr) 0.35rem var(--detail-width);
+}
+
+.workspace.install-workspace.detail-collapsed {
   grid-template-columns: minmax(0, 1fr) 2.65rem;
 }
 

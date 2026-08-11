@@ -394,12 +394,8 @@ export function InstallStation({
       ) : null}
 
       <div
-        className={`install-workspace${detailCollapsed ? ' detail-collapsed' : ''}`}
-        style={
-          !detailCollapsed
-            ? ({ '--detail-width': `${detailWidth}px` } as CSSProperties)
-            : undefined
-        }
+        className={`workspace install-workspace${detailCollapsed ? ' detail-collapsed' : ''}`}
+        style={{ '--detail-width': `${detailWidth}px` } as CSSProperties}
       >
         <div className="install-main">
           <InstallTable
@@ -410,7 +406,6 @@ export function InstallStation({
             onSelectStep={onSelectStep}
           />
         </div>
-        {!detailCollapsed ? <div className="detail-resize-handle" aria-hidden="true" /> : null}
         <InstallDetailPane
           step={selectedStep}
           selectedComponentId={selectedComponentId}
