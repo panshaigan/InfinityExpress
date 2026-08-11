@@ -1,5 +1,5 @@
 import type { InstallSequenceModel, TreeNode } from '../xml/schema'
-import { splitAuthorNames } from './modFieldParse'
+import { normalizeGameField, splitAuthorNames } from './modFieldParse'
 
 export interface ModInfo {
   codename: string
@@ -209,7 +209,7 @@ export function parseModsCsv(raw: string): Map<string, ModInfo> {
       category: (iCategory >= 0 ? cols[iCategory] ?? '' : '').trim(),
       url: (iUrl >= 0 ? cols[iUrl] ?? '' : '').trim(),
       readme: (iReadme >= 0 ? cols[iReadme] ?? '' : '').trim(),
-      game: (iGame >= 0 ? cols[iGame] ?? '' : '').trim(),
+      game: normalizeGameField(iGame >= 0 ? cols[iGame] ?? '' : ''),
       track,
       download,
       release: (iRelease >= 0 ? cols[iRelease] ?? '' : '').trim(),

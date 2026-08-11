@@ -44,7 +44,6 @@ interface Props {
   mods: WorkingMod[]
   neededCodenames: string[]
   journey: ModsJourneyState | null
-  onClearJourneyLock: () => void
   detailCollapsed: boolean
   detailWidth: number
   onDetailWidthChange: (width: number) => void
@@ -63,13 +62,13 @@ interface Props {
     codenames: string[],
   ) => Promise<{ removed: string[]; errors: string[] }>
   onOpenSettings: () => void
+  onProceedToInstall?: () => void
 }
 
 export function ModsStation({
   mods,
   neededCodenames,
   journey,
-  onClearJourneyLock,
   detailCollapsed,
   detailWidth,
   onDetailWidthChange,
@@ -82,6 +81,7 @@ export function ModsStation({
   onRefreshDiskStatus,
   onRemoveFromDisk,
   onOpenSettings,
+  onProceedToInstall,
 }: Props) {
   const journeyLocked = !!journey?.locked
   const [filters, setFilters] = useState<ModsTableFilters>(() =>
@@ -188,6 +188,24 @@ export function ModsStation({
 
   const selectedList = useMemo(() => [...selected], [selected])
 
+  const allRequiredDownloaded = useMemo(() => {
+    if (!journey) return false
+    const required = journey.requiredCodenames
+    if (required.length === 0) return false
+    return required.every((code) => {
+      const mod = mods.find((m) => m.codename === code)
+      return mod && mod.diskStatus !== 'not_present'
+    })
+  }, [journey, mods])
+
+  const removeFromDiskDisabled = useMemo(() => {
+    if (selectedList.length === 0) return true
+    return selectedList.every((code) => {
+      const mod = mods.find((m) => m.codename === code)
+      return !mod || mod.diskStatus === 'not_present'
+    })
+  }, [mods, selectedList])
+
   const selectedAcquireKind = useMemo(() => {
     const targets = modsNeedingAcquire(mods, selectedList)
     return acquireButtonKind(targets.map((m) => m.diskStatus))
@@ -235,7 +253,6 @@ export function ModsStation({
 
   const onToggle = useCallback(
     (codename: string, want: boolean) => {
-      if (journeyLocked) return
       setSelected((prev) => {
         const next = new Set(prev)
         if (want) next.add(codename)
@@ -243,12 +260,11 @@ export function ModsStation({
         return next
       })
     },
-    [journeyLocked],
+    [],
   )
 
   const onToggleAllVisible = useCallback(
     (want: boolean) => {
-      if (journeyLocked) return
       setSelected((prev) => {
         const next = new Set(prev)
         for (const row of rows) {
@@ -258,7 +274,7 @@ export function ModsStation({
         return next
       })
     },
-    [journeyLocked, rows],
+    [rows],
   )
 
   const flashNotice = useCallback((message: string) => {
@@ -331,13 +347,11 @@ export function ModsStation({
   }, [pendingDelete])
 
   function handleFiltersChange(next: ModsTableFilters) {
-    if (journeyLocked) return
+    if (journeyLocked) {
+      // Keep required-mods filter locked during journey
+      next = { ...next, requiredCodenames: filters.requiredCodenames }
+    }
     setFilters(next)
-  }
-
-  function handleContinueBrowsing() {
-    setFilters((prev) => ({ ...prev, requiredCodenames: null }))
-    onClearJourneyLock()
   }
 
   const jobMinimized = acquire.job.minimized
@@ -371,13 +385,15 @@ export function ModsStation({
               onCheckUpdates={() => {
                 void acquire.runCheck(selectedList)
               }}
+              removeFromDiskDisabled={removeFromDiskDisabled}
               onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
               onDeleteFromCatalog={() => setPendingDelete(selectedList)}
               onExportCsv={() => {
                 void exportCsv()
               }}
               onAddMod={() => setEditor({ mode: 'create', initial: null })}
-              onContinueBrowsing={handleContinueBrowsing}
+              allRequiredDownloaded={allRequiredDownloaded}
+              onProceedToInstall={onProceedToInstall}
             />
           </div>
           <div className="list-pane-scroll mods-table-scroll">
@@ -385,7 +401,7 @@ export function ModsStation({
               rows={rows}
               selected={selected}
               focusedCodename={focusedCodename}
-              selectionLocked={journeyLocked}
+              selectionLocked={false}
               sortKey={sortKey}
               sortDir={sortDir}
               onSort={onSort}

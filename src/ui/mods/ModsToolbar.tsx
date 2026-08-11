@@ -39,11 +39,13 @@ interface Props {
   jobRunning?: boolean
   onAcquire: () => void
   onCheckUpdates: () => void
+  removeFromDiskDisabled: boolean
   onRemoveFromDisk: () => void
   onDeleteFromCatalog: () => void
   onExportCsv: () => void
   onAddMod: () => void
-  onContinueBrowsing: () => void
+  allRequiredDownloaded: boolean
+  onProceedToInstall?: () => void
 }
 
 const ALL_STATUSES: DiskStatus[] = [
@@ -71,11 +73,13 @@ export function ModsToolbar({
   jobRunning = false,
   onAcquire,
   onCheckUpdates,
+  removeFromDiskDisabled,
   onRemoveFromDisk,
   onDeleteFromCatalog,
   onExportCsv,
   onAddMod,
-  onContinueBrowsing,
+  allRequiredDownloaded,
+  onProceedToInstall,
 }: Props) {
   const bulkDisabled = selectedCount === 0
   const acquireBusy = jobRunning
@@ -129,12 +133,31 @@ export function ModsToolbar({
       {journeyLocked ? (
         <div className="mods-journey-banner" role="status">
           <div className="mods-journey-banner-text">
-            <strong>Needed for your route</strong>
-            <span>
-              These mods are required by your selected components.
-              Please make sure they are all downloaded. You can also
-              update the selected mods if needed.
-            </span>
+            {allRequiredDownloaded ? (
+              <>
+                <p className="mods-journey-banner-title">All mods are ready</p>
+                <p className="mods-journey-banner-body">
+                  Every required mod has been downloaded. You can proceed to
+                  installation or continue browsing.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="mods-journey-banner-title">Needed for your route</p>
+                <p className="mods-journey-banner-body">
+                  These mods are required by your selected components.
+                  Please make sure they are all downloaded. You can also
+                  update the selected mods if needed.
+                </p>
+              </>
+            )}
+          </div>
+          <div className="mods-journey-banner-actions">
+            {allRequiredDownloaded && onProceedToInstall ? (
+              <button type="button" className="btn" onClick={onProceedToInstall}>
+                Proceed to installation
+              </button>
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -145,7 +168,6 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn primary"
-              disabled={journeyLocked}
               onClick={onAddMod}
               aria-label="Add mod"
             >
@@ -157,7 +179,7 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={bulkDisabled}
+              disabled={bulkDisabled || removeFromDiskDisabled}
               onClick={onRemoveFromDisk}
               aria-label="Remove from disk"
             >
@@ -169,7 +191,7 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={bulkDisabled || journeyLocked}
+              disabled={bulkDisabled}
               onClick={onDeleteFromCatalog}
               aria-label="Remove from catalog"
             >
@@ -326,24 +348,7 @@ export function ModsToolbar({
             </button>
           ) : null}
         </div>
-      ) : (
-        <div className="mods-facets mods-facets-locked">
-          <label className="mods-search">
-            <span className="visually-hidden">Search mods</span>
-            <input
-              id={MODS_SEARCH_ID}
-              type="search"
-              placeholder="Search..."
-              value={filters.search}
-              autoComplete="off"
-              disabled
-              onChange={(e) =>
-                onChange({ ...filters, search: e.target.value })
-              }
-            />
-          </label>
-        </div>
-      )}
+      ) : null}
     </div>
   )
 }

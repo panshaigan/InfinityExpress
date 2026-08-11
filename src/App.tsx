@@ -245,6 +245,7 @@ export default function App() {
     onRouteJustCompleted: () => {
       const required = listSelectedModCodenames(model, selectedIds)
       setModsJourney({ locked: true, requiredCodenames: required })
+      setDetailCollapsed(true)
       setAppPhase('mods')
     },
   })
@@ -252,6 +253,7 @@ export default function App() {
   function openModsJourneyFromBanner() {
     const required = listSelectedModCodenames(model, selectedIds)
     setModsJourney({ locked: true, requiredCodenames: required })
+    setDetailCollapsed(true)
     setAppPhase('mods')
     route.setHideCaughtUp(true)
   }
@@ -663,11 +665,6 @@ export default function App() {
               mods={userCatalog.mods}
               neededCodenames={neededCodenames}
               journey={modsJourney}
-              onClearJourneyLock={() =>
-                setModsJourney((prev) =>
-                  prev ? { ...prev, locked: false } : null,
-                )
-              }
               detailCollapsed={detailCollapsed}
               detailWidth={detailWidth}
               onDetailWidthChange={setDetailWidth}
@@ -680,6 +677,7 @@ export default function App() {
               onRefreshDiskStatus={userCatalog.refreshDiskStatus}
               onRemoveFromDisk={userCatalog.removeFromDisk}
               onOpenSettings={openSettingsModsDownload}
+              onProceedToInstall={() => onPhaseChange('install')}
             />
           </div>
         </div>

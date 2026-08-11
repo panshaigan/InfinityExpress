@@ -1,5 +1,5 @@
 /** Canonical order when joining selected game tokens into a stored Game field. */
-export const GAME_TOKENS = ['BG1', 'BG2', 'IWD', 'PST'] as const
+export const GAME_TOKENS = ['BG', 'BG1', 'BG2', 'IWD', 'PST'] as const
 
 export type GameToken = (typeof GAME_TOKENS)[number]
 
@@ -28,6 +28,13 @@ export function splitGameTokens(game: string): string[] {
     .filter(Boolean)
 }
 
+/** Normalize legacy "BG1-BG2" to "BG" on import. */
+export function normalizeGameField(raw: string): string {
+  const trimmed = raw.trim()
+  if (trimmed === 'BG1-BG2') return 'BG'
+  return trimmed
+}
+
 export function joinGameTokens(tokens: readonly string[]): string {
   const unique = new Set<GameToken>()
   for (const raw of tokens) {
@@ -54,9 +61,10 @@ export function modMatchesGameFilter(
   if (!filter) return true
   const tokens = new Set(splitGameTokens(modGame))
   if (filter === 'BG1+BG2' || filter === 'BG1-BG2') {
-    // Union of BG1 and BG2 (includes BG1-only, BG2-only, and dual tags).
-    return tokens.has('BG1') || tokens.has('BG2')
+    return tokens.has('BG1') || tokens.has('BG2') || tokens.has('BG')
   }
+  if (filter === 'BG1') return tokens.has('BG1') || tokens.has('BG')
+  if (filter === 'BG2') return tokens.has('BG2') || tokens.has('BG')
   return tokens.has(filter)
 }
 
