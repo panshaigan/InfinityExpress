@@ -83,6 +83,7 @@ export function InstallStation({
     planSteps,
     consoleLines,
     commandLines,
+    resultLines,
     inputPrompt,
     activeStepId,
     initRun,
@@ -93,6 +94,7 @@ export function InstallStation({
     skipCurrent,
     restartFromBackup,
     sendInput,
+    appendCommandLine,
   } = useInstallRun({ model, selectedIds, game, gameFolders })
 
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null)
@@ -119,6 +121,7 @@ export function InstallStation({
     stagedFolderName: '',
     weiduNumbers: [],
     languageIndex: null,
+    resultLines: s.resultLines ?? [],
   }))
 
   const selectedStep = useMemo(
@@ -499,13 +502,12 @@ export function InstallStation({
       <InstallConsoleDock
         lines={consoleLines}
         commandLines={commandLines}
+        resultLines={resultLines}
         statusText={statusText}
         collapsed={consoleCollapsed}
         onToggleCollapsed={() => setConsoleCollapsed((v) => !v)}
         waitingForInput={
-          !!inputPrompt ||
-          (run?.runState === 'running' &&
-            run.steps[run.cursor]?.status === 'installing')
+          !!inputPrompt || run?.runState === 'waitingForInput'
         }
         inputPrompt={inputPrompt}
         onSendInput={(text) => void sendInput(text)}
@@ -523,6 +525,7 @@ export function InstallStation({
         onBaselineDone={() => void onStart()}
         onRestoreDone={(path) => void onRestoreDone(path)}
         onBusyChange={setBackupBusy}
+        onLog={appendCommandLine}
       />
     </div>
   )

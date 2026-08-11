@@ -53,3 +53,27 @@ export function HideInstalledIcon() {
     </svg>
   )
 }
+
+/** Double chevron down — collapse bottom console panel. */
+export function ChevronDoubleDownIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M3.2 3.35a.75.75 0 0 1 1.06 0L8 7.09l3.74-3.74a.75.75 0 1 1 1.06 1.06l-4.27 4.27a.75.75 0 0 1-1.06 0L3.2 4.41a.75.75 0 0 1 0-1.06Zm0 4.5a.75.75 0 0 1 1.06 0L8 11.59l3.74-3.74a.75.75 0 1 1 1.06 1.06l-4.27 4.27a.75.75 0 0 1-1.06 0L3.2 8.91a.75.75 0 0 1 0-1.06Z"
+      />
+    </svg>
+  )
+}
+
+/** Double chevron up — expand bottom console panel. */
+export function ChevronDoubleUpIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M7.47 2.22a.75.75 0 0 1 1.06 0l4.27 4.27a.75.75 0 1 1-1.06 1.06L8 3.91 4.26 7.55a.75.75 0 0 1-1.06-1.06l4.27-4.27Zm0 4.5a.75.75 0 0 1 1.06 0l4.27 4.27a.75.75 0 1 1-1.06 1.06L8 8.41l-3.74 3.74a.75.75 0 0 1-1.06-1.06l4.27-4.27Z"
+      />
+    </svg>
+  )
+}

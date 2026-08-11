@@ -1,11 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  consoleLineTone,
+  consoleLineToneClass,
+} from '../../lib/install/consoleLineHighlight'
 import { readInstallConsoleHeight, writeInstallConsoleHeight } from '../../lib/ui/installConsolePrefs'
+import { IconTip } from '../IconTip'
+import { OutlinedTextField } from '../OutlinedTextField'
+import { ChevronDoubleDownIcon, ChevronDoubleUpIcon } from './InstallControlIcons'
 
-type ConsoleTab = 'output' | 'commands'
+type ConsoleTab = 'output' | 'commands' | 'results'
 
 interface Props {
   lines: string[]
   commandLines: string[]
+  resultLines: string[]
   statusText: string
   collapsed: boolean
   onToggleCollapsed: () => void
@@ -17,6 +25,7 @@ interface Props {
 export function InstallConsoleDock({
   lines,
   commandLines,
+  resultLines,
   statusText,
   collapsed,
   onToggleCollapsed,
@@ -27,15 +36,26 @@ export function InstallConsoleDock({
   const [height, setHeight] = useState(() => readInstallConsoleHeight())
   const [input, setInput] = useState('')
   const [tab, setTab] = useState<ConsoleTab>('output')
+  const [responseCollapsed, setResponseCollapsed] = useState(false)
   const preRef = useRef<HTMLPreElement>(null)
   const dragRef = useRef<{ startY: number; startH: number } | null>(null)
+  const prevWaitingRef = useRef(false)
 
-  const activeLines = tab === 'output' ? lines : commandLines
+  const activeLines =
+    tab === 'output' ? lines : tab === 'commands' ? commandLines : resultLines
+  const colorize = tab === 'output' || tab === 'results'
 
   useEffect(() => {
     const el = preRef.current
     if (el) el.scrollTop = el.scrollHeight
   }, [activeLines, tab])
+
+  useEffect(() => {
+    if (waitingForInput && !prevWaitingRef.current) {
+      setResponseCollapsed(false)
+    }
+    prevWaitingRef.current = waitingForInput
+  }, [waitingForInput])
 
   const onResizeStart = useCallback(
     (clientY: number) => {
@@ -61,6 +81,9 @@ export function InstallConsoleDock({
     [height],
   )
 
+  const collapseLabel = collapsed ? 'Show output' : 'Hide output'
+  const showResponse = waitingForInput && tab === 'output'
+
   return (
     <div
       className={`install-console-dock${collapsed ? ' collapsed' : ''}`}
@@ -75,8 +98,15 @@ export function InstallConsoleDock({
         />
       ) : null}
       <div className="install-console-header">
-        <button type="button" className="btn secondary" onClick={onToggleCollapsed}>
-          {collapsed ? 'Show output' : 'Hide output'}
+        <button
+          type="button"
+          className="btn secondary install-control-btn install-console-collapse-btn has-icon-tip"
+          onClick={onToggleCollapsed}
+          aria-expanded={!collapsed}
+          aria-label={collapseLabel}
+        >
+          {collapsed ? <ChevronDoubleUpIcon /> : <ChevronDoubleDownIcon />}
+          <IconTip>{collapseLabel}</IconTip>
         </button>
         {!collapsed ? (
           <div className="install-console-tabs" role="tablist" aria-label="Install console">
@@ -102,6 +132,17 @@ export function InstallConsoleDock({
             >
               Commands{commandLines.length > 0 ? ` (${commandLines.length})` : ''}
             </button>
+            <button
+              type="button"
+              role="tab"
+              id="install-console-tab-results"
+              aria-selected={tab === 'results'}
+              aria-controls="install-console-panel"
+              className={`install-console-tab${tab === 'results' ? ' active' : ''}`}
+              onClick={() => setTab('results')}
+            >
+              Results{resultLines.length > 0 ? ` (${resultLines.length})` : ''}
+            </button>
           </div>
         ) : null}
         <span className="install-console-status" role="status" aria-live="polite">
@@ -117,45 +158,86 @@ export function InstallConsoleDock({
             aria-labelledby={
               tab === 'output'
                 ? 'install-console-tab-output'
-                : 'install-console-tab-commands'
+                : tab === 'commands'
+                  ? 'install-console-tab-commands'
+                  : 'install-console-tab-results'
             }
             className="install-console-output"
             aria-live="polite"
           >
-            {activeLines.length > 0
-              ? activeLines.join('\n')
-              : tab === 'commands'
-                ? '(No WeiDU commands logged yet)'
-                : ''}
+            {activeLines.length > 0 ? (
+              activeLines.map((line, i) => {
+                const tone = colorize ? consoleLineTone(line) : null
+                return (
+                  <div
+                    key={`${i}:${line.slice(0, 48)}`}
+                    className={`install-console-line${consoleLineToneClass(tone)}`}
+                  >
+                    {line}
+                  </div>
+                )
+              })
+            ) : tab === 'commands' ? (
+              <div className="install-console-line install-console-empty">
+                (No commands logged yet)
+              </div>
+            ) : tab === 'results' ? (
+              <div className="install-console-line install-console-empty">
+                (No errors, warnings, or successes logged yet)
+              </div>
+            ) : null}
           </pre>
-          {waitingForInput && tab === 'output' ? (
-            <form
-              className="install-console-input"
-              onSubmit={(e) => {
-                e.preventDefault()
-                if (!input.trim()) return
-                onSendInput(input)
-                setInput('')
-              }}
-            >
-              {inputPrompt ? (
-                <div className="install-console-prompt">{inputPrompt}</div>
-              ) : (
-                <div className="install-console-prompt">
-                  WeiDU may be waiting — type a response (e.g. 0 for English) and Send
-                </div>
-              )}
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Response"
-                autoFocus
-              />
-              <button type="submit" className="btn primary">
-                Send
-              </button>
-            </form>
+          {showResponse ? (
+            <div className="install-console-input">
+              <div className="install-console-input-chrome">
+                <button
+                  type="button"
+                  className="btn secondary install-control-btn install-console-response-fold has-icon-tip"
+                  onClick={() => setResponseCollapsed((v) => !v)}
+                  aria-expanded={!responseCollapsed}
+                  aria-label={
+                    responseCollapsed ? 'Show response input' : 'Hide response input'
+                  }
+                >
+                  {responseCollapsed ? <ChevronDoubleUpIcon /> : <ChevronDoubleDownIcon />}
+                  <IconTip>
+                    {responseCollapsed ? 'Show response' : 'Hide response'}
+                  </IconTip>
+                </button>
+                {responseCollapsed ? (
+                  <span className="install-console-response-needed">Response needed</span>
+                ) : null}
+              </div>
+              {!responseCollapsed ? (
+                <form
+                  className="install-console-input-form"
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    if (!input.trim()) return
+                    onSendInput(input)
+                    setInput('')
+                  }}
+                >
+                  {inputPrompt ? (
+                    <div className="install-console-prompt">{inputPrompt}</div>
+                  ) : null}
+                  <div className="install-console-input-row">
+                    <OutlinedTextField
+                      label="Response"
+                      value={input}
+                      onChange={setInput}
+                      autoFocus
+                      className="install-console-response-field"
+                      spellCheck={false}
+                      autoComplete="off"
+                    />
+                    <button type="submit" className="btn primary">
+                      Send
+                    </button>
+                  </div>
+                </form>
+              ) : null}
+            </div>
           ) : null}
         </>
       ) : null}

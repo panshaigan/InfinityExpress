@@ -124,6 +124,7 @@ describe('expandStepsToTableRows', () => {
       status: 'queued',
       warnings: [],
       errors: [],
+      resultLines: [],
       ...partial,
     }
   }

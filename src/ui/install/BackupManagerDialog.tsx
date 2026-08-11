@@ -33,6 +33,8 @@ interface Props {
   onBaselineDone: () => void
   onRestoreDone: (backupPath: string) => void
   onBusyChange?: (busy: boolean) => void
+  /** Optional install Commands-tab log (timestamped by caller). */
+  onLog?: (message: string) => void
 }
 
 function pad2(n: number): string {
@@ -105,6 +107,7 @@ export function BackupManagerDialog({
   onBaselineDone,
   onRestoreDone,
   onBusyChange,
+  onLog,
 }: Props) {
   const { pushToast } = useToast()
   const [manageTab, setManageTab] = useState<ManageTab>(initialManageTab)
@@ -197,12 +200,14 @@ export function BackupManagerDialog({
         kind: 'baseline',
         excludeSafeDirs,
       })
+      onLog?.(`Baseline backup created (${gameKey})`)
       pushToast({ tone: 'success', message: 'Baseline backup created.' })
       onBaselineDone()
       onClose()
     } catch (e) {
       const message = String(e)
       setError(message)
+      onLog?.(`Baseline backup failed: ${message}`)
       pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
@@ -215,19 +220,22 @@ export function BackupManagerDialog({
     setError(null)
     setProgress(emptyProgress('Starting snapshot…'))
     try {
+      const name = snapshotName.trim() || defaultSnapshotName()
       await createNamedBackup({
         sourceDir,
         backupRoot,
         gameKey,
         kind: 'snapshot',
-        name: snapshotName.trim() || defaultSnapshotName(),
+        name,
         excludeSafeDirs,
       })
+      onLog?.(`Snapshot "${name}" saved (${gameKey})`)
       pushToast({ tone: 'success', message: 'Snapshot saved.' })
       onClose()
     } catch (e) {
       const message = String(e)
       setError(message)
+      onLog?.(`Snapshot failed: ${message}`)
       pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
@@ -242,12 +250,14 @@ export function BackupManagerDialog({
     setProgress(emptyProgress('Restoring…'))
     try {
       await restoreGameDir(selectedPath, targetDir)
+      onLog?.(`Backup restored from ${selectedPath}`)
       pushToast({ tone: 'success', message: 'Backup restored.' })
       onRestoreDone(selectedPath)
       onClose()
     } catch (e) {
       const message = String(e)
       setError(message)
+      onLog?.(`Backup restore failed: ${message}`)
       pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
@@ -265,10 +275,12 @@ export function BackupManagerDialog({
       await deleteBackup(backupRoot, gameKey, entry.path)
       if (selectedPath === entry.path) setSelectedPath('')
       await refreshManifest()
+      onLog?.(`Backup deleted: ${displayName(entry)}`)
       pushToast({ tone: 'success', message: 'Backup deleted.' })
     } catch (e) {
       const message = String(e)
       setError(message)
+      onLog?.(`Backup delete failed: ${message}`)
       pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)

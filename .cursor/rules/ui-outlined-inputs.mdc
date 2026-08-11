@@ -17,10 +17,9 @@ When adding a text input (or editing one), use the shared outlined field pattern
 
 - Do **not** invent a new input look for dialogs or side panes.
 - Do **not** use a raw `<label className="outlined-field"><span>…</span><input>` unless you are matching an existing display-only detail pattern (`<dt>`/`<dd>`), not a free-typed control.
-- Console / WeiDU stdin is the intentional exception (`.install-console-input`).
 
 ## References
 
 - Component: `src/ui/OutlinedTextField.tsx`
 - CSS: `src/index.css` — `.outlined-field`, `.outlined-text-field`
-- Examples: Settings path fields, SelectionPresetsBar rename, BackupManagerDialog snapshot name
+- Examples: Settings path fields, SelectionPresetsBar rename, BackupManagerDialog snapshot name, install console Response field

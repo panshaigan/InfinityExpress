@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { isDesktopApp, saveTextFile } from '../../lib/desktop/fsDialogs'
+import { downloadText } from '../../lib/export/installOrder'
 import { useBackdropDismiss } from '../backdropDismiss'
 import { IconTip } from '../IconTip'
 
@@ -23,12 +25,25 @@ function CopyIcon({ copied }: { copied: boolean }) {
   )
 }
 
+function SaveIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M3 1.5h8.2L14.5 4.8V13a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2.5 13V3A1.5 1.5 0 0 1 4 1.5H3Zm1 1A.5.5 0 0 0 3.5 3v10a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V5.2L10.8 2.5H8.5V6H5V2.5H4Zm1.5 0V5h2V2.5h-2ZM5 9h6v3.5H5V9Z"
+      />
+    </svg>
+  )
+}
+
 interface Props {
   open: boolean
   title: string
   contents: string | null
   loading?: boolean
   error?: string | null
+  /** When set, show Save and use this default filename. */
+  saveFilename?: string | null
   onClose: () => void
 }
 
@@ -38,6 +53,7 @@ export function InstallLogDialog({
   contents,
   loading = false,
   error = null,
+  saveFilename = null,
   onClose,
 }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
@@ -69,6 +85,19 @@ export function InstallLogDialog({
     }
   }
 
+  async function onSave() {
+    if (!contents || !saveFilename) return
+    if (isDesktopApp()) {
+      try {
+        await saveTextFile(saveFilename, contents)
+      } catch {
+        /* dialog/fs may fail; leave preview open */
+      }
+      return
+    }
+    downloadText(contents, saveFilename)
+  }
+
   if (!open) return null
 
   const displayText = loading
@@ -76,6 +105,8 @@ export function InstallLogDialog({
     : error
       ? error
       : contents ?? '(empty)'
+
+  const canAct = Boolean(contents) && !loading && !error
 
   return (
     <div className="keyboard-help-backdrop" role="presentation" {...backdrop}>
@@ -105,13 +136,25 @@ export function InstallLogDialog({
             <button
               type="button"
               className="export-dialog-icon-btn has-icon-tip"
-              disabled={!contents || loading}
+              disabled={!canAct}
               onClick={() => void onCopy()}
               aria-label={copied ? 'Copied' : 'Copy log'}
             >
               <CopyIcon copied={copied} />
               <IconTip align="end">{copied ? 'Copied' : 'Copy'}</IconTip>
             </button>
+            {saveFilename ? (
+              <button
+                type="button"
+                className="export-dialog-icon-btn has-icon-tip"
+                disabled={!canAct}
+                onClick={() => void onSave()}
+                aria-label="Save log"
+              >
+                <SaveIcon />
+                <IconTip align="end">Save</IconTip>
+              </button>
+            ) : null}
           </div>
         </div>
       </div>

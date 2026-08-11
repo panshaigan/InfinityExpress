@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import type { InstallStep } from '../../lib/install/types'
+import { consoleLineTone } from '../../lib/install/consoleLineHighlight'
 import { stepDurationLabel } from '../../lib/install/formatDuration'
 import { readTextFile } from '../../lib/desktop/fsDialogs'
 import {
@@ -26,7 +27,28 @@ const STATUS_LABEL: Record<InstallStep['status'], string> = {
   needsInput: 'Input needed',
 }
 
-type LogKind = 'stdout' | 'stderr' | 'debug'
+type LogKind = 'stdout' | 'stderr' | 'debug' | 'results'
+
+const PROCESSED: ReadonlySet<InstallStep['status']> = new Set([
+  'succeeded',
+  'succeededWithWarnings',
+  'failed',
+  'skipped',
+  'alreadyInstalled',
+  'needsInput',
+])
+
+function safeResultsFilename(modId: string): string {
+  const safe = modId.replace(/[^\w.-]+/g, '_').slice(0, 40) || 'step'
+  return `${safe}-results.log`
+}
+
+function filterResultLinesFromText(text: string): string[] {
+  return text
+    .split(/\r?\n/)
+    .map((l) => l.trimEnd())
+    .filter((l) => l.length > 0 && consoleLineTone(l) != null)
+}
 
 interface Props {
   step: InstallStep | null
@@ -122,7 +144,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-const LOG_LABELS: Record<LogKind, string> = {
+const LOG_LABELS: Record<Exclude<LogKind, 'results'>, string> = {
   stdout: 'Standard output',
   stderr: 'Standard error',
   debug: 'Debug log',
@@ -140,8 +162,9 @@ export function InstallDetailPane({
 }: Props) {
   const [logDialog, setLogDialog] = useState<{
     kind: LogKind
-    path: string
+    path?: string
     title: string
+    saveFilename?: string | null
   } | null>(null)
   const [logContents, setLogContents] = useState<string | null>(null)
   const [logLoading, setLogLoading] = useState(false)
@@ -158,6 +181,12 @@ export function InstallDetailPane({
   const eff = mod ? effectiveModFields(mod) : null
   const durationLive = !!step?.startedAt && !step.finishedAt
   const durationLabel = step ? stepDurationLabel(step, nowMs) : null
+  const stepProcessed = step != null && PROCESSED.has(step.status)
+  const canOpenResults =
+    stepProcessed &&
+    ((step.resultLines?.length ?? 0) > 0 ||
+      !!step.stdoutLogPath ||
+      !!step.stderrLogPath)
 
   useEffect(() => {
     if (!durationLive) return
@@ -166,7 +195,7 @@ export function InstallDetailPane({
     return () => window.clearInterval(id)
   }, [durationLive, step?.stepId, step?.startedAt])
 
-  async function openLog(kind: LogKind, path: string) {
+  async function openLog(kind: Exclude<LogKind, 'results'>, path: string) {
     const label = component?.attrs.label ?? step?.modId ?? 'step'
     setLogDialog({ kind, path, title: `${LOG_LABELS[kind]} — ${label}` })
     setLogContents(null)
@@ -178,6 +207,40 @@ export function InstallDetailPane({
     else setLogContents(text)
   }
 
+  async function openResults() {
+    if (!step) return
+    const label = component?.attrs.label ?? step.modId
+    const saveFilename = safeResultsFilename(step.modId)
+    setLogDialog({
+      kind: 'results',
+      title: `Results — ${label}`,
+      saveFilename,
+    })
+    setLogContents(null)
+    setLogError(null)
+
+    if (step.resultLines.length > 0) {
+      setLogContents(step.resultLines.join('\n'))
+      return
+    }
+
+    setLogLoading(true)
+    const paths = [step.stdoutLogPath, step.stderrLogPath].filter(
+      (p): p is string => !!p,
+    )
+    const collected: string[] = []
+    for (const path of paths) {
+      const text = await readTextFile(path)
+      if (text) collected.push(...filterResultLinesFromText(text))
+    }
+    setLogLoading(false)
+    if (collected.length === 0) {
+      setLogContents('(No matching result lines found.)')
+    } else {
+      setLogContents(collected.join('\n'))
+    }
+  }
+
   function closeLog() {
     setLogDialog(null)
     setLogContents(null)
@@ -185,7 +248,7 @@ export function InstallDetailPane({
     setLogLoading(false)
   }
 
-  const logEntries: { kind: LogKind; path: string }[] = []
+  const logEntries: { kind: Exclude<LogKind, 'results'>; path: string }[] = []
   if (step?.stdoutLogPath) logEntries.push({ kind: 'stdout', path: step.stdoutLogPath })
   if (step?.stderrLogPath) logEntries.push({ kind: 'stderr', path: step.stderrLogPath })
   if (step?.debugLogPath) logEntries.push({ kind: 'debug', path: step.debugLogPath })
@@ -315,9 +378,20 @@ export function InstallDetailPane({
                       </DetailBlock>
                     )}
 
-                    {logEntries.length > 0 ? (
+                    {logEntries.length > 0 || canOpenResults ? (
                       <DetailBlock kind="logs" title="Logs">
                         <ul className="install-detail-log-list">
+                          {canOpenResults ? (
+                            <li>
+                              <button
+                                type="button"
+                                className="install-detail-log-link"
+                                onClick={() => void openResults()}
+                              >
+                                Results
+                              </button>
+                            </li>
+                          ) : null}
                           {logEntries.map(({ kind, path }) => (
                             <li key={kind}>
                               <button
@@ -346,6 +420,7 @@ export function InstallDetailPane({
         contents={logContents}
         loading={logLoading}
         error={logError}
+        saveFilename={logDialog?.saveFilename ?? null}
         onClose={closeLog}
       />
     </>

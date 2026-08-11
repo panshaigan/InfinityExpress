@@ -71,6 +71,7 @@ export function buildInstallPlan(
         status: 'queued',
         warnings: [],
         errors: [],
+        resultLines: [],
       })
       batchModId = null
       batchComponentIds = []

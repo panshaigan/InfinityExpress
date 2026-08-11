@@ -54,6 +54,8 @@ export interface InstallStep {
   finishedAt?: string
   warnings: string[]
   errors: string[]
+  /** Highlighted WeiDU lines (error/warning/success/skipped) for this step. */
+  resultLines: string[]
   stdoutLogPath?: string
   stderrLogPath?: string
   debugLogPath?: string
