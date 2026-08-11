@@ -22,8 +22,8 @@ const DEFAULT_PRE_EET_FILENAME = 'install-order-pre-eet.txt'
 const DEFAULT_EET_FILENAME = 'install-order-eet.txt'
 
 const EET_TABS = [
-  { id: 'eet1', label: 'Pre-EET (install on BG1)' },
-  { id: 'eet', label: 'EET' },
+  { id: 'eet1', label: 'BG1 (Pre-EET)' },
+  { id: 'eet', label: 'BG2 (EET)' },
 ] as const
 
 export function ExportDialog({ open, onClose, model, selectedIds, game }: Props) {

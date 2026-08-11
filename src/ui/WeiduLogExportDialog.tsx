@@ -24,8 +24,8 @@ const DEFAULT_BG1_FILENAME = 'WeiDU-bg1.log'
 const DEFAULT_BG2_FILENAME = 'WeiDU-bg2.log'
 
 const EET_TABS = [
-  { id: 'eet1', label: 'Pre-EET (install on BG1)' },
-  { id: 'eet', label: 'EET' },
+  { id: 'eet1', label: 'BG1 (Pre-EET)' },
+  { id: 'eet', label: 'BG2 (EET)' },
 ] as const
 
 function lineCountOf(text: string): number {
