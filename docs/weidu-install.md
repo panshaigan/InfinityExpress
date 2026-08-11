@@ -22,13 +22,45 @@ Never treat XML `modId` as WeiDU id, `setup-*.exe` stem, or tp2 path segment.
 - **EET:** phases `eet1` then `eet` (same token rules as export). Other games: `single`.
 - `tp2Path` / `stagedFolderName` / `weiduNumbers` filled later by resolution.
 
+## Cursor
+
+`InstallRun.cursor` is the **install cursor**: index of the current package in `steps`.
+
+- Table rows for that step use class `install-cursor` (CSS `--install-cursor`), distinct from selection / keyboard `focused` / batch hover.
+- Soft pulse (`install-cursor-live`) while `runState === 'running'`.
+- **Play (fresh start)** sets `cursor: 0` so the first row is highlighted immediately.
+- Pause / Stop keep the cursor on the interrupted package. Skip advances it. Success advances it.
+- Play resume / Skip / Stop all act relative to this index.
+
+Hook: `useInstallRun` exposes `cursorStepId` (`steps[cursor]?.stepId`) for the table.
+
+## Controls
+
+Toolbar in `InstallStation.tsx`; state machine in `useInstallRun.ts`.
+
+| Control | Enabled | Behavior |
+| --- | --- | --- |
+| **Play** | Not `running` (and paths/mods ready) | Fresh start when no run / `idle` / `completed`: `initRun` + vanillas + `executeFromCursor` from cursor 0. Resume when `paused` / `stopped` / `failed` / `waitingForInput`: continue from current cursor (no re-init). |
+| **Pause** | `running` or `paused` (toggle) | Soft-pause: waits until the current WeiDU process finishes, then gates before the next step. Second click unpauses. |
+| **Stop** | `running` or `waitingForInput` | Kills the WeiDU child, then runs `--force-uninstall-list` via the same `setup-{weiduId}.exe` as install; resets the interrupted step to `queued`; **keeps cursor**; `runState: 'stopped'`. Less safe than Pause (tooltip says so). |
+| **Skip** | `paused`, `stopped`, or `waitingForInput` | Marks the package at the cursor as `skipped`, advances cursor, stays halted — does **not** auto-continue. |
+
+`InstallRunState` includes `stopped` (hard stop after kill/cleanup), separate from soft `paused`.
+
 ## Resolve & run
 
 1. Stage by XML `modId` (download folder) → discover tp2 → WeiDU id = tp2 parent folder.
 2. List: `weidu.exe --nogame --noautoupdate --list-components-json <tp2> <lang>`.
 3. Resolve: prefer `:N` → number; else match WeiDU `label[]` to **component id** (not XML UI `label`/`name`).
 4. Language: prefer English TRA name; else first listed (`pickEnglishLanguage`).
-5. Copy `weidu.exe` → `{gameDir}/setup-{weiduId}.exe`; run that exe (no tp2 argv) with `--language`, `--use-lang`, `--force-install-list`, etc.
+5. Copy `weidu.exe` → `{gameDir}/setup-{weiduId}.exe`; run **that** exe (no tp2 argv) with:
+
+   - `--noautoupdate`
+   - `--safe-exit` (so a killed install can be cleaned with force-uninstall)
+   - `--language`, `--use-lang`
+   - `--force-install-list` + component numbers
+
+**Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --safe-exit --force-uninstall-list` (`run_weidu_force_uninstall`). Do not invoke the configured `weidu.exe` directly for install or uninstall.
 
 Orchestration: `hooks/useInstallRun.ts` + `lib/desktop/weiduInstall.ts` → Rust `src-tauri/src/weidu_install.rs`. Console/log helpers under `src/lib/install/`.
 
@@ -80,8 +112,9 @@ UI shows message on the left and `copied / total` bytes on the right (no em dash
 ### Restore → install plan
 
 1. Wipe target game dir, then copy backup tree.
-2. If an install run is active, `restartFromBackup` resets steps to `queued`, then marks `alreadyInstalled` from each step’s phase game dir `weidu.log` (`parseWeiduLog` / `~tp2~ #lang #number`).
-3. Vanilla (no log) → none marked installed. Does **not** change Components-phase selection checkboxes.
+2. If an install run exists, `restartFromBackup` resets steps to `queued`, marks `alreadyInstalled` from each step’s phase game dir `weidu.log` (`parseWeiduLog` / `~tp2~ #lang #number`), and places the **cursor** on the first unfinished step.
+3. Leaves `runState: 'idle'` — **does not** start or resume WeiDU. User presses Play.
+4. Vanilla (no log) → none marked installed. Does **not** change Components-phase selection checkboxes.
 
 ### Commands
 
@@ -95,7 +128,7 @@ UI shows message on the left and `copied / total` bytes on the right (no em dash
 | WeiDU.log parse | `src/lib/install/weiduLog.ts` |
 | Label → number | `src/lib/install/weiduResolution.ts` |
 | Run hook | `src/hooks/useInstallRun.ts` |
-| UI | `src/ui/install/InstallStation.tsx`, `BackupManagerDialog.tsx`, console dock |
+| UI | `src/ui/install/InstallStation.tsx`, `InstallTable.tsx`, `BackupManagerDialog.tsx`, console dock |
 | Rust install / backup | `src-tauri/src/weidu_install.rs`, `weidu_backup.rs` |
 
 Tauri FS boundary (dialogs vs persisted paths): `.cursor/rules/tauri-desktop.mdc`.

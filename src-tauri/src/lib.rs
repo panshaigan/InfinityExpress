@@ -22,6 +22,7 @@ pub fn run() {
       weidu_install::list_weidu_components,
       weidu_install::list_weidu_languages,
       weidu_install::run_weidu_step,
+      weidu_install::run_weidu_force_uninstall,
       weidu_install::send_weidu_stdin,
       weidu_install::cancel_weidu_step,
       weidu_install::stage_mod_into_game_dir,

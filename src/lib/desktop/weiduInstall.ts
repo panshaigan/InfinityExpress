@@ -127,6 +127,30 @@ export async function runWeiduStep(input: RunStepInput): Promise<StepResult> {
   })
 }
 
+export interface ForceUninstallInput {
+  weiduPath: string
+  tp2Path: string
+  gameDir: string
+  componentNumbers: number[]
+  languageIndex: number
+}
+
+/** Same setup-{weiduId}.exe path as install; runs --force-uninstall-list. */
+export async function runWeiduForceUninstall(
+  input: ForceUninstallInput,
+): Promise<void> {
+  requireDesktop()
+  await invoke('run_weidu_force_uninstall', {
+    input: {
+      weiduPath: input.weiduPath,
+      tp2Path: input.tp2Path,
+      gameDir: input.gameDir,
+      componentNumbers: input.componentNumbers,
+      languageIndex: input.languageIndex,
+    },
+  })
+}
+
 export async function sendWeiduStdin(text: string): Promise<void> {
   requireDesktop()
   await invoke('send_weidu_stdin', { text })

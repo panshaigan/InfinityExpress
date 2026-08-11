@@ -752,7 +752,10 @@ pub async fn run_weidu_step(
 
   // setup-{weiduId}.exe auto-binds the tp2; do not pass the tp2 path as argv.
   // --language = mod TRA; --use-lang = EE game lang/ folder (avoids weidu.conf prompt).
+  // --safe-exit enables cleanup via --force-uninstall-list after a killed install.
   let mut args: Vec<String> = vec![
+    "--noautoupdate".into(),
+    "--safe-exit".into(),
     "--language".into(),
     input.language_index.to_string(),
     "--use-lang".into(),
@@ -903,6 +906,72 @@ pub fn send_weidu_stdin(state: State<'_, RunningWeidu>, text: String) -> Result<
 #[tauri::command]
 pub fn cancel_weidu_step(state: State<'_, RunningWeidu>) {
   state.request_cancel();
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ForceUninstallInput {
+  pub weidu_path: String,
+  pub tp2_path: String,
+  pub game_dir: String,
+  pub component_numbers: Vec<i32>,
+  pub language_index: i32,
+}
+
+/// Same launcher as install: copy weidu → `setup-{weiduId}.exe`, run that exe (no tp2 argv)
+/// with `--force-uninstall-list` to clean up after a killed `--safe-exit` install.
+#[tauri::command]
+pub async fn run_weidu_force_uninstall(
+  app: AppHandle,
+  input: ForceUninstallInput,
+) -> Result<(), String> {
+  if input.component_numbers.is_empty() {
+    return Ok(());
+  }
+  let weidu = validate_weidu_path(&input.weidu_path)?;
+  let tp2 = PathBuf::from(input.tp2_path.trim());
+  let game_dir = PathBuf::from(input.game_dir.trim());
+  if !tp2.is_file() {
+    return Err(format!("TP2 not found: {}", tp2.display()));
+  }
+  if !game_dir.is_dir() {
+    return Err(format!("Game directory not found: {}", game_dir.display()));
+  }
+
+  let (cwd, _tp2_arg) = weidu_game_cwd_and_tp2_arg(&game_dir, &tp2)?;
+  let (weidu_id, setup_exe) = setup_exe_for_tp2(&game_dir, &tp2)?;
+  fs::copy(&weidu, &setup_exe).map_err(|e| {
+    format!("Failed to copy WeiDU to setup-{weidu_id}.exe: {e}")
+  })?;
+
+  let mut args: Vec<String> = vec![
+    "--noautoupdate".into(),
+    "--safe-exit".into(),
+    "--language".into(),
+    input.language_index.to_string(),
+    "--use-lang".into(),
+    "en_US".into(),
+    "--force-uninstall-list".into(),
+  ];
+  for n in &input.component_numbers {
+    args.push(n.to_string());
+  }
+
+  emit_command_logged(&app, &setup_exe, &cwd, &args);
+
+  let status = Command::new(&setup_exe)
+    .current_dir(&cwd)
+    .args(&args)
+    .status()
+    .map_err(|e| e.to_string())?;
+
+  if !status.success() {
+    return Err(format!(
+      "Force uninstall exited with status {}",
+      status.code().map(|c| c.to_string()).unwrap_or_else(|| "unknown".into())
+    ));
+  }
+  Ok(())
 }
 
 fn find_tp2_in_dir(dir: &Path) -> Result<PathBuf, String> {

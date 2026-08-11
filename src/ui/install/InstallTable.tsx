@@ -143,7 +143,10 @@ interface Props {
   mods: WorkingMod[]
   selectedStepId: string | null
   selectedComponentId: string | null
-  activeStepId: string | null
+  /** Step under `InstallRun.cursor` (install cursor highlight). */
+  cursorStepId: string | null
+  /** Soft pulse while install is actively running. */
+  cursorLive?: boolean
   hideInstalled: boolean
   onSelectStep: (stepId: string, componentId: string) => void
 }
@@ -154,7 +157,8 @@ export function InstallTable({
   mods,
   selectedStepId,
   selectedComponentId,
-  activeStepId,
+  cursorStepId,
+  cursorLive = false,
   hideInstalled,
   onSelectStep,
 }: Props) {
@@ -312,7 +316,7 @@ export function InstallTable({
           <tbody onMouseLeave={() => setHoveredStepId(null)}>
             {visible.map((row) => {
               const selected = row.stepId === selectedStepId
-              const active = row.stepId === activeStepId
+              const atCursor = row.stepId === cursorStepId
               const batchHover = row.stepId === hoveredStepId
               const focused =
                 selected && row.componentId === selectedComponentId
@@ -341,7 +345,7 @@ export function InstallTable({
                   ref={(el) => setRowEl(row.stepId, row.componentId, el)}
                   role="row"
                   tabIndex={focused ? 0 : -1}
-                  className={`install-row${selected ? ' selected' : ''}${active ? ' active' : ''}${batchHover ? ' batch-hover' : ''}${focused ? ' focused' : ''}${batchClass} install-status-${row.status}`}
+                  className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${batchHover ? ' batch-hover' : ''}${focused ? ' focused' : ''}${batchClass} install-status-${row.status}`}
                   onClick={() => selectRow(row.stepId, row.componentId)}
                   onMouseEnter={() => setHoveredStepId(row.stepId)}
                 >

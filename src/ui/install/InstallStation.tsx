@@ -85,7 +85,7 @@ export function InstallStation({
     commandLines,
     resultLines,
     inputPrompt,
-    activeStepId,
+    cursorStepId,
     initRun,
     start,
     continueRun,
@@ -130,9 +130,9 @@ export function InstallStation({
   )
 
   useEffect(() => {
-    if (activeStepId) {
-      setSelectedStepId(activeStepId)
-      const active = steps.find((s) => s.stepId === activeStepId)
+    if (cursorStepId) {
+      setSelectedStepId(cursorStepId)
+      const active = steps.find((s) => s.stepId === cursorStepId)
       if (active?.componentIds[0]) {
         setSelectedComponentId((prev) =>
           prev && active.componentIds.includes(prev)
@@ -146,7 +146,7 @@ export function InstallStation({
       setSelectedStepId(steps[0].stepId)
       setSelectedComponentId(steps[0].componentIds[0] ?? null)
     }
-  }, [steps, selectedStepId, activeStepId])
+  }, [steps, selectedStepId, cursorStepId])
 
   useEffect(() => {
     if (run?.runState === 'completed') setCleanupOffer(true)
@@ -245,9 +245,19 @@ export function InstallStation({
   const canBackup = !!game && !!appDirs.backupDir
   const isRunning = run?.runState === 'running'
   const canPauseToggle =
+    !!run && (run.runState === 'running' || run.runState === 'paused')
+  const canStop =
     !!run &&
-    (run.runState === 'running' ||
-      run.runState === 'paused' ||
+    (run.runState === 'running' || run.runState === 'waitingForInput')
+  const canSkip =
+    !!run &&
+    (run.runState === 'paused' ||
+      run.runState === 'stopped' ||
+      run.runState === 'waitingForInput')
+  const resumeFromCursor =
+    !!run &&
+    (run.runState === 'paused' ||
+      run.runState === 'stopped' ||
       run.runState === 'failed' ||
       run.runState === 'waitingForInput')
 
@@ -293,11 +303,24 @@ export function InstallStation({
 
   const onStart = useCallback(async () => {
     if (!canRun || isRunning) return
-    initRun()
+    if (resumeFromCursor) {
+      await continueRun()
+      return
+    }
+    const next = initRun()
+    if (!next) return
     const ok = await ensureVanillas()
     if (!ok) return
-    await start()
-  }, [canRun, isRunning, initRun, ensureVanillas, start])
+    await start(next)
+  }, [
+    canRun,
+    isRunning,
+    resumeFromCursor,
+    continueRun,
+    initRun,
+    ensureVanillas,
+    start,
+  ])
 
   const onPauseToggle = useCallback(() => {
     if (!run) return
@@ -305,11 +328,7 @@ export function InstallStation({
       pause()
       return
     }
-    if (
-      run.runState === 'paused' ||
-      run.runState === 'failed' ||
-      run.runState === 'waitingForInput'
-    ) {
+    if (run.runState === 'paused') {
       void continueRun()
     }
   }, [run, pause, continueRun])
@@ -398,12 +417,16 @@ export function InstallStation({
     setSelectedComponentId(componentId)
   }, [])
 
+  const playTip = resumeFromCursor
+    ? 'Resume from cursor'
+    : 'Start installation'
   const pauseTip =
     run?.runState === 'running'
-      ? 'Pause'
-      : run?.runState === 'waitingForInput'
-        ? 'Continue'
-        : 'Resume'
+      ? 'Pause (finish current WeiDU step)'
+      : 'Unpause'
+  const stopTip =
+    'Stop — kills WeiDU and uninstalls the interrupted package. Less safe than Pause.'
+  const skipTip = 'Skip package at cursor'
 
   return (
     <div className="install-station">
@@ -425,10 +448,10 @@ export function InstallStation({
                 className="btn secondary install-control-btn install-control-start has-icon-tip"
                 disabled={!canRun || isRunning}
                 onClick={() => void onStart()}
-                aria-label="Start"
+                aria-label={playTip}
               >
                 <PlayIcon />
-                <IconTip>Start</IconTip>
+                <IconTip>{playTip}</IconTip>
               </button>
               <button
                 type="button"
@@ -443,22 +466,22 @@ export function InstallStation({
               <button
                 type="button"
                 className="btn secondary install-control-btn has-icon-tip"
-                disabled={!run || !isRunning}
+                disabled={!canStop}
                 onClick={() => void stop()}
-                aria-label="Stop"
+                aria-label={stopTip}
               >
                 <StopIcon />
-                <IconTip>Stop</IconTip>
+                <IconTip>{stopTip}</IconTip>
               </button>
               <button
                 type="button"
                 className="btn secondary install-control-btn has-icon-tip"
-                disabled={!run || run.runState !== 'waitingForInput'}
-                onClick={() => void skipCurrent()}
-                aria-label="Skip"
+                disabled={!canSkip}
+                onClick={() => skipCurrent()}
+                aria-label={skipTip}
               >
                 <SkipNextIcon />
-                <IconTip>Skip</IconTip>
+                <IconTip>{skipTip}</IconTip>
               </button>
               {!modsReady ? (
                 <span className="install-toolbar-note">Missing mods on disk</span>
@@ -509,7 +532,8 @@ export function InstallStation({
             mods={mods}
             selectedStepId={selectedStep?.stepId ?? null}
             selectedComponentId={selectedComponentId}
-            activeStepId={activeStepId}
+            cursorStepId={cursorStepId}
+            cursorLive={run?.runState === 'running'}
             hideInstalled={hideInstalled}
             onSelectStep={onSelectStep}
           />

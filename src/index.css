@@ -6,6 +6,7 @@
   --muted: #b9a890;
   --accent: #c45c26;
   --accent-soft: #3a281c;
+  --install-cursor: #d4a84e;
   --line: #3d3228;
   --ok: #6b8f71;
   --err: #c44040;
@@ -5929,25 +5930,46 @@ body.is-resizing-detail * {
   min-width: 0;
 }
 
-.install-row.batch-hover:not(.selected):not(.active):not(.focused) {
+.install-row.batch-hover:not(.selected):not(.install-cursor):not(.focused) {
   background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
 }
 
-.install-row.selected:not(.focused) {
+.install-row.selected:not(.focused):not(.install-cursor) {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
-.install-row.selected:not(.focused).batch-hover {
+.install-row.selected:not(.focused):not(.install-cursor).batch-hover {
   background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
-.install-row.active:not(.focused) {
-  box-shadow: inset 3px 0 0 var(--accent);
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
+/* Install cursor — current package in the run (`InstallRun.cursor`). Distinct from focus/hover. */
+.install-row.install-cursor {
+  box-shadow:
+    inset 5px 0 0 var(--install-cursor),
+    inset 0 0 0 1px color-mix(in srgb, var(--install-cursor) 55%, transparent);
+  background: color-mix(in srgb, var(--install-cursor) 22%, transparent);
 }
 
-.install-row.active.selected:not(.focused) {
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
+.install-row.install-cursor.selected:not(.focused) {
+  background: color-mix(in srgb, var(--install-cursor) 28%, transparent);
+}
+
+.install-row.install-cursor.batch-hover {
+  background: color-mix(in srgb, var(--install-cursor) 32%, transparent);
+}
+
+.install-row.install-cursor-live {
+  animation: install-cursor-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes install-cursor-pulse {
+  0%,
+  100% {
+    background: color-mix(in srgb, var(--install-cursor) 22%, transparent);
+  }
+  50% {
+    background: color-mix(in srgb, var(--install-cursor) 38%, transparent);
+  }
 }
 
 .install-row:focus {
@@ -5966,10 +5988,12 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
-.install-row.active.focused,
-.install-row.active:focus-visible {
-  box-shadow: inset 3px 0 0 var(--accent);
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
+.install-row.install-cursor.focused,
+.install-row.install-cursor:focus-visible {
+  box-shadow:
+    inset 5px 0 0 var(--install-cursor),
+    inset 0 0 0 1px color-mix(in srgb, var(--install-cursor) 55%, transparent);
+  background: color-mix(in srgb, var(--install-cursor) 30%, var(--accent-soft));
 }
 
 .install-row.install-row-batch-start > td,

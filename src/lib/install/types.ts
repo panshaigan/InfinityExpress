@@ -22,6 +22,7 @@ export type InstallRunState =
   | 'idle'
   | 'running'
   | 'paused'
+  | 'stopped'
   | 'waitingForInput'
   | 'failed'
   | 'completed'
@@ -65,6 +66,10 @@ export interface InstallRun {
   runId: string
   game: SelectedGame
   steps: InstallStep[]
+  /**
+   * Install cursor: index of the current package in `steps`.
+   * Table highlight, Play resume, Pause/Stop/Skip all act relative to this.
+   */
   cursor: number
   runState: InstallRunState
   /** Absolute path to run log directory under backupDir/install-logs. */

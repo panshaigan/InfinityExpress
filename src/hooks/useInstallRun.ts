@@ -24,6 +24,7 @@ import {
   listenStageProgress,
   listenWeiduInstallEvents,
   readGameWeiduLog,
+  runWeiduForceUninstall,
   runWeiduStep,
   sendWeiduStdin,
 } from '../lib/desktop/weiduInstall'
@@ -72,7 +73,9 @@ export function useInstallRun(options: {
   const cacheRef = useRef<ModListingCache>(new Map())
   const runningRef = useRef(false)
   const pausedRef = useRef(false)
+  const stopRequestedRef = useRef(false)
   const activeStepIdRef = useRef<string | null>(null)
+  const runRef = useRef<InstallRun | null>(null)
   /** Live WeiDU highlight lines per step; survives executeFromCursor setRun overwrites. */
   const stepResultLinesRef = useRef<Map<string, string[]>>(new Map())
 
@@ -83,6 +86,17 @@ export function useInstallRun(options: {
   useEffect(() => {
     activeStepIdRef.current = activeStepId
   }, [activeStepId])
+
+  useEffect(() => {
+    runRef.current = run
+  }, [run])
+
+  /** Install cursor step id for table highlight (`InstallRun.cursor`). */
+  const cursorStepId = useMemo(() => {
+    if (!run) return null
+    const step = run.steps[run.cursor]
+    return step?.stepId ?? null
+  }, [run])
 
   const rememberStepResult = useCallback((stepId: string, stamped: string) => {
     const map = stepResultLinesRef.current
@@ -168,7 +182,9 @@ export function useInstallRun(options: {
     setResultLines([])
     setInputPrompt(null)
     setPaused(false)
-    setActiveStepId(null)
+    stopRequestedRef.current = false
+    // Cursor is 0 — first package is highlighted immediately on Start.
+    setActiveStepId(steps[0]?.stepId ?? null)
     cacheRef.current = new Map()
     stepResultLinesRef.current = new Map()
     return next
@@ -372,17 +388,84 @@ export function useInstallRun(options: {
     [gameFolders],
   )
 
+  const applyStoppedAtCursor = useCallback(
+    async (
+      current: InstallRun,
+      index: number,
+      step: InstallStep,
+      gameDir: string,
+    ): Promise<InstallRun> => {
+      if (step.weiduNumbers.length > 0 && step.tp2Path && gameDir) {
+        try {
+          pushConsoleLine(
+            `[stop] Force-uninstall ${step.modId} (${step.weiduNumbers.join(', ')})…`,
+          )
+          await runWeiduForceUninstall({
+            weiduPath: readWeiduPath(),
+            tp2Path: step.tp2Path,
+            gameDir,
+            componentNumbers: step.weiduNumbers,
+            languageIndex: step.languageIndex ?? 0,
+          })
+          pushConsoleLine(`[stop] Force-uninstall finished for ${step.modId}`)
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          pushConsoleLine(`[error] Force-uninstall failed: ${message}`)
+        }
+      }
+
+      const reset: InstallStep = {
+        ...mergeStepResultLines(step),
+        status: 'queued',
+        progress: null,
+        errors: [],
+        finishedAt: undefined,
+      }
+      const next: InstallRun = {
+        ...current,
+        steps: withMergedResults(
+          current.steps.map((s, idx) => (idx === index ? reset : s)),
+        ),
+        cursor: index,
+        runState: 'stopped',
+      }
+      setRun(next)
+      setActiveStepId(reset.stepId)
+      setPaused(false)
+      stopRequestedRef.current = false
+      appendCommandLine('Installation stopped')
+      return next
+    },
+    [appendCommandLine, mergeStepResultLines, pushConsoleLine, withMergedResults],
+  )
+
   const executeFromCursor = useCallback(
     async (startRun: InstallRun) => {
       if (runningRef.current) return
       runningRef.current = true
+      stopRequestedRef.current = false
       let current = startRun
       setRun({ ...current, runState: 'running' })
 
       try {
         for (let i = current.cursor; i < current.steps.length; i++) {
           while (pausedRef.current) {
+            if (stopRequestedRef.current) {
+              const step = current.steps[i]!
+              const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
+              await applyStoppedAtCursor(current, i, step, gameDir)
+              runningRef.current = false
+              return
+            }
             await new Promise((r) => setTimeout(r, 200))
+          }
+
+          if (stopRequestedRef.current) {
+            const step = current.steps[i]!
+            const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
+            await applyStoppedAtCursor(current, i, step, gameDir)
+            runningRef.current = false
+            return
           }
 
           let step = current.steps[i]!
@@ -439,6 +522,18 @@ export function useInstallRun(options: {
               componentNodes,
               gameVersion,
             )
+
+            if (stopRequestedRef.current) {
+              step = {
+                ...step,
+                tp2Path: resolved.tp2Path,
+                stagedFolderName: resolved.stagedFolderName,
+                languageIndex: resolved.languageIndex,
+              }
+              await applyStoppedAtCursor(current, i, step, gameDir)
+              runningRef.current = false
+              return
+            }
 
             if (resolved.didStage) {
               pushConsoleLines([
@@ -567,9 +662,21 @@ export function useInstallRun(options: {
               stepFolder: stepFolderName(step, i),
             })
 
+            if (stopRequestedRef.current) {
+              await applyStoppedAtCursor(current, i, step, gameDir)
+              runningRef.current = false
+              return
+            }
+
+            // User cancel (not timeout): same cleanup path as Stop.
+            if (result.cancelled && !result.timedOut) {
+              await applyStoppedAtCursor(current, i, step, gameDir)
+              runningRef.current = false
+              return
+            }
+
             let status: InstallStep['status'] = 'failed'
-            if (result.cancelled) status = 'failed'
-            else if (result.timedOut) status = 'failed'
+            if (result.timedOut) status = 'failed'
             else if (result.exitCode === 0 && result.logVerified) status = 'succeeded'
             else if (result.exitCode === 0) status = 'succeededWithWarnings'
             else status = 'failed'
@@ -604,6 +711,16 @@ export function useInstallRun(options: {
               return
             }
           } catch (err) {
+            if (stopRequestedRef.current) {
+              const gameDir = gameDirForPhase(
+                current.game,
+                step.phase,
+                gameFolders,
+              )
+              await applyStoppedAtCursor(current, i, step, gameDir)
+              runningRef.current = false
+              return
+            }
             const message = err instanceof Error ? err.message : String(err)
             const raw = `[error] ${message}`
             const stamped = pushConsoleLine(raw)
@@ -640,6 +757,7 @@ export function useInstallRun(options: {
       }
     },
     [
+      applyStoppedAtCursor,
       gameFolders,
       model.componentsById,
       pushConsoleLine,
@@ -649,20 +767,25 @@ export function useInstallRun(options: {
     ],
   )
 
-  const start = useCallback(async () => {
-    const next = initRun() ?? run
-    if (!next) return
-    appendCommandLine('Installation started')
-    await executeFromCursor(next)
-  }, [initRun, run, executeFromCursor, appendCommandLine])
+  const start = useCallback(
+    async (seed?: InstallRun | null) => {
+      const next = seed ?? initRun()
+      if (!next) return
+      appendCommandLine('Installation started')
+      await executeFromCursor(next)
+    },
+    [initRun, executeFromCursor, appendCommandLine],
+  )
 
   const continueRun = useCallback(async () => {
-    if (!run) return
+    const current = runRef.current
+    if (!current) return
     setPaused(false)
+    stopRequestedRef.current = false
     setInputPrompt(null)
     appendCommandLine('Installation resumed')
-    await executeFromCursor({ ...run, runState: 'running' })
-  }, [run, executeFromCursor, appendCommandLine])
+    await executeFromCursor({ ...current, runState: 'running' })
+  }, [executeFromCursor, appendCommandLine])
 
   const pause = useCallback(() => {
     setPaused(true)
@@ -671,32 +794,85 @@ export function useInstallRun(options: {
   }, [appendCommandLine])
 
   const stop = useCallback(async () => {
+    stopRequestedRef.current = true
+    setPaused(true)
     await cancelWeiduStep()
-    setRun((r) => (r ? { ...r, runState: 'paused' } : r))
-    appendCommandLine('Installation stopped')
-  }, [appendCommandLine])
+    appendCommandLine('Stop requested — waiting for WeiDU to exit…')
 
-  const skipCurrent = useCallback(async () => {
-    if (!run) return
-    const i = run.cursor
-    const step = run.steps[i]
-    const label = step
-      ? `${step.modId}${step.componentIds[0] ? ` (${step.componentIds[0]})` : ''}`
-      : 'current step'
-    const steps = run.steps.map((s, idx) =>
+    // waitingForInput / already-idle runner: finalize immediately (no in-flight loop).
+    if (!runningRef.current) {
+      const current = runRef.current
+      if (!current) return
+      const i = current.cursor
+      const step = current.steps[i]
+      if (!step) {
+        setRun({ ...current, runState: 'stopped' })
+        setPaused(false)
+        stopRequestedRef.current = false
+        appendCommandLine('Installation stopped')
+        return
+      }
+      const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
+      await applyStoppedAtCursor(current, i, step, gameDir)
+    }
+  }, [appendCommandLine, applyStoppedAtCursor, gameFolders])
+
+  const skipCurrent = useCallback(() => {
+    const current = runRef.current
+    if (!current) return
+    const halt =
+      current.runState === 'paused' ||
+      current.runState === 'stopped' ||
+      current.runState === 'waitingForInput'
+    if (!halt) return
+
+    const i = current.cursor
+    const step = current.steps[i]
+    if (!step) return
+    if (
+      step.status === 'succeeded' ||
+      step.status === 'alreadyInstalled' ||
+      step.status === 'skipped'
+    ) {
+      return
+    }
+
+    const label = `${step.modId}${step.componentIds[0] ? ` (${step.componentIds[0]})` : ''}`
+    const steps = current.steps.map((s, idx) =>
       idx === i ? { ...s, status: 'skipped' as const, progress: null } : s,
     )
-    const next = { ...run, steps, cursor: i + 1, runState: 'running' as InstallRunState }
+    const nextCursor = i + 1
+    const keepState: InstallRunState =
+      current.runState === 'waitingForInput' ? 'stopped' : current.runState
+    const next: InstallRun = {
+      ...current,
+      steps,
+      cursor: nextCursor,
+      runState: keepState,
+    }
     setRun(next)
+    setActiveStepId(steps[nextCursor]?.stepId ?? null)
     setInputPrompt(null)
     appendCommandLine(`Step skipped: ${label}`)
-    await executeFromCursor(next)
-  }, [run, executeFromCursor, appendCommandLine])
+  }, [appendCommandLine])
 
   const restartFromBackup = useCallback(
     async (_phaseGameDir: string) => {
-      if (!run) return
-      let steps: InstallStep[] = run.steps.map(
+      if (!runRef.current) return
+
+      if (runningRef.current) {
+        stopRequestedRef.current = true
+        setPaused(true)
+        await cancelWeiduStep()
+        for (let n = 0; n < 200 && runningRef.current; n++) {
+          await new Promise((r) => setTimeout(r, 100))
+        }
+      }
+
+      const base = runRef.current
+      if (!base) return
+
+      let steps: InstallStep[] = base.steps.map(
         (s): InstallStep => ({
           ...s,
           status: 'queued',
@@ -708,30 +884,32 @@ export function useInstallRun(options: {
           startedAt: undefined,
         }),
       )
-      steps = await markAlreadyInstalledFromLog(steps, run.game)
+      steps = await markAlreadyInstalledFromLog(steps, base.game)
       const cursor = steps.findIndex(
         (s) =>
           s.status !== 'succeeded' &&
           s.status !== 'alreadyInstalled' &&
           s.status !== 'skipped',
       )
-      const next = {
-        ...run,
+      const nextCursor = cursor >= 0 ? cursor : 0
+      const next: InstallRun = {
+        ...base,
         steps,
-        cursor: cursor >= 0 ? cursor : 0,
-        runState: 'idle' as InstallRunState,
+        cursor: nextCursor,
+        runState: 'idle',
       }
       setRun(next)
       setConsoleLines([])
       setResultLines([])
       setInputPrompt(null)
-      setActiveStepId(null)
+      setActiveStepId(steps[nextCursor]?.stepId ?? null)
+      setPaused(false)
+      stopRequestedRef.current = false
       cacheRef.current = new Map()
       stepResultLinesRef.current = new Map()
-      appendCommandLine('Restarted installation after backup restore')
-      await executeFromCursor({ ...next, runState: 'running' })
+      appendCommandLine('Plan reset after backup restore — press Play to continue')
     },
-    [run, markAlreadyInstalledFromLog, executeFromCursor, appendCommandLine],
+    [markAlreadyInstalledFromLog, appendCommandLine],
   )
 
   const sendInput = useCallback(async (text: string) => {
@@ -751,6 +929,7 @@ export function useInstallRun(options: {
     inputPrompt,
     paused,
     activeStepId,
+    cursorStepId,
     initRun,
     start,
     continueRun,
