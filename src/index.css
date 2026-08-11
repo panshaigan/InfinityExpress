@@ -5473,7 +5473,8 @@ body.is-resizing-detail * {
   margin: 0;
 }
 
-.mod-detail .outlined-field a {
+.mod-detail .outlined-field a,
+.install-step-detail .outlined-field a {
   color: color-mix(in srgb, var(--ink) 75%, var(--accent));
   text-decoration: underline;
   text-underline-offset: 0.15em;
@@ -5482,7 +5483,9 @@ body.is-resizing-detail * {
 }
 
 .mod-detail .outlined-field a:hover,
-.mod-detail .outlined-field a:focus-visible {
+.mod-detail .outlined-field a:focus-visible,
+.install-step-detail .outlined-field a:hover,
+.install-step-detail .outlined-field a:focus-visible {
   color: var(--ink);
 }
 
@@ -5710,6 +5713,53 @@ body.is-resizing-detail * {
   margin-left: auto;
 }
 
+.install-run-duration {
+  min-width: 2.75rem;
+  padding: 0 0.15rem;
+  font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  text-align: right;
+  user-select: none;
+}
+
+.install-action-icon-wrap {
+  display: inline-flex;
+  position: relative;
+}
+
+.install-action-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--panel) 70%, #000);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.install-action-icon-btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent-soft) 55%, var(--panel));
+}
+
+.install-action-icon-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.install-action-icon-btn.active {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent-soft) 75%, transparent);
+  color: var(--ink);
+}
+
 .install-control-btn {
   display: inline-flex;
   align-items: center;
@@ -5797,16 +5847,6 @@ body.is-resizing-detail * {
   gap: 0.5rem;
   padding: 0.35rem 0.65rem;
   border-bottom: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
-}
-
-.install-filter-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.78rem;
-  color: var(--muted);
-  cursor: pointer;
-  user-select: none;
 }
 
 .install-table-wrap .install-table-scroll {

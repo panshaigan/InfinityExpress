@@ -4,6 +4,7 @@ import type { RelationIndex } from '../lib/selection/relations'
 import type { ModInfo } from '../lib/mods/loadMods'
 import { ComponentDetail, type DetailSelectionState } from './ComponentDetail'
 import { DetailResizeHandle } from './DetailResizeHandle'
+import { IconTip } from './IconTip'
 
 interface Props {
   collapsed: boolean
@@ -48,9 +49,7 @@ export function DetailPane({
             aria-label="Show details"
           >
             <span className="detail-pane-expand-label">Details</span>
-            <span className="icon-tip" role="tooltip">
-              Show details (;)
-            </span>
+            <IconTip>Show details (;)</IconTip>
           </button>
         ) : (
           <>
@@ -64,9 +63,7 @@ export function DetailPane({
                 aria-label="Hide details"
               >
                 »
-                <span className="icon-tip" role="tooltip">
-                  Hide details (;)
-                </span>
+                <IconTip>Hide details (;)</IconTip>
               </button>
             </div>
             <div className="detail-pane-scroll">

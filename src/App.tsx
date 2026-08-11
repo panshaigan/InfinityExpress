@@ -811,21 +811,6 @@ function AppShell() {
         />
 
         <div className="app-main">
-          <RouteGuideTip visible={showRouteTip && routeUnlocked} onDismiss={dismissRouteTip} />
-          <RouteCaughtUp
-            visible={route.routeComplete && !route.hideCaughtUp && !showRouteTip}
-            selectedCount={selectedIds.size}
-            onOpenMods={openModsJourneyFromBanner}
-            onExport={handleExport}
-            onDismiss={() => route.setHideCaughtUp(true)}
-          />
-          <PresetLoadNotice
-            visible={presets.presetNotice != null && !showRouteTip}
-            presetName={presets.presetNotice?.name ?? ''}
-            added={presets.presetNotice?.added ?? 0}
-            removed={presets.presetNotice?.removed ?? 0}
-            onDismiss={() => presets.setPresetNotice(null)}
-          />
           <div
             className={`workspace${showDetail ? '' : ' engine-only'}${
               showDetail && detailCollapsed ? ' detail-collapsed' : ''
@@ -837,6 +822,21 @@ function AppShell() {
             }
           >
             <div className="list-pane">
+              <RouteGuideTip visible={showRouteTip && routeUnlocked} onDismiss={dismissRouteTip} />
+              <RouteCaughtUp
+                visible={route.routeComplete && !route.hideCaughtUp && !showRouteTip}
+                selectedCount={selectedIds.size}
+                onOpenMods={openModsJourneyFromBanner}
+                onExport={handleExport}
+                onDismiss={() => route.setHideCaughtUp(true)}
+              />
+              <PresetLoadNotice
+                visible={presets.presetNotice != null && !showRouteTip}
+                presetName={presets.presetNotice?.name ?? ''}
+                added={presets.presetNotice?.added ?? 0}
+                removed={presets.presetNotice?.removed ?? 0}
+                onDismiss={() => presets.setPresetNotice(null)}
+              />
               <div className="list-pane-body">
                 {!game || activeStation === 'engine' ? (
                   <div className="list-pane-scroll engine-pane-scroll">
@@ -989,6 +989,23 @@ function AppShell() {
                   </details>
                 )}
               </div>
+              {game != null && !isSetupSlot(activeStation) && (
+                <FiltersStrip
+                  criteria={filters}
+                  onChange={setFilters}
+                  tagOptions={filterOptions.tags}
+                  authorOptions={catalogAuthorOptions}
+                  sizeBounds={filterSeed.sizeBounds}
+                  onRequestTreeFocus={focusComponentTree}
+                  searchScope={searchScope}
+                  onSearchScopeChange={setSearchScope}
+                  searchPlaceholder={
+                    isAllSections
+                      ? 'Search all components...'
+                      : 'Search in this window...'
+                  }
+                />
+              )}
             </div>
 
             {showDetail && (
@@ -1006,23 +1023,6 @@ function AppShell() {
               />
             )}
           </div>
-          {game != null && !isSetupSlot(activeStation) && (
-            <FiltersStrip
-              criteria={filters}
-              onChange={setFilters}
-              tagOptions={filterOptions.tags}
-              authorOptions={catalogAuthorOptions}
-              sizeBounds={filterSeed.sizeBounds}
-              onRequestTreeFocus={focusComponentTree}
-              searchScope={searchScope}
-              onSearchScopeChange={setSearchScope}
-              searchPlaceholder={
-                isAllSections
-                  ? 'Search all components...'
-                  : 'Search in this window...'
-              }
-            />
-          )}
         </div>
       </div>
       ) : null}

@@ -16,6 +16,20 @@ export function formatDurationMs(ms: number): string {
   return `${hours}h ${remMin}m`
 }
 
+/** Media-player style clock: `m:ss` or `h:mm:ss`. */
+export function formatPlayerDurationMs(ms: number): string {
+  if (!Number.isFinite(ms) || ms < 0) return '0:00'
+  const totalSec = Math.floor(ms / 1000)
+  const hours = Math.floor(totalSec / 3600)
+  const minutes = Math.floor((totalSec % 3600) / 60)
+  const seconds = totalSec % 60
+  const ss = String(seconds).padStart(2, '0')
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, '0')}:${ss}`
+  }
+  return `${minutes}:${ss}`
+}
+
 /** Elapsed label for an install step; null when not started. */
 export function stepDurationLabel(
   step: Pick<InstallStep, 'startedAt' | 'finishedAt'>,

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useInstallRun } from '../../hooks/useInstallRun'
+import { formatPlayerDurationMs } from '../../lib/install/formatDuration'
 import { collectAdjustementsModIds } from '../../lib/install/weiduResolution'
 import { cleanupInstallArtifacts, gameDirForPhase, listBackups } from '../../lib/desktop/weiduInstall'
 import { isDesktopApp } from '../../lib/desktop/fsDialogs'
@@ -19,6 +20,7 @@ import { InstallConsoleDock } from './InstallConsoleDock'
 import { InstallDetailPane } from './InstallDetailPane'
 import { InstallTable } from './InstallTable'
 import {
+  HideInstalledIcon,
   PauseIcon,
   PlayIcon,
   SkipNextIcon,
@@ -104,8 +106,12 @@ export function InstallStation({
   const [backupBusy, setBackupBusy] = useState(false)
   const [cleanupOffer, setCleanupOffer] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
+  const [runElapsedMs, setRunElapsedMs] = useState(0)
   const prevRunStateRef = useRef(run?.runState ?? null)
   const promptedMissingPathsRef = useRef(false)
+  const runElapsedAccumRef = useRef(0)
+  const runSegmentStartRef = useRef<number | null>(null)
+  const timedRunIdRef = useRef<string | null>(null)
 
   const steps = run?.steps ?? planSteps.map((s) => ({
     ...s,
@@ -161,6 +167,54 @@ export function InstallStation({
     onBusyChange?.(run?.runState === 'running' || backupBusy)
     return () => onBusyChange?.(false)
   }, [run?.runState, backupBusy, onBusyChange])
+
+  const runId = run?.runId ?? null
+  const runState = run?.runState ?? null
+  const isRunTiming =
+    runState === 'running' || runState === 'waitingForInput'
+
+  useEffect(() => {
+    if (runId !== timedRunIdRef.current) {
+      timedRunIdRef.current = runId
+      runElapsedAccumRef.current = 0
+      runSegmentStartRef.current = null
+      setRunElapsedMs(0)
+    }
+
+    if (!runId || runState == null || runState === 'idle') {
+      runElapsedAccumRef.current = 0
+      runSegmentStartRef.current = null
+      setRunElapsedMs(0)
+      return
+    }
+
+    if (isRunTiming) {
+      if (runSegmentStartRef.current == null) {
+        runSegmentStartRef.current = Date.now()
+      }
+      return
+    }
+
+    // Pause / stop / failed / completed: freeze elapsed.
+    if (runSegmentStartRef.current != null) {
+      runElapsedAccumRef.current += Date.now() - runSegmentStartRef.current
+      runSegmentStartRef.current = null
+      setRunElapsedMs(runElapsedAccumRef.current)
+    }
+  }, [runId, runState, isRunTiming])
+
+  useEffect(() => {
+    if (!isRunTiming) return
+    const tick = () => {
+      const segment = runSegmentStartRef.current
+      const live =
+        runElapsedAccumRef.current + (segment != null ? Date.now() - segment : 0)
+      setRunElapsedMs(live)
+    }
+    tick()
+    const id = window.setInterval(tick, 250)
+    return () => window.clearInterval(id)
+  }, [isRunTiming])
 
   useEffect(() => {
     function maybePromptMissingPaths() {
@@ -330,6 +384,12 @@ export function InstallStation({
         <div className="install-main">
           <div className="install-toolbar">
             <div className="install-toolbar-controls">
+              <span
+                className="install-run-duration"
+                aria-label="Total install duration"
+              >
+                {formatPlayerDurationMs(runElapsedMs)}
+              </span>
               <button
                 type="button"
                 className="btn secondary install-control-btn install-control-start has-icon-tip"
@@ -376,14 +436,18 @@ export function InstallStation({
             </div>
 
             <div className="install-toolbar-actions">
-              <label className="install-filter-toggle">
-                <input
-                  type="checkbox"
-                  checked={hideInstalled}
-                  onChange={(e) => setHideInstalled(e.target.checked)}
-                />
-                <span>Hide installed</span>
-              </label>
+              <span className="install-action-icon-wrap has-icon-tip">
+                <button
+                  type="button"
+                  className={`install-action-icon-btn${hideInstalled ? ' active' : ''}`}
+                  aria-pressed={hideInstalled}
+                  aria-label="Hide installed"
+                  onClick={() => setHideInstalled((v) => !v)}
+                >
+                  <HideInstalledIcon />
+                </button>
+                <IconTip>Hide installed</IconTip>
+              </span>
               <button
                 type="button"
                 className="btn secondary"
