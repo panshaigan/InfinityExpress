@@ -44,10 +44,11 @@ export interface InstallStep {
    * (also the stem for `setup-{stagedFolderName}.exe`).
    */
   stagedFolderName: string
-  componentIds: string[]
-  /** Display labels for table (parallel to componentIds). */
-  componentLabels: string[]
-  weiduNumbers: number[]
+  componentId: string
+  /** Display label for table. */
+  componentLabel: string
+  /** Resolved WeiDU component number; null until mod resolution runs. */
+  weiduNumber: number | null
   languageIndex: number | null
   status: ComponentRunStatus
   progress?: StepProgress | null

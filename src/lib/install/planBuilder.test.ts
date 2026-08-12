@@ -60,7 +60,7 @@ function modelWithParentMod(
 }
 
 describe('buildInstallPlan', () => {
-  it('batches consecutive same-mod components', () => {
+  it('emits one step per selected component', () => {
     const model = modelWith([
       comp('a:0', 'ModA', 0),
       comp('a:1', 'ModA', 1),
@@ -69,13 +69,15 @@ describe('buildInstallPlan', () => {
     ])
     const selected = new Set(['a:0', 'a:1', 'b:0', 'a:2'])
     const steps = buildInstallPlan(model, selected, 'bg2')
-    expect(steps).toHaveLength(3)
+    expect(steps).toHaveLength(4)
     expect(steps[0]?.modId).toBe('ModA')
-    expect(steps[0]?.status).toBe('queued')
-    expect(steps[0]?.componentIds).toEqual(['a:0', 'a:1'])
-    expect(steps[1]?.modId).toBe('ModB')
-    expect(steps[2]?.modId).toBe('ModA')
-    expect(steps[2]?.componentIds).toEqual(['a:2'])
+    expect(steps[0]?.componentId).toBe('a:0')
+    expect(steps[1]?.modId).toBe('ModA')
+    expect(steps[1]?.componentId).toBe('a:1')
+    expect(steps[2]?.modId).toBe('ModB')
+    expect(steps[2]?.componentId).toBe('b:0')
+    expect(steps[3]?.modId).toBe('ModA')
+    expect(steps[3]?.componentId).toBe('a:2')
   })
 
   it('inherits mod id from parent mod when component has no modId', () => {
@@ -104,22 +106,24 @@ describe('buildInstallPlan', () => {
     const model = modelWithParentMod('bg1ub', children)
     const selected = new Set(['bg1ub:11', 'bg1ub:16'])
     const steps = buildInstallPlan(model, selected, 'bg2')
-    expect(steps).toHaveLength(1)
+    expect(steps).toHaveLength(2)
     expect(steps[0]?.modId).toBe('bg1ub')
-    expect(steps[0]?.componentIds).toEqual(['bg1ub:11', 'bg1ub:16'])
+    expect(steps[0]?.componentId).toBe('bg1ub:11')
+    expect(steps[1]?.modId).toBe('bg1ub')
+    expect(steps[1]?.componentId).toBe('bg1ub:16')
   })
 })
 
 describe('expandStepsToTableRows', () => {
   function queuedStep(
-    partial: Pick<InstallStep, 'stepId' | 'modId' | 'componentIds' | 'componentLabels'> &
+    partial: Pick<InstallStep, 'stepId' | 'modId' | 'componentId' | 'componentLabel'> &
       Partial<Pick<InstallStep, 'phase'>>,
   ): InstallStep {
     return {
       phase: 'single',
       tp2Path: '',
       stagedFolderName: '',
-      weiduNumbers: [],
+      weiduNumber: null,
       languageIndex: null,
       status: 'queued',
       warnings: [],
@@ -129,26 +133,29 @@ describe('expandStepsToTableRows', () => {
     }
   }
 
-  it('assigns one order per batch step and marks the first row', () => {
+  it('assigns one order per step', () => {
     const steps = [
       queuedStep({
         stepId: 'single:0000',
         modId: 'EEex',
-        componentIds: ['e:0', 'e:1', 'e:2'],
-        componentLabels: ['A', 'B', 'C'],
+        componentId: 'e:0',
+        componentLabel: 'A',
       }),
       queuedStep({
         stepId: 'single:0001',
+        modId: 'EEex',
+        componentId: 'e:1',
+        componentLabel: 'B',
+      }),
+      queuedStep({
+        stepId: 'single:0002',
         modId: 'Other',
-        componentIds: ['o:0'],
-        componentLabels: ['X'],
+        componentId: 'o:0',
+        componentLabel: 'X',
       }),
     ]
     const rows = expandStepsToTableRows(steps)
-    expect(rows).toHaveLength(4)
-    expect(rows.map((r) => r.order)).toEqual([1, 1, 1, 2])
-    expect(rows.map((r) => r.isFirstInStep)).toEqual([true, false, false, true])
-    expect(rows[0]?.batchSize).toBe(3)
-    expect(rows[3]?.batchSize).toBe(1)
+    expect(rows).toHaveLength(3)
+    expect(rows.map((r) => r.order)).toEqual([1, 2, 3])
   })
 })

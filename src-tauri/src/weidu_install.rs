@@ -77,7 +77,7 @@ pub struct RunStepInput {
   pub weidu_path: String,
   pub tp2_path: String,
   pub game_dir: String,
-  pub component_numbers: Vec<i32>,
+  pub component_number: i32,
   pub language_index: i32,
   pub step_id: String,
   pub log_dir: String,
@@ -616,7 +616,7 @@ fn find_debug_file(tp2: &Path) -> Option<PathBuf> {
   None
 }
 
-fn verify_weidu_log(game_dir: &Path, tp2: &Path, lang: i32, numbers: &[i32]) -> bool {
+fn verify_weidu_log(game_dir: &Path, tp2: &Path, lang: i32, number: i32) -> bool {
   let log_path = game_dir.join("weidu.log");
   let Ok(text) = fs::read_to_string(&log_path) else {
     return false;
@@ -629,7 +629,6 @@ fn verify_weidu_log(game_dir: &Path, tp2: &Path, lang: i32, numbers: &[i32]) -> 
   let Ok(re) = Regex::new(r"(?i)^~([^~]+)~ #(\d+) #(\d+)") else {
     return false;
   };
-  let mut found = 0usize;
   for line in text.lines() {
     let Some(caps) = re.captures(line.trim()) else {
       continue;
@@ -652,11 +651,11 @@ fn verify_weidu_log(game_dir: &Path, tp2: &Path, lang: i32, numbers: &[i32]) -> 
     if !(path == tp2_norm || path.ends_with(&tp2_name) || tp2_norm.ends_with(&path)) {
       continue;
     }
-    if numbers.contains(&num) {
-      found += 1;
+    if num == number {
+      return true;
     }
   }
-  found >= numbers.len()
+  false
 }
 
 fn stream_pipe(
@@ -752,19 +751,17 @@ pub async fn run_weidu_step(
 
   // setup-{weiduId}.exe auto-binds the tp2; do not pass the tp2 path as argv.
   // --language = mod TRA; --use-lang = EE game lang/ folder (avoids weidu.conf prompt).
-  // --safe-exit enables cleanup via --force-uninstall-list after a killed install.
-  let mut args: Vec<String> = vec![
+  // --safe-exit enables cleanup via --force-uninstall after a killed install.
+  let args: Vec<String> = vec![
     "--noautoupdate".into(),
     "--safe-exit".into(),
     "--language".into(),
     input.language_index.to_string(),
     "--use-lang".into(),
     "en_US".into(),
-    "--force-install-list".into(),
+    "--force-install".into(),
+    input.component_number.to_string(),
   ];
-  for n in &input.component_numbers {
-    args.push(n.to_string());
-  }
 
   emit_event(
     &app,
@@ -865,7 +862,7 @@ pub async fn run_weidu_step(
     &game_dir,
     &tp2,
     input.language_index,
-    &input.component_numbers,
+    input.component_number,
   );
   let success = !timed_out && !cancelled && exit_code == Some(0) && log_verified;
 
@@ -914,20 +911,17 @@ pub struct ForceUninstallInput {
   pub weidu_path: String,
   pub tp2_path: String,
   pub game_dir: String,
-  pub component_numbers: Vec<i32>,
+  pub component_number: i32,
   pub language_index: i32,
 }
 
 /// Same launcher as install: copy weidu → `setup-{weiduId}.exe`, run that exe (no tp2 argv)
-/// with `--force-uninstall-list` to roll back a package.
+/// with `--force-uninstall` to roll back a component.
 #[tauri::command]
 pub async fn run_weidu_force_uninstall(
   app: AppHandle,
   input: ForceUninstallInput,
 ) -> Result<(), String> {
-  if input.component_numbers.is_empty() {
-    return Ok(());
-  }
   let weidu = validate_weidu_path(&input.weidu_path)?;
   let tp2 = PathBuf::from(input.tp2_path.trim());
   let game_dir = PathBuf::from(input.game_dir.trim());
@@ -944,17 +938,15 @@ pub async fn run_weidu_force_uninstall(
     format!("Failed to copy WeiDU to setup-{weidu_id}.exe: {e}")
   })?;
 
-  let mut args: Vec<String> = vec![
+  let args: Vec<String> = vec![
     "--noautoupdate".into(),
     "--language".into(),
     input.language_index.to_string(),
     "--use-lang".into(),
     "en_US".into(),
-    "--force-uninstall-list".into(),
+    "--force-uninstall".into(),
+    input.component_number.to_string(),
   ];
-  for n in &input.component_numbers {
-    args.push(n.to_string());
-  }
 
   emit_command_logged(&app, &setup_exe, &cwd, &args);
 

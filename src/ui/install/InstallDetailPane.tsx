@@ -173,9 +173,7 @@ export function InstallDetailPane({
   const [logError, setLogError] = useState<string | null>(null)
   const [nowMs, setNowMs] = useState(() => Date.now())
 
-  const componentId =
-    selectedComponentId ??
-    (step?.componentIds.length === 1 ? step.componentIds[0] : null)
+  const componentId = selectedComponentId ?? step?.componentId ?? null
   const component = componentId ? model.componentsById.get(componentId) : undefined
   const mod = step
     ? mods.find((m) => m.codename.toLowerCase() === step.modId.toLowerCase())
@@ -305,14 +303,6 @@ export function InstallDetailPane({
                               <CopyButton value={componentId} label="Copy id" />
                             </span>
                           </Field>
-                        ) : step.componentIds.length > 1 ? (
-                          <Field label="Ids">
-                            <ul className="install-detail-list">
-                              {step.componentIds.map((id) => (
-                                <li key={id}>{id}</li>
-                              ))}
-                            </ul>
-                          </Field>
                         ) : null}
                         {component?.attrs.name ? (
                           <Field label="WeiDU Label">
@@ -324,8 +314,8 @@ export function InstallDetailPane({
                         ) : null}
                         <Field label="Status">{STATUS_LABEL[step.status]}</Field>
                         <Field label="Duration">{durationLabel ?? '—'}</Field>
-                        {step.weiduNumbers.length > 0 ? (
-                          <Field label="WeiDU #">{step.weiduNumbers.join(', ')}</Field>
+                        {step.weiduNumber != null ? (
+                          <Field label="WeiDU #">{step.weiduNumber}</Field>
                         ) : null}
                         {step.languageIndex != null ? (
                           <Field label="Language">{step.languageIndex}</Field>

@@ -40,65 +40,47 @@ function makeStepId(phase: InstallPhase, index: number): string {
 }
 
 /**
- * Build install steps grouped by consecutive same modId.
- * tp2Path and weiduNumbers are placeholders until mod resolution runs.
+ * Build one install step per selected component (document order).
+ * tp2Path and weiduNumber are placeholders until mod resolution runs.
  */
 export function buildInstallPlan(
   model: InstallSequenceModel,
   selectedIds: ReadonlySet<string>,
   game: SelectedGame,
-): Omit<InstallStep, 'tp2Path' | 'stagedFolderName' | 'weiduNumbers' | 'languageIndex'>[] {
+): Omit<InstallStep, 'tp2Path' | 'stagedFolderName' | 'weiduNumber' | 'languageIndex'>[] {
   const rawSteps: Omit<
     InstallStep,
-    'tp2Path' | 'stagedFolderName' | 'weiduNumbers' | 'languageIndex'
+    'tp2Path' | 'stagedFolderName' | 'weiduNumber' | 'languageIndex'
   >[] = []
   let stepCounter = 0
 
   for (const { phase, exportPhase } of phasesForGame(game)) {
     const components = orderedSelectedComponents(model, selectedIds, exportPhase)
-    let batchModId: string | null = null
-    let batchComponentIds: string[] = []
-    let batchLabels: string[] = []
-
-    const flush = () => {
-      if (!batchModId || batchComponentIds.length === 0) return
+    for (const c of components) {
+      const modId = resolveModLookupKey(model, c)?.trim() || c.componentId
       rawSteps.push({
         stepId: makeStepId(phase, stepCounter++),
         phase,
-        modId: batchModId,
-        componentIds: [...batchComponentIds],
-        componentLabels: [...batchLabels],
+        modId,
+        componentId: c.componentId,
+        componentLabel: componentLabel(c),
         status: 'queued',
         warnings: [],
         errors: [],
         resultLines: [],
       })
-      batchModId = null
-      batchComponentIds = []
-      batchLabels = []
     }
-
-    for (const c of components) {
-      const modId = resolveModLookupKey(model, c)?.trim() || c.componentId
-      if (batchModId != null && modId !== batchModId) flush()
-      batchModId = modId
-      batchComponentIds.push(c.componentId)
-      batchLabels.push(componentLabel(c))
-    }
-    flush()
   }
 
   return rawSteps
 }
 
-/** Expand batched steps into one row per component for the install table. */
+/** One table row per install step. */
 export interface InstallTableRow {
   stepId: string
   stepIndex: number
-  /** 1-based install step number (shared by all components in a batch). */
+  /** 1-based install step number. */
   order: number
-  isFirstInStep: boolean
-  batchSize: number
   modId: string
   componentId: string
   componentLabel: string
@@ -107,25 +89,14 @@ export interface InstallTableRow {
 }
 
 export function expandStepsToTableRows(steps: InstallStep[]): InstallTableRow[] {
-  const rows: InstallTableRow[] = []
-  let order = 1
-  steps.forEach((step, stepIndex) => {
-    const batchSize = step.componentIds.length
-    const stepOrder = order++
-    step.componentIds.forEach((componentId, i) => {
-      rows.push({
-        stepId: step.stepId,
-        stepIndex,
-        order: stepOrder,
-        isFirstInStep: i === 0,
-        batchSize,
-        modId: step.modId,
-        componentId,
-        componentLabel: step.componentLabels[i] ?? componentId,
-        status: step.status,
-        phase: step.phase,
-      })
-    })
-  })
-  return rows
+  return steps.map((step, stepIndex) => ({
+    stepId: step.stepId,
+    stepIndex,
+    order: stepIndex + 1,
+    modId: step.modId,
+    componentId: step.componentId,
+    componentLabel: step.componentLabel,
+    status: step.status,
+    phase: step.phase,
+  }))
 }

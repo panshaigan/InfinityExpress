@@ -194,7 +194,7 @@ export function InstallStation({
     ...s,
     tp2Path: '',
     stagedFolderName: '',
-    weiduNumbers: [],
+    weiduNumber: null,
     languageIndex: null,
     resultLines: s.resultLines ?? [],
   }))
@@ -208,18 +208,16 @@ export function InstallStation({
     if (cursorStepId) {
       setSelectedStepId(cursorStepId)
       const active = steps.find((s) => s.stepId === cursorStepId)
-      if (active?.componentIds[0]) {
+      if (active?.componentId) {
         setSelectedComponentId((prev) =>
-          prev && active.componentIds.includes(prev)
-            ? prev
-            : active.componentIds[0] ?? null,
+          prev === active.componentId ? prev : active.componentId,
         )
       }
       return
     }
     if (!selectedStepId && steps[0]) {
       setSelectedStepId(steps[0].stepId)
-      setSelectedComponentId(steps[0].componentIds[0] ?? null)
+      setSelectedComponentId(steps[0].componentId)
     }
   }, [steps, selectedStepId, cursorStepId])
 

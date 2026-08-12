@@ -12,7 +12,7 @@ export interface RunStepInput {
   weiduPath: string
   tp2Path: string
   gameDir: string
-  componentNumbers: number[]
+  componentNumber: number
   languageIndex: number
   stepId: string
   logDir: string
@@ -117,7 +117,7 @@ export async function runWeiduStep(input: RunStepInput): Promise<StepResult> {
       weiduPath: input.weiduPath,
       tp2Path: input.tp2Path,
       gameDir: input.gameDir,
-      componentNumbers: input.componentNumbers,
+      componentNumber: input.componentNumber,
       languageIndex: input.languageIndex,
       stepId: input.stepId,
       logDir: input.logDir,
@@ -131,11 +131,11 @@ export interface ForceUninstallInput {
   weiduPath: string
   tp2Path: string
   gameDir: string
-  componentNumbers: number[]
+  componentNumber: number
   languageIndex: number
 }
 
-/** Same setup-{weiduId}.exe path as install; runs --force-uninstall-list. */
+/** Same setup-{weiduId}.exe path as install; runs --force-uninstall. */
 export async function runWeiduForceUninstall(
   input: ForceUninstallInput,
 ): Promise<void> {
@@ -145,7 +145,7 @@ export async function runWeiduForceUninstall(
       weiduPath: input.weiduPath,
       tp2Path: input.tp2Path,
       gameDir: input.gameDir,
-      componentNumbers: input.componentNumbers,
+      componentNumber: input.componentNumber,
       languageIndex: input.languageIndex,
     },
   })

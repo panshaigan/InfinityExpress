@@ -528,7 +528,7 @@ export function InstallTable({
             {visible.map((row) => {
               const selected = row.stepId === selectedStepId
               const atCursor = row.stepId === cursorStepId
-              const batchHover = row.stepId === hoveredStepId
+              const rowHover = row.stepId === hoveredStepId
               const focused =
                 selected && row.componentId === selectedComponentId
               const step = stepById.get(row.stepId)
@@ -546,20 +546,14 @@ export function InstallTable({
               const type = eff?.type?.trim() || ''
               const duration =
                 step != null ? stepDurationLabel(step, nowMs, runState) : null
-              const batchClass =
-                row.batchSize > 1
-                  ? row.isFirstInStep
-                    ? ' install-row-batch-start'
-                    : ' install-row-batch-cont'
-                  : ''
 
               return (
                 <tr
-                  key={`${row.stepId}-${row.componentId}`}
+                  key={row.stepId}
                   ref={(el) => setRowEl(row.stepId, row.componentId, el)}
                   role="row"
                   tabIndex={focused ? 0 : -1}
-                  className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${hasBreakpoint ? ' install-breakpoint' : ''}${batchHover ? ' batch-hover' : ''}${focused ? ' focused' : ''}${batchClass} install-status-${row.status}`}
+                  className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${hasBreakpoint ? ' install-breakpoint' : ''}${rowHover ? ' row-hover' : ''}${focused ? ' focused' : ''} install-status-${row.status}`}
                   onClick={() => selectRow(row.stepId, row.componentId)}
                   onMouseEnter={() => setHoveredStepId(row.stepId)}
                   onContextMenu={(e) => {
@@ -569,18 +563,12 @@ export function InstallTable({
                     setContextMenu({ stepId: row.stepId, x: e.clientX, y: e.clientY })
                   }}
                 >
-                  <td className="install-col-num">
-                    {row.isFirstInStep ? row.order : null}
-                  </td>
-                  {row.isFirstInStep ? (
-                    <TipCell
-                      className="install-col-mod"
-                      display={modDisplay}
-                      tip={modTip}
-                    />
-                  ) : (
-                    <td className="install-col-mod" />
-                  )}
+                  <td className="install-col-num">{row.order}</td>
+                  <TipCell
+                    className="install-col-mod"
+                    display={modDisplay}
+                    tip={modTip}
+                  />
                   <TipCell
                     className="install-col-component"
                     display={row.componentLabel}
@@ -593,11 +581,7 @@ export function InstallTable({
                     </span>
                   </td>
                   <td className="install-col-category">
-                    {row.isFirstInStep ? (
-                      <span className="mods-cell-clip">
-                        {category || '—'}
-                      </span>
-                    ) : null}
+                    <span className="mods-cell-clip">{category || '—'}</span>
                   </td>
                   <td className="install-col-type">
                     <span className="mods-cell-clip">{type || '—'}</span>
@@ -609,7 +593,7 @@ export function InstallTable({
                     <StatusCell status={row.status} progress={step?.progress} />
                   </td>
                   <td className="install-col-actions">
-                    {row.isFirstInStep && tableActions && step && stepIndex >= 0 ? (
+                    {tableActions && step && stepIndex >= 0 ? (
                       <StepActionButtons
                         step={step}
                         stepIndex={stepIndex}

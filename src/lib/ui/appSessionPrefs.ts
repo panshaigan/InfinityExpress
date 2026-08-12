@@ -182,14 +182,15 @@ function installStepFrom(value: unknown): InstallStep | null {
   if (
     typeof o.stepId !== 'string' ||
     typeof o.modId !== 'string' ||
+    typeof o.componentId !== 'string' ||
     !isStepStatus(o.status)
   ) {
     return null
   }
   const phase = o.phase
   if (phase !== 'eet1' && phase !== 'eet' && phase !== 'single') return null
-  const componentIds = stringArray(o.componentIds)
-  const componentLabels = stringArray(o.componentLabels)
+  const componentLabel =
+    typeof o.componentLabel === 'string' ? o.componentLabel : o.componentId
   const progress =
     o.progress && typeof o.progress === 'object'
       ? {
@@ -209,13 +210,12 @@ function installStepFrom(value: unknown): InstallStep | null {
     modId: o.modId,
     tp2Path: typeof o.tp2Path === 'string' ? o.tp2Path : '',
     stagedFolderName: typeof o.stagedFolderName === 'string' ? o.stagedFolderName : '',
-    componentIds,
-    componentLabels,
-    weiduNumbers: Array.isArray(o.weiduNumbers)
-      ? o.weiduNumbers
-          .map((n) => (typeof n === 'number' ? n : Number(n)))
-          .filter((n) => Number.isFinite(n))
-      : [],
+    componentId: o.componentId,
+    componentLabel,
+    weiduNumber:
+      typeof o.weiduNumber === 'number' && Number.isFinite(o.weiduNumber)
+        ? o.weiduNumber
+        : null,
     languageIndex:
       typeof o.languageIndex === 'number' && Number.isFinite(o.languageIndex)
         ? o.languageIndex
@@ -399,7 +399,7 @@ export function planStepsMatchRun(
     const a = run.steps[i]
     const b = planSteps[i]
     if (a.stepId !== b.stepId || a.modId !== b.modId) return false
-    if (JSON.stringify(a.componentIds) !== JSON.stringify(b.componentIds)) return false
+    if (a.componentId !== b.componentId) return false
   }
   return true
 }

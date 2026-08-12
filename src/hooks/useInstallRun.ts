@@ -222,7 +222,7 @@ export function useInstallRun(options: {
       ...s,
       tp2Path: '',
       stagedFolderName: '',
-      weiduNumbers: [],
+      weiduNumber: null,
       languageIndex: null,
       progress: null,
       resultLines: s.resultLines ?? [],
@@ -434,7 +434,7 @@ export function useInstallRun(options: {
 
       const out: InstallStep[] = []
       for (const step of steps) {
-        if (step.languageIndex == null || step.weiduNumbers.length === 0) {
+        if (step.languageIndex == null || step.weiduNumber == null) {
           out.push(step)
           continue
         }
@@ -444,10 +444,13 @@ export function useInstallRun(options: {
           out.push(step)
           continue
         }
-        const allInstalled = step.weiduNumbers.every((n) =>
-          isComponentInstalledInLog(log, step.tp2Path, step.languageIndex!, n),
+        const installed = isComponentInstalledInLog(
+          log,
+          step.tp2Path,
+          step.languageIndex,
+          step.weiduNumber,
         )
-        if (allInstalled && (step.status === 'queued' || step.status === 'copying')) {
+        if (installed && (step.status === 'queued' || step.status === 'copying')) {
           out.push({ ...step, status: 'alreadyInstalled', progress: null })
         } else {
           out.push(step)
@@ -468,16 +471,15 @@ export function useInstallRun(options: {
   const ensureStepResolvedForUninstall = useCallback(
     async (current: InstallRun, index: number): Promise<InstallStep> => {
       let step = current.steps[index]!
-      if (step.tp2Path && step.weiduNumbers.length > 0) return step
+      if (step.tp2Path && step.weiduNumber != null) return step
 
       const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
       const weiduPath = readWeiduPath()
       const appDirs = readAppDirPaths()
       const gameVersion =
         readGameFolderVersions()[gameFolderKeyForPhase(current.game, step.phase)] ?? ''
-      const componentNodes = step.componentIds
-        .map((id) => model.componentsById.get(id))
-        .filter((n): n is NonNullable<typeof n> => !!n)
+      const componentNode = model.componentsById.get(step.componentId)
+      const componentNodes = componentNode ? [componentNode] : []
 
       const resolved = await resolveModForInstall(
         cacheRef.current,
@@ -489,17 +491,14 @@ export function useInstallRun(options: {
         gameVersion,
       )
 
-      const weiduNumbers: number[] = []
-      for (const id of step.componentIds) {
-        const r = resolved.componentResults.get(id)
-        if (r?.weiduNumber != null) weiduNumbers.push(r.weiduNumber)
-      }
+      const r = resolved.componentResults.get(step.componentId)
+      const weiduNumber = r?.weiduNumber ?? null
 
       return {
         ...step,
         tp2Path: resolved.tp2Path,
         stagedFolderName: resolved.stagedFolderName,
-        weiduNumbers,
+        weiduNumber,
         languageIndex: resolved.languageIndex,
       }
     },
@@ -515,16 +514,16 @@ export function useInstallRun(options: {
       )
       let step = await ensureStepResolvedForUninstall(current, index)
 
-      if (step.weiduNumbers.length > 0 && step.tp2Path && gameDir) {
+      if (step.weiduNumber != null && step.tp2Path && gameDir) {
         try {
           pushConsoleLine(
-            `[uninstall] ${step.modId} (${step.weiduNumbers.join(', ')})…`,
+            `[uninstall] ${step.modId} (${step.weiduNumber})…`,
           )
           await runWeiduForceUninstall({
             weiduPath: readWeiduPath(),
             tp2Path: step.tp2Path,
             gameDir,
-            componentNumbers: step.weiduNumbers,
+            componentNumber: step.weiduNumber,
             languageIndex: step.languageIndex ?? 0,
           })
           pushConsoleLine(`[uninstall] Finished ${step.modId}`)
@@ -554,16 +553,16 @@ export function useInstallRun(options: {
       step: InstallStep,
       gameDir: string,
     ): Promise<InstallRun> => {
-      if (step.weiduNumbers.length > 0 && step.tp2Path && gameDir) {
+      if (step.weiduNumber != null && step.tp2Path && gameDir) {
         try {
           pushConsoleLine(
-            `[stop] Force-uninstall ${step.modId} (${step.weiduNumbers.join(', ')})…`,
+            `[stop] Force-uninstall ${step.modId} (${step.weiduNumber})…`,
           )
           await runWeiduForceUninstall({
             weiduPath: readWeiduPath(),
             tp2Path: step.tp2Path,
             gameDir,
-            componentNumbers: step.weiduNumbers,
+            componentNumber: step.weiduNumber,
             languageIndex: step.languageIndex ?? 0,
           })
           pushConsoleLine(`[stop] Force-uninstall finished for ${step.modId}`)
@@ -738,9 +737,8 @@ export function useInstallRun(options: {
               readGameFolderVersions()[
                 gameFolderKeyForPhase(current.game, step.phase)
               ] ?? ''
-            const componentNodes = step.componentIds
-              .map((id) => model.componentsById.get(id))
-              .filter((n): n is NonNullable<typeof n> => !!n)
+            const componentNode = model.componentsById.get(step.componentId)
+            const componentNodes = componentNode ? [componentNode] : []
 
             const resolved = await resolveModForInstall(
               cacheRef.current,
@@ -775,25 +773,19 @@ export function useInstallRun(options: {
               )
             }
 
-            const weiduNumbers: number[] = []
             const errors: string[] = []
             if (resolved.languageError) errors.push(resolved.languageError)
-            for (const id of step.componentIds) {
-              const r = resolved.componentResults.get(id)
-              if (!r) {
-                errors.push(`Could not resolve component ${id}`)
-                continue
-              }
-              if (r.error) errors.push(r.error)
-              else if (r.weiduNumber != null) weiduNumbers.push(r.weiduNumber)
+            const r = resolved.componentResults.get(step.componentId)
+            if (!r) {
+              errors.push(`Could not resolve component ${step.componentId}`)
+            } else if (r.error) {
+              errors.push(r.error)
             }
+            const weiduNumber = r?.weiduNumber ?? null
 
-            if (weiduNumbers.length === step.componentIds.length && errors.length === 0) {
-              const mapping = step.componentIds
-                .map((id, idx) => `${id}→${weiduNumbers[idx]}`)
-                .join(', ')
+            if (weiduNumber != null && errors.length === 0) {
               pushConsoleLine(
-                `[resolve] ${resolved.stagedFolderName} (xml modId=${step.modId}): ${mapping}`,
+                `[resolve] ${resolved.stagedFolderName} (xml modId=${step.modId}): ${step.componentId}→${weiduNumber}`,
               )
             }
 
@@ -801,12 +793,12 @@ export function useInstallRun(options: {
               ? `${current.logDir}/${stepFolderName(step, i)}`
               : ''
 
-            if (errors.length > 0 || weiduNumbers.length !== step.componentIds.length) {
+            if (errors.length > 0 || weiduNumber == null) {
               step = {
                 ...step,
                 tp2Path: resolved.tp2Path,
                 stagedFolderName: resolved.stagedFolderName,
-                weiduNumbers,
+                weiduNumber,
                 languageIndex: resolved.languageIndex,
                 status: 'needsInput',
                 progress: null,
@@ -820,7 +812,7 @@ export function useInstallRun(options: {
               }
               if (errors.length === 0) {
                 const raw =
-                  `[error] Could not resolve all WeiDU component numbers for ${step.modId}`
+                  `[error] Could not resolve WeiDU component number for ${step.componentId}`
                 const stamped = pushConsoleLine(raw)
                 step = appendStepResultIfHighlighted(step, stamped, raw)
               }
@@ -840,7 +832,7 @@ export function useInstallRun(options: {
               ...step,
               tp2Path: resolved.tp2Path,
               stagedFolderName: resolved.stagedFolderName,
-              weiduNumbers,
+              weiduNumber,
               languageIndex: resolved.languageIndex,
               status: 'installing',
               progress: {
@@ -864,8 +856,12 @@ export function useInstallRun(options: {
             const log = await readGameWeiduLog(gameDir)
             if (
               step.languageIndex != null &&
-              step.weiduNumbers.every((n) =>
-                isComponentInstalledInLog(log, step.tp2Path, step.languageIndex!, n),
+              step.weiduNumber != null &&
+              isComponentInstalledInLog(
+                log,
+                step.tp2Path,
+                step.languageIndex,
+                step.weiduNumber,
               )
             ) {
               step = { ...step, status: 'alreadyInstalled', progress: null }
@@ -882,7 +878,7 @@ export function useInstallRun(options: {
               weiduPath: readWeiduPath(),
               tp2Path: step.tp2Path,
               gameDir,
-              componentNumbers: step.weiduNumbers,
+              componentNumber: weiduNumber,
               languageIndex: step.languageIndex ?? 0,
               stepId: step.stepId,
               logDir: current.logDir,
@@ -1089,7 +1085,7 @@ export function useInstallRun(options: {
 
     setSkipping(true)
     try {
-      const label = `${step.modId}${step.componentIds[0] ? ` (${step.componentIds[0]})` : ''}`
+      const label = `${step.modId} (${step.componentId})`
       const steps = current.steps.map((s, idx) =>
         idx === i ? { ...s, status: 'skipped' as const, progress: null } : s,
       )

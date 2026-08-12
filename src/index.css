@@ -6065,7 +6065,7 @@ body.is-resizing-detail * {
   min-width: 0;
 }
 
-.install-row.batch-hover:not(.selected):not(.install-cursor):not(.focused) {
+.install-row.row-hover:not(.selected):not(.install-cursor):not(.focused) {
   background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
 }
 
@@ -6073,7 +6073,7 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
-.install-row.selected:not(.focused):not(.install-cursor).batch-hover {
+.install-row.selected:not(.focused):not(.install-cursor).row-hover {
   background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
@@ -6089,7 +6089,7 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, var(--install-cursor) 28%, transparent);
 }
 
-.install-row.install-cursor.batch-hover {
+.install-row.install-cursor.row-hover {
   background: color-mix(in srgb, var(--install-cursor) 32%, transparent);
 }
 
@@ -6129,19 +6129,6 @@ body.is-resizing-detail * {
     inset 5px 0 0 var(--install-cursor),
     inset 0 0 0 1px color-mix(in srgb, var(--install-cursor) 55%, transparent);
   background: color-mix(in srgb, var(--install-cursor) 30%, var(--accent-soft));
-}
-
-.install-row.install-row-batch-start > td,
-.install-row.install-row-batch-cont > td {
-  border-bottom-color: transparent;
-}
-
-.install-row.install-row-batch-cont:has(+ .install-row-batch-start) > td,
-.install-row.install-row-batch-cont:has(+ .install-row:not(.install-row-batch-cont)) > td,
-.install-row.install-row-batch-start:not(:has(+ .install-row-batch-cont)) > td,
-.install-row.install-row-batch-cont:last-child > td,
-.install-row.install-row-batch-start:last-child > td {
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
 }
 
 .install-row-progress {
