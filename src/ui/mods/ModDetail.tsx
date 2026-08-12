@@ -113,8 +113,17 @@ export function ModDetail({
           </button>
         ) : (
           <>
-            <div className="detail-pane-chrome">
-              <span className="detail-pane-chrome-label">Details</span>
+            <div className="detail-pane-chrome detail-pane-chrome-with-actions">
+              <button
+                type="button"
+                className="detail-pane-chrome-hit detail-pane-chrome-interactive has-icon-tip"
+                onClick={onToggleCollapsed}
+                aria-expanded={true}
+                aria-label="Hide details"
+              >
+                <span className="detail-pane-chrome-label">Details</span>
+                <IconTip>Hide details (;)</IconTip>
+              </button>
               {mod ? (
                 <div className="mod-detail-actions mod-detail-actions-chrome">
                   <span className="mods-action-icon-wrap has-icon-tip">
@@ -181,16 +190,6 @@ export function ModDetail({
                   </span>
                 </div>
               ) : null}
-              <button
-                type="button"
-                className="detail-pane-collapse has-icon-tip"
-                onClick={onToggleCollapsed}
-                aria-expanded={true}
-                aria-label="Hide details"
-              >
-                »
-                <IconTip>Hide details (;)</IconTip>
-              </button>
             </div>
             <div className="detail-pane-scroll">
               {!mod ? (

@@ -29,6 +29,7 @@ import {
 import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
 import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { isHttpUrl } from '../lib/url'
+import { IconTip } from './IconTip'
 import { JumpIcon } from './JumpIcon'
 
 export type DetailSelectionState = 'checked' | 'unchecked' | 'indeterminate'
@@ -293,9 +294,7 @@ export function ComponentDetail({
               onClick={() => onNavigateToComponent(componentId)}
             >
               <JumpIcon />
-              <span className="icon-tip" role="tooltip">
-                Jump to station
-              </span>
+              <IconTip>Jump to station</IconTip>
             </button>
           )}
         </div>

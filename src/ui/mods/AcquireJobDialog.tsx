@@ -11,6 +11,56 @@ interface Props {
   onClose: () => void
 }
 
+function acquireBarProgress(job: AcquireJobState): {
+  pct: number | null
+  ariaText: string
+  indeterminate: boolean
+} {
+  if (job.kind === 'check') {
+    const pct =
+      job.totalCount > 0
+        ? Math.min(100, Math.round((job.doneCount / job.totalCount) * 100))
+        : 0
+    return {
+      pct,
+      ariaText: `${job.doneCount} of ${job.totalCount} mods checked`,
+      indeterminate: false,
+    }
+  }
+
+  const p = job.progress
+  if (
+    p?.phase === 'download' &&
+    p.bytesReceived != null &&
+    p.bytesTotal != null &&
+    p.bytesTotal > 0
+  ) {
+    const pct = Math.min(
+      100,
+      Math.round((p.bytesReceived / p.bytesTotal) * 100),
+    )
+    return {
+      pct,
+      ariaText: `${formatBytes(p.bytesReceived)} of ${formatBytes(p.bytesTotal)} downloaded`,
+      indeterminate: false,
+    }
+  }
+
+  if (p?.phase === 'download' && p.bytesReceived != null && p.bytesReceived > 0) {
+    return {
+      pct: null,
+      ariaText: `${formatBytes(p.bytesReceived)} downloaded`,
+      indeterminate: true,
+    }
+  }
+
+  if (p?.message) {
+    return { pct: 0, ariaText: p.message, indeterminate: false }
+  }
+
+  return { pct: 0, ariaText: 'Preparing download…', indeterminate: false }
+}
+
 function statusLabel(status: string, kind: JobKind): string {
   switch (status) {
     case 'pending':
@@ -78,10 +128,7 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
 
   if (!job.open) return null
 
-  const pct =
-    job.totalCount > 0
-      ? Math.min(100, Math.round((job.doneCount / job.totalCount) * 100))
-      : 0
+  const { pct, ariaText, indeterminate } = acquireBarProgress(job)
   const title = job.kind === 'check' ? 'Check for updates' : 'Download / Update'
   const byteLine =
     job.progress?.bytesReceived != null
@@ -132,10 +179,17 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
                 <span className="acquire-job-active">{job.activeCodename}</span>
               ) : null}
             </div>
-            <div className="acquire-job-bar" aria-hidden="true">
+            <div
+              className="acquire-job-bar"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={pct ?? undefined}
+              aria-valuetext={ariaText}
+            >
               <div
-                className="acquire-job-bar-fill"
-                style={{ width: `${pct}%` }}
+                className={`acquire-job-bar-fill${indeterminate ? ' indeterminate' : ''}`}
+                style={pct != null && pct > 0 ? { width: `${pct}%` } : undefined}
               />
             </div>
             {job.progress?.message ? (

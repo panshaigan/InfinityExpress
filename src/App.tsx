@@ -785,6 +785,8 @@ function AppShell() {
         <div className="app-body mods-app-body" hidden={appPhase !== 'mods'}>
           <div className="app-main mods-app-main">
             <ModsStation
+              model={model}
+              selectedIds={selectedIds}
               mods={userCatalog.mods}
               neededCodenames={neededCodenames}
               journey={modsJourney}

@@ -1085,6 +1085,7 @@ async fn download_to_file(
   dest: &Path,
   token: Option<&str>,
   cancel: &AcquireCancelFlag,
+  expected_size: Option<u64>,
 ) -> Result<u64, String> {
   let client = http_client()?;
   let mut req = client.get(url);
@@ -1110,7 +1111,7 @@ async fn download_to_file(
   if !res.status().is_success() {
     return Err(format!("Download failed HTTP {} for {url}", res.status()));
   }
-  let total = res.content_length();
+  let total = res.content_length().or(expected_size);
   let mut file = File::create(dest).map_err(|e| e.to_string())?;
   let mut stream = res.bytes_stream();
   let mut received: u64 = 0;
@@ -1406,6 +1407,7 @@ pub async fn acquire_mod(
       &archive_path,
       input.github_token.as_deref(),
       &cancel,
+      remote.size_bytes,
     )
     .await?;
 

@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildModComponentCatalogStats,
   collectAuthorOptions,
   countSelectedMods,
   formatBytes,
   hasModField,
   isModTypeBranchDisplay,
   listSelectedModCodenames,
+  modCodenamesWithCatalogComponents,
   modSizeBounds,
   parseModsCsv,
   resolveModLookupKey,
@@ -455,6 +457,76 @@ describe('countSelectedMods', () => {
       attrs: { modId: 'ModA' },
     } as TreeNode)
     expect(countSelectedMods(modelWithComponents(a), new Set())).toBe(0)
+  })
+})
+
+describe('buildModComponentCatalogStats', () => {
+  function node(
+    partial: Partial<TreeNode> & Pick<TreeNode, 'key' | 'tag' | 'kind'>,
+  ): TreeNode {
+    return {
+      attrs: {},
+      effectiveEngine: '',
+      children: [],
+      ...partial,
+    } as TreeNode
+  }
+
+  function modelWithComponents(...comps: TreeNode[]): InstallSequenceModel {
+    const components = comps.filter((n) => n.kind === 'component') as ComponentNode[]
+    const nodesByKey = new Map(comps.map((n) => [n.key, n]))
+    return {
+      stations: [],
+      componentsById: new Map(components.map((c) => [c.componentId, c])),
+      componentsInOrder: components,
+      nodesByKey,
+    }
+  }
+
+  it('counts catalog and checked components per mod codename', () => {
+    const a = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'a:1',
+      orderIndex: 0,
+      attrs: { modId: 'ModA' },
+    } as TreeNode)
+    const b = node({
+      key: 'c2',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'a:2',
+      orderIndex: 1,
+      attrs: { modId: 'ModA' },
+    } as TreeNode)
+    const c = node({
+      key: 'c3',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'b:1',
+      orderIndex: 2,
+      attrs: { modId: 'ModB' },
+    } as TreeNode)
+    const model = modelWithComponents(a, b, c)
+    const stats = buildModComponentCatalogStats(model, new Set(['a:1']))
+    expect(stats.get('ModA')).toEqual({ catalogCount: 2, checkedCount: 1 })
+    expect(stats.get('ModB')).toEqual({ catalogCount: 1, checkedCount: 0 })
+    expect(modCodenamesWithCatalogComponents(model)).toEqual(['ModA', 'ModB'])
+  })
+
+  it('includes hidden selection in checked count', () => {
+    const hidden = node({
+      key: 'c1',
+      tag: 'component',
+      kind: 'component',
+      componentId: 'hidden:1',
+      orderIndex: 0,
+      attrs: { modId: 'HiddenMod' },
+    } as TreeNode)
+    const model = modelWithComponents(hidden)
+    const stats = buildModComponentCatalogStats(model, new Set(['hidden:1']))
+    expect(stats.get('HiddenMod')).toEqual({ catalogCount: 1, checkedCount: 1 })
   })
 })
 

@@ -21,7 +21,7 @@ import {
   type ModsSortKey,
 } from '../../lib/mods/modsTable'
 import { formatGameDisplay, formatUrlForTable } from '../../lib/mods/modFieldParse'
-import { effectiveModFields, type WorkingMod } from '../../lib/mods/loadMods'
+import { effectiveModFields, type ModComponentCatalogStats, type WorkingMod } from '../../lib/mods/loadMods'
 import { isHttpUrl } from '../../lib/url'
 import { IconTip } from '../IconTip'
 import {
@@ -63,6 +63,7 @@ interface Props {
   onRowModifierClick?: (codename: string, e: ReactMouseEvent) => void
   /** Active acquire/check progress by codename (0–100 or indeterminate). */
   rowProgress?: ReadonlyMap<string, { pct: number | null; label: string }>
+  componentStats?: ReadonlyMap<string, ModComponentCatalogStats>
   rowActions?: ModsRowActions
 }
 
@@ -75,6 +76,16 @@ const COLUMNS: { key: ModsSortKey; label: string; className?: string }[] = [
   { key: 'version', label: 'Version', className: 'mods-col-version' },
   { key: 'size', label: 'Size', className: 'mods-col-size' },
   { key: 'author', label: 'Author', className: 'mods-col-author' },
+  {
+    key: 'catalogComponents',
+    label: 'In catalog',
+    className: 'mods-col-catalog-count',
+  },
+  {
+    key: 'checkedComponents',
+    label: 'Checked',
+    className: 'mods-col-checked-count',
+  },
   { key: 'status', label: 'Status', className: 'mods-col-status' },
 ]
 
@@ -158,6 +169,7 @@ interface ModsTableRowProps {
   focused: boolean
   selectionLocked: boolean
   progress: RowProgress | undefined
+  catalogStats: ModComponentCatalogStats | undefined
   onToggle: (codename: string, want: boolean) => void
   onFocusRow: (codename: string) => void
   onRowModifierClick?: (codename: string, e: ReactMouseEvent) => void
@@ -171,6 +183,7 @@ const ModsTableRow = memo(function ModsTableRow({
   focused,
   selectionLocked,
   progress,
+  catalogStats,
   onToggle,
   onFocusRow,
   onRowModifierClick,
@@ -271,6 +284,16 @@ const ModsTableRow = memo(function ModsTableRow({
         display={author.display}
         tip={author.title}
       />
+      <td className="mods-col-catalog-count">
+        {catalogStats && catalogStats.catalogCount > 0
+          ? catalogStats.catalogCount
+          : '—'}
+      </td>
+      <td className="mods-col-checked-count">
+        {catalogStats && catalogStats.checkedCount > 0
+          ? catalogStats.checkedCount
+          : '—'}
+      </td>
       <td className="mods-col-status">
         <span className={statusClass(mod.diskStatus)}>
           {diskStatusLabel(mod.diskStatus)}
@@ -427,6 +450,7 @@ export function ModsTable({
   onFocusRow,
   onRowModifierClick,
   rowProgress,
+  componentStats,
   rowActions,
 }: Props) {
   const rowRefs = useRef(new Map<string, HTMLTableRowElement>())
@@ -589,6 +613,7 @@ export function ModsTable({
                 focused={focusedCodename === mod.codename}
                 selectionLocked={selectionLocked}
                 progress={rowProgress?.get(mod.codename)}
+                catalogStats={componentStats?.get(mod.codename)}
                 onToggle={onToggle}
                 onFocusRow={onFocusRow}
                 onRowModifierClick={onRowModifierClick}

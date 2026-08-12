@@ -53,19 +53,16 @@ export function DetailPane({
           </button>
         ) : (
           <>
-            <div className="detail-pane-chrome">
+            <button
+              type="button"
+              className="detail-pane-chrome detail-pane-chrome-interactive has-icon-tip"
+              onClick={onToggleCollapsed}
+              aria-expanded={true}
+              aria-label="Hide details"
+            >
               <span className="detail-pane-chrome-label">Details</span>
-              <button
-                type="button"
-                className="detail-pane-collapse has-icon-tip"
-                onClick={onToggleCollapsed}
-                aria-expanded={true}
-                aria-label="Hide details"
-              >
-                »
-                <IconTip>Hide details (;)</IconTip>
-              </button>
-            </div>
+              <IconTip>Hide details (;)</IconTip>
+            </button>
             <div className="detail-pane-scroll">
               <ComponentDetail
                 display={display}

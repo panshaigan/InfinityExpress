@@ -15,6 +15,7 @@ Desktop mod route planner for Infinity Engine EE games. **React 18 + TypeScript 
 | `InstallSequence.xml` tags / attrs / engine / conditions | [docs/install-sequence-schema.md](docs/install-sequence-schema.md) |
 | Install plan, WeiDU IDs, run, backups | [docs/weidu-install.md](docs/weidu-install.md) |
 | Tree / chrome hotkeys | [docs/keyboard.md](docs/keyboard.md) |
+| Tooltips, inputs, collapsible chrome | [docs/ui.md](docs/ui.md) |
 | Tauri dialogs / FS / ACL | `.cursor/rules/tauri-desktop.mdc` (auto when editing matching files) |
 
 Do **not** re-derive behaviour from a full codebase scan when the doc above covers it.

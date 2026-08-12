@@ -13,6 +13,7 @@ import {
 import { displaySelectionState } from '../lib/selection/selectionEngine'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { EmptyPanel } from './EmptyPanel'
+import { IconTip } from './IconTip'
 import { JumpIcon } from './JumpIcon'
 
 interface Props {
@@ -271,9 +272,7 @@ export function GlobalSearchList({
                 onClick={handleJump}
               >
                 <JumpIcon />
-                <span className="icon-tip" role="tooltip">
-                  Jump to station
-                </span>
+                <IconTip>Jump to station</IconTip>
               </button>
             )}
           </div>

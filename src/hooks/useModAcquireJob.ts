@@ -141,11 +141,21 @@ export function useModAcquireJob(args: {
   useEffect(() => {
     let unlisten: (() => void) | undefined
     void listenModAcquireProgress((payload) => {
-      setJob((prev) =>
-        prev.running
-          ? { ...prev, activeCodename: payload.codename, progress: payload }
-          : prev,
-      )
+      setJob((prev) => {
+        if (!prev.running) return prev
+        let progress = payload
+        if (
+          payload.phase === 'download' &&
+          payload.bytesTotal == null &&
+          payload.bytesReceived != null
+        ) {
+          const est = pendingRemotesRef.current.get(payload.codename)?.sizeBytes
+          if (est != null && est > 0) {
+            progress = { ...payload, bytesTotal: est }
+          }
+        }
+        return { ...prev, activeCodename: payload.codename, progress }
+      })
     }).then((fn) => {
       unlisten = fn
     })

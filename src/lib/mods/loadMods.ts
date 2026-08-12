@@ -264,6 +264,35 @@ export function listSelectedModCodenames(
   return [...keys].sort((a, b) => a.localeCompare(b))
 }
 
+export interface ModComponentCatalogStats {
+  catalogCount: number
+  checkedCount: number
+}
+
+/** Per-mod component counts from InstallSequence (checked includes hidden selection). */
+export function buildModComponentCatalogStats(
+  model: InstallSequenceModel,
+  selectedIds: ReadonlySet<string>,
+): Map<string, ModComponentCatalogStats> {
+  const stats = new Map<string, ModComponentCatalogStats>()
+  for (const c of model.componentsInOrder) {
+    const codename = resolveModLookupKey(model, c) ?? c.componentId
+    const entry = stats.get(codename) ?? { catalogCount: 0, checkedCount: 0 }
+    entry.catalogCount += 1
+    if (selectedIds.has(c.componentId)) entry.checkedCount += 1
+    stats.set(codename, entry)
+  }
+  return stats
+}
+
+/** Codenames with at least one InstallSequence component. */
+export function modCodenamesWithCatalogComponents(
+  model: InstallSequenceModel,
+): string[] {
+  const stats = buildModComponentCatalogStats(model, new Set())
+  return [...stats.keys()].sort((a, b) => a.localeCompare(b))
+}
+
 /** Format byte count as human-readable (1024-based). */
 export function formatBytes(n: number): string {
   if (!Number.isFinite(n) || n < 0) return '0 B'

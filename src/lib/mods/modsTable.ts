@@ -2,6 +2,7 @@ import {
   effectiveModFields,
   formatBytes,
   type DiskStatus,
+  type ModComponentCatalogStats,
   type WorkingMod,
 } from './loadMods'
 import {
@@ -28,6 +29,8 @@ export type ModsSortKey =
   | 'version'
   | 'size'
   | 'author'
+  | 'catalogComponents'
+  | 'checkedComponents'
   | 'status'
 
 export type ModsSortDir = 'asc' | 'desc'
@@ -40,6 +43,8 @@ export interface ModsTableFilters {
   statuses: DiskStatus[]
   /** When set, only these codenames are shown (journey mode). */
   requiredCodenames: string[] | null
+  /** When set, only mods with InstallSequence components (catalog presence). */
+  catalogComponentCodenames: string[] | null
 }
 
 export function createDefaultModsTableFilters(): ModsTableFilters {
@@ -50,6 +55,7 @@ export function createDefaultModsTableFilters(): ModsTableFilters {
     authors: [],
     statuses: [],
     requiredCodenames: null,
+    catalogComponentCodenames: null,
   }
 }
 
@@ -120,6 +126,10 @@ export function filterWorkingMods(
     filters.requiredCodenames != null
       ? new Set(filters.requiredCodenames)
       : null
+  const catalog =
+    filters.catalogComponentCodenames != null
+      ? new Set(filters.catalogComponentCodenames)
+      : null
   const cat = filters.categories.length ? new Set(filters.categories) : null
   const games = filters.games.length ? new Set(filters.games) : null
   const authors = filters.authors.length ? new Set(filters.authors) : null
@@ -127,6 +137,7 @@ export function filterWorkingMods(
 
   return mods.filter((mod) => {
     if (required && !required.has(mod.codename)) return false
+    if (catalog && !catalog.has(mod.codename)) return false
     if (!matchesSearch(mod, filters.search)) return false
     const eff = effectiveModFields(mod)
     if (cat && !cat.has(eff.category)) return false
@@ -143,7 +154,11 @@ export function filterWorkingMods(
   })
 }
 
-function sortValue(mod: WorkingMod, key: ModsSortKey): string | number {
+function sortValue(
+  mod: WorkingMod,
+  key: ModsSortKey,
+  componentStats?: ReadonlyMap<string, ModComponentCatalogStats>,
+): string | number {
   const eff = effectiveModFields(mod)
   switch (key) {
     case 'name':
@@ -162,6 +177,10 @@ function sortValue(mod: WorkingMod, key: ModsSortKey): string | number {
       return eff.sizeBytes ?? -1
     case 'author':
       return eff.author.toLowerCase()
+    case 'catalogComponents':
+      return componentStats?.get(mod.codename)?.catalogCount ?? -1
+    case 'checkedComponents':
+      return componentStats?.get(mod.codename)?.checkedCount ?? -1
     case 'status':
       return mod.diskStatus
   }
@@ -171,11 +190,12 @@ export function sortWorkingMods(
   mods: readonly WorkingMod[],
   key: ModsSortKey,
   dir: ModsSortDir,
+  componentStats?: ReadonlyMap<string, ModComponentCatalogStats>,
 ): WorkingMod[] {
   const mul = dir === 'asc' ? 1 : -1
   return [...mods].sort((a, b) => {
-    const va = sortValue(a, key)
-    const vb = sortValue(b, key)
+    const va = sortValue(a, key, componentStats)
+    const vb = sortValue(b, key, componentStats)
     if (typeof va === 'number' && typeof vb === 'number') {
       return (va - vb) * mul
     }
@@ -190,8 +210,14 @@ export function filterAndSortWorkingMods(
   filters: ModsTableFilters,
   sortKey: ModsSortKey,
   sortDir: ModsSortDir,
+  componentStats?: ReadonlyMap<string, ModComponentCatalogStats>,
 ): WorkingMod[] {
-  return sortWorkingMods(filterWorkingMods(mods, filters), sortKey, sortDir)
+  return sortWorkingMods(
+    filterWorkingMods(mods, filters),
+    sortKey,
+    sortDir,
+    componentStats,
+  )
 }
 
 export function formatModSize(sizeBytes: number | null): string {

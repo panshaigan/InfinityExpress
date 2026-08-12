@@ -13,6 +13,7 @@ import {
   ClearFiltersIcon,
   DeleteFromCatalogIcon,
   DownloadIcon,
+  OnlyInCatalogIcon,
   OnlyNeededIcon,
   RemoveFromDiskIcon,
 } from './ModsActionIcons'
@@ -23,12 +24,15 @@ interface FacetOptions {
 }
 
 const ONLY_NEEDED_TIP = 'Only mods required by the selected components'
+const ONLY_IN_CATALOG_TIP =
+  'Show only mods that have components in the component catalog'
 
 interface Props {
   filters: ModsTableFilters
   onChange: (next: ModsTableFilters) => void
   facets: FacetOptions
   neededCodenames: string[]
+  catalogComponentCodenames: string[]
   journeyLocked: boolean
   selectedCount: number
   visibleCount: number
@@ -63,6 +67,7 @@ export function ModsToolbar({
   onChange,
   facets,
   neededCodenames,
+  catalogComponentCodenames,
   journeyLocked,
   selectedCount,
   visibleCount,
@@ -83,13 +88,15 @@ export function ModsToolbar({
   const bulkDisabled = selectedCount === 0
   const acquireBusy = jobRunning
   const onlyNeededActive = filters.requiredCodenames != null
+  const onlyInCatalogActive = filters.catalogComponentCodenames != null
   const hasFacetFilters =
     filters.categories.length > 0 ||
     filters.games.length > 0 ||
     filters.authors.length > 0 ||
     filters.statuses.length > 0 ||
     !!filters.search.trim() ||
-    (onlyNeededActive && !journeyLocked)
+    (onlyNeededActive && !journeyLocked) ||
+    onlyInCatalogActive
   const [openFacet, setOpenFacet] = useState<FacetId | null>(null)
 
   function toggleOnlyNeeded() {
@@ -100,6 +107,18 @@ export function ModsToolbar({
     }
     if (neededCodenames.length === 0) return
     onChange({ ...filters, requiredCodenames: neededCodenames })
+  }
+
+  function toggleOnlyInCatalog() {
+    if (onlyInCatalogActive) {
+      onChange({ ...filters, catalogComponentCodenames: null })
+      return
+    }
+    if (catalogComponentCodenames.length === 0) return
+    onChange({
+      ...filters,
+      catalogComponentCodenames: catalogComponentCodenames,
+    })
   }
 
   function facetOpenChange(id: FacetId, open: boolean) {
@@ -124,6 +143,26 @@ export function ModsToolbar({
         <OnlyNeededIcon />
       </button>
       <IconTip>{ONLY_NEEDED_TIP}</IconTip>
+    </span>
+  )
+
+  const onlyInCatalogButton = (
+    <span className="mods-action-icon-wrap mods-only-in-catalog has-icon-tip">
+      <button
+        type="button"
+        className={`mods-action-icon-btn mods-only-in-catalog-btn${
+          onlyInCatalogActive ? ' active' : ''
+        }`}
+        aria-pressed={onlyInCatalogActive}
+        aria-label="Only mods in component catalog"
+        disabled={
+          catalogComponentCodenames.length === 0 && !onlyInCatalogActive
+        }
+        onClick={toggleOnlyInCatalog}
+      >
+        <OnlyInCatalogIcon />
+      </button>
+      <IconTip>{ONLY_IN_CATALOG_TIP}</IconTip>
     </span>
   )
 
@@ -223,6 +262,7 @@ export function ModsToolbar({
             <IconTip>{acquireLabel}</IconTip>
           </span>
           {onlyNeededButton}
+          {onlyInCatalogButton}
         </div>
         <span className="mods-count" aria-live="polite">
           {visibleCount} of {totalCount} mods
@@ -325,6 +365,7 @@ export function ModsToolbar({
                   authors: [],
                   statuses: [],
                   requiredCodenames: null,
+                  catalogComponentCodenames: null,
                 })
               }
               aria-label="Clear filters"

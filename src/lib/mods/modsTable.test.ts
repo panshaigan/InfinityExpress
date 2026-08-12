@@ -6,7 +6,13 @@ import {
   filterAndSortWorkingMods,
   filterWorkingMods,
   primaryAuthorLabel,
+  sortWorkingMods,
 } from './modsTable'
+import {
+  buildModComponentCatalogStats,
+  type ModComponentCatalogStats,
+} from './loadMods'
+import type { ComponentNode, InstallSequenceModel } from '../xml/schema'
 
 function mod(partial: Partial<WorkingMod> & { codename: string }): WorkingMod {
   return {
@@ -65,6 +71,16 @@ describe('modsTable filter/sort', () => {
     ])
   })
 
+  it('filters by catalog component codenames', () => {
+    const filters = {
+      ...createDefaultModsTableFilters(),
+      catalogComponentCodenames: ['Alpha', 'Missing'],
+    }
+    expect(filterWorkingMods(mods, filters).map((m) => m.codename)).toEqual([
+      'Alpha',
+    ])
+  })
+
   it('sorts by name', () => {
     const rows = filterAndSortWorkingMods(
       mods,
@@ -83,6 +99,57 @@ describe('modsTable filter/sort', () => {
       'desc',
     )
     expect(rows.map((m) => m.codename)).toEqual(['Zebra', 'Beta', 'Alpha'])
+  })
+})
+
+describe('component stats sort', () => {
+  const mods = [
+    mod({ codename: 'Alpha', name: 'Alpha' }),
+    mod({ codename: 'Beta', name: 'Beta' }),
+    mod({ codename: 'Zebra', name: 'Zebra' }),
+  ]
+
+  const componentStats = new Map<string, ModComponentCatalogStats>([
+    ['Alpha', { catalogCount: 5, checkedCount: 2 }],
+    ['Beta', { catalogCount: 1, checkedCount: 0 }],
+    ['Zebra', { catalogCount: 0, checkedCount: 0 }],
+  ])
+
+  function miniModel(): InstallSequenceModel {
+    const components: ComponentNode[] = [
+      {
+        key: 'c1',
+        tag: 'component',
+        kind: 'component',
+        componentId: 'a:1',
+        orderIndex: 0,
+        attrs: { modId: 'Alpha' },
+        effectiveEngine: '',
+        children: [],
+      },
+    ]
+    return {
+      stations: [],
+      componentsById: new Map(components.map((c) => [c.componentId, c])),
+      componentsInOrder: components,
+      nodesByKey: new Map(components.map((c) => [c.key, c])),
+    }
+  }
+
+  it('sorts by catalog component count', () => {
+    const rows = sortWorkingMods(mods, 'catalogComponents', 'desc', componentStats)
+    expect(rows.map((m) => m.codename)).toEqual(['Alpha', 'Beta', 'Zebra'])
+  })
+
+  it('sorts by checked component count', () => {
+    const rows = sortWorkingMods(mods, 'checkedComponents', 'desc', componentStats)
+    expect(rows.map((m) => m.codename)).toEqual(['Alpha', 'Beta', 'Zebra'])
+  })
+
+  it('buildModComponentCatalogStats counts selected ids without visibility gate', () => {
+    const model = miniModel()
+    const stats = buildModComponentCatalogStats(model, new Set(['a:1']))
+    expect(stats.get('Alpha')).toEqual({ catalogCount: 1, checkedCount: 1 })
   })
 })
 

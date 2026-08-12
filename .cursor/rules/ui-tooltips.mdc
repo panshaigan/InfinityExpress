@@ -9,8 +9,9 @@ When the user asks for a tooltip (or hover tip / help text on hover), use **our*
 
 ## Do
 
-- Prefer `has-icon-tip` on the host + `<span className="icon-tip" role="tooltip">…</span>` for short tips.
-- Add `icon-tip-below` on the tip when upward placement would clip (top bar, header nav, phase nav).
+- Prefer `has-icon-tip` on the host + `<IconTip>…</IconTip>` when the control sits inside scrollable panels, detail panes, or other overflow clipping ancestors.
+- Use inline `has-icon-tip` + `<span className="icon-tip" role="tooltip">…</span>` only when no clipping ancestors exist.
+- Add `icon-tip-below` (or let `IconTip` auto-flip) when upward placement would clip (top bar, header nav, phase nav, sticky headers).
 - Use `level-card-tip` only where that richer pattern already applies (Engine level cards).
 - Tips should appear immediately on hover / focus-visible (see `.icon-tip` in `src/index.css`), including on disabled hosts.
 
@@ -21,5 +22,7 @@ When the user asks for a tooltip (or hover tip / help text on hover), use **our*
 
 ## References
 
+- Full guide: [docs/ui.md](../../docs/ui.md)
 - CSS: `src/index.css` — “Immediate hover tips (engine-style; no native title delay).”
+- Component: `src/ui/IconTip.tsx`
 - Examples: `StationListToolbar` fold toggle, `ComponentTreeRow` randomise / fold-all, `ModsTable` `TipCell`.

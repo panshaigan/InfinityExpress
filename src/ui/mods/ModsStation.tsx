@@ -15,6 +15,11 @@ import {
 } from '../../lib/mods/acquireTargets'
 import type { WorkingMod } from '../../lib/mods/loadMods'
 import {
+  buildModComponentCatalogStats,
+  modCodenamesWithCatalogComponents,
+} from '../../lib/mods/loadMods'
+import type { InstallSequenceModel } from '../../lib/xml/schema'
+import {
   collectModsFacetOptions,
   createDefaultModsTableFilters,
   filterAndSortWorkingMods,
@@ -42,6 +47,8 @@ export type ModsJourneyState = {
 }
 
 interface Props {
+  model: InstallSequenceModel
+  selectedIds: ReadonlySet<string>
   mods: WorkingMod[]
   neededCodenames: string[]
   journey: ModsJourneyState | null
@@ -69,6 +76,8 @@ interface Props {
 }
 
 export function ModsStation({
+  model,
+  selectedIds,
   mods,
   neededCodenames,
   journey,
@@ -193,9 +202,26 @@ export function ModsStation({
 
   const facets = useMemo(() => collectModsFacetOptions(mods), [mods])
 
+  const componentStats = useMemo(
+    () => buildModComponentCatalogStats(model, selectedIds),
+    [model, selectedIds],
+  )
+
+  const catalogComponentCodenames = useMemo(
+    () => modCodenamesWithCatalogComponents(model),
+    [model],
+  )
+
   const rows = useMemo(
-    () => filterAndSortWorkingMods(mods, filters, sortKey, sortDir),
-    [mods, filters, sortKey, sortDir],
+    () =>
+      filterAndSortWorkingMods(
+        mods,
+        filters,
+        sortKey,
+        sortDir,
+        componentStats,
+      ),
+    [mods, filters, sortKey, sortDir, componentStats],
   )
 
   const focusedMod = useMemo(() => {
@@ -261,14 +287,25 @@ export function ModsStation({
         map.set(entry.codename, { pct: 0, label: 'Queued' })
       } else if (entry.status === 'running') {
         const p = acquire.job.progress
-        if (p && p.codename === entry.codename && p.bytesTotal && p.bytesReceived != null) {
+        if (
+          p &&
+          p.codename === entry.codename &&
+          p.phase === 'download' &&
+          p.bytesTotal != null &&
+          p.bytesTotal > 0 &&
+          p.bytesReceived != null
+        ) {
           const pct = Math.min(
             99,
             Math.round((p.bytesReceived / p.bytesTotal) * 100),
           )
-          map.set(entry.codename, { pct, label: p.phase || 'Working…' })
+          map.set(entry.codename, { pct, label: p.message || 'Downloading…' })
         } else {
-          map.set(entry.codename, { pct: null, label: entry.message || 'Working…' })
+          const phaseLabel =
+            p && p.codename === entry.codename && p.phase
+              ? p.phase.charAt(0).toUpperCase() + p.phase.slice(1) + '…'
+              : entry.message || 'Working…'
+          map.set(entry.codename, { pct: null, label: phaseLabel })
         }
       }
     }
@@ -453,6 +490,7 @@ export function ModsStation({
               onChange={handleFiltersChange}
               facets={facets}
               neededCodenames={neededCodenames}
+              catalogComponentCodenames={catalogComponentCodenames}
               journeyLocked={journeyLocked}
               selectedCount={selected.size}
               visibleCount={rows.length}
@@ -487,6 +525,7 @@ export function ModsStation({
               onFocusRow={setFocusedCodename}
               onRowModifierClick={onRowModifierClick}
               rowProgress={rowProgress}
+              componentStats={componentStats}
               rowActions={{
                 acquireLabel: (mod) =>
                   acquireButtonLabel(acquireButtonKind([mod.diskStatus])),

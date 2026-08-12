@@ -60,6 +60,18 @@ export function OnlyNeededIcon({ size = 16 }: { size?: number }) {
   )
 }
 
+/** Layers — “only mods with components in the component catalog”. */
+export function OnlyInCatalogIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M8 1.25 1.75 4.5 8 7.75l6.25-3.25L8 1.25ZM8.75 9.06v5.19l5.5-2.87V6.19L8.75 9.06ZM7.25 14.25V9.06L1.75 6.19v5.19l5.5 2.87Z"
+      />
+    </svg>
+  )
+}
+
 export function EditModIcon({ size = 16 }: { size?: number }) {
   return (
     <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
