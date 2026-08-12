@@ -39,6 +39,10 @@ Settings (top bar): **Vanilla backups** + **App** (mods download dir, backup/log
 
 **Session restore:** Selection, station done marks, presets, install table/cursor live on the active project. Install console WeiDU output is **not** stored there — on startup it is reloaded from `{backupDir}/install-logs/{runId}/run-stdout.log` and `run-stderr.log` when a saved install run exists.
 
+### Fresh install (clear projects + Settings)
+
+Dev helper — see **[dev-fresh-install.md](dev-fresh-install.md)** for the PowerShell command (`IE_FRESH_INSTALL=1`) and DevTools `__ieClearFreshInstall()`. Disk game/mod folders are never deleted.
+
 ## UI confirmations
 
 Destructive or rollback actions (install Previous / uninstall-back, backup delete, mod remove-from-disk) use [`src/ui/ConfirmDialog.tsx`](src/ui/ConfirmDialog.tsx): `confirm-dialog-backdrop` + `confirm-dialog`, cancel focused by default, `danger` prop for the primary confirm button.

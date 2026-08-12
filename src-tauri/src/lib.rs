@@ -1,3 +1,4 @@
+mod dev_reset;
 mod mod_acquire;
 mod mod_fs;
 mod weidu_backup;
@@ -12,6 +13,7 @@ pub fn run() {
     .manage(mod_acquire::AcquireCancelFlag::new())
     .manage(weidu_install::RunningWeidu::new())
     .invoke_handler(tauri::generate_handler![
+      dev_reset::take_fresh_install_env_flag,
       mod_fs::list_subdir_names,
       mod_fs::read_text_file,
       mod_fs::write_text_file,

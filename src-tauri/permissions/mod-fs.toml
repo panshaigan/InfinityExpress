@@ -70,3 +70,8 @@ commands.allow = [
   "delete_backup",
   "prepare_project_destination",
 ]
+
+[[permission]]
+identifier = "allow-take-fresh-install-env-flag"
+description = "Read-once IE_FRESH_INSTALL env flag for dev localStorage wipe"
+commands.allow = ["take_fresh_install_env_flag"]

@@ -1,9 +1,18 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import {
+  applyFreshInstallEnvFlagIfRequested,
+  installFreshInstallConsoleApi,
+} from './lib/ui/freshInstallReset'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+installFreshInstallConsoleApi()
+
+void applyFreshInstallEnvFlagIfRequested().then((wiped) => {
+  if (wiped) return
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  )
+})

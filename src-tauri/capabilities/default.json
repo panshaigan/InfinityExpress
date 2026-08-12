@@ -20,6 +20,7 @@
     "allow-cancel-mod-acquire",
     "allow-scrape-mod-page-meta",
     "allow-weidu-install",
-    "allow-weidu-backup"
+    "allow-weidu-backup",
+    "allow-take-fresh-install-env-flag"
   ]
 }
