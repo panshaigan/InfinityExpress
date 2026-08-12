@@ -10,19 +10,32 @@ import type { AppNavSlot } from '../ui/StationNav'
 /** @deprecated Prefer preferredContentSub from stationBranchNav. */
 export const preferredSub = preferredContentSub
 
+export interface BranchNavInitialState {
+  mainKey: string | null
+  subKey: string | null
+  subTag: string | null
+}
+
 export function useBranchNav(args: {
   activeStation: AppNavSlot
   displayNodes: DisplayNode[]
   onClearFocus: () => void
+  initialBranchState?: BranchNavInitialState
 }) {
-  const { activeStation, displayNodes, onClearFocus } = args
+  const { activeStation, displayNodes, onClearFocus, initialBranchState } = args
   const branched = isBranchNavStation(activeStation)
   const isContentStation = activeStation === 'content'
   const isMechanicsStation = activeStation === 'mechanics'
 
-  const [mainKey, setMainKey] = useState<string | null>(null)
-  const [subKey, setSubKey] = useState<string | null>(null)
-  const [subTag, setSubTag] = useState<string | null>(null)
+  const [mainKey, setMainKey] = useState<string | null>(
+    () => initialBranchState?.mainKey ?? null,
+  )
+  const [subKey, setSubKey] = useState<string | null>(
+    () => initialBranchState?.subKey ?? null,
+  )
+  const [subTag, setSubTag] = useState<string | null>(
+    () => initialBranchState?.subTag ?? null,
+  )
 
   const mainBranches = branched ? displayNodes : []
   const selectedMain = useMemo(() => {

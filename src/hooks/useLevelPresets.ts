@@ -20,25 +20,65 @@ export type StationLevelMap = Map<
   }
 >
 
+export interface LevelPresetsInitialState {
+  ladderChecked: readonly LadderLevel[]
+  lowerDifficultyPreset: boolean
+  higherDifficultyPreset: boolean
+  lastGlobalLadder: readonly LadderLevel[]
+  lastGlobalLowerDifficulty: boolean
+  lastGlobalHigherDifficulty: boolean
+  stationLevelPresets: ReadonlyMap<
+    string,
+    {
+      ladder: ReadonlySet<LadderLevel>
+      lowerDifficulty: boolean
+      higherDifficulty: boolean
+    }
+  >
+}
+
 export function useLevelPresets(args: {
   model: InstallSequenceModel
   game: SelectedGame | null
   activeStation: AppNavSlot
   relationIndex: RelationIndex
   setSelectedIds: Dispatch<SetStateAction<Set<string>>>
+  initialLevelState?: LevelPresetsInitialState
 }) {
-  const { model, game, activeStation, relationIndex, setSelectedIds } = args
+  const { model, game, activeStation, relationIndex, setSelectedIds, initialLevelState } =
+    args
 
-  const [ladderChecked, setLadderChecked] = useState<Set<LadderLevel>>(() => new Set())
-  const [lowerDifficultyPreset, setLowerDifficultyPreset] = useState(false)
-  const [higherDifficultyPreset, setHigherDifficultyPreset] = useState(false)
-  /** Last Engine-applied baseline; used by station “Reset to global”. */
-  const [lastGlobalLadder, setLastGlobalLadder] = useState<Set<LadderLevel>>(() => new Set())
-  const [lastGlobalLowerDifficulty, setLastGlobalLowerDifficulty] = useState(false)
-  const [lastGlobalHigherDifficulty, setLastGlobalHigherDifficulty] = useState(false)
-  const [stationLevelPresets, setStationLevelPresets] = useState<StationLevelMap>(
-    () => new Map(),
+  const [ladderChecked, setLadderChecked] = useState<Set<LadderLevel>>(
+    () => new Set(initialLevelState?.ladderChecked ?? []),
   )
+  const [lowerDifficultyPreset, setLowerDifficultyPreset] = useState(
+    () => initialLevelState?.lowerDifficultyPreset ?? false,
+  )
+  const [higherDifficultyPreset, setHigherDifficultyPreset] = useState(
+    () => initialLevelState?.higherDifficultyPreset ?? false,
+  )
+  /** Last Engine-applied baseline; used by station “Reset to global”. */
+  const [lastGlobalLadder, setLastGlobalLadder] = useState<Set<LadderLevel>>(
+    () => new Set(initialLevelState?.lastGlobalLadder ?? []),
+  )
+  const [lastGlobalLowerDifficulty, setLastGlobalLowerDifficulty] = useState(
+    () => initialLevelState?.lastGlobalLowerDifficulty ?? false,
+  )
+  const [lastGlobalHigherDifficulty, setLastGlobalHigherDifficulty] = useState(
+    () => initialLevelState?.lastGlobalHigherDifficulty ?? false,
+  )
+  const [stationLevelPresets, setStationLevelPresets] = useState<StationLevelMap>(() => {
+    const next: StationLevelMap = new Map()
+    if (!initialLevelState) return next
+    for (const [key, value] of initialLevelState.stationLevelPresets) {
+      next.set(key as StationId, {
+        ladder: new Set(value.ladder),
+        lowerDifficulty: value.lowerDifficulty,
+        higherDifficulty: value.higherDifficulty,
+      })
+    }
+    return next
+  })
 
   const activeStationPreset =
     isSetupSlot(activeStation)
@@ -165,6 +205,24 @@ export function useLevelPresets(args: {
     setSelectedIds((prev) => applyLadderLevelSelection(model, prev, game, fixes))
   }
 
+  function restoreLevelState(state: LevelPresetsInitialState) {
+    setLadderChecked(new Set(state.ladderChecked))
+    setLowerDifficultyPreset(state.lowerDifficultyPreset)
+    setHigherDifficultyPreset(state.higherDifficultyPreset)
+    setLastGlobalLadder(new Set(state.lastGlobalLadder))
+    setLastGlobalLowerDifficulty(state.lastGlobalLowerDifficulty)
+    setLastGlobalHigherDifficulty(state.lastGlobalHigherDifficulty)
+    const next: StationLevelMap = new Map()
+    for (const [key, value] of state.stationLevelPresets) {
+      next.set(key as StationId, {
+        ladder: new Set(value.ladder),
+        lowerDifficulty: value.lowerDifficulty,
+        higherDifficulty: value.higherDifficulty,
+      })
+    }
+    setStationLevelPresets(next)
+  }
+
   return {
     ladderChecked,
     setLadderChecked,
@@ -188,5 +246,6 @@ export function useLevelPresets(args: {
     onClearToGlobal,
     resetLevelPresets,
     seedFixesBaseline,
+    restoreLevelState,
   }
 }

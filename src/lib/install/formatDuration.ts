@@ -1,4 +1,6 @@
-import type { InstallStep } from './types'
+import type { ComponentRunStatus, InstallRunState, InstallStep } from './types'
+
+const ACTIVE_STEP_STATUSES = new Set<ComponentRunStatus>(['copying', 'installing'])
 
 export function formatDurationMs(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return '—'
@@ -25,17 +27,29 @@ export function formatPlayerDurationMs(ms: number): string {
   return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
 
+/** True while WeiDU is actively working this step (table/detail tick). */
+export function isStepDurationLive(
+  step: Pick<InstallStep, 'status' | 'startedAt' | 'finishedAt'>,
+  runState: InstallRunState | null | undefined,
+): boolean {
+  if (!step.startedAt || step.finishedAt) return false
+  if (!ACTIVE_STEP_STATUSES.has(step.status)) return false
+  return runState === 'running'
+}
+
 /** Elapsed label for an install step; null when not started. */
 export function stepDurationLabel(
-  step: Pick<InstallStep, 'startedAt' | 'finishedAt'>,
+  step: Pick<InstallStep, 'status' | 'startedAt' | 'finishedAt'>,
   nowMs: number,
+  runState?: InstallRunState | null,
 ): string | null {
   if (!step.startedAt) return null
   const start = Date.parse(step.startedAt)
   if (!Number.isFinite(start)) return null
-  const end = step.finishedAt ? Date.parse(step.finishedAt) : nowMs
+  const live = isStepDurationLive(step, runState)
+  const end = step.finishedAt ? Date.parse(step.finishedAt) : live ? nowMs : start
   if (!Number.isFinite(end)) return null
-  const label = formatDurationMs(end - start)
-  if (!step.finishedAt) return `${label} (running)`
+  const label = formatDurationMs(Math.max(0, end - start))
+  if (live) return `${label} (running)`
   return label
 }

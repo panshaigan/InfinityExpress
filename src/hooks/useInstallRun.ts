@@ -35,6 +35,8 @@ import {
   sendWeiduStdin,
 } from '../lib/desktop/weiduInstall'
 import { isComponentInstalledInLog } from '../lib/install/weiduLog'
+import { loadInstallConsoleFromRunLog } from '../lib/install/loadRunConsole'
+import type { PersistedInstallSession } from '../lib/ui/appSessionPrefs'
 
 function newRunId(): string {
   return `run-${Date.now()}`
@@ -62,24 +64,41 @@ function stampLine(text: string): string {
   return `${formatConsoleTs()} ${text}`
 }
 
+export interface InstallRunInitialState {
+  installSession: PersistedInstallSession
+}
+
 export function useInstallRun(options: {
   model: InstallSequenceModel
   selectedIds: ReadonlySet<string>
   game: SelectedGame | null
   gameFolders: GameFolderPaths
+  initialInstallState?: InstallRunInitialState | null
 }) {
-  const { model, selectedIds, game, gameFolders } = options
-  const [run, setRun] = useState<InstallRun | null>(null)
+  const { model, selectedIds, game, gameFolders, initialInstallState } = options
+  const shouldLoadConsoleRef = useRef(!!initialInstallState?.installSession)
+  const hydratedRef = useRef(false)
+  const [run, setRun] = useState<InstallRun | null>(() => {
+    const session = initialInstallState?.installSession
+    return session?.run ?? null
+  })
   const [consoleLines, setConsoleLines] = useState<string[]>([])
   const [commandLines, setCommandLines] = useState<string[]>([])
   const [resultLines, setResultLines] = useState<string[]>([])
   const [inputPrompt, setInputPrompt] = useState<string | null>(null)
-  const [paused, setPaused] = useState(false)
+  const [paused, setPaused] = useState(
+    () => initialInstallState?.installSession.transport.paused ?? false,
+  )
   const [pausePending, setPausePending] = useState(false)
   const [stopping, setStopping] = useState(false)
   const [skipping, setSkipping] = useState(false)
   const [goingPrevious, setGoingPrevious] = useState(false)
-  const [activeStepId, setActiveStepId] = useState<string | null>(null)
+  const [activeStepId, setActiveStepId] = useState<string | null>(() => {
+    const session = initialInstallState?.installSession
+    if (!session) return null
+    const step = session.run.steps[session.run.cursor]
+    return step?.stepId ?? session.run.steps[0]?.stepId ?? null
+  })
   const cacheRef = useRef<ModListingCache>(new Map())
   const runningRef = useRef(false)
   const pausedRef = useRef(false)
@@ -92,6 +111,16 @@ export function useInstallRun(options: {
   /** Live WeiDU highlight lines per step; survives executeFromCursor setRun overwrites. */
   const stepResultLinesRef = useRef<Map<string, string[]>>(new Map())
 
+  if (!hydratedRef.current && initialInstallState?.installSession) {
+    hydratedRef.current = true
+    pausedRef.current = initialInstallState.installSession.transport.paused
+    for (const step of initialInstallState.installSession.run.steps) {
+      if (step.resultLines.length > 0) {
+        stepResultLinesRef.current.set(step.stepId, [...step.resultLines])
+      }
+    }
+  }
+
   useEffect(() => {
     pausedRef.current = paused
   }, [paused])
@@ -103,6 +132,23 @@ export function useInstallRun(options: {
   useEffect(() => {
     runRef.current = run
   }, [run])
+
+  useEffect(() => {
+    if (!shouldLoadConsoleRef.current) return
+    const logDir = run?.logDir
+    if (!logDir) return
+    shouldLoadConsoleRef.current = false
+    let cancelled = false
+    void loadInstallConsoleFromRunLog(logDir).then((loaded) => {
+      if (cancelled) return
+      if (loaded.consoleLines.length === 0) return
+      setConsoleLines(loaded.consoleLines)
+      setResultLines(loaded.resultLines)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [run?.logDir, run?.runId])
 
   /** Install cursor step id for table highlight (`InstallRun.cursor`). */
   const cursorStepId = useMemo(() => {
@@ -527,12 +573,13 @@ export function useInstallRun(options: {
         }
       }
 
+      const stoppedAt = new Date().toISOString()
       const reset: InstallStep = {
         ...mergeStepResultLines(step),
         status: 'queued',
         progress: null,
         errors: [],
-        finishedAt: undefined,
+        finishedAt: step.startedAt ? stoppedAt : undefined,
       }
       const next: InstallRun = {
         ...current,

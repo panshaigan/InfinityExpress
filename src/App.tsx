@@ -83,6 +83,7 @@ import { useChromeHotkeys } from './hooks/useChromeHotkeys'
 import { useRouteNav } from './hooks/useRouteNav'
 import { useTreeFocus } from './hooks/useTreeFocus'
 import { useUserCatalog } from './hooks/useUserCatalog'
+import { useAppSessionPersistence } from './hooks/useAppSessionPersistence'
 import { type AppPhase } from './ui/PhaseNav'
 import { ModsStation, type ModsJourneyState } from './ui/mods/ModsStation'
 import { InstallStation } from './ui/install/InstallStation'
@@ -94,9 +95,19 @@ import {
   type MissingInstallPath,
   type SettingsFocusField,
 } from './lib/ui/installPathValidation'
+import {
+  bootstrapAppSession,
+  buildGameSessionSnapshot,
+  levelPresetsInitialFromSession,
+  sanitizeComponentsSession,
+  sanitizeInstallSession,
+  type GameSession,
+  type PersistedInstallSession,
+} from './lib/ui/appSessionPrefs'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
+const sessionBootstrap = bootstrapAppSession(parsed.model)
 
 export default function App() {
   return (
@@ -109,18 +120,34 @@ export default function App() {
 function AppShell() {
   const { model, warnings } = parsed
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
-  const [game, setGame] = useState<SelectedGame | null>(null)
-  const [routeUnlocked, setRouteUnlocked] = useState(false)
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
-  const [activeStation, setActiveStation] = useState<AppNavSlot>('engine')
-  const [appPhase, setAppPhase] = useState<AppPhase>('components')
-  const [mountedPhases, setMountedPhases] = useState<Record<AppPhase, boolean>>({
-    components: true,
-    mods: false,
-    install: false,
+  const installSnapshotRef = useRef<PersistedInstallSession | null | undefined>(
+    sessionBootstrap.install,
+  )
+  const [restoredInstallSession, setRestoredInstallSession] = useState<
+    PersistedInstallSession | undefined
+  >(() => sessionBootstrap.install)
+  const [game, setGame] = useState<SelectedGame | null>(() => sessionBootstrap.game)
+  const [routeUnlocked, setRouteUnlocked] = useState(
+    () => sessionBootstrap.session?.routeUnlocked ?? false,
+  )
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => {
+    if (!sessionBootstrap.session) return new Set()
+    return new Set(sessionBootstrap.session.selectedIds)
   })
+  const [activeStation, setActiveStation] = useState<AppNavSlot>(
+    () => sessionBootstrap.session?.activeStation ?? 'engine',
+  )
+  const [appPhase, setAppPhase] = useState<AppPhase>(() => sessionBootstrap.appPhase)
+  const [mountedPhases, setMountedPhases] = useState<Record<AppPhase, boolean>>(() => ({
+    components: true,
+    mods:
+      sessionBootstrap.appPhase === 'mods' || sessionBootstrap.appPhase === 'install',
+    install: sessionBootstrap.appPhase === 'install',
+  }))
   const [phaseBusy, setPhaseBusy] = useState<Partial<Record<AppPhase, boolean>>>({})
-  const [modsJourney, setModsJourney] = useState<ModsJourneyState | null>(null)
+  const [modsJourney, setModsJourney] = useState<ModsJourneyState | null>(
+    () => sessionBootstrap.session?.modsJourney ?? null,
+  )
   const [searchScope, setSearchScope] = useState<'section' | 'all'>('section')
   const userCatalog = useUserCatalog()
 
@@ -167,6 +194,9 @@ function AppShell() {
     activeStation,
     relationIndex,
     setSelectedIds,
+    initialLevelState: sessionBootstrap.session
+      ? levelPresetsInitialFromSession(sessionBootstrap.session)
+      : undefined,
   })
 
   const presets = useSelectionPresetsState({
@@ -187,6 +217,9 @@ function AppShell() {
     setLastGlobalHigherDifficulty: levels.setLastGlobalHigherDifficulty,
     stationLevelPresets: levels.stationLevelPresets,
     setStationLevelPresets: levels.setStationLevelPresets,
+    initialPresets: sessionBootstrap.session?.selectionPresets,
+    initialActivePresetId: sessionBootstrap.session?.activePresetId ?? null,
+    initialPresetBaseline: sessionBootstrap.session?.presetBaseline ?? null,
   })
 
   const filtersActive = useMemo(
@@ -211,6 +244,13 @@ function AppShell() {
     activeStation,
     displayNodes,
     onClearFocus: clearFocus,
+    initialBranchState: sessionBootstrap.session
+      ? {
+          mainKey: sessionBootstrap.session.contentMainKey,
+          subKey: sessionBootstrap.session.contentSubKey,
+          subTag: sessionBootstrap.session.contentSubTag,
+        }
+      : undefined,
   })
 
   const {
@@ -288,6 +328,7 @@ function AppShell() {
     clearFocus,
     showRouteTip,
     dismissRouteTip,
+    initialFinishedStations: sessionBootstrap.session?.finishedStations,
     onRouteJustCompleted: () => {
       const required = listSelectedModCodenames(model, selectedIds)
       setModsJourney({ locked: true, requiredCodenames: required })
@@ -411,16 +452,121 @@ function AppShell() {
     )
   }
 
-  function applyChooseGame(next: SelectedGame) {
-    setGame(next)
-    setRouteUnlocked(false)
-    setSelectedIds(createInitialSelection(model, next))
-    levels.seedFixesBaseline(next)
-    presets.resetPresetSelection()
-    route.resetFinishedStations()
-    setActiveStation('engine')
+  const buildGameSession = useCallback(() => {
+    if (!game) return null
+    let install = installSnapshotRef.current ?? undefined
+    if (install) {
+      install = sanitizeInstallSession(model, game, selectedIds, install)
+    }
+    return buildGameSessionSnapshot({
+      selectedIds,
+      finishedStations: route.finishedStations,
+      routeUnlocked,
+      selectionPresets: presets.allSelectionPresets,
+      activePresetId: presets.activePresetId,
+      presetBaseline: presets.presetBaseline,
+      activeStation,
+      contentMainKey,
+      contentSubKey,
+      contentSubTag,
+      ladderChecked: levels.ladderChecked,
+      lowerDifficultyPreset: levels.lowerDifficultyPreset,
+      higherDifficultyPreset: levels.higherDifficultyPreset,
+      lastGlobalLadder: levels.lastGlobalLadder,
+      lastGlobalLowerDifficulty: levels.lastGlobalLowerDifficulty,
+      lastGlobalHigherDifficulty: levels.lastGlobalHigherDifficulty,
+      stationLevelPresets: levels.stationLevelPresets,
+      modsJourney,
+      ...(install ? { install } : {}),
+    })
+  }, [
+    activeStation,
+    contentMainKey,
+    contentSubKey,
+    contentSubTag,
+    game,
+    levels.higherDifficultyPreset,
+    levels.lastGlobalHigherDifficulty,
+    levels.lastGlobalLadder,
+    levels.lastGlobalLowerDifficulty,
+    levels.ladderChecked,
+    levels.lowerDifficultyPreset,
+    levels.stationLevelPresets,
+    modsJourney,
+    presets.activePresetId,
+    presets.allSelectionPresets,
+    presets.presetBaseline,
+    route.finishedStations,
+    routeUnlocked,
+    selectedIds,
+    model,
+  ])
+
+  const { sessionStoreRef, persistGameSlice } = useAppSessionPersistence({
+    game,
+    appPhase,
+    buildGameSession,
+  })
+
+  const onInstallSessionChange = useCallback((session: PersistedInstallSession | null) => {
+    installSnapshotRef.current = session ?? undefined
+  }, [])
+
+  function applyGameSession(next: SelectedGame, raw: GameSession | undefined) {
+    if (!raw) {
+      setGame(next)
+      setRouteUnlocked(false)
+      setSelectedIds(createInitialSelection(model, next))
+      levels.seedFixesBaseline(next)
+      presets.restoreSelectionPresetsState({
+        presets: [],
+        activePresetId: null,
+        presetBaseline: null,
+      })
+      route.resetFinishedStations()
+      setActiveStation('engine')
+      setContentMainKey(null)
+      setContentSubKey(null)
+      setContentSubTag(null)
+      setModsJourney(null)
+      installSnapshotRef.current = undefined
+      setRestoredInstallSession(undefined)
+    } else {
+      const session = sanitizeComponentsSession(model, next, raw)
+      const install = sanitizeInstallSession(
+        model,
+        next,
+        new Set(session.selectedIds),
+        raw.install,
+      )
+      setGame(next)
+      setRouteUnlocked(session.routeUnlocked)
+      setSelectedIds(new Set(session.selectedIds))
+      levels.restoreLevelState(levelPresetsInitialFromSession(session))
+      presets.restoreSelectionPresetsState({
+        presets: session.selectionPresets,
+        activePresetId: session.activePresetId,
+        presetBaseline: session.presetBaseline,
+      })
+      route.replaceFinishedStations(session.finishedStations)
+      setActiveStation(session.activeStation)
+      setContentMainKey(session.contentMainKey)
+      setContentSubKey(session.contentSubKey)
+      setContentSubTag(session.contentSubTag)
+      setModsJourney(session.modsJourney)
+      installSnapshotRef.current = install
+      setRestoredInstallSession(install)
+    }
     setSearchScope('section')
     clearFocus()
+  }
+
+  function applyChooseGame(next: SelectedGame) {
+    if (game) {
+      persistGameSlice(game)
+    }
+    const raw = sessionStoreRef.current.byGame[next]
+    applyGameSession(next, raw)
   }
 
   function chooseGame(next: SelectedGame) {
@@ -817,6 +963,7 @@ function AppShell() {
         >
           <div className="app-main mods-app-main install-app-main">
             <InstallStation
+              key={game ?? 'no-game'}
               model={model}
               selectedIds={selectedIds}
               game={game}
@@ -829,6 +976,8 @@ function AppShell() {
               onOpenSettings={openSettings}
               onOpenSettingsForMissing={openSettingsForMissing}
               onBusyChange={onInstallBusyChange}
+              initialInstallSession={restoredInstallSession}
+              onInstallSessionChange={onInstallSessionChange}
             />
           </div>
         </div>

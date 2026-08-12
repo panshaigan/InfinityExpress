@@ -12,7 +12,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { canSetBreakpoint, isStepDone, stepIndexById } from '../../lib/install/cursor'
-import { stepDurationLabel } from '../../lib/install/formatDuration'
+import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
 import type { InstallRunState, InstallStep, StepProgress } from '../../lib/install/types'
 import { expandStepsToTableRows } from '../../lib/install/planBuilder'
 import {
@@ -349,6 +349,7 @@ interface Props {
   cursorStepId: string | null
   /** Soft pulse while install is actively running. */
   cursorLive?: boolean
+  runState?: InstallRunState | null
   hideInstalled: boolean
   tableActions: InstallTableActions | null
   onSelectStep: (stepId: string, componentId: string) => void
@@ -362,6 +363,7 @@ export function InstallTable({
   selectedComponentId,
   cursorStepId,
   cursorLive = false,
+  runState = null,
   hideInstalled,
   tableActions,
   onSelectStep,
@@ -393,8 +395,8 @@ export function InstallTable({
   const rowRefs = useRef(new Map<string, HTMLTableRowElement>())
 
   const anyRunning = useMemo(
-    () => steps.some((s) => !!s.startedAt && !s.finishedAt),
-    [steps],
+    () => steps.some((s) => isStepDurationLive(s, runState)),
+    [runState, steps],
   )
 
   useEffect(() => {
@@ -543,7 +545,7 @@ export function InstallTable({
               const category = eff?.category?.trim() || ''
               const type = eff?.type?.trim() || ''
               const duration =
-                step != null ? stepDurationLabel(step, nowMs) : null
+                step != null ? stepDurationLabel(step, nowMs, runState) : null
               const batchClass =
                 row.batchSize > 1
                   ? row.isFirstInStep

@@ -21,6 +21,7 @@ export function useRouteNav(args: {
   dismissRouteTip: () => void
   /** Called when Done finishes the last unfinished station (no next screen). */
   onRouteJustCompleted?: () => void
+  initialFinishedStations?: readonly StationSlot[]
 }) {
   const {
     game,
@@ -38,10 +39,11 @@ export function useRouteNav(args: {
     showRouteTip,
     dismissRouteTip,
     onRouteJustCompleted,
+    initialFinishedStations,
   } = args
 
   const [finishedStations, setFinishedStations] = useState<Set<StationSlot>>(
-    () => new Set(),
+    () => new Set(initialFinishedStations ?? []),
   )
   const [hideCaughtUp, setHideCaughtUp] = useState(false)
 
@@ -177,6 +179,10 @@ export function useRouteNav(args: {
     setFinishedStations(new Set())
   }
 
+  function replaceFinishedStations(slots: readonly StationSlot[]) {
+    setFinishedStations(new Set(slots))
+  }
+
   /** Clear done marks on component stations; Engine and Presets stay finished. */
   function reopenEntireRoute() {
     setFinishedStations(new Set(['engine', 'presets']))
@@ -199,6 +205,7 @@ export function useRouteNav(args: {
     finishEntireRoute,
     unmarkStationFinished,
     resetFinishedStations,
+    replaceFinishedStations,
     reopenEntireRoute,
   }
 }

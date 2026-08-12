@@ -31,6 +31,10 @@ import {
 } from './InstallControlIcons'
 import { IconTip } from '../IconTip'
 import { useToast } from '../toasts/toastContext'
+import {
+  buildPersistedInstallSession,
+  type PersistedInstallSession,
+} from '../../lib/ui/appSessionPrefs'
 
 interface Props {
   model: InstallSequenceModel
@@ -45,6 +49,8 @@ interface Props {
   onOpenSettings: () => void
   onOpenSettingsForMissing: (missing: MissingInstallPath[]) => void
   onBusyChange?: (busy: boolean) => void
+  initialInstallSession?: PersistedInstallSession
+  onInstallSessionChange?: (session: PersistedInstallSession | null) => void
 }
 
 function allModsPresent(needed: string[], mods: WorkingMod[]): boolean {
@@ -68,6 +74,8 @@ export function InstallStation({
   onOpenSettings,
   onOpenSettingsForMissing,
   onBusyChange,
+  initialInstallSession,
+  onInstallSessionChange,
 }: Props) {
   const { pushToast } = useToast()
   const [pathTick, setPathTick] = useState(0)
@@ -104,14 +112,29 @@ export function InstallStation({
     sendInput,
     appendCommandLine,
     pausePending,
+    paused,
     stopping,
     skipping,
     goingPrevious,
-  } = useInstallRun({ model, selectedIds, game, gameFolders })
+  } = useInstallRun({
+    model,
+    selectedIds,
+    game,
+    gameFolders,
+    initialInstallState: initialInstallSession
+      ? { installSession: initialInstallSession }
+      : null,
+  })
 
-  const [selectedStepId, setSelectedStepId] = useState<string | null>(null)
-  const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null)
-  const [hideInstalled, setHideInstalled] = useState(false)
+  const [selectedStepId, setSelectedStepId] = useState<string | null>(
+    () => initialInstallSession?.ui.selectedStepId ?? null,
+  )
+  const [selectedComponentId, setSelectedComponentId] = useState<string | null>(
+    () => initialInstallSession?.ui.selectedComponentId ?? null,
+  )
+  const [hideInstalled, setHideInstalled] = useState(
+    () => initialInstallSession?.ui.hideInstalled ?? false,
+  )
   const [consoleCollapsed, setConsoleCollapsed] = useState(false)
   const [backupDialog, setBackupDialog] = useState<BackupDialogMode | null>(null)
   const [backupManageTab, setBackupManageTab] = useState<'backup' | 'restore'>('backup')
@@ -127,12 +150,45 @@ export function InstallStation({
     danger?: boolean
     onConfirm: () => void
   } | null>(null)
-  const [runElapsedMs, setRunElapsedMs] = useState(0)
+  const [runElapsedMs, setRunElapsedMs] = useState(
+    () => initialInstallSession?.ui.runElapsedMs ?? 0,
+  )
   const prevRunStateRef = useRef(run?.runState ?? null)
   const promptedMissingPathsRef = useRef(false)
-  const runElapsedAccumRef = useRef(0)
+  const runElapsedAccumRef = useRef(initialInstallSession?.ui.runElapsedMs ?? 0)
   const runSegmentStartRef = useRef<number | null>(null)
   const timedRunIdRef = useRef<string | null>(null)
+  const restoredRunIdRef = useRef(initialInstallSession?.run.runId ?? null)
+  const restoredElapsedRef = useRef(initialInstallSession?.ui.runElapsedMs ?? 0)
+
+  useEffect(() => {
+    if (!onInstallSessionChange || !game || !run || run.runState === 'idle') {
+      onInstallSessionChange?.(null)
+      return
+    }
+    onInstallSessionChange(
+      buildPersistedInstallSession({
+        game,
+        selectedIds,
+        run,
+        paused,
+        selectedStepId,
+        selectedComponentId,
+        hideInstalled,
+        runElapsedMs,
+      }),
+    )
+  }, [
+    game,
+    hideInstalled,
+    onInstallSessionChange,
+    paused,
+    run,
+    runElapsedMs,
+    selectedComponentId,
+    selectedIds,
+    selectedStepId,
+  ])
 
   const steps = run?.steps ?? planSteps.map((s) => ({
     ...s,
@@ -198,9 +254,14 @@ export function InstallStation({
   useEffect(() => {
     if (runId !== timedRunIdRef.current) {
       timedRunIdRef.current = runId
-      runElapsedAccumRef.current = 0
-      runSegmentStartRef.current = null
-      setRunElapsedMs(0)
+      if (runId && runId === restoredRunIdRef.current) {
+        runElapsedAccumRef.current = restoredElapsedRef.current
+        setRunElapsedMs(restoredElapsedRef.current)
+      } else {
+        runElapsedAccumRef.current = 0
+        runSegmentStartRef.current = null
+        setRunElapsedMs(0)
+      }
     }
 
     if (!runId || runState == null || runState === 'idle') {
@@ -661,6 +722,7 @@ export function InstallStation({
             selectedComponentId={selectedComponentId}
             cursorStepId={cursorStepId ?? steps[0]?.stepId ?? null}
             cursorLive={run?.runState === 'running' && !pausePending}
+            runState={run?.runState ?? null}
             hideInstalled={hideInstalled}
             tableActions={tableActions}
             onSelectStep={onSelectStep}
@@ -669,6 +731,7 @@ export function InstallStation({
         <InstallDetailPane
           step={selectedStep}
           selectedComponentId={selectedComponentId}
+          runState={run?.runState ?? null}
           model={model}
           mods={mods}
           collapsed={detailCollapsed}

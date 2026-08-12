@@ -1,5 +1,3 @@
-import { IconTip } from './IconTip'
-
 interface Props {
   visible: boolean
   selectedCount: number
@@ -13,9 +11,11 @@ export function RouteCaughtUp({
   visible,
   selectedCount,
   onOpenMods,
-  onExport,
-  onDismiss,
+  onExport: _onExport,
+  onDismiss: _onDismiss,
 }: Props) {
+  void _onExport
+  void _onDismiss
   if (!visible) return null
 
   return (

@@ -34,6 +34,9 @@ export function useSelectionPresetsState(args: {
   setLastGlobalHigherDifficulty: Dispatch<SetStateAction<boolean>>
   stationLevelPresets: StationLevelMap
   setStationLevelPresets: Dispatch<SetStateAction<StationLevelMap>>
+  initialPresets?: readonly SelectionPreset[]
+  initialActivePresetId?: string | null
+  initialPresetBaseline?: string | null
 }) {
   const {
     game,
@@ -53,11 +56,20 @@ export function useSelectionPresetsState(args: {
     setLastGlobalHigherDifficulty,
     stationLevelPresets,
     setStationLevelPresets,
+    initialPresets,
+    initialActivePresetId,
+    initialPresetBaseline,
   } = args
 
-  const [selectionPresets, setSelectionPresets] = useState<SelectionPreset[]>(() => [])
-  const [activePresetId, setActivePresetId] = useState<string | null>(null)
-  const [presetBaseline, setPresetBaseline] = useState<string | null>(null)
+  const [selectionPresets, setSelectionPresets] = useState<SelectionPreset[]>(
+    () => [...(initialPresets ?? [])],
+  )
+  const [activePresetId, setActivePresetId] = useState<string | null>(
+    () => initialActivePresetId ?? null,
+  )
+  const [presetBaseline, setPresetBaseline] = useState<string | null>(
+    () => initialPresetBaseline ?? null,
+  )
   const [presetNotice, setPresetNotice] = useState<{
     name: string
     added: number
@@ -203,10 +215,22 @@ export function useSelectionPresetsState(args: {
     setPresetBaseline(null)
   }
 
+  function restoreSelectionPresetsState(input: {
+    presets: readonly SelectionPreset[]
+    activePresetId: string | null
+    presetBaseline: string | null
+  }) {
+    setSelectionPresets([...input.presets])
+    setActivePresetId(input.activePresetId)
+    setPresetBaseline(input.presetBaseline)
+  }
+
   return {
     gamePresets,
+    allSelectionPresets: selectionPresets,
     activePreset,
     activePresetId,
+    presetBaseline,
     presetDirty,
     presetNotice,
     setPresetNotice,
@@ -215,5 +239,6 @@ export function useSelectionPresetsState(args: {
     renameSelectionPreset,
     deleteSelectionPreset,
     resetPresetSelection,
+    restoreSelectionPresetsState,
   }
 }

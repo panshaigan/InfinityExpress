@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import type { InstallStep } from '../../lib/install/types'
+import type { InstallRunState, InstallStep } from '../../lib/install/types'
 import { consoleLineTone } from '../../lib/install/consoleLineHighlight'
-import { stepDurationLabel } from '../../lib/install/formatDuration'
+import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
 import { readTextFile } from '../../lib/desktop/fsDialogs'
 import {
   effectiveModFields,
@@ -53,6 +53,7 @@ function filterResultLinesFromText(text: string): string[] {
 interface Props {
   step: InstallStep | null
   selectedComponentId: string | null
+  runState?: InstallRunState | null
   model: InstallSequenceModel
   mods: WorkingMod[]
   collapsed: boolean
@@ -153,6 +154,7 @@ const LOG_LABELS: Record<Exclude<LogKind, 'results'>, string> = {
 export function InstallDetailPane({
   step,
   selectedComponentId,
+  runState = null,
   model,
   mods,
   collapsed,
@@ -179,8 +181,8 @@ export function InstallDetailPane({
     ? mods.find((m) => m.codename.toLowerCase() === step.modId.toLowerCase())
     : undefined
   const eff = mod ? effectiveModFields(mod) : null
-  const durationLive = !!step?.startedAt && !step.finishedAt
-  const durationLabel = step ? stepDurationLabel(step, nowMs) : null
+  const durationLive = step != null && isStepDurationLive(step, runState)
+  const durationLabel = step ? stepDurationLabel(step, nowMs, runState) : null
   const stepProcessed = step != null && PROCESSED.has(step.status)
   const canOpenResults =
     stepProcessed &&
