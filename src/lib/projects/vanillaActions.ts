@@ -1,6 +1,6 @@
 import { backupGameDir, listBackups, prepareProjectDestination } from '../desktop/weiduInstall'
 import { GAME_FOLDER_EXE, probeGameFolder } from '../desktop/gameExe'
-import { isDesktopApp } from '../desktop/fsDialogs'
+import { ensureDir, isDesktopApp } from '../desktop/fsDialogs'
 import { readAppDirPaths } from '../ui/appDirPrefs'
 import type { GameFolderKey } from '../ui/gameFolderPrefs'
 import type { PrepareDestinationResult } from './types'
@@ -28,6 +28,20 @@ export async function syncManagedVanillasFromDisk(): Promise<void> {
       /* ignore per-key */
     }
   }
+}
+
+/** Ensure the main data folder exists (create parents if needed) and is usable. */
+export async function ensureMainDataFolder(path: string): Promise<string> {
+  const trimmed = path.trim()
+  if (!trimmed) throw new Error('Required')
+  if (isDesktopApp()) {
+    try {
+      await ensureDir(trimmed)
+    } catch (err) {
+      throw new Error(String(err))
+    }
+  }
+  return trimmed
 }
 
 /** Create a managed vanilla under the data root from an unmodded source folder. */

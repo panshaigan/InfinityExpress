@@ -361,11 +361,13 @@ export function SettingsDialog({
               />
               <DirectoryField
                 id="settings-backup-dir"
-                label="Main data folder (backups, logs, project data)"
+                label="Main data folder"
+                tip="Stores vanilla backups, install logs, and project data for Infinity Express."
+                tipAriaLabel="About main data folder"
                 value={appDirs.backupDir}
                 onChange={(value) => setAppDir('backupDir', value)}
-                placeholder="Select data folder…"
-                browseTitle="Select main data folder folder"
+                placeholder="Select or type the path…"
+                browseTitle="Select main data folder"
                 error={missingFieldError('backupDir')}
                 required={activeMissing.includes('backupDir')}
               />

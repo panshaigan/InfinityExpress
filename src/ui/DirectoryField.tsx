@@ -1,4 +1,6 @@
+import type { ReactNode } from 'react'
 import { isDesktopApp, pickDirectory } from '../lib/desktop/fsDialogs'
+import { IconTip } from './IconTip'
 import { OutlinedTextField } from './OutlinedTextField'
 
 interface Props {
@@ -15,6 +17,9 @@ interface Props {
   /** Validation message when the folder is not a valid game dir. */
   error?: string | null
   required?: boolean
+  /** Help tip shown via a trailing ? control (GitHub-token pattern). */
+  tip?: ReactNode
+  tipAriaLabel?: string
 }
 
 export function DirectoryField({
@@ -28,6 +33,8 @@ export function DirectoryField({
   hint,
   error = null,
   required = false,
+  tip,
+  tipAriaLabel = 'About this field',
 }: Props) {
   const canBrowse = isDesktopApp()
   const labelWithHint = hint?.trim() ? `${label} (${hint.trim()})` : label
@@ -54,19 +61,33 @@ export function DirectoryField({
       error={error}
       required={required}
       trailing={
-        <button
-          type="button"
-          className="btn secondary outlined-text-field-action has-icon-tip"
-          onClick={() => void browse()}
-          disabled={!canBrowse}
-        >
-          Browse
-          <span className="icon-tip" role="tooltip">
-            {canBrowse
-              ? browseTitle
-              : 'Browse is available in the desktop app'}
-          </span>
-        </button>
+        <>
+          {tip != null ? (
+            <span className="has-icon-tip settings-github-tip-host">
+              <button
+                type="button"
+                className="btn secondary outlined-text-field-action settings-github-tip-btn"
+                aria-label={tipAriaLabel}
+              >
+                ?
+              </button>
+              <IconTip>{tip}</IconTip>
+            </span>
+          ) : null}
+          <button
+            type="button"
+            className="btn secondary outlined-text-field-action has-icon-tip"
+            onClick={() => void browse()}
+            disabled={!canBrowse}
+          >
+            Browse
+            <span className="icon-tip" role="tooltip">
+              {canBrowse
+                ? browseTitle
+                : 'Browse is available in the desktop app'}
+            </span>
+          </button>
+        </>
       }
     />
   )

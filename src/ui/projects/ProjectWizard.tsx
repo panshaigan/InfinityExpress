@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { readAppDirPaths, writeAppDirPaths } from '../../lib/ui/appDirPrefs'
 import { gameFolderKeysForEngine } from '../../lib/ui/installPathValidation'
 import type { GameFolderKey, GameFolderPaths } from '../../lib/ui/gameFolderPrefs'
@@ -8,15 +8,15 @@ import {
   defaultProjectName,
   destinationsForEngine,
   emptyDestinations,
+  ensureMainDataFolder,
   missingVanillaKeys,
   prepareDestinationForKey,
   readVanillaRegistry,
   registerExternalVanilla,
-  vanillaPath,
 } from '../../lib/projects'
 import { DirectoryField } from '../DirectoryField'
+import { OutlinedSelect, type OutlinedSelectOption } from '../OutlinedSelect'
 import { OutlinedTextField } from '../OutlinedTextField'
-import { IconTip } from '../IconTip'
 import { listenBackupProgress } from '../../lib/desktop/weiduInstall'
 import { isDesktopApp } from '../../lib/desktop/fsDialogs'
 
@@ -34,8 +34,26 @@ const ENGINE_ROWS: SelectedGame[][] = [
   ['iwd', 'pst'],
 ]
 
+const MAIN_DATA_FOLDER_TIP =
+  'Stores vanilla backups, install logs, and project data for Infinity Express.'
+
+const VANILLA_FOLDER_TIP =
+  'Point at an untouched fresh installation — no mods applied yet.'
+
 type WizardStep = 'engine' | 'vanilla' | 'destination'
 type VanillaErrorKey = GameFolderKey | 'backupDir'
+type VanillaMethod = 'create' | 'external'
+
+const VANILLA_METHOD_OPTIONS: OutlinedSelectOption[] = [
+  {
+    value: 'create',
+    label: 'Use this folder to create a clean backup',
+  },
+  {
+    value: 'external',
+    label: 'Use this folder as the clean backup',
+  },
+]
 
 interface Props {
   onCancel: () => void
@@ -48,11 +66,16 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
   const [step, setStep] = useState<WizardStep>('engine')
   const [engine, setEngine] = useState<SelectedGame | null>(null)
   const [name, setName] = useState('')
+  const autofilledNameRef = useRef<string | null>(null)
   const [destinations, setDestinations] = useState<GameFolderPaths>(emptyDestinations)
   const [destErrors, setDestErrors] = useState<Partial<Record<GameFolderKey, string>>>({})
-  const [vanillaBusyKey, setVanillaBusyKey] = useState<GameFolderKey | null>(null)
+  const [vanillaBusy, setVanillaBusy] = useState(false)
   const [vanillaErrors, setVanillaErrors] = useState<Partial<Record<VanillaErrorKey, string>>>({})
   const [vanillaSource, setVanillaSource] = useState<Partial<Record<GameFolderKey, string>>>({})
+  const [vanillaMethod, setVanillaMethod] = useState<
+    Partial<Record<GameFolderKey, VanillaMethod>>
+  >({})
+  const [openMethodKey, setOpenMethodKey] = useState<GameFolderKey | null>(null)
   const [progressMsg, setProgressMsg] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [registryTick, setRegistryTick] = useState(0)
@@ -62,6 +85,7 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
   const registry = useMemo(() => readVanillaRegistry(), [registryTick])
   const missingVanilla = engine ? missingVanillaKeys(engine, registry) : []
   const destKeys = engine ? gameFolderKeysForEngine(engine) : []
+  const footerBusy = submitting || vanillaBusy
 
   useEffect(() => {
     if (!isDesktopApp()) return
@@ -87,9 +111,20 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
     })
   }
 
+  function methodFor(key: GameFolderKey): VanillaMethod {
+    return vanillaMethod[key] ?? 'create'
+  }
+
   function chooseEngine(next: SelectedGame) {
     setEngine(next)
-    setName((prev) => (prev.trim() ? prev : defaultProjectName(next)))
+    const suggested = defaultProjectName(next)
+    setName((prev) => {
+      if (!prev.trim() || prev === autofilledNameRef.current) {
+        autofilledNameRef.current = suggested
+        return suggested
+      }
+      return prev
+    })
   }
 
   function goAfterEngine() {
@@ -103,69 +138,61 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
     }
   }
 
-  function goAfterVanilla() {
+  async function goAfterVanilla() {
     if (!engine) return
-    const missing = missingVanillaKeys(engine)
-    if (missing.length > 0) {
-      const next: Partial<Record<VanillaErrorKey, string>> = {}
-      for (const key of missing) {
-        next[key] = 'Set vanilla before continuing'
+    const keys = missingVanillaKeys(engine)
+    const nextErrors: Partial<Record<VanillaErrorKey, string>> = {}
+
+    const backupDir = appDirs.backupDir.trim()
+    if (!backupDir) {
+      nextErrors.backupDir = 'Required'
+    }
+
+    for (const key of keys) {
+      if (!vanillaSource[key]?.trim()) {
+        nextErrors[key] = 'Required'
       }
-      setVanillaErrors((prev) => ({ ...prev, ...next }))
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setVanillaErrors((prev) => ({ ...prev, ...nextErrors }))
       return
     }
+
+    setVanillaBusy(true)
     setVanillaErrors({})
-    setStep('destination')
-  }
-
-  async function onCreateManaged(key: GameFolderKey) {
-    const source = vanillaSource[key]?.trim()
-    if (!source) {
-      setVanillaErrors((prev) => ({
-        ...prev,
-        [key]: 'Pick an unmodded game folder to copy from',
-      }))
-      return
-    }
-    if (!appDirs.backupDir.trim()) {
-      setVanillaErrors((prev) => ({
-        ...prev,
-        backupDir: 'Set the main data folder first',
-      }))
-      return
-    }
-    setVanillaBusyKey(key)
-    clearVanillaError(key)
-    clearVanillaError('backupDir')
+    setProgressMsg(null)
     try {
-      await createManagedVanillaFromFolder(key, source)
+      try {
+        const ensured = await ensureMainDataFolder(backupDir)
+        const nextDirs = { ...appDirs, backupDir: ensured }
+        setAppDirs(nextDirs)
+        writeAppDirPaths(nextDirs)
+      } catch (err) {
+        setVanillaErrors({ backupDir: String(err) })
+        return
+      }
+
+      for (const key of keys) {
+        const source = vanillaSource[key]!.trim()
+        try {
+          if (methodFor(key) === 'create') {
+            await createManagedVanillaFromFolder(key, source)
+          } else {
+            await registerExternalVanilla(key, source)
+          }
+        } catch (err) {
+          setVanillaErrors({ [key]: String(err) })
+          refreshRegistry()
+          return
+        }
+      }
+
       refreshRegistry()
-    } catch (err) {
-      setVanillaErrors((prev) => ({ ...prev, [key]: String(err) }))
+      setStep('destination')
     } finally {
-      setVanillaBusyKey(null)
+      setVanillaBusy(false)
       setProgressMsg(null)
-    }
-  }
-
-  async function onUseExternal(key: GameFolderKey) {
-    const source = vanillaSource[key]?.trim()
-    if (!source) {
-      setVanillaErrors((prev) => ({
-        ...prev,
-        [key]: 'Pick an unmodded game folder',
-      }))
-      return
-    }
-    setVanillaBusyKey(key)
-    clearVanillaError(key)
-    try {
-      await registerExternalVanilla(key, source)
-      refreshRegistry()
-    } catch (err) {
-      setVanillaErrors((prev) => ({ ...prev, [key]: String(err) }))
-    } finally {
-      setVanillaBusyKey(null)
     }
   }
 
@@ -216,7 +243,10 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
             id="project-wizard-name"
             label="Project name"
             value={name}
-            onChange={setName}
+            onChange={(value) => {
+              setName(value)
+              if (!value.trim()) autofilledNameRef.current = null
+            }}
             placeholder="Enter a name…"
           />
           {ENGINE_ROWS.map((row) => (
@@ -244,7 +274,9 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
         <div className="project-wizard-vanilla">
           <DirectoryField
             id="project-wizard-data-root"
-            label="Main data folder (backups, logs, project data)"
+            label="Main data folder"
+            tip={MAIN_DATA_FOLDER_TIP}
+            tipAriaLabel="About main data folder"
             value={appDirs.backupDir}
             onChange={(value) => {
               const next = { ...appDirs, backupDir: value }
@@ -252,59 +284,48 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
               writeAppDirPaths(next)
               clearVanillaError('backupDir')
             }}
-            placeholder="Select data folder…"
-            browseTitle="Select main data folder folder"
+            placeholder="Select or type the path…"
+            browseTitle="Select main data folder"
             error={vanillaErrors.backupDir ?? null}
+            required
           />
-          {missingVanilla.map((key) => {
-            const binding = registry[key]
-            return (
-              <div key={key} className="project-wizard-vanilla-block">
-                <h3>{GAME_LABELS[key]}</h3>
-                {binding ? (
-                  <p className="hint">
-                    Set ({binding.mode}): {vanillaPath(binding)}
-                  </p>
-                ) : (
-                  <>
-                    <DirectoryField
-                      id={`project-wizard-vanilla-src-${key}`}
-                      label="Vanilla game folder"
-                      value={vanillaSource[key] ?? ''}
-                      onChange={(value) => {
-                        setVanillaSource((prev) => ({ ...prev, [key]: value }))
-                        clearVanillaError(key)
-                      }}
-                      placeholder="Path to unmodded game…"
-                      browseTitle={`Select unmodded ${GAME_LABELS[key]}`}
-                      error={vanillaErrors[key] ?? null}
-                    />
-                    <div className="project-wizard-vanilla-actions">
-                      <button
-                        type="button"
-                        className="btn primary has-icon-tip"
-                        disabled={vanillaBusyKey === key}
-                        onClick={() => void onCreateManaged(key)}
-                      >
-                        Create vanilla backup from folder
-                        <IconTip>
-                          Copies into the backups directory (recommended).
-                        </IconTip>
-                      </button>
-                      <button
-                        type="button"
-                        className="btn secondary"
-                        disabled={vanillaBusyKey === key}
-                        onClick={() => void onUseExternal(key)}
-                      >
-                        Use folder as vanilla
-                      </button>
-                    </div>
-                  </>
-                )}
+          {missingVanilla.map((key) => (
+            <div key={key} className="project-wizard-vanilla-block">
+              <h3>{GAME_LABELS[key]}</h3>
+              <div className="project-wizard-vanilla-fields">
+                <DirectoryField
+                  id={`project-wizard-vanilla-src-${key}`}
+                  label="Vanilla game folder"
+                  tip={VANILLA_FOLDER_TIP}
+                  tipAriaLabel="About vanilla game folder"
+                  value={vanillaSource[key] ?? ''}
+                  onChange={(value) => {
+                    setVanillaSource((prev) => ({ ...prev, [key]: value }))
+                    clearVanillaError(key)
+                  }}
+                  placeholder="Select or type the path…"
+                  browseTitle={`Select unmodded ${GAME_LABELS[key]}`}
+                  error={vanillaErrors[key] ?? null}
+                  required
+                />
+                <OutlinedSelect
+                  label="Backup method"
+                  className="outlined-field-wide"
+                  value={methodFor(key)}
+                  options={VANILLA_METHOD_OPTIONS}
+                  open={openMethodKey === key}
+                  onOpenChange={(open) => setOpenMethodKey(open ? key : null)}
+                  onChange={(value) =>
+                    setVanillaMethod((prev) => ({
+                      ...prev,
+                      [key]: value as VanillaMethod,
+                    }))
+                  }
+                  disabled={vanillaBusy}
+                />
               </div>
-            )
-          })}
+            </div>
+          ))}
           {progressMsg ? <p className="hint">{progressMsg}</p> : null}
         </div>
       ) : null}
@@ -338,7 +359,12 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
 
       <footer className="project-wizard-footer">
         {canCancel ? (
-          <button type="button" className="btn secondary" onClick={onCancel} disabled={submitting}>
+          <button
+            type="button"
+            className="btn secondary lg"
+            onClick={onCancel}
+            disabled={footerBusy}
+          >
             Cancel
           </button>
         ) : (
@@ -348,8 +374,8 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
           {step !== 'engine' ? (
             <button
               type="button"
-              className="btn secondary"
-              disabled={submitting}
+              className="btn secondary lg"
+              disabled={footerBusy}
               onClick={() =>
                 setStep(
                   step === 'destination'
@@ -366,7 +392,7 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
           {step === 'engine' ? (
             <button
               type="button"
-              className="btn primary"
+              className="btn primary lg"
               disabled={!engine || !name.trim()}
               onClick={goAfterEngine}
             >
@@ -374,14 +400,19 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
             </button>
           ) : null}
           {step === 'vanilla' ? (
-            <button type="button" className="btn primary" onClick={goAfterVanilla}>
-              Continue
+            <button
+              type="button"
+              className="btn primary lg"
+              disabled={vanillaBusy}
+              onClick={() => void goAfterVanilla()}
+            >
+              {vanillaBusy ? 'Preparing…' : 'Continue'}
             </button>
           ) : null}
           {step === 'destination' ? (
             <button
               type="button"
-              className="btn primary"
+              className="btn primary lg"
               disabled={submitting}
               onClick={() => void finish()}
             >
