@@ -1,6 +1,6 @@
 import { backupGameDir, listBackups, prepareProjectDestination } from '../desktop/weiduInstall'
 import { GAME_FOLDER_EXE, probeGameFolder } from '../desktop/gameExe'
-import { ensureDir, isDesktopApp } from '../desktop/fsDialogs'
+import { ensureDir, isDesktopApp, validateCreatableDir, dirIsEmpty } from '../desktop/fsDialogs'
 import { readAppDirPaths } from '../ui/appDirPrefs'
 import type { GameFolderKey } from '../ui/gameFolderPrefs'
 import type { PrepareDestinationResult } from './types'
@@ -30,10 +30,23 @@ export async function syncManagedVanillasFromDisk(): Promise<void> {
   }
 }
 
-/** Ensure the main data folder exists (create parents if needed) and is usable. */
-export async function ensureMainDataFolder(path: string): Promise<string> {
+/** Validate the main data folder path (may not exist yet if parent does). */
+export async function validateMainDataFolder(path: string): Promise<string> {
   const trimmed = path.trim()
   if (!trimmed) throw new Error('Required')
+  if (isDesktopApp()) {
+    try {
+      await validateCreatableDir(trimmed)
+    } catch (err) {
+      throw new Error(String(err))
+    }
+  }
+  return trimmed
+}
+
+/** Ensure the main data folder exists (create if missing) and is usable. */
+export async function ensureMainDataFolder(path: string): Promise<string> {
+  const trimmed = await validateMainDataFolder(path)
   if (isDesktopApp()) {
     try {
       await ensureDir(trimmed)
@@ -41,6 +54,39 @@ export async function ensureMainDataFolder(path: string): Promise<string> {
       throw new Error(String(err))
     }
   }
+  return trimmed
+}
+
+/**
+ * Validate a project destination folder:
+ * - missing / creatable (parent exists) → OK (will create + copy)
+ * - existing empty → OK (will copy)
+ * - existing non-empty → must have game exe and no WeiDU.log
+ */
+export async function validateDestinationFolder(
+  key: GameFolderKey,
+  path: string,
+): Promise<string> {
+  const trimmed = path.trim()
+  if (!trimmed) throw new Error('Required')
+  if (!isDesktopApp()) return trimmed
+
+  try {
+    await validateCreatableDir(trimmed)
+  } catch (err) {
+    throw new Error(String(err))
+  }
+
+  let empty = false
+  try {
+    empty = await dirIsEmpty(trimmed)
+  } catch (err) {
+    throw new Error(String(err))
+  }
+  if (empty) return trimmed
+
+  const probe = await probeGameFolder(key, trimmed)
+  if (!probe.ok) throw new Error(probe.error)
   return trimmed
 }
 

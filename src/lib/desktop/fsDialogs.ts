@@ -72,3 +72,40 @@ export async function ensureDir(path: string): Promise<void> {
   if (!isDesktopApp() || !path.trim()) return
   await invoke('ensure_dir', { path: path.trim() })
 }
+
+/**
+ * Validate a folder path that may not exist yet: if missing, its parent must
+ * already be a directory. Existing paths must be directories.
+ */
+export async function validateCreatableDir(path: string): Promise<void> {
+  const trimmed = path.trim()
+  if (!trimmed) throw new Error('Required')
+  if (!isDesktopApp()) return
+  await invoke('validate_creatable_dir', { path: trimmed })
+}
+
+/** True when the game folder contains WeiDU.log (likely already modded). */
+export async function gameDirHasWeiduLog(gameDir: string): Promise<boolean> {
+  if (!isDesktopApp() || !gameDir.trim()) return false
+  try {
+    return await invoke<boolean>('game_dir_has_weidu_log', {
+      gameDir: gameDir.trim(),
+    })
+  } catch {
+    return false
+  }
+}
+
+/** True when the path does not exist or is an empty directory. */
+export async function dirIsEmpty(path: string): Promise<boolean> {
+  const trimmed = path.trim()
+  if (!trimmed) throw new Error('Required')
+  if (!isDesktopApp()) return true
+  return invoke<boolean>('dir_is_empty', { path: trimmed })
+}
+
+/** Normalize a folder path for equality checks (trim, strip trailing separators, case-fold). */
+export function normalizeFolderPath(path: string): string {
+  const trimmed = path.trim().replace(/[/\\]+$/, '')
+  return trimmed.toLowerCase()
+}

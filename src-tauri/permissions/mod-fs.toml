@@ -19,6 +19,21 @@ description = "Create a directory and parents at an absolute path"
 commands.allow = ["ensure_dir"]
 
 [[permission]]
+identifier = "allow-validate-creatable-dir"
+description = "Validate a folder path that may be created (parent must exist)"
+commands.allow = ["validate_creatable_dir"]
+
+[[permission]]
+identifier = "allow-game-dir-has-weidu-log"
+description = "Check whether a game folder contains WeiDU.log"
+commands.allow = ["game_dir_has_weidu_log"]
+
+[[permission]]
+identifier = "allow-dir-is-empty"
+description = "Check whether a path is missing or an empty directory"
+commands.allow = ["dir_is_empty"]
+
+[[permission]]
 identifier = "allow-remove-mod-dir"
 description = "Recursively delete a named folder under the mods download directory"
 commands.allow = ["remove_mod_dir"]

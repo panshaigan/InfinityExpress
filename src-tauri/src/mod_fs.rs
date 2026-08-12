@@ -69,6 +69,85 @@ pub fn ensure_dir(path: String) -> Result<(), String> {
   fs::create_dir_all(trimmed).map_err(|e| e.to_string())
 }
 
+/// Validate a folder path that may be created: existing path must be a directory;
+/// if missing, its parent must already be an existing directory.
+#[tauri::command]
+pub fn validate_creatable_dir(path: String) -> Result<(), String> {
+  let trimmed = path.trim();
+  if trimmed.is_empty() {
+    return Err("Path is required".into());
+  }
+  let p = PathBuf::from(trimmed);
+  if p.exists() {
+    if p.is_dir() {
+      return Ok(());
+    }
+    return Err("Path exists but is not a folder".into());
+  }
+
+  let parent = p.parent().filter(|parent| !parent.as_os_str().is_empty());
+  let Some(parent) = parent else {
+    return Err("Enter a full folder path".into());
+  };
+  if !parent.exists() {
+    return Err("Parent folder does not exist".into());
+  }
+  if !parent.is_dir() {
+    return Err("Parent path is not a folder".into());
+  }
+  Ok(())
+}
+
+/// True when `game_dir` contains a WeiDU.log file (case-insensitive name).
+pub(crate) fn dir_has_weidu_log(dir: &Path) -> Result<bool, String> {
+  if !dir.is_dir() {
+    return Ok(false);
+  }
+  // Direct check is case-insensitive on Windows; also scan for other platforms.
+  if dir.join("weidu.log").is_file() || dir.join("WeiDU.log").is_file() {
+    return Ok(true);
+  }
+  let entries = fs::read_dir(dir).map_err(|e| e.to_string())?;
+  for entry in entries {
+    let entry = entry.map_err(|e| e.to_string())?;
+    if !entry.file_type().map(|t| t.is_file()).unwrap_or(false) {
+      continue;
+    }
+    if entry
+      .file_name()
+      .to_string_lossy()
+      .eq_ignore_ascii_case("weidu.log")
+    {
+      return Ok(true);
+    }
+  }
+  Ok(false)
+}
+
+/// True when `game_dir` contains a WeiDU.log file (case-insensitive name).
+#[tauri::command]
+pub fn game_dir_has_weidu_log(game_dir: String) -> Result<bool, String> {
+  dir_has_weidu_log(&PathBuf::from(game_dir.trim()))
+}
+
+/// True when the path does not exist or is an empty directory.
+#[tauri::command]
+pub fn dir_is_empty(path: String) -> Result<bool, String> {
+  let trimmed = path.trim();
+  if trimmed.is_empty() {
+    return Err("Path is required".into());
+  }
+  let p = PathBuf::from(trimmed);
+  if !p.exists() {
+    return Ok(true);
+  }
+  if !p.is_dir() {
+    return Err("Path exists but is not a folder".into());
+  }
+  let mut entries = fs::read_dir(&p).map_err(|e| e.to_string())?;
+  Ok(entries.next().is_none())
+}
+
 /// Recursively delete `download_dir/folder_name` after path-safety checks.
 /// Folder name match is case-insensitive (uses the on-disk spelling).
 #[tauri::command]

@@ -1,5 +1,5 @@
 import type { GameFolderKey } from '../ui/gameFolderPrefs'
-import { isDesktopApp } from './fsDialogs'
+import { gameDirHasWeiduLog, isDesktopApp } from './fsDialogs'
 import { readGameExeVersion } from './weiduInstall'
 
 export const GAME_FOLDER_EXE: Record<GameFolderKey, string> = {
@@ -19,7 +19,7 @@ export async function probeGameFolder(
 ): Promise<ProbeGameFolderResult> {
   const trimmed = path.trim()
   if (!trimmed) {
-    return { ok: false, error: 'Not a valid game folder' }
+    return { ok: false, error: 'Required' }
   }
   if (!isDesktopApp()) {
     // Browser preview: accept path without exe probe.
@@ -28,6 +28,12 @@ export async function probeGameFolder(
   const exeName = GAME_FOLDER_EXE[key]
   try {
     const version = await readGameExeVersion(trimmed, exeName)
+    if (await gameDirHasWeiduLog(trimmed)) {
+      return {
+        ok: false,
+        error: 'Folder looks modded (WeiDU.log found)',
+      }
+    }
     return { ok: true, version }
   } catch {
     return {
