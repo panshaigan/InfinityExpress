@@ -1,15 +1,19 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from 'react'
+import { createPortal } from 'react-dom'
+import { canSetBreakpoint, isStepDone, stepIndexById } from '../../lib/install/cursor'
 import { stepDurationLabel } from '../../lib/install/formatDuration'
-import type { InstallStep, StepProgress } from '../../lib/install/types'
+import type { InstallRunState, InstallStep, StepProgress } from '../../lib/install/types'
 import { expandStepsToTableRows } from '../../lib/install/planBuilder'
 import {
   effectiveModFields,
@@ -17,6 +21,11 @@ import {
 } from '../../lib/mods/loadMods'
 import type { InstallSequenceModel } from '../../lib/xml/schema'
 import { IconTip } from '../IconTip'
+import {
+  BreakpointIcon,
+  MoveCursorIcon,
+  UninstallBackIcon,
+} from './InstallControlIcons'
 
 export const INSTALL_TABLE_ID = 'install-table'
 
@@ -137,6 +146,196 @@ function StatusCell({
   )
 }
 
+interface InstallTableActions {
+  runState: InstallRunState | null
+  cursor: number
+  breakpointStepIds: string[]
+  canNavigate: boolean
+  onRequestUninstallBack: (stepId: string) => void
+  onToggleBreakpoint: (stepId: string) => void
+  onRequestMoveCursor: (stepId: string) => void
+}
+
+interface ContextMenuState {
+  stepId: string
+  x: number
+  y: number
+}
+
+function InstallStepContextMenu({
+  menu,
+  step,
+  stepIndex,
+  actions,
+  onClose,
+}: {
+  menu: ContextMenuState
+  step: InstallStep
+  stepIndex: number
+  actions: InstallTableActions
+  onClose: () => void
+}) {
+  const menuRef = useRef<HTMLDivElement>(null)
+  const [style, setStyle] = useState<CSSProperties>({ top: menu.y, left: menu.x })
+  const hasBreakpoint = actions.breakpointStepIds.includes(step.stepId)
+  const canBreakpoint = canSetBreakpoint(
+    step,
+    stepIndex,
+    actions.cursor,
+    actions.runState,
+  )
+  const canUninstallBack =
+    actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
+  const canMoveCursor =
+    actions.canNavigate || actions.runState === 'running' || actions.runState === 'waitingForInput'
+  const moveDisabled = stepIndex === actions.cursor
+
+  useLayoutEffect(() => {
+    const el = menuRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    let left = menu.x
+    let top = menu.y
+    if (left + rect.width > window.innerWidth - 8) {
+      left = Math.max(8, window.innerWidth - rect.width - 8)
+    }
+    if (top + rect.height > window.innerHeight - 8) {
+      top = Math.max(8, window.innerHeight - rect.height - 8)
+    }
+    setStyle({ top, left })
+  }, [menu.x, menu.y])
+
+  useEffect(() => {
+    function onPointerDown(e: PointerEvent) {
+      if (!menuRef.current?.contains(e.target as Node)) onClose()
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose()
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [onClose])
+
+  function run(action: () => void) {
+    action()
+    onClose()
+  }
+
+  return createPortal(
+    <div
+      ref={menuRef}
+      className="mods-row-context-menu install-row-context-menu"
+      role="menu"
+      aria-label="Install step actions"
+      style={style}
+    >
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={!canUninstallBack}
+        onClick={() => run(() => actions.onRequestUninstallBack(step.stepId))}
+      >
+        <UninstallBackIcon />
+        <span>Uninstall back to here</span>
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={!canBreakpoint}
+        onClick={() => run(() => actions.onToggleBreakpoint(step.stepId))}
+      >
+        <BreakpointIcon active={hasBreakpoint} />
+        <span>{hasBreakpoint ? 'Remove breakpoint' : 'Add breakpoint'}</span>
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={!canMoveCursor || moveDisabled}
+        onClick={() => run(() => actions.onRequestMoveCursor(step.stepId))}
+      >
+        <MoveCursorIcon />
+        <span>Move cursor here</span>
+      </button>
+    </div>,
+    document.body,
+  )
+}
+
+function StepActionButtons({
+  step,
+  stepIndex,
+  actions,
+}: {
+  step: InstallStep
+  stepIndex: number
+  actions: InstallTableActions
+}) {
+  const hasBreakpoint = actions.breakpointStepIds.includes(step.stepId)
+  const canBreakpoint = canSetBreakpoint(
+    step,
+    stepIndex,
+    actions.cursor,
+    actions.runState,
+  )
+  const canUninstallBack =
+    actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
+  const canMoveCursor =
+    actions.canNavigate || actions.runState === 'running' || actions.runState === 'waitingForInput'
+  const moveDisabled = stepIndex === actions.cursor
+
+  return (
+    <div className="install-row-actions" onClick={(e) => e.stopPropagation()}>
+      <span className="install-row-action-wrap has-icon-tip">
+        <button
+          type="button"
+          className="install-row-action-btn"
+          disabled={!canUninstallBack}
+          aria-label="Uninstall back to here"
+          onClick={() => actions.onRequestUninstallBack(step.stepId)}
+        >
+          <UninstallBackIcon />
+        </button>
+        <IconTip>Uninstall back to here</IconTip>
+      </span>
+      <span className="install-row-action-wrap has-icon-tip">
+        <button
+          type="button"
+          className={`install-row-action-btn${hasBreakpoint ? ' active' : ''}`}
+          disabled={!canBreakpoint}
+          aria-label={hasBreakpoint ? 'Remove breakpoint' : 'Add breakpoint'}
+          aria-pressed={hasBreakpoint}
+          onClick={() => actions.onToggleBreakpoint(step.stepId)}
+        >
+          <BreakpointIcon active={hasBreakpoint} />
+        </button>
+        <IconTip>{hasBreakpoint ? 'Remove breakpoint' : 'Add breakpoint'}</IconTip>
+      </span>
+      <span className="install-row-action-wrap has-icon-tip">
+        <button
+          type="button"
+          className="install-row-action-btn"
+          disabled={!canMoveCursor || moveDisabled}
+          aria-label="Move cursor here"
+          onClick={() => actions.onRequestMoveCursor(step.stepId)}
+        >
+          <MoveCursorIcon />
+        </button>
+        <IconTip>Move cursor here</IconTip>
+      </span>
+    </div>
+  )
+}
+
 interface Props {
   steps: InstallStep[]
   model: InstallSequenceModel
@@ -148,6 +347,7 @@ interface Props {
   /** Soft pulse while install is actively running. */
   cursorLive?: boolean
   hideInstalled: boolean
+  tableActions: InstallTableActions | null
   onSelectStep: (stepId: string, componentId: string) => void
 }
 
@@ -160,6 +360,7 @@ export function InstallTable({
   cursorStepId,
   cursorLive = false,
   hideInstalled,
+  tableActions,
   onSelectStep,
 }: Props) {
   const rows = useMemo(() => expandStepsToTableRows(steps), [steps])
@@ -184,6 +385,7 @@ export function InstallTable({
   )
 
   const [hoveredStepId, setHoveredStepId] = useState<string | null>(null)
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
   const [nowMs, setNowMs] = useState(() => Date.now())
   const rowRefs = useRef(new Map<string, HTMLTableRowElement>())
 
@@ -300,6 +502,7 @@ export function InstallTable({
             <col className="install-col-type" />
             <col className="install-col-duration" />
             <col className="install-col-status" />
+            <col className="install-col-actions" />
           </colgroup>
           <thead>
             <tr>
@@ -311,6 +514,9 @@ export function InstallTable({
               <th scope="col">Type</th>
               <th scope="col">Duration</th>
               <th scope="col">Status</th>
+              <th scope="col" className="install-col-actions-head">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody onMouseLeave={() => setHoveredStepId(null)}>
@@ -321,6 +527,9 @@ export function InstallTable({
               const focused =
                 selected && row.componentId === selectedComponentId
               const step = stepById.get(row.stepId)
+              const stepIndex = step ? stepIndexById(steps, row.stepId) : -1
+              const hasBreakpoint =
+                !!step && (tableActions?.breakpointStepIds.includes(row.stepId) ?? false)
               const mod = modsByCodename.get(row.modId.toLowerCase())
               const eff = mod ? effectiveModFields(mod) : null
               const modDisplay = eff?.name?.trim() || row.modId
@@ -345,9 +554,15 @@ export function InstallTable({
                   ref={(el) => setRowEl(row.stepId, row.componentId, el)}
                   role="row"
                   tabIndex={focused ? 0 : -1}
-                  className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${batchHover ? ' batch-hover' : ''}${focused ? ' focused' : ''}${batchClass} install-status-${row.status}`}
+                  className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${hasBreakpoint ? ' install-breakpoint' : ''}${batchHover ? ' batch-hover' : ''}${focused ? ' focused' : ''}${batchClass} install-status-${row.status}`}
                   onClick={() => selectRow(row.stepId, row.componentId)}
                   onMouseEnter={() => setHoveredStepId(row.stepId)}
+                  onContextMenu={(e) => {
+                    if (!tableActions || !step || stepIndex < 0) return
+                    e.preventDefault()
+                    selectRow(row.stepId, row.componentId)
+                    setContextMenu({ stepId: row.stepId, x: e.clientX, y: e.clientY })
+                  }}
                 >
                   <td className="install-col-num">
                     {row.isFirstInStep ? row.order : null}
@@ -388,12 +603,35 @@ export function InstallTable({
                   <td className="install-col-status">
                     <StatusCell status={row.status} progress={step?.progress} />
                   </td>
+                  <td className="install-col-actions">
+                    {row.isFirstInStep && tableActions && step && stepIndex >= 0 ? (
+                      <StepActionButtons
+                        step={step}
+                        stepIndex={stepIndex}
+                        actions={tableActions}
+                      />
+                    ) : null}
+                  </td>
                 </tr>
               )
             })}
           </tbody>
         </table>
       </div>
+      {contextMenu && tableActions ? (() => {
+        const step = stepById.get(contextMenu.stepId)
+        const stepIndex = stepIndexById(steps, contextMenu.stepId)
+        if (!step || stepIndex < 0) return null
+        return (
+          <InstallStepContextMenu
+            menu={contextMenu}
+            step={step}
+            stepIndex={stepIndex}
+            actions={tableActions}
+            onClose={() => setContextMenu(null)}
+          />
+        )
+      })() : null}
     </div>
   )
 }

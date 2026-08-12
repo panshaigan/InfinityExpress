@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useInstallRun } from '../../hooks/useInstallRun'
 import { formatPlayerDurationMs } from '../../lib/install/formatDuration'
+import { stepIndexById } from '../../lib/install/cursor'
 import { collectAdjustementsModIds } from '../../lib/install/weiduResolution'
 import { cleanupInstallArtifacts, gameDirForPhase, listBackups } from '../../lib/desktop/weiduInstall'
 import { isDesktopApp } from '../../lib/desktop/fsDialogs'
@@ -16,6 +17,7 @@ import { PATHS_CHANGED_EVENT } from '../../lib/ui/pathPrefsEvents'
 import { readWeiduPath } from '../../lib/ui/weiduPrefs'
 import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
 import { BackupManagerDialog, type BackupDialogMode } from './BackupManagerDialog'
+import { ConfirmDialog } from '../ConfirmDialog'
 import { InstallConsoleDock } from './InstallConsoleDock'
 import { InstallDetailPane } from './InstallDetailPane'
 import { InstallTable } from './InstallTable'
@@ -24,6 +26,7 @@ import {
   PauseIcon,
   PlayIcon,
   SkipNextIcon,
+  SkipPreviousIcon,
   StopIcon,
 } from './InstallControlIcons'
 import { IconTip } from '../IconTip'
@@ -92,6 +95,11 @@ export function InstallStation({
     pause,
     stop,
     skipCurrent,
+    goToPreviousStep,
+    uninstallBackToStep,
+    toggleBreakpoint,
+    moveCursorToStep,
+    canGoPrevious,
     restartFromBackup,
     sendInput,
     appendCommandLine,
@@ -108,6 +116,13 @@ export function InstallStation({
   const [backupBusy, setBackupBusy] = useState(false)
   const [cleanupOffer, setCleanupOffer] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
+  const [confirmDialog, setConfirmDialog] = useState<{
+    title: string
+    message: string
+    confirmLabel: string
+    danger?: boolean
+    onConfirm: () => void
+  } | null>(null)
   const [runElapsedMs, setRunElapsedMs] = useState(0)
   const prevRunStateRef = useRef(run?.runState ?? null)
   const promptedMissingPathsRef = useRef(false)
@@ -260,6 +275,62 @@ export function InstallStation({
       run.runState === 'stopped' ||
       run.runState === 'failed' ||
       run.runState === 'waitingForInput')
+
+  const canNavigateSteps =
+    !!run && (run.runState === 'paused' || run.runState === 'stopped')
+
+  const tableActions = useMemo(() => {
+    if (!run) return null
+    return {
+      runState: run.runState,
+      cursor: run.cursor,
+      breakpointStepIds: run.breakpointStepIds ?? [],
+      canNavigate: canNavigateSteps,
+      onRequestUninstallBack: (stepId: string) => {
+        const step = run.steps.find((s) => s.stepId === stepId)
+        const label = step?.modId ?? 'this step'
+        setConfirmDialog({
+          title: 'Uninstall back to step?',
+          message: `Uninstall packages from the cursor back to ${label}. This rolls back WeiDU components step by step.`,
+          confirmLabel: 'Uninstall',
+          danger: true,
+          onConfirm: () => {
+            setConfirmDialog(null)
+            void uninstallBackToStep(stepId)
+          },
+        })
+      },
+      onToggleBreakpoint: toggleBreakpoint,
+      onRequestMoveCursor: (stepId: string) => {
+        const targetIdx = stepIndexById(run.steps, stepId)
+        if (targetIdx < 0) return
+        const crossesInstalled =
+          targetIdx < run.cursor &&
+          run.steps
+            .slice(targetIdx, run.cursor)
+            .some(
+              (s) =>
+                s.status === 'succeeded' ||
+                s.status === 'succeededWithWarnings' ||
+                s.status === 'alreadyInstalled',
+            )
+        const label = run.steps[targetIdx]?.modId ?? 'step'
+        if (crossesInstalled && canNavigateSteps) {
+          setConfirmDialog({
+            title: 'Move cursor backward?',
+            message: `Move the install cursor to ${label}. Installed packages between the cursor and this step will remain installed until you roll back.`,
+            confirmLabel: 'Move cursor',
+            onConfirm: () => {
+              setConfirmDialog(null)
+              moveCursorToStep(stepId)
+            },
+          })
+          return
+        }
+        moveCursorToStep(stepId)
+      },
+    }
+  }, [run, canNavigateSteps, uninstallBackToStep, toggleBreakpoint, moveCursorToStep])
 
   const statusText = useMemo(() => {
     if (!run) return `${planSteps.length} steps planned`
@@ -417,6 +488,7 @@ export function InstallStation({
     setSelectedComponentId(componentId)
   }, [])
 
+  const previousTip = 'Go back one step and uninstall that package'
   const playTip = resumeFromCursor
     ? 'Resume from cursor'
     : 'Start installation'
@@ -443,6 +515,28 @@ export function InstallStation({
               >
                 {formatPlayerDurationMs(runElapsedMs)}
               </span>
+              <button
+                type="button"
+                className="btn secondary install-control-btn has-icon-tip"
+                disabled={!canGoPrevious}
+                onClick={() =>
+                  setConfirmDialog({
+                    title: 'Go to previous step?',
+                    message:
+                      'Move the cursor back one install step and uninstall that package so you can install it again.',
+                    confirmLabel: 'Go back',
+                    danger: true,
+                    onConfirm: () => {
+                      setConfirmDialog(null)
+                      void goToPreviousStep()
+                    },
+                  })
+                }
+                aria-label={previousTip}
+              >
+                <SkipPreviousIcon />
+                <IconTip>{previousTip}</IconTip>
+              </button>
               <button
                 type="button"
                 className="btn secondary install-control-btn install-control-start has-icon-tip"
@@ -535,6 +629,7 @@ export function InstallStation({
             cursorStepId={cursorStepId}
             cursorLive={run?.runState === 'running'}
             hideInstalled={hideInstalled}
+            tableActions={tableActions}
             onSelectStep={onSelectStep}
           />
         </div>
@@ -580,6 +675,16 @@ export function InstallStation({
         onRestoreDone={(path, key) => void onRestoreDone(path, key)}
         onBusyChange={setBackupBusy}
         onLog={appendCommandLine}
+      />
+
+      <ConfirmDialog
+        open={confirmDialog != null}
+        title={confirmDialog?.title ?? ''}
+        message={confirmDialog?.message ?? ''}
+        confirmLabel={confirmDialog?.confirmLabel ?? 'Continue'}
+        danger={confirmDialog?.danger}
+        onConfirm={() => confirmDialog?.onConfirm()}
+        onCancel={() => setConfirmDialog(null)}
       />
     </div>
   )

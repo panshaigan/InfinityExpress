@@ -44,8 +44,25 @@ Toolbar in `InstallStation.tsx`; state machine in `useInstallRun.ts`.
 | **Pause** | `running` or `paused` (toggle) | Soft-pause: waits until the current WeiDU process finishes, then gates before the next step. Second click unpauses. |
 | **Stop** | `running` or `waitingForInput` | Kills the WeiDU child, then runs `--force-uninstall-list` via the same `setup-{weiduId}.exe` as install; resets the interrupted step to `queued`; **keeps cursor**; `runState: 'stopped'`. Less safe than Pause (tooltip says so). |
 | **Skip** | `paused`, `stopped`, or `waitingForInput` | Marks the package at the cursor as `skipped`, advances cursor, stays halted — does **not** auto-continue. |
+| **Previous** | `paused` or `stopped` | Confirms, then moves cursor back one install step, force-uninstalls that package via `setup-{weiduId}.exe`, resets it to `queued`. |
 
 `InstallRunState` includes `stopped` (hard stop after kill/cleanup), separate from soft `paused`.
+
+When halted (`paused` / `stopped` / `waitingForInput`), cursor normalization skips `succeeded` / `alreadyInstalled` / `skipped` so the highlight stays on the next actionable package.
+
+## Table actions
+
+Install table rows (by **install step**, not component row) expose the same actions via a right-click menu and an **Actions** column:
+
+| Action | When | Behavior |
+| --- | --- | --- |
+| **Uninstall back to here** | `paused` / `stopped`; target step before cursor | Force-uninstall each package from cursor−1 down to the target step; move cursor to target. Confirms first. |
+| **Add / remove breakpoint** | Future, not-yet-installed steps | Toggle `InstallRun.breakpointStepIds`. Row class `install-breakpoint`. |
+| **Move cursor here** | `paused` / `stopped` (immediate), or while `running` / `waitingForInput` (after current step) | Sets `cursor` to the selected install step. Confirms when moving backward across installed packages. |
+
+**Breakpoints (mode B):** when the runner reaches a breakpoint step, it pauses **before staging/copying** that package (`runState: paused`, cursor on the breakpoint step).
+
+Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx) (`confirm-dialog-backdrop` / `confirm-dialog`; `danger` for destructive confirms).
 
 ## Resolve & run
 

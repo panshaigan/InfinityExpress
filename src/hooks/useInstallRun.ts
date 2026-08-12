@@ -8,6 +8,12 @@ import {
 } from '../lib/ui/gameFolderPrefs'
 import { readWeiduPath } from '../lib/ui/weiduPrefs'
 import { buildInstallPlan } from '../lib/install/planBuilder'
+import {
+  canSetBreakpoint,
+  isStepDone,
+  nextActionableCursor,
+  stepIndexById,
+} from '../lib/install/cursor'
 import { consoleLineTone } from '../lib/install/consoleLineHighlight'
 import { formatConsoleTs } from '../lib/install/formatConsoleTs'
 import type {
@@ -76,6 +82,8 @@ export function useInstallRun(options: {
   const stopRequestedRef = useRef(false)
   const activeStepIdRef = useRef<string | null>(null)
   const runRef = useRef<InstallRun | null>(null)
+  /** Skip-to-step requested while running; applied between steps. */
+  const pendingCursorStepIdRef = useRef<string | null>(null)
   /** Live WeiDU highlight lines per step; survives executeFromCursor setRun overwrites. */
   const stepResultLinesRef = useRef<Map<string, string[]>>(new Map())
 
@@ -174,6 +182,7 @@ export function useInstallRun(options: {
       steps,
       cursor: 0,
       runState: 'idle',
+      breakpointStepIds: [],
       logDir,
     }
     setRun(next)
@@ -388,6 +397,95 @@ export function useInstallRun(options: {
     [gameFolders],
   )
 
+  const withNormalizedCursor = useCallback((current: InstallRun): InstallRun => {
+    const cursor = nextActionableCursor(current.steps, current.cursor)
+    const step = current.steps[cursor]
+    setActiveStepId(step?.stepId ?? current.steps[current.cursor]?.stepId ?? null)
+    return { ...current, cursor }
+  }, [])
+
+  const ensureStepResolvedForUninstall = useCallback(
+    async (current: InstallRun, index: number): Promise<InstallStep> => {
+      let step = current.steps[index]!
+      if (step.tp2Path && step.weiduNumbers.length > 0) return step
+
+      const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
+      const weiduPath = readWeiduPath()
+      const appDirs = readAppDirPaths()
+      const gameVersion =
+        readGameFolderVersions()[gameFolderKeyForPhase(current.game, step.phase)] ?? ''
+      const componentNodes = step.componentIds
+        .map((id) => model.componentsById.get(id))
+        .filter((n): n is NonNullable<typeof n> => !!n)
+
+      const resolved = await resolveModForInstall(
+        cacheRef.current,
+        weiduPath,
+        appDirs.modsDownloadDir,
+        gameDir,
+        step.modId,
+        componentNodes,
+        gameVersion,
+      )
+
+      const weiduNumbers: number[] = []
+      for (const id of step.componentIds) {
+        const r = resolved.componentResults.get(id)
+        if (r?.weiduNumber != null) weiduNumbers.push(r.weiduNumber)
+      }
+
+      return {
+        ...step,
+        tp2Path: resolved.tp2Path,
+        stagedFolderName: resolved.stagedFolderName,
+        weiduNumbers,
+        languageIndex: resolved.languageIndex,
+      }
+    },
+    [gameFolders, model.componentsById],
+  )
+
+  const uninstallStepAtIndex = useCallback(
+    async (current: InstallRun, index: number): Promise<InstallStep> => {
+      const gameDir = gameDirForPhase(
+        current.game,
+        current.steps[index]!.phase,
+        gameFolders,
+      )
+      let step = await ensureStepResolvedForUninstall(current, index)
+
+      if (step.weiduNumbers.length > 0 && step.tp2Path && gameDir) {
+        try {
+          pushConsoleLine(
+            `[uninstall] ${step.modId} (${step.weiduNumbers.join(', ')})…`,
+          )
+          await runWeiduForceUninstall({
+            weiduPath: readWeiduPath(),
+            tp2Path: step.tp2Path,
+            gameDir,
+            componentNumbers: step.weiduNumbers,
+            languageIndex: step.languageIndex ?? 0,
+          })
+          pushConsoleLine(`[uninstall] Finished ${step.modId}`)
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          pushConsoleLine(`[error] Uninstall failed: ${message}`)
+        }
+      }
+
+      return {
+        ...mergeStepResultLines(step),
+        status: 'queued',
+        progress: null,
+        errors: [],
+        warnings: [],
+        finishedAt: undefined,
+        startedAt: undefined,
+      }
+    },
+    [ensureStepResolvedForUninstall, gameFolders, mergeStepResultLines, pushConsoleLine],
+  )
+
   const applyStoppedAtCursor = useCallback(
     async (
       current: InstallRun,
@@ -449,6 +547,18 @@ export function useInstallRun(options: {
 
       try {
         for (let i = current.cursor; i < current.steps.length; i++) {
+          const pendingStepId = pendingCursorStepIdRef.current
+          if (pendingStepId) {
+            const pendingIdx = stepIndexById(current.steps, pendingStepId)
+            pendingCursorStepIdRef.current = null
+            if (pendingIdx >= 0 && pendingIdx !== i) {
+              i = pendingIdx - 1
+              current = withNormalizedCursor({ ...current, cursor: pendingIdx })
+              setRun(current)
+              continue
+            }
+          }
+
           while (pausedRef.current) {
             if (stopRequestedRef.current) {
               const step = current.steps[i]!
@@ -475,6 +585,19 @@ export function useInstallRun(options: {
             step.status === 'skipped'
           ) {
             continue
+          }
+
+          if (current.breakpointStepIds.includes(step.stepId)) {
+            const halted = withNormalizedCursor({
+              ...current,
+              cursor: i,
+              runState: 'paused',
+            })
+            setPaused(true)
+            setRun(halted)
+            appendCommandLine(`Breakpoint hit: ${step.modId}`)
+            runningRef.current = false
+            return
           }
 
           try {
@@ -704,6 +827,7 @@ export function useInstallRun(options: {
               ),
               cursor: i + 1,
             }
+            current = withNormalizedCursor(current)
             setRun({ ...current, runState: status === 'failed' ? 'failed' : 'running' })
 
             if (status === 'failed') {
@@ -764,6 +888,8 @@ export function useInstallRun(options: {
       pushConsoleLines,
       mergeStepResultLines,
       withMergedResults,
+      withNormalizedCursor,
+      appendCommandLine,
     ],
   )
 
@@ -789,9 +915,12 @@ export function useInstallRun(options: {
 
   const pause = useCallback(() => {
     setPaused(true)
-    setRun((r) => (r ? { ...r, runState: 'paused' } : r))
+    setRun((r) => {
+      if (!r) return r
+      return withNormalizedCursor({ ...r, runState: 'paused' })
+    })
     appendCommandLine('Installation paused')
-  }, [appendCommandLine])
+  }, [appendCommandLine, withNormalizedCursor])
 
   const stop = useCallback(async () => {
     stopRequestedRef.current = true
@@ -841,20 +970,123 @@ export function useInstallRun(options: {
     const steps = current.steps.map((s, idx) =>
       idx === i ? { ...s, status: 'skipped' as const, progress: null } : s,
     )
-    const nextCursor = i + 1
+    const nextCursor = nextActionableCursor(steps, i + 1)
     const keepState: InstallRunState =
       current.runState === 'waitingForInput' ? 'stopped' : current.runState
-    const next: InstallRun = {
+    const next: InstallRun = withNormalizedCursor({
       ...current,
       steps,
       cursor: nextCursor,
       runState: keepState,
-    }
+    })
     setRun(next)
-    setActiveStepId(steps[nextCursor]?.stepId ?? null)
+    setActiveStepId(next.steps[next.cursor]?.stepId ?? null)
     setInputPrompt(null)
     appendCommandLine(`Step skipped: ${label}`)
+  }, [appendCommandLine, withNormalizedCursor])
+
+  const goToPreviousStep = useCallback(async () => {
+    const current = runRef.current
+    if (!current) return false
+    if (current.runState !== 'paused' && current.runState !== 'stopped') return false
+
+    const prev = current.cursor - 1
+    if (prev < 0) return false
+
+    let steps = [...current.steps]
+    const reset = await uninstallStepAtIndex(current, prev)
+    steps[prev] = reset
+
+    const next = withNormalizedCursor({
+      ...current,
+      steps: withMergedResults(steps),
+      cursor: prev,
+      runState: current.runState,
+    })
+    setRun(next)
+    setActiveStepId(reset.stepId)
+    appendCommandLine(`Moved back to ${reset.modId}`)
+    return true
+  }, [appendCommandLine, uninstallStepAtIndex, withMergedResults, withNormalizedCursor])
+
+  const uninstallBackToStep = useCallback(
+    async (targetStepId: string) => {
+      const current = runRef.current
+      if (!current) return false
+      if (current.runState !== 'paused' && current.runState !== 'stopped') return false
+
+      const targetIdx = stepIndexById(current.steps, targetStepId)
+      if (targetIdx < 0) return false
+      if (targetIdx >= current.cursor) return false
+
+      let steps = [...current.steps]
+      for (let i = current.cursor - 1; i >= targetIdx; i--) {
+        const step = steps[i]!
+        if (isStepDone(step.status)) continue
+        steps[i] = await uninstallStepAtIndex({ ...current, steps }, i)
+      }
+
+      const next = withNormalizedCursor({
+        ...current,
+        steps: withMergedResults(steps),
+        cursor: targetIdx,
+        runState: current.runState,
+      })
+      setRun(next)
+      setActiveStepId(steps[targetIdx]?.stepId ?? null)
+      appendCommandLine(`Uninstalled back to ${steps[targetIdx]?.modId ?? 'step'}`)
+      return true
+    },
+    [appendCommandLine, uninstallStepAtIndex, withMergedResults, withNormalizedCursor],
+  )
+
+  const toggleBreakpoint = useCallback((stepId: string) => {
+    const current = runRef.current
+    if (!current) return
+    const idx = stepIndexById(current.steps, stepId)
+    if (idx < 0) return
+    const step = current.steps[idx]!
+    if (!canSetBreakpoint(step, idx, current.cursor, current.runState)) return
+    const has = current.breakpointStepIds.includes(stepId)
+    const breakpointStepIds = has
+      ? current.breakpointStepIds.filter((id) => id !== stepId)
+      : [...current.breakpointStepIds, stepId]
+    setRun({ ...current, breakpointStepIds })
+    appendCommandLine(
+      has ? `Breakpoint removed: ${step.modId}` : `Breakpoint set: ${step.modId}`,
+    )
   }, [appendCommandLine])
+
+  const moveCursorToStep = useCallback(
+    (targetStepId: string) => {
+      const current = runRef.current
+      if (!current) return false
+
+      const targetIdx = stepIndexById(current.steps, targetStepId)
+      if (targetIdx < 0) return false
+
+      if (current.runState === 'running' || current.runState === 'waitingForInput') {
+        pendingCursorStepIdRef.current = targetStepId
+        appendCommandLine(`Cursor will move to ${current.steps[targetIdx]?.modId} after current step`)
+        return true
+      }
+
+      if (current.runState !== 'paused' && current.runState !== 'stopped') {
+        return false
+      }
+
+      const next = withNormalizedCursor({
+        ...current,
+        cursor: targetIdx,
+        runState: current.runState,
+      })
+      setRun(next)
+      setActiveStepId(targetStepId)
+      appendCommandLine(`Cursor moved to ${current.steps[targetIdx]?.modId}`)
+      return true
+    },
+    [appendCommandLine, withNormalizedCursor],
+  )
 
   const restartFromBackup = useCallback(
     async (_phaseGameDir: string) => {
@@ -897,6 +1129,7 @@ export function useInstallRun(options: {
         steps,
         cursor: nextCursor,
         runState: 'idle',
+        breakpointStepIds: base.breakpointStepIds ?? [],
       }
       setRun(next)
       setConsoleLines([])
@@ -936,9 +1169,17 @@ export function useInstallRun(options: {
     pause,
     stop,
     skipCurrent,
+    goToPreviousStep,
+    uninstallBackToStep,
+    toggleBreakpoint,
+    moveCursorToStep,
     restartFromBackup,
     sendInput,
     appendCommandLine,
     setRun,
+    canGoPrevious: run
+      ? run.cursor > 0 &&
+        (run.runState === 'paused' || run.runState === 'stopped')
+      : false,
   }
 }

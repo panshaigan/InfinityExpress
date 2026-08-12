@@ -28,6 +28,10 @@ Stack: React 18 + TypeScript + Vite + Vitest; Tauri 2 desktop shell. Pure domain
 
 Settings (top bar): game folders, mods download dir, backup dir, WeiDU path (`gameFolderPrefs`, `appDirPrefs`, `weiduPrefs`).
 
+## UI confirmations
+
+Destructive or rollback actions (install Previous / uninstall-back, backup delete, mod remove-from-disk) use [`src/ui/ConfirmDialog.tsx`](src/ui/ConfirmDialog.tsx): `confirm-dialog-backdrop` + `confirm-dialog`, cancel focused by default, `danger` prop for the primary confirm button.
+
 ## Data flow
 
 ```text

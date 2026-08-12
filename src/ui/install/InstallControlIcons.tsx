@@ -34,6 +34,54 @@ export function SkipNextIcon() {
   )
 }
 
+/** Skip back: end bar + play chevron (media skip-previous). */
+export function SkipPreviousIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path fill="currentColor" d="M13.25 3.1v9.8L5.4 8l7.85-4.9Z" />
+      <path fill="currentColor" d="M2.35 3.1h1.9v9.8h-1.9z" />
+    </svg>
+  )
+}
+
+/** Breakpoint marker (filled circle). */
+export function BreakpointIcon({ active = false }: { active?: boolean }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <circle
+        cx="8"
+        cy="8"
+        r={active ? 4.5 : 3.5}
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+    </svg>
+  )
+}
+
+/** Roll back / uninstall to here (undo arrow). */
+export function UninstallBackIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M8 3.5a4.5 4.5 0 0 1 4.24 3h-1.52a3 3 0 1 0 .28 4.12l.85.85A4.5 4.5 0 1 1 8 3.5Zm-2.1 2.4 2.35 2.35H3.5V4.65l2.4 1.25Z"
+      />
+    </svg>
+  )
+}
+
+/** Move install cursor to this step. */
+export function MoveCursorIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path fill="currentColor" d="M3 2.5h10v1.5H3V2.5Zm0 4.25h7v1.5H3V6.75Zm0 4.25h10v1.5H3v-1.5Z" />
+      <path fill="currentColor" d="M12.25 7.25 14.5 9.5l-2.25 2.25V7.25Z" />
+    </svg>
+  )
+}
+
 /** Eye with slash — hide completed / already-installed steps. */
 export function HideInstalledIcon() {
   return (

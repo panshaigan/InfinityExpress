@@ -72,6 +72,8 @@ export interface InstallRun {
    */
   cursor: number
   runState: InstallRunState
+  /** Step ids that pause the run before staging (breakpoint mode B). */
+  breakpointStepIds: string[]
   /** Absolute path to run log directory under backupDir/install-logs. */
   logDir: string
 }
