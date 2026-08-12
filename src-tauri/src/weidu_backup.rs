@@ -734,3 +734,132 @@ pub async fn delete_backup(
   );
   Ok(())
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PrepareDestinationResult {
+  pub action: String,
+  pub path: String,
+}
+
+fn dir_is_empty(dir: &Path) -> Result<bool, String> {
+  if !dir.exists() {
+    return Ok(true);
+  }
+  if !dir.is_dir() {
+    return Err(format!("Not a directory: {}", dir.display()));
+  }
+  let mut entries = fs::read_dir(dir).map_err(|e| e.to_string())?;
+  Ok(entries.next().is_none())
+}
+
+/// Ensure a project destination exists. Empty dirs are seeded from vanilla;
+/// non-empty dirs must contain the expected game executable.
+#[tauri::command]
+pub async fn prepare_project_destination(
+  app: AppHandle,
+  target_dir: String,
+  vanilla_source: Option<String>,
+  exe_name: String,
+) -> Result<PrepareDestinationResult, String> {
+  let target = PathBuf::from(target_dir.trim());
+  if target.as_os_str().is_empty() {
+    return Err("Destination directory is not set".into());
+  }
+  fs::create_dir_all(&target).map_err(|e| e.to_string())?;
+
+  let empty = dir_is_empty(&target)?;
+  if empty {
+    let vanilla = vanilla_source
+      .as_ref()
+      .map(|s| s.trim())
+      .filter(|s| !s.is_empty())
+      .map(PathBuf::from);
+    let Some(vanilla) = vanilla else {
+      return Err(
+        "Destination folder is empty — set a vanilla backup first so it can be copied".into(),
+      );
+    };
+    if !vanilla.is_dir() {
+      return Err(format!("Vanilla folder not found: {}", vanilla.display()));
+    }
+
+    emit_progress(
+      &app,
+      progress(
+        "scan",
+        format!("Measuring {}", vanilla.display()),
+        0,
+        0,
+        0,
+        0,
+      ),
+    );
+    let (files_total, bytes_total) = measure_filtered(&vanilla, false)?;
+    emit_progress(
+      &app,
+      progress(
+        "copy",
+        format!("Copying vanilla to {}", target.display()),
+        0,
+        0,
+        files_total,
+        bytes_total,
+      ),
+    );
+
+    let files = Arc::new(AtomicU64::new(0));
+    let bytes = Arc::new(AtomicU64::new(0));
+    let app_copy = app.clone();
+    let vanilla_copy = vanilla.clone();
+    let target_copy = target.clone();
+    let files_c = Arc::clone(&files);
+    let bytes_c = Arc::clone(&bytes);
+    tauri::async_runtime::spawn_blocking(move || {
+      copy_filtered(
+        &app_copy,
+        &vanilla_copy,
+        &target_copy,
+        false,
+        &files_c,
+        &bytes_c,
+        files_total,
+        bytes_total,
+      )
+    })
+    .await
+    .map_err(|e| format!("Vanilla copy task failed: {e}"))??;
+
+    emit_progress(
+      &app,
+      progress(
+        "done",
+        "Vanilla copied to destination",
+        files.load(Ordering::SeqCst),
+        bytes.load(Ordering::SeqCst),
+        files_total,
+        bytes_total,
+      ),
+    );
+
+    return Ok(PrepareDestinationResult {
+      action: "copied_vanilla".into(),
+      path: target.to_string_lossy().into_owned(),
+    });
+  }
+
+  let exe = exe_name.trim();
+  if exe.is_empty() {
+    return Err("Game executable name is required".into());
+  }
+  if crate::weidu_install::find_named_game_exe(&target, exe).is_none() {
+    return Err(format!(
+      "Destination is not empty and is missing {exe} — pick an empty folder or a valid game install"
+    ));
+  }
+
+  Ok(PrepareDestinationResult {
+    action: "accepted_existing".into(),
+    path: target.to_string_lossy().into_owned(),
+  })
+}

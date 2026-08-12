@@ -8,7 +8,7 @@ import { cleanupInstallArtifacts, gameDirForPhase, listBackups } from '../../lib
 import { isDesktopApp } from '../../lib/desktop/fsDialogs'
 import type { WorkingMod } from '../../lib/mods/loadMods'
 import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
-import { readGameFolderPaths } from '../../lib/ui/gameFolderPrefs'
+import type { GameFolderPaths } from '../../lib/ui/gameFolderPrefs'
 import {
   getMissingInstallPaths,
   type MissingInstallPath,
@@ -32,6 +32,12 @@ import {
 import { IconTip } from '../IconTip'
 import { useToast } from '../toasts/toastContext'
 import {
+  missingVanillaKeys,
+  readVanillaRegistry,
+  setVanillaBinding,
+  vanillaPath,
+} from '../../lib/projects'
+import {
   buildPersistedInstallSession,
   type PersistedInstallSession,
 } from '../../lib/ui/appSessionPrefs'
@@ -49,6 +55,8 @@ interface Props {
   onOpenSettings: () => void
   onOpenSettingsForMissing: (missing: MissingInstallPath[]) => void
   onBusyChange?: (busy: boolean) => void
+  /** Per-project live game destinations. */
+  gameFolders: GameFolderPaths
   initialInstallSession?: PersistedInstallSession
   onInstallSessionChange?: (session: PersistedInstallSession | null) => void
 }
@@ -74,12 +82,12 @@ export function InstallStation({
   onOpenSettings,
   onOpenSettingsForMissing,
   onBusyChange,
+  gameFolders,
   initialInstallSession,
   onInstallSessionChange,
 }: Props) {
   const { pushToast } = useToast()
   const [pathTick, setPathTick] = useState(0)
-  const gameFolders = readGameFolderPaths()
   const appDirs = readAppDirPaths()
   const weiduPath = readWeiduPath()
   void pathTick
@@ -300,7 +308,7 @@ export function InstallStation({
   useEffect(() => {
     function maybePromptMissingPaths() {
       if (!isDesktopApp() || !game) return
-      const missing = getMissingInstallPaths(game)
+      const missing = getMissingInstallPaths(game, gameFolders)
       if (missing.length === 0) {
         promptedMissingPathsRef.current = false
         return
@@ -316,7 +324,7 @@ export function InstallStation({
     }
     window.addEventListener(PATHS_CHANGED_EVENT, onPathsChanged)
     return () => window.removeEventListener(PATHS_CHANGED_EVENT, onPathsChanged)
-  }, [game, onOpenSettingsForMissing])
+  }, [game, gameFolders, onOpenSettingsForMissing])
 
   const modsReady = allModsPresent(neededCodenames, mods)
   const canRun = isDesktopApp() && !!game && modsReady && !!weiduPath && !!appDirs.backupDir
@@ -429,32 +437,49 @@ export function InstallStation({
   }, [run, planSteps.length])
 
   const ensureVanillas = useCallback(async (): Promise<boolean> => {
-    if (!game || !appDirs.backupDir) return false
-    const keys =
-      game === 'eet' ? (['bg1', 'bg2'] as const) : ([game] as const)
-    for (const key of keys) {
-      const manifest = await listBackups(appDirs.backupDir, key)
-      if (!manifest.vanilla) {
-        const dir =
-          key === 'bg1'
-            ? gameFolders.bg1
-            : key === 'bg2'
-              ? gameFolders.bg2
-              : key === 'iwd'
-                ? gameFolders.iwd
-                : gameFolders.pst
-        if (!dir) {
-          setNotice(`Set ${key} game folder in Settings.`)
-          onOpenSettings()
-          return false
+    if (!game) return false
+    let registry = readVanillaRegistry()
+    let missing = missingVanillaKeys(game, registry)
+    if (missing.length === 0) return true
+
+    if (appDirs.backupDir) {
+      for (const key of [...missing]) {
+        try {
+          const manifest = await listBackups(appDirs.backupDir, key)
+          const path = manifest.vanilla?.path?.trim()
+          if (path) {
+            setVanillaBinding(key, { mode: 'managed', path })
+          }
+        } catch {
+          /* ignore */
         }
+      }
+      registry = readVanillaRegistry()
+      missing = missingVanillaKeys(game, registry)
+      if (missing.length === 0) return true
+    }
+
+    const key = missing[0]!
+    const bindingPath = vanillaPath(registry[key])
+    if (!bindingPath && appDirs.backupDir) {
+      const dir =
+        key === 'bg1'
+          ? gameFolders.bg1
+          : key === 'bg2'
+            ? gameFolders.bg2
+            : key === 'iwd'
+              ? gameFolders.iwd
+              : gameFolders.pst
+      if (dir) {
         setBackupGameKey(key)
         setBackupSourceDir(dir)
         setBackupDialog('vanilla')
         return false
       }
     }
-    return true
+    setNotice(`Set vanilla backup for ${key} in Settings.`)
+    onOpenSettings()
+    return false
   }, [game, appDirs.backupDir, gameFolders, onOpenSettings])
 
   const onStart = useCallback(async () => {

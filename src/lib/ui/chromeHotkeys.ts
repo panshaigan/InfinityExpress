@@ -2,7 +2,7 @@ import type { StationId } from '../xml/schema'
 
 export type StationSlot = 'engine' | 'presets' | StationId
 
-/** Setup stops with no component tree (Engine + Presets). */
+/** Setup stops with no component tree (Presets). */
 export function isSetupSlot(slot: StationSlot | string): slot is 'engine' | 'presets' {
   return slot === 'engine' || slot === 'presets'
 }
@@ -61,10 +61,11 @@ export function isDocumentShellFocused(el: Element | null): boolean {
 }
 
 /**
- * Build ordered station slots: Engine → Presets, then visible content stations.
+ * Build ordered station slots: Presets, then visible content stations.
+ * (`engine` remains a valid StationSlot for legacy session data only.)
  */
 export function stationCycleOrder(visibleStations: readonly StationId[]): StationSlot[] {
-  return ['engine', 'presets', ...visibleStations]
+  return ['presets', ...visibleStations]
 }
 
 /** Next/previous station with wrap-around. */

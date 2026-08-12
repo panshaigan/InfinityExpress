@@ -9,6 +9,16 @@ description = "Read a UTF-8 text file from an absolute path"
 commands.allow = ["read_text_file"]
 
 [[permission]]
+identifier = "allow-write-text-file-path"
+description = "Write a UTF-8 text file at an absolute path (create parents)"
+commands.allow = ["write_text_file"]
+
+[[permission]]
+identifier = "allow-ensure-dir"
+description = "Create a directory and parents at an absolute path"
+commands.allow = ["ensure_dir"]
+
+[[permission]]
 identifier = "allow-remove-mod-dir"
 description = "Recursively delete a named folder under the mods download directory"
 commands.allow = ["remove_mod_dir"]
@@ -58,4 +68,5 @@ commands.allow = [
   "list_backups",
   "create_named_backup",
   "delete_backup",
+  "prepare_project_destination",
 ]

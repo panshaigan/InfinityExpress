@@ -2,15 +2,19 @@
 
 Desktop mod route planner for Infinity Engine EE games. **React 18 + TypeScript + Vite** UI; **Tauri 2** shell (`src-tauri/`). Domain logic stays in pure TS under `src/lib/`.
 
+## Projects
+
+Boot opens the **Project hub**. A project locks one engine, owns selection + install run state, and has destination game folder(s). Vanilla backups and app paths are global (Settings).
+
 ## Phases
 
-**Components** (Engine + XML stations) → **Mods** (catalog / disk / acquire) → **Install** (WeiDU plan / run / backups).
+**Components** (Presets + XML stations) → **Mods** (catalog / disk / acquire) → **Install** (WeiDU plan / run / backups).
 
 ## When to Read (do this before nontrivial work)
 
 | Working on | Read first |
 | --- | --- |
-| App map, folders, data flow, Mods overview | [docs/architecture.md](docs/architecture.md) |
+| App map, folders, data flow, Mods overview, Projects | [docs/architecture.md](docs/architecture.md) |
 | Checkboxes, visibility, levels, filters, presets, export | [docs/selection.md](docs/selection.md) |
 | `InstallSequence.xml` tags / attrs / engine / conditions | [docs/install-sequence-schema.md](docs/install-sequence-schema.md) |
 | Install plan, WeiDU IDs, run, backups | [docs/weidu-install.md](docs/weidu-install.md) |

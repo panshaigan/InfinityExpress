@@ -43,6 +43,32 @@ pub fn read_text_file(path: String) -> Result<String, String> {
   fs::read_to_string(&p).map_err(|e| e.to_string())
 }
 
+/// Write a UTF-8 text file, creating parent directories as needed.
+#[tauri::command]
+pub fn write_text_file(path: String, contents: String) -> Result<(), String> {
+  let trimmed = path.trim();
+  if trimmed.is_empty() {
+    return Err("Path is required".into());
+  }
+  let p = PathBuf::from(trimmed);
+  if let Some(parent) = p.parent() {
+    if !parent.as_os_str().is_empty() {
+      fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+  }
+  fs::write(&p, contents).map_err(|e| e.to_string())
+}
+
+/// Create a directory (and parents) if missing.
+#[tauri::command]
+pub fn ensure_dir(path: String) -> Result<(), String> {
+  let trimmed = path.trim();
+  if trimmed.is_empty() {
+    return Err("Path is required".into());
+  }
+  fs::create_dir_all(trimmed).map_err(|e| e.to_string())
+}
+
 /// Recursively delete `download_dir/folder_name` after path-safety checks.
 /// Folder name match is case-insensitive (uses the on-disk spelling).
 #[tauri::command]

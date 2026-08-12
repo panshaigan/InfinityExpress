@@ -1986,6 +1986,148 @@ body.is-resizing-detail * {
   padding: 0.5rem 0.25rem 1rem;
 }
 
+/* —— Project hub & wizard —— */
+.project-hub,
+.project-wizard {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.project-hub-header,
+.project-wizard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.project-hub-title,
+.project-wizard-header h1 {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.project-hub-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 2rem 0;
+}
+
+.project-hub-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.project-hub-card {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 6px;
+  background: var(--panel-bg, rgba(0, 0, 0, 0.2));
+}
+
+.project-hub-card-main {
+  flex: 1;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.project-hub-card-main:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.project-hub-card-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.project-hub-card-meta {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.project-hub-card-sep {
+  margin: 0 0.35rem;
+}
+
+.project-hub-card-delete {
+  align-self: center;
+  margin-right: 0.65rem;
+}
+
+.project-wizard-vanilla,
+.project-wizard-dest {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.project-wizard-vanilla-block h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.project-wizard-vanilla-actions,
+.settings-vanilla-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.settings-vanilla-block {
+  margin-bottom: 1.25rem;
+}
+
+.project-wizard-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+}
+
+.project-wizard-footer-right {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.top-bar-project {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 16rem;
+}
+
+.top-bar-project-name {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .engine-station-header {
   display: flex;
   align-items: center;

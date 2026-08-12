@@ -49,8 +49,9 @@ import {
 } from './lib/ui/chromePrefs'
 import { listEmptyCopy } from './lib/ui/listEmptyCopy'
 import { StationNav, type AppNavSlot } from './ui/StationNav'
-import { EngineStation } from './ui/EngineStation'
 import { PresetsStation } from './ui/PresetsStation'
+import { ProjectHub } from './ui/projects/ProjectHub'
+import { ProjectWizard } from './ui/projects/ProjectWizard'
 import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
 import { StationBranchNav } from './ui/StationBranchNav'
@@ -83,7 +84,7 @@ import { useChromeHotkeys } from './hooks/useChromeHotkeys'
 import { useRouteNav } from './hooks/useRouteNav'
 import { useTreeFocus } from './hooks/useTreeFocus'
 import { useUserCatalog } from './hooks/useUserCatalog'
-import { useAppSessionPersistence } from './hooks/useAppSessionPersistence'
+import { useProjectSessionPersistence } from './hooks/useProjectSessionPersistence'
 import { type AppPhase } from './ui/PhaseNav'
 import { ModsStation, type ModsJourneyState } from './ui/mods/ModsStation'
 import { InstallStation } from './ui/install/InstallStation'
@@ -96,18 +97,28 @@ import {
   type SettingsFocusField,
 } from './lib/ui/installPathValidation'
 import {
-  bootstrapAppSession,
   buildGameSessionSnapshot,
   levelPresetsInitialFromSession,
-  sanitizeComponentsSession,
   sanitizeInstallSession,
-  type GameSession,
   type PersistedInstallSession,
 } from './lib/ui/appSessionPrefs'
+import type { GameFolderPaths } from './lib/ui/gameFolderPrefs'
+import {
+  bootstrapProjects,
+  emptyDestinations,
+  loadProjectRecord,
+  type AppShellView,
+  type ProjectId,
+  type ProjectMeta,
+} from './lib/projects'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
-const sessionBootstrap = bootstrapAppSession(parsed.model)
+const projectBootstrap = bootstrapProjects(parsed.model)
+
+function normalizeStation(slot: AppNavSlot): Exclude<AppNavSlot, 'engine'> {
+  return slot === 'engine' ? 'presets' : slot
+}
 
 export default function App() {
   return (
@@ -121,33 +132,29 @@ function AppShell() {
   const { model, warnings } = parsed
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
   const installSnapshotRef = useRef<PersistedInstallSession | null | undefined>(
-    sessionBootstrap.install,
+    undefined,
   )
+  const [shellView, setShellView] = useState<AppShellView>(
+    () => projectBootstrap.view,
+  )
+  const [projectId, setProjectId] = useState<ProjectId | null>(null)
+  const [projectMeta, setProjectMeta] = useState<ProjectMeta | null>(null)
+  const [gameFolders, setGameFolders] = useState<GameFolderPaths>(emptyDestinations)
   const [restoredInstallSession, setRestoredInstallSession] = useState<
     PersistedInstallSession | undefined
-  >(() => sessionBootstrap.install)
-  const [game, setGame] = useState<SelectedGame | null>(() => sessionBootstrap.game)
-  const [routeUnlocked, setRouteUnlocked] = useState(
-    () => sessionBootstrap.session?.routeUnlocked ?? false,
-  )
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => {
-    if (!sessionBootstrap.session) return new Set()
-    return new Set(sessionBootstrap.session.selectedIds)
-  })
-  const [activeStation, setActiveStation] = useState<AppNavSlot>(
-    () => sessionBootstrap.session?.activeStation ?? 'engine',
-  )
-  const [appPhase, setAppPhase] = useState<AppPhase>(() => sessionBootstrap.appPhase)
+  >(undefined)
+  const [game, setGame] = useState<SelectedGame | null>(null)
+  const [routeUnlocked, setRouteUnlocked] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
+  const [activeStation, setActiveStation] = useState<AppNavSlot>('presets')
+  const [appPhase, setAppPhase] = useState<AppPhase>('components')
   const [mountedPhases, setMountedPhases] = useState<Record<AppPhase, boolean>>(() => ({
     components: true,
-    mods:
-      sessionBootstrap.appPhase === 'mods' || sessionBootstrap.appPhase === 'install',
-    install: sessionBootstrap.appPhase === 'install',
+    mods: false,
+    install: false,
   }))
   const [phaseBusy, setPhaseBusy] = useState<Partial<Record<AppPhase, boolean>>>({})
-  const [modsJourney, setModsJourney] = useState<ModsJourneyState | null>(
-    () => sessionBootstrap.session?.modsJourney ?? null,
-  )
+  const [modsJourney, setModsJourney] = useState<ModsJourneyState | null>(null)
   const [searchScope, setSearchScope] = useState<'section' | 'all'>('section')
   const userCatalog = useUserCatalog()
 
@@ -175,7 +182,6 @@ function AppShell() {
   const [csvExportOpen, setCsvExportOpen] = useState(false)
   const [weiduExportOpen, setWeiduExportOpen] = useState(false)
   type PendingSelectionReset =
-    | { type: 'chooseGame'; game: SelectedGame }
     | { type: 'ladder'; level: LadderLevel; wantChecked: boolean }
     | { type: 'difficulty'; token: DifficultyLevel; want: boolean }
   const [pendingSelectionReset, setPendingSelectionReset] =
@@ -194,9 +200,6 @@ function AppShell() {
     activeStation,
     relationIndex,
     setSelectedIds,
-    initialLevelState: sessionBootstrap.session
-      ? levelPresetsInitialFromSession(sessionBootstrap.session)
-      : undefined,
   })
 
   const presets = useSelectionPresetsState({
@@ -217,9 +220,6 @@ function AppShell() {
     setLastGlobalHigherDifficulty: levels.setLastGlobalHigherDifficulty,
     stationLevelPresets: levels.stationLevelPresets,
     setStationLevelPresets: levels.setStationLevelPresets,
-    initialPresets: sessionBootstrap.session?.selectionPresets,
-    initialActivePresetId: sessionBootstrap.session?.activePresetId ?? null,
-    initialPresetBaseline: sessionBootstrap.session?.presetBaseline ?? null,
   })
 
   const filtersActive = useMemo(
@@ -244,13 +244,6 @@ function AppShell() {
     activeStation,
     displayNodes,
     onClearFocus: clearFocus,
-    initialBranchState: sessionBootstrap.session
-      ? {
-          mainKey: sessionBootstrap.session.contentMainKey,
-          subKey: sessionBootstrap.session.contentSubKey,
-          subTag: sessionBootstrap.session.contentSubTag,
-        }
-      : undefined,
   })
 
   const {
@@ -328,7 +321,6 @@ function AppShell() {
     clearFocus,
     showRouteTip,
     dismissRouteTip,
-    initialFinishedStations: sessionBootstrap.session?.finishedStations,
     onRouteJustCompleted: () => {
       const required = listSelectedModCodenames(model, selectedIds)
       setModsJourney({ locked: true, requiredCodenames: required })
@@ -353,7 +345,7 @@ function AppShell() {
       // persists as long as the route is complete.
     }
     if (phase === 'install') {
-      const missing = getMissingInstallPaths(game)
+      const missing = getMissingInstallPaths(game, gameFolders)
       if (missing.length > 0) {
         setSettingsFocusField(firstMissingFocusField(missing))
         setSettingsHighlightMissing(missing)
@@ -502,8 +494,8 @@ function AppShell() {
     model,
   ])
 
-  const { sessionStoreRef, persistGameSlice } = useAppSessionPersistence({
-    game,
+  const { flushSession } = useProjectSessionPersistence({
+    projectId,
     appPhase,
     buildGameSession,
   })
@@ -512,19 +504,32 @@ function AppShell() {
     installSnapshotRef.current = session ?? undefined
   }, [])
 
-  function applyGameSession(next: SelectedGame, raw: GameSession | undefined) {
-    if (!raw) {
-      setGame(next)
-      setRouteUnlocked(false)
-      setSelectedIds(createInitialSelection(model, next))
-      levels.seedFixesBaseline(next)
+  function openProject(id: ProjectId) {
+    const loaded = loadProjectRecord(model, id)
+    if (!loaded) return
+    const { record, session, install } = loaded
+    const engine = record.meta.engine
+
+    setProjectId(record.meta.id)
+    setProjectMeta(record.meta)
+    setGameFolders(record.meta.destinations)
+    setGame(engine)
+    setAppPhase('components')
+    setMountedPhases({ components: true, mods: false, install: false })
+    setSearchScope('section')
+    clearFocus()
+
+    if (!session) {
+      setRouteUnlocked(true)
+      setSelectedIds(createInitialSelection(model, engine))
+      levels.seedFixesBaseline(engine)
       presets.restoreSelectionPresetsState({
         presets: [],
         activePresetId: null,
         presetBaseline: null,
       })
-      route.resetFinishedStations()
-      setActiveStation('engine')
+      route.replaceFinishedStations(['presets'])
+      setActiveStation('presets')
       setContentMainKey(null)
       setContentSubKey(null)
       setContentSubTag(null)
@@ -532,14 +537,6 @@ function AppShell() {
       installSnapshotRef.current = undefined
       setRestoredInstallSession(undefined)
     } else {
-      const session = sanitizeComponentsSession(model, next, raw)
-      const install = sanitizeInstallSession(
-        model,
-        next,
-        new Set(session.selectedIds),
-        raw.install,
-      )
-      setGame(next)
       setRouteUnlocked(session.routeUnlocked)
       setSelectedIds(new Set(session.selectedIds))
       levels.restoreLevelState(levelPresetsInitialFromSession(session))
@@ -549,7 +546,7 @@ function AppShell() {
         presetBaseline: session.presetBaseline,
       })
       route.replaceFinishedStations(session.finishedStations)
-      setActiveStation(session.activeStation)
+      setActiveStation(normalizeStation(session.activeStation))
       setContentMainKey(session.contentMainKey)
       setContentSubKey(session.contentSubKey)
       setContentSubTag(session.contentSubTag)
@@ -557,24 +554,15 @@ function AppShell() {
       installSnapshotRef.current = install
       setRestoredInstallSession(install)
     }
-    setSearchScope('section')
-    clearFocus()
+
+    setShellView('workspace')
   }
 
-  function applyChooseGame(next: SelectedGame) {
-    if (game) {
-      persistGameSlice(game)
-    }
-    const raw = sessionStoreRef.current.byGame[next]
-    applyGameSession(next, raw)
-  }
-
-  function chooseGame(next: SelectedGame) {
-    if (game != null && isSelectionDirty()) {
-      setPendingSelectionReset({ type: 'chooseGame', game: next })
-      return
-    }
-    applyChooseGame(next)
+  function returnToHub() {
+    flushSession()
+    setProjectId(null)
+    setProjectMeta(null)
+    setShellView('hub')
   }
 
   function onPresetsLadderToggle(level: LadderLevel, wantChecked: boolean) {
@@ -601,10 +589,6 @@ function AppShell() {
     if (!pendingSelectionReset) return
     const pending = pendingSelectionReset
     setPendingSelectionReset(null)
-    if (pending.type === 'chooseGame') {
-      applyChooseGame(pending.game)
-      return
-    }
     if (pending.type === 'ladder') {
       levels.onLadderToggle(pending.level, pending.wantChecked)
       return
@@ -652,7 +636,7 @@ function AppShell() {
         return
       }
       void (async () => {
-        const hasLog = await hasAnyWeiduLog(game)
+        const hasLog = await hasAnyWeiduLog(game, gameFolders)
         if (hasLog) setWeiduExportOpen(true)
         else setExportOpen(true)
       })()
@@ -675,23 +659,8 @@ function AppShell() {
         ? false
         : selectedIds.size === 0
 
-  function selectEngine() {
-    setActiveStation('engine')
-    setSearchScope('section')
-    clearFocus()
-  }
-
   function selectPresets() {
     if (!game || !routeUnlocked) return
-    setActiveStation('presets')
-    setSearchScope('section')
-    clearFocus()
-  }
-
-  function continueFromEngine() {
-    if (!game) return
-    setRouteUnlocked(true)
-    route.markStationsFinished(['engine', 'presets'])
     setActiveStation('presets')
     setSearchScope('section')
     clearFocus()
@@ -806,10 +775,6 @@ function AppShell() {
       focusInstallTable()
       return
     }
-    if (activeStation === 'engine') {
-      document.querySelector<HTMLElement>('.engine-card')?.focus()
-      return
-    }
     if (activeStation === 'presets') {
       document.querySelector<HTMLElement>('.presets-station .level-card input')?.focus()
       return
@@ -825,28 +790,23 @@ function AppShell() {
     foldApiRef.current?.unfoldAll()
   }
 
-  const stationTitle =
-    activeStation === 'engine'
-      ? 'Engine'
-      : activeStation === 'presets'
-        ? 'Presets'
-        : activeStation === 'content' || activeStation === 'mechanics'
-          ? (() => {
-              const sectionLabel =
-                selectedMain?.node.attrs.label ?? selectedMain?.node.tag
-              return sectionLabel
-                ? `${sectionLabel} ${STATION_LABELS[activeStation]}`
-                : STATION_LABELS[activeStation]
-            })()
-          : STATION_LABELS[activeStation]
+  const stationTitle = (() => {
+    const station = normalizeStation(activeStation)
+    if (station === 'presets') return 'Presets'
+    if (station === 'content' || station === 'mechanics') {
+      const sectionLabel =
+        selectedMain?.node.attrs.label ?? selectedMain?.node.tag
+      return sectionLabel
+        ? `${sectionLabel} ${STATION_LABELS[station]}`
+        : STATION_LABELS[station]
+    }
+    return STATION_LABELS[station]
+  })()
 
   const applyStationSlot = useCallback(
     (slot: StationSlot) => {
-      if (slot !== 'engine' && (!game || !routeUnlocked)) {
-        setActiveStation('engine')
-      } else {
-        setActiveStation(slot)
-      }
+      if (!game || !routeUnlocked) return
+      setActiveStation(normalizeStation(slot))
       setSearchScope('section')
       clearFocus()
     },
@@ -871,6 +831,10 @@ function AppShell() {
     setSettingsOpen(true)
   }, [])
 
+  useEffect(() => {
+    if (activeStation === 'engine') setActiveStation('presets')
+  }, [activeStation])
+
   useChromeHotkeys({
     keyboardHelpOpen,
     showDetail: (showComponentsChrome && showDetail) || appPhase === 'mods' || appPhase === 'install',
@@ -893,6 +857,18 @@ function AppShell() {
 
   return (
     <div className="app">
+      {shellView === 'hub' ? (
+        <ProjectHub
+          onOpen={openProject}
+          onCreateNew={() => setShellView('wizard')}
+        />
+      ) : shellView === 'wizard' ? (
+        <ProjectWizard
+          onCancel={() => setShellView('hub')}
+          onCreated={openProject}
+        />
+      ) : (
+        <>
       <AppTopBar
         phase={appPhase}
         onPhaseChange={onPhaseChange}
@@ -900,6 +876,8 @@ function AppShell() {
         installTitle={installPhaseTitle}
         processingPhases={phaseBusy}
         game={game}
+        projectName={projectMeta?.name ?? null}
+        onSwitchProject={returnToHub}
         selectedModsCount={selectedModsCount}
         selectedCount={selectedIds.size}
         presets={presets.gamePresets.map((p) => ({ id: p.id, name: p.name }))}
@@ -963,10 +941,11 @@ function AppShell() {
         >
           <div className="app-main mods-app-main install-app-main">
             <InstallStation
-              key={game ?? 'no-game'}
+              key={projectId ?? game ?? 'no-game'}
               model={model}
               selectedIds={selectedIds}
               game={game}
+              gameFolders={gameFolders}
               neededCodenames={neededCodenames}
               mods={userCatalog.mods}
               detailCollapsed={detailCollapsed}
@@ -988,14 +967,13 @@ function AppShell() {
         <StationNav
           game={game}
           routeUnlocked={routeUnlocked}
-          activeStation={activeStation}
+          activeStation={normalizeStation(activeStation)}
           visibleStations={visibleStations}
           finishedStations={route.finishedStations}
           finishedCount={route.routeProgress.finishedCount}
           totalCount={route.routeProgress.totalCount}
           collapsed={railCollapsed}
           onToggleCollapsed={toggleRailCollapsed}
-          onSelectEngine={selectEngine}
           onSelectPresets={selectPresets}
           onSelectStation={selectStation}
           onFinishRoute={finishRoute}
@@ -1030,19 +1008,10 @@ function AppShell() {
                 onDismiss={() => presets.setPresetNotice(null)}
               />
               <div className="list-pane-body">
-                {!game || activeStation === 'engine' ? (
-                  <div className="list-pane-scroll engine-pane-scroll">
-                    <EngineStation
-                      game={game}
-                      onChoose={chooseGame}
-                      canContinue={!!game}
-                      onContinue={continueFromEngine}
-                    />
-                  </div>
-                ) : activeStation === 'presets' ? (
+                {!game || normalizeStation(activeStation) === 'presets' ? (
                   <div className="list-pane-scroll engine-pane-scroll">
                     <PresetsStation
-                      enabled
+                      enabled={!!game}
                       checkedLadderLevels={levels.ladderChecked}
                       lowerDifficulty={levels.lowerDifficultyPreset}
                       higherDifficulty={levels.higherDifficultyPreset}
@@ -1227,6 +1196,7 @@ function AppShell() {
       />
       <SettingsDialog
         open={settingsOpen}
+        destinations={gameFolders}
         focusField={settingsFocusField}
         highlightMissing={settingsHighlightMissing}
         onClose={() => {
@@ -1252,6 +1222,7 @@ function AppShell() {
           open={weiduExportOpen}
           onClose={() => setWeiduExportOpen(false)}
           game={game}
+          gameFolders={gameFolders}
         />
       ) : null}
       <ConfirmDialog
@@ -1262,6 +1233,8 @@ function AppShell() {
         onConfirm={confirmSelectionReset}
         onCancel={cancelSelectionReset}
       />
+        </>
+      )}
     </div>
   )
 }

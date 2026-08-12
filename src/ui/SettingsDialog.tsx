@@ -11,14 +11,7 @@ import {
   readGithubToken,
   writeGithubToken,
 } from '../lib/ui/githubTokenPrefs'
-import {
-  readGameFolderPaths,
-  readGameFolderVersions,
-  writeGameFolderPaths,
-  writeGameFolderVersions,
-  type GameFolderKey,
-  type GameFolderPaths,
-} from '../lib/ui/gameFolderPrefs'
+import type { GameFolderKey } from '../lib/ui/gameFolderPrefs'
 import {
   countMissingByTab,
   focusElementIdForField,
@@ -32,22 +25,32 @@ import { GAME_LABELS } from '../lib/xml/schema'
 import { useBackdropDismiss } from './backdropDismiss'
 import { DirectoryField } from './DirectoryField'
 import { isDesktopApp, pickFile } from '../lib/desktop/fsDialogs'
-import { probeGameFolder } from '../lib/desktop/gameExe'
 import { IconTip } from './IconTip'
 import { OutlinedTextField } from './OutlinedTextField'
+import {
+  createManagedVanillaFromFolder,
+  readVanillaRegistry,
+  registerExternalVanilla,
+  syncManagedVanillasFromDisk,
+  useExistingManagedVanilla,
+  vanillaPath,
+  type VanillaRegistry,
+} from '../lib/projects'
+import type { GameFolderPaths } from '../lib/ui/gameFolderPrefs'
+import { emptyDestinations } from '../lib/projects'
 
 const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
 
 export type { SettingsFocusField }
 
-type SettingsTab = 'games' | 'app' | 'github'
+type SettingsTab = 'vanilla' | 'app'
 
 interface Props {
   open: boolean
   onClose: () => void
-  /** When set, focus this field instead of the dialog panel on open. */
+  /** Active project destinations (for missing-path highlight of dest:*). */
+  destinations?: GameFolderPaths
   focusField?: SettingsFocusField | null
-  /** Highlight empty required install paths at tab and field level. */
   highlightMissing?: MissingInstallPath[]
 }
 
@@ -57,34 +60,38 @@ const GITHUB_TOKEN_TIP =
 export function SettingsDialog({
   open,
   onClose,
+  destinations = emptyDestinations(),
   focusField = null,
   highlightMissing = [],
 }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
   const backdrop = useBackdropDismiss(onClose)
-  const [tab, setTab] = useState<SettingsTab>('games')
-  const [folderPaths, setFolderPaths] = useState(readGameFolderPaths)
-  const [folderVersions, setFolderVersions] = useState(readGameFolderVersions)
-  const [folderErrors, setFolderErrors] = useState<Partial<Record<GameFolderKey, string>>>(
-    {},
-  )
+  const [tab, setTab] = useState<SettingsTab>('vanilla')
+  const [registry, setRegistry] = useState<VanillaRegistry>(readVanillaRegistry)
+  const [vanillaSource, setVanillaSource] = useState<Partial<Record<GameFolderKey, string>>>({})
+  const [vanillaErrors, setVanillaErrors] = useState<Partial<Record<GameFolderKey, string>>>({})
+  const [vanillaBusy, setVanillaBusy] = useState<GameFolderKey | null>(null)
   const [appDirs, setAppDirs] = useState(readAppDirPaths)
   const [githubToken, setGithubToken] = useState(readGithubToken)
   const [weiduPath, setWeiduPath] = useState(readWeiduPath)
 
+  function refreshRegistry() {
+    setRegistry(readVanillaRegistry())
+  }
+
   useEffect(() => {
     if (!open) return
-    setFolderPaths(readGameFolderPaths())
-    setFolderVersions(readGameFolderVersions())
-    setFolderErrors({})
     setAppDirs(readAppDirPaths())
     setGithubToken(readGithubToken())
     setWeiduPath(readWeiduPath())
+    setVanillaErrors({})
+    void syncManagedVanillasFromDisk().then(refreshRegistry)
+    refreshRegistry()
     const nextTab: SettingsTab = focusField
       ? settingsTabForMissing(focusField)
       : highlightMissing.length > 0
         ? settingsTabForMissing(highlightMissing[0]!)
-        : 'games'
+        : 'vanilla'
     setTab(nextTab)
     requestAnimationFrame(() => {
       if (focusField) {
@@ -106,74 +113,13 @@ export function SettingsDialog({
   useEffect(() => {
     if (!open) return
     function sync() {
-      setFolderPaths(readGameFolderPaths())
-      setFolderVersions(readGameFolderVersions())
       setAppDirs(readAppDirPaths())
       setWeiduPath(readWeiduPath())
+      refreshRegistry()
     }
     window.addEventListener(PATHS_CHANGED_EVENT, sync)
     return () => window.removeEventListener(PATHS_CHANGED_EVENT, sync)
   }, [open])
-
-  function setFolderPath(key: GameFolderKey, value: string) {
-    setFolderPaths((prev) => ({ ...prev, [key]: value }))
-    if (!value.trim()) {
-      setFolderPaths((prev) => {
-        const next: GameFolderPaths = { ...prev, [key]: '' }
-        writeGameFolderPaths(next)
-        return next
-      })
-      setFolderVersions((prev) => {
-        const next = { ...prev, [key]: '' }
-        writeGameFolderVersions(next)
-        return next
-      })
-      setFolderErrors((prev) => {
-        if (!prev[key]) return prev
-        const next = { ...prev }
-        delete next[key]
-        return next
-      })
-    }
-  }
-
-  function validateFolderPath(key: GameFolderKey, value: string) {
-    const trimmed = value.trim()
-    if (!trimmed) {
-      setFolderPath(key, '')
-      return
-    }
-
-    void probeGameFolder(key, trimmed).then((result) => {
-      if (!result.ok) {
-        setFolderErrors((prev) => ({
-          ...prev,
-          [key]: result.error,
-        }))
-        setFolderPaths((prev) => ({
-          ...prev,
-          [key]: readGameFolderPaths()[key],
-        }))
-        return
-      }
-      setFolderPaths((prev) => {
-        const next: GameFolderPaths = { ...prev, [key]: trimmed }
-        writeGameFolderPaths(next)
-        return next
-      })
-      setFolderVersions((prev) => {
-        const next = { ...prev, [key]: result.version }
-        writeGameFolderVersions(next)
-        return next
-      })
-      setFolderErrors((prev) => {
-        if (!prev[key]) return prev
-        const next = { ...prev }
-        delete next[key]
-        return next
-      })
-    })
-  }
 
   function setAppDir(key: keyof AppDirPaths, value: string) {
     setAppDirs((prev) => {
@@ -193,7 +139,77 @@ export function SettingsDialog({
     writeWeiduPath(value)
   }
 
-  const activeMissing = highlightMissing.filter(isPathStillMissing)
+  async function onCreateManaged(key: GameFolderKey) {
+    const source = vanillaSource[key]?.trim()
+    if (!source) {
+      setVanillaErrors((prev) => ({ ...prev, [key]: 'Pick an unmodded folder' }))
+      return
+    }
+    setVanillaBusy(key)
+    try {
+      await createManagedVanillaFromFolder(key, source)
+      setVanillaErrors((prev) => {
+        const next = { ...prev }
+        delete next[key]
+        return next
+      })
+      refreshRegistry()
+    } catch (err) {
+      setVanillaErrors((prev) => ({ ...prev, [key]: String(err) }))
+    } finally {
+      setVanillaBusy(null)
+    }
+  }
+
+  async function onUseExternal(key: GameFolderKey) {
+    const source = vanillaSource[key]?.trim()
+    if (!source) {
+      setVanillaErrors((prev) => ({ ...prev, [key]: 'Pick an unmodded folder' }))
+      return
+    }
+    setVanillaBusy(key)
+    try {
+      await registerExternalVanilla(key, source)
+      setVanillaErrors((prev) => {
+        const next = { ...prev }
+        delete next[key]
+        return next
+      })
+      refreshRegistry()
+    } catch (err) {
+      setVanillaErrors((prev) => ({ ...prev, [key]: String(err) }))
+    } finally {
+      setVanillaBusy(null)
+    }
+  }
+
+  async function onUseExisting(key: GameFolderKey) {
+    setVanillaBusy(key)
+    try {
+      const path = await useExistingManagedVanilla(key)
+      if (!path) {
+        setVanillaErrors((prev) => ({
+          ...prev,
+          [key]: 'No managed vanilla found under the backups directory',
+        }))
+        return
+      }
+      setVanillaErrors((prev) => {
+        const next = { ...prev }
+        delete next[key]
+        return next
+      })
+      refreshRegistry()
+    } catch (err) {
+      setVanillaErrors((prev) => ({ ...prev, [key]: String(err) }))
+    } finally {
+      setVanillaBusy(null)
+    }
+  }
+
+  const activeMissing = highlightMissing.filter((key) =>
+    isPathStillMissing(key, destinations),
+  )
   const tabIssueCounts = countMissingByTab(activeMissing)
 
   function missingFieldError(key: MissingInstallPath): string | null {
@@ -204,11 +220,7 @@ export function SettingsDialog({
   if (!open) return null
 
   return (
-    <div
-      className="keyboard-help-backdrop"
-      role="presentation"
-      {...backdrop}
-    >
+    <div className="keyboard-help-backdrop" role="presentation" {...backdrop}>
       <div
         ref={panelRef}
         className="keyboard-help settings-dialog"
@@ -226,16 +238,19 @@ export function SettingsDialog({
           <button
             type="button"
             role="tab"
-            id="settings-tab-games"
-            aria-selected={tab === 'games'}
-            aria-controls="settings-panel-games"
-            className={`settings-dialog-tab${tab === 'games' ? ' active' : ''}`}
-            onClick={() => setTab('games')}
+            id="settings-tab-vanilla"
+            aria-selected={tab === 'vanilla'}
+            aria-controls="settings-panel-vanilla"
+            className={`settings-dialog-tab${tab === 'vanilla' ? ' active' : ''}`}
+            onClick={() => setTab('vanilla')}
           >
-            Games
-            {tabIssueCounts.games > 0 ? (
-              <span className="settings-tab-issue-badge" aria-label={`${tabIssueCounts.games} required`}>
-                {tabIssueCounts.games}
+            Vanilla backups
+            {tabIssueCounts.vanilla > 0 ? (
+              <span
+                className="settings-tab-issue-badge"
+                aria-label={`${tabIssueCounts.vanilla} required`}
+              >
+                {tabIssueCounts.vanilla}
               </span>
             ) : null}
           </button>
@@ -250,48 +265,79 @@ export function SettingsDialog({
           >
             App
             {tabIssueCounts.app > 0 ? (
-              <span className="settings-tab-issue-badge" aria-label={`${tabIssueCounts.app} required`}>
+              <span
+                className="settings-tab-issue-badge"
+                aria-label={`${tabIssueCounts.app} required`}
+              >
                 {tabIssueCounts.app}
               </span>
             ) : null}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="settings-tab-github"
-            aria-selected={tab === 'github'}
-            aria-controls="settings-panel-github"
-            className={`settings-dialog-tab${tab === 'github' ? ' active' : ''}`}
-            onClick={() => setTab('github')}
-          >
-            GitHub
           </button>
         </div>
 
         <div className="settings-tab-panels">
           <section
-            className={`settings-section settings-tab-panel${tab === 'games' ? ' active' : ''}`}
-            id="settings-panel-games"
+            className={`settings-section settings-tab-panel${tab === 'vanilla' ? ' active' : ''}`}
+            id="settings-panel-vanilla"
             role="tabpanel"
-            aria-labelledby="settings-tab-games"
-            aria-hidden={tab !== 'games'}
+            aria-labelledby="settings-tab-vanilla"
+            aria-hidden={tab !== 'vanilla'}
           >
             <div className="settings-fields">
-              {GAME_FOLDER_KEYS.map((key) => (
-                <DirectoryField
-                  key={key}
-                  id={`settings-game-folder-${key}`}
-                  label={GAME_LABELS[key]}
-                  value={folderPaths[key]}
-                  onChange={(value) => setFolderPath(key, value)}
-                  onValidate={(value) => validateFolderPath(key, value)}
-                  placeholder="Path to unmodded game…"
-                  browseTitle={`Select ${GAME_LABELS[key]} folder`}
-                  hint={folderVersions[key] ? `v${folderVersions[key]}` : null}
-                  error={folderErrors[key] ?? missingFieldError(key)}
-                  required={activeMissing.includes(key)}
-                />
-              ))}
+              {GAME_FOLDER_KEYS.map((key) => {
+                const binding = registry[key]
+                const vanillaMissing = missingFieldError(`vanilla:${key}`)
+                return (
+                  <div key={key} className="settings-vanilla-block">
+                    <DirectoryField
+                      id={`settings-vanilla-${key}`}
+                      label={GAME_LABELS[key]}
+                      value={vanillaSource[key] ?? ''}
+                      onChange={(value) =>
+                        setVanillaSource((prev) => ({ ...prev, [key]: value }))
+                      }
+                      placeholder="Unmodded folder to copy from or use…"
+                      browseTitle={`Select unmodded ${GAME_LABELS[key]}`}
+                      hint={
+                        binding
+                          ? `${binding.mode}: ${vanillaPath(binding)}${
+                              binding.version ? ` (v${binding.version})` : ''
+                            }`
+                          : 'Not set'
+                      }
+                      error={vanillaErrors[key] ?? vanillaMissing}
+                      required={vanillaMissing != null}
+                    />
+                    <div className="settings-vanilla-actions">
+                      <button
+                        type="button"
+                        className="btn primary has-icon-tip"
+                        disabled={vanillaBusy === key}
+                        onClick={() => void onCreateManaged(key)}
+                      >
+                        Create vanilla backup
+                        <IconTip>Copies into the backups directory (recommended).</IconTip>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn secondary"
+                        disabled={vanillaBusy === key}
+                        onClick={() => void onUseExternal(key)}
+                      >
+                        Use folder as vanilla
+                      </button>
+                      <button
+                        type="button"
+                        className="btn secondary"
+                        disabled={vanillaBusy === key || !appDirs.backupDir.trim()}
+                        onClick={() => void onUseExisting(key)}
+                      >
+                        Use existing managed
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </section>
 
@@ -315,11 +361,11 @@ export function SettingsDialog({
               />
               <DirectoryField
                 id="settings-backup-dir"
-                label="Backup & logs directory"
+                label="Backup / logs / projects directory"
                 value={appDirs.backupDir}
                 onChange={(value) => setAppDir('backupDir', value)}
-                placeholder="Select backup folder…"
-                browseTitle="Select backup folder"
+                placeholder="Select data folder…"
+                browseTitle="Select backup / logs / projects folder"
                 error={missingFieldError('backupDir')}
                 required={activeMissing.includes('backupDir')}
               />
@@ -348,17 +394,6 @@ export function SettingsDialog({
                   </button>
                 }
               />
-            </div>
-          </section>
-
-          <section
-            className={`settings-section settings-tab-panel${tab === 'github' ? ' active' : ''}`}
-            id="settings-panel-github"
-            role="tabpanel"
-            aria-labelledby="settings-tab-github"
-            aria-hidden={tab !== 'github'}
-          >
-            <div className="settings-fields">
               <OutlinedTextField
                 id="settings-github-token"
                 label="GitHub token"

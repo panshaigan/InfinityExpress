@@ -22,13 +22,22 @@ Stack: React 18 + TypeScript + Vite + Vitest; Tauri 2 desktop shell. Pure domain
 
 ## Phases
 
-1. **Components** — Engine station (game + folder prefs) then XML stations in `STATION_ORDER` (`base` … `adjustements`). Content has main/sub branch nav after remap.
+1. **Components** — XML stations in `STATION_ORDER` (`base` … `adjustements`) after Presets. Content has main/sub branch nav after remap. Engine is chosen once per **Project** (not a station).
 2. **Mods** — Working copy of `mods.csv` (localStorage overlays). Desktop: scan Settings **mods download dir** by Download ID (subdir name); acquire / remove-from-disk. Completing last Components station can open Mods in journey mode.
-3. **Install** — Plan/run WeiDU steps; **cursor** (`InstallRun.cursor`) marks the current package in the table; **vanilla** + named snapshots under Settings backup path (see [weidu-install.md](weidu-install.md) for cursor, controls, backups); console dock. EET splits Pre-EET (`eet1`) vs EET (`eet`).
+3. **Install** — Plan/run WeiDU steps; **cursor** (`InstallRun.cursor`) marks the current package in the table; **vanilla** (app-wide) + named snapshots under the data root (see [weidu-install.md](weidu-install.md)); console dock. EET splits Pre-EET (`eet1`) vs EET (`eet`).
 
-Settings (top bar): game folders, mods download dir, backup dir, WeiDU path (`gameFolderPrefs`, `appDirPrefs`, `weiduPrefs`).
+## Projects
 
-**Session restore:** Components and Install workflow state (engine, selection, station done marks, preset choice, nav context, install table/cursor) persist in localStorage (`infinity-express.app-session`, per-game buckets). Install console WeiDU output is **not** stored there — on startup it is reloaded from `{backupDir}/install-logs/{runId}/run-stdout.log` and `run-stderr.log` when a saved install run exists.
+A **Project** is one install universe: locked engine, component selection / presets, install run state, and **destination** game folder(s) (live/modded). Multiple projects can share the same engine (different mod lists / destinations).
+
+- **Boot:** Project hub → open existing or **New project** wizard (engine → vanilla if missing → destinations).
+- **Destinations:** Empty folder → copy from app-wide vanilla; non-empty → must contain the game exe.
+- **Vanilla:** App-wide per `bg1`/`bg2`/`iwd`/`pst` (managed under data root preferred; external folder allowed). EET needs both BG1 and BG2 vanillas.
+- **Persistence:** Project meta + session in localStorage (`infinity-express.projects-v1`). Legacy per-game `infinity-express.app-session` buckets migrate once into projects.
+
+Settings (top bar): **Vanilla backups** + **App** (mods download dir, backup/logs/projects dir, WeiDU, GitHub token).
+
+**Session restore:** Selection, station done marks, presets, install table/cursor live on the active project. Install console WeiDU output is **not** stored there — on startup it is reloaded from `{backupDir}/install-logs/{runId}/run-stdout.log` and `run-stderr.log` when a saved install run exists.
 
 ## UI confirmations
 

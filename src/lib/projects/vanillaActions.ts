@@ -1,0 +1,123 @@
+import { backupGameDir, listBackups, prepareProjectDestination } from '../desktop/weiduInstall'
+import { GAME_FOLDER_EXE, probeGameFolder } from '../desktop/gameExe'
+import { isDesktopApp } from '../desktop/fsDialogs'
+import { readAppDirPaths } from '../ui/appDirPrefs'
+import type { GameFolderKey } from '../ui/gameFolderPrefs'
+import type { PrepareDestinationResult } from './types'
+import {
+  managedVanillaPath,
+  readVanillaRegistry,
+  setVanillaBinding,
+  vanillaPath,
+} from './vanillaRegistry'
+
+/** Sync managed vanilla bindings from backup manifests when present. */
+export async function syncManagedVanillasFromDisk(): Promise<void> {
+  const { backupDir } = readAppDirPaths()
+  if (!backupDir.trim() || !isDesktopApp()) return
+  const registry = readVanillaRegistry()
+  for (const key of ['bg1', 'bg2', 'iwd', 'pst'] as const) {
+    try {
+      const manifest = await listBackups(backupDir, key)
+      const path = manifest.vanilla?.path?.trim()
+      if (!path) continue
+      const existing = registry[key]
+      if (existing?.mode === 'external' && existing.path.trim()) continue
+      setVanillaBinding(key, { mode: 'managed', path })
+    } catch {
+      /* ignore per-key */
+    }
+  }
+}
+
+/** Create a managed vanilla under the data root from an unmodded source folder. */
+export async function createManagedVanillaFromFolder(
+  key: GameFolderKey,
+  sourceDir: string,
+): Promise<{ path: string; version: string }> {
+  const { backupDir } = readAppDirPaths()
+  if (!backupDir.trim()) {
+    throw new Error('Set the backup / logs / projects directory first')
+  }
+  const probe = await probeGameFolder(key, sourceDir)
+  if (!probe.ok) throw new Error(probe.error)
+
+  if (!isDesktopApp()) {
+    const path = managedVanillaPath(backupDir, key)
+    setVanillaBinding(key, {
+      mode: 'managed',
+      path,
+      version: probe.version || undefined,
+    })
+    return { path, version: probe.version }
+  }
+
+  const result = await backupGameDir({
+    sourceDir: sourceDir.trim(),
+    backupRoot: backupDir.trim(),
+    gameKey: key,
+    kind: 'vanilla',
+    name: null,
+    excludeSafeDirs: false,
+  })
+  setVanillaBinding(key, {
+    mode: 'managed',
+    path: result.path,
+    version: probe.version || undefined,
+  })
+  return { path: result.path, version: probe.version }
+}
+
+export async function registerExternalVanilla(
+  key: GameFolderKey,
+  folderPath: string,
+): Promise<{ path: string; version: string }> {
+  const probe = await probeGameFolder(key, folderPath)
+  if (!probe.ok) throw new Error(probe.error)
+  setVanillaBinding(key, {
+    mode: 'external',
+    path: folderPath.trim(),
+    version: probe.version || undefined,
+  })
+  return { path: folderPath.trim(), version: probe.version }
+}
+
+export async function useExistingManagedVanilla(
+  key: GameFolderKey,
+): Promise<string | null> {
+  const { backupDir } = readAppDirPaths()
+  if (!backupDir.trim()) return null
+  if (isDesktopApp()) {
+    const manifest = await listBackups(backupDir, key)
+    const path = manifest.vanilla?.path?.trim()
+    if (path) {
+      setVanillaBinding(key, { mode: 'managed', path })
+      return path
+    }
+  }
+  const binding = readVanillaRegistry()[key]
+  if (binding?.mode === 'managed' && binding.path.trim()) return binding.path.trim()
+  return null
+}
+
+export async function prepareDestinationForKey(
+  key: GameFolderKey,
+  targetDir: string,
+): Promise<PrepareDestinationResult> {
+  const trimmed = targetDir.trim()
+  if (!trimmed) throw new Error('Destination path is required')
+
+  const vanilla = vanillaPath(readVanillaRegistry()[key])
+  const exeName = GAME_FOLDER_EXE[key]
+
+  if (!isDesktopApp()) {
+    // Browser preview: accept path without copy/probe.
+    return { action: 'accepted_existing', path: trimmed }
+  }
+
+  return prepareProjectDestination({
+    targetDir: trimmed,
+    vanillaSource: vanilla || null,
+    exeName,
+  })
+}

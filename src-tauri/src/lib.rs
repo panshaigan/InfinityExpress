@@ -14,6 +14,8 @@ pub fn run() {
     .invoke_handler(tauri::generate_handler![
       mod_fs::list_subdir_names,
       mod_fs::read_text_file,
+      mod_fs::write_text_file,
+      mod_fs::ensure_dir,
       mod_fs::remove_mod_dir,
       mod_acquire::probe_mod_remote,
       mod_acquire::scrape_mod_page_meta,
@@ -34,6 +36,7 @@ pub fn run() {
       weidu_backup::list_backups,
       weidu_backup::create_named_backup,
       weidu_backup::delete_backup,
+      weidu_backup::prepare_project_destination,
     ])
     .setup(|app| {
       if cfg!(debug_assertions) {

@@ -4,15 +4,14 @@ import {
   type SelectedGame,
   type StationId,
 } from '../lib/xml/schema'
-import { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
+import type { StationSlot } from '../lib/ui/chromeHotkeys'
 import { IconTip } from './IconTip'
 import { RailCollapseButton } from './RailCollapseButton'
 
 export type AppNavSlot = StationSlot
 export { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
 
-const SHORT_LABELS: Record<AppNavSlot, string> = {
-  engine: 'Eng',
+const SHORT_LABELS: Record<Exclude<AppNavSlot, 'engine'>, string> = {
   presets: 'Pre',
   base: 'Base',
   ui: 'UI',
@@ -30,8 +29,7 @@ const SHORT_LABELS: Record<AppNavSlot, string> = {
   adjustements: 'Adj',
 }
 
-const SETUP_LABELS: Record<'engine' | 'presets', string> = {
-  engine: 'Engine',
+const SETUP_LABELS: Record<'presets', string> = {
   presets: 'Presets',
 }
 
@@ -45,7 +43,6 @@ interface Props {
   totalCount: number
   collapsed: boolean
   onToggleCollapsed: () => void
-  onSelectEngine: () => void
   onSelectPresets: () => void
   onSelectStation: (id: StationId) => void
   onFinishRoute: () => void
@@ -64,15 +61,17 @@ function stationClass(
 }
 
 function labelFor(id: AppNavSlot, collapsed: boolean): string {
+  if (id === 'engine') return collapsed ? 'Eng' : 'Engine'
   if (!collapsed) {
-    if (isSetupSlot(id)) return SETUP_LABELS[id]
+    if (id === 'presets') return SETUP_LABELS.presets
     return STATION_LABELS[id]
   }
   return SHORT_LABELS[id]
 }
 
 function titleFor(id: AppNavSlot): string {
-  if (isSetupSlot(id)) return SETUP_LABELS[id]
+  if (id === 'engine') return 'Engine'
+  if (id === 'presets') return SETUP_LABELS.presets
   return STATION_LABELS[id]
 }
 
@@ -121,7 +120,6 @@ export function StationNav({
   totalCount,
   collapsed,
   onToggleCollapsed,
-  onSelectEngine,
   onSelectPresets,
   onSelectStation,
   onFinishRoute,
@@ -137,13 +135,6 @@ export function StationNav({
       aria-label="Stations"
     >
       <div className="station-nav-scroll">
-        <StationStop
-          id="engine"
-          activeStation={activeStation}
-          finishedStations={finishedStations}
-          collapsed={collapsed}
-          onClick={onSelectEngine}
-        />
         {routeUnlocked ? (
           <>
             <StationStop
@@ -194,7 +185,7 @@ export function StationNav({
               )}
               <IconTip>
                 {allDone
-                  ? 'Reopen component stations (Engine and Presets stay done)'
+                  ? 'Reopen component stations (Presets stay done)'
                   : 'Mark all stations done'}
               </IconTip>
             </span>

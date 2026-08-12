@@ -17,6 +17,7 @@ interface Props {
   open: boolean
   onClose: () => void
   game: SelectedGame
+  gameFolders: GameFolderPaths
 }
 
 const DEFAULT_FILENAME = 'WeiDU.log'
@@ -34,7 +35,7 @@ function lineCountOf(text: string): number {
   return trimmed.split('\n').length
 }
 
-export function WeiduLogExportDialog({ open, onClose, game }: Props) {
+export function WeiduLogExportDialog({ open, onClose, game, gameFolders }: Props) {
   const isEet = game === 'eet'
   const [tab, setTab] = useState<EetTab>('eet1')
   const [filenameAll, setFilenameAll] = useState(DEFAULT_FILENAME)
@@ -61,15 +62,15 @@ export function WeiduLogExportDialog({ open, onClose, game }: Props) {
     setFoundBg1(true)
     setFoundBg2(true)
 
-    const gameFolders = readGameFolderPaths()
+    const folders = gameFolders
     let cancelled = false
     async function load() {
       if (!isDesktopApp()) return
       setLoading(true)
       try {
         if (isEet) {
-          const bg1Dir = gameDirForPhase(game, 'eet1', gameFolders)
-          const bg2Dir = gameDirForPhase(game, 'eet', gameFolders)
+          const bg1Dir = gameDirForPhase(game, 'eet1', folders)
+          const bg2Dir = gameDirForPhase(game, 'eet', folders)
           const [a, b] = await Promise.all([
             bg1Dir.trim() ? readGameWeiduLog(bg1Dir) : Promise.resolve(''),
             bg2Dir.trim() ? readGameWeiduLog(bg2Dir) : Promise.resolve(''),
@@ -80,7 +81,7 @@ export function WeiduLogExportDialog({ open, onClose, game }: Props) {
           setFoundBg1(a.trim().length > 0)
           setFoundBg2(b.trim().length > 0)
         } else {
-          const dir = gameDirForPhase(game, 'single', gameFolders)
+          const dir = gameDirForPhase(game, 'single', folders)
           const text = dir.trim() ? await readGameWeiduLog(dir) : ''
           if (cancelled) return
           setLogAll(text)
@@ -94,7 +95,7 @@ export function WeiduLogExportDialog({ open, onClose, game }: Props) {
     return () => {
       cancelled = true
     }
-  }, [open, game, isEet])
+  }, [open, game, isEet, gameFolders])
 
   const text = !isEet ? logAll : tab === 'eet1' ? logBg1 : logBg2
   const found = !isEet ? foundAll : tab === 'eet1' ? foundBg1 : foundBg2

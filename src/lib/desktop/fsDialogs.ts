@@ -57,3 +57,18 @@ export async function readTextFile(path: string): Promise<string | null> {
     return null
   }
 }
+
+/** Write UTF-8 text to an absolute path (creates parents). */
+export async function writeTextFileAt(
+  path: string,
+  contents: string,
+): Promise<void> {
+  if (!isDesktopApp()) return
+  await invoke('write_text_file', { path: path.trim(), contents })
+}
+
+/** Create directory and parents if missing. */
+export async function ensureDir(path: string): Promise<void> {
+  if (!isDesktopApp() || !path.trim()) return
+  await invoke('ensure_dir', { path: path.trim() })
+}

@@ -1,15 +1,25 @@
 import { readAppDirPaths } from './appDirPrefs'
-import { readGameFolderPaths, type GameFolderKey } from './gameFolderPrefs'
+import type { GameFolderKey, GameFolderPaths } from './gameFolderPrefs'
 import { readWeiduPath } from './weiduPrefs'
 import type { SelectedGame } from '../xml/schema'
+import {
+  missingVanillaKeys,
+  readVanillaRegistry,
+  type VanillaRegistry,
+} from '../projects'
 
 export type MissingInstallPath =
-  | GameFolderKey
   | 'modsDownloadDir'
   | 'backupDir'
   | 'weiduPath'
+  | `vanilla:${GameFolderKey}`
+  | `dest:${GameFolderKey}`
 
-export type SettingsFocusField = MissingInstallPath
+export type SettingsFocusField =
+  | 'modsDownloadDir'
+  | 'backupDir'
+  | 'weiduPath'
+  | `vanilla:${GameFolderKey}`
 
 const FOLDERS_BY_GAME: Record<SelectedGame, GameFolderKey[]> = {
   bg1: ['bg1'],
@@ -27,16 +37,22 @@ function isEmpty(value: string | undefined | null): boolean {
   return !value?.trim()
 }
 
-export function getMissingInstallPaths(game: SelectedGame | null): MissingInstallPath[] {
+export function getMissingInstallPaths(
+  game: SelectedGame | null,
+  destinations: GameFolderPaths,
+  registry: VanillaRegistry = readVanillaRegistry(),
+): MissingInstallPath[] {
   if (!game) return []
 
-  const folders = readGameFolderPaths()
   const appDirs = readAppDirPaths()
   const weidu = readWeiduPath()
   const missing: MissingInstallPath[] = []
 
+  for (const key of missingVanillaKeys(game, registry)) {
+    missing.push(`vanilla:${key}`)
+  }
   for (const key of gameFolderKeysForEngine(game)) {
-    if (isEmpty(folders[key])) missing.push(key)
+    if (isEmpty(destinations[key])) missing.push(`dest:${key}`)
   }
   if (isEmpty(appDirs.modsDownloadDir)) missing.push('modsDownloadDir')
   if (isEmpty(appDirs.backupDir)) missing.push('backupDir')
@@ -47,42 +63,63 @@ export function getMissingInstallPaths(game: SelectedGame | null): MissingInstal
 
 export function settingsTabForMissing(
   key: MissingInstallPath,
-): 'games' | 'app' {
-  if (key === 'modsDownloadDir' || key === 'backupDir' || key === 'weiduPath') {
+): 'vanilla' | 'app' {
+  if (
+    key === 'modsDownloadDir' ||
+    key === 'backupDir' ||
+    key === 'weiduPath'
+  ) {
     return 'app'
   }
-  return 'games'
+  return 'vanilla'
 }
 
 export function firstMissingFocusField(
   keys: MissingInstallPath[],
-): MissingInstallPath | null {
-  return keys[0] ?? null
+): SettingsFocusField | null {
+  for (const key of keys) {
+    if (key.startsWith('dest:')) continue
+    return key as SettingsFocusField
+  }
+  return null
 }
 
-export function focusElementIdForField(field: MissingInstallPath): string {
+export function focusElementIdForField(field: SettingsFocusField): string {
   if (field === 'modsDownloadDir') return 'settings-mods-download-dir'
   if (field === 'backupDir') return 'settings-backup-dir'
   if (field === 'weiduPath') return 'settings-weidu-path'
-  return `settings-game-folder-${field}`
+  if (field.startsWith('vanilla:')) {
+    return `settings-vanilla-${field.slice('vanilla:'.length)}`
+  }
+  return 'settings-backup-dir'
 }
 
 export function countMissingByTab(
   keys: MissingInstallPath[],
-): { games: number; app: number } {
-  let games = 0
+): { vanilla: number; app: number } {
+  let vanilla = 0
   let app = 0
   for (const key of keys) {
-    if (settingsTabForMissing(key) === 'games') games += 1
+    if (settingsTabForMissing(key) === 'vanilla') vanilla += 1
     else app += 1
   }
-  return { games, app }
+  return { vanilla, app }
 }
 
-export function isPathStillMissing(key: MissingInstallPath): boolean {
-  if (key === 'modsDownloadDir' || key === 'backupDir') {
-    return isEmpty(readAppDirPaths()[key])
+export function isPathStillMissing(
+  key: MissingInstallPath,
+  destinations: GameFolderPaths,
+): boolean {
+  if (key.startsWith('dest:')) {
+    const folder = key.slice('dest:'.length) as GameFolderKey
+    return isEmpty(destinations[folder])
   }
+  if (key.startsWith('vanilla:')) {
+    const folder = key.slice('vanilla:'.length) as GameFolderKey
+    return isEmpty(readVanillaRegistry()[folder]?.path)
+  }
+  if (key === 'modsDownloadDir') return isEmpty(readAppDirPaths().modsDownloadDir)
+  if (key === 'backupDir') return isEmpty(readAppDirPaths().backupDir)
   if (key === 'weiduPath') return isEmpty(readWeiduPath())
-  return isEmpty(readGameFolderPaths()[key])
+  return false
 }

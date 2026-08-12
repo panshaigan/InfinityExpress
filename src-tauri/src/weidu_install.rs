@@ -1206,7 +1206,7 @@ pub fn stage_mod_into_game_dir(
   Ok(tp2.to_string_lossy().into_owned())
 }
 
-fn find_named_game_exe(game: &Path, exe_name: &str) -> Option<PathBuf> {
+pub(crate) fn find_named_game_exe(game: &Path, exe_name: &str) -> Option<PathBuf> {
   let trimmed = exe_name.trim();
   if trimmed.is_empty() {
     return None;

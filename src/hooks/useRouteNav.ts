@@ -48,7 +48,7 @@ export function useRouteNav(args: {
   const [hideCaughtUp, setHideCaughtUp] = useState(false)
 
   const routeProgress = useMemo(() => {
-    const slots: StationSlot[] = ['engine', 'presets', ...visibleStations]
+    const slots: StationSlot[] = ['presets', ...visibleStations]
     const finishedCount = slots.filter((id) => finishedStations.has(id)).length
     return { finishedCount, totalCount: slots.length }
   }, [finishedStations, visibleStations])
@@ -170,7 +170,7 @@ export function useRouteNav(args: {
   /** Tick every stop and open Mods the same way Done does on the last unfinished station. */
   function finishEntireRoute() {
     if (showRouteTip) dismissRouteTip()
-    const slots: StationSlot[] = ['engine', 'presets', ...visibleStations]
+    const slots: StationSlot[] = ['presets', ...visibleStations]
     setFinishedStations(new Set(slots))
     onRouteJustCompleted?.()
   }
@@ -180,12 +180,12 @@ export function useRouteNav(args: {
   }
 
   function replaceFinishedStations(slots: readonly StationSlot[]) {
-    setFinishedStations(new Set(slots))
+    setFinishedStations(new Set(slots.filter((s) => s !== 'engine')))
   }
 
-  /** Clear done marks on component stations; Engine and Presets stay finished. */
+  /** Clear done marks on component stations; Presets stay finished. */
   function reopenEntireRoute() {
-    setFinishedStations(new Set(['engine', 'presets']))
+    setFinishedStations(new Set(['presets']))
   }
 
   return {

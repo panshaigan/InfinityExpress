@@ -311,7 +311,7 @@ function gameSessionFrom(value: unknown): GameSession | null {
   if (activePresetId && !selectionPresets.some((p) => p.id === activePresetId)) {
     activePresetId = null
   }
-  const activeStation = isStationSlot(o.activeStation) ? o.activeStation : 'engine'
+  const activeStation = isStationSlot(o.activeStation) ? o.activeStation : 'presets'
   const install = o.install != null ? persistedInstallFrom(o.install) : undefined
   return {
     selectedIds: stringArray(o.selectedIds),

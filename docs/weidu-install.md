@@ -83,7 +83,7 @@ Orchestration: `hooks/useInstallRun.ts` + `lib/desktop/weiduInstall.ts` → Rust
 
 ## Backups
 
-Settings **Backup & logs directory** (`appDirs.backupDir`). UI: [`BackupManagerDialog.tsx`](../src/ui/install/BackupManagerDialog.tsx). Rust: [`weidu_backup.rs`](../src-tauri/src/weidu_backup.rs). TS wrappers: [`weiduInstall.ts`](../src/lib/desktop/weiduInstall.ts). Types: `BackupKind` / `BackupManifest` in [`types.ts`](../src/lib/install/types.ts).
+Settings **Backup / logs / projects directory** (`appDirs.backupDir`). App-wide **vanilla** bindings live in `infinity-express.vanilla-registry` (managed path under the data root, or an external unmodded folder). UI: Settings → Vanilla backups; wizard on new project; [`BackupManagerDialog.tsx`](../src/ui/install/BackupManagerDialog.tsx) for snapshots. Rust: [`weidu_backup.rs`](../src-tauri/src/weidu_backup.rs). TS wrappers: [`weiduInstall.ts`](../src/lib/desktop/weiduInstall.ts). Types: `BackupKind` / `BackupManifest` in [`types.ts`](../src/lib/install/types.ts).
 
 ### Layout
 
@@ -91,11 +91,13 @@ Settings **Backup & logs directory** (`appDirs.backupDir`). UI: [`BackupManagerD
 {backupDir}/
   {gameKey}/                 # bg1 | bg2 | iwd | pst  (never "eet")
     manifest.json
-    vanilla/                 # required unmodded copy
+    vanilla/                 # managed unmodded copy (preferred)
     {snapshotName}/          # named snapshots as siblings of vanilla
   install-logs/
     {runId}/                 # WeiDU run stdout/stderr (not game backups)
 ```
+
+**Project destinations** (live/modded folders) are per-project, not under this tree. Creating a project: empty destination → `prepare_project_destination` copies vanilla into it; non-empty destination must already contain the game executable.
 
 Legacy trees are migrated on `list_backups` / create / delete:
 

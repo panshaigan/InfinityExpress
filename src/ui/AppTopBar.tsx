@@ -36,6 +36,8 @@ interface Props {
   onExport: () => void
   exportDisabled?: boolean
   exportTip?: string
+  projectName?: string | null
+  onSwitchProject?: () => void
 }
 
 function SettingsGearIcon() {
@@ -108,6 +110,8 @@ export function AppTopBar({
   onExport,
   exportDisabled = false,
   exportTip = 'Preview and save install order',
+  projectName = null,
+  onSwitchProject,
 }: Props) {
   return (
     <header className="top-bar">
@@ -130,9 +134,19 @@ export function AppTopBar({
         processingPhases={processingPhases}
       />
       <div className="top-bar-actions">
+        {projectName ? (
+          <span className="engine-badge">
+            Project: <strong>{projectName}</strong>
+          </span>
+        ) : null}
         <span className="engine-badge">
           Engine: <strong>{game ? GAME_LABELS[game] : 'not set'}</strong>
         </span>
+        {onSwitchProject ? (
+          <button type="button" className="btn secondary" onClick={onSwitchProject}>
+            Projects
+          </button>
+        ) : null}
         <span className="stats">
           {selectedModsCount} mods · {selectedCount} components
         </span>

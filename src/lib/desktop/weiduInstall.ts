@@ -234,6 +234,19 @@ export async function deleteBackup(
   await invoke('delete_backup', { backupRoot, gameKey, backupPath })
 }
 
+export async function prepareProjectDestination(input: {
+  targetDir: string
+  vanillaSource?: string | null
+  exeName: string
+}): Promise<import('../projects/types').PrepareDestinationResult> {
+  requireDesktop()
+  return invoke('prepare_project_destination', {
+    targetDir: input.targetDir,
+    vanillaSource: input.vanillaSource ?? null,
+    exeName: input.exeName,
+  })
+}
+
 export async function listenWeiduInstallEvents(
   handler: (event: WeiduInstallEvent) => void,
 ): Promise<UnlistenFn> {
