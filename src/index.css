@@ -544,7 +544,7 @@ body {
 }
 
 .station-nav.collapsed .station-nav-footer {
-  justify-content: left;
+  justify-content: center;
   padding-left: 0.05rem;
   padding-right: 0.05rem;
 }
