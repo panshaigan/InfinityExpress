@@ -103,6 +103,10 @@ export function InstallStation({
     restartFromBackup,
     sendInput,
     appendCommandLine,
+    pausePending,
+    stopping,
+    skipping,
+    goingPrevious,
   } = useInstallRun({ model, selectedIds, game, gameFolders })
 
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null)
@@ -259,13 +263,18 @@ export function InstallStation({
   const canRun = isDesktopApp() && !!game && modsReady && !!weiduPath && !!appDirs.backupDir
   const canBackup = !!game && !!appDirs.backupDir
   const isRunning = run?.runState === 'running'
+  const transportBusy = stopping || skipping || goingPrevious
   const canPauseToggle =
-    !!run && (run.runState === 'running' || run.runState === 'paused')
+    !!run &&
+    !transportBusy &&
+    (run.runState === 'running' || run.runState === 'paused')
   const canStop =
     !!run &&
+    !transportBusy &&
     (run.runState === 'running' || run.runState === 'waitingForInput')
   const canSkip =
     !!run &&
+    !transportBusy &&
     (run.runState === 'paused' ||
       run.runState === 'stopped' ||
       run.runState === 'waitingForInput')
@@ -275,19 +284,26 @@ export function InstallStation({
       run.runState === 'stopped' ||
       run.runState === 'failed' ||
       run.runState === 'waitingForInput')
+  const canGoPreviousEffective = canGoPrevious && !transportBusy
 
   const canNavigateSteps =
     !!run && (run.runState === 'paused' || run.runState === 'stopped')
 
   const tableActions = useMemo(() => {
-    if (!run) return null
+    if (planSteps.length === 0) return null
+    const tableRun = run
+    const tableRunState = tableRun?.runState ?? 'idle'
+    const tableCursor = tableRun?.cursor ?? 0
+    const tableSteps = tableRun?.steps ?? steps
+    const tableBreakpoints = tableRun?.breakpointStepIds ?? []
     return {
-      runState: run.runState,
-      cursor: run.cursor,
-      breakpointStepIds: run.breakpointStepIds ?? [],
+      runState: tableRunState,
+      cursor: tableCursor,
+      breakpointStepIds: tableBreakpoints,
       canNavigate: canNavigateSteps,
       onRequestUninstallBack: (stepId: string) => {
-        const step = run.steps.find((s) => s.stepId === stepId)
+        if (!tableRun) return
+        const step = tableRun.steps.find((s) => s.stepId === stepId)
         const label = step?.modId ?? 'this step'
         setConfirmDialog({
           title: 'Uninstall back to step?',
@@ -300,21 +316,23 @@ export function InstallStation({
           },
         })
       },
-      onToggleBreakpoint: toggleBreakpoint,
+      onToggleBreakpoint: (stepId: string) => {
+        toggleBreakpoint(stepId)
+      },
       onRequestMoveCursor: (stepId: string) => {
-        const targetIdx = stepIndexById(run.steps, stepId)
+        const targetIdx = stepIndexById(tableSteps, stepId)
         if (targetIdx < 0) return
         const crossesInstalled =
-          targetIdx < run.cursor &&
-          run.steps
-            .slice(targetIdx, run.cursor)
+          targetIdx < tableCursor &&
+          tableSteps
+            .slice(targetIdx, tableCursor)
             .some(
               (s) =>
                 s.status === 'succeeded' ||
                 s.status === 'succeededWithWarnings' ||
                 s.status === 'alreadyInstalled',
             )
-        const label = run.steps[targetIdx]?.modId ?? 'step'
+        const label = tableSteps[targetIdx]?.modId ?? 'step'
         if (crossesInstalled && canNavigateSteps) {
           setConfirmDialog({
             title: 'Move cursor backward?',
@@ -330,7 +348,15 @@ export function InstallStation({
         moveCursorToStep(stepId)
       },
     }
-  }, [run, canNavigateSteps, uninstallBackToStep, toggleBreakpoint, moveCursorToStep])
+  }, [
+    planSteps.length,
+    run,
+    steps,
+    canNavigateSteps,
+    uninstallBackToStep,
+    toggleBreakpoint,
+    moveCursorToStep,
+  ])
 
   const statusText = useMemo(() => {
     if (!run) return `${planSteps.length} steps planned`
@@ -373,12 +399,12 @@ export function InstallStation({
   }, [game, appDirs.backupDir, gameFolders, onOpenSettings])
 
   const onStart = useCallback(async () => {
-    if (!canRun || isRunning) return
+    if (!canRun || isRunning || transportBusy) return
     if (resumeFromCursor) {
       await continueRun()
       return
     }
-    const next = initRun()
+    const next = run?.runState === 'idle' ? run : initRun()
     if (!next) return
     const ok = await ensureVanillas()
     if (!ok) return
@@ -386,7 +412,9 @@ export function InstallStation({
   }, [
     canRun,
     isRunning,
+    transportBusy,
     resumeFromCursor,
+    run,
     continueRun,
     initRun,
     ensureVanillas,
@@ -394,15 +422,8 @@ export function InstallStation({
   ])
 
   const onPauseToggle = useCallback(() => {
-    if (!run) return
-    if (run.runState === 'running') {
-      pause()
-      return
-    }
-    if (run.runState === 'paused') {
-      void continueRun()
-    }
-  }, [run, pause, continueRun])
+    pause()
+  }, [pause])
 
   const onRestoreDone = useCallback(
     async (_backupPath: string, restoredGameKey: string) => {
@@ -488,14 +509,21 @@ export function InstallStation({
     setSelectedComponentId(componentId)
   }, [])
 
+  const playActive = isRunning && !pausePending && !stopping
+  const pauseActive = pausePending || run?.runState === 'paused'
+  const stopActive = stopping
+  const skipActive = skipping
+  const previousActive = goingPrevious
+
   const previousTip = 'Go back one step and uninstall that package'
   const playTip = resumeFromCursor
     ? 'Resume from cursor'
     : 'Start installation'
-  const pauseTip =
-    run?.runState === 'running'
+  const pauseTip = pausePending
+    ? 'Pause after current step (click again to cancel)'
+    : run?.runState === 'running'
       ? 'Pause (finish current WeiDU step)'
-      : 'Unpause'
+      : 'Resume'
   const stopTip =
     'Stop — kills WeiDU and uninstalls the interrupted package. Less safe than Pause.'
   const skipTip = 'Skip package at cursor'
@@ -517,8 +545,9 @@ export function InstallStation({
               </span>
               <button
                 type="button"
-                className="btn secondary install-control-btn has-icon-tip"
-                disabled={!canGoPrevious}
+                className={`btn secondary install-control-btn has-icon-tip${previousActive ? ' active' : ''}`}
+                disabled={!canGoPreviousEffective}
+                aria-pressed={previousActive}
                 onClick={() =>
                   setConfirmDialog({
                     title: 'Go to previous step?',
@@ -539,8 +568,9 @@ export function InstallStation({
               </button>
               <button
                 type="button"
-                className="btn secondary install-control-btn install-control-start has-icon-tip"
-                disabled={!canRun || isRunning}
+                className={`btn secondary install-control-btn install-control-start has-icon-tip${playActive ? ' active' : ''}`}
+                disabled={!canRun || isRunning || transportBusy}
+                aria-pressed={playActive}
                 onClick={() => void onStart()}
                 aria-label={playTip}
               >
@@ -549,8 +579,9 @@ export function InstallStation({
               </button>
               <button
                 type="button"
-                className="btn secondary install-control-btn has-icon-tip"
+                className={`btn secondary install-control-btn has-icon-tip${pauseActive ? ' active' : ''}${pausePending ? ' pending' : ''}`}
                 disabled={!canPauseToggle}
+                aria-pressed={pauseActive}
                 onClick={onPauseToggle}
                 aria-label={pauseTip}
               >
@@ -559,8 +590,9 @@ export function InstallStation({
               </button>
               <button
                 type="button"
-                className="btn secondary install-control-btn has-icon-tip"
+                className={`btn secondary install-control-btn has-icon-tip${stopActive ? ' active' : ''}`}
                 disabled={!canStop}
+                aria-pressed={stopActive}
                 onClick={() => void stop()}
                 aria-label={stopTip}
               >
@@ -569,8 +601,9 @@ export function InstallStation({
               </button>
               <button
                 type="button"
-                className="btn secondary install-control-btn has-icon-tip"
+                className={`btn secondary install-control-btn has-icon-tip${skipActive ? ' active' : ''}`}
                 disabled={!canSkip}
+                aria-pressed={skipActive}
                 onClick={() => skipCurrent()}
                 aria-label={skipTip}
               >
@@ -626,8 +659,8 @@ export function InstallStation({
             mods={mods}
             selectedStepId={selectedStep?.stepId ?? null}
             selectedComponentId={selectedComponentId}
-            cursorStepId={cursorStepId}
-            cursorLive={run?.runState === 'running'}
+            cursorStepId={cursorStepId ?? steps[0]?.stepId ?? null}
+            cursorLive={run?.runState === 'running' && !pausePending}
             hideInstalled={hideInstalled}
             tableActions={tableActions}
             onSelectStep={onSelectStep}

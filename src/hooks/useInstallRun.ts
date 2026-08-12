@@ -75,10 +75,15 @@ export function useInstallRun(options: {
   const [resultLines, setResultLines] = useState<string[]>([])
   const [inputPrompt, setInputPrompt] = useState<string | null>(null)
   const [paused, setPaused] = useState(false)
+  const [pausePending, setPausePending] = useState(false)
+  const [stopping, setStopping] = useState(false)
+  const [skipping, setSkipping] = useState(false)
+  const [goingPrevious, setGoingPrevious] = useState(false)
   const [activeStepId, setActiveStepId] = useState<string | null>(null)
   const cacheRef = useRef<ModListingCache>(new Map())
   const runningRef = useRef(false)
   const pausedRef = useRef(false)
+  const pausePendingRef = useRef(false)
   const stopRequestedRef = useRef(false)
   const activeStepIdRef = useRef<string | null>(null)
   const runRef = useRef<InstallRun | null>(null)
@@ -186,18 +191,28 @@ export function useInstallRun(options: {
       logDir,
     }
     setRun(next)
+    runRef.current = next
     setConsoleLines([])
     setCommandLines([])
     setResultLines([])
     setInputPrompt(null)
     setPaused(false)
+    pausedRef.current = false
+    setPausePending(false)
+    pausePendingRef.current = false
     stopRequestedRef.current = false
+    setStopping(false)
     // Cursor is 0 — first package is highlighted immediately on Start.
     setActiveStepId(steps[0]?.stepId ?? null)
     cacheRef.current = new Map()
     stepResultLinesRef.current = new Map()
     return next
   }, [game, planSteps])
+
+  const ensureIdleRun = useCallback((): InstallRun | null => {
+    if (runRef.current) return runRef.current
+    return initRun()
+  }, [initRun])
 
   useEffect(() => {
     let cancelled = false
@@ -530,11 +545,52 @@ export function useInstallRun(options: {
       setRun(next)
       setActiveStepId(reset.stepId)
       setPaused(false)
+      pausedRef.current = false
+      setPausePending(false)
+      pausePendingRef.current = false
       stopRequestedRef.current = false
+      setStopping(false)
       appendCommandLine('Installation stopped')
       return next
     },
     [appendCommandLine, mergeStepResultLines, pushConsoleLine, withMergedResults],
+  )
+
+  const finishStepIteration = useCallback(
+    (
+      current: InstallRun,
+      index: number,
+      step: InstallStep,
+      failed: boolean,
+    ): { current: InstallRun; shouldExit: boolean } => {
+      let next: InstallRun = {
+        ...current,
+        steps: withMergedResults(
+          current.steps.map((s, idx) => (idx === index ? step : s)),
+        ),
+        cursor: index + 1,
+      }
+      next = withNormalizedCursor(next)
+
+      if (failed) {
+        setRun({ ...next, runState: 'failed' })
+        return { current: next, shouldExit: true }
+      }
+
+      if (pausePendingRef.current) {
+        pausePendingRef.current = false
+        pausedRef.current = true
+        setPausePending(false)
+        setPaused(true)
+        setRun({ ...next, runState: 'paused' })
+        appendCommandLine('Installation paused')
+        return { current: next, shouldExit: false }
+      }
+
+      setRun({ ...next, runState: 'running' })
+      return { current: next, shouldExit: false }
+    },
+    [appendCommandLine, withMergedResults, withNormalizedCursor],
   )
 
   const executeFromCursor = useCallback(
@@ -593,6 +649,9 @@ export function useInstallRun(options: {
               cursor: i,
               runState: 'paused',
             })
+            pausedRef.current = true
+            pausePendingRef.current = false
+            setPausePending(false)
             setPaused(true)
             setRun(halted)
             appendCommandLine(`Breakpoint hit: ${step.modId}`)
@@ -763,14 +822,12 @@ export function useInstallRun(options: {
               )
             ) {
               step = { ...step, status: 'alreadyInstalled', progress: null }
-              current = {
-                ...current,
-                steps: withMergedResults(
-                  current.steps.map((s, idx) => (idx === i ? step : s)),
-                ),
-                cursor: i + 1,
+              const finished = finishStepIteration(current, i, step, false)
+              current = finished.current
+              if (finished.shouldExit) {
+                runningRef.current = false
+                return
               }
-              setRun({ ...current, runState: 'running' })
               continue
             }
 
@@ -820,17 +877,9 @@ export function useInstallRun(options: {
               finishedAt: new Date().toISOString(),
             })
 
-            current = {
-              ...current,
-              steps: withMergedResults(
-                current.steps.map((s, idx) => (idx === i ? step : s)),
-              ),
-              cursor: i + 1,
-            }
-            current = withNormalizedCursor(current)
-            setRun({ ...current, runState: status === 'failed' ? 'failed' : 'running' })
-
-            if (status === 'failed') {
+            const finished = finishStepIteration(current, i, step, status === 'failed')
+            current = finished.current
+            if (finished.shouldExit) {
               runningRef.current = false
               return
             }
@@ -890,6 +939,7 @@ export function useInstallRun(options: {
       withMergedResults,
       withNormalizedCursor,
       appendCommandLine,
+      finishStepIteration,
     ],
   )
 
@@ -906,7 +956,10 @@ export function useInstallRun(options: {
   const continueRun = useCallback(async () => {
     const current = runRef.current
     if (!current) return
+    pausedRef.current = false
+    pausePendingRef.current = false
     setPaused(false)
+    setPausePending(false)
     stopRequestedRef.current = false
     setInputPrompt(null)
     appendCommandLine('Installation resumed')
@@ -914,30 +967,51 @@ export function useInstallRun(options: {
   }, [executeFromCursor, appendCommandLine])
 
   const pause = useCallback(() => {
-    setPaused(true)
-    setRun((r) => {
-      if (!r) return r
-      return withNormalizedCursor({ ...r, runState: 'paused' })
-    })
-    appendCommandLine('Installation paused')
-  }, [appendCommandLine, withNormalizedCursor])
+    const current = runRef.current
+    if (!current) return
+
+    if (current.runState === 'running') {
+      if (pausePendingRef.current) {
+        pausePendingRef.current = false
+        setPausePending(false)
+        appendCommandLine('Pause cancelled')
+        return
+      }
+      pausePendingRef.current = true
+      setPausePending(true)
+      appendCommandLine('Pause after current step')
+      return
+    }
+
+    if (current.runState === 'paused') {
+      void continueRun()
+    }
+  }, [appendCommandLine, continueRun])
 
   const stop = useCallback(async () => {
     stopRequestedRef.current = true
-    setPaused(true)
+    pausePendingRef.current = false
+    setPausePending(false)
+    pausedRef.current = true
+    setStopping(true)
     await cancelWeiduStep()
     appendCommandLine('Stop requested — waiting for WeiDU to exit…')
 
     // waitingForInput / already-idle runner: finalize immediately (no in-flight loop).
     if (!runningRef.current) {
       const current = runRef.current
-      if (!current) return
+      if (!current) {
+        setStopping(false)
+        return
+      }
       const i = current.cursor
       const step = current.steps[i]
       if (!step) {
         setRun({ ...current, runState: 'stopped' })
         setPaused(false)
+        pausedRef.current = false
         stopRequestedRef.current = false
+        setStopping(false)
         appendCommandLine('Installation stopped')
         return
       }
@@ -966,23 +1040,28 @@ export function useInstallRun(options: {
       return
     }
 
-    const label = `${step.modId}${step.componentIds[0] ? ` (${step.componentIds[0]})` : ''}`
-    const steps = current.steps.map((s, idx) =>
-      idx === i ? { ...s, status: 'skipped' as const, progress: null } : s,
-    )
-    const nextCursor = nextActionableCursor(steps, i + 1)
-    const keepState: InstallRunState =
-      current.runState === 'waitingForInput' ? 'stopped' : current.runState
-    const next: InstallRun = withNormalizedCursor({
-      ...current,
-      steps,
-      cursor: nextCursor,
-      runState: keepState,
-    })
-    setRun(next)
-    setActiveStepId(next.steps[next.cursor]?.stepId ?? null)
-    setInputPrompt(null)
-    appendCommandLine(`Step skipped: ${label}`)
+    setSkipping(true)
+    try {
+      const label = `${step.modId}${step.componentIds[0] ? ` (${step.componentIds[0]})` : ''}`
+      const steps = current.steps.map((s, idx) =>
+        idx === i ? { ...s, status: 'skipped' as const, progress: null } : s,
+      )
+      const nextCursor = nextActionableCursor(steps, i + 1)
+      const keepState: InstallRunState =
+        current.runState === 'waitingForInput' ? 'stopped' : current.runState
+      const next: InstallRun = withNormalizedCursor({
+        ...current,
+        steps,
+        cursor: nextCursor,
+        runState: keepState,
+      })
+      setRun(next)
+      setActiveStepId(next.steps[next.cursor]?.stepId ?? null)
+      setInputPrompt(null)
+      appendCommandLine(`Step skipped: ${label}`)
+    } finally {
+      setSkipping(false)
+    }
   }, [appendCommandLine, withNormalizedCursor])
 
   const goToPreviousStep = useCallback(async () => {
@@ -993,20 +1072,25 @@ export function useInstallRun(options: {
     const prev = current.cursor - 1
     if (prev < 0) return false
 
-    let steps = [...current.steps]
-    const reset = await uninstallStepAtIndex(current, prev)
-    steps[prev] = reset
+    setGoingPrevious(true)
+    try {
+      let steps = [...current.steps]
+      const reset = await uninstallStepAtIndex(current, prev)
+      steps[prev] = reset
 
-    const next = withNormalizedCursor({
-      ...current,
-      steps: withMergedResults(steps),
-      cursor: prev,
-      runState: current.runState,
-    })
-    setRun(next)
-    setActiveStepId(reset.stepId)
-    appendCommandLine(`Moved back to ${reset.modId}`)
-    return true
+      const next = withNormalizedCursor({
+        ...current,
+        steps: withMergedResults(steps),
+        cursor: prev,
+        runState: current.runState,
+      })
+      setRun(next)
+      setActiveStepId(reset.stepId)
+      appendCommandLine(`Moved back to ${reset.modId}`)
+      return true
+    } finally {
+      setGoingPrevious(false)
+    }
   }, [appendCommandLine, uninstallStepAtIndex, withMergedResults, withNormalizedCursor])
 
   const uninstallBackToStep = useCallback(
@@ -1041,7 +1125,7 @@ export function useInstallRun(options: {
   )
 
   const toggleBreakpoint = useCallback((stepId: string) => {
-    const current = runRef.current
+    const current = ensureIdleRun()
     if (!current) return
     const idx = stepIndexById(current.steps, stepId)
     if (idx < 0) return
@@ -1051,19 +1135,24 @@ export function useInstallRun(options: {
     const breakpointStepIds = has
       ? current.breakpointStepIds.filter((id) => id !== stepId)
       : [...current.breakpointStepIds, stepId]
-    setRun({ ...current, breakpointStepIds })
+    const next = { ...current, breakpointStepIds }
+    setRun(next)
+    runRef.current = next
     appendCommandLine(
       has ? `Breakpoint removed: ${step.modId}` : `Breakpoint set: ${step.modId}`,
     )
-  }, [appendCommandLine])
+  }, [appendCommandLine, ensureIdleRun])
 
   const moveCursorToStep = useCallback(
     (targetStepId: string) => {
-      const current = runRef.current
+      const current = runRef.current ?? ensureIdleRun()
       if (!current) return false
 
       const targetIdx = stepIndexById(current.steps, targetStepId)
       if (targetIdx < 0) return false
+
+      const targetStep = current.steps[targetIdx]
+      if (!targetStep || isStepDone(targetStep.status)) return false
 
       if (current.runState === 'running' || current.runState === 'waitingForInput') {
         pendingCursorStepIdRef.current = targetStepId
@@ -1081,11 +1170,12 @@ export function useInstallRun(options: {
         runState: current.runState,
       })
       setRun(next)
+      runRef.current = next
       setActiveStepId(targetStepId)
       appendCommandLine(`Cursor moved to ${current.steps[targetIdx]?.modId}`)
       return true
     },
-    [appendCommandLine, withNormalizedCursor],
+    [appendCommandLine, ensureIdleRun, withNormalizedCursor],
   )
 
   const restartFromBackup = useCallback(
@@ -1137,7 +1227,11 @@ export function useInstallRun(options: {
       setInputPrompt(null)
       setActiveStepId(steps[nextCursor]?.stepId ?? null)
       setPaused(false)
+      pausedRef.current = false
+      setPausePending(false)
+      pausePendingRef.current = false
       stopRequestedRef.current = false
+      setStopping(false)
       cacheRef.current = new Map()
       stepResultLinesRef.current = new Map()
       appendCommandLine('Plan reset after backup restore — press Play to continue')
@@ -1161,9 +1255,14 @@ export function useInstallRun(options: {
     resultLines,
     inputPrompt,
     paused,
+    pausePending,
+    stopping,
+    skipping,
+    goingPrevious,
     activeStepId,
     cursorStepId,
     initRun,
+    ensureIdleRun,
     start,
     continueRun,
     pause,

@@ -5769,6 +5769,22 @@ body.is-resizing-detail * {
   padding: 0.35rem 0.5rem;
 }
 
+.install-control-btn.active {
+  color: #e8c468;
+  border-color: color-mix(in srgb, #e8c468 45%, transparent);
+  background: color-mix(in srgb, #e8c468 12%, transparent);
+}
+
+.install-control-btn.active.pending {
+  opacity: 0.85;
+}
+
+.install-control-start.active {
+  color: #fff;
+  border-color: color-mix(in srgb, #e8c468 55%, transparent);
+  background: color-mix(in srgb, #e8c468 28%, var(--accent));
+}
+
 .install-control-start {
   color: #fff;
 }

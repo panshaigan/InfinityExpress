@@ -41,7 +41,7 @@ Toolbar in `InstallStation.tsx`; state machine in `useInstallRun.ts`.
 | Control | Enabled | Behavior |
 | --- | --- | --- |
 | **Play** | Not `running` (and paths/mods ready) | Fresh start when no run / `idle` / `completed`: `initRun` + vanillas + `executeFromCursor` from cursor 0. Resume when `paused` / `stopped` / `failed` / `waitingForInput`: continue from current cursor (no re-init). |
-| **Pause** | `running` or `paused` (toggle) | Soft-pause: waits until the current WeiDU process finishes, then gates before the next step. Second click unpauses. |
+| **Pause** | `running` or `paused` (toggle) | **Pending pause** while `running`: finishes the current step, then halts before the next. Click again while pending to cancel. **Effective pause** sets `runState: 'paused'`. Click again (or Play) to resume. |
 | **Stop** | `running` or `waitingForInput` | Kills the WeiDU child, then runs `--force-uninstall-list` via the same `setup-{weiduId}.exe` as install; resets the interrupted step to `queued`; **keeps cursor**; `runState: 'stopped'`. Less safe than Pause (tooltip says so). |
 | **Skip** | `paused`, `stopped`, or `waitingForInput` | Marks the package at the cursor as `skipped`, advances cursor, stays halted — does **not** auto-continue. |
 | **Previous** | `paused` or `stopped` | Confirms, then moves cursor back one install step, force-uninstalls that package via `setup-{weiduId}.exe`, resets it to `queued`. |
@@ -52,13 +52,13 @@ When halted (`paused` / `stopped` / `waitingForInput`), cursor normalization ski
 
 ## Table actions
 
-Install table rows (by **install step**, not component row) expose the same actions via a right-click menu and an **Actions** column:
+Install table rows (by **install step**, not component row) expose the same actions via a right-click menu and an **Actions** column — visible before the first **Play** as well (disabled/enabled per rules below). Breakpoints can be set on an idle plan via `ensureIdleRun()`.
 
 | Action | When | Behavior |
 | --- | --- | --- |
 | **Uninstall back to here** | `paused` / `stopped`; target step before cursor | Force-uninstall each package from cursor−1 down to the target step; move cursor to target. Confirms first. |
-| **Add / remove breakpoint** | Future, not-yet-installed steps | Toggle `InstallRun.breakpointStepIds`. Row class `install-breakpoint`. |
-| **Move cursor here** | `paused` / `stopped` (immediate), or while `running` / `waitingForInput` (after current step) | Sets `cursor` to the selected install step. Confirms when moving backward across installed packages. |
+| **Add / remove breakpoint** | Future, not-yet-installed steps (including before first Play) | Toggle `InstallRun.breakpointStepIds`. Row class `install-breakpoint`. |
+| **Move cursor here** | `paused` / `stopped` (immediate), or while `running` / `waitingForInput` (after current step); not on finished steps | Sets `cursor` to the selected install step. Disabled when target is `succeeded` / `alreadyInstalled` / `skipped`. Confirms when moving backward across installed packages. |
 
 **Breakpoints (mode B):** when the runner reaches a breakpoint step, it pauses **before staging/copying** that package (`runState: paused`, cursor on the breakpoint step).
 
@@ -77,7 +77,7 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
    - `--language`, `--use-lang`
    - `--force-install-list` + component numbers
 
-**Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --safe-exit --force-uninstall-list` (`run_weidu_force_uninstall`). Do not invoke the configured `weidu.exe` directly for install or uninstall.
+**Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --force-uninstall-list` (`run_weidu_force_uninstall`; no `--safe-exit` on uninstall). Do not invoke the configured `weidu.exe` directly for install or uninstall.
 
 Orchestration: `hooks/useInstallRun.ts` + `lib/desktop/weiduInstall.ts` → Rust `src-tauri/src/weidu_install.rs`. Console/log helpers under `src/lib/install/`.
 

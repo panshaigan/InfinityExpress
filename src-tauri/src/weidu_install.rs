@@ -919,7 +919,7 @@ pub struct ForceUninstallInput {
 }
 
 /// Same launcher as install: copy weidu → `setup-{weiduId}.exe`, run that exe (no tp2 argv)
-/// with `--force-uninstall-list` to clean up after a killed `--safe-exit` install.
+/// with `--force-uninstall-list` to roll back a package.
 #[tauri::command]
 pub async fn run_weidu_force_uninstall(
   app: AppHandle,
@@ -946,7 +946,6 @@ pub async fn run_weidu_force_uninstall(
 
   let mut args: Vec<String> = vec![
     "--noautoupdate".into(),
-    "--safe-exit".into(),
     "--language".into(),
     input.language_index.to_string(),
     "--use-lang".into(),

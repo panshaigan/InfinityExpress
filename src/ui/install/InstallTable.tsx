@@ -188,7 +188,7 @@ function InstallStepContextMenu({
     actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
   const canMoveCursor =
     actions.canNavigate || actions.runState === 'running' || actions.runState === 'waitingForInput'
-  const moveDisabled = stepIndex === actions.cursor
+  const moveDisabled = stepIndex === actions.cursor || isStepDone(step.status)
 
   useLayoutEffect(() => {
     const el = menuRef.current
@@ -291,7 +291,10 @@ function StepActionButtons({
     actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
   const canMoveCursor =
     actions.canNavigate || actions.runState === 'running' || actions.runState === 'waitingForInput'
-  const moveDisabled = stepIndex === actions.cursor
+  const moveDisabled = stepIndex === actions.cursor || isStepDone(step.status)
+  const moveTip = moveDisabled && isStepDone(step.status)
+    ? 'Already installed or finished'
+    : 'Move cursor here'
 
   return (
     <div className="install-row-actions" onClick={(e) => e.stopPropagation()}>
@@ -325,12 +328,12 @@ function StepActionButtons({
           type="button"
           className="install-row-action-btn"
           disabled={!canMoveCursor || moveDisabled}
-          aria-label="Move cursor here"
+          aria-label={moveTip}
           onClick={() => actions.onRequestMoveCursor(step.stepId)}
         >
           <MoveCursorIcon />
         </button>
-        <IconTip>Move cursor here</IconTip>
+        <IconTip>{moveTip}</IconTip>
       </span>
     </div>
   )
@@ -558,7 +561,7 @@ export function InstallTable({
                   onClick={() => selectRow(row.stepId, row.componentId)}
                   onMouseEnter={() => setHoveredStepId(row.stepId)}
                   onContextMenu={(e) => {
-                    if (!tableActions || !step || stepIndex < 0) return
+                    if (!step || stepIndex < 0 || !tableActions) return
                     e.preventDefault()
                     selectRow(row.stepId, row.componentId)
                     setContextMenu({ stepId: row.stepId, x: e.clientX, y: e.clientY })
