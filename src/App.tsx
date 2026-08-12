@@ -106,6 +106,7 @@ import type { GameFolderPaths } from './lib/ui/gameFolderPrefs'
 import {
   bootstrapProjects,
   emptyDestinations,
+  listProjects,
   loadProjectRecord,
   type AppShellView,
   type ProjectId,
@@ -558,11 +559,15 @@ function AppShell() {
     setShellView('workspace')
   }
 
+  function goToProjectEntry() {
+    setShellView(listProjects().length === 0 ? 'wizard' : 'hub')
+  }
+
   function returnToHub() {
     flushSession()
     setProjectId(null)
     setProjectMeta(null)
-    setShellView('hub')
+    goToProjectEntry()
   }
 
   function onPresetsLadderToggle(level: LadderLevel, wantChecked: boolean) {
@@ -861,10 +866,14 @@ function AppShell() {
         <ProjectHub
           onOpen={openProject}
           onCreateNew={() => setShellView('wizard')}
+          onProjectsChanged={() => {
+            if (listProjects().length === 0) setShellView('wizard')
+          }}
         />
       ) : shellView === 'wizard' ? (
         <ProjectWizard
-          onCancel={() => setShellView('hub')}
+          canCancel={listProjects().length > 0}
+          onCancel={goToProjectEntry}
           onCreated={openProject}
         />
       ) : (

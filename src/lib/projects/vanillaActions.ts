@@ -37,7 +37,7 @@ export async function createManagedVanillaFromFolder(
 ): Promise<{ path: string; version: string }> {
   const { backupDir } = readAppDirPaths()
   if (!backupDir.trim()) {
-    throw new Error('Set the backup / logs / projects directory first')
+    throw new Error('Set the main data folder first')
   }
   const probe = await probeGameFolder(key, sourceDir)
   if (!probe.ok) throw new Error(probe.error)

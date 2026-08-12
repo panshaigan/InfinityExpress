@@ -39,10 +39,6 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
       <header className="project-hub-header">
         <div>
           <h1 className="project-hub-title">Projects</h1>
-          <p className="lede">
-            Each project is one engine, one component selection, and one install
-            destination — so you can keep several games or several mod lists at once.
-          </p>
         </div>
         <button type="button" className="btn primary" onClick={onCreateNew}>
           New project

@@ -40,23 +40,10 @@ export function bootstrapProjects(_model: InstallSequenceModel): ProjectBootstra
   void syncManagedVanillasFromDisk()
 
   const index = readProjectIndex()
-  const lastId = index.lastProjectId
-  // Always land on hub so the user can pick among projects; last id is restored when they open.
-  if (!lastId || !index.projects[lastId]) {
-    return {
-      view: 'hub',
-      projectId: null,
-      meta: null,
-      session: null,
-      install: undefined,
-      destinations: emptyDestinations(),
-      appPhase: 'components',
-    }
-  }
-
-  // Keep lastProjectId but still show hub (explicit pick). Caller may auto-open later.
+  const hasProjects = Object.keys(index.projects).length > 0
+  // No projects yet → new-project wizard. Otherwise hub so the user can pick.
   return {
-    view: 'hub',
+    view: hasProjects ? 'hub' : 'wizard',
     projectId: null,
     meta: null,
     session: null,

@@ -361,11 +361,11 @@ export function SettingsDialog({
               />
               <DirectoryField
                 id="settings-backup-dir"
-                label="Backup / logs / projects directory"
+                label="Main data folder (backups, logs, project data)"
                 value={appDirs.backupDir}
                 onChange={(value) => setAppDir('backupDir', value)}
                 placeholder="Select data folder…"
-                browseTitle="Select backup / logs / projects folder"
+                browseTitle="Select main data folder folder"
                 error={missingFieldError('backupDir')}
                 required={activeMissing.includes('backupDir')}
               />

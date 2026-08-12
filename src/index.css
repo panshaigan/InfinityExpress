@@ -1989,9 +1989,14 @@ body.is-resizing-detail * {
 /* —— Project hub & wizard —— */
 .project-hub,
 .project-wizard {
-  max-width: 52rem;
-  margin: 0 auto;
+  align-self: center;
+  width: 40rem;
+  max-width: calc(100% - 2.5rem);
+  margin: auto auto;
   padding: 2rem 1.25rem 3rem;
+  /*flex: 1 1 auto;*/
+  min-height: 0;
+  overflow: auto;
 }
 
 .project-hub-header,
@@ -2004,7 +2009,9 @@ body.is-resizing-detail * {
 }
 
 .project-hub-title,
-.project-wizard-header h1 {
+.project-wizard-header h1,
+.engine-card-title,
+.project-wizard-vanilla-block h3 {
   margin: 0 0 0.35rem;
   font-family: var(--font-display);
   font-size: 1.75rem;
@@ -2082,8 +2089,7 @@ body.is-resizing-detail * {
 }
 
 .project-wizard-vanilla-block h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
+  margin: 0 0 0.65rem;
 }
 
 .project-wizard-vanilla-actions,
@@ -2208,7 +2214,7 @@ body.is-resizing-detail * {
 .engine-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.35rem;
   background: color-mix(in srgb, var(--panel) 88%, #000);
   border: 1px solid var(--line);
@@ -2220,13 +2226,6 @@ body.is-resizing-detail * {
   cursor: pointer;
   text-align: left;
   transition: border-color var(--ease), background var(--ease), transform var(--ease);
-}
-
-.engine-card-title {
-  font-family: var(--font-display);
-  font-size: 1.08rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
 }
 
 .engine-card-blurb {
@@ -3415,10 +3414,20 @@ body.is-resizing-detail * {
   border-radius: var(--radius-md);
   background: var(--outlined-field-bg);
   padding: 0.55rem 0.65rem 0.42rem;
+  transition: border-color var(--ease), background var(--ease);
 }
 
 .outlined-field:focus-within {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+.outlined-field-control:hover:not(.disabled):not(:focus-within):not(.outlined-field-invalid) {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  --outlined-field-bg: color-mix(
+    in srgb,
+    var(--accent-soft) 45%,
+    color-mix(in srgb, var(--panel) 78%, #000)
+  );
 }
 
 .outlined-field-control:focus-within {
@@ -3595,7 +3604,7 @@ body.is-resizing-detail * {
 
 .outlined-field-error {
   margin: 0.35rem 0 0;
-  color: color-mix(in srgb, #c44 75%, var(--ink));
+  color: color-mix(in srgb, var(--err) 85%, var(--ink));
   font-size: 0.78rem;
   line-height: 1.35;
 }
