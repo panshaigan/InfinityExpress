@@ -83,7 +83,7 @@ export function loadProjectRecord(
 export function emptyWorkspaceSession(): GameSession {
   return {
     selectedIds: [],
-    finishedStations: ['presets'],
+    finishedStations: [],
     routeUnlocked: true,
     selectionPresets: [],
     activePresetId: null,

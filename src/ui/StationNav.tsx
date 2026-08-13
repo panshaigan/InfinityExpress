@@ -185,7 +185,7 @@ export function StationNav({
               )}
               <IconTip>
                 {allDone
-                  ? 'Reopen component stations (Presets stay done)'
+                  ? 'Reopen all component stations'
                   : 'Mark all stations done'}
               </IconTip>
             </span>

@@ -183,9 +183,9 @@ export function useRouteNav(args: {
     setFinishedStations(new Set(slots.filter((s) => s !== 'engine')))
   }
 
-  /** Clear done marks on component stations; Presets stay finished. */
+  /** Clear done marks on all component stations including Presets. */
   function reopenEntireRoute() {
-    setFinishedStations(new Set(['presets']))
+    setFinishedStations(new Set())
   }
 
   return {

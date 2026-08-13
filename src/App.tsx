@@ -575,7 +575,7 @@ function AppShell() {
         activePresetId: null,
         presetBaseline: null,
       })
-      route.replaceFinishedStations(['presets'])
+      route.replaceFinishedStations([])
       setActiveStation('presets')
       setContentMainKey(null)
       setContentSubKey(null)
@@ -1081,8 +1081,10 @@ function AppShell() {
                       onLadderToggle={onPresetsLadderToggle}
                       onDifficultyChange={onPresetsDifficultyChange}
                       levelCounts={presetLevelCounts}
+                      finished={route.currentFinished}
                       canContinue={route.canCycleScreens}
                       onContinue={continueFromPresets}
+                      onReopen={route.unmarkStationFinished}
                     />
                   </div>
                 ) : isAllSections ? (
