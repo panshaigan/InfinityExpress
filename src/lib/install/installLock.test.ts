@@ -4,6 +4,7 @@ import type { ComponentNode, InstallSequenceModel } from '../xml/schema'
 import {
   canRemoveStepFromPlan,
   deriveInstallLock,
+  hasInstallStarted,
   isComponentSelectionLocked,
   isModActionLocked,
   syncRunWithPlan,
@@ -99,6 +100,18 @@ describe('deriveInstallLock', () => {
     expect([...lock.installedComponentIds]).toEqual(['a'])
     expect([...lock.installedModCodenames]).toEqual(['moda', 'modb'])
     expect(lock.componentStepIndex.get('c')).toBe(2)
+  })
+})
+
+describe('hasInstallStarted', () => {
+  it('is false for null or idle run', () => {
+    expect(hasInstallStarted(null)).toBe(false)
+    expect(hasInstallStarted(makeRun([makeStep('a', 'ModA', 0)], 0, 'idle'))).toBe(false)
+  })
+
+  it('is true once the run leaves idle', () => {
+    const run = makeRun([makeStep('a', 'ModA', 0)], 0, 'paused')
+    expect(hasInstallStarted(run)).toBe(true)
   })
 })
 

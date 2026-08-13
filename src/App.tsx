@@ -95,8 +95,12 @@ import { useProjectSessionPersistence } from './hooks/useProjectSessionPersisten
 import { useAppExitGuard } from './hooks/useAppExitGuard'
 import { type AppPhase } from './ui/PhaseNav'
 import { ModsStation, type ModsJourneyState } from './ui/mods/ModsStation'
-import { InstallStation } from './ui/install/InstallStation'
-import { ToastProvider } from './ui/toasts/toastContext'
+import { InstallStation, type InstallActions } from './ui/install/InstallStation'
+import {
+  RestartConfirmDialog,
+  type RestartScope,
+} from './ui/install/RestartConfirmDialog'
+import { ToastProvider, useToast } from './ui/toasts/toastContext'
 import { isDesktopApp } from './lib/desktop/fsDialogs'
 import { setAppWindowTitle } from './lib/desktop/windowTitle'
 import {
@@ -164,6 +168,7 @@ export default function App() {
 }
 
 function AppShell() {
+  const { pushToast } = useToast()
   const { model, warnings } = parsed
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
   const installSnapshotRef = useRef<PersistedInstallSession | null | undefined>(
@@ -243,6 +248,11 @@ function AppShell() {
     | { type: 'difficulty'; token: DifficultyLevel; want: boolean }
   const [pendingSelectionReset, setPendingSelectionReset] =
     useState<PendingSelectionReset | null>(null)
+  const [resetAllConfirmOpen, setResetAllConfirmOpen] = useState(false)
+  const [resetAllRestartOpen, setResetAllRestartOpen] = useState(false)
+  const [pendingVanillaRestartScope, setPendingVanillaRestartScope] =
+    useState<RestartScope | null>(null)
+  const [installActions, setInstallActions] = useState<InstallActions | null>(null)
   const foldApiRef = useRef<TreeFoldApi | null>(null)
   const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
     foldApiRef.current = api
@@ -701,6 +711,56 @@ function AppShell() {
     levels.onDifficultyPresetChange(pending.token, pending.want)
   }
 
+  function resetComponentSelection() {
+    if (!game) return
+    levels.resetLevelPresets()
+    presets.resetPresetSelection()
+    setSelectedIds(new Set())
+    clearFocus()
+  }
+
+  function openResetAllConfirm() {
+    if (appBlocking) return
+    setResetAllConfirmOpen(true)
+  }
+
+  function cancelResetAllConfirm() {
+    setResetAllConfirmOpen(false)
+  }
+
+  function confirmResetAll() {
+    setResetAllConfirmOpen(false)
+    if (installLock.mode !== 'none') {
+      setMountedPhases((prev) => ({ ...prev, install: true }))
+      setResetAllRestartOpen(true)
+      return
+    }
+    resetComponentSelection()
+    pushToast({ tone: 'success', message: 'Project reset.' })
+  }
+
+  function cancelResetAllRestart() {
+    setResetAllRestartOpen(false)
+    setPendingVanillaRestartScope(null)
+  }
+
+  function confirmResetAllRestart(scope: RestartScope) {
+    setResetAllRestartOpen(false)
+    setPendingVanillaRestartScope(scope)
+  }
+
+  useEffect(() => {
+    if (!pendingVanillaRestartScope || !installActions) return
+    const scope = pendingVanillaRestartScope
+    setPendingVanillaRestartScope(null)
+    void (async () => {
+      const ok = await installActions.performVanillaRestart(scope)
+      if (!ok) return
+      resetComponentSelection()
+      pushToast({ tone: 'success', message: 'Project reset.' })
+    })()
+  }, [pendingVanillaRestartScope, installActions])
+
   function onToggleAll(wantSelected: boolean) {
     if (!game || installSelectionFrozen) return
     setSelectedIds((prev) => toggleListSelection(model, prev, game, listNodes, wantSelected))
@@ -1045,6 +1105,13 @@ function AppShell() {
         onExport={handleExport}
         exportDisabled={exportDisabled}
         exportTip={exportTip}
+        onResetAll={openResetAllConfirm}
+        resetAllDisabled={appBlocking}
+        resetAllTip={
+          appBlocking
+            ? projectsBlockedTip(blockingFlags)
+            : 'Reset installation and component selection'
+        }
       />
 
       {mountedPhases.mods ? (
@@ -1104,6 +1171,7 @@ function AppShell() {
               onInstallSessionChange={onInstallSessionChange}
               onDeselectComponent={onDeselectComponent}
               installLock={installLock}
+              onInstallActionsReady={setInstallActions}
             />
           </div>
         </div>
@@ -1379,6 +1447,25 @@ function AppShell() {
         confirmLabel="Discard"
         onConfirm={confirmSelectionReset}
         onCancel={cancelSelectionReset}
+      />
+      <ConfirmDialog
+        open={resetAllConfirmOpen}
+        title="Reset all?"
+        message={
+          installLock.mode !== 'none'
+            ? 'Clear all component selection and restore your game folder from the vanilla backup? The install plan will reset.'
+            : 'Clear all component selection and level presets for this project?'
+        }
+        confirmLabel="Reset all"
+        danger
+        onConfirm={confirmResetAll}
+        onCancel={cancelResetAllConfirm}
+      />
+      <RestartConfirmDialog
+        open={resetAllRestartOpen}
+        eetMode={game === 'eet'}
+        onConfirm={confirmResetAllRestart}
+        onCancel={cancelResetAllRestart}
       />
         </>
       )}

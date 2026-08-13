@@ -40,6 +40,10 @@ function isWorkingRunState(runState: InstallRunState): boolean {
   return runState === 'running' || runState === 'waitingForInput'
 }
 
+export function hasInstallStarted(run: InstallRun | null): boolean {
+  return run != null && run.runState !== 'idle'
+}
+
 export function deriveInstallLock(
   run: InstallRun | null,
   _transport?: InstallLockTransport | null,

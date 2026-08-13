@@ -43,7 +43,15 @@ import {
   buildPersistedInstallSession,
   type PersistedInstallSession,
 } from '../../lib/ui/appSessionPrefs'
-import { deriveInstallLock, type InstallLock } from '../../lib/install/installLock'
+import {
+  deriveInstallLock,
+  hasInstallStarted,
+  type InstallLock,
+} from '../../lib/install/installLock'
+
+export type InstallActions = {
+  performVanillaRestart: (scope: RestartScope) => Promise<boolean>
+}
 
 interface Props {
   model: InstallSequenceModel
@@ -65,6 +73,7 @@ interface Props {
   onInstallSessionChange?: (session: PersistedInstallSession | null) => void
   onDeselectComponent?: (componentId: string) => void
   installLock?: InstallLock
+  onInstallActionsReady?: (actions: InstallActions | null) => void
 }
 
 function allModsPresent(needed: string[], mods: WorkingMod[]): boolean {
@@ -94,6 +103,7 @@ export function InstallStation({
   onInstallSessionChange,
   onDeselectComponent,
   installLock: installLockProp,
+  onInstallActionsReady,
 }: Props) {
   const { pushToast } = useToast()
   const [pathTick, setPathTick] = useState(0)
@@ -368,12 +378,19 @@ export function InstallStation({
   const missingVanillas = game ? missingVanillaKeys(game, vanillaRegistry) : []
   const isRunning = run?.runState === 'running'
   const transportBusy = stopping || skipping || goingPrevious
+  const installStarted = hasInstallStarted(run)
   const canRestart =
-    canSnapshot && missingVanillas.length === 0 && !snapshotBusy && !transportBusy
+    canSnapshot &&
+    missingVanillas.length === 0 &&
+    !snapshotBusy &&
+    !transportBusy &&
+    installStarted
   const restartTip =
     missingVanillas.length > 0
       ? 'Set vanilla backup in Settings'
-      : 'Restart from vanilla backup'
+      : !installStarted
+        ? 'Start installation first'
+        : 'Restart from vanilla backup'
   const canPauseToggle =
     !!run &&
     !transportBusy &&
@@ -627,9 +644,9 @@ export function InstallStation({
   )
 
   const onRestartConfirm = useCallback(
-    async (scope: RestartScope) => {
+    async (scope: RestartScope): Promise<boolean> => {
       setRestartDialogOpen(false)
-      if (!game || !appDirs.backupDir) return
+      if (!game || !appDirs.backupDir) return false
 
       const keys: string[] =
         game === 'eet'
@@ -668,11 +685,13 @@ export function InstallStation({
         setNotice('Game restored from vanilla backup.')
         pushToast({ tone: 'success', message: 'Game restored from vanilla backup.' })
         appendCommandLine('Restart complete — vanilla backup restored.')
+        return true
       } catch (e) {
         const message = String(e)
         setNotice(message)
         pushToast({ tone: 'error', message })
         appendCommandLine(`Restart failed: ${message}`)
+        return false
       } finally {
         unlisten?.()
         setSnapshotBusy(false)
@@ -690,6 +709,12 @@ export function InstallStation({
       pushToast,
     ],
   )
+
+  useEffect(() => {
+    if (!onInstallActionsReady) return
+    onInstallActionsReady({ performVanillaRestart: onRestartConfirm })
+    return () => onInstallActionsReady(null)
+  }, [onInstallActionsReady, onRestartConfirm])
 
   const onCleanup = useCallback(async () => {
     if (!game || !run) return

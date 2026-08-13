@@ -41,6 +41,9 @@ interface Props {
   onSwitchProject?: () => void
   switchProjectDisabled?: boolean
   switchProjectTip?: string
+  onResetAll?: () => void
+  resetAllDisabled?: boolean
+  resetAllTip?: string
 }
 
 function KeyboardIcon() {
@@ -117,6 +120,9 @@ export function AppTopBar({
   onSwitchProject,
   switchProjectDisabled = false,
   switchProjectTip = 'Projects',
+  onResetAll,
+  resetAllDisabled = false,
+  resetAllTip = 'Reset installation and component selection',
 }: Props) {
   return (
     <header className="top-bar">
@@ -185,6 +191,18 @@ export function AppTopBar({
           settingsOpen={settingsOpen}
           onOpenSettings={onOpenSettings}
         />
+        {onResetAll ? (
+          <button
+            type="button"
+            className="btn secondary top-bar-help has-icon-tip"
+            disabled={resetAllDisabled}
+            aria-label="Reset all"
+            onClick={onResetAll}
+          >
+            Reset all
+            <IconTip align="end">{resetAllTip}</IconTip>
+          </button>
+        ) : null}
         {onSwitchProject ? (
           <button
             type="button"
