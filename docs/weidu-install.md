@@ -117,6 +117,8 @@ Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanill
     {projectId}/
       logs/
         {runId}/             # WeiDU run stdout/stderr (not game backups)
+  metrics/
+    component-install-times.jsonl  # append-only per-component install samples
 ```
 
 **Project destinations** (live/modded folders) are per-project, not under this tree. Creating a project: empty destination → `prepare_project_destination` copies vanilla into it; non-empty destination must already contain the game executable (and no `WeiDU.log`).
@@ -172,6 +174,7 @@ Install toolbar **Restart** restores the vanilla backup (with EET scope choice) 
 | Types / plan | `src/lib/install/types.ts`, `planBuilder.ts` |
 | WeiDU.log parse | `src/lib/install/weiduLog.ts` |
 | Label → number | `src/lib/install/weiduResolution.ts` |
+| Install timings | `src/lib/install/installTiming.ts` — JSONL under `{backupDir}/metrics/` |
 | Run hook | `src/hooks/useInstallRun.ts` |
 | UI | `src/ui/install/InstallStation.tsx`, `InstallTable.tsx`, `RestoreSnapshotDialog.tsx`, `PlanSnapshotDialog.tsx`, `RestartConfirmDialog.tsx`, console dock |
 | Rust install / backup | `src-tauri/src/weidu_install.rs`, `weidu_backup.rs` |

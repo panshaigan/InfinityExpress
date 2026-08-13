@@ -15,6 +15,7 @@
     "allow-list-subdir-names",
     "allow-read-text-file",
     "allow-write-text-file-path",
+    "allow-append-text-file",
     "allow-ensure-dir",
     "allow-validate-creatable-dir",
     "allow-game-dir-has-weidu-log",

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import type { GameFolderPaths } from '../lib/ui/gameFolderPrefs'
-import { ensureDir } from '../lib/desktop/fsDialogs'
+import { appendTextFileAt, ensureDir } from '../lib/desktop/fsDialogs'
 import { installRunLogDir } from '../lib/projects'
 import { readAppDirPaths } from '../lib/ui/appDirPrefs'
 import {
@@ -43,6 +43,11 @@ import {
   sendWeiduStdin,
 } from '../lib/desktop/weiduInstall'
 import { useToast } from '../ui/toasts/toastContext'
+import {
+  buildComponentInstallTimingRecord,
+  componentInstallTimesPath,
+  serializeInstallTimingLine,
+} from '../lib/install/installTiming'
 import { isComponentInstalledInLog } from '../lib/install/weiduLog'
 import { loadInstallConsoleFromRunLog } from '../lib/install/loadRunConsole'
 import type { PersistedInstallSession } from '../lib/ui/appSessionPrefs'
@@ -71,6 +76,47 @@ function formatBytes(n: number): string {
 
 function stampLine(text: string): string {
   return `${formatConsoleTs()} ${text}`
+}
+
+function logComponentInstallTime(args: {
+  backupDir: string
+  projectId?: string | null
+  runId: string
+  game: SelectedGame
+  step: InstallStep
+  status: InstallStep['status']
+  logVerified: boolean
+  didStage: boolean
+  installStartedAt: string
+  installMs: number
+}): void {
+  const backupDir = args.backupDir.trim()
+  const projectId = args.projectId?.trim() ?? ''
+  if (!backupDir || !projectId) return
+  const record = buildComponentInstallTimingRecord({
+    projectId,
+    runId: args.runId,
+    game: args.game,
+    phase: args.step.phase,
+    componentId: args.step.componentId,
+    modId: args.step.modId,
+    weiduModId: args.step.stagedFolderName,
+    weiduNumber: args.step.weiduNumber,
+    status: args.status,
+    logVerified: args.logVerified,
+    didStage: args.didStage,
+    startedAt: args.step.startedAt,
+    installStartedAt: args.installStartedAt,
+    finishedAt: args.step.finishedAt,
+    installMs: args.installMs,
+  })
+  if (!record) return
+  void appendTextFileAt(
+    componentInstallTimesPath(backupDir),
+    serializeInstallTimingLine(record),
+  ).catch((err) => {
+    console.warn('Failed to log component install time', err)
+  })
 }
 
 export interface InstallRunInitialState {
@@ -1065,6 +1111,8 @@ export function useInstallRun(options: {
               continue
             }
 
+            const installStartedAt = new Date().toISOString()
+            const didStage = resolved.didStage
             const result = await runWeiduStep({
               weiduPath: readWeiduPath(),
               tp2Path: step.tp2Path,
@@ -1109,6 +1157,19 @@ export function useInstallRun(options: {
                   ? [...step.errors, `Exit code ${result.exitCode ?? 'unknown'}`]
                   : step.errors,
               finishedAt: new Date().toISOString(),
+            })
+
+            logComponentInstallTime({
+              backupDir: appDirs.backupDir,
+              projectId,
+              runId: current.runId,
+              game: current.game,
+              step,
+              status,
+              logVerified: result.logVerified,
+              didStage,
+              installStartedAt,
+              installMs: result.durationMs,
             })
 
             const finished = finishStepIteration(current, i, step, status === 'failed')
@@ -1175,6 +1236,7 @@ export function useInstallRun(options: {
       appendCommandLine,
       finishStepIteration,
       takePlannedSnapshot,
+      projectId,
     ],
   )
 

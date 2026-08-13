@@ -67,6 +67,15 @@ export async function writeTextFileAt(
   await invoke('write_text_file', { path: path.trim(), contents })
 }
 
+/** Append UTF-8 text to an absolute path (creates parents and the file). */
+export async function appendTextFileAt(
+  path: string,
+  contents: string,
+): Promise<void> {
+  if (!isDesktopApp()) return
+  await invoke('append_text_file', { path: path.trim(), contents })
+}
+
 /** Create directory and parents if missing. */
 export async function ensureDir(path: string): Promise<void> {
   if (!isDesktopApp() || !path.trim()) return

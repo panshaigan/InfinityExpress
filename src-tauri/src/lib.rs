@@ -17,6 +17,7 @@ pub fn run() {
       mod_fs::list_subdir_names,
       mod_fs::read_text_file,
       mod_fs::write_text_file,
+      mod_fs::append_text_file,
       mod_fs::ensure_dir,
       mod_fs::validate_creatable_dir,
       mod_fs::game_dir_has_weidu_log,

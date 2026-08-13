@@ -1,4 +1,5 @@
-use std::fs;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
 use std::path::{Component, Path, PathBuf};
 
 /// List immediate subdirectory names under `path`.
@@ -57,6 +58,27 @@ pub fn write_text_file(path: String, contents: String) -> Result<(), String> {
     }
   }
   fs::write(&p, contents).map_err(|e| e.to_string())
+}
+
+/// Append UTF-8 text to a file, creating parent directories and the file as needed.
+#[tauri::command]
+pub fn append_text_file(path: String, contents: String) -> Result<(), String> {
+  let trimmed = path.trim();
+  if trimmed.is_empty() {
+    return Err("Path is required".into());
+  }
+  let p = PathBuf::from(trimmed);
+  if let Some(parent) = p.parent() {
+    if !parent.as_os_str().is_empty() {
+      fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+  }
+  let mut file = OpenOptions::new()
+    .create(true)
+    .append(true)
+    .open(&p)
+    .map_err(|e| e.to_string())?;
+  file.write_all(contents.as_bytes()).map_err(|e| e.to_string())
 }
 
 /// Create a directory (and parents) if missing.

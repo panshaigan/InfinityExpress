@@ -28,6 +28,8 @@ export interface StepResult {
   logVerified: boolean
   timedOut: boolean
   cancelled: boolean
+  /** WeiDU child wall time from spawn-wait through process exit. */
+  durationMs: number
 }
 
 export interface BackupGameInput {

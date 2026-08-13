@@ -95,6 +95,7 @@ pub struct StepResult {
   pub log_verified: bool,
   pub timed_out: bool,
   pub cancelled: bool,
+  pub duration_ms: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -850,6 +851,7 @@ pub async fn run_weidu_step(
       None
     }
   };
+  let duration_ms = start.elapsed().as_millis() as u64;
 
   let debug_src = find_debug_file(&tp2);
   let debug_path = debug_src.as_ref().map(|src| {
@@ -883,6 +885,7 @@ pub async fn run_weidu_step(
     log_verified,
     timed_out,
     cancelled,
+    duration_ms,
   })
 }
 
