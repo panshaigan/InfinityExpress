@@ -716,6 +716,7 @@ function AppShell() {
     levels.resetLevelPresets()
     presets.resetPresetSelection()
     setSelectedIds(new Set())
+    route.reopenEntireRoute()
     clearFocus()
   }
 
@@ -1453,8 +1454,8 @@ function AppShell() {
         title="Reset all?"
         message={
           installLock.mode !== 'none'
-            ? 'Clear all component selection and restore your game folder from the vanilla backup? The install plan will reset.'
-            : 'Clear all component selection and level presets for this project?'
+            ? 'Clear all component selection, station progress, and restore your game folder from the vanilla backup? The install plan will reset.'
+            : 'Clear all component selection, level presets, and station progress for this project?'
         }
         confirmLabel="Reset all"
         danger

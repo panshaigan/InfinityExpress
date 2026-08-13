@@ -3,6 +3,7 @@ import { IconTip } from './IconTip'
 import { SelectionPresetsBar } from './SelectionPresetsBar'
 import { SettingsOpenButton } from './SettingsOpenButton'
 import { PhaseNav, type AppPhase } from './PhaseNav'
+import { RestartIcon } from './install/InstallControlIcons'
 
 interface PresetItem {
   id: string
@@ -194,12 +195,12 @@ export function AppTopBar({
         {onResetAll ? (
           <button
             type="button"
-            className="btn secondary top-bar-help has-icon-tip"
+            className="btn secondary top-bar-help top-bar-settings has-icon-tip"
             disabled={resetAllDisabled}
             aria-label="Reset all"
             onClick={onResetAll}
           >
-            Reset all
+            <RestartIcon />
             <IconTip align="end">{resetAllTip}</IconTip>
           </button>
         ) : null}
