@@ -26,9 +26,6 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
-# Local GitHub PAT for scripts/update.ps1 (never commit)
-scripts/token.txt
-
 # Editor / IDE
 .vscode/*
 !.vscode/extensions.json

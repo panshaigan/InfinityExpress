@@ -109,9 +109,3 @@ Agent entry point: [AGENTS.md](AGENTS.md) (when to load which doc).
 - [docs/install-sequence-schema.md](docs/install-sequence-schema.md) — XML tags and attributes
 - [docs/weidu-install.md](docs/weidu-install.md) — install plan, WeiDU IDs, run, backups
 - [docs/keyboard.md](docs/keyboard.md) — tree and chrome keyboard bindings
-
-## Data and scripts
-
-Curated app data lives under `src/data/`.
-
-[`scripts/update.ps1`](scripts/update.ps1) updates the mods catalog from GitHub. Pass a mod list filename; the script reads `scripts/token.txt` for a GitHub personal access token (or prompts you to create one). Historical note: older versions expected `mods.csv` next to the repo root; the curated file now lives at `src/data/mods.csv`.
