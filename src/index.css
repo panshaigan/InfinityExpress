@@ -2275,10 +2275,6 @@ body.is-resizing-detail * {
 }
 
 .project-hub-menu {
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + 0.3rem);
-  right: 0;
   min-width: 8.5rem;
   padding: 0.3rem;
   display: flex;
@@ -2288,6 +2284,11 @@ body.is-resizing-detail * {
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   box-shadow: 0 10px 24px color-mix(in srgb, #000 40%, transparent);
+}
+
+.project-hub-menu-portal {
+  position: fixed;
+  z-index: 40;
 }
 
 .project-hub-menu-item {
@@ -2396,7 +2397,7 @@ body.is-resizing-detail * {
   justify-content: space-between;
   gap: 1rem;
   margin-top: 2rem;
-  padding-top: 1rem;
+  padding-top: 1.5rem;
   border-top: 1px solid var(--border, rgba(255, 255, 255, 0.12));
 }
 
@@ -2484,7 +2485,7 @@ body.is-resizing-detail * {
 .engine-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 1.5rem;
 }
 
 .engine-row {
@@ -3877,6 +3878,7 @@ body.is-resizing-detail * {
   padding-left: 0.45rem;
   padding-right: 0.45rem;
   font-weight: 700;
+  cursor: help;
 }
 
 .outlined-field-invalid {

@@ -1,4 +1,5 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { createPortal } from 'react-dom'
 import { GAME_FULL_LABELS, GAME_LABELS } from '../../lib/xml/schema'
 import {
   deleteProject,
@@ -92,7 +93,7 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
             </p>
           </div>
           {projects.length > 0 ? (
-            <button type="button" className="btn project-hub-new-btn" onClick={onCreateNew}>
+            <button type="button" className="btn lg project-hub-new-btn" onClick={onCreateNew}>
               <PlusIcon />
               New Project
             </button>
@@ -179,12 +180,27 @@ function ProjectCardMenu({
   onRemove: () => void
 }) {
   const rootRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const menuId = useId()
+  const [menuStyle, setMenuStyle] = useState<CSSProperties>({})
+
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    setMenuStyle({
+      top: rect.bottom + 5,
+      right: window.innerWidth - rect.right,
+    })
+  }, [open])
 
   useEffect(() => {
     if (!open) return
     function onPointerDown(e: PointerEvent) {
-      if (!rootRef.current?.contains(e.target as Node)) onOpenChange(false)
+      const target = e.target as Node
+      if (!rootRef.current?.contains(target) && !menuRef.current?.contains(target)) {
+        onOpenChange(false)
+      }
     }
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
@@ -203,6 +219,7 @@ function ProjectCardMenu({
   return (
     <div ref={rootRef} className="project-hub-card-menu">
       <button
+        ref={triggerRef}
         type="button"
         className={`project-hub-menu-trigger${open ? ' open' : ''}`}
         aria-label={`Actions for ${projectName}`}
@@ -213,31 +230,36 @@ function ProjectCardMenu({
       >
         <span aria-hidden="true">⋮</span>
       </button>
-      {open ? (
-        <div
-          id={menuId}
-          className="project-hub-menu"
-          role="menu"
-          aria-label={`Actions for ${projectName}`}
-        >
-          <button
-            type="button"
-            role="menuitem"
-            className="project-hub-menu-item"
-            onClick={onRename}
-          >
-            Rename
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className="project-hub-menu-item danger"
-            onClick={onRemove}
-          >
-            Remove
-          </button>
-        </div>
-      ) : null}
+      {open
+        ? createPortal(
+            <div
+              ref={menuRef}
+              id={menuId}
+              className="project-hub-menu project-hub-menu-portal"
+              role="menu"
+              aria-label={`Actions for ${projectName}`}
+              style={menuStyle}
+            >
+              <button
+                type="button"
+                role="menuitem"
+                className="project-hub-menu-item"
+                onClick={onRename}
+              >
+                Rename
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="project-hub-menu-item danger"
+                onClick={onRemove}
+              >
+                Remove
+              </button>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   )
 }
