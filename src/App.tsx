@@ -85,6 +85,7 @@ import { useRouteNav } from './hooks/useRouteNav'
 import { useTreeFocus } from './hooks/useTreeFocus'
 import { useUserCatalog } from './hooks/useUserCatalog'
 import { useProjectSessionPersistence } from './hooks/useProjectSessionPersistence'
+import { useAppExitGuard } from './hooks/useAppExitGuard'
 import { type AppPhase } from './ui/PhaseNav'
 import { ModsStation, type ModsJourneyState } from './ui/mods/ModsStation'
 import { InstallStation } from './ui/install/InstallStation'
@@ -103,6 +104,13 @@ import {
   sanitizeInstallSession,
   type PersistedInstallSession,
 } from './lib/ui/appSessionPrefs'
+import {
+  EMPTY_BLOCKING_FLAGS,
+  exitConfirmCopy,
+  isAppBlocking,
+  projectsBlockedTip,
+  type AppBlockingFlags,
+} from './lib/ui/appBlockingOperations'
 import type { GameFolderPaths } from './lib/ui/gameFolderPrefs'
 import {
   bootstrapProjects,
@@ -157,6 +165,8 @@ function AppShell() {
     install: false,
   }))
   const [phaseBusy, setPhaseBusy] = useState<Partial<Record<AppPhase, boolean>>>({})
+  const [blockingFlags, setBlockingFlags] =
+    useState<AppBlockingFlags>(EMPTY_BLOCKING_FLAGS)
   const [modsJourney, setModsJourney] = useState<ModsJourneyState | null>(null)
   const [searchScope, setSearchScope] = useState<'section' | 'all'>('section')
   const userCatalog = useUserCatalog()
@@ -312,6 +322,31 @@ function AppShell() {
       prev.install === busy ? prev : { ...prev, install: busy },
     )
   }, [])
+
+  const setModsBlocking = useCallback((busy: boolean) => {
+    setBlockingFlags((prev) => (prev.mods === busy ? prev : { ...prev, mods: busy }))
+  }, [])
+
+  const setInstallBlocking = useCallback((busy: boolean) => {
+    setBlockingFlags((prev) =>
+      prev.install === busy ? prev : { ...prev, install: busy },
+    )
+  }, [])
+
+  const setSettingsBlocking = useCallback((busy: boolean) => {
+    setBlockingFlags((prev) =>
+      prev.settings === busy ? prev : { ...prev, settings: busy },
+    )
+  }, [])
+
+  const setWizardBlocking = useCallback((busy: boolean) => {
+    setBlockingFlags((prev) =>
+      prev.wizard === busy ? prev : { ...prev, wizard: busy },
+    )
+  }, [])
+
+  const appBlocking = isAppBlocking(blockingFlags)
+  const exitConfirm = useMemo(() => exitConfirmCopy(blockingFlags), [blockingFlags])
 
   const route = useRouteNav({
     game,
@@ -507,6 +542,11 @@ function AppShell() {
     buildGameSession,
   })
 
+  const { exitConfirmOpen, confirmExit, cancelExit } = useAppExitGuard({
+    blocking: appBlocking,
+    onFlushSession: flushSession,
+  })
+
   const onInstallSessionChange = useCallback((session: PersistedInstallSession | null) => {
     installSnapshotRef.current = session ?? undefined
   }, [])
@@ -570,6 +610,7 @@ function AppShell() {
   }
 
   function returnToHub() {
+    if (appBlocking) return
     flushSession()
     setProjectId(null)
     setProjectMeta(null)
@@ -883,6 +924,7 @@ function AppShell() {
           onCreated={openProject}
           settingsOpen={settingsOpen}
           onOpenSettings={openSettings}
+          onBusyChange={setWizardBlocking}
         />
       ) : (
         <>
@@ -895,6 +937,8 @@ function AppShell() {
         game={game}
         projectName={projectMeta?.name ?? null}
         onSwitchProject={returnToHub}
+        switchProjectDisabled={appBlocking}
+        switchProjectTip={projectsBlockedTip(blockingFlags)}
         selectedModsCount={selectedModsCount}
         selectedCount={selectedIds.size}
         presets={presets.gamePresets.map((p) => ({ id: p.id, name: p.name }))}
@@ -946,6 +990,7 @@ function AppShell() {
               onOpenSettings={openSettingsModsDownload}
               onProceedToInstall={() => onPhaseChange('install')}
               onBusyChange={onModsBusyChange}
+              onExitBlockingChange={setModsBlocking}
             />
           </div>
         </div>
@@ -972,6 +1017,7 @@ function AppShell() {
               onOpenSettings={openSettings}
               onOpenSettingsForMissing={openSettingsForMissing}
               onBusyChange={onInstallBusyChange}
+              onExitBlockingChange={setInstallBlocking}
               initialInstallSession={restoredInstallSession}
               onInstallSessionChange={onInstallSessionChange}
             />
@@ -1241,11 +1287,22 @@ function AppShell() {
       />
         </>
       )}
+      <ConfirmDialog
+        open={exitConfirmOpen}
+        title={exitConfirm.title}
+        message={exitConfirm.message}
+        confirmLabel="Quit anyway"
+        cancelLabel="Stay"
+        danger
+        onConfirm={() => void confirmExit()}
+        onCancel={cancelExit}
+      />
       <SettingsDialog
         open={settingsOpen}
         projectId={projectId}
         projectEngine={game}
         destinations={gameFolders}
+        onBusyChange={setSettingsBlocking}
         onDestinationsChange={(paths) => {
           if (!projectId) return
           updateProjectMeta(projectId, { destinations: paths })

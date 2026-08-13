@@ -73,6 +73,7 @@ interface Props {
   onOpenSettings: () => void
   onProceedToInstall?: () => void
   onBusyChange?: (busy: boolean) => void
+  onExitBlockingChange?: (busy: boolean) => void
 }
 
 export function ModsStation({
@@ -96,6 +97,7 @@ export function ModsStation({
   onOpenSettings,
   onProceedToInstall,
   onBusyChange,
+  onExitBlockingChange,
 }: Props) {
   const { pushToast } = useToast()
   const journeyLocked = routeComplete && !!journey
@@ -142,6 +144,11 @@ export function ModsStation({
     onBusyChange?.(acquire.job.running)
     return () => onBusyChange?.(false)
   }, [acquire.job.running, onBusyChange])
+
+  useEffect(() => {
+    onExitBlockingChange?.(acquire.job.running || removing)
+    return () => onExitBlockingChange?.(false)
+  }, [acquire.job.running, removing, onExitBlockingChange])
 
   useEffect(() => {
     function maybePromptDownloadDir() {

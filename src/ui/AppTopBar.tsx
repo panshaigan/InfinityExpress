@@ -39,6 +39,8 @@ interface Props {
   exportTip?: string
   projectName?: string | null
   onSwitchProject?: () => void
+  switchProjectDisabled?: boolean
+  switchProjectTip?: string
 }
 
 function KeyboardIcon() {
@@ -113,6 +115,8 @@ export function AppTopBar({
   exportTip = 'Preview and save install order',
   projectName = null,
   onSwitchProject,
+  switchProjectDisabled = false,
+  switchProjectTip = 'Projects',
 }: Props) {
   return (
     <header className="top-bar">
@@ -186,10 +190,12 @@ export function AppTopBar({
             type="button"
             className="btn secondary top-bar-help top-bar-settings has-icon-tip"
             aria-label="Projects"
+            disabled={switchProjectDisabled}
+            aria-disabled={switchProjectDisabled || undefined}
             onClick={onSwitchProject}
           >
             <ProjectsIcon />
-            <IconTip align="end">Projects</IconTip>
+            <IconTip align="end">{switchProjectTip}</IconTip>
           </button>
         ) : null}
       </div>

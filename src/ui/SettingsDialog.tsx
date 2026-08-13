@@ -58,6 +58,7 @@ interface Props {
   onDestinationsChange?: (paths: GameFolderPaths) => void
   focusField?: SettingsFocusField | null
   highlightMissing?: MissingInstallPath[]
+  onBusyChange?: (busy: boolean) => void
 }
 
 const DESTINATION_FOLDER_TIP =
@@ -78,6 +79,7 @@ export function SettingsDialog({
   onDestinationsChange,
   focusField = null,
   highlightMissing = [],
+  onBusyChange,
 }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
   const backdrop = useBackdropDismiss(onClose)
@@ -90,6 +92,11 @@ export function SettingsDialog({
   const [appDirs, setAppDirs] = useState(readAppDirPaths)
   const [githubToken, setGithubToken] = useState(readGithubToken)
   const [weiduPath, setWeiduPath] = useState(readWeiduPath)
+
+  useEffect(() => {
+    onBusyChange?.(vanillaBusy !== null)
+    return () => onBusyChange?.(false)
+  }, [vanillaBusy, onBusyChange])
 
   function refreshRegistry() {
     setRegistry(readVanillaRegistry())

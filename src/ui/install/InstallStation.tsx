@@ -55,6 +55,7 @@ interface Props {
   onOpenSettings: () => void
   onOpenSettingsForMissing: (missing: MissingInstallPath[]) => void
   onBusyChange?: (busy: boolean) => void
+  onExitBlockingChange?: (busy: boolean) => void
   /** Per-project live game destinations. */
   gameFolders: GameFolderPaths
   initialInstallSession?: PersistedInstallSession
@@ -82,6 +83,7 @@ export function InstallStation({
   onOpenSettings,
   onOpenSettingsForMissing,
   onBusyChange,
+  onExitBlockingChange,
   gameFolders,
   initialInstallSession,
   onInstallSessionChange,
@@ -251,6 +253,25 @@ export function InstallStation({
     onBusyChange?.(run?.runState === 'running' || backupBusy)
     return () => onBusyChange?.(false)
   }, [run?.runState, backupBusy, onBusyChange])
+
+  useEffect(() => {
+    const installExitBlocking =
+      run?.runState === 'running' ||
+      run?.runState === 'waitingForInput' ||
+      stopping ||
+      skipping ||
+      goingPrevious ||
+      backupBusy
+    onExitBlockingChange?.(installExitBlocking)
+    return () => onExitBlockingChange?.(false)
+  }, [
+    run?.runState,
+    stopping,
+    skipping,
+    goingPrevious,
+    backupBusy,
+    onExitBlockingChange,
+  ])
 
   const runId = run?.runId ?? null
   const runState = run?.runState ?? null

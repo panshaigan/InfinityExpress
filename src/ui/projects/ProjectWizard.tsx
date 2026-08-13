@@ -74,6 +74,7 @@ interface Props {
   canCancel?: boolean
   settingsOpen: boolean
   onOpenSettings: () => void
+  onBusyChange?: (busy: boolean) => void
 }
 
 function formatWizardProgress(
@@ -122,6 +123,7 @@ export function ProjectWizard({
   canCancel = true,
   settingsOpen,
   onOpenSettings,
+  onBusyChange,
 }: Props) {
   const [step, setStep] = useState<WizardStep>('engine')
   const [engine, setEngine] = useState<SelectedGame | null>(null)
@@ -144,6 +146,11 @@ export function ProjectWizard({
 
   const destKeys = engine ? gameFolderKeysForEngine(engine) : []
   const footerBusy = submitting || vanillaBusy
+
+  useEffect(() => {
+    onBusyChange?.(footerBusy)
+    return () => onBusyChange?.(false)
+  }, [footerBusy, onBusyChange])
 
   const vanillaContinueBlocked = useMemo(() => {
     if (!appDirs.backupDir.trim() || vanillaErrors.backupDir) return true
