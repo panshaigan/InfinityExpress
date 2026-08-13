@@ -1144,7 +1144,6 @@ body.is-resizing-detail * {
 }
 
 .list-pane-header {
-  padding: 0.55rem 0.9rem 0.45rem 0.45rem;
   flex-shrink: 0;
   border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 78%, var(--bg));
@@ -5149,6 +5148,7 @@ body.is-resizing-detail * {
   align-items: center;
   gap: 0.65rem;
   flex-wrap: wrap;
+  padding: 0.55rem 0.9rem 0.45rem 0.45rem;
 }
 
 .mods-search {
