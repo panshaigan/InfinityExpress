@@ -880,6 +880,8 @@ function AppShell() {
           canCancel={listProjects().length > 0}
           onCancel={goToProjectEntry}
           onCreated={openProject}
+          settingsOpen={settingsOpen}
+          onOpenSettings={openSettings}
         />
       ) : (
         <>
@@ -1208,17 +1210,6 @@ function AppShell() {
         phase={appPhase}
         onClose={() => setKeyboardHelpOpen(false)}
       />
-      <SettingsDialog
-        open={settingsOpen}
-        destinations={gameFolders}
-        focusField={settingsFocusField}
-        highlightMissing={settingsHighlightMissing}
-        onClose={() => {
-          setSettingsOpen(false)
-          setSettingsFocusField(null)
-          setSettingsHighlightMissing([])
-        }}
-      />
       <ExportDialog
         open={exportOpen}
         onClose={() => setExportOpen(false)}
@@ -1249,6 +1240,17 @@ function AppShell() {
       />
         </>
       )}
+      <SettingsDialog
+        open={settingsOpen}
+        destinations={gameFolders}
+        focusField={settingsFocusField}
+        highlightMissing={settingsHighlightMissing}
+        onClose={() => {
+          setSettingsOpen(false)
+          setSettingsFocusField(null)
+          setSettingsHighlightMissing([])
+        }}
+      />
     </div>
   )
 }

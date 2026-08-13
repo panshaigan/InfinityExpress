@@ -22,6 +22,7 @@ import { probeGameFolder } from '../../lib/desktop/gameExe'
 import { DirectoryField } from '../DirectoryField'
 import { OutlinedSelect, type OutlinedSelectOption } from '../OutlinedSelect'
 import { OutlinedTextField } from '../OutlinedTextField'
+import { SettingsOpenButton } from '../SettingsOpenButton'
 import {
   listenBackupProgress,
   type BackupProgress,
@@ -71,6 +72,8 @@ interface Props {
   onCreated: (projectId: string) => void
   /** When false (no projects yet), Cancel is hidden — there is nowhere to return. */
   canCancel?: boolean
+  settingsOpen: boolean
+  onOpenSettings: () => void
 }
 
 function formatWizardProgress(
@@ -113,7 +116,13 @@ function formatDestinationProgress(
   }
 }
 
-export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) {
+export function ProjectWizard({
+  onCancel,
+  onCreated,
+  canCancel = true,
+  settingsOpen,
+  onOpenSettings,
+}: Props) {
   const [step, setStep] = useState<WizardStep>('engine')
   const [engine, setEngine] = useState<SelectedGame | null>(null)
   const [name, setName] = useState('')
@@ -504,6 +513,11 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
     <div className="project-wizard">
       <header className="project-wizard-header">
         <h1>New project</h1>
+        <SettingsOpenButton
+          settingsOpen={settingsOpen}
+          onOpenSettings={onOpenSettings}
+          tipAlign="end"
+        />
       </header>
 
       {step === 'engine' ? (
