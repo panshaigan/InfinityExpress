@@ -19,6 +19,7 @@ import {
   modCodenamesWithCatalogComponents,
 } from '../../lib/mods/loadMods'
 import type { InstallSequenceModel } from '../../lib/xml/schema'
+import { isModActionLocked, type InstallLock } from '../../lib/install/installLock'
 import {
   collectModsFacetOptions,
   createDefaultModsTableFilters,
@@ -74,6 +75,7 @@ interface Props {
   onProceedToInstall?: () => void
   onBusyChange?: (busy: boolean) => void
   onExitBlockingChange?: (busy: boolean) => void
+  installLock: InstallLock
 }
 
 export function ModsStation({
@@ -98,7 +100,13 @@ export function ModsStation({
   onProceedToInstall,
   onBusyChange,
   onExitBlockingChange,
+  installLock,
 }: Props) {
+  const installFrozen = installLock.mode === 'working'
+  const modLocked = useCallback(
+    (codename: string) => isModActionLocked(codename, installLock),
+    [installLock],
+  )
   const { pushToast } = useToast()
   const journeyLocked = routeComplete && !!journey
   const [filters, setFilters] = useState<ModsTableFilters>(() =>
@@ -254,35 +262,46 @@ export function ModsStation({
   }, [journey, mods])
 
   const removeFromDiskDisabled = useMemo(() => {
+    if (installFrozen) return true
     if (selectedList.length === 0) return true
-    return selectedList.every((code) => {
+    return !selectedList.some((code) => {
       const mod = mods.find((m) => m.codename === code)
-      return !mod || mod.diskStatus === 'not_present'
+      return mod && mod.diskStatus !== 'not_present' && !modLocked(code)
     })
-  }, [mods, selectedList])
+  }, [installFrozen, mods, modLocked, selectedList])
 
   const checkableSelectedList = useMemo(
     () =>
       selectedList.filter((code) => {
         const mod = mods.find((m) => m.codename === code)
-        return mod != null && mod.diskStatus !== 'not_present'
+        return (
+          mod != null &&
+          mod.diskStatus !== 'not_present' &&
+          !modLocked(code)
+        )
       }),
-    [mods, selectedList],
+    [mods, modLocked, selectedList],
   )
 
-  const checkUpdatesDisabled = checkableSelectedList.length === 0
+  const checkUpdatesDisabled =
+    installFrozen || checkableSelectedList.length === 0
+
+  const acquirableSelectedList = useMemo(
+    () => selectedList.filter((code) => !modLocked(code)),
+    [modLocked, selectedList],
+  )
 
   const selectedAcquireKind = useMemo(() => {
-    const targets = modsNeedingAcquire(mods, selectedList)
+    const targets = modsNeedingAcquire(mods, acquirableSelectedList)
     return acquireButtonKind(targets.map((m) => m.diskStatus))
-  }, [mods, selectedList])
+  }, [acquirableSelectedList, mods])
 
   const focusedAcquireKind = useMemo(() => {
-    if (!focusedMod) return 'none' as const
+    if (!focusedMod || modLocked(focusedMod.codename)) return 'none' as const
     return acquireButtonKind(
       modsNeedingAcquire(mods, [focusedMod.codename]).map((m) => m.diskStatus),
     )
-  }, [focusedMod, mods])
+  }, [focusedMod, modLocked, mods])
 
   const rowProgress = useMemo(() => {
     const map = new Map<string, { pct: number | null; label: string }>()
@@ -407,19 +426,21 @@ export function ModsStation({
   }, [])
 
   const requestRemoveFromDisk = useCallback((codenames: string[]) => {
-    if (codenames.length === 0) return
-    setPendingRemove(codenames)
-  }, [])
+    if (installFrozen) return
+    const allowed = codenames.filter((c) => !modLocked(c))
+    if (allowed.length === 0) return
+    setPendingRemove(allowed)
+  }, [installFrozen, modLocked])
 
   const requestDeleteFromCatalog = useCallback((codenames: string[]) => {
-    if (journeyLocked) return
+    if (installFrozen || journeyLocked) return
     const deletable = codenames.filter((c) => !shippedMods.has(c))
     if (deletable.length === 0) {
       flashNotice('Built-in mods cannot be removed from the catalog.')
       return
     }
     setPendingDelete(deletable)
-  }, [flashNotice, journeyLocked])
+  }, [flashNotice, installFrozen, journeyLocked])
 
   const confirmRemoveFromDisk = useCallback(async () => {
     if (!pendingRemove || removing) return
@@ -503,9 +524,10 @@ export function ModsStation({
               visibleCount={rows.length}
               totalCount={mods.length}
               acquireLabel={acquireButtonLabel(selectedAcquireKind)}
-              acquireDisabled={selectedAcquireKind === 'none'}
+              acquireDisabled={installFrozen || selectedAcquireKind === 'none'}
               jobRunning={jobRunning}
-              onAcquire={() => acquire.requestAcquire(selectedList)}
+              actionsFrozen={installFrozen}
+              onAcquire={() => acquire.requestAcquire(acquirableSelectedList)}
               onCheckUpdates={() => {
                 void acquire.runCheck(checkableSelectedList)
               }}
@@ -514,6 +536,7 @@ export function ModsStation({
               onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
               onDeleteFromCatalog={() => requestDeleteFromCatalog(selectedList)}
               onAddMod={() => setEditor({ mode: 'create', initial: null })}
+              catalogActionsDisabled={installFrozen}
               allRequiredDownloaded={allRequiredDownloaded}
               onProceedToInstall={onProceedToInstall}
             />
@@ -523,7 +546,7 @@ export function ModsStation({
               rows={rows}
               selected={selected}
               focusedCodename={focusedCodename}
-              selectionLocked={false}
+              selectionLocked={installFrozen}
               sortKey={sortKey}
               sortDir={sortDir}
               onSort={onSort}
@@ -537,19 +560,25 @@ export function ModsStation({
                 acquireLabel: (mod) =>
                   acquireButtonLabel(acquireButtonKind([mod.diskStatus])),
                 acquireDisabled: (mod) =>
+                  installFrozen ||
+                  modLocked(mod.codename) ||
                   acquireButtonKind([mod.diskStatus]) === 'none',
                 jobRunning,
-                onAcquire: (codename) => acquire.requestAcquire([codename]),
+                onAcquire: (codename) => {
+                  if (modLocked(codename) || installFrozen) return
+                  acquire.requestAcquire([codename])
+                },
                 onCheckUpdates: (codename) => {
+                  if (installFrozen || modLocked(codename)) return
                   const mod = mods.find((m) => m.codename === codename)
                   if (!mod || mod.diskStatus === 'not_present') return
                   void acquire.runCheck([codename])
                 },
-                editDisabled: journeyLocked,
-                catalogDeleteDisabled: journeyLocked,
+                editDisabled: journeyLocked || installFrozen,
+                catalogDeleteDisabled: journeyLocked || installFrozen,
                 isModProtected: (codename) => shippedMods.has(codename),
                 onEdit: (codename) => {
-                  if (journeyLocked) return
+                  if (journeyLocked || installFrozen) return
                   const mod = mods.find((m) => m.codename === codename)
                   if (mod) setEditor({ mode: 'edit', initial: mod })
                 },
@@ -569,7 +598,7 @@ export function ModsStation({
           onWidthChange={onDetailWidthChange}
           onToggleCollapsed={onToggleDetailCollapsed}
           onEdit={() => {
-            if (journeyLocked) return
+            if (journeyLocked || installFrozen) return
             if (focusedMod) {
               setEditor({ mode: 'edit', initial: focusedMod })
             }
@@ -577,20 +606,48 @@ export function ModsStation({
           onDeleteFromCatalog={() => {
             if (focusedMod) requestDeleteFromCatalog([focusedMod.codename])
           }}
-          editDisabled={journeyLocked}
-          catalogDeleteDisabled={journeyLocked || (focusedMod ? shippedMods.has(focusedMod.codename) : false)}
+          editDisabled={journeyLocked || installFrozen}
+          catalogDeleteDisabled={
+            installFrozen ||
+            journeyLocked ||
+            (focusedMod ? shippedMods.has(focusedMod.codename) : false)
+          }
           acquireLabel={acquireButtonLabel(focusedAcquireKind)}
-          acquireDisabled={focusedAcquireKind === 'none'}
+          acquireDisabled={
+            installFrozen ||
+            focusedAcquireKind === 'none' ||
+            (focusedMod ? modLocked(focusedMod.codename) : false)
+          }
           jobRunning={jobRunning}
           onAcquire={() =>
-            focusedMod && acquire.requestAcquire([focusedMod.codename])
+            focusedMod && !modLocked(focusedMod.codename) &&
+            acquire.requestAcquire([focusedMod.codename])
           }
           onCheckUpdates={() => {
-            if (!focusedMod || focusedMod.diskStatus === 'not_present') return
+            if (
+              !focusedMod ||
+              focusedMod.diskStatus === 'not_present' ||
+              modLocked(focusedMod.codename) ||
+              installFrozen
+            ) {
+              return
+            }
             void acquire.runCheck([focusedMod.codename])
           }}
           onRemoveFromDisk={() =>
             focusedMod && requestRemoveFromDisk([focusedMod.codename])
+          }
+          removeFromDiskDisabled={
+            installFrozen ||
+            !focusedMod ||
+            focusedMod.diskStatus === 'not_present' ||
+            modLocked(focusedMod.codename)
+          }
+          checkUpdatesDisabled={
+            installFrozen ||
+            !focusedMod ||
+            focusedMod.diskStatus === 'not_present' ||
+            modLocked(focusedMod.codename)
           }
         />
       </div>

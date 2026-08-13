@@ -59,8 +59,21 @@ Install table rows (one per component / install step) expose the same actions vi
 | **Uninstall back to here** | `paused` / `stopped`; target step before cursor | Force-uninstall each package from cursor−1 down to the target step; move cursor to target. Confirms first. |
 | **Add / remove breakpoint** | Future, not-yet-installed steps (including before first Play) | Toggle `InstallRun.breakpointStepIds`. Row class `install-breakpoint`. |
 | **Move cursor here** | `paused` / `stopped` (immediate), or while `running` / `waitingForInput` (after current step); not on finished steps | Sets `cursor` to the selected install step. Disabled when target is `succeeded` / `alreadyInstalled` / `skipped`. Confirms when moving backward across installed packages. |
+| **Remove from plan** | `paused` / `stopped` / `failed`; step at or after cursor, not yet finished | Unchecks the component in Components (updates selection + syncs the run plan). |
 
 **Breakpoints (mode B):** when the runner reaches a breakpoint step, it pauses **before staging/copying** that package (`runState: paused`, cursor on the breakpoint step).
+
+## Cross-phase install lock
+
+After the first **Play**, Components and Mods respect the active install run:
+
+| Run state | Components | Mods | Route reopen |
+| --- | --- | --- | --- |
+| **Running** / **waitingForInput** | Tree readonly; no toggles | All action icons disabled | Reopen route / stop disabled |
+| **Paused** / **stopped** / **failed** | Steps **before cursor** locked (badge: Installed); only at/after cursor toggles; `alwaysIf` partners of locked steps stay locked | Acquire/remove only for mods with no steps before cursor | Reopen allowed |
+| **Idle** / no run | Normal | Normal | Normal |
+
+Logic: [`installLock.ts`](../src/lib/install/installLock.ts). Session snapshot in App drives lock even before visiting Install.
 
 Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx) (`confirm-dialog-backdrop` / `confirm-dialog`; `danger` for destructive confirms).
 

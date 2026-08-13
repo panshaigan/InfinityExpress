@@ -3,6 +3,7 @@ import installSequenceXml from './data/InstallSequence.xml?raw'
 import { parseInstallSequence } from './lib/xml/parseInstallSequence'
 import {
   STATION_LABELS,
+  isComponentNode,
   type SelectedGame,
   type StationId,
 } from './lib/xml/schema'
@@ -35,6 +36,12 @@ import {
   modsByCodename,
 } from './lib/mods/catalog'
 import { buildRelationIndex } from './lib/selection/relations'
+import {
+  deriveInstallLock,
+  isComponentSelectionLocked,
+  canRemoveStepFromPlan,
+  type InstallLock,
+} from './lib/install/installLock'
 import { isSetupSlot, type StationSlot } from './lib/ui/chromeHotkeys'
 import {
   readDetailCollapsed,
@@ -131,6 +138,23 @@ function normalizeStation(slot: AppNavSlot): Exclude<AppNavSlot, 'engine'> {
   return slot === 'engine' ? 'presets' : slot
 }
 
+function componentIdsInDisplay(display: DisplayNode): string[] {
+  if (display.collapsedComponent) return [display.collapsedComponent.componentId]
+  if (isComponentNode(display.node)) return [display.node.componentId]
+  return display.children.flatMap((child) => componentIdsInDisplay(child))
+}
+
+function isDisplaySelectionLocked(
+  display: DisplayNode,
+  lock: InstallLock,
+  model: typeof parsed.model,
+  relationIndex: ReturnType<typeof buildRelationIndex>,
+): boolean {
+  return componentIdsInDisplay(display).some((id) =>
+    isComponentSelectionLocked(id, lock, model, relationIndex),
+  )
+}
+
 export default function App() {
   return (
     <ToastProvider>
@@ -154,6 +178,26 @@ function AppShell() {
   const [restoredInstallSession, setRestoredInstallSession] = useState<
     PersistedInstallSession | undefined
   >(undefined)
+  const [installSession, setInstallSession] = useState<
+    PersistedInstallSession | null | undefined
+  >(undefined)
+  const installLock = useMemo(
+    () => deriveInstallLock(installSession?.run ?? null, installSession?.transport),
+    [installSession],
+  )
+  const selectionLockedIds = useMemo(() => {
+    if (installLock.mode === 'none') return null
+    const locked = new Set<string>()
+    for (const c of model.componentsInOrder) {
+      if (isComponentSelectionLocked(c.componentId, installLock, model, relationIndex)) {
+        locked.add(c.componentId)
+      }
+    }
+    return locked
+  }, [installLock, model, relationIndex])
+  const installSelectionFrozen = installLock.mode !== 'none'
+  const installWorking = installLock.mode === 'working'
+  const routeReopenDisabled = installWorking
   const [game, setGame] = useState<SelectedGame | null>(null)
   const [routeUnlocked, setRouteUnlocked] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
@@ -549,6 +593,7 @@ function AppShell() {
 
   const onInstallSessionChange = useCallback((session: PersistedInstallSession | null) => {
     installSnapshotRef.current = session ?? undefined
+    setInstallSession(session)
   }, [])
 
   function openProject(id: ProjectId) {
@@ -562,7 +607,11 @@ function AppShell() {
     setGameFolders(record.meta.destinations)
     setGame(engine)
     setAppPhase('components')
-    setMountedPhases({ components: true, mods: false, install: false })
+    setMountedPhases({
+      components: true,
+      mods: false,
+      install: !!install,
+    })
     setSearchScope('section')
     clearFocus()
 
@@ -583,6 +632,7 @@ function AppShell() {
       setModsJourney(null)
       installSnapshotRef.current = undefined
       setRestoredInstallSession(undefined)
+      setInstallSession(null)
     } else {
       setRouteUnlocked(session.routeUnlocked)
       setSelectedIds(new Set(session.selectedIds))
@@ -600,6 +650,7 @@ function AppShell() {
       setModsJourney(session.modsJourney)
       installSnapshotRef.current = install
       setRestoredInstallSession(install)
+      setInstallSession(install ?? null)
     }
 
     setShellView('workspace')
@@ -618,6 +669,7 @@ function AppShell() {
   }
 
   function onPresetsLadderToggle(level: LadderLevel, wantChecked: boolean) {
+    if (installSelectionFrozen) return
     if (isSelectionDirty()) {
       setPendingSelectionReset({ type: 'ladder', level, wantChecked })
       return
@@ -626,6 +678,7 @@ function AppShell() {
   }
 
   function onPresetsDifficultyChange(token: DifficultyLevel, want: boolean) {
+    if (installSelectionFrozen) return
     if (isSelectionDirty()) {
       setPendingSelectionReset({ type: 'difficulty', token, want })
       return
@@ -649,12 +702,12 @@ function AppShell() {
   }
 
   function onToggleAll(wantSelected: boolean) {
-    if (!game) return
+    if (!game || installSelectionFrozen) return
     setSelectedIds((prev) => toggleListSelection(model, prev, game, listNodes, wantSelected))
   }
 
   function onToggleAllSearch(wantSelected: boolean) {
-    if (!game) return
+    if (!game || installSelectionFrozen) return
     const nodes = globalSearchHits
       .filter((h) => h.checkable)
       .map((h) => ({ node: h.component, children: [] }) as DisplayNode)
@@ -735,8 +788,14 @@ function AppShell() {
   }
 
   function reopenRoute() {
+    if (routeReopenDisabled) return
     route.reopenEntireRoute()
     setModsJourney(null)
+  }
+
+  function reopenCurrentStation() {
+    if (routeReopenDisabled) return
+    route.unmarkStationFinished()
   }
 
   const onNavigateToComponent = useCallback(
@@ -752,20 +811,42 @@ function AppShell() {
 
   const onToggle = useCallback(
     (display: DisplayNode, wantSelected: boolean) => {
-      if (!game) return
+      if (!game || installWorking) return
+      if (
+        installLock.mode !== 'none' &&
+        isDisplaySelectionLocked(display, installLock, model, relationIndex)
+      ) {
+        return
+      }
       setSelectedIds((prev) => toggleDisplayNode(model, prev, game, display, wantSelected))
     },
-    [game, model],
+    [game, model, installLock, installWorking, relationIndex],
   )
 
   const onRandomize = useCallback(
     (display: DisplayNode, options: RandomizeOptions) => {
-      if (!game) return
+      if (!game || installSelectionFrozen) return
       setSelectedIds((prev) =>
         randomizeDisplaySubtree(model, prev, game, display, options),
       )
     },
-    [game, model],
+    [game, model, installSelectionFrozen],
+  )
+
+  const onDeselectComponent = useCallback(
+    (componentId: string) => {
+      if (!game) return
+      const stepIndex = installLock.componentStepIndex.get(componentId)
+      const step = installSession?.run?.steps.find((s) => s.componentId === componentId)
+      if (stepIndex == null || !step) return
+      if (!canRemoveStepFromPlan(stepIndex, step.status, installLock)) return
+      const comp = model.componentsById.get(componentId)
+      if (!comp) return
+      setSelectedIds((prev) =>
+        toggleDisplayNode(model, prev, game, { node: comp, children: [] }, false),
+      )
+    },
+    [game, installLock, installSession, model],
   )
 
   function focusComponentTree() {
@@ -991,6 +1072,7 @@ function AppShell() {
               onProceedToInstall={() => onPhaseChange('install')}
               onBusyChange={onModsBusyChange}
               onExitBlockingChange={setModsBlocking}
+              installLock={installLock}
             />
           </div>
         </div>
@@ -1020,6 +1102,8 @@ function AppShell() {
               onExitBlockingChange={setInstallBlocking}
               initialInstallSession={restoredInstallSession}
               onInstallSessionChange={onInstallSessionChange}
+              onDeselectComponent={onDeselectComponent}
+              installLock={installLock}
             />
           </div>
         </div>
@@ -1041,6 +1125,7 @@ function AppShell() {
           onSelectStation={selectStation}
           onFinishRoute={finishRoute}
           onReopenRoute={reopenRoute}
+          routeReopenDisabled={routeReopenDisabled}
         />
 
         <div className="app-main">
@@ -1084,7 +1169,8 @@ function AppShell() {
                       finished={route.currentFinished}
                       canContinue={route.canCycleScreens}
                       onContinue={continueFromPresets}
-                      onReopen={route.unmarkStationFinished}
+                      onReopen={reopenCurrentStation}
+                      reopenDisabled={routeReopenDisabled}
                     />
                   </div>
                 ) : isAllSections ? (
@@ -1121,6 +1207,8 @@ function AppShell() {
                         searchQuery={filters.search}
                         filtersActive={filtersActive}
                         loading={globalSearchLoading}
+                        selectionLockedIds={selectionLockedIds}
+                        installedComponentIds={installLock.installedComponentIds}
                       />
                     </div>
                   </>
@@ -1153,7 +1241,8 @@ function AppShell() {
                             onPrevious={route.goPrevScreen}
                             onNext={route.goNextScreen}
                             onOk={route.onOk}
-                            onCancel={route.unmarkStationFinished}
+                            onCancel={reopenCurrentStation}
+                            reopenDisabled={routeReopenDisabled}
                           />
                         </div>
                       </div>
@@ -1166,6 +1255,7 @@ function AppShell() {
                         onToggleAll={onToggleAll}
                         onFoldAll={onFoldAll}
                         onUnfoldAll={onUnfoldAll}
+                        selectAllDisabled={installSelectionFrozen}
                       >
                         {activeStation === 'content' ||
                         activeStation === 'mechanics' ? (
@@ -1200,7 +1290,9 @@ function AppShell() {
                         onExpandKeysApplied={focus.clearPendingExpandKeys}
                         emptyTitle={emptyCopy?.title}
                         emptyBody={emptyCopy?.body}
-                        readonly={route.currentFinished}
+                        readonly={route.currentFinished || installWorking}
+                        selectionLockedIds={selectionLockedIds}
+                        installedComponentIds={installLock.installedComponentIds}
                       />
                     </div>
                   </>

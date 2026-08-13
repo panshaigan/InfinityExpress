@@ -82,6 +82,18 @@ export function MoveCursorIcon() {
   )
 }
 
+/** Remove from install plan (uncheck in Components). */
+export function RemoveFromPlanIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M3.5 3.5h9v1.5h-9V3.5Zm1.25 3.25h6.5v7.5a.75.75 0 0 1-.75.75H5.5a.75.75 0 0 1-.75-.75V6.75Zm1.5 1.5v4.5h1.75V8.25H6.25Zm3 0v4.5h1.75V8.25H9.25Z"
+      />
+    </svg>
+  )
+}
+
 /** Eye with slash — hide completed / already-installed steps. */
 export function HideInstalledIcon() {
   return (

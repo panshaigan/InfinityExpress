@@ -10,6 +10,7 @@ interface Props {
   onNext: () => void
   onOk: () => void
   onCancel: () => void
+  reopenDisabled?: boolean
 }
 
 /** Previous / Done|Reopen / Next cluster for station headers. */
@@ -21,6 +22,7 @@ export function ScreenNavButtons({
   onNext,
   onOk,
   onCancel,
+  reopenDisabled = false,
 }: Props) {
   return (
     <div className="screen-nav-buttons" role="group" aria-label="Station progress">
@@ -38,10 +40,19 @@ export function ScreenNavButtons({
       </span>
       {finished ? (
         <span className="has-icon-tip">
-          <button type="button" className="btn screen-nav-ok-btn" onClick={onCancel}>
+          <button
+            type="button"
+            className="btn screen-nav-ok-btn"
+            disabled={reopenDisabled}
+            onClick={onCancel}
+          >
             Reopen
           </button>
-          <IconTip>Mark this stop unfinished again</IconTip>
+          <IconTip>
+            {reopenDisabled
+              ? 'Cannot reopen while install is running'
+              : 'Mark this stop unfinished again'}
+          </IconTip>
         </span>
       ) : (
         <span className="has-icon-tip">

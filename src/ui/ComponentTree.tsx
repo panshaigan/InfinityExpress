@@ -26,6 +26,12 @@ import {
 import { EmptyPanel } from './EmptyPanel'
 import { CheckboxRow } from './ComponentTreeRow'
 
+function componentIdsInDisplay(display: DisplayNode): string[] {
+  if (display.collapsedComponent) return [display.collapsedComponent.componentId]
+  if (display.node.kind === 'component') return [display.node.componentId]
+  return display.children.flatMap((child) => componentIdsInDisplay(child))
+}
+
 export interface TreeFoldApi {
   foldAll: () => void
   unfoldAll: () => void
@@ -55,6 +61,8 @@ interface Props {
   emptyBody?: string
   /** When true, checkboxes and editing controls are disabled (station finished). */
   readonly?: boolean
+  selectionLockedIds?: ReadonlySet<string> | null
+  installedComponentIds?: ReadonlySet<string>
 }
 /** Session-scoped expand/collapse per tree; survives remount, resets on page reload. */
 const expandedKeysCache = new Map<string, Set<string>>()
@@ -292,6 +300,14 @@ export function ComponentTree(props: Props) {
         if (props.readonly) break
         const row = keyboardCtx.visibleRows.find((r) => r.key === cmd.key)
         if (!row) break
+        if (
+          props.selectionLockedIds?.size &&
+          componentIdsInDisplay(row.display).some((id) =>
+            props.selectionLockedIds!.has(id),
+          )
+        ) {
+          break
+        }
         const state = displaySelectionState(row.display, props.selectedIds, props.game)
         const isExclusive =
           row.parentKey != null &&
@@ -354,6 +370,8 @@ export function ComponentTree(props: Props) {
           onCollapseSubtree={collapseSubtree}
           rowRefs={rowRefs}
           readonly={props.readonly}
+          selectionLockedIds={props.selectionLockedIds}
+          installedComponentIds={props.installedComponentIds}
         />
       ))}
     </div>

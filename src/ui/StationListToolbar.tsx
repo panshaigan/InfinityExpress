@@ -18,6 +18,7 @@ interface Props {
   onFoldAll: () => void
   onUnfoldAll: () => void
   children?: ReactNode
+  selectAllDisabled?: boolean
 }
 
 export function StationListToolbar({
@@ -27,6 +28,7 @@ export function StationListToolbar({
   onFoldAll,
   onUnfoldAll,
   children,
+  selectAllDisabled = false,
 }: Props) {
   const selectAllRef = useRef<HTMLInputElement>(null)
   const [allUnfolded, setAllUnfolded] = useState(false)
@@ -78,12 +80,12 @@ export function StationListToolbar({
           </button>
           <IconTip>{foldLabel}</IconTip>
         </span>
-        <label className={`station-select-all${empty ? ' disabled' : ''}`}>
+        <label className={`station-select-all${empty || selectAllDisabled ? ' disabled' : ''}`}>
           <input
             ref={selectAllRef}
             type="checkbox"
             checked={checked}
-            disabled={empty}
+            disabled={empty || selectAllDisabled}
             aria-label="Select all on this list"
             onChange={handleSelectAllChange}
           />

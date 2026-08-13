@@ -3426,6 +3426,11 @@ body.is-resizing-detail * {
   border-color: color-mix(in srgb, var(--muted) 45%, var(--line));
 }
 
+.badge-status-installed {
+  color: #6a9a6a;
+  border-color: color-mix(in srgb, #6a9a6a 70%, var(--line));
+}
+
 /* —— Freeform tags (quietest) —— */
 
 .badge-tag {

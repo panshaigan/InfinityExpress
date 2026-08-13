@@ -12,6 +12,7 @@ import {
 } from '../lib/selection/globalSearch'
 import { displaySelectionState } from '../lib/selection/selectionEngine'
 import type { DisplayNode } from '../lib/selection/visibility'
+import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { EmptyPanel } from './EmptyPanel'
 import { IconTip } from './IconTip'
 import { JumpIcon } from './JumpIcon'
@@ -31,6 +32,8 @@ interface Props {
   filtersActive: boolean
   /** True while the all-stations scan is in progress. */
   loading?: boolean
+  selectionLockedIds?: ReadonlySet<string> | null
+  installedComponentIds?: ReadonlySet<string>
 }
 
 function emptyCopy(searchQuery: string, filtersActive: boolean): {
@@ -74,6 +77,8 @@ export function GlobalSearchList({
   searchQuery,
   filtersActive,
   loading = false,
+  selectionLockedIds = null,
+  installedComponentIds,
 }: Props) {
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const tabbableId =
@@ -125,7 +130,7 @@ export function GlobalSearchList({
     }
     if (e.key === ' ' || e.key === 'Enter') {
       const hit = hits[idx]
-      if (!hit || !hit.checkable) return
+      if (!hit || !hit.checkable || selectionLockedIds?.has(hit.component.componentId)) return
       e.preventDefault()
       const display: DisplayNode = { node: hit.component, children: [] }
       const state = displaySelectionState(display, selectedIds, game)
@@ -178,9 +183,12 @@ export function GlobalSearchList({
       {hits.map((hit) => {
         const id = hit.component.componentId
         const display: DisplayNode = { node: hit.component, children: [] }
+        const installLocked = !!selectionLockedIds?.has(id)
+        const checkable = hit.checkable && !installLocked
         const state = displaySelectionState(display, selectedIds, game)
         const checked = state === 'checked'
         const focused = focusedComponentId === id
+        const showInstalledBadge = !!installedComponentIds?.has(id)
         const label =
           hit.component.attrs.label ?? hit.component.attrs.name ?? id
         const path = formatSearchPath(hit.pathLabels)
@@ -190,7 +198,7 @@ export function GlobalSearchList({
         }
 
         function handleRowDoubleClick() {
-          if (hit.checkable) onToggle(display, !checked)
+          if (checkable) onToggle(display, !checked)
         }
 
         function handleRowFocus() {
@@ -198,7 +206,7 @@ export function GlobalSearchList({
         }
 
         function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
-          if (!hit.checkable) return
+          if (!checkable) return
           onFocus(id)
           onToggle(display, e.target.checked)
         }
@@ -217,10 +225,10 @@ export function GlobalSearchList({
             key={id}
             role="option"
             aria-selected={focused}
-            aria-disabled={!hit.checkable}
+            aria-disabled={!checkable}
             tabIndex={tabbableId === id ? 0 : -1}
             className={`global-search-row${focused ? ' focused' : ''}${
-              !hit.checkable ? ' gated' : ''
+              !checkable ? ' gated' : ''
             }`}
             onClick={handleRowClick}
             onDoubleClick={handleRowDoubleClick}
@@ -234,7 +242,7 @@ export function GlobalSearchList({
             <input
               type="checkbox"
               checked={checked}
-              disabled={!hit.checkable}
+              disabled={!checkable}
               tabIndex={-1}
               aria-label={label}
               onChange={handleInputChange}
@@ -243,27 +251,36 @@ export function GlobalSearchList({
             <div className="global-search-text">
               <span className="global-search-label">{label}</span>
               <span className="global-search-path">
-                {!hit.checkable ? 'Locked until requirements are met · ' : ''}
+                {!hit.checkable
+                  ? 'Locked until requirements are met · '
+                  : installLocked
+                    ? 'Locked by install progress · '
+                    : ''}
                 {path}
               </span>
             </div>
-            {hit.checkable && hit.component.attrs.required && (
+            {checkable && hit.component.attrs.required && (
               <span className="badge">required</span>
             )}
-            {hit.checkable && hit.component.attrs.noDisplay && (
+            {checkable && hit.component.attrs.noDisplay && (
               <span className="badge">hidden</span>
             )}
-            {!hit.checkable && (
+            {showInstalledBadge && (
+              <span className={statusBadgeClass('installed')}>Installed</span>
+            )}
+            {!checkable && (
               <span
                 className="badge badge-gated has-icon-tip"
               >
                 locked
                 <span className="icon-tip" role="tooltip">
-                  Needs another component first
+                  {installLocked
+                    ? 'Cannot change during this install run'
+                    : 'Needs another component first'}
                 </span>
               </span>
             )}
-            {hit.checkable && (
+            {checkable && (
               <button
                 type="button"
                 className="global-search-jump has-icon-tip"

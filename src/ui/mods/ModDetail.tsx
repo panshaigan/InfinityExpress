@@ -32,6 +32,8 @@ interface Props {
   acquireLabel: string
   acquireDisabled: boolean
   jobRunning?: boolean
+  removeFromDiskDisabled?: boolean
+  checkUpdatesDisabled?: boolean
   onAcquire: () => void
   onCheckUpdates: () => void
   onRemoveFromDisk: () => void
@@ -84,6 +86,8 @@ export function ModDetail({
   acquireLabel,
   acquireDisabled,
   jobRunning = false,
+  removeFromDiskDisabled = false,
+  checkUpdatesDisabled = false,
   onAcquire,
   onCheckUpdates,
   onRemoveFromDisk,
@@ -143,7 +147,9 @@ export function ModDetail({
                       type="button"
                       className="mods-action-icon-btn"
                       onClick={onRemoveFromDisk}
-                      disabled={mod.diskStatus === 'not_present'}
+                      disabled={
+                        removeFromDiskDisabled || mod.diskStatus === 'not_present'
+                      }
                       aria-label="Remove from disk"
                     >
                       <RemoveFromDiskIcon />
@@ -167,7 +173,9 @@ export function ModDetail({
                       type="button"
                       className="mods-action-icon-btn"
                       disabled={
-                        jobRunning || mod.diskStatus === 'not_present'
+                        checkUpdatesDisabled ||
+                        jobRunning ||
+                        mod.diskStatus === 'not_present'
                       }
                       onClick={onCheckUpdates}
                       aria-label="Check for updates"

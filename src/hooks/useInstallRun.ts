@@ -8,6 +8,8 @@ import {
 } from '../lib/ui/gameFolderPrefs'
 import { readWeiduPath } from '../lib/ui/weiduPrefs'
 import { buildInstallPlan } from '../lib/install/planBuilder'
+import { syncRunWithPlan } from '../lib/install/installLock'
+import { planStepsMatchRun } from '../lib/ui/appSessionPrefs'
 import {
   canSetBreakpoint,
   isStepDone,
@@ -179,6 +181,22 @@ export function useInstallRun(options: {
     if (!game) return []
     return buildInstallPlan(model, selectedIds, game)
   }, [model, selectedIds, game])
+
+  useEffect(() => {
+    if (!run) return
+    const state = run.runState
+    if (
+      state === 'idle' ||
+      state === 'running' ||
+      state === 'waitingForInput'
+    ) {
+      return
+    }
+    if (planStepsMatchRun(run, planSteps)) return
+    const synced = syncRunWithPlan(run, planSteps)
+    setRun(synced)
+    runRef.current = synced
+  }, [planSteps, run])
 
   /** Append to WeiDU (+ Results if highlighted). Returns stamped line for callers that track per-step results. */
   const pushConsoleLine = useCallback((text: string): string => {

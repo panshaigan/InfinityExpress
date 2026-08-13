@@ -29,8 +29,23 @@ import {
 import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { hasNestedFoldable } from '../lib/ui/treeKeyboard'
 import { FoldAllIcon, UnfoldAllIcon } from './FoldAllIcons'
+import { IconTip } from './IconTip'
 
 const RANDOMIZE_PERCENTS: RandomizePercent[] = [25, 50, 75, 100]
+
+function componentIdsInDisplay(display: DisplayNode): string[] {
+  if (display.collapsedComponent) return [display.collapsedComponent.componentId]
+  if (isComponentNode(display.node)) return [display.node.componentId]
+  return display.children.flatMap((child) => componentIdsInDisplay(child))
+}
+
+function isDisplaySelectionLocked(
+  display: DisplayNode,
+  selectionLockedIds: ReadonlySet<string> | null | undefined,
+): boolean {
+  if (!selectionLockedIds?.size) return false
+  return componentIdsInDisplay(display).some((id) => selectionLockedIds.has(id))
+}
 
 function ShuffleIcon() {
   return (
@@ -77,6 +92,10 @@ export type CheckboxRowProps = {
   rowRefs: MutableRefObject<Map<string, HTMLDivElement>>
   /** When true, checkboxes and editing controls are disabled (station finished). */
   readonly?: boolean
+  /** Component ids whose checkboxes are locked by install progress. */
+  selectionLockedIds?: ReadonlySet<string> | null
+  /** Component ids with a physically installed install step. */
+  installedComponentIds?: ReadonlySet<string>
 }
 
 function subtreeSelectionChanged(
@@ -150,6 +169,8 @@ function checkboxRowPropsAreEqual(
   if (prev.exclusiveGroupKey !== next.exclusiveGroupKey) return false
   if (prev.parentNoBranches !== next.parentNoBranches) return false
   if (prev.readonly !== next.readonly) return false
+  if (prev.selectionLockedIds !== next.selectionLockedIds) return false
+  if (prev.installedComponentIds !== next.installedComponentIds) return false
   if (prev.onFocus !== next.onFocus) return false
   if (prev.onHover !== next.onHover) return false
   if (prev.onToggle !== next.onToggle) return false
@@ -206,6 +227,8 @@ export const CheckboxRow = memo(function CheckboxRow({
   parentNoBranches = false,
   rowRefs,
   readonly = false,
+  selectionLockedIds = null,
+  installedComponentIds,
 }: CheckboxRowProps) {
   const { node, collapsedComponent, children } = display
   const state = displaySelectionState(display, selectedIds, game)
@@ -221,6 +244,14 @@ export const CheckboxRow = memo(function CheckboxRow({
   const isExclusiveOption = exclusiveGroupKey != null
   // Exclusive branch radios light up for any selection under the option (incl. partial).
   const checked = isExclusiveOption ? state !== 'unchecked' : state === 'checked'
+  const selectionLocked = isDisplaySelectionLocked(display, selectionLockedIds)
+  const inputDisabled = readonly || selectionLocked
+  const componentIdForBadge =
+    collapsedComponent?.componentId ??
+    (isComponentNode(node) ? node.componentId : null)
+  const showInstalledBadge =
+    componentIdForBadge != null &&
+    !!installedComponentIds?.has(componentIdForBadge)
 
   useEffect(() => {
     if (inputRef.current && !isExclusiveOption) {
@@ -311,7 +342,7 @@ export const CheckboxRow = memo(function CheckboxRow({
   }
 
   function handleRowDoubleClick() {
-    if (readonly) return
+    if (readonly || selectionLocked) return
     onToggle(display, !checked)
   }
 
@@ -370,17 +401,22 @@ export const CheckboxRow = memo(function CheckboxRow({
           <span className="tree-fold-spacer" />
         )}
         <div className="tree-row">
-          <input
-            ref={inputRef}
-            type={isExclusiveOption ? 'radio' : 'checkbox'}
-            name={isExclusiveOption ? exclusiveGroupKey : undefined}
-            checked={checked}
-            disabled={readonly}
-            tabIndex={-1}
-            aria-label={label}
-            onChange={handleInputChange}
-            onClick={handleInputClick}
-          />
+          <span className={selectionLocked ? 'has-icon-tip' : undefined}>
+            <input
+              ref={inputRef}
+              type={isExclusiveOption ? 'radio' : 'checkbox'}
+              name={isExclusiveOption ? exclusiveGroupKey : undefined}
+              checked={checked}
+              disabled={inputDisabled}
+              tabIndex={-1}
+              aria-label={label}
+              onChange={handleInputChange}
+              onClick={handleInputClick}
+            />
+            {selectionLocked ? (
+              <IconTip>Locked by install progress</IconTip>
+            ) : null}
+          </span>
           <span className="tree-label">{label}</span>
           {foldable && !readonly && (
             <span className="tree-randomize" ref={menuRef}>
@@ -486,6 +522,9 @@ export const CheckboxRow = memo(function CheckboxRow({
           {attrs.noDisplay && (
             <span className={statusBadgeClass('hidden')}>hidden</span>
           )}
+          {showInstalledBadge && (
+            <span className={statusBadgeClass('installed')}>Installed</span>
+          )}
         </div>
       </div>
       {expanded && (
@@ -521,6 +560,8 @@ export const CheckboxRow = memo(function CheckboxRow({
               parentNoBranches={!!node.attrs.noBranches}
               rowRefs={rowRefs}
               readonly={readonly}
+              selectionLockedIds={selectionLockedIds}
+              installedComponentIds={installedComponentIds}
             />
           ))}
         </div>

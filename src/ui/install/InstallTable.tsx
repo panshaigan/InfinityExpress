@@ -24,8 +24,10 @@ import { IconTip } from '../IconTip'
 import {
   BreakpointIcon,
   MoveCursorIcon,
+  RemoveFromPlanIcon,
   UninstallBackIcon,
 } from './InstallControlIcons'
+import { canRemoveStepFromPlan, type InstallLock } from '../../lib/install/installLock'
 
 export const INSTALL_TABLE_ID = 'install-table'
 
@@ -151,9 +153,11 @@ interface InstallTableActions {
   cursor: number
   breakpointStepIds: string[]
   canNavigate: boolean
+  installLock: InstallLock
   onRequestUninstallBack: (stepId: string) => void
   onToggleBreakpoint: (stepId: string) => void
   onRequestMoveCursor: (stepId: string) => void
+  onRemoveFromPlan: (stepId: string) => void
 }
 
 interface ContextMenuState {
@@ -189,6 +193,7 @@ function InstallStepContextMenu({
   const canMoveCursor =
     actions.canNavigate || actions.runState === 'running' || actions.runState === 'waitingForInput'
   const moveDisabled = stepIndex === actions.cursor || isStepDone(step.status)
+  const canRemove = canRemoveStepFromPlan(stepIndex, step.status, actions.installLock)
 
   useLayoutEffect(() => {
     const el = menuRef.current
@@ -266,6 +271,16 @@ function InstallStepContextMenu({
         <MoveCursorIcon />
         <span>Move cursor here</span>
       </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={!canRemove}
+        onClick={() => run(() => actions.onRemoveFromPlan(step.stepId))}
+      >
+        <RemoveFromPlanIcon />
+        <span>Remove from plan</span>
+      </button>
     </div>,
     document.body,
   )
@@ -295,6 +310,7 @@ function StepActionButtons({
   const moveTip = moveDisabled && isStepDone(step.status)
     ? 'Already installed or finished'
     : 'Move cursor here'
+  const canRemove = canRemoveStepFromPlan(stepIndex, step.status, actions.installLock)
 
   return (
     <div className="install-row-actions" onClick={(e) => e.stopPropagation()}>
@@ -334,6 +350,18 @@ function StepActionButtons({
           <MoveCursorIcon />
         </button>
         <IconTip>{moveTip}</IconTip>
+      </span>
+      <span className="install-row-action-wrap has-icon-tip">
+        <button
+          type="button"
+          className="install-row-action-btn"
+          disabled={!canRemove}
+          aria-label="Remove from plan"
+          onClick={() => actions.onRemoveFromPlan(step.stepId)}
+        >
+          <RemoveFromPlanIcon />
+        </button>
+        <IconTip>Remove from install plan (unchecks in Components)</IconTip>
       </span>
     </div>
   )

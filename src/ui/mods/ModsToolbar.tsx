@@ -45,6 +45,9 @@ interface Props {
   acquireLabel: string
   acquireDisabled: boolean
   jobRunning?: boolean
+  /** When true, all mod action icons are disabled (install running). */
+  actionsFrozen?: boolean
+  catalogActionsDisabled?: boolean
   onAcquire: () => void
   onCheckUpdates: () => void
   checkUpdatesDisabled: boolean
@@ -80,6 +83,8 @@ export function ModsToolbar({
   acquireLabel,
   acquireDisabled,
   jobRunning = false,
+  actionsFrozen = false,
+  catalogActionsDisabled = false,
   onAcquire,
   onCheckUpdates,
   checkUpdatesDisabled,
@@ -241,6 +246,7 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn primary"
+              disabled={actionsFrozen}
               onClick={onAddMod}
               aria-label="Add mod"
             >
@@ -252,7 +258,7 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={bulkDisabled || removeFromDiskDisabled}
+              disabled={actionsFrozen || bulkDisabled || removeFromDiskDisabled}
               onClick={onRemoveFromDisk}
               aria-label="Remove from disk"
             >
@@ -264,7 +270,9 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={bulkDisabled || journeyLocked}
+              disabled={
+                actionsFrozen || bulkDisabled || journeyLocked || catalogActionsDisabled
+              }
               onClick={onDeleteFromCatalog}
               aria-label="Remove from catalog"
             >
@@ -276,7 +284,7 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={checkUpdatesDisabled || acquireBusy}
+              disabled={actionsFrozen || checkUpdatesDisabled || acquireBusy}
               onClick={onCheckUpdates}
               aria-label="Check for updates"
             >
@@ -288,7 +296,9 @@ export function ModsToolbar({
             <button
               type="button"
               className="mods-action-icon-btn"
-              disabled={bulkDisabled || acquireDisabled || acquireBusy}
+              disabled={
+                actionsFrozen || bulkDisabled || acquireDisabled || acquireBusy
+              }
               onClick={onAcquire}
               aria-label={acquireLabel}
             >

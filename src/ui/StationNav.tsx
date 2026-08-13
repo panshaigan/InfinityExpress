@@ -47,6 +47,7 @@ interface Props {
   onSelectStation: (id: StationId) => void
   onFinishRoute: () => void
   onReopenRoute: () => void
+  routeReopenDisabled?: boolean
 }
 
 function stationClass(
@@ -124,6 +125,7 @@ export function StationNav({
   onSelectStation,
   onFinishRoute,
   onReopenRoute,
+  routeReopenDisabled = false,
 }: Props) {
   const progressRatio = totalCount > 0 ? finishedCount / totalCount : 0
   const allDone = totalCount > 0 && finishedCount === totalCount
@@ -169,6 +171,7 @@ export function StationNav({
                   type="button"
                   className="btn station-nav-finish-btn"
                   onClick={onReopenRoute}
+                  disabled={routeReopenDisabled}
                   aria-label="Reopen route"
                 >
                   {collapsed ? '↺' : 'Reopen route'}

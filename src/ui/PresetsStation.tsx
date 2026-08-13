@@ -15,6 +15,7 @@ interface Props {
   canContinue: boolean
   onContinue: () => void
   onReopen: () => void
+  reopenDisabled?: boolean
 }
 
 export function PresetsStation({
@@ -29,6 +30,7 @@ export function PresetsStation({
   canContinue,
   onContinue,
   onReopen,
+  reopenDisabled = false,
 }: Props) {
   return (
     <section className="engine-station presets-station">
@@ -43,10 +45,19 @@ export function PresetsStation({
         </h2>
         {finished ? (
           <span className="has-icon-tip">
-            <button type="button" className="btn engine-start-btn" onClick={onReopen}>
+            <button
+              type="button"
+              className="btn engine-start-btn"
+              disabled={reopenDisabled}
+              onClick={onReopen}
+            >
               Reopen
             </button>
-            <IconTip>Mark this stop unfinished again</IconTip>
+            <IconTip>
+              {reopenDisabled
+                ? 'Cannot reopen while install is running'
+                : 'Mark this stop unfinished again'}
+            </IconTip>
           </span>
         ) : (
           <span className="has-icon-tip">

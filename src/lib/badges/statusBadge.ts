@@ -4,6 +4,7 @@ export type StatusBadgeKind =
   | 'core'
   | 'default'
   | 'chooseOne'
+  | 'installed'
   | 'tag'
 
 /** CSS classes for structural / attribute / freeform-tag badges. */

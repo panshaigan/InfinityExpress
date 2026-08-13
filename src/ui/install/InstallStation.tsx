@@ -41,6 +41,7 @@ import {
   buildPersistedInstallSession,
   type PersistedInstallSession,
 } from '../../lib/ui/appSessionPrefs'
+import { deriveInstallLock, type InstallLock } from '../../lib/install/installLock'
 
 interface Props {
   model: InstallSequenceModel
@@ -60,6 +61,8 @@ interface Props {
   gameFolders: GameFolderPaths
   initialInstallSession?: PersistedInstallSession
   onInstallSessionChange?: (session: PersistedInstallSession | null) => void
+  onDeselectComponent?: (componentId: string) => void
+  installLock?: InstallLock
 }
 
 function allModsPresent(needed: string[], mods: WorkingMod[]): boolean {
@@ -87,6 +90,8 @@ export function InstallStation({
   gameFolders,
   initialInstallSession,
   onInstallSessionChange,
+  onDeselectComponent,
+  installLock: installLockProp,
 }: Props) {
   const { pushToast } = useToast()
   const [pathTick, setPathTick] = useState(0)
@@ -135,6 +140,11 @@ export function InstallStation({
       ? { installSession: initialInstallSession }
       : null,
   })
+
+  const installLock = useMemo(
+    () => installLockProp ?? deriveInstallLock(run),
+    [installLockProp, run],
+  )
 
   const [selectedStepId, setSelectedStepId] = useState<string | null>(
     () => initialInstallSession?.ui.selectedStepId ?? null,
@@ -389,6 +399,7 @@ export function InstallStation({
       cursor: tableCursor,
       breakpointStepIds: tableBreakpoints,
       canNavigate: canNavigateSteps,
+      installLock,
       onRequestUninstallBack: (stepId: string) => {
         if (!tableRun) return
         const step = tableRun.steps.find((s) => s.stepId === stepId)
@@ -435,12 +446,19 @@ export function InstallStation({
         }
         moveCursorToStep(stepId)
       },
+      onRemoveFromPlan: (stepId: string) => {
+        const step = tableSteps.find((s) => s.stepId === stepId)
+        if (!step || !onDeselectComponent) return
+        onDeselectComponent(step.componentId)
+      },
     }
   }, [
     planSteps.length,
     run,
     steps,
     canNavigateSteps,
+    installLock,
+    onDeselectComponent,
     uninstallBackToStep,
     toggleBreakpoint,
     moveCursorToStep,
