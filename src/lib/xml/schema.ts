@@ -46,6 +46,15 @@ export const GAME_LABELS: Record<SelectedGame, string> = {
   pst: 'PST:EE',
 }
 
+/** Short code plus full product name (project hub, etc.). */
+export const GAME_FULL_LABELS: Record<SelectedGame, string> = {
+  bg1: "Baldur's Gate: Enhanced Edition",
+  bg2: "Baldur's Gate II: Enhanced Edition",
+  eet: 'Enhanced Edition Trilogy',
+  iwd: 'Icewind Dale: Enhanced Edition',
+  pst: 'Planescape Torment: Enhanced Edition',
+}
+
 export const STATION_TAG_SET = new Set<string>(STATION_ORDER)
 
 export type NodeKind = 'component' | 'container' | 'alternatives' | 'station'

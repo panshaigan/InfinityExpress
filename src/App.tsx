@@ -90,6 +90,7 @@ import { ModsStation, type ModsJourneyState } from './ui/mods/ModsStation'
 import { InstallStation } from './ui/install/InstallStation'
 import { ToastProvider } from './ui/toasts/toastContext'
 import { isDesktopApp } from './lib/desktop/fsDialogs'
+import { setAppWindowTitle } from './lib/desktop/windowTitle'
 import {
   firstMissingFocusField,
   getMissingInstallPaths,
@@ -222,6 +223,10 @@ function AppShell() {
     stationLevelPresets: levels.stationLevelPresets,
     setStationLevelPresets: levels.setStationLevelPresets,
   })
+
+  useEffect(() => {
+    void setAppWindowTitle(projectMeta?.name ?? null)
+  }, [projectMeta?.name])
 
   const filtersActive = useMemo(
     () => isFilterActive(filters, filterOptions.tags, filterSeed),

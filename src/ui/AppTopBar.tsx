@@ -1,4 +1,4 @@
-import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
+import { type SelectedGame } from '../lib/xml/schema'
 import { IconTip } from './IconTip'
 import { SelectionPresetsBar } from './SelectionPresetsBar'
 import { PhaseNav, type AppPhase } from './PhaseNav'
@@ -82,6 +82,20 @@ function ExportIcon() {
   )
 }
 
+function ProjectsIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      fill="currentColor"
+    >
+      <path d="M1.5 3.25A1.75 1.75 0 0 1 3.25 1.5h5.5c.55 0 1.05.26 1.37.68l.13.17.88 1.15H13.5A1.5 1.5 0 0 1 15 4.5v7A1.5 1.5 0 0 1 13.5 13h-11A1.5 1.5 0 0 1 1 11.5v-8.25ZM3.25 2.75a.75.75 0 0 0-.75.75V4h5.82l-.6-.8a.25.25 0 0 0-.2-.1h-4.27ZM2.25 5.25v6.25c0 .14.11.25.25.25h11a.25.25 0 0 0 .25-.25v-6A.25.25 0 0 0 13.5 5.25H2.25Z" />
+    </svg>
+  )
+}
+
 export function AppTopBar({
   phase,
   onPhaseChange,
@@ -139,11 +153,6 @@ export function AppTopBar({
             <strong>{projectName}</strong>
           </span>
         ) : null}
-        {onSwitchProject ? (
-          <button type="button" className="btn secondary" onClick={onSwitchProject}>
-            Projects
-          </button>
-        ) : null}
         <span className="stats">
           {selectedModsCount} mods · {selectedCount} components
         </span>
@@ -164,17 +173,6 @@ export function AppTopBar({
           type="button"
           className="btn secondary top-bar-help top-bar-settings has-icon-tip"
           aria-haspopup="dialog"
-          aria-expanded={settingsOpen}
-          aria-label="Settings"
-          onClick={onOpenSettings}
-        >
-          <SettingsGearIcon />
-          <IconTip>Settings</IconTip>
-        </button>
-        <button
-          type="button"
-          className="btn secondary top-bar-help top-bar-settings has-icon-tip"
-          aria-haspopup="dialog"
           aria-expanded={keyboardHelpOpen}
           aria-label="Keyboard shortcuts"
           onClick={onOpenKeyboardHelp}
@@ -190,8 +188,30 @@ export function AppTopBar({
           onClick={onExport}
         >
           <ExportIcon />
-          <IconTip align="end">{exportTip}</IconTip>
+          <IconTip>{exportTip}</IconTip>
         </button>
+        <button
+          type="button"
+          className="btn secondary top-bar-help top-bar-settings has-icon-tip"
+          aria-haspopup="dialog"
+          aria-expanded={settingsOpen}
+          aria-label="Settings"
+          onClick={onOpenSettings}
+        >
+          <SettingsGearIcon />
+          <IconTip>Settings</IconTip>
+        </button>
+        {onSwitchProject ? (
+          <button
+            type="button"
+            className="btn secondary top-bar-help top-bar-settings has-icon-tip"
+            aria-label="Projects"
+            onClick={onSwitchProject}
+          >
+            <ProjectsIcon />
+            <IconTip align="end">Projects</IconTip>
+          </button>
+        ) : null}
       </div>
     </header>
   )

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { GAME_LABELS } from '../../lib/xml/schema'
+import { GAME_FULL_LABELS } from '../../lib/xml/schema'
 import {
   deleteProject,
   listProjects,
@@ -14,7 +14,7 @@ interface Props {
 }
 
 function statusLabel(meta: ProjectMeta): string {
-  return GAME_LABELS[meta.engine]
+  return GAME_FULL_LABELS[meta.engine]
 }
 
 export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
@@ -38,11 +38,9 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
     <div className="project-hub">
       <header className="project-hub-header">
         <div>
-          <h1 className="project-hub-title">Open a project...</h1>
+          <h1 className="project-hub-title">Your projects</h1>
+          <p>Select an existing project or create a new one</p>
         </div>
-        <button type="button" className="btn secondary lg" onClick={onCreateNew}>
-          ...or create a new one
-        </button>
       </header>
 
       {projects.length === 0 ? (
@@ -65,7 +63,7 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
                 <span className="project-hub-card-meta">
                   {statusLabel(p)}
                   <span className="project-hub-card-sep">·</span>
-                  Opened {formatRelative(p.lastOpenedAt)}
+                  Created {formatRelative(p.createdAt)}
                 </span>
               </button>
               <button
@@ -79,6 +77,11 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
           ))}
         </ul>
       )}
+      <div>
+        <button type="button" className="btn primary lg" onClick={onCreateNew}>
+          New Project
+        </button>
+      </div>
 
       <ConfirmDialog
         open={pendingDelete != null}
