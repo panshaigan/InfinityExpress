@@ -17,9 +17,10 @@ import {
   focusElementIdForField,
   gameFolderKeysForEngine,
   isPathStillMissing,
-  settingsTabForMissing,
+  resolveSettingsOpenTab,
   type MissingInstallPath,
   type SettingsFocusField,
+  type SettingsTab,
 } from '../lib/ui/installPathValidation'
 import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
@@ -44,9 +45,7 @@ import { emptyDestinations } from '../lib/projects'
 
 const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
 
-export type { SettingsFocusField }
-
-type SettingsTab = 'project' | 'vanilla' | 'app'
+export type { SettingsFocusField, SettingsTab }
 
 interface Props {
   open: boolean
@@ -56,6 +55,10 @@ interface Props {
   /** Active project destinations (for missing-path highlight of dest:*). */
   destinations?: GameFolderPaths
   onDestinationsChange?: (paths: GameFolderPaths) => void
+  /** Default tab when opening without a focused missing field. */
+  initialTab?: SettingsTab
+  /** Hide destination folders (new-project wizard). */
+  hideProjectTab?: boolean
   focusField?: SettingsFocusField | null
   highlightMissing?: MissingInstallPath[]
   onBusyChange?: (busy: boolean) => void
@@ -77,6 +80,8 @@ export function SettingsDialog({
   projectEngine = null,
   destinations = emptyDestinations(),
   onDestinationsChange,
+  initialTab = 'vanilla',
+  hideProjectTab = false,
   focusField = null,
   highlightMissing = [],
   onBusyChange,
@@ -111,12 +116,14 @@ export function SettingsDialog({
     setDestErrors({})
     void syncManagedVanillasFromDisk().then(refreshRegistry)
     refreshRegistry()
-    const nextTab: SettingsTab = focusField
-      ? settingsTabForMissing(focusField)
-      : highlightMissing.length > 0
-        ? settingsTabForMissing(highlightMissing[0]!)
-        : 'vanilla'
-    setTab(nextTab)
+    setTab(
+      resolveSettingsOpenTab({
+        focusField,
+        highlightMissing,
+        initialTab,
+        hideProjectTab,
+      }),
+    )
     requestAnimationFrame(() => {
       if (focusField) {
         document.getElementById(focusElementIdForField(focusField))?.focus()
@@ -132,7 +139,7 @@ export function SettingsDialog({
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open, onClose, focusField, highlightMissing])
+  }, [open, onClose, focusField, highlightMissing, initialTab, hideProjectTab])
 
   useEffect(() => {
     if (!open) return
@@ -343,25 +350,27 @@ export function SettingsDialog({
         </div>
 
         <div className="settings-dialog-tabs" role="tablist" aria-label="Settings sections">
-          <button
-            type="button"
-            role="tab"
-            id="settings-tab-project"
-            aria-selected={tab === 'project'}
-            aria-controls="settings-panel-project"
-            className={`settings-dialog-tab${tab === 'project' ? ' active' : ''}`}
-            onClick={() => setTab('project')}
-          >
-            Project
-            {tabIssueCounts.project > 0 ? (
-              <span
-                className="settings-tab-issue-badge"
-                aria-label={`${tabIssueCounts.project} required`}
-              >
-                {tabIssueCounts.project}
-              </span>
-            ) : null}
-          </button>
+          {hideProjectTab ? null : (
+            <button
+              type="button"
+              role="tab"
+              id="settings-tab-project"
+              aria-selected={tab === 'project'}
+              aria-controls="settings-panel-project"
+              className={`settings-dialog-tab${tab === 'project' ? ' active' : ''}`}
+              onClick={() => setTab('project')}
+            >
+              Project
+              {tabIssueCounts.project > 0 ? (
+                <span
+                  className="settings-tab-issue-badge"
+                  aria-label={`${tabIssueCounts.project} required`}
+                >
+                  {tabIssueCounts.project}
+                </span>
+              ) : null}
+            </button>
+          )}
           <button
             type="button"
             role="tab"
@@ -403,42 +412,44 @@ export function SettingsDialog({
         </div>
 
         <div className="settings-tab-panels">
-          <section
-            className={`settings-section settings-tab-panel${tab === 'project' ? ' active' : ''}`}
-            id="settings-panel-project"
-            role="tabpanel"
-            aria-labelledby="settings-tab-project"
-            aria-hidden={tab !== 'project'}
-          >
-            {showProjectFields ? (
-              <div className="settings-fields">
-                {destKeys.map((key) => {
-                  const destMissing = missingFieldError(`dest:${key}`)
-                  return (
-                    <DirectoryField
-                      key={key}
-                      id={`settings-dest-${key}`}
-                      label={`Modded ${GAME_LABELS[key]} destination`}
-                      tip={DESTINATION_FOLDER_TIP}
-                      tipAriaLabel="About destination folder"
-                      value={destinations[key]}
-                      onChange={(value) => {
-                        onDestChange(key, value)
-                        setDestFieldError(key, null)
-                      }}
-                      onValidate={(value) => void validateDestDir(key, value)}
-                      placeholder="Select or type the path…"
-                      browseTitle={`Select ${GAME_LABELS[key]} destination`}
-                      error={destErrors[key] ?? destMissing}
-                      required={destMissing != null}
-                    />
-                  )
-                })}
-              </div>
-            ) : (
-              <p className="settings-help">Open a project to edit destination folders.</p>
-            )}
-          </section>
+          {hideProjectTab ? null : (
+            <section
+              className={`settings-section settings-tab-panel${tab === 'project' ? ' active' : ''}`}
+              id="settings-panel-project"
+              role="tabpanel"
+              aria-labelledby="settings-tab-project"
+              aria-hidden={tab !== 'project'}
+            >
+              {showProjectFields ? (
+                <div className="settings-fields">
+                  {destKeys.map((key) => {
+                    const destMissing = missingFieldError(`dest:${key}`)
+                    return (
+                      <DirectoryField
+                        key={key}
+                        id={`settings-dest-${key}`}
+                        label={`Modded ${GAME_LABELS[key]} destination`}
+                        tip={DESTINATION_FOLDER_TIP}
+                        tipAriaLabel="About destination folder"
+                        value={destinations[key]}
+                        onChange={(value) => {
+                          onDestChange(key, value)
+                          setDestFieldError(key, null)
+                        }}
+                        onValidate={(value) => void validateDestDir(key, value)}
+                        placeholder="Select or type the path…"
+                        browseTitle={`Select ${GAME_LABELS[key]} destination`}
+                        error={destErrors[key] ?? destMissing}
+                        required={destMissing != null}
+                      />
+                    )
+                  })}
+                </div>
+              ) : (
+                <p className="settings-help">Open a project to edit destination folders.</p>
+              )}
+            </section>
+          )}
 
           <section
             className={`settings-section settings-tab-panel${tab === 'vanilla' ? ' active' : ''}`}

@@ -62,9 +62,11 @@ export function getMissingInstallPaths(
   return missing
 }
 
-export function settingsTabForMissing(
-  key: MissingInstallPath,
-): 'project' | 'vanilla' | 'app' {
+export type SettingsTab = 'project' | 'vanilla' | 'app'
+
+export type SettingsOpenContext = 'wizard' | 'components' | 'mods' | 'install'
+
+export function settingsTabForMissing(key: MissingInstallPath): SettingsTab {
   if (key.startsWith('dest:')) return 'project'
   if (
     key === 'modsDownloadDir' ||
@@ -74,6 +76,32 @@ export function settingsTabForMissing(
     return 'app'
   }
   return 'vanilla'
+}
+
+export function defaultSettingsTabForContext(
+  context: SettingsOpenContext,
+): SettingsTab {
+  if (context === 'components') return 'project'
+  if (context === 'mods') return 'app'
+  return 'vanilla'
+}
+
+export function resolveSettingsOpenTab(opts: {
+  focusField?: SettingsFocusField | null
+  highlightMissing?: readonly MissingInstallPath[]
+  initialTab?: SettingsTab
+  hideProjectTab?: boolean
+}): SettingsTab {
+  let tab: SettingsTab
+  if (opts.focusField) {
+    tab = settingsTabForMissing(opts.focusField)
+  } else if (opts.highlightMissing && opts.highlightMissing.length > 0) {
+    tab = settingsTabForMissing(opts.highlightMissing[0]!)
+  } else {
+    tab = opts.initialTab ?? 'vanilla'
+  }
+  if (opts.hideProjectTab && tab === 'project') return 'vanilla'
+  return tab
 }
 
 export function firstMissingFocusField(

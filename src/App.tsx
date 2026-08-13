@@ -104,6 +104,7 @@ import { ToastProvider, useToast } from './ui/toasts/toastContext'
 import { isDesktopApp } from './lib/desktop/fsDialogs'
 import { setAppWindowTitle } from './lib/desktop/windowTitle'
 import {
+  defaultSettingsTabForContext,
   firstMissingFocusField,
   getMissingInstallPaths,
   type MissingInstallPath,
@@ -1485,6 +1486,10 @@ function AppShell() {
         projectId={projectId}
         projectEngine={game}
         destinations={gameFolders}
+        initialTab={defaultSettingsTabForContext(
+          shellView === 'wizard' ? 'wizard' : appPhase,
+        )}
+        hideProjectTab={shellView === 'wizard'}
         onBusyChange={setSettingsBlocking}
         onDestinationsChange={(paths) => {
           if (!projectId) return
