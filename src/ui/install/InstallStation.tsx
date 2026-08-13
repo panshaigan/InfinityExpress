@@ -8,7 +8,11 @@ import { cleanupInstallArtifacts, gameDirForPhase, listBackups, listenBackupProg
 import { isDesktopApp } from '../../lib/desktop/fsDialogs'
 import type { WorkingMod } from '../../lib/mods/loadMods'
 import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
-import type { GameFolderPaths } from '../../lib/ui/gameFolderPrefs'
+import {
+  gameFolderKeyForPhase,
+  gameFolderKeyLabel,
+  type GameFolderPaths,
+} from '../../lib/ui/gameFolderPrefs'
 import {
   getMissingInstallPaths,
   type MissingInstallPath,
@@ -17,6 +21,7 @@ import { PATHS_CHANGED_EVENT } from '../../lib/ui/pathPrefsEvents'
 import { readWeiduPath } from '../../lib/ui/weiduPrefs'
 import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
 import { SnapshotManagerDialog, type SnapshotDialogMode } from './SnapshotManagerDialog'
+import { PlanSnapshotDialog } from './PlanSnapshotDialog'
 import { RestartConfirmDialog, type RestartScope } from './RestartConfirmDialog'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { InstallConsoleDock } from './InstallConsoleDock'
@@ -48,6 +53,7 @@ import {
   hasInstallStarted,
   type InstallLock,
 } from '../../lib/install/installLock'
+import { defaultSnapshotName } from '../../lib/install/snapshotName'
 
 export type InstallActions = {
   performVanillaRestart: (scope: RestartScope) => Promise<boolean>
@@ -135,6 +141,9 @@ export function InstallStation({
     goToPreviousStep,
     uninstallBackToStep,
     toggleBreakpoint,
+    setPlannedSnapshot,
+    clearPlannedSnapshot,
+    plannedSnapshotBusy,
     moveCursorToStep,
     canGoPrevious,
     restartFromBackup,
@@ -177,6 +186,11 @@ export function InstallStation({
   const [snapshotGameKey, setSnapshotGameKey] = useState('bg2')
   const [snapshotSourceDir, setSnapshotSourceDir] = useState('')
   const [snapshotBusy, setSnapshotBusy] = useState(false)
+  const [planSnapshotDialog, setPlanSnapshotDialog] = useState<{
+    stepId: string
+    gameKey: string
+    name: string
+  } | null>(null)
   const [restartDialogOpen, setRestartDialogOpen] = useState(false)
   const [cleanupOffer, setCleanupOffer] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
@@ -277,9 +291,9 @@ export function InstallStation({
   }, [run?.runState, pushToast])
 
   useEffect(() => {
-    onBusyChange?.(run?.runState === 'running' || snapshotBusy)
+    onBusyChange?.(run?.runState === 'running' || snapshotBusy || plannedSnapshotBusy)
     return () => onBusyChange?.(false)
-  }, [run?.runState, snapshotBusy, onBusyChange])
+  }, [run?.runState, snapshotBusy, plannedSnapshotBusy, onBusyChange])
 
   useEffect(() => {
     const installExitBlocking =
@@ -288,7 +302,8 @@ export function InstallStation({
       stopping ||
       skipping ||
       goingPrevious ||
-      snapshotBusy
+      snapshotBusy ||
+      plannedSnapshotBusy
     onExitBlockingChange?.(installExitBlocking)
     return () => onExitBlockingChange?.(false)
   }, [
@@ -297,6 +312,7 @@ export function InstallStation({
     skipping,
     goingPrevious,
     snapshotBusy,
+    plannedSnapshotBusy,
     onExitBlockingChange,
   ])
 
@@ -380,12 +396,13 @@ export function InstallStation({
   const vanillaRegistry = readVanillaRegistry()
   const missingVanillas = game ? missingVanillaKeys(game, vanillaRegistry) : []
   const isRunning = run?.runState === 'running'
-  const transportBusy = stopping || skipping || goingPrevious
+  const transportBusy = stopping || skipping || goingPrevious || plannedSnapshotBusy
   const installStarted = hasInstallStarted(run)
   const canRestart =
     canSnapshot &&
     missingVanillas.length === 0 &&
     !snapshotBusy &&
+    !plannedSnapshotBusy &&
     !transportBusy &&
     installStarted
   const restartTip =
@@ -426,10 +443,13 @@ export function InstallStation({
     const tableCursor = tableRun?.cursor ?? 0
     const tableSteps = tableRun?.steps ?? steps
     const tableBreakpoints = tableRun?.breakpointStepIds ?? []
+    const tableSnapshots = tableRun?.plannedSnapshots ?? []
     return {
       runState: tableRunState,
       cursor: tableCursor,
       breakpointStepIds: tableBreakpoints,
+      plannedSnapshots: tableSnapshots,
+      game,
       canNavigate: canNavigateSteps,
       installLock,
       onRequestUninstallBack: (stepId: string) => {
@@ -449,6 +469,18 @@ export function InstallStation({
       },
       onToggleBreakpoint: (stepId: string) => {
         toggleBreakpoint(stepId)
+      },
+      onRequestPlanSnapshot: (stepId: string) => {
+        const step = tableSteps.find((s) => s.stepId === stepId)
+        if (!step || !game) return
+        setPlanSnapshotDialog({
+          stepId,
+          gameKey: gameFolderKeyForPhase(game, step.phase),
+          name: defaultSnapshotName(),
+        })
+      },
+      onClearPlannedSnapshot: (stepId: string) => {
+        clearPlannedSnapshot(stepId)
       },
       onRequestMoveCursor: (stepId: string) => {
         const targetIdx = stepIndexById(tableSteps, stepId)
@@ -493,7 +525,9 @@ export function InstallStation({
     onDeselectComponent,
     uninstallBackToStep,
     toggleBreakpoint,
+    clearPlannedSnapshot,
     moveCursorToStep,
+    game,
   ])
 
   const statusText = useMemo(() => {
@@ -882,7 +916,7 @@ export function InstallStation({
               <button
                 type="button"
                 className="btn secondary"
-                disabled={!canSnapshot || snapshotBusy}
+                disabled={!canSnapshot || snapshotBusy || plannedSnapshotBusy}
                 onClick={() => openSnapshotsDialog('create')}
               >
                 Snapshots
@@ -978,6 +1012,22 @@ export function InstallStation({
         danger={confirmDialog?.danger}
         onConfirm={() => confirmDialog?.onConfirm()}
         onCancel={() => setConfirmDialog(null)}
+      />
+
+      <PlanSnapshotDialog
+        open={planSnapshotDialog != null}
+        gameLabel={
+          planSnapshotDialog
+            ? gameFolderKeyLabel(planSnapshotDialog.gameKey)
+            : 'game'
+        }
+        initialName={planSnapshotDialog?.name ?? ''}
+        onConfirm={(name) => {
+          if (!planSnapshotDialog) return
+          setPlannedSnapshot(planSnapshotDialog.stepId, name)
+          setPlanSnapshotDialog(null)
+        }}
+        onCancel={() => setPlanSnapshotDialog(null)}
       />
     </div>
   )

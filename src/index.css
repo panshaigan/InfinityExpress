@@ -7,6 +7,7 @@
   --accent: #c45c26;
   --accent-soft: #3a281c;
   --install-cursor: #d4a84e;
+  --install-snapshot: #5aa8a0;
   --line: #3d3228;
   --ok: #6b8f71;
   --err: #c44040;
@@ -6444,7 +6445,7 @@ body.is-resizing-detail * {
 }
 
 .install-table col.install-col-actions {
-  width: 7.5rem;
+  width: 9.25rem;
 }
 
 .install-col-actions,
@@ -6490,6 +6491,12 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, #e8c468 12%, transparent);
 }
 
+.install-row-action-btn.snapshot-active {
+  color: var(--install-snapshot);
+  border-color: color-mix(in srgb, var(--install-snapshot) 45%, transparent);
+  background: color-mix(in srgb, var(--install-snapshot) 12%, transparent);
+}
+
 .install-row-action-btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
@@ -6499,6 +6506,16 @@ body.is-resizing-detail * {
   box-shadow: inset 0 -2px 0 color-mix(in srgb, #e8c468 75%, transparent);
 }
 
+.install-row.install-snapshot:not(.install-cursor):not(.install-breakpoint) {
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--install-snapshot) 75%, transparent);
+}
+
+.install-row.install-breakpoint.install-snapshot:not(.install-cursor) {
+  box-shadow:
+    inset 0 -2px 0 color-mix(in srgb, #e8c468 75%, transparent),
+    inset 0 2px 0 color-mix(in srgb, var(--install-snapshot) 75%, transparent);
+}
+
 .install-row.install-breakpoint.install-cursor {
   box-shadow:
     inset 5px 0 0 var(--install-cursor),
@@ -6506,8 +6523,28 @@ body.is-resizing-detail * {
     inset 0 0 0 1px color-mix(in srgb, var(--install-cursor) 55%, transparent);
 }
 
+.install-row.install-snapshot.install-cursor:not(.install-breakpoint) {
+  box-shadow:
+    inset 5px 0 0 var(--install-cursor),
+    inset 0 -2px 0 color-mix(in srgb, var(--install-snapshot) 85%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--install-cursor) 55%, transparent);
+}
+
+.install-row.install-breakpoint.install-snapshot.install-cursor {
+  box-shadow:
+    inset 5px 0 0 var(--install-cursor),
+    inset 0 -2px 0 color-mix(in srgb, #e8c468 85%, transparent),
+    inset 0 2px 0 color-mix(in srgb, var(--install-snapshot) 85%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--install-cursor) 55%, transparent);
+}
+
 .install-row-context-menu {
-  min-width: 13rem;
+  min-width: 14.5rem;
+}
+
+.confirm-dialog .outlined-text-field {
+  width: 100%;
+  margin: 0 0 1rem;
 }
 
 .install-col-num {

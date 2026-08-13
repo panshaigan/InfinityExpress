@@ -6,6 +6,7 @@ import { installRunLogDir } from '../lib/projects'
 import { readAppDirPaths } from '../lib/ui/appDirPrefs'
 import {
   gameFolderKeyForPhase,
+  gameFolderKeyLabel,
   readGameFolderVersions,
 } from '../lib/ui/gameFolderPrefs'
 import { readWeiduPath } from '../lib/ui/weiduPrefs'
@@ -25,12 +26,15 @@ import type {
   InstallRunState,
   InstallStep,
   ModListingCache,
+  PlannedSnapshot,
   WeiduInstallEvent,
 } from '../lib/install/types'
 import { resolveModForInstall } from '../lib/install/modResolution'
 import {
   cancelWeiduStep,
+  createNamedBackup,
   gameDirForPhase,
+  listenBackupProgress,
   listenStageProgress,
   listenWeiduInstallEvents,
   readGameWeiduLog,
@@ -38,6 +42,7 @@ import {
   runWeiduStep,
   sendWeiduStdin,
 } from '../lib/desktop/weiduInstall'
+import { useToast } from '../ui/toasts/toastContext'
 import { isComponentInstalledInLog } from '../lib/install/weiduLog'
 import { loadInstallConsoleFromRunLog } from '../lib/install/loadRunConsole'
 import type { PersistedInstallSession } from '../lib/ui/appSessionPrefs'
@@ -98,6 +103,8 @@ export function useInstallRun(options: {
   const [stopping, setStopping] = useState(false)
   const [skipping, setSkipping] = useState(false)
   const [goingPrevious, setGoingPrevious] = useState(false)
+  const [plannedSnapshotBusy, setPlannedSnapshotBusy] = useState(false)
+  const { pushToast } = useToast()
   const [activeStepId, setActiveStepId] = useState<string | null>(() => {
     const session = initialInstallState?.installSession
     if (!session) return null
@@ -258,6 +265,7 @@ export function useInstallRun(options: {
       cursor: 0,
       runState: 'idle',
       breakpointStepIds: [],
+      plannedSnapshots: [],
       logDir,
     }
     setRun(next)
@@ -663,6 +671,152 @@ export function useInstallRun(options: {
     [appendCommandLine, withMergedResults, withNormalizedCursor],
   )
 
+  const takePlannedSnapshot = useCallback(
+    async (
+      current: InstallRun,
+      index: number,
+      planned: PlannedSnapshot,
+    ): Promise<{ current: InstallRun; failed: boolean }> => {
+      const step = current.steps[index]!
+      const gameKey = gameFolderKeyForPhase(current.game, step.phase)
+      const gameLabel = gameFolderKeyLabel(gameKey)
+      const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
+      const backupRoot = readAppDirPaths().backupDir.trim()
+
+      const snapshotting: InstallStep = {
+        ...step,
+        status: 'copying',
+        progress: {
+          filesDone: 0,
+          bytesDone: 0,
+          indeterminate: true,
+          label: `Snapshotting ${gameLabel}…`,
+        },
+      }
+      let next: InstallRun = {
+        ...current,
+        steps: withMergedResults(
+          current.steps.map((s, idx) => (idx === index ? snapshotting : s)),
+        ),
+        cursor: index,
+        runState: 'running',
+      }
+      setActiveStepId(step.stepId)
+      setPlannedSnapshotBusy(true)
+      setRun(next)
+      runRef.current = next
+      appendCommandLine(
+        `Planned snapshot: copying ${gameLabel} as "${planned.name}"…`,
+      )
+
+      let unlisten: (() => void) | undefined
+      try {
+        if (!gameDir) {
+          throw new Error(`Set ${gameLabel} game folder in Settings.`)
+        }
+        if (!backupRoot) {
+          throw new Error('Set the main data folder in Settings.')
+        }
+
+        unlisten = await listenBackupProgress((payload) => {
+          const label =
+            payload.bytesTotal > 0
+              ? `Snapshotting ${gameLabel}… ${formatBytes(payload.bytesDone)} / ${formatBytes(payload.bytesTotal)}`
+              : payload.message || `Snapshotting ${gameLabel}…`
+          setRun((r) => {
+            if (!r) return r
+            return {
+              ...r,
+              steps: r.steps.map((s) =>
+                s.stepId === step.stepId
+                  ? {
+                      ...s,
+                      progress: {
+                        filesDone: payload.filesDone,
+                        bytesDone: payload.bytesDone,
+                        indeterminate: payload.bytesTotal === 0,
+                        label,
+                      },
+                    }
+                  : s,
+              ),
+            }
+          })
+        })
+
+        await createNamedBackup({
+          sourceDir: gameDir,
+          backupRoot,
+          gameKey,
+          kind: 'snapshot',
+          name: planned.name,
+          excludeSafeDirs: false,
+        })
+
+        next = runRef.current ?? next
+        const cleared: InstallStep = {
+          ...next.steps[index]!,
+          status: 'queued',
+          progress: null,
+        }
+        next = {
+          ...next,
+          plannedSnapshots: next.plannedSnapshots.filter(
+            (s) => s.stepId !== step.stepId,
+          ),
+          steps: withMergedResults(
+            next.steps.map((s, idx) => (idx === index ? cleared : s)),
+          ),
+          cursor: index,
+          runState: 'running',
+        }
+        setRun(next)
+        runRef.current = next
+        appendCommandLine(`Snapshot saved: ${planned.name} (${gameKey})`)
+        pushToast({
+          tone: 'success',
+          message: `Snapshot saved: ${planned.name}`,
+        })
+        return { current: next, failed: false }
+      } catch (e) {
+        const message = String(e)
+        next = runRef.current ?? next
+        const reset: InstallStep = {
+          ...next.steps[index]!,
+          status: 'queued',
+          progress: null,
+        }
+        const halted = withNormalizedCursor({
+          ...next,
+          steps: withMergedResults(
+            next.steps.map((s, idx) => (idx === index ? reset : s)),
+          ),
+          cursor: index,
+          runState: 'paused',
+        })
+        pausedRef.current = true
+        pausePendingRef.current = false
+        setPausePending(false)
+        setPaused(true)
+        setRun(halted)
+        runRef.current = halted
+        appendCommandLine(`Snapshot failed: ${message}`)
+        pushToast({ tone: 'error', message })
+        return { current: halted, failed: true }
+      } finally {
+        unlisten?.()
+        setPlannedSnapshotBusy(false)
+      }
+    },
+    [
+      appendCommandLine,
+      gameFolders,
+      pushToast,
+      withMergedResults,
+      withNormalizedCursor,
+    ],
+  )
+
   const executeFromCursor = useCallback(
     async (startRun: InstallRun) => {
       if (runningRef.current) return
@@ -711,6 +865,19 @@ export function useInstallRun(options: {
             step.status === 'skipped'
           ) {
             continue
+          }
+
+          const planned = current.plannedSnapshots.find(
+            (s) => s.stepId === step.stepId,
+          )
+          if (planned) {
+            const snap = await takePlannedSnapshot(current, i, planned)
+            current = snap.current
+            if (snap.failed) {
+              runningRef.current = false
+              return
+            }
+            step = current.steps[i]!
           }
 
           if (current.breakpointStepIds.includes(step.stepId)) {
@@ -1007,6 +1174,7 @@ export function useInstallRun(options: {
       withNormalizedCursor,
       appendCommandLine,
       finishStepIteration,
+      takePlannedSnapshot,
     ],
   )
 
@@ -1210,6 +1378,47 @@ export function useInstallRun(options: {
     )
   }, [appendCommandLine, ensureIdleRun])
 
+  const setPlannedSnapshot = useCallback(
+    (stepId: string, name: string) => {
+      const current = ensureIdleRun()
+      if (!current) return
+      const trimmed = name.trim()
+      if (!trimmed) return
+      const idx = stepIndexById(current.steps, stepId)
+      if (idx < 0) return
+      const step = current.steps[idx]!
+      if (!canSetBreakpoint(step, idx, current.cursor, current.runState)) return
+      const plannedSnapshots = [
+        ...current.plannedSnapshots.filter((s) => s.stepId !== stepId),
+        { stepId, name: trimmed },
+      ]
+      const next = { ...current, plannedSnapshots }
+      setRun(next)
+      runRef.current = next
+      appendCommandLine(`Planned snapshot set: ${step.modId} ("${trimmed}")`)
+    },
+    [appendCommandLine, ensureIdleRun],
+  )
+
+  const clearPlannedSnapshot = useCallback(
+    (stepId: string) => {
+      const current = ensureIdleRun()
+      if (!current) return
+      const idx = stepIndexById(current.steps, stepId)
+      if (idx < 0) return
+      const step = current.steps[idx]!
+      if (!current.plannedSnapshots.some((s) => s.stepId === stepId)) return
+      const plannedSnapshots = current.plannedSnapshots.filter(
+        (s) => s.stepId !== stepId,
+      )
+      const next = { ...current, plannedSnapshots }
+      setRun(next)
+      runRef.current = next
+      appendCommandLine(`Planned snapshot removed: ${step.modId}`)
+    },
+    [appendCommandLine, ensureIdleRun],
+  )
+
   const moveCursorToStep = useCallback(
     (targetStepId: string) => {
       const current = runRef.current ?? ensureIdleRun()
@@ -1290,6 +1499,7 @@ export function useInstallRun(options: {
         cursor: nextCursor,
         runState: 'idle',
         breakpointStepIds: base.breakpointStepIds ?? [],
+        plannedSnapshots: base.plannedSnapshots ?? [],
       }
       setRun(next)
       setConsoleLines([])
@@ -1341,6 +1551,9 @@ export function useInstallRun(options: {
     goToPreviousStep,
     uninstallBackToStep,
     toggleBreakpoint,
+    setPlannedSnapshot,
+    clearPlannedSnapshot,
+    plannedSnapshotBusy,
     moveCursorToStep,
     restartFromBackup,
     stopRunningInstall,

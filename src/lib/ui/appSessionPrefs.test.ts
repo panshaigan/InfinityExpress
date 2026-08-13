@@ -25,6 +25,7 @@ function makeRun(game: SelectedGame = 'bg2'): InstallRun {
     cursor: 1,
     runState: 'running',
     breakpointStepIds: ['single:0000'],
+    plannedSnapshots: [{ stepId: 'single:0001', name: 'before-tweaks' }],
     steps: [
       {
         stepId: 'single:0000',
@@ -166,5 +167,55 @@ describe('appSessionPrefs', () => {
     expect(out.selectedIds).toEqual(['known'])
     expect(out.activePresetId).toBeNull()
     expect(out.presetBaseline).toBeNull()
+  })
+
+  it('round-trips plannedSnapshots on the install run', () => {
+    const install = buildPersistedInstallSession({
+      game: 'bg2',
+      selectedIds: new Set(['a', 'b']),
+      run: makeRun('bg2'),
+      paused: true,
+      selectedStepId: 'single:0001',
+      selectedComponentId: 'comp-b',
+      hideInstalled: false,
+      runElapsedMs: 0,
+    })
+    expect(install.run.plannedSnapshots).toEqual([
+      { stepId: 'single:0001', name: 'before-tweaks' },
+    ])
+    const store = mergeAppSession(
+      emptyAppSession(),
+      'bg2',
+      {
+        ...buildGameSessionSnapshot({
+          selectedIds: new Set(['a', 'b']),
+          finishedStations: new Set(),
+          routeUnlocked: true,
+          selectionPresets: [],
+          activePresetId: null,
+          presetBaseline: null,
+          activeStation: 'base',
+          contentMainKey: null,
+          contentSubKey: null,
+          contentSubTag: null,
+          ladderChecked: new Set(),
+          lowerDifficultyPreset: false,
+          higherDifficultyPreset: false,
+          lastGlobalLadder: new Set(),
+          lastGlobalLowerDifficulty: false,
+          lastGlobalHigherDifficulty: false,
+          stationLevelPresets: new Map(),
+          modsJourney: null,
+        }),
+        install,
+      },
+      'install',
+    )
+    writeAppSession(store)
+    const read = readAppSession()
+    expect(read.byGame.bg2?.install?.run.plannedSnapshots).toEqual([
+      { stepId: 'single:0001', name: 'before-tweaks' },
+    ])
+    window.localStorage.removeItem(APP_SESSION_STORAGE_KEY)
   })
 })

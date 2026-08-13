@@ -63,6 +63,11 @@ export interface InstallStep {
   debugLogPath?: string
 }
 
+export interface PlannedSnapshot {
+  stepId: string
+  name: string
+}
+
 export interface InstallRun {
   runId: string
   game: SelectedGame
@@ -75,6 +80,8 @@ export interface InstallRun {
   runState: InstallRunState
   /** Step ids that pause the run before staging (breakpoint mode B). */
   breakpointStepIds: string[]
+  /** Named snapshots to take before staging the listed steps (one-shot). */
+  plannedSnapshots: PlannedSnapshot[]
   /** Absolute path to run log directory under backupDir/projects/{projectId}/logs. */
   logDir: string
 }

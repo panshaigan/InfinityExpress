@@ -182,11 +182,15 @@ export function syncRunWithPlan(run: InstallRun, planSteps: PlanStep[]): Install
 
   const validStepIds = new Set(newSteps.map((s) => s.stepId))
   const breakpointStepIds = run.breakpointStepIds.filter((id) => validStepIds.has(id))
+  const plannedSnapshots = (run.plannedSnapshots ?? []).filter((s) =>
+    validStepIds.has(s.stepId),
+  )
 
   return {
     ...run,
     steps: newSteps,
     cursor: newCursor,
     breakpointStepIds,
+    plannedSnapshots,
   }
 }

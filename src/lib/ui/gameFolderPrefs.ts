@@ -96,3 +96,11 @@ export function gameFolderKeyForPhase(
   if (game === 'bg1' || game === 'bg2' || game === 'iwd' || game === 'pst') return game
   return 'bg2'
 }
+
+export function gameFolderKeyLabel(key: string): string {
+  if (key === 'bg1') return 'BG1'
+  if (key === 'bg2') return 'BG2'
+  if (key === 'iwd') return 'IWD'
+  if (key === 'pst') return 'PST'
+  return key.toUpperCase()
+}

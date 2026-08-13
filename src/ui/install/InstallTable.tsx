@@ -13,18 +13,28 @@ import {
 import { createPortal } from 'react-dom'
 import { canSetBreakpoint, isStepDone, stepIndexById } from '../../lib/install/cursor'
 import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
-import type { InstallRunState, InstallStep, StepProgress } from '../../lib/install/types'
+import type {
+  InstallRunState,
+  InstallStep,
+  PlannedSnapshot,
+  StepProgress,
+} from '../../lib/install/types'
 import { expandStepsToTableRows } from '../../lib/install/planBuilder'
 import {
   effectiveModFields,
   type WorkingMod,
 } from '../../lib/mods/loadMods'
-import type { InstallSequenceModel } from '../../lib/xml/schema'
+import {
+  gameFolderKeyForPhase,
+  gameFolderKeyLabel,
+} from '../../lib/ui/gameFolderPrefs'
+import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
 import { IconTip } from '../IconTip'
 import {
   BreakpointIcon,
   MoveCursorIcon,
   RemoveFromPlanIcon,
+  SnapshotIcon,
   UninstallBackIcon,
 } from './InstallControlIcons'
 import { canRemoveStepFromPlan, type InstallLock } from '../../lib/install/installLock'
@@ -118,6 +128,7 @@ function StatusCell({
   progress?: StepProgress | null
 }) {
   const showBar = status === 'copying' || status === 'installing'
+  const snapshotting = !!progress?.label?.startsWith('Snapshotting')
   if (!showBar) {
     return (
       <span className={`install-status install-status-${status}`}>
@@ -135,7 +146,7 @@ function StatusCell({
   return (
     <div className="mods-row-progress install-row-progress">
       <span className={`install-status install-status-${status}`}>
-        {STATUS_LABEL[status]}
+        {snapshotting ? 'Snapshot' : STATUS_LABEL[status]}
       </span>
       <div
         className="mods-row-progress-bar"
@@ -152,10 +163,14 @@ interface InstallTableActions {
   runState: InstallRunState | null
   cursor: number
   breakpointStepIds: string[]
+  plannedSnapshots: PlannedSnapshot[]
+  game: SelectedGame | null
   canNavigate: boolean
   installLock: InstallLock
   onRequestUninstallBack: (stepId: string) => void
   onToggleBreakpoint: (stepId: string) => void
+  onRequestPlanSnapshot: (stepId: string) => void
+  onClearPlannedSnapshot: (stepId: string) => void
   onRequestMoveCursor: (stepId: string) => void
   onRemoveFromPlan: (stepId: string) => void
 }
@@ -164,6 +179,18 @@ interface ContextMenuState {
   stepId: string
   x: number
   y: number
+}
+
+function plannedForStep(
+  plannedSnapshots: PlannedSnapshot[],
+  stepId: string,
+): PlannedSnapshot | undefined {
+  return plannedSnapshots.find((s) => s.stepId === stepId)
+}
+
+function snapshotGameLabel(game: SelectedGame | null, step: InstallStep): string {
+  if (!game) return 'game'
+  return gameFolderKeyLabel(gameFolderKeyForPhase(game, step.phase))
 }
 
 function InstallStepContextMenu({
@@ -182,6 +209,9 @@ function InstallStepContextMenu({
   const menuRef = useRef<HTMLDivElement>(null)
   const [style, setStyle] = useState<CSSProperties>({ top: menu.y, left: menu.x })
   const hasBreakpoint = actions.breakpointStepIds.includes(step.stepId)
+  const planned = plannedForStep(actions.plannedSnapshots, step.stepId)
+  const hasSnapshot = !!planned
+  const snapshotLabel = snapshotGameLabel(actions.game, step)
   const canBreakpoint = canSetBreakpoint(
     step,
     stepIndex,
@@ -265,6 +295,26 @@ function InstallStepContextMenu({
         type="button"
         role="menuitem"
         className="mods-row-context-item"
+        disabled={!canBreakpoint}
+        onClick={() =>
+          run(() =>
+            hasSnapshot
+              ? actions.onClearPlannedSnapshot(step.stepId)
+              : actions.onRequestPlanSnapshot(step.stepId),
+          )
+        }
+      >
+        <SnapshotIcon active={hasSnapshot} />
+        <span>
+          {hasSnapshot
+            ? 'Remove planned snapshot'
+            : `Plan snapshot (${snapshotLabel})`}
+        </span>
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
         disabled={!canMoveCursor || moveDisabled}
         onClick={() => run(() => actions.onRequestMoveCursor(step.stepId))}
       >
@@ -296,6 +346,14 @@ function StepActionButtons({
   actions: InstallTableActions
 }) {
   const hasBreakpoint = actions.breakpointStepIds.includes(step.stepId)
+  const planned = plannedForStep(actions.plannedSnapshots, step.stepId)
+  const hasSnapshot = !!planned
+  const snapshotLabel = snapshotGameLabel(actions.game, step)
+  const snapshotTip = hasSnapshot
+    ? planned.name
+      ? `Remove planned snapshot (${planned.name})`
+      : 'Remove planned snapshot'
+    : `Plan snapshot (${snapshotLabel})`
   const canBreakpoint = canSetBreakpoint(
     step,
     stepIndex,
@@ -338,6 +396,23 @@ function StepActionButtons({
           <BreakpointIcon active={hasBreakpoint} />
         </button>
         <IconTip>{hasBreakpoint ? 'Remove breakpoint' : 'Add breakpoint'}</IconTip>
+      </span>
+      <span className="install-row-action-wrap has-icon-tip">
+        <button
+          type="button"
+          className={`install-row-action-btn${hasSnapshot ? ' snapshot-active' : ''}`}
+          disabled={!canBreakpoint}
+          aria-label={snapshotTip}
+          aria-pressed={hasSnapshot}
+          onClick={() =>
+            hasSnapshot
+              ? actions.onClearPlannedSnapshot(step.stepId)
+              : actions.onRequestPlanSnapshot(step.stepId)
+          }
+        >
+          <SnapshotIcon active={hasSnapshot} />
+        </button>
+        <IconTip>{snapshotTip}</IconTip>
       </span>
       <span className="install-row-action-wrap has-icon-tip">
         <button
@@ -563,6 +638,10 @@ export function InstallTable({
               const stepIndex = step ? stepIndexById(steps, row.stepId) : -1
               const hasBreakpoint =
                 !!step && (tableActions?.breakpointStepIds.includes(row.stepId) ?? false)
+              const hasSnapshot =
+                !!step &&
+                (tableActions?.plannedSnapshots.some((s) => s.stepId === row.stepId) ??
+                  false)
               const mod = modsByCodename.get(row.modId.toLowerCase())
               const eff = mod ? effectiveModFields(mod) : null
               const modDisplay = eff?.name?.trim() || row.modId
@@ -581,7 +660,7 @@ export function InstallTable({
                   ref={(el) => setRowEl(row.stepId, row.componentId, el)}
                   role="row"
                   tabIndex={focused ? 0 : -1}
-                  className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${hasBreakpoint ? ' install-breakpoint' : ''}${rowHover ? ' row-hover' : ''}${focused ? ' focused' : ''} install-status-${row.status}`}
+                  className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${hasBreakpoint ? ' install-breakpoint' : ''}${hasSnapshot ? ' install-snapshot' : ''}${rowHover ? ' row-hover' : ''}${focused ? ' focused' : ''} install-status-${row.status}`}
                   onClick={() => selectRow(row.stepId, row.componentId)}
                   onMouseEnter={() => setHoveredStepId(row.stepId)}
                   onContextMenu={(e) => {

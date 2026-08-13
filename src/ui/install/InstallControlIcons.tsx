@@ -60,6 +60,28 @@ export function BreakpointIcon({ active = false }: { active?: boolean }) {
   )
 }
 
+/** Planned snapshot (camera). */
+export function SnapshotIcon({ active = false }: { active?: boolean }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="1.25"
+        d="M5.15 4.2 5.95 3.2h4.1l.8 1H13a1 1 0 0 1 1 1v6.55a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5.2a1 1 0 0 1 1-1h2.15Z"
+      />
+      <circle
+        cx="8"
+        cy="8.55"
+        r="2.2"
+        fill={active ? 'var(--panel, #241e17)' : 'none'}
+        stroke="currentColor"
+        strokeWidth="1.25"
+      />
+    </svg>
+  )
+}
+
 /** Roll back / uninstall to here (undo arrow). */
 export function UninstallBackIcon() {
   return (

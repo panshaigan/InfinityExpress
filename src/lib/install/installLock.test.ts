@@ -65,6 +65,7 @@ function makeRun(steps: InstallStep[], cursor: number, runState: InstallRun['run
     cursor,
     runState,
     breakpointStepIds: [],
+    plannedSnapshots: [],
     logDir: '',
   }
 }
@@ -189,5 +190,30 @@ describe('syncRunWithPlan', () => {
     expect(synced.steps[0]?.status).toBe('succeeded')
     expect(synced.steps[1]?.status).toBe('queued')
     expect(synced.cursor).toBe(1)
+  })
+
+  it('drops planned snapshots whose step id is gone', () => {
+    const model = modelWith([
+      comp('a', 'ModA', 0),
+      comp('b', 'ModB', 1),
+      comp('c', 'ModC', 2),
+    ])
+    const run = makeRun(
+      [
+        makeStep('a', 'ModA', 0, 'succeeded'),
+        makeStep('b', 'ModB', 1, 'queued'),
+        makeStep('c', 'ModC', 2, 'queued'),
+      ],
+      1,
+      'paused',
+    )
+    run.plannedSnapshots = [
+      { stepId: 'single:0000', name: 'keep' },
+      { stepId: 'single:0099', name: 'gone' },
+    ]
+    const planSteps = buildInstallPlan(model, new Set(['a', 'c']), 'bg2')
+    const synced = syncRunWithPlan(run, planSteps)
+    expect(synced.steps.map((s) => s.stepId)).toEqual(['single:0000', 'single:0001'])
+    expect(synced.plannedSnapshots).toEqual([{ stepId: 'single:0000', name: 'keep' }])
   })
 })

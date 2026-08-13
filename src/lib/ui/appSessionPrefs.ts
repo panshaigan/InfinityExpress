@@ -6,6 +6,7 @@ import type {
   InstallRun,
   InstallRunState,
   InstallStep,
+  PlannedSnapshot,
 } from '../install/types'
 import type {
   SelectionPreset,
@@ -124,6 +125,23 @@ function isStepStatus(value: unknown): value is ComponentRunStatus {
 function stringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return []
   return value.filter((v): v is string => typeof v === 'string')
+}
+
+function plannedSnapshotsFrom(value: unknown): PlannedSnapshot[] {
+  if (!Array.isArray(value)) return []
+  const out: PlannedSnapshot[] = []
+  const seen = new Set<string>()
+  for (const item of value) {
+    if (!item || typeof item !== 'object') continue
+    const o = item as Record<string, unknown>
+    if (typeof o.stepId !== 'string' || typeof o.name !== 'string') continue
+    const stepId = o.stepId.trim()
+    const name = o.name.trim()
+    if (!stepId || !name || seen.has(stepId)) continue
+    seen.add(stepId)
+    out.push({ stepId, name })
+  }
+  return out
 }
 
 function ladderArray(value: unknown): LadderLevel[] {
@@ -257,6 +275,7 @@ function installRunFrom(value: unknown): InstallRun | null {
     cursor: Math.min(cursor, Math.max(0, steps.length - 1)),
     runState,
     breakpointStepIds: stringArray(o.breakpointStepIds),
+    plannedSnapshots: plannedSnapshotsFrom(o.plannedSnapshots),
     logDir: o.logDir,
   }
 }
