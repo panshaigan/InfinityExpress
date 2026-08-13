@@ -513,11 +513,13 @@ export function ProjectWizard({
     <div className="project-wizard">
       <header className="project-wizard-header">
         <h1>New project</h1>
-        <SettingsOpenButton
-          settingsOpen={settingsOpen}
-          onOpenSettings={onOpenSettings}
-          tipAlign="end"
-        />
+        {step === 'engine' ? (
+          <SettingsOpenButton
+            settingsOpen={settingsOpen}
+            onOpenSettings={onOpenSettings}
+            tipAlign="end"
+          />
+        ) : null}
       </header>
 
       {step === 'engine' ? (
