@@ -82,6 +82,32 @@ export function SnapshotIcon({ active = false }: { active?: boolean }) {
   )
 }
 
+/** Restore a named snapshot (camera + restore arrow). */
+export function RestoreSnapshotIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        d="M4.55 4.55 5.2 3.7h3.35l.65.85H11.1a.85.85 0 0 1 .85.85v5.05a.85.85 0 0 1-.85.85H3.2a.85.85 0 0 1-.85-.85V5.4a.85.85 0 0 1 .85-.85h1.35Z"
+      />
+      <circle
+        cx="7.15"
+        cy="8.15"
+        r="1.75"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.25"
+      />
+      <path
+        fill="currentColor"
+        d="M13.35 2.45v3.2h-3.2l1.15-1A3.05 3.05 0 0 0 8.7 3.85l-.4-.95a4.05 4.05 0 0 1 4.05 1.45l1-1.9Z"
+      />
+    </svg>
+  )
+}
+
 /** Roll back / uninstall to here (undo arrow). */
 export function UninstallBackIcon() {
   return (

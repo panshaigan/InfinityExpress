@@ -6279,9 +6279,14 @@ body.is-resizing-detail * {
   cursor: pointer;
 }
 
-.install-action-icon-btn:hover {
+.install-action-icon-btn:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
   background: color-mix(in srgb, var(--accent-soft) 55%, var(--panel));
+}
+
+.install-action-icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .install-action-icon-btn:focus-visible {
@@ -6545,6 +6550,15 @@ body.is-resizing-detail * {
 .confirm-dialog .outlined-text-field {
   width: 100%;
   margin: 0 0 1rem;
+}
+
+.confirm-dialog .install-dialog-progress-block {
+  min-height: 0;
+  margin: 0 0 0.65rem;
+}
+
+.confirm-dialog .install-dialog-error {
+  margin: 0 0 0.65rem;
 }
 
 .install-col-num {
