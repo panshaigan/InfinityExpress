@@ -136,12 +136,9 @@ export function AppTopBar({
       <div className="top-bar-actions">
         {projectName ? (
           <span className="engine-badge">
-            Project: <strong>{projectName}</strong>
+            <strong>{projectName}</strong>
           </span>
         ) : null}
-        <span className="engine-badge">
-          Engine: <strong>{game ? GAME_LABELS[game] : 'not set'}</strong>
-        </span>
         {onSwitchProject ? (
           <button type="button" className="btn secondary" onClick={onSwitchProject}>
             Projects

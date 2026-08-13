@@ -38,10 +38,10 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
     <div className="project-hub">
       <header className="project-hub-header">
         <div>
-          <h1 className="project-hub-title">Projects</h1>
+          <h1 className="project-hub-title">Open a project...</h1>
         </div>
-        <button type="button" className="btn primary" onClick={onCreateNew}>
-          New project
+        <button type="button" className="btn secondary lg" onClick={onCreateNew}>
+          ...or create a new one
         </button>
       </header>
 
