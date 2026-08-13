@@ -86,7 +86,19 @@ fn progress(
   }
 }
 
+fn backups_dir(backup_root: &Path) -> PathBuf {
+  backup_root.join("backups")
+}
+
+fn managed_vanilla_dir(backup_root: &Path, game_key: &str) -> PathBuf {
+  backups_dir(backup_root).join(game_key)
+}
+
 fn manifest_path(backup_root: &Path, game_key: &str) -> PathBuf {
+  backups_dir(backup_root).join(format!("{game_key}.json"))
+}
+
+fn legacy_manifest_path(backup_root: &Path, game_key: &str) -> PathBuf {
   backup_root.join(game_key).join("manifest.json")
 }
 
@@ -100,17 +112,22 @@ fn empty_manifest(game_key: &str) -> BackupManifest {
 
 fn read_manifest_file(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
   let path = manifest_path(backup_root, game_key);
-  if !path.is_file() {
-    return Ok(empty_manifest(game_key));
+  if path.is_file() {
+    let text = fs::read_to_string(&path).map_err(|e| e.to_string())?;
+    return serde_json::from_str(&text).map_err(|e| e.to_string());
   }
-  let text = fs::read_to_string(&path).map_err(|e| e.to_string())?;
-  serde_json::from_str(&text).map_err(|e| e.to_string())
+  let legacy = legacy_manifest_path(backup_root, game_key);
+  if legacy.is_file() {
+    let text = fs::read_to_string(&legacy).map_err(|e| e.to_string())?;
+    return serde_json::from_str(&text).map_err(|e| e.to_string());
+  }
+  Ok(empty_manifest(game_key))
 }
 
 fn write_manifest(backup_root: &Path, manifest: &BackupManifest) -> Result<(), String> {
-  let dir = backup_root.join(&manifest.game_key);
+  let dir = backups_dir(backup_root);
   fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-  let path = dir.join("manifest.json");
+  let path = manifest_path(backup_root, &manifest.game_key);
   let text = serde_json::to_string_pretty(manifest).map_err(|e| e.to_string())?;
   fs::write(path, text).map_err(|e| e.to_string())
 }
@@ -128,17 +145,20 @@ fn normalize_kind(kind: &str) -> Result<&'static str, String> {
   }
 }
 
-/// Migrate legacy `baseline/` + `snapshots/` layout and rewrite manifest paths/kinds.
+/// Migrate legacy layouts and rewrite manifest paths/kinds.
+/// Vanilla lives at `{backupRoot}/backups/{gameKey}`; snapshots remain under `{gameKey}/` for now.
 fn migrate_layout(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
   let game_root = backup_root.join(game_key);
-  if !game_root.exists() {
-    return Ok(empty_manifest(game_key));
-  }
-
+  let vanilla_dir = managed_vanilla_dir(backup_root, game_key);
+  let legacy_vanilla = game_root.join("vanilla");
   let baseline_dir = game_root.join("baseline");
-  let vanilla_dir = game_root.join("vanilla");
-  if baseline_dir.is_dir() && !vanilla_dir.exists() {
+
+  if baseline_dir.is_dir() && !legacy_vanilla.exists() && !vanilla_dir.exists() {
+    fs::create_dir_all(vanilla_dir.parent().unwrap_or(backup_root)).map_err(|e| e.to_string())?;
     fs::rename(&baseline_dir, &vanilla_dir).map_err(|e| e.to_string())?;
+  } else if legacy_vanilla.is_dir() && !vanilla_dir.exists() {
+    fs::create_dir_all(vanilla_dir.parent().unwrap_or(backup_root)).map_err(|e| e.to_string())?;
+    fs::rename(&legacy_vanilla, &vanilla_dir).map_err(|e| e.to_string())?;
   }
 
   let snapshots_dir = game_root.join("snapshots");
@@ -466,7 +486,7 @@ pub async fn backup_game_dir(
   let created_at = iso_timestamp();
   let (dest, entry_name) = match kind {
     "vanilla" => (
-      backup_root.join(game_key).join("vanilla"),
+      managed_vanilla_dir(&backup_root, game_key),
       "vanilla".to_string(),
     ),
     "snapshot" => {
@@ -710,8 +730,8 @@ pub async fn delete_backup(
   }
 
   let _ = migrate_layout(&root, &key)?;
-  let game_root = root.join(&key);
-  let safe = resolve_under(&game_root, &path)?;
+  // Allow vanilla under backups/ and snapshots under {gameKey}/.
+  let safe = resolve_under(&root, &path)?;
 
   let mut manifest = read_manifest(&root, &key)?;
   let matches = |entry_path: &str| {

@@ -251,9 +251,10 @@ export function ProjectWizard({ onCancel, onCreated, canCancel = true }: Props) 
   ): { label: string; path: string }[] {
     const others: { label: string; path: string }[] = [
       { label: 'Main data folder', path: appDirs.backupDir },
+      { label: 'Mods download directory', path: appDirs.modsDownloadDir },
     ]
     const registry = readVanillaRegistry()
-    for (const key of destKeys) {
+    for (const key of ['bg1', 'bg2', 'iwd', 'pst'] as const) {
       const vPath = vanillaPath(registry[key])
       if (vPath) {
         others.push({

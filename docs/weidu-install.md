@@ -89,28 +89,31 @@ Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanill
 
 ```text
 {backupDir}/
-  {gameKey}/                 # bg1 | bg2 | iwd | pst  (never "eet")
-    manifest.json
-    vanilla/                 # managed unmodded copy (preferred)
-    {snapshotName}/          # named snapshots as siblings of vanilla
+  backups/
+    {gameKey}/               # bg1 | bg2 | iwd | pst — managed unmodded copy
+    {gameKey}.json           # per-game backup manifest (sidecar)
+  {gameKey}/                 # legacy / named snapshots (until project snapshots land)
+    {snapshotName}/
   install-logs/
     {runId}/                 # WeiDU run stdout/stderr (not game backups)
 ```
 
-**Project destinations** (live/modded folders) are per-project, not under this tree. Creating a project: empty destination → `prepare_project_destination` copies vanilla into it; non-empty destination must already contain the game executable.
+**Project destinations** (live/modded folders) are per-project, not under this tree. Creating a project: empty destination → `prepare_project_destination` copies vanilla into it; non-empty destination must already contain the game executable (and no `WeiDU.log`).
 
 Legacy trees are migrated on `list_backups` / create / delete:
 
-- `baseline/` → `vanilla/`
+- `baseline/` → managed vanilla under `backups/{gameKey}/`
+- `{gameKey}/vanilla/` → `backups/{gameKey}/`
 - `snapshots/{name}/` → `{gameKey}/{name}/`
 - Manifest field `baseline` is accepted on read; rewritten as `vanilla`
+- Legacy `{gameKey}/manifest.json` is read and rewritten to `backups/{gameKey}.json`
 
 ### Vanilla vs snapshot
 
 | Kind | Path | Rules |
 | --- | --- | --- |
-| `vanilla` | `{gameKey}/vanilla/` | One per game key. Required before install Start. Recreate replaces existing. |
-| `snapshot` | `{gameKey}/{name}/` | Named; same name replaces. Only allowed after vanilla exists for that key. |
+| `vanilla` | `backups/{gameKey}/` | One per game key. Required before install Start. Recreate replaces existing. |
+| `snapshot` | `{gameKey}/{name}/` | Named; same name replaces. Only allowed after vanilla exists for that key. (Project-scoped snapshots under `projects/` are planned later.) |
 
 **Create gate:** if vanilla is missing for the scoped keys, Back up UI only offers vanilla (no snapshot name). Once vanillas exist, named snapshots are available.
 

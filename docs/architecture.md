@@ -32,7 +32,7 @@ A **Project** is one install universe: locked engine, component selection / pres
 
 - **Boot:** If no projects exist → **New project** wizard; otherwise Project hub → open existing or create new (engine → vanilla if missing → destinations).
 - **Destinations:** Empty folder → copy from app-wide vanilla; non-empty → must contain the game exe.
-- **Vanilla:** App-wide per `bg1`/`bg2`/`iwd`/`pst` (managed under data root preferred; external folder allowed). EET needs both BG1 and BG2 vanillas.
+- **Vanilla:** App-wide per `bg1`/`bg2`/`iwd`/`pst` (managed under `{dataRoot}/backups/{key}` preferred; external folder allowed). EET needs both BG1 and BG2 vanillas.
 - **Persistence:** Project meta + session in localStorage (`infinity-express.projects-v1`). Legacy per-game `infinity-express.app-session` buckets migrate once into projects.
 
 Settings (top bar): **Vanilla backups** + **App** (mods download dir, backup/logs/projects dir, WeiDU, GitHub token).

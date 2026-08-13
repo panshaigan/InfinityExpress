@@ -2012,11 +2012,18 @@ body.is-resizing-detail * {
 
 .project-hub-title,
 .project-wizard-header h1,
-.engine-card-title,
-.project-wizard-vanilla-block h3 {
+.engine-card-title {
   margin: 0 0 0.35rem;
   font-family: var(--font-display);
   font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.project-wizard-vanilla-block h3 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -2088,10 +2095,6 @@ body.is-resizing-detail * {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-}
-
-.project-wizard-vanilla-block h3 {
-  margin: 0 0 0.65rem;
 }
 
 .project-wizard-vanilla-fields {

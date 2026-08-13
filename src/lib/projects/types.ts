@@ -13,7 +13,7 @@ export type VanillaBinding =
     }
   | {
       mode: 'managed'
-      /** Absolute path to `{dataRoot}/{key}/vanilla`. */
+      /** Absolute path to `{dataRoot}/backups/{key}`. */
       path: string
       version?: string
     }

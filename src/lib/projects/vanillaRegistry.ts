@@ -85,5 +85,5 @@ export function missingVanillaKeys(
 
 export function managedVanillaPath(dataRoot: string, key: GameFolderKey): string {
   const root = dataRoot.replace(/\\/g, '/').replace(/\/$/, '')
-  return `${root}/${key}/vanilla`
+  return `${root}/backups/${key}`
 }

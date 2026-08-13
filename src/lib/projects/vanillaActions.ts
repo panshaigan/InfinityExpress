@@ -1,6 +1,12 @@
 import { backupGameDir, listBackups, prepareProjectDestination } from '../desktop/weiduInstall'
 import { GAME_FOLDER_EXE, probeGameFolder } from '../desktop/gameExe'
-import { ensureDir, isDesktopApp, validateCreatableDir, dirIsEmpty } from '../desktop/fsDialogs'
+import {
+  ensureDir,
+  isDesktopApp,
+  normalizeFolderPath,
+  validateCreatableDir,
+  dirIsEmpty,
+} from '../desktop/fsDialogs'
 import { readAppDirPaths } from '../ui/appDirPrefs'
 import type { GameFolderKey } from '../ui/gameFolderPrefs'
 import type { PrepareDestinationResult } from './types'
@@ -102,14 +108,24 @@ export async function createManagedVanillaFromFolder(
   const probe = await probeGameFolder(key, sourceDir)
   if (!probe.ok) throw new Error(probe.error)
 
-  if (!isDesktopApp()) {
-    const path = managedVanillaPath(backupDir, key)
+  const dest = managedVanillaPath(backupDir, key)
+  // Source is already the managed backup location and valid — bind without re-copying.
+  if (normalizeFolderPath(sourceDir) === normalizeFolderPath(dest)) {
     setVanillaBinding(key, {
       mode: 'managed',
-      path,
+      path: dest,
       version: probe.version || undefined,
     })
-    return { path, version: probe.version }
+    return { path: dest, version: probe.version }
+  }
+
+  if (!isDesktopApp()) {
+    setVanillaBinding(key, {
+      mode: 'managed',
+      path: dest,
+      version: probe.version || undefined,
+    })
+    return { path: dest, version: probe.version }
   }
 
   const result = await backupGameDir({
