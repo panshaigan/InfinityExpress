@@ -1074,7 +1074,7 @@ function AppShell() {
                 {!game || normalizeStation(activeStation) === 'presets' ? (
                   <div className="list-pane-scroll engine-pane-scroll">
                     <PresetsStation
-                      enabled={!!game}
+                      enabled={!!game && !route.currentFinished}
                       checkedLadderLevels={levels.ladderChecked}
                       lowerDifficulty={levels.lowerDifficultyPreset}
                       higherDifficulty={levels.higherDifficultyPreset}
@@ -1136,6 +1136,7 @@ function AppShell() {
                         </h2>
                         <div className="list-pane-header-actions">
                           <StationPresetsMenu
+                            enabled={!route.currentFinished}
                             checkedLadderLevels={levels.activeStationPreset.ladder}
                             lowerDifficulty={levels.activeStationPreset.lowerDifficulty}
                             higherDifficulty={levels.activeStationPreset.higherDifficulty}

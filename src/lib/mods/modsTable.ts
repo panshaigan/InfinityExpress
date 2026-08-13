@@ -43,7 +43,9 @@ export interface ModsTableFilters {
   statuses: DiskStatus[]
   /** When set, only these codenames are shown (journey mode). */
   requiredCodenames: string[] | null
-  /** When set, only mods with InstallSequence components (catalog presence). */
+  /** null = off; include/exclude use catalogComponentCodenames snapshot. */
+  catalogComponentFilter: null | 'include' | 'exclude'
+  /** Snapshot of in-catalog codenames when catalogComponentFilter is active. */
   catalogComponentCodenames: string[] | null
 }
 
@@ -55,6 +57,7 @@ export function createDefaultModsTableFilters(): ModsTableFilters {
     authors: [],
     statuses: [],
     requiredCodenames: null,
+    catalogComponentFilter: null,
     catalogComponentCodenames: null,
   }
 }
@@ -127,9 +130,11 @@ export function filterWorkingMods(
       ? new Set(filters.requiredCodenames)
       : null
   const catalog =
-    filters.catalogComponentCodenames != null
+    filters.catalogComponentCodenames != null &&
+    filters.catalogComponentFilter != null
       ? new Set(filters.catalogComponentCodenames)
       : null
+  const catalogFilter = filters.catalogComponentFilter
   const cat = filters.categories.length ? new Set(filters.categories) : null
   const games = filters.games.length ? new Set(filters.games) : null
   const authors = filters.authors.length ? new Set(filters.authors) : null
@@ -137,7 +142,14 @@ export function filterWorkingMods(
 
   return mods.filter((mod) => {
     if (required && !required.has(mod.codename)) return false
-    if (catalog && !catalog.has(mod.codename)) return false
+    if (
+      catalog &&
+      catalogFilter === 'include' &&
+      !catalog.has(mod.codename)
+    )
+      return false
+    if (catalog && catalogFilter === 'exclude' && catalog.has(mod.codename))
+      return false
     if (!matchesSearch(mod, filters.search)) return false
     const eff = effectiveModFields(mod)
     if (cat && !cat.has(eff.category)) return false

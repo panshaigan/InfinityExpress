@@ -71,13 +71,26 @@ describe('modsTable filter/sort', () => {
     ])
   })
 
-  it('filters by catalog component codenames', () => {
+  it('filters by catalog component codenames (include)', () => {
     const filters = {
       ...createDefaultModsTableFilters(),
+      catalogComponentFilter: 'include' as const,
       catalogComponentCodenames: ['Alpha', 'Missing'],
     }
     expect(filterWorkingMods(mods, filters).map((m) => m.codename)).toEqual([
       'Alpha',
+    ])
+  })
+
+  it('filters by catalog component codenames (exclude)', () => {
+    const filters = {
+      ...createDefaultModsTableFilters(),
+      catalogComponentFilter: 'exclude' as const,
+      catalogComponentCodenames: ['Alpha'],
+    }
+    expect(filterWorkingMods(mods, filters).map((m) => m.codename)).toEqual([
+      'Zebra',
+      'Beta',
     ])
   })
 

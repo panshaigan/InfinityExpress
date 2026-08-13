@@ -72,6 +72,22 @@ export function OnlyInCatalogIcon({ size = 16 }: { size?: number }) {
   )
 }
 
+/** Open box — “only mods without components in the component catalog”. */
+export function OnlyNotInCatalogIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M8 2.25 2.5 5v1.25L8 9.5l5.5-3.25V5L8 2.25ZM8.75 9.06v5.19l5.5-2.87V6.19L8.75 9.06ZM7.25 14.25V9.06L1.75 6.19v5.19l5.5 2.87Z"
+      />
+      <path
+        fill="currentColor"
+        d="M1.75 4.5 8 1.25l6.25 3.25-1.06.55L8 2.35 2.81 5.05 1.75 4.5Z"
+      />
+    </svg>
+  )
+}
+
 export function EditModIcon({ size = 16 }: { size?: number }) {
   return (
     <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">

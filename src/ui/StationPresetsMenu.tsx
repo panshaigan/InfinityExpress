@@ -3,6 +3,7 @@ import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import { LevelSelectStrip } from './LevelSelectStrip'
 
 interface Props {
+  enabled?: boolean
   checkedLadderLevels: ReadonlySet<LadderLevel>
   lowerDifficulty: boolean
   higherDifficulty: boolean
@@ -13,6 +14,7 @@ interface Props {
 
 /** Compact Presets dropdown for the station header nav row. */
 export function StationPresetsMenu({
+  enabled = true,
   checkedLadderLevels,
   lowerDifficulty,
   higherDifficulty,
@@ -69,7 +71,7 @@ export function StationPresetsMenu({
           <div className="station-list-toolbar-levels">
             <LevelSelectStrip
               compact
-              enabled
+              enabled={enabled}
               checkedLadderLevels={checkedLadderLevels}
               lowerDifficulty={lowerDifficulty}
               higherDifficulty={higherDifficulty}
@@ -79,6 +81,7 @@ export function StationPresetsMenu({
             <button
               type="button"
               className="btn secondary station-clear-to-global has-icon-tip"
+              disabled={!enabled}
               onClick={onClearToGlobal}
             >
               Reset to global

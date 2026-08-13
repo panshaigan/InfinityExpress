@@ -15,6 +15,7 @@ import {
   DownloadIcon,
   OnlyInCatalogIcon,
   OnlyNeededIcon,
+  OnlyNotInCatalogIcon,
   RemoveFromDiskIcon,
 } from './ModsActionIcons'
 
@@ -24,8 +25,12 @@ interface FacetOptions {
 }
 
 const ONLY_NEEDED_TIP = 'Only mods required by the selected components'
-const ONLY_IN_CATALOG_TIP =
+const ONLY_IN_CATALOG_TIP_OFF =
   'Show only mods that have components in the component catalog'
+const ONLY_IN_CATALOG_TIP_INCLUDE =
+  'Showing only mods in the component catalog'
+const ONLY_IN_CATALOG_TIP_EXCLUDE =
+  'Showing only mods not in the component catalog'
 
 interface Props {
   filters: ModsTableFilters
@@ -88,7 +93,10 @@ export function ModsToolbar({
   const bulkDisabled = selectedCount === 0
   const acquireBusy = jobRunning
   const onlyNeededActive = filters.requiredCodenames != null
-  const onlyInCatalogActive = filters.catalogComponentCodenames != null
+  const catalogFilter = filters.catalogComponentFilter
+  const onlyInCatalogActive = catalogFilter === 'include'
+  const onlyNotInCatalogActive = catalogFilter === 'exclude'
+  const catalogFilterActive = catalogFilter != null
   const hasFacetFilters =
     filters.categories.length > 0 ||
     filters.games.length > 0 ||
@@ -96,7 +104,7 @@ export function ModsToolbar({
     filters.statuses.length > 0 ||
     !!filters.search.trim() ||
     (onlyNeededActive && !journeyLocked) ||
-    onlyInCatalogActive
+    catalogFilterActive
   const [openFacet, setOpenFacet] = useState<FacetId | null>(null)
 
   function toggleOnlyNeeded() {
@@ -110,16 +118,39 @@ export function ModsToolbar({
   }
 
   function toggleOnlyInCatalog() {
-    if (onlyInCatalogActive) {
-      onChange({ ...filters, catalogComponentCodenames: null })
+    if (catalogFilter === 'exclude') {
+      onChange({
+        ...filters,
+        catalogComponentFilter: null,
+        catalogComponentCodenames: null,
+      })
+      return
+    }
+    if (catalogFilter === 'include') {
+      onChange({
+        ...filters,
+        catalogComponentFilter: 'exclude',
+      })
       return
     }
     if (catalogComponentCodenames.length === 0) return
     onChange({
       ...filters,
+      catalogComponentFilter: 'include',
       catalogComponentCodenames: catalogComponentCodenames,
     })
   }
+
+  const onlyInCatalogTip = onlyNotInCatalogActive
+    ? ONLY_IN_CATALOG_TIP_EXCLUDE
+    : onlyInCatalogActive
+      ? ONLY_IN_CATALOG_TIP_INCLUDE
+      : ONLY_IN_CATALOG_TIP_OFF
+  const onlyInCatalogAriaLabel = onlyNotInCatalogActive
+    ? 'Only mods not in component catalog'
+    : onlyInCatalogActive
+      ? 'Only mods in component catalog'
+      : 'Only mods in component catalog'
 
   function facetOpenChange(id: FacetId, open: boolean) {
     setOpenFacet(open ? id : null)
@@ -152,17 +183,21 @@ export function ModsToolbar({
         type="button"
         className={`mods-action-icon-btn mods-only-in-catalog-btn${
           onlyInCatalogActive ? ' active' : ''
-        }`}
-        aria-pressed={onlyInCatalogActive}
-        aria-label="Only mods in component catalog"
+        }${onlyNotInCatalogActive ? ' active inverted' : ''}`}
+        aria-pressed={catalogFilterActive}
+        aria-label={onlyInCatalogAriaLabel}
         disabled={
-          catalogComponentCodenames.length === 0 && !onlyInCatalogActive
+          catalogComponentCodenames.length === 0 && !catalogFilterActive
         }
         onClick={toggleOnlyInCatalog}
       >
-        <OnlyInCatalogIcon />
+        {onlyNotInCatalogActive ? (
+          <OnlyNotInCatalogIcon />
+        ) : (
+          <OnlyInCatalogIcon />
+        )}
       </button>
-      <IconTip>{ONLY_IN_CATALOG_TIP}</IconTip>
+      <IconTip>{onlyInCatalogTip}</IconTip>
     </span>
   )
 
@@ -365,6 +400,7 @@ export function ModsToolbar({
                   authors: [],
                   statuses: [],
                   requiredCodenames: null,
+                  catalogComponentFilter: null,
                   catalogComponentCodenames: null,
                 })
               }

@@ -5243,6 +5243,12 @@ body.is-resizing-detail * {
   color: var(--ink);
 }
 
+.mods-only-in-catalog-btn.active.inverted {
+  border-color: color-mix(in srgb, var(--install-cursor) 55%, var(--line));
+  background: color-mix(in srgb, var(--install-cursor) 22%, transparent);
+  color: var(--ink);
+}
+
 .mods-facets .outlined-field {
   --outlined-field-bg: color-mix(in srgb, var(--panel) 70%, #000);
 }
