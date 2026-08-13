@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { GAME_FULL_LABELS } from '../../lib/xml/schema'
+import { GAME_FULL_LABELS, GAME_LABELS } from '../../lib/xml/schema'
 import {
   deleteProject,
   listProjects,
@@ -75,60 +75,69 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
   return (
     <div className="project-hub">
       <header className="project-hub-header">
-        <div className="project-hub-brand">
+        <div className="project-hub-hero">
           <h1 className="project-hub-app-title">Infinity Express</h1>
           <p className="project-hub-motto">
             Infinity Engine Integrated Modding Environment
           </p>
         </div>
-        <h2 className="project-hub-title">Your projects</h2>
-        <p className="project-hub-lede">
-          Select an existing project or create a new one
-        </p>
       </header>
 
-      {projects.length === 0 ? (
-        <div className="project-hub-empty">
-          <p>No projects yet.</p>
-          <button type="button" className="btn primary" onClick={onCreateNew}>
-            Create your first project
-          </button>
+      <div className="project-hub-section">
+        <div className="project-hub-section-head">
+          <div className="project-hub-section-intro">
+            <h2 className="project-hub-title">Your projects</h2>
+            <p className="project-hub-lede">
+              Select an existing project or create a new one
+            </p>
+          </div>
+          {projects.length > 0 ? (
+            <button type="button" className="btn project-hub-new-btn" onClick={onCreateNew}>
+              <PlusIcon />
+              New Project
+            </button>
+          ) : null}
         </div>
-      ) : (
-        <ul className="project-hub-list">
-          {projects.map((p) => (
-            <li key={p.id} className="project-hub-card">
-              <button
-                type="button"
-                className="project-hub-card-main"
-                onClick={() => onOpen(p.id)}
-              >
-                <span className="project-hub-card-name">{p.name}</span>
-                <span className="project-hub-card-meta">
-                  {statusLabel(p)}
-                  <span className="project-hub-card-sep">·</span>
-                  Created {formatRelative(p.createdAt)}
-                </span>
-              </button>
-              <ProjectCardMenu
-                open={menuOpenId === p.id}
-                onOpenChange={(open) => setMenuOpenId(open ? p.id : null)}
-                projectName={p.name}
-                onRename={() => openRename(p)}
-                onRemove={() => {
-                  setMenuOpenId(null)
-                  setPendingDelete(p)
-                }}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
-      <div className="project-hub-create">
-        <button type="button" className="btn primary lg" onClick={onCreateNew}>
-          <PlusIcon />
-          New Project
-        </button>
+
+        {projects.length === 0 ? (
+          <div className="project-hub-empty-panel">
+            <p>No projects yet.</p>
+            <button type="button" className="btn" onClick={onCreateNew}>
+              Create your first project
+            </button>
+          </div>
+        ) : (
+          <ul className="project-hub-list">
+            {projects.map((p) => (
+              <li key={p.id} className="project-hub-card">
+                <button
+                  type="button"
+                  className="project-hub-card-main"
+                  onClick={() => onOpen(p.id)}
+                >
+                  <span className="project-hub-card-name">{p.name}</span>
+                  <span className="project-hub-card-meta">
+                    <span className="project-hub-card-engine">{GAME_LABELS[p.engine]}</span>
+                    <span className="project-hub-card-sep">·</span>
+                    {statusLabel(p)}
+                    <span className="project-hub-card-sep">·</span>
+                    Created {formatRelative(p.createdAt)}
+                  </span>
+                </button>
+                <ProjectCardMenu
+                  open={menuOpenId === p.id}
+                  onOpenChange={(open) => setMenuOpenId(open ? p.id : null)}
+                  projectName={p.name}
+                  onRename={() => openRename(p)}
+                  onRemove={() => {
+                    setMenuOpenId(null)
+                    setPendingDelete(p)
+                  }}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <ConfirmDialog
