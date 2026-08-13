@@ -124,7 +124,7 @@ export function AppTopBar({
         aria-label="About iNfinity eXpress"
         onClick={onOpenAbout}
       >
-        <span className="brand-title">iNfinity eXpress</span>
+        <span className="brand-title">iNeX</span>
         <IconTip>About</IconTip>
       </button>
       <PhaseNav

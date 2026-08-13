@@ -15,16 +15,17 @@ import type { GameFolderKey } from '../lib/ui/gameFolderPrefs'
 import {
   countMissingByTab,
   focusElementIdForField,
+  gameFolderKeysForEngine,
   isPathStillMissing,
   settingsTabForMissing,
   type MissingInstallPath,
   type SettingsFocusField,
 } from '../lib/ui/installPathValidation'
 import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
-import { GAME_LABELS } from '../lib/xml/schema'
+import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import { useBackdropDismiss } from './backdropDismiss'
 import { DirectoryField } from './DirectoryField'
-import { isDesktopApp, pickFile } from '../lib/desktop/fsDialogs'
+import { isDesktopApp, normalizeFolderPath, pickFile } from '../lib/desktop/fsDialogs'
 import { IconTip } from './IconTip'
 import { OutlinedTextField } from './OutlinedTextField'
 import {
@@ -33,7 +34,9 @@ import {
   registerExternalVanilla,
   syncManagedVanillasFromDisk,
   useExistingManagedVanilla,
+  validateDestinationFolder,
   vanillaPath,
+  type ProjectId,
   type VanillaRegistry,
 } from '../lib/projects'
 import type { GameFolderPaths } from '../lib/ui/gameFolderPrefs'
@@ -43,16 +46,25 @@ const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
 
 export type { SettingsFocusField }
 
-type SettingsTab = 'vanilla' | 'app'
+type SettingsTab = 'project' | 'vanilla' | 'app'
 
 interface Props {
   open: boolean
   onClose: () => void
+  projectId?: ProjectId | null
+  projectEngine?: SelectedGame | null
   /** Active project destinations (for missing-path highlight of dest:*). */
   destinations?: GameFolderPaths
+  onDestinationsChange?: (paths: GameFolderPaths) => void
   focusField?: SettingsFocusField | null
   highlightMissing?: MissingInstallPath[]
 }
+
+const DESTINATION_FOLDER_TIP =
+  'Folder where mods will be installed and the game will be modified.'
+
+const MODS_DOWNLOAD_DIR_TIP =
+  'Root folder for downloaded mod archives. The Mods phase scans subfolders here.'
 
 const GITHUB_TOKEN_TIP =
   'Optional personal access token raises API rate limits for checking for updates on large catalogs. Without a token the app still works via public API and HTML scrape fallback. Create a classic token with public_repo (or a fine-grained token with read access to public repositories).'
@@ -60,7 +72,10 @@ const GITHUB_TOKEN_TIP =
 export function SettingsDialog({
   open,
   onClose,
+  projectId = null,
+  projectEngine = null,
   destinations = emptyDestinations(),
+  onDestinationsChange,
   focusField = null,
   highlightMissing = [],
 }: Props) {
@@ -71,6 +86,7 @@ export function SettingsDialog({
   const [vanillaSource, setVanillaSource] = useState<Partial<Record<GameFolderKey, string>>>({})
   const [vanillaErrors, setVanillaErrors] = useState<Partial<Record<GameFolderKey, string>>>({})
   const [vanillaBusy, setVanillaBusy] = useState<GameFolderKey | null>(null)
+  const [destErrors, setDestErrors] = useState<Partial<Record<GameFolderKey, string>>>({})
   const [appDirs, setAppDirs] = useState(readAppDirPaths)
   const [githubToken, setGithubToken] = useState(readGithubToken)
   const [weiduPath, setWeiduPath] = useState(readWeiduPath)
@@ -85,6 +101,7 @@ export function SettingsDialog({
     setGithubToken(readGithubToken())
     setWeiduPath(readWeiduPath())
     setVanillaErrors({})
+    setDestErrors({})
     void syncManagedVanillasFromDisk().then(refreshRegistry)
     refreshRegistry()
     const nextTab: SettingsTab = focusField
@@ -120,6 +137,86 @@ export function SettingsDialog({
     window.addEventListener(PATHS_CHANGED_EVENT, sync)
     return () => window.removeEventListener(PATHS_CHANGED_EVENT, sync)
   }, [open])
+
+  function setDestFieldError(key: GameFolderKey, message: string | null) {
+    setDestErrors((prev) => {
+      const next = { ...prev }
+      if (message) next[key] = message
+      else delete next[key]
+      return next
+    })
+  }
+
+  function distinctPathError(
+    _selfLabel: string,
+    selfPath: string,
+    others: { label: string; path: string }[],
+  ): string | null {
+    const selfNorm = normalizeFolderPath(selfPath)
+    if (!selfNorm) return null
+    for (const other of others) {
+      const otherNorm = normalizeFolderPath(other.path)
+      if (!otherNorm) continue
+      if (selfNorm === otherNorm) {
+        return `Must be a different folder from ${other.label}`
+      }
+    }
+    return null
+  }
+
+  function destinationDistinctOthers(
+    exclude: GameFolderKey,
+    destKeys: GameFolderKey[],
+  ): { label: string; path: string }[] {
+    const others: { label: string; path: string }[] = [
+      { label: 'Main data folder', path: appDirs.backupDir },
+      { label: 'Mods download directory', path: appDirs.modsDownloadDir },
+    ]
+    const reg = readVanillaRegistry()
+    for (const key of GAME_FOLDER_KEYS) {
+      const vPath = vanillaPath(reg[key])
+      if (vPath) {
+        others.push({
+          label: `${GAME_LABELS[key]} vanilla`,
+          path: vPath,
+        })
+      }
+    }
+    for (const key of destKeys) {
+      if (key === exclude) continue
+      others.push({
+        label: `${GAME_LABELS[key]} destination`,
+        path: destinations[key] ?? '',
+      })
+    }
+    return others
+  }
+
+  async function validateDestDir(key: GameFolderKey, value: string) {
+    const trimmed = value.trim()
+    if (!trimmed) {
+      setDestFieldError(key, 'Required')
+      return
+    }
+    try {
+      await validateDestinationFolder(key, trimmed)
+    } catch (err) {
+      setDestFieldError(key, String(err))
+      return
+    }
+    const destKeys = projectEngine ? gameFolderKeysForEngine(projectEngine) : []
+    const clash = distinctPathError(
+      `${GAME_LABELS[key]} destination`,
+      trimmed,
+      destinationDistinctOthers(key, destKeys),
+    )
+    setDestFieldError(key, clash)
+  }
+
+  function onDestChange(key: GameFolderKey, value: string) {
+    if (!onDestinationsChange) return
+    onDestinationsChange({ ...destinations, [key]: value })
+  }
 
   function setAppDir(key: keyof AppDirPaths, value: string) {
     setAppDirs((prev) => {
@@ -217,6 +314,10 @@ export function SettingsDialog({
     return 'Required'
   }
 
+  const destKeys =
+    projectEngine != null ? gameFolderKeysForEngine(projectEngine) : []
+  const showProjectFields = projectId != null && projectEngine != null
+
   if (!open) return null
 
   return (
@@ -235,6 +336,25 @@ export function SettingsDialog({
         </div>
 
         <div className="settings-dialog-tabs" role="tablist" aria-label="Settings sections">
+          <button
+            type="button"
+            role="tab"
+            id="settings-tab-project"
+            aria-selected={tab === 'project'}
+            aria-controls="settings-panel-project"
+            className={`settings-dialog-tab${tab === 'project' ? ' active' : ''}`}
+            onClick={() => setTab('project')}
+          >
+            Project
+            {tabIssueCounts.project > 0 ? (
+              <span
+                className="settings-tab-issue-badge"
+                aria-label={`${tabIssueCounts.project} required`}
+              >
+                {tabIssueCounts.project}
+              </span>
+            ) : null}
+          </button>
           <button
             type="button"
             role="tab"
@@ -276,6 +396,43 @@ export function SettingsDialog({
         </div>
 
         <div className="settings-tab-panels">
+          <section
+            className={`settings-section settings-tab-panel${tab === 'project' ? ' active' : ''}`}
+            id="settings-panel-project"
+            role="tabpanel"
+            aria-labelledby="settings-tab-project"
+            aria-hidden={tab !== 'project'}
+          >
+            {showProjectFields ? (
+              <div className="settings-fields">
+                {destKeys.map((key) => {
+                  const destMissing = missingFieldError(`dest:${key}`)
+                  return (
+                    <DirectoryField
+                      key={key}
+                      id={`settings-dest-${key}`}
+                      label={`Modded ${GAME_LABELS[key]} destination`}
+                      tip={DESTINATION_FOLDER_TIP}
+                      tipAriaLabel="About destination folder"
+                      value={destinations[key]}
+                      onChange={(value) => {
+                        onDestChange(key, value)
+                        setDestFieldError(key, null)
+                      }}
+                      onValidate={(value) => void validateDestDir(key, value)}
+                      placeholder="Select or type the path…"
+                      browseTitle={`Select ${GAME_LABELS[key]} destination`}
+                      error={destErrors[key] ?? destMissing}
+                      required={destMissing != null}
+                    />
+                  )
+                })}
+              </div>
+            ) : (
+              <p className="settings-help">Open a project to edit destination folders.</p>
+            )}
+          </section>
+
           <section
             className={`settings-section settings-tab-panel${tab === 'vanilla' ? ' active' : ''}`}
             id="settings-panel-vanilla"
@@ -352,6 +509,8 @@ export function SettingsDialog({
               <DirectoryField
                 id="settings-mods-download-dir"
                 label="Mods download directory"
+                tip={MODS_DOWNLOAD_DIR_TIP}
+                tipAriaLabel="About mods download directory"
                 value={appDirs.modsDownloadDir}
                 onChange={(value) => setAppDir('modsDownloadDir', value)}
                 placeholder="Select download folder…"

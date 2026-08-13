@@ -109,6 +109,7 @@ import {
   emptyDestinations,
   listProjects,
   loadProjectRecord,
+  updateProjectMeta,
   type AppShellView,
   type ProjectId,
   type ProjectMeta,
@@ -1242,7 +1243,15 @@ function AppShell() {
       )}
       <SettingsDialog
         open={settingsOpen}
+        projectId={projectId}
+        projectEngine={game}
         destinations={gameFolders}
+        onDestinationsChange={(paths) => {
+          if (!projectId) return
+          updateProjectMeta(projectId, { destinations: paths })
+          setGameFolders(paths)
+          setProjectMeta((m) => (m ? { ...m, destinations: paths } : m))
+        }}
         focusField={settingsFocusField}
         highlightMissing={settingsHighlightMissing}
         onClose={() => {

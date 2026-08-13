@@ -20,6 +20,7 @@ export type SettingsFocusField =
   | 'backupDir'
   | 'weiduPath'
   | `vanilla:${GameFolderKey}`
+  | `dest:${GameFolderKey}`
 
 const FOLDERS_BY_GAME: Record<SelectedGame, GameFolderKey[]> = {
   bg1: ['bg1'],
@@ -63,7 +64,8 @@ export function getMissingInstallPaths(
 
 export function settingsTabForMissing(
   key: MissingInstallPath,
-): 'vanilla' | 'app' {
+): 'project' | 'vanilla' | 'app' {
+  if (key.startsWith('dest:')) return 'project'
   if (
     key === 'modsDownloadDir' ||
     key === 'backupDir' ||
@@ -78,7 +80,6 @@ export function firstMissingFocusField(
   keys: MissingInstallPath[],
 ): SettingsFocusField | null {
   for (const key of keys) {
-    if (key.startsWith('dest:')) continue
     return key as SettingsFocusField
   }
   return null
@@ -91,19 +92,25 @@ export function focusElementIdForField(field: SettingsFocusField): string {
   if (field.startsWith('vanilla:')) {
     return `settings-vanilla-${field.slice('vanilla:'.length)}`
   }
+  if (field.startsWith('dest:')) {
+    return `settings-dest-${field.slice('dest:'.length)}`
+  }
   return 'settings-backup-dir'
 }
 
 export function countMissingByTab(
   keys: MissingInstallPath[],
-): { vanilla: number; app: number } {
+): { project: number; vanilla: number; app: number } {
+  let project = 0
   let vanilla = 0
   let app = 0
   for (const key of keys) {
-    if (settingsTabForMissing(key) === 'vanilla') vanilla += 1
+    const tab = settingsTabForMissing(key)
+    if (tab === 'project') project += 1
+    else if (tab === 'vanilla') vanilla += 1
     else app += 1
   }
-  return { vanilla, app }
+  return { project, vanilla, app }
 }
 
 export function isPathStillMissing(
