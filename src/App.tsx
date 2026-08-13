@@ -715,7 +715,7 @@ function AppShell() {
     if (!game) return
     levels.resetLevelPresets()
     presets.resetPresetSelection()
-    setSelectedIds(new Set())
+    setSelectedIds(createInitialSelection(model, game))
     route.reopenEntireRoute()
     clearFocus()
   }
