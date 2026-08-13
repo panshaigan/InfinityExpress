@@ -94,6 +94,18 @@ export function RemoveFromPlanIcon() {
   )
 }
 
+/** Restart from vanilla backup (circular arrow). */
+export function RestartIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M8 2.5a5.5 5.5 0 0 1 5.24 3.75h-1.65a4 4 0 1 0 .35 5.5l.9.9A5.5 5.5 0 1 1 8 2.5Zm-3.1 2.65 2.5 2.5H3.5V3.65l1.4 1.5Z"
+      />
+    </svg>
+  )
+}
+
 /** Eye with slash — hide completed / already-installed steps. */
 export function HideInstalledIcon() {
   return (

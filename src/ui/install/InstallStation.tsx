@@ -4,7 +4,7 @@ import { useInstallRun } from '../../hooks/useInstallRun'
 import { formatPlayerDurationMs } from '../../lib/install/formatDuration'
 import { stepIndexById } from '../../lib/install/cursor'
 import { collectAdjustementsModIds } from '../../lib/install/weiduResolution'
-import { cleanupInstallArtifacts, gameDirForPhase, listBackups } from '../../lib/desktop/weiduInstall'
+import { cleanupInstallArtifacts, gameDirForPhase, listBackups, listenBackupProgress, restoreGameDir } from '../../lib/desktop/weiduInstall'
 import { isDesktopApp } from '../../lib/desktop/fsDialogs'
 import type { WorkingMod } from '../../lib/mods/loadMods'
 import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
@@ -16,7 +16,8 @@ import {
 import { PATHS_CHANGED_EVENT } from '../../lib/ui/pathPrefsEvents'
 import { readWeiduPath } from '../../lib/ui/weiduPrefs'
 import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
-import { BackupManagerDialog, type BackupDialogMode } from './BackupManagerDialog'
+import { SnapshotManagerDialog, type SnapshotDialogMode } from './SnapshotManagerDialog'
+import { RestartConfirmDialog, type RestartScope } from './RestartConfirmDialog'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { InstallConsoleDock } from './InstallConsoleDock'
 import { InstallDetailPane } from './InstallDetailPane'
@@ -25,6 +26,7 @@ import {
   HideInstalledIcon,
   PauseIcon,
   PlayIcon,
+  RestartIcon,
   SkipNextIcon,
   SkipPreviousIcon,
   StopIcon,
@@ -124,6 +126,7 @@ export function InstallStation({
     moveCursorToStep,
     canGoPrevious,
     restartFromBackup,
+    stopRunningInstall,
     sendInput,
     appendCommandLine,
     pausePending,
@@ -156,11 +159,12 @@ export function InstallStation({
     () => initialInstallSession?.ui.hideInstalled ?? false,
   )
   const [consoleCollapsed, setConsoleCollapsed] = useState(false)
-  const [backupDialog, setBackupDialog] = useState<BackupDialogMode | null>(null)
-  const [backupManageTab, setBackupManageTab] = useState<'backup' | 'restore'>('backup')
-  const [backupGameKey, setBackupGameKey] = useState('bg2')
-  const [backupSourceDir, setBackupSourceDir] = useState('')
-  const [backupBusy, setBackupBusy] = useState(false)
+  const [snapshotDialog, setSnapshotDialog] = useState<SnapshotDialogMode | null>(null)
+  const [snapshotManageTab, setSnapshotManageTab] = useState<'create' | 'restore'>('create')
+  const [snapshotGameKey, setSnapshotGameKey] = useState('bg2')
+  const [snapshotSourceDir, setSnapshotSourceDir] = useState('')
+  const [snapshotBusy, setSnapshotBusy] = useState(false)
+  const [restartDialogOpen, setRestartDialogOpen] = useState(false)
   const [cleanupOffer, setCleanupOffer] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -260,9 +264,9 @@ export function InstallStation({
   }, [run?.runState, pushToast])
 
   useEffect(() => {
-    onBusyChange?.(run?.runState === 'running' || backupBusy)
+    onBusyChange?.(run?.runState === 'running' || snapshotBusy)
     return () => onBusyChange?.(false)
-  }, [run?.runState, backupBusy, onBusyChange])
+  }, [run?.runState, snapshotBusy, onBusyChange])
 
   useEffect(() => {
     const installExitBlocking =
@@ -271,7 +275,7 @@ export function InstallStation({
       stopping ||
       skipping ||
       goingPrevious ||
-      backupBusy
+      snapshotBusy
     onExitBlockingChange?.(installExitBlocking)
     return () => onExitBlockingChange?.(false)
   }, [
@@ -279,7 +283,7 @@ export function InstallStation({
     stopping,
     skipping,
     goingPrevious,
-    backupBusy,
+    snapshotBusy,
     onExitBlockingChange,
   ])
 
@@ -359,9 +363,17 @@ export function InstallStation({
 
   const modsReady = allModsPresent(neededCodenames, mods)
   const canRun = isDesktopApp() && !!game && modsReady && !!weiduPath && !!appDirs.backupDir
-  const canBackup = !!game && !!appDirs.backupDir
+  const canSnapshot = !!game && !!appDirs.backupDir
+  const vanillaRegistry = readVanillaRegistry()
+  const missingVanillas = game ? missingVanillaKeys(game, vanillaRegistry) : []
   const isRunning = run?.runState === 'running'
   const transportBusy = stopping || skipping || goingPrevious
+  const canRestart =
+    canSnapshot && missingVanillas.length === 0 && !snapshotBusy && !transportBusy
+  const restartTip =
+    missingVanillas.length > 0
+      ? 'Set vanilla backup in Settings'
+      : 'Restart from vanilla backup'
   const canPauseToggle =
     !!run &&
     !transportBusy &&
@@ -510,9 +522,9 @@ export function InstallStation({
               ? gameFolders.iwd
               : gameFolders.pst
       if (dir) {
-        setBackupGameKey(key)
-        setBackupSourceDir(dir)
-        setBackupDialog('vanilla')
+        setSnapshotGameKey(key)
+        setSnapshotSourceDir(dir)
+        setSnapshotDialog('vanilla')
         return false
       }
     }
@@ -551,7 +563,7 @@ export function InstallStation({
   const onRestoreDone = useCallback(
     async (_backupPath: string, restoredGameKey: string) => {
       if (!game) return
-      setNotice('Backup restored.')
+      setNotice('Snapshot restored.')
       if (!run) return
       const targetDir =
         restoredGameKey === 'bg1'
@@ -573,27 +585,27 @@ export function InstallStation({
     [game, run, gameFolders, restartFromBackup],
   )
 
-  const openBackupsDialog = useCallback(
-    (tab: 'backup' | 'restore' = 'backup') => {
+  const openSnapshotsDialog = useCallback(
+    (tab: 'create' | 'restore' = 'create') => {
       if (!game) return
       const step = run?.steps[run.cursor] ?? run?.steps[0]
       const phase = step?.phase ?? 'single'
       const dir = gameDirForPhase(game, phase, gameFolders)
       const gameKey = game === 'eet' ? (phase === 'eet1' ? 'bg1' : 'bg2') : game
-      setBackupGameKey(gameKey)
-      setBackupSourceDir(dir)
-      setBackupManageTab(tab)
-      setBackupDialog('manage')
+      setSnapshotGameKey(gameKey)
+      setSnapshotSourceDir(dir)
+      setSnapshotManageTab(tab)
+      setSnapshotDialog('manage')
     },
     [game, run, gameFolders],
   )
 
-  const backupGameKeys = useMemo(
-    () => (game === 'eet' ? ['bg1', 'bg2'] : game ? [game] : [backupGameKey]),
-    [game, backupGameKey],
+  const snapshotGameKeys = useMemo(
+    () => (game === 'eet' ? ['bg1', 'bg2'] : game ? [game] : [snapshotGameKey]),
+    [game, snapshotGameKey],
   )
 
-  const backupDirsByKey = useMemo(
+  const snapshotDirsByKey = useMemo(
     () => ({
       bg1: gameFolders.bg1,
       bg2: gameFolders.bg2,
@@ -601,6 +613,82 @@ export function InstallStation({
       pst: gameFolders.pst,
     }),
     [gameFolders],
+  )
+
+  const gameDirForKey = useCallback(
+    (key: string): string => {
+      if (key === 'bg1') return gameFolders.bg1
+      if (key === 'bg2') return gameFolders.bg2
+      if (key === 'iwd') return gameFolders.iwd
+      if (key === 'pst') return gameFolders.pst
+      return ''
+    },
+    [gameFolders],
+  )
+
+  const onRestartConfirm = useCallback(
+    async (scope: RestartScope) => {
+      setRestartDialogOpen(false)
+      if (!game || !appDirs.backupDir) return
+
+      const keys: string[] =
+        game === 'eet'
+          ? scope === 'full'
+            ? ['bg1', 'bg2']
+            : ['bg2']
+          : [game]
+
+      setSnapshotBusy(true)
+      setNotice('Restoring vanilla backup…')
+      let unlisten: (() => void) | undefined
+      try {
+        await stopRunningInstall()
+        unlisten = await listenBackupProgress(() => {})
+
+        for (const key of keys) {
+          const manifest = await listBackups(appDirs.backupDir, key)
+          const vanillaPath = manifest.vanilla?.path?.trim()
+          if (!vanillaPath) {
+            throw new Error(`No vanilla backup for ${key}. Set it in Settings.`)
+          }
+          const dest = gameDirForKey(key)
+          if (!dest) {
+            throw new Error(`Set ${key} game folder in Settings.`)
+          }
+          appendCommandLine(`Restart: restoring vanilla (${key})…`)
+          await restoreGameDir(vanillaPath, dest)
+        }
+
+        if (run) {
+          const primaryDir =
+            keys.includes('bg2') ? gameFolders.bg2 : gameDirForKey(keys[0] ?? game)
+          if (primaryDir) await restartFromBackup(primaryDir)
+        }
+
+        setNotice('Game restored from vanilla backup.')
+        pushToast({ tone: 'success', message: 'Game restored from vanilla backup.' })
+        appendCommandLine('Restart complete — vanilla backup restored.')
+      } catch (e) {
+        const message = String(e)
+        setNotice(message)
+        pushToast({ tone: 'error', message })
+        appendCommandLine(`Restart failed: ${message}`)
+      } finally {
+        unlisten?.()
+        setSnapshotBusy(false)
+      }
+    },
+    [
+      game,
+      appDirs.backupDir,
+      gameFolders.bg2,
+      gameDirForKey,
+      stopRunningInstall,
+      run,
+      restartFromBackup,
+      appendCommandLine,
+      pushToast,
+    ],
   )
 
   const onCleanup = useCallback(async () => {
@@ -751,13 +839,25 @@ export function InstallStation({
                 </button>
                 <IconTip>Hide installed</IconTip>
               </span>
+              <span className="install-action-icon-wrap has-icon-tip">
+                <button
+                  type="button"
+                  className="install-action-icon-btn"
+                  disabled={!canRestart}
+                  aria-label={restartTip}
+                  onClick={() => setRestartDialogOpen(true)}
+                >
+                  <RestartIcon />
+                </button>
+                <IconTip>{restartTip}</IconTip>
+              </span>
               <button
                 type="button"
                 className="btn secondary"
-                disabled={!canBackup}
-                onClick={() => openBackupsDialog('backup')}
+                disabled={!canSnapshot || snapshotBusy}
+                onClick={() => openSnapshotsDialog('create')}
               >
-                Backups
+                Snapshots
               </button>
             </div>
           </div>
@@ -817,22 +917,29 @@ export function InstallStation({
         onSendInput={(text) => void sendInput(text)}
       />
 
-      <BackupManagerDialog
-        open={backupDialog != null}
-        mode={backupDialog ?? 'vanilla'}
-        initialManageTab={backupManageTab}
+      <SnapshotManagerDialog
+        open={snapshotDialog != null}
+        mode={snapshotDialog ?? 'vanilla'}
+        initialManageTab={snapshotManageTab}
         backupRoot={appDirs.backupDir}
-        gameKeys={backupGameKeys}
-        dirsByKey={backupDirsByKey}
-        gameKey={backupGameKey}
-        sourceDir={backupSourceDir}
-        targetDir={backupSourceDir}
+        gameKeys={snapshotGameKeys}
+        dirsByKey={snapshotDirsByKey}
+        gameKey={snapshotGameKey}
+        sourceDir={snapshotSourceDir}
+        targetDir={snapshotSourceDir}
         eetMode={game === 'eet'}
-        onClose={() => setBackupDialog(null)}
+        onClose={() => setSnapshotDialog(null)}
         onVanillaDone={() => void onStart()}
         onRestoreDone={(path, key) => void onRestoreDone(path, key)}
-        onBusyChange={setBackupBusy}
+        onBusyChange={setSnapshotBusy}
         onLog={appendCommandLine}
+      />
+
+      <RestartConfirmDialog
+        open={restartDialogOpen}
+        eetMode={game === 'eet'}
+        onCancel={() => setRestartDialogOpen(false)}
+        onConfirm={(scope) => void onRestartConfirm(scope)}
       />
 
       <ConfirmDialog

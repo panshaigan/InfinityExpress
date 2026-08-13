@@ -16,17 +16,17 @@ import { OutlinedTextField } from '../OutlinedTextField'
 import { DeleteFromCatalogIcon } from '../mods/ModsActionIcons'
 import { useToast } from '../toasts/toastContext'
 
-export type BackupDialogMode = 'vanilla' | 'manage'
+export type SnapshotDialogMode = 'vanilla' | 'manage'
 
-type ManageTab = 'backup' | 'restore'
+type ManageTab = 'create' | 'restore'
 
-interface ListedBackup extends BackupEntry {
+interface ListedSnapshot extends BackupEntry {
   gameKey: string
 }
 
 interface Props {
   open: boolean
-  mode: BackupDialogMode
+  mode: SnapshotDialogMode
   /** Initial tab when mode is manage. */
   initialManageTab?: ManageTab
   backupRoot: string
@@ -45,7 +45,7 @@ interface Props {
   eetMode?: boolean
   onClose: () => void
   onVanillaDone: () => void
-  onRestoreDone: (backupPath: string, restoredGameKey: string) => void
+  onRestoreDone: (snapshotPath: string, restoredGameKey: string) => void
   onBusyChange?: (busy: boolean) => void
   /** Optional install Commands-tab log (timestamped by caller). */
   onLog?: (message: string) => void
@@ -101,12 +101,7 @@ function formatCreatedAt(raw: string): string {
 }
 
 function typeLabel(entry: BackupEntry): string {
-  const base = entry.kind === 'vanilla' ? 'Vanilla' : 'Snapshot'
-  return entry.excludeSafeDirs ? `${base} (partial)` : `${base} (full)`
-}
-
-function displayName(entry: BackupEntry): string {
-  return entry.kind === 'vanilla' ? 'Vanilla' : entry.name
+  return entry.excludeSafeDirs ? 'Snapshot (partial)' : 'Snapshot (full)'
 }
 
 function gameKeyLabel(key: string): string {
@@ -115,10 +110,10 @@ function gameKeyLabel(key: string): string {
   return key.toUpperCase()
 }
 
-export function BackupManagerDialog({
+export function SnapshotManagerDialog({
   open,
   mode,
-  initialManageTab = 'backup',
+  initialManageTab = 'create',
   backupRoot,
   gameKeys,
   dirsByKey,
@@ -142,7 +137,7 @@ export function BackupManagerDialog({
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState<BackupProgress | null>(null)
-  const [pendingDelete, setPendingDelete] = useState<ListedBackup | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<ListedSnapshot | null>(null)
   const [includeBg1, setIncludeBg1] = useState(true)
   const [includeBg2, setIncludeBg2] = useState(true)
   const [vanillaTargetKey, setVanillaTargetKey] = useState(gameKey)
@@ -240,7 +235,7 @@ export function BackupManagerDialog({
   const forceVanillaOnly =
     mode === 'vanilla' ||
     (mode === 'manage' &&
-      manageTab === 'backup' &&
+      manageTab === 'create' &&
       (!manifestsLoaded || missingVanillaKeys.length > 0))
 
   useEffect(() => {
@@ -259,14 +254,9 @@ export function BackupManagerDialog({
     (vanillaTargetKey === gameKey ? sourceDir : '') ||
     ''
 
-  const entries: ListedBackup[] = keys.flatMap((key) => {
-    const m = manifests[key]
-    if (!m) return []
-    const list: ListedBackup[] = []
-    if (m.vanilla) list.push({ ...m.vanilla, gameKey: key })
-    for (const s of m.snapshots) list.push({ ...s, gameKey: key })
-    return list
-  })
+  const entries: ListedSnapshot[] = keys.flatMap((key) =>
+    (manifests[key]?.snapshots ?? []).map((s) => ({ ...s, gameKey: key })),
+  )
 
   const progressPct =
     progress && progress.bytesTotal > 0
@@ -407,14 +397,14 @@ export function BackupManagerDialog({
     setProgress(emptyProgress('Cleaning game folder…'))
     try {
       await restoreGameDir(selectedPath, dest)
-      onLog?.(`Backup restored from ${selectedPath} → ${selectedGameKey}`)
-      pushToast({ tone: 'success', message: 'Backup restored.' })
+      onLog?.(`Snapshot restored from ${selectedPath} → ${selectedGameKey}`)
+      pushToast({ tone: 'success', message: 'Snapshot restored.' })
       onRestoreDone(selectedPath, selectedGameKey)
       onClose()
     } catch (e) {
       const message = String(e)
       setError(message)
-      onLog?.(`Backup restore failed: ${message}`)
+      onLog?.(`Snapshot restore failed: ${message}`)
       pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
@@ -428,7 +418,7 @@ export function BackupManagerDialog({
     setPendingDelete(null)
     setBusy(true)
     setError(null)
-    setProgress(emptyProgress('Removing backup…'))
+    setProgress(emptyProgress('Removing snapshot…'))
     try {
       await deleteBackup(backupRoot, entry.gameKey, entry.path)
       if (selectedPath === entry.path) {
@@ -436,12 +426,12 @@ export function BackupManagerDialog({
         setSelectedGameKey('')
       }
       await loadManifests()
-      onLog?.(`Backup deleted: ${displayName(entry)} (${entry.gameKey})`)
-      pushToast({ tone: 'success', message: 'Backup deleted.' })
+      onLog?.(`Snapshot deleted: ${entry.name} (${entry.gameKey})`)
+      pushToast({ tone: 'success', message: 'Snapshot deleted.' })
     } catch (e) {
       const message = String(e)
       setError(message)
-      onLog?.(`Backup delete failed: ${message}`)
+      onLog?.(`Snapshot delete failed: ${message}`)
       pushToast({ tone: 'error', message })
     } finally {
       setBusy(false)
@@ -449,8 +439,8 @@ export function BackupManagerDialog({
     }
   }
 
-  const showBackupForm =
-    mode === 'vanilla' || (mode === 'manage' && manageTab === 'backup')
+  const showCreateForm =
+    mode === 'vanilla' || (mode === 'manage' && manageTab === 'create')
   const showMultiVanillaPick =
     forceVanillaOnly && manifestsLoaded && missingVanillaKeys.length > 1
 
@@ -460,26 +450,26 @@ export function BackupManagerDialog({
         className="keyboard-help settings-dialog backup-dialog"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="backup-dialog-title"
+        aria-labelledby="snapshot-dialog-title"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="keyboard-help-header">
-          <h2 id="backup-dialog-title">
-            {mode === 'vanilla' || forceVanillaOnly ? 'Vanilla backup' : 'Backups'}
+          <h2 id="snapshot-dialog-title">
+            {mode === 'vanilla' || forceVanillaOnly ? 'Vanilla backup' : 'Snapshots'}
           </h2>
         </div>
 
         {mode === 'manage' ? (
-          <div className="settings-dialog-tabs" role="tablist" aria-label="Backup actions">
+          <div className="settings-dialog-tabs" role="tablist" aria-label="Snapshot actions">
             <button
               type="button"
               role="tab"
-              aria-selected={manageTab === 'backup'}
-              className={`settings-dialog-tab${manageTab === 'backup' ? ' active' : ''}`}
-              onClick={() => setManageTab('backup')}
+              aria-selected={manageTab === 'create'}
+              className={`settings-dialog-tab${manageTab === 'create' ? ' active' : ''}`}
+              onClick={() => setManageTab('create')}
               disabled={busy}
             >
-              Back up
+              Create
             </button>
             <button
               type="button"
@@ -495,7 +485,7 @@ export function BackupManagerDialog({
         ) : null}
 
         <div className="backup-dialog-body">
-          {showBackupForm ? (
+          {showCreateForm ? (
             <div className="settings-fields">
               {forceVanillaOnly ? (
                 <>
@@ -568,7 +558,7 @@ export function BackupManagerDialog({
           ) : (
             <div className="backup-restore-list ie-scroll">
               {entries.length === 0 ? (
-                <p className="backup-restore-empty">No backups found for this game folder.</p>
+                <p className="backup-restore-empty">No snapshots found for this game folder.</p>
               ) : (
                 <table className="backup-restore-table">
                   <thead>
@@ -600,7 +590,7 @@ export function BackupManagerDialog({
                             <label className="backup-restore-name">
                               <input
                                 type="radio"
-                                name="backup-choice"
+                                name="snapshot-choice"
                                 checked={selected}
                                 onChange={() => {
                                   setSelectedPath(entry.path)
@@ -608,7 +598,7 @@ export function BackupManagerDialog({
                                 }}
                                 disabled={busy}
                               />
-                              <span>{displayName(entry)}</span>
+                              <span>{entry.name}</span>
                             </label>
                           </td>
                           {keys.length > 1 ? (
@@ -621,7 +611,7 @@ export function BackupManagerDialog({
                               type="button"
                               className="btn secondary install-control-btn has-icon-tip"
                               disabled={busy}
-                              aria-label={`Delete ${displayName(entry)}`}
+                              aria-label={`Delete ${entry.name}`}
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setPendingDelete(entry)
@@ -681,7 +671,7 @@ export function BackupManagerDialog({
               Create vanilla
             </button>
           ) : null}
-          {!forceVanillaOnly && mode === 'manage' && manageTab === 'backup' ? (
+          {!forceVanillaOnly && mode === 'manage' && manageTab === 'create' ? (
             <button
               type="button"
               className="btn primary"
@@ -706,10 +696,10 @@ export function BackupManagerDialog({
 
       <ConfirmDialog
         open={pendingDelete != null}
-        title="Delete backup?"
+        title="Delete snapshot?"
         message={
           pendingDelete
-            ? `Delete "${displayName(pendingDelete)}"? This cannot be undone.`
+            ? `Delete "${pendingDelete.name}"? This cannot be undone.`
             : ''
         }
         confirmLabel="Delete"

@@ -1239,18 +1239,21 @@ export function useInstallRun(options: {
     [appendCommandLine, ensureIdleRun, withNormalizedCursor],
   )
 
+  const stopRunningInstall = useCallback(async () => {
+    if (!runningRef.current) return
+    stopRequestedRef.current = true
+    setPaused(true)
+    await cancelWeiduStep()
+    for (let n = 0; n < 200 && runningRef.current; n++) {
+      await new Promise((r) => setTimeout(r, 100))
+    }
+  }, [])
+
   const restartFromBackup = useCallback(
     async (_phaseGameDir: string) => {
       if (!runRef.current) return
 
-      if (runningRef.current) {
-        stopRequestedRef.current = true
-        setPaused(true)
-        await cancelWeiduStep()
-        for (let n = 0; n < 200 && runningRef.current; n++) {
-          await new Promise((r) => setTimeout(r, 100))
-        }
-      }
+      await stopRunningInstall()
 
       const base = runRef.current
       if (!base) return
@@ -1295,9 +1298,9 @@ export function useInstallRun(options: {
       setStopping(false)
       cacheRef.current = new Map()
       stepResultLinesRef.current = new Map()
-      appendCommandLine('Plan reset after backup restore — press Play to continue')
+      appendCommandLine('Plan reset after restore — press Play to continue')
     },
-    [markAlreadyInstalledFromLog, appendCommandLine],
+    [markAlreadyInstalledFromLog, appendCommandLine, stopRunningInstall],
   )
 
   const sendInput = useCallback(async (text: string) => {
@@ -1334,6 +1337,7 @@ export function useInstallRun(options: {
     toggleBreakpoint,
     moveCursorToStep,
     restartFromBackup,
+    stopRunningInstall,
     sendInput,
     appendCommandLine,
     setRun,

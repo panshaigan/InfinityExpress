@@ -96,7 +96,7 @@ Orchestration: `hooks/useInstallRun.ts` + `lib/desktop/weiduInstall.ts` → Rust
 
 ## Backups
 
-Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanilla** bindings live in `infinity-express.vanilla-registry` (managed path under the data root, or an external unmodded folder). UI: Settings → Vanilla backups; wizard on new project; [`BackupManagerDialog.tsx`](../src/ui/install/BackupManagerDialog.tsx) for snapshots. Rust: [`weidu_backup.rs`](../src-tauri/src/weidu_backup.rs). TS wrappers: [`weiduInstall.ts`](../src/lib/desktop/weiduInstall.ts). Types: `BackupKind` / `BackupManifest` in [`types.ts`](../src/lib/install/types.ts).
+Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanilla** bindings live in `infinity-express.vanilla-registry` (managed path under the data root, or an external unmodded folder). UI: Settings → Vanilla backups; wizard on new project; Install toolbar **Restart** (restore vanilla + reset plan) and **Snapshots** ([`SnapshotManagerDialog.tsx`](../src/ui/install/SnapshotManagerDialog.tsx)). Rust: [`weidu_backup.rs`](../src-tauri/src/weidu_backup.rs). TS wrappers: [`weiduInstall.ts`](../src/lib/desktop/weiduInstall.ts). Types: `BackupKind` / `BackupManifest` in [`types.ts`](../src/lib/install/types.ts).
 
 ### Layout
 
@@ -128,9 +128,9 @@ Legacy trees are migrated on `list_backups` / create / delete:
 | `vanilla` | `backups/{gameKey}/` | One per game key. Required before install Start. Recreate replaces existing. |
 | `snapshot` | `{gameKey}/{name}/` | Named; same name replaces. Only allowed after vanilla exists for that key. (Project-scoped snapshots under `projects/` are planned later.) |
 
-**Create gate:** if vanilla is missing for the scoped keys, Back up UI only offers vanilla (no snapshot name). Once vanillas exist, named snapshots are available.
+**Create gate:** if vanilla is missing for the scoped keys, Snapshots **Create** tab only offers vanilla (no snapshot name). Once vanillas exist, named snapshots are available.
 
-**EET:** Start requires **both** `bg1` and `bg2` vanillas. A vanilla created earlier under a non-EET BG1/BG2 install counts. Snapshot create shows BG1/BG2 checkboxes; each checked key gets a folder with the **same snapshot name**. Restore list merges both keys (Game column).
+**EET:** Start requires **both** `bg1` and `bg2` vanillas. A vanilla created earlier under a non-EET BG1/BG2 install counts. Snapshot create shows BG1/BG2 checkboxes; each checked key gets a folder with the **same snapshot name**. Restore list merges both keys (Game column). **Restart** offers EET stage only (BG2) or full installation (BG1 + BG2).
 
 ### Operations & progress
 
@@ -140,16 +140,18 @@ Event: `weidu-backup-progress` (`phase`, `message`, `filesDone`/`bytesDone`, `fi
 | --- | --- |
 | Create | Measure → copy (per-file). Pre-delete of existing dest is async with indeterminate bar. |
 | Restore | Wipe live game folder (`Cleaning game folder…`) → measure → copy. |
-| Delete | Async `remove_dir_all` with indeterminate “Removing backup…”. |
+| Delete | Async `remove_dir_all` with indeterminate “Removing snapshot…”. |
 
 UI shows message on the left and `copied / total` bytes on the right (no em dash). Indeterminate animated bar when totals are 0.
 
 ### Restore → install plan
 
-1. Wipe target game dir, then copy backup tree.
+1. Wipe target game dir, then copy snapshot or vanilla tree.
 2. If an install run exists, `restartFromBackup` resets steps to `queued`, marks `alreadyInstalled` from each step’s phase game dir `weidu.log` (`parseWeiduLog` / `~tp2~ #lang #number`), and places the **cursor** on the first unfinished step.
 3. Leaves `runState: 'idle'` — **does not** start or resume WeiDU. User presses Play.
-4. Vanilla (no log) → none marked installed. Does **not** change Components-phase selection checkboxes.
+4. Vanilla restore (no log) → none marked installed. Does **not** change Components-phase selection checkboxes.
+
+Install toolbar **Restart** restores the vanilla backup (with EET scope choice) then runs the same plan reset. Snapshots dialog **Restore** restores a named snapshot only (vanilla is not listed there).
 
 ### Commands
 
@@ -163,7 +165,7 @@ UI shows message on the left and `copied / total` bytes on the right (no em dash
 | WeiDU.log parse | `src/lib/install/weiduLog.ts` |
 | Label → number | `src/lib/install/weiduResolution.ts` |
 | Run hook | `src/hooks/useInstallRun.ts` |
-| UI | `src/ui/install/InstallStation.tsx`, `InstallTable.tsx`, `BackupManagerDialog.tsx`, console dock |
+| UI | `src/ui/install/InstallStation.tsx`, `InstallTable.tsx`, `SnapshotManagerDialog.tsx`, `RestartConfirmDialog.tsx`, console dock |
 | Rust install / backup | `src-tauri/src/weidu_install.rs`, `weidu_backup.rs` |
 
 Tauri FS boundary (dialogs vs persisted paths): `.cursor/rules/tauri-desktop.mdc`.
