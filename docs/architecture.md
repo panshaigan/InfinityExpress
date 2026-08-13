@@ -37,7 +37,7 @@ A **Project** is one install universe: locked engine, component selection / pres
 
 Settings (top bar): **Project** (per-project modded destination folders), **Vanilla backups** + **App** (mods download dir, backup/logs/projects dir, WeiDU, GitHub token). Opening Settings defaults to **Project** on Components, **App** on Mods, and **Vanilla backups** on Install. The new-project wizard opens on Vanilla backups and hides the Project tab.
 
-**Session restore:** Selection, station done marks, presets, install table/cursor live on the active project. Install console WeiDU output is **not** stored there — on startup it is reloaded from `{backupDir}/install-logs/{runId}/run-stdout.log` and `run-stderr.log` when a saved install run exists.
+**Session restore:** Selection, station done marks, presets, install table/cursor live on the active project. Install console WeiDU output is **not** stored there — on startup it is reloaded from `{backupDir}/projects/{projectId}/logs/{runId}/run-stdout.log` and `run-stderr.log` when a saved install run exists.
 
 ### Fresh install (clear projects + Settings)
 

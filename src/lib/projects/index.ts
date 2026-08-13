@@ -1,6 +1,7 @@
 export * from './types'
 export * from './vanillaRegistry'
 export * from './projectStore'
+export * from './projectPaths'
 export * from './migrateLegacy'
 export * from './vanillaActions'
 export * from './bootstrap'

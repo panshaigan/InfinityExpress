@@ -69,6 +69,7 @@ interface Props {
   onExitBlockingChange?: (busy: boolean) => void
   /** Per-project live game destinations. */
   gameFolders: GameFolderPaths
+  projectId?: string | null
   initialInstallSession?: PersistedInstallSession
   onInstallSessionChange?: (session: PersistedInstallSession | null) => void
   onDeselectComponent?: (componentId: string) => void
@@ -99,6 +100,7 @@ export function InstallStation({
   onBusyChange,
   onExitBlockingChange,
   gameFolders,
+  projectId = null,
   initialInstallSession,
   onInstallSessionChange,
   onDeselectComponent,
@@ -149,6 +151,7 @@ export function InstallStation({
     selectedIds,
     game,
     gameFolders,
+    projectId,
     initialInstallState: initialInstallSession
       ? { installSession: initialInstallSession }
       : null,

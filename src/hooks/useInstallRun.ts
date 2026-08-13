@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import type { GameFolderPaths } from '../lib/ui/gameFolderPrefs'
+import { ensureDir } from '../lib/desktop/fsDialogs'
+import { installRunLogDir } from '../lib/projects'
 import { readAppDirPaths } from '../lib/ui/appDirPrefs'
 import {
   gameFolderKeyForPhase,
@@ -75,9 +77,10 @@ export function useInstallRun(options: {
   selectedIds: ReadonlySet<string>
   game: SelectedGame | null
   gameFolders: GameFolderPaths
+  projectId?: string | null
   initialInstallState?: InstallRunInitialState | null
 }) {
-  const { model, selectedIds, game, gameFolders, initialInstallState } = options
+  const { model, selectedIds, game, gameFolders, projectId, initialInstallState } = options
   const shouldLoadConsoleRef = useRef(!!initialInstallState?.installSession)
   const hydratedRef = useRef(false)
   const [run, setRun] = useState<InstallRun | null>(() => {
@@ -233,9 +236,12 @@ export function useInstallRun(options: {
     if (!game) return null
     const appDirs = readAppDirPaths()
     const runId = newRunId()
-    const logDir = appDirs.backupDir
-      ? `${appDirs.backupDir.replace(/\\/g, '/').replace(/\/$/, '')}/install-logs/${runId}`
-      : ''
+    const backupDir = appDirs.backupDir.trim()
+    const logDir =
+      backupDir && projectId
+        ? installRunLogDir(backupDir, projectId, runId)
+        : ''
+    if (logDir) void ensureDir(logDir)
     const steps: InstallStep[] = planSteps.map((s) => ({
       ...s,
       tp2Path: '',
@@ -271,7 +277,7 @@ export function useInstallRun(options: {
     cacheRef.current = new Map()
     stepResultLinesRef.current = new Map()
     return next
-  }, [game, planSteps])
+  }, [game, planSteps, projectId])
 
   const ensureIdleRun = useCallback((): InstallRun | null => {
     if (runRef.current) return runRef.current

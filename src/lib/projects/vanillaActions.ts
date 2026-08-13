@@ -9,6 +9,7 @@ import {
 } from '../desktop/fsDialogs'
 import { readAppDirPaths } from '../ui/appDirPrefs'
 import type { GameFolderKey } from '../ui/gameFolderPrefs'
+import { projectLogsDir, projectsRoot } from './projectPaths'
 import type { PrepareDestinationResult } from './types'
 import {
   managedVanillaPath,
@@ -56,11 +57,19 @@ export async function ensureMainDataFolder(path: string): Promise<string> {
   if (isDesktopApp()) {
     try {
       await ensureDir(trimmed)
+      await ensureDir(projectsRoot(trimmed))
     } catch (err) {
       throw new Error(String(err))
     }
   }
   return trimmed
+}
+
+/** Create `{dataRoot}/projects/{projectId}/logs` when the main data folder is set. */
+export async function ensureProjectLogsDir(projectId: string): Promise<void> {
+  const { backupDir } = readAppDirPaths()
+  if (!backupDir.trim() || !isDesktopApp()) return
+  await ensureDir(projectLogsDir(backupDir, projectId))
 }
 
 /**

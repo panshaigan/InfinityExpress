@@ -107,8 +107,10 @@ Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanill
     {gameKey}.json           # per-game backup manifest (sidecar)
   {gameKey}/                 # legacy / named snapshots (until project snapshots land)
     {snapshotName}/
-  install-logs/
-    {runId}/                 # WeiDU run stdout/stderr (not game backups)
+  projects/
+    {projectId}/
+      logs/
+        {runId}/             # WeiDU run stdout/stderr (not game backups)
 ```
 
 **Project destinations** (live/modded folders) are per-project, not under this tree. Creating a project: empty destination → `prepare_project_destination` copies vanilla into it; non-empty destination must already contain the game executable (and no `WeiDU.log`).

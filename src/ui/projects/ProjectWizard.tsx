@@ -9,6 +9,7 @@ import {
   destinationsForEngine,
   emptyDestinations,
   ensureMainDataFolder,
+  ensureProjectLogsDir,
   hasVanillaForKey,
   missingVanillaKeys,
   prepareDestinationForKey,
@@ -509,6 +510,7 @@ export function ProjectWizard({
         engine,
         destinations: destinationsForEngine(engine, destinations),
       })
+      await ensureProjectLogsDir(id)
       onCreated(id)
     } finally {
       setSubmitting(false)

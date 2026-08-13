@@ -1159,6 +1159,7 @@ function AppShell() {
               selectedIds={selectedIds}
               game={game}
               gameFolders={gameFolders}
+              projectId={projectId}
               neededCodenames={neededCodenames}
               mods={userCatalog.mods}
               detailCollapsed={detailCollapsed}
