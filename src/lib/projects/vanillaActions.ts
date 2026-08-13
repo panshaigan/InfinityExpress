@@ -185,6 +185,48 @@ export async function useExistingManagedVanilla(
   return null
 }
 
+/** Copy the current vanilla for `key` into an empty folder and bind it as external. */
+export async function copyVanillaToFolder(
+  key: GameFolderKey,
+  targetDir: string,
+): Promise<{ path: string; version: string }> {
+  const trimmed = targetDir.trim()
+  if (!trimmed) throw new Error('Pick a destination folder')
+
+  const binding = readVanillaRegistry()[key]
+  const source = vanillaPath(binding)
+  if (!source) throw new Error('No vanilla backup set for this game')
+
+  if (normalizeFolderPath(source) === normalizeFolderPath(trimmed)) {
+    throw new Error('Choose a different folder from the current backup')
+  }
+
+  if (isDesktopApp()) {
+    try {
+      await validateCreatableDir(trimmed)
+    } catch (err) {
+      throw new Error(String(err))
+    }
+    let empty = false
+    try {
+      empty = await dirIsEmpty(trimmed)
+    } catch (err) {
+      throw new Error(String(err))
+    }
+    if (!empty) {
+      throw new Error('Destination folder must be empty')
+    }
+
+    await prepareProjectDestination({
+      targetDir: trimmed,
+      vanillaSource: source,
+      exeName: GAME_FOLDER_EXE[key],
+    })
+  }
+
+  return registerExternalVanilla(key, trimmed)
+}
+
 export async function prepareDestinationForKey(
   key: GameFolderKey,
   targetDir: string,
@@ -206,3 +248,4 @@ export async function prepareDestinationForKey(
     exeName,
   })
 }
+

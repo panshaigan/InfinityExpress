@@ -1,5 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { createPortal } from 'react-dom'
+import { useEffect, useMemo, useState } from 'react'
 import { GAME_FULL_LABELS, GAME_LABELS } from '../../lib/xml/schema'
 import {
   deleteProject,
@@ -8,6 +7,7 @@ import {
   type ProjectMeta,
 } from '../../lib/projects'
 import { ConfirmDialog } from '../ConfirmDialog'
+import { HubCardMenu } from '../HubCardMenu'
 import { OutlinedTextField } from '../OutlinedTextField'
 import { useBackdropDismiss } from '../backdropDismiss'
 
@@ -125,15 +125,26 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
                     Created {formatRelative(p.createdAt)}
                   </span>
                 </button>
-                <ProjectCardMenu
+                <HubCardMenu
                   open={menuOpenId === p.id}
                   onOpenChange={(open) => setMenuOpenId(open ? p.id : null)}
-                  projectName={p.name}
-                  onRename={() => openRename(p)}
-                  onRemove={() => {
-                    setMenuOpenId(null)
-                    setPendingDelete(p)
-                  }}
+                  label={p.name}
+                  items={[
+                    {
+                      id: 'rename',
+                      label: 'Rename',
+                      onSelect: () => openRename(p),
+                    },
+                    {
+                      id: 'remove',
+                      label: 'Remove',
+                      danger: true,
+                      onSelect: () => {
+                        setMenuOpenId(null)
+                        setPendingDelete(p)
+                      },
+                    },
+                  ]}
                 />
               </li>
             ))}
@@ -162,104 +173,6 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
         onCancel={() => setPendingRename(null)}
         onConfirm={confirmRename}
       />
-    </div>
-  )
-}
-
-function ProjectCardMenu({
-  open,
-  onOpenChange,
-  projectName,
-  onRename,
-  onRemove,
-}: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  projectName: string
-  onRename: () => void
-  onRemove: () => void
-}) {
-  const rootRef = useRef<HTMLDivElement>(null)
-  const triggerRef = useRef<HTMLButtonElement>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const menuId = useId()
-  const [menuStyle, setMenuStyle] = useState<CSSProperties>({})
-
-  useLayoutEffect(() => {
-    if (!open || !triggerRef.current) return
-    const rect = triggerRef.current.getBoundingClientRect()
-    setMenuStyle({
-      top: rect.bottom + 5,
-      right: window.innerWidth - rect.right,
-    })
-  }, [open])
-
-  useEffect(() => {
-    if (!open) return
-    function onPointerDown(e: PointerEvent) {
-      const target = e.target as Node
-      if (!rootRef.current?.contains(target) && !menuRef.current?.contains(target)) {
-        onOpenChange(false)
-      }
-    }
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        onOpenChange(false)
-      }
-    }
-    document.addEventListener('pointerdown', onPointerDown)
-    window.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown)
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [open, onOpenChange])
-
-  return (
-    <div ref={rootRef} className="project-hub-card-menu">
-      <button
-        ref={triggerRef}
-        type="button"
-        className={`project-hub-menu-trigger${open ? ' open' : ''}`}
-        aria-label={`Actions for ${projectName}`}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        aria-controls={open ? menuId : undefined}
-        onClick={() => onOpenChange(!open)}
-      >
-        <span aria-hidden="true">⋮</span>
-      </button>
-      {open
-        ? createPortal(
-            <div
-              ref={menuRef}
-              id={menuId}
-              className="project-hub-menu project-hub-menu-portal"
-              role="menu"
-              aria-label={`Actions for ${projectName}`}
-              style={menuStyle}
-            >
-              <button
-                type="button"
-                role="menuitem"
-                className="project-hub-menu-item"
-                onClick={onRename}
-              >
-                Rename
-              </button>
-              <button
-                type="button"
-                role="menuitem"
-                className="project-hub-menu-item danger"
-                onClick={onRemove}
-              >
-                Remove
-              </button>
-            </div>,
-            document.body,
-          )
-        : null}
     </div>
   )
 }

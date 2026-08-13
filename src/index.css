@@ -2288,7 +2288,7 @@ body.is-resizing-detail * {
 
 .project-hub-menu-portal {
   position: fixed;
-  z-index: 40;
+  z-index: 50;
 }
 
 .project-hub-menu-item {
@@ -2379,16 +2379,129 @@ body.is-resizing-detail * {
   word-break: break-word;
 }
 
-.project-wizard-vanilla-actions,
-.settings-vanilla-actions {
+.project-wizard-vanilla-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
 
-.settings-vanilla-block {
-  margin-bottom: 1.25rem;
+.settings-vanilla-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.settings-vanilla-card {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--panel) 88%, #000);
+}
+
+.settings-vanilla-card.has-error {
+  border-color: color-mix(in srgb, var(--err) 55%, var(--line));
+  border-left-color: var(--err);
+}
+
+.settings-vanilla-card.is-busy {
+  border-left-color: var(--accent);
+}
+
+.settings-vanilla-card-main {
+  flex: 1;
+  min-width: 0;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.settings-vanilla-card-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding-right: 0.5rem;
+}
+
+.settings-vanilla-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--muted) 88%, var(--ink));
+}
+
+.settings-vanilla-card-badge {
+  display: inline-block;
+  padding: 0.08rem 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--line) 90%, var(--muted));
+  border-radius: var(--radius-sm);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.settings-vanilla-card-sep {
+  margin: 0 0.35rem;
+}
+
+.settings-vanilla-card-path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.settings-vanilla-card-error {
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--err) 78%, var(--ink));
+}
+
+.settings-vanilla-card-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.15rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.settings-vanilla-card-progress-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.settings-vanilla-card-progress-detail {
+  word-break: break-word;
+}
+
+.settings-vanilla-card-menu {
+  position: relative;
+  align-self: center;
+  margin-right: 0.65rem;
+}
+
+.project-hub-menu-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.project-hub-menu-item:disabled:hover,
+.project-hub-menu-item:disabled:focus-visible {
+  background: transparent;
 }
 
 .project-wizard-footer {

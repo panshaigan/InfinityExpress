@@ -102,7 +102,7 @@ Orchestration: `hooks/useInstallRun.ts` + `lib/desktop/weiduInstall.ts` → Rust
 
 ## Backups
 
-Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanilla** bindings live in `infinity-express.vanilla-registry` (managed path under the data root, or an external unmodded folder). UI: Settings → Vanilla backups; wizard on new project; Install toolbar **Restart** (restore vanilla + reset plan), **Take snapshot** (name popup then copy now), and **Restore snapshot** ([`RestoreSnapshotDialog.tsx`](../src/ui/install/RestoreSnapshotDialog.tsx)). Rust: [`weidu_backup.rs`](../src-tauri/src/weidu_backup.rs). TS wrappers: [`weiduInstall.ts`](../src/lib/desktop/weiduInstall.ts). Types: `BackupKind` / `BackupManifest` in [`types.ts`](../src/lib/install/types.ts).
+Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanilla** bindings live in `infinity-express.vanilla-registry` (managed path under the data root, or an external unmodded folder). UI: Settings → Vanilla backups (cards for set bindings; ⋮ retarget / copy-elsewhere); wizard on new project; Install toolbar **Restart** (restore vanilla + reset plan), **Take snapshot** (name popup then copy now), and **Restore snapshot** ([`RestoreSnapshotDialog.tsx`](../src/ui/install/RestoreSnapshotDialog.tsx)). Rust: [`weidu_backup.rs`](../src-tauri/src/weidu_backup.rs). TS wrappers: [`weiduInstall.ts`](../src/lib/desktop/weiduInstall.ts). Types: `BackupKind` / `BackupManifest` in [`types.ts`](../src/lib/install/types.ts).
 
 ### Layout
 

@@ -25,19 +25,30 @@ import {
 import { PATHS_CHANGED_EVENT } from '../lib/ui/pathPrefsEvents'
 import { GAME_LABELS, type SelectedGame } from '../lib/xml/schema'
 import { useBackdropDismiss } from './backdropDismiss'
+import { ConfirmDialog } from './ConfirmDialog'
 import { DirectoryField } from './DirectoryField'
-import { isDesktopApp, normalizeFolderPath, pickFile } from '../lib/desktop/fsDialogs'
+import {
+  isDesktopApp,
+  normalizeFolderPath,
+  pickDirectory,
+  pickFile,
+} from '../lib/desktop/fsDialogs'
+import {
+  listenBackupProgress,
+  type BackupProgress,
+} from '../lib/desktop/weiduInstall'
+import { HubCardMenu } from './HubCardMenu'
 import { IconTip } from './IconTip'
 import { OutlinedTextField } from './OutlinedTextField'
 import {
-  createManagedVanillaFromFolder,
+  copyVanillaToFolder,
   readVanillaRegistry,
   registerExternalVanilla,
   syncManagedVanillasFromDisk,
-  useExistingManagedVanilla,
   validateDestinationFolder,
   vanillaPath,
   type ProjectId,
+  type VanillaBinding,
   type VanillaRegistry,
 } from '../lib/projects'
 import type { GameFolderPaths } from '../lib/ui/gameFolderPrefs'
@@ -73,6 +84,30 @@ const MODS_DOWNLOAD_DIR_TIP =
 const GITHUB_TOKEN_TIP =
   'Optional personal access token raises API rate limits for checking for updates on large catalogs. Without a token the app still works via public API and HTML scrape fallback. Create a classic token with public_repo (or a fine-grained token with read access to public repositories).'
 
+function formatVanillaCopyProgress(
+  progress: BackupProgress | null,
+  busyKey: GameFolderKey | null,
+): { heading: string; detail: string } | null {
+  if (!busyKey || !progress?.message?.trim()) return null
+  const message = progress.message.trim()
+  const phase = progress.phase
+  const isPerFileCopy =
+    phase === 'copy' &&
+    !message.toLowerCase().startsWith('copying') &&
+    !message.toLowerCase().startsWith('measuring') &&
+    !message.includes('/') &&
+    !message.includes('\\')
+
+  return {
+    heading: `Copying ${GAME_LABELS[busyKey]} vanilla`,
+    detail: isPerFileCopy ? `Copying… ${message}` : message,
+  }
+}
+
+function vanillaModeLabel(binding: VanillaBinding): string {
+  return binding.mode === 'managed' ? 'Managed' : 'External'
+}
+
 export function SettingsDialog({
   open,
   onClose,
@@ -90,18 +125,41 @@ export function SettingsDialog({
   const backdrop = useBackdropDismiss(onClose)
   const [tab, setTab] = useState<SettingsTab>('vanilla')
   const [registry, setRegistry] = useState<VanillaRegistry>(readVanillaRegistry)
-  const [vanillaSource, setVanillaSource] = useState<Partial<Record<GameFolderKey, string>>>({})
   const [vanillaErrors, setVanillaErrors] = useState<Partial<Record<GameFolderKey, string>>>({})
   const [vanillaBusy, setVanillaBusy] = useState<GameFolderKey | null>(null)
+  const [vanillaProgress, setVanillaProgress] = useState<BackupProgress | null>(null)
+  const [menuOpenKey, setMenuOpenKey] = useState<GameFolderKey | null>(null)
+  const [pendingCopyKey, setPendingCopyKey] = useState<GameFolderKey | null>(null)
+  const menuOpenKeyRef = useRef<GameFolderKey | null>(null)
+  const pendingCopyKeyRef = useRef<GameFolderKey | null>(null)
   const [destErrors, setDestErrors] = useState<Partial<Record<GameFolderKey, string>>>({})
   const [appDirs, setAppDirs] = useState(readAppDirPaths)
   const [githubToken, setGithubToken] = useState(readGithubToken)
   const [weiduPath, setWeiduPath] = useState(readWeiduPath)
 
+  menuOpenKeyRef.current = menuOpenKey
+  pendingCopyKeyRef.current = pendingCopyKey
+
   useEffect(() => {
     onBusyChange?.(vanillaBusy !== null)
     return () => onBusyChange?.(false)
   }, [vanillaBusy, onBusyChange])
+
+  useEffect(() => {
+    if (!open) return
+    let cancelled = false
+    let unlisten: (() => void) | undefined
+    void listenBackupProgress((payload) => {
+      if (!cancelled) setVanillaProgress(payload)
+    }).then((fn) => {
+      if (cancelled) fn()
+      else unlisten = fn
+    })
+    return () => {
+      cancelled = true
+      unlisten?.()
+    }
+  }, [open])
 
   function refreshRegistry() {
     setRegistry(readVanillaRegistry())
@@ -114,6 +172,9 @@ export function SettingsDialog({
     setWeiduPath(readWeiduPath())
     setVanillaErrors({})
     setDestErrors({})
+    setMenuOpenKey(null)
+    setPendingCopyKey(null)
+    setVanillaProgress(null)
     void syncManagedVanillasFromDisk().then(refreshRegistry)
     refreshRegistry()
     setTab(
@@ -133,6 +194,7 @@ export function SettingsDialog({
     })
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
+        if (menuOpenKeyRef.current != null || pendingCopyKeyRef.current != null) return
         e.preventDefault()
         onClose()
       }
@@ -151,6 +213,15 @@ export function SettingsDialog({
     window.addEventListener(PATHS_CHANGED_EVENT, sync)
     return () => window.removeEventListener(PATHS_CHANGED_EVENT, sync)
   }, [open])
+
+  function setVanillaFieldError(key: GameFolderKey, message: string | null) {
+    setVanillaErrors((prev) => {
+      const next = { ...prev }
+      if (message) next[key] = message
+      else delete next[key]
+      return next
+    })
+  }
 
   function setDestFieldError(key: GameFolderKey, message: string | null) {
     setDestErrors((prev) => {
@@ -206,6 +277,34 @@ export function SettingsDialog({
     return others
   }
 
+  function vanillaDistinctOthers(exclude: GameFolderKey): { label: string; path: string }[] {
+    const others: { label: string; path: string }[] = [
+      { label: 'Main data folder', path: appDirs.backupDir },
+      { label: 'Mods download directory', path: appDirs.modsDownloadDir },
+    ]
+    const reg = readVanillaRegistry()
+    for (const key of GAME_FOLDER_KEYS) {
+      if (key === exclude) continue
+      const vPath = vanillaPath(reg[key])
+      if (vPath) {
+        others.push({
+          label: `${GAME_LABELS[key]} vanilla`,
+          path: vPath,
+        })
+      }
+    }
+    for (const key of GAME_FOLDER_KEYS) {
+      const dest = destinations[key]?.trim()
+      if (dest) {
+        others.push({
+          label: `${GAME_LABELS[key]} destination`,
+          path: dest,
+        })
+      }
+    }
+    return others
+  }
+
   async function validateDestDir(key: GameFolderKey, value: string) {
     const trimmed = value.trim()
     if (!trimmed) {
@@ -250,71 +349,65 @@ export function SettingsDialog({
     writeWeiduPath(value)
   }
 
-  async function onCreateManaged(key: GameFolderKey) {
-    const source = vanillaSource[key]?.trim()
-    if (!source) {
-      setVanillaErrors((prev) => ({ ...prev, [key]: 'Pick an unmodded folder' }))
+  async function onChooseOtherFolder(key: GameFolderKey) {
+    setMenuOpenKey(null)
+    if (!isDesktopApp()) {
+      setVanillaFieldError(key, 'Available in the desktop app')
+      return
+    }
+    const picked = await pickDirectory(`Select unmodded ${GAME_LABELS[key]}`)
+    if (!picked) return
+    const clash = distinctPathError(
+      `${GAME_LABELS[key]} vanilla`,
+      picked,
+      vanillaDistinctOthers(key),
+    )
+    if (clash) {
+      setVanillaFieldError(key, clash)
       return
     }
     setVanillaBusy(key)
+    setVanillaProgress(null)
     try {
-      await createManagedVanillaFromFolder(key, source)
-      setVanillaErrors((prev) => {
-        const next = { ...prev }
-        delete next[key]
-        return next
-      })
+      await registerExternalVanilla(key, picked)
+      setVanillaFieldError(key, null)
       refreshRegistry()
     } catch (err) {
-      setVanillaErrors((prev) => ({ ...prev, [key]: String(err) }))
+      setVanillaFieldError(key, String(err))
     } finally {
       setVanillaBusy(null)
+      setVanillaProgress(null)
     }
   }
 
-  async function onUseExternal(key: GameFolderKey) {
-    const source = vanillaSource[key]?.trim()
-    if (!source) {
-      setVanillaErrors((prev) => ({ ...prev, [key]: 'Pick an unmodded folder' }))
+  async function runCopyElsewhere(key: GameFolderKey) {
+    setPendingCopyKey(null)
+    if (!isDesktopApp()) {
+      setVanillaFieldError(key, 'Available in the desktop app')
+      return
+    }
+    const picked = await pickDirectory(`Copy ${GAME_LABELS[key]} vanilla to…`)
+    if (!picked) return
+    const clash = distinctPathError(
+      `${GAME_LABELS[key]} vanilla`,
+      picked,
+      vanillaDistinctOthers(key),
+    )
+    if (clash) {
+      setVanillaFieldError(key, clash)
       return
     }
     setVanillaBusy(key)
+    setVanillaProgress(null)
     try {
-      await registerExternalVanilla(key, source)
-      setVanillaErrors((prev) => {
-        const next = { ...prev }
-        delete next[key]
-        return next
-      })
+      await copyVanillaToFolder(key, picked)
+      setVanillaFieldError(key, null)
       refreshRegistry()
     } catch (err) {
-      setVanillaErrors((prev) => ({ ...prev, [key]: String(err) }))
+      setVanillaFieldError(key, String(err))
     } finally {
       setVanillaBusy(null)
-    }
-  }
-
-  async function onUseExisting(key: GameFolderKey) {
-    setVanillaBusy(key)
-    try {
-      const path = await useExistingManagedVanilla(key)
-      if (!path) {
-        setVanillaErrors((prev) => ({
-          ...prev,
-          [key]: 'No managed vanilla found under the backups directory',
-        }))
-        return
-      }
-      setVanillaErrors((prev) => {
-        const next = { ...prev }
-        delete next[key]
-        return next
-      })
-      refreshRegistry()
-    } catch (err) {
-      setVanillaErrors((prev) => ({ ...prev, [key]: String(err) }))
-    } finally {
-      setVanillaBusy(null)
+      setVanillaProgress(null)
     }
   }
 
@@ -331,6 +424,10 @@ export function SettingsDialog({
   const destKeys =
     projectEngine != null ? gameFolderKeysForEngine(projectEngine) : []
   const showProjectFields = projectId != null && projectEngine != null
+  const setVanillaKeys = GAME_FOLDER_KEYS.filter((key) => registry[key] != null)
+  const copyProgress = formatVanillaCopyProgress(vanillaProgress, vanillaBusy)
+  const pendingCopyLabel =
+    pendingCopyKey != null ? GAME_LABELS[pendingCopyKey] : ''
 
   if (!open) return null
 
@@ -458,62 +555,100 @@ export function SettingsDialog({
             aria-labelledby="settings-tab-vanilla"
             aria-hidden={tab !== 'vanilla'}
           >
-            <div className="settings-fields">
-              {GAME_FOLDER_KEYS.map((key) => {
-                const binding = registry[key]
-                const vanillaMissing = missingFieldError(`vanilla:${key}`)
-                return (
-                  <div key={key} className="settings-vanilla-block">
-                    <DirectoryField
+            {setVanillaKeys.length === 0 ? (
+              <p className="settings-help">
+                No vanilla backups yet. Create them when starting a new project.
+              </p>
+            ) : (
+              <ul className="settings-vanilla-list">
+                {setVanillaKeys.map((key) => {
+                  const binding = registry[key]!
+                  const path = vanillaPath(binding) ?? ''
+                  const vanillaMissing = missingFieldError(`vanilla:${key}`)
+                  const error = vanillaErrors[key] ?? vanillaMissing
+                  const busy = vanillaBusy === key
+                  return (
+                    <li
+                      key={key}
                       id={`settings-vanilla-${key}`}
-                      label={GAME_LABELS[key]}
-                      value={vanillaSource[key] ?? ''}
-                      onChange={(value) =>
-                        setVanillaSource((prev) => ({ ...prev, [key]: value }))
-                      }
-                      placeholder="Unmodded folder to copy from or use…"
-                      browseTitle={`Select unmodded ${GAME_LABELS[key]}`}
-                      hint={
-                        binding
-                          ? `${binding.mode}: ${vanillaPath(binding)}${
-                              binding.version ? ` (v${binding.version})` : ''
-                            }`
-                          : 'Not set'
-                      }
-                      error={vanillaErrors[key] ?? vanillaMissing}
-                      required={vanillaMissing != null}
-                    />
-                    <div className="settings-vanilla-actions">
-                      <button
-                        type="button"
-                        className="btn primary has-icon-tip"
-                        disabled={vanillaBusy === key}
-                        onClick={() => void onCreateManaged(key)}
-                      >
-                        Create vanilla backup
-                        <IconTip>Copies into the backups directory (recommended).</IconTip>
-                      </button>
-                      <button
-                        type="button"
-                        className="btn secondary"
-                        disabled={vanillaBusy === key}
-                        onClick={() => void onUseExternal(key)}
-                      >
-                        Use folder as vanilla
-                      </button>
-                      <button
-                        type="button"
-                        className="btn secondary"
-                        disabled={vanillaBusy === key || !appDirs.backupDir.trim()}
-                        onClick={() => void onUseExisting(key)}
-                      >
-                        Use existing managed
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+                      className={`settings-vanilla-card${error ? ' has-error' : ''}${
+                        busy ? ' is-busy' : ''
+                      }`}
+                      tabIndex={-1}
+                    >
+                      <div className="settings-vanilla-card-main">
+                        <span className="settings-vanilla-card-name">
+                          {GAME_LABELS[key]}
+                        </span>
+                        <span className="settings-vanilla-card-meta">
+                          <span className="settings-vanilla-card-badge">
+                            {vanillaModeLabel(binding)}
+                          </span>
+                          {binding.version ? (
+                            <>
+                              <span className="settings-vanilla-card-sep">·</span>
+                              <span>v{binding.version}</span>
+                            </>
+                          ) : null}
+                          {path ? (
+                            <>
+                              <span className="settings-vanilla-card-sep">·</span>
+                              <span className="settings-vanilla-card-path">
+                                {path}
+                              </span>
+                            </>
+                          ) : null}
+                        </span>
+                        {error ? (
+                          <span className="settings-vanilla-card-error" role="alert">
+                            {error}
+                          </span>
+                        ) : null}
+                        {busy && copyProgress ? (
+                          <span className="settings-vanilla-card-progress" role="status">
+                            <span className="settings-vanilla-card-progress-heading">
+                              {copyProgress.heading}
+                            </span>
+                            <span className="settings-vanilla-card-progress-detail">
+                              {copyProgress.detail}
+                            </span>
+                          </span>
+                        ) : busy ? (
+                          <span className="settings-vanilla-card-progress" role="status">
+                            Working…
+                          </span>
+                        ) : null}
+                      </div>
+                      <HubCardMenu
+                        open={menuOpenKey === key}
+                        onOpenChange={(nextOpen) =>
+                          setMenuOpenKey(nextOpen ? key : null)
+                        }
+                        label={`${GAME_LABELS[key]} vanilla`}
+                        className="settings-vanilla-card-menu"
+                        items={[
+                          {
+                            id: 'choose-other',
+                            label: 'Choose other folder…',
+                            disabled: busy || !isDesktopApp(),
+                            onSelect: () => void onChooseOtherFolder(key),
+                          },
+                          {
+                            id: 'copy-elsewhere',
+                            label: 'Copy to new location…',
+                            disabled: busy || !isDesktopApp(),
+                            onSelect: () => {
+                              setMenuOpenKey(null)
+                              setPendingCopyKey(key)
+                            },
+                          },
+                        ]}
+                      />
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
           </section>
 
           <section
@@ -613,6 +748,21 @@ export function SettingsDialog({
           </section>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={pendingCopyKey != null}
+        title="Copy vanilla backup?"
+        message={
+          pendingCopyKey
+            ? `Copy the ${pendingCopyLabel} vanilla to another folder and use that as the backup? The current binding will switch; the old folder is not deleted.`
+            : ''
+        }
+        confirmLabel="Choose folder…"
+        onCancel={() => setPendingCopyKey(null)}
+        onConfirm={() => {
+          if (pendingCopyKey) void runCopyElsewhere(pendingCopyKey)
+        }}
+      />
     </div>
   )
 }
