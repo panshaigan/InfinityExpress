@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { GAME_FULL_LABELS } from '../../lib/xml/schema'
 import {
   deleteProject,
   listProjects,
+  updateProjectMeta,
   type ProjectMeta,
 } from '../../lib/projects'
 import { ConfirmDialog } from '../ConfirmDialog'
+import { OutlinedTextField } from '../OutlinedTextField'
+import { useBackdropDismiss } from '../backdropDismiss'
 
 interface Props {
   onOpen: (projectId: string) => void
@@ -17,10 +20,27 @@ function statusLabel(meta: ProjectMeta): string {
   return GAME_FULL_LABELS[meta.engine]
 }
 
+function PlusIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      fill="currentColor"
+    >
+      <path d="M8 2a.75.75 0 0 1 .75.75v4.5h4.5a.75.75 0 0 1 0 1.5h-4.5v4.5a.75.75 0 0 1-1.5 0v-4.5h-4.5a.75.75 0 0 1 0-1.5h4.5v-4.5A.75.75 0 0 1 8 2Z" />
+    </svg>
+  )
+}
+
 export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
   const [tick, setTick] = useState(0)
   const projects = useMemo(() => listProjects(), [tick])
   const [pendingDelete, setPendingDelete] = useState<ProjectMeta | null>(null)
+  const [pendingRename, setPendingRename] = useState<ProjectMeta | null>(null)
+  const [renameDraft, setRenameDraft] = useState('')
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
 
   function refresh() {
     setTick((n) => n + 1)
@@ -34,13 +54,37 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
     refresh()
   }
 
+  function openRename(project: ProjectMeta) {
+    setPendingRename(project)
+    setRenameDraft(project.name)
+    setMenuOpenId(null)
+  }
+
+  function confirmRename() {
+    if (!pendingRename) return
+    const next = renameDraft.trim()
+    if (!next || next === pendingRename.name) {
+      setPendingRename(null)
+      return
+    }
+    updateProjectMeta(pendingRename.id, { name: next })
+    setPendingRename(null)
+    refresh()
+  }
+
   return (
     <div className="project-hub">
       <header className="project-hub-header">
-        <div>
-          <h1 className="project-hub-title">Your projects</h1>
-          <p>Select an existing project or create a new one</p>
+        <div className="project-hub-brand">
+          <h1 className="project-hub-app-title">Infinity Express</h1>
+          <p className="project-hub-motto">
+            Infinity Engine Integrated Modding Environment
+          </p>
         </div>
+        <h2 className="project-hub-title">Your projects</h2>
+        <p className="project-hub-lede">
+          Select an existing project or create a new one
+        </p>
       </header>
 
       {projects.length === 0 ? (
@@ -66,36 +110,204 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
                   Created {formatRelative(p.createdAt)}
                 </span>
               </button>
-              <button
-                type="button"
-                className="btn secondary project-hub-card-delete"
-                onClick={() => setPendingDelete(p)}
-              >
-                Delete
-              </button>
+              <ProjectCardMenu
+                open={menuOpenId === p.id}
+                onOpenChange={(open) => setMenuOpenId(open ? p.id : null)}
+                projectName={p.name}
+                onRename={() => openRename(p)}
+                onRemove={() => {
+                  setMenuOpenId(null)
+                  setPendingDelete(p)
+                }}
+              />
             </li>
           ))}
         </ul>
       )}
-      <div>
+      <div className="project-hub-create">
         <button type="button" className="btn primary lg" onClick={onCreateNew}>
+          <PlusIcon />
           New Project
         </button>
       </div>
 
       <ConfirmDialog
         open={pendingDelete != null}
-        title="Delete project?"
+        title="Remove project?"
         message={
           pendingDelete
             ? `Remove “${pendingDelete.name}” from Infinity Express? Game folders and vanilla backups on disk are kept.`
             : ''
         }
-        confirmLabel="Delete project"
+        confirmLabel="Remove project"
         danger
         onCancel={() => setPendingDelete(null)}
         onConfirm={confirmDelete}
       />
+
+      <RenameProjectDialog
+        open={pendingRename != null}
+        name={renameDraft}
+        onChange={setRenameDraft}
+        onCancel={() => setPendingRename(null)}
+        onConfirm={confirmRename}
+      />
+    </div>
+  )
+}
+
+function ProjectCardMenu({
+  open,
+  onOpenChange,
+  projectName,
+  onRename,
+  onRemove,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  projectName: string
+  onRename: () => void
+  onRemove: () => void
+}) {
+  const rootRef = useRef<HTMLDivElement>(null)
+  const menuId = useId()
+
+  useEffect(() => {
+    if (!open) return
+    function onPointerDown(e: PointerEvent) {
+      if (!rootRef.current?.contains(e.target as Node)) onOpenChange(false)
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onOpenChange(false)
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open, onOpenChange])
+
+  return (
+    <div ref={rootRef} className="project-hub-card-menu">
+      <button
+        type="button"
+        className={`btn secondary project-hub-menu-trigger${open ? ' open' : ''}`}
+        aria-label={`Actions for ${projectName}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-controls={open ? menuId : undefined}
+        onClick={() => onOpenChange(!open)}
+      >
+        <span aria-hidden="true">⋮</span>
+      </button>
+      {open ? (
+        <div
+          id={menuId}
+          className="project-hub-menu"
+          role="menu"
+          aria-label={`Actions for ${projectName}`}
+        >
+          <button
+            type="button"
+            role="menuitem"
+            className="project-hub-menu-item"
+            onClick={onRename}
+          >
+            Rename
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className="project-hub-menu-item danger"
+            onClick={onRemove}
+          >
+            Remove
+          </button>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+function RenameProjectDialog({
+  open,
+  name,
+  onChange,
+  onCancel,
+  onConfirm,
+}: {
+  open: boolean
+  name: string
+  onChange: (value: string) => void
+  onCancel: () => void
+  onConfirm: () => void
+}) {
+  const backdrop = useBackdropDismiss(onCancel)
+  const canSave = name.trim().length > 0
+
+  useEffect(() => {
+    if (!open) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onCancel()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open, onCancel])
+
+  if (!open) return null
+
+  return (
+    <div
+      className="confirm-dialog-backdrop"
+      role="presentation"
+      {...backdrop}
+    >
+      <div
+        className="confirm-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="rename-project-dialog-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="confirm-dialog-header">
+          <h2 id="rename-project-dialog-title">Rename project</h2>
+        </div>
+        <div className="project-hub-rename-field">
+          <OutlinedTextField
+            label="Name"
+            value={name}
+            onChange={onChange}
+            autoFocus
+            required
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                if (canSave) onConfirm()
+              }
+            }}
+          />
+        </div>
+        <div className="confirm-dialog-actions">
+          <button type="button" className="btn secondary" onClick={onCancel}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn"
+            disabled={!canSave}
+            onClick={onConfirm}
+          >
+            Rename
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
