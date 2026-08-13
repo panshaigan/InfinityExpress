@@ -406,10 +406,10 @@ export function SettingsDialog({
                 value={githubToken}
                 onChange={onGithubTokenChange}
                 trailing={
-                  <span className="has-icon-tip settings-github-tip-host">
+                  <span className="has-icon-tip field-help-tip-host">
                     <button
                       type="button"
-                      className="btn secondary outlined-text-field-action settings-github-tip-btn"
+                      className="field-help-tip"
                       aria-label="About GitHub token"
                     >
                       ?

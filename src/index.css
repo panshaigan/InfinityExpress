@@ -3868,17 +3868,39 @@ body.is-resizing-detail * {
   font-size: 0.78rem;
 }
 
-.settings-github-tip-host {
+.field-help-tip-host {
   display: inline-flex;
   flex-shrink: 0;
 }
 
-.settings-github-tip-btn {
-  min-width: 1.85rem;
-  padding-left: 0.45rem;
-  padding-right: 0.45rem;
+.field-help-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.78rem;
   font-weight: 700;
+  line-height: 1;
   cursor: help;
+  appearance: none;
+}
+
+.field-help-tip:hover {
+  color: var(--ink);
+}
+
+.field-help-tip:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 70%, #fff);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .outlined-field-invalid {
