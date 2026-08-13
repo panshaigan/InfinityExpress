@@ -1,7 +1,7 @@
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { isDesktopApp } from './fsDialogs'
 
-const APP_TITLE = 'Infinity Express'
+const APP_TITLE = 'iNfinity eXpress'
 
 /** Window / tab title: app name, or app + open project. */
 export function formatAppWindowTitle(projectName: string | null | undefined): string {

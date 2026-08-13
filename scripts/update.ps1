@@ -3,7 +3,7 @@ param (
     [string]$preferredGames
 )
 
-# Curated mods catalog now lives at ../src/data/mods.csv (Infinity Express defaults).
+# Curated mods catalog now lives at ../src/data/mods.csv (iNfinity eXpress defaults).
 # This script still accepts a mod list filename argument for batch updates.
 
 if (-not $modFileName) {

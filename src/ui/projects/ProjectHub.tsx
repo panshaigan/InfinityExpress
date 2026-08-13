@@ -76,7 +76,7 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
     <div className="project-hub">
       <header className="project-hub-header">
         <div className="project-hub-hero">
-          <h1 className="project-hub-app-title">Infinity Express</h1>
+          <h1 className="project-hub-app-title">iNfinity eXpress</h1>
           <p className="project-hub-motto">
             Infinity Engine Integrated Modding Environment
           </p>
@@ -145,7 +145,7 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
         title="Remove project?"
         message={
           pendingDelete
-            ? `Remove “${pendingDelete.name}” from Infinity Express? Game folders and vanilla backups on disk are kept.`
+            ? `Remove “${pendingDelete.name}” from iNfinity eXpress? Game folders and vanilla backups on disk are kept.`
             : ''
         }
         confirmLabel="Remove project"
@@ -204,7 +204,7 @@ function ProjectCardMenu({
     <div ref={rootRef} className="project-hub-card-menu">
       <button
         type="button"
-        className={`btn secondary project-hub-menu-trigger${open ? ' open' : ''}`}
+        className={`project-hub-menu-trigger${open ? ' open' : ''}`}
         aria-label={`Actions for ${projectName}`}
         aria-haspopup="menu"
         aria-expanded={open}

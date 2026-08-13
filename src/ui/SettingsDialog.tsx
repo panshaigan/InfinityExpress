@@ -362,7 +362,7 @@ export function SettingsDialog({
               <DirectoryField
                 id="settings-backup-dir"
                 label="Main data folder"
-                tip="Stores vanilla backups, install logs, and project data for Infinity Express."
+                tip="Stores vanilla backups, install logs, and project data for iNfinity eXpress."
                 tipAriaLabel="About main data folder"
                 value={appDirs.backupDir}
                 onChange={(value) => setAppDir('backupDir', value)}

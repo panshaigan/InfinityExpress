@@ -1,4 +1,4 @@
-# Infinity Express — agent guide
+# iNfinity eXpress — agent guide
 
 Desktop mod route planner for Infinity Engine EE games. **React 18 + TypeScript + Vite** UI; **Tauri 2** shell (`src-tauri/`). Domain logic stays in pure TS under `src/lib/`.
 

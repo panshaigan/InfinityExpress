@@ -43,7 +43,7 @@ const ENGINE_ROWS: SelectedGame[][] = [
 ]
 
 const MAIN_DATA_FOLDER_TIP =
-  'Stores vanilla backups, install logs, and project data for Infinity Express.'
+  'Stores vanilla backups, install logs, and project data for iNfinity eXpress.'
 
 const VANILLA_FOLDER_TIP =
   'Point at an untouched fresh installation — no mods installed yet.'

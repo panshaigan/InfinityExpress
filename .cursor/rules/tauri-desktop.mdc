@@ -4,7 +4,7 @@ globs: src-tauri/**/*,src/lib/desktop/**/*,**/ExportDialog.tsx,**/EngineStation.
 alwaysApply: false
 ---
 
-# Tauri 2 desktop (Infinity Express)
+# Tauri 2 desktop (iNfinity eXpress)
 
 App map: [docs/architecture.md](docs/architecture.md). WeiDU / backups: [docs/weidu-install.md](docs/weidu-install.md).
 

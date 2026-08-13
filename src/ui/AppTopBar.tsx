@@ -134,10 +134,10 @@ export function AppTopBar({
         className="brand has-icon-tip"
         aria-haspopup="dialog"
         aria-expanded={aboutOpen}
-        aria-label="About Infinity Express"
+        aria-label="About iNfinity eXpress"
         onClick={onOpenAbout}
       >
-        <span className="brand-title">Infinity Express</span>
+        <span className="brand-title">iNfinity eXpress</span>
         <IconTip>About</IconTip>
       </button>
       <PhaseNav

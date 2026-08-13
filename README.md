@@ -1,4 +1,4 @@
-# Infinity Express
+# iNfinity eXpress
 
 Desktop mod route planner for Infinity Engine Enhanced Edition games.
 

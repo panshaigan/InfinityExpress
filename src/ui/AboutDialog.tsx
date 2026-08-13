@@ -81,7 +81,7 @@ export function AboutDialog({ open, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="keyboard-help-header">
-          <h2 id="about-dialog-title">Infinity Express</h2>
+          <h2 id="about-dialog-title">iNfinity eXpress</h2>
         </div>
         <p className="about-meta">
           Version {APP_VERSION} · by shaigan

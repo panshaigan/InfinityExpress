@@ -1,6 +1,6 @@
 # UI patterns
 
-Shared React components and CSS conventions for Infinity Express chrome.
+Shared React components and CSS conventions for iNfinity eXpress chrome.
 
 ## Tooltips
 
