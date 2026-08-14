@@ -20,13 +20,12 @@ import {
 import {
   formatBytes,
   hasModField,
-  isModTypeBranchDisplay,
   resolveModLookupKey,
   resolveModStability,
-  resolveModType,
   type ModInfo,
 } from '../lib/mods/loadMods'
 import { modTypeBadgeClass, modTypeBadgeLabel } from '../lib/mods/modTypeBadge'
+import { resolveComponentComplexity } from '../lib/xml/componentComplexity'
 import { statusBadgeClass } from '../lib/badges/statusBadge'
 import { isHttpUrl } from '../lib/url'
 import { IconTip } from './IconTip'
@@ -242,11 +241,8 @@ export function ComponentDetail({
   const stabilityLabel = stabilityBadgeLabel(stability)
   const stabilityClass = stabilityBadgeClass(stability)
   const mod = codename ? modsByCodename.get(codename) : undefined
-  const modType = resolveModType(model, modsByCodename, source, {
-    asBranch: isModTypeBranchDisplay(model, node, {
-      collapsedToSingleComponent: Boolean(collapsedComponent),
-    }),
-  })
+  const complexityComponent = collapsedComponent ?? (isComponentNode(node) ? node : undefined)
+  const complexity = resolveComponentComplexity(complexityComponent)
   const componentReadme = attrs.readme
   const modReadme = mod?.readme
 
@@ -272,7 +268,7 @@ export function ComponentDetail({
   if (modHasReadme) modLinks.push({ href: modReadme, label: 'Readme' })
 
   const hasModSection = Boolean(codename)
-  const hasComponentMeta = Boolean(componentId || attrs.name)
+  const hasComponentMeta = Boolean(componentId || attrs.name || complexity)
 
   const aboutSummary =
     kind === 'Component'
@@ -309,8 +305,8 @@ export function ComponentDetail({
           {level && (
             <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
-          {modType && (
-            <span className={modTypeBadgeClass(modType)}>{modTypeBadgeLabel(modType)}</span>
+          {complexity && (
+            <span className={modTypeBadgeClass(complexity)}>{modTypeBadgeLabel(complexity)}</span>
           )}
           {stabilityLabel && stabilityClass && (
             <span className={stabilityClass}>{stabilityLabel}</span>
@@ -356,6 +352,12 @@ export function ComponentDetail({
                       <span>{attrs.name}</span>
                       <CopyButton value={attrs.name} label="Copy WeiDU label" />
                     </dd>
+                  </div>
+                )}
+                {complexity && (
+                  <div className="outlined-field">
+                    <dt>Complexity</dt>
+                    <dd>{complexity}</dd>
                   </div>
                 )}
               </dl>

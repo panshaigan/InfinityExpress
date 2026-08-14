@@ -27,6 +27,7 @@ function readAttrs(el: Element): NodeAttrs {
     modId: g('modId') ?? g('modid'),
     engine: g('engine'),
     level: g('level'),
+    complexity: g('complexity'),
     required: truthyAttr(el.getAttribute('required')),
     noDisplay: truthyAttr(el.getAttribute('noDisplay')),
     noExport: truthyAttr(el.getAttribute('noExport')),

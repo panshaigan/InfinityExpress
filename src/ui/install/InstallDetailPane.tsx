@@ -312,6 +312,9 @@ export function InstallDetailPane({
                             </span>
                           </Field>
                         ) : null}
+                        {component?.attrs.complexity ? (
+                          <Field label="Complexity">{component.attrs.complexity}</Field>
+                        ) : null}
                         <Field label="Status">{STATUS_LABEL[step.status]}</Field>
                         <Field label="Duration">{durationLabel ?? '—'}</Field>
                         {step.weiduNumber != null ? (

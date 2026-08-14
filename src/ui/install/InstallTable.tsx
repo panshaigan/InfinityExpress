@@ -619,7 +619,7 @@ export function InstallTable({
               <th scope="col">Component</th>
               <th scope="col">Component id</th>
               <th scope="col">Category</th>
-              <th scope="col">Type</th>
+              <th scope="col">Complexity</th>
               <th scope="col">Duration</th>
               <th scope="col">Status</th>
               <th scope="col" className="install-col-actions-head">
@@ -650,7 +650,8 @@ export function InstallTable({
                 .get(row.componentId)
                 ?.attrs.name?.trim()
               const category = eff?.category?.trim() || ''
-              const type = eff?.type?.trim() || ''
+              const complexity =
+                model.componentsById.get(row.componentId)?.attrs.complexity?.trim() || ''
               const duration =
                 step != null ? stepDurationLabel(step, nowMs, runState) : null
 
@@ -691,7 +692,7 @@ export function InstallTable({
                     <span className="mods-cell-clip">{category || '—'}</span>
                   </td>
                   <td className="install-col-type">
-                    <span className="mods-cell-clip">{type || '—'}</span>
+                    <span className="mods-cell-clip">{complexity || '—'}</span>
                   </td>
                   <td className="install-col-duration">
                     <span className="mods-cell-clip">{duration ?? '—'}</span>

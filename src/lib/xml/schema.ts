@@ -71,6 +71,8 @@ export interface NodeAttrs {
   modId?: string
   engine?: string
   level?: string
+  /** Install impact tier: `minor`, `moderate`, or `major`. */
+  complexity?: string
   required?: boolean
   noDisplay?: boolean
   /** When true, selected component is kept out of install-order export (UI-only marker). */

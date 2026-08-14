@@ -3459,7 +3459,7 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, #9bb0d4 16%, transparent);
 }
 
-.badge-mod-type-medium {
+.badge-mod-type-moderate {
   color: #8a9cb8;
   border-color: #8a9cb8;
 }
@@ -3467,11 +3467,6 @@ body.is-resizing-detail * {
 .badge-mod-type-minor {
   color: #6f7f96;
   border-color: #6f7f96;
-}
-
-.badge-mod-type-compilation {
-  color: #7a8fba;
-  border-color: #7a8fba;
 }
 
 .badge-mod-type-unknown {
