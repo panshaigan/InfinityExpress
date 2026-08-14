@@ -58,6 +58,7 @@ Ladder ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `e
 
 - **Recommended tiles** — mass-check components with matching `effectiveRecommended` and **no** `effectivePackage`. Independent toggles; does not change filters.
 - **Package tiles** — nested visually under their recommended parent; mass-check only components with matching `effectivePackage`. Independent from the parent recommended tile and from sibling packages.
+- Tiles are omitted when the current engine has no eligible visible components (engine allow-list, `noDisplay`, and `displayIf` / `displayIfNot` on the component or ancestors — e.g. IDGO stays hidden on EET until IWD-in-EET is selected).
 - Dirty detection uses the combined level + recommended + package baseline (`selectionMatchesPresetBaseline`).
 
 ## Presets

@@ -518,13 +518,13 @@ function AppShell() {
 
   const recommendedGroups = useMemo(() => {
     if (!game) return []
-    return buildRecommendedCatalog(model, game)
-  }, [game, model])
+    return buildRecommendedCatalog(model, game, selectedIds)
+  }, [game, model, selectedIds])
 
   const presetRecommendedCounts = useMemo(() => {
     if (!game || recommendedGroups.length === 0) return undefined
-    return countAllRecommendedContent(model, game, recommendedGroups)
-  }, [game, model, recommendedGroups])
+    return countAllRecommendedContent(model, game, recommendedGroups, selectedIds)
+  }, [game, model, recommendedGroups, selectedIds])
 
   const installPhaseReady = useMemo(() => {
     if (!game || !isDesktopApp()) return false

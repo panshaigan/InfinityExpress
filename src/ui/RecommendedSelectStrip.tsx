@@ -87,13 +87,15 @@ export function RecommendedSelectStrip({
       <div className="recommended-preselect-grid">
         {groups.map((group) => (
           <div key={group.token} className="recommended-group">
-            <PresetTile
-              label={group.label}
-              countsLabel={formatCounts(contentCounts?.[group.token])}
-              checked={checkedRecommended.has(group.token)}
-              enabled={enabled}
-              onChange={(want) => onRecommendedToggle(group.token, want)}
-            />
+            {group.hasBase ? (
+              <PresetTile
+                label={group.label}
+                countsLabel={formatCounts(contentCounts?.[group.token])}
+                checked={checkedRecommended.has(group.token)}
+                enabled={enabled}
+                onChange={(want) => onRecommendedToggle(group.token, want)}
+              />
+            ) : null}
             {group.packages.length > 0 ? (
               <div
                 className="recommended-package-row"

@@ -44,3 +44,17 @@ export function passesDisplayGates(
   }
   return true
 }
+
+/** True when this node and every ancestor satisfy displayIf / displayIfNot. */
+export function passesOwnAndAncestorDisplayGates(
+  model: InstallSequenceModel,
+  node: TreeNode,
+  selected: ReadonlySet<string>,
+): boolean {
+  let cur: TreeNode | undefined = node
+  while (cur) {
+    if (!passesDisplayGates(cur, selected)) return false
+    cur = parentOf(model, cur)
+  }
+  return true
+}

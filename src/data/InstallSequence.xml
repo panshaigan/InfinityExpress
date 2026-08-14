@@ -10,7 +10,7 @@
 		<component id="EET:0" name="EET core (resource importation)" label="Baldur's Gate: Enhanced Edition Trilogy (EET)" desc="Merges the whole saga into one game and provides continuity between the events of Baldur's Gate, Tales of the Sword Coast, Shadows of Amn, Throne of Bhaal and Siege of Dragonspear expansions" modId="EET" engine="eet" required="1" noDisplay="1" complexity="major" />
 		<mod id="EEex" label="EEex — an executable extender" desc="Required for advanced modding" engine="bg,eet,iwd">
 			<component id="EEex:0" name="Quick Menu Core" label="Quick menu core" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
-			<component id="EEex:1" name="EEex" label="EEex — an executable extender (required for advanced modding)" complexity="major" recommended="ui" package="EEex" />
+			<component id="EEex:1" name="EEex" label="EEex — an executable extender (required for advanced modding)" complexity="major" recommended="ui" />
 			<component id="EEex:2" name="Enable effect menu module: LShift-on-hover to view spells affecting creature" label="Enable effect menu module: LShift-on-hover to view spells affecting creature" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
 			<component id="EEex:3" name="Enable empty container module: Highlight empty containers in gray instead of cyan" label="Enable empty container module: Highlight empty containers in gray instead of cyan" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
 			<component id="EEex:4" name="Enable hotkey module: Edit override/B3Hotkey.lua to create advanced spell hotkeys" label="Enable hotkey module: Edit override/B3Hotkey.lua to create advanced spell hotkeys" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />

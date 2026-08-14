@@ -1,9 +1,11 @@
 import { engineMatches } from '../engine/matchEngine'
 import { resolveModLookupKey } from '../mods/loadMods'
+import { passesOwnAndAncestorDisplayGates } from '../selection/treeAncestry'
 import {
   STATION_LABELS,
   STATION_ORDER,
   isStationTag,
+  type ComponentNode,
   type InstallSequenceModel,
   type SelectedGame,
 } from '../xml/schema'
@@ -16,6 +18,8 @@ export interface RecommendedPackageTile {
 export interface RecommendedGroup {
   token: string
   label: string
+  /** True when at least one eligible component has this recommended token and no package. */
+  hasBase: boolean
   packages: RecommendedPackageTile[]
 }
 
@@ -41,40 +45,46 @@ function packageLabel(model: InstallSequenceModel, packageToken: string): string
 }
 
 function isEligibleForCatalog(
-  noDisplay: boolean | undefined,
-  engine: string,
+  model: InstallSequenceModel,
+  component: ComponentNode,
   game: SelectedGame,
+  selected: ReadonlySet<string>,
 ): boolean {
-  if (noDisplay) return false
-  return engineMatches(engine, game)
+  if (component.attrs.noDisplay) return false
+  if (!engineMatches(component.effectiveEngine, game)) return false
+  return passesOwnAndAncestorDisplayGates(model, component, selected)
 }
 
 /** Ordered recommended groups + nested packages for the active game. */
 export function buildRecommendedCatalog(
   model: InstallSequenceModel,
   game: SelectedGame,
+  selected: ReadonlySet<string> = new Set(),
 ): RecommendedGroup[] {
   const recommendedOrder: string[] = []
   const recommendedSeen = new Set<string>()
+  const hasBaseByRecommended = new Map<string, boolean>()
   const packagesByRecommended = new Map<string, Map<string, true>>()
   const packageOrder = new Map<string, string[]>()
 
   for (const c of model.componentsInOrder) {
-    if (!isEligibleForCatalog(c.attrs.noDisplay, c.effectiveEngine, game)) {
-      continue
-    }
+    if (!isEligibleForCatalog(model, c, game, selected)) continue
     const rec = c.effectiveRecommended
     if (!rec) continue
 
     if (!recommendedSeen.has(rec)) {
       recommendedSeen.add(rec)
       recommendedOrder.push(rec)
+      hasBaseByRecommended.set(rec, false)
       packagesByRecommended.set(rec, new Map())
       packageOrder.set(rec, [])
     }
 
     const pkg = c.effectivePackage
-    if (!pkg) continue
+    if (!pkg) {
+      hasBaseByRecommended.set(rec, true)
+      continue
+    }
     const pkgMap = packagesByRecommended.get(rec)!
     if (!pkgMap.has(pkg)) {
       pkgMap.set(pkg, true)
@@ -92,26 +102,33 @@ export function buildRecommendedCatalog(
     return recommendedOrder.indexOf(a) - recommendedOrder.indexOf(b)
   })
 
-  return recommendedOrder.map((token) => ({
-    token,
-    label: recommendedLabel(token),
-    packages: (packageOrder.get(token) ?? []).map((pkg) => ({
-      token: pkg,
-      label: packageLabel(model, pkg),
-    })),
-  }))
+  return recommendedOrder
+    .filter(
+      (token) =>
+        hasBaseByRecommended.get(token) === true ||
+        (packageOrder.get(token)?.length ?? 0) > 0,
+    )
+    .map((token) => ({
+      token,
+      label: recommendedLabel(token),
+      hasBase: hasBaseByRecommended.get(token) === true,
+      packages: (packageOrder.get(token) ?? []).map((pkg) => ({
+        token: pkg,
+        label: packageLabel(model, pkg),
+      })),
+    }))
 }
 
 function countComponents(
   model: InstallSequenceModel,
   game: SelectedGame,
-  match: (c: (typeof model.componentsInOrder)[number]) => boolean,
+  selected: ReadonlySet<string>,
+  match: (c: ComponentNode) => boolean,
 ): RecommendedContentCounts {
   const modKeys = new Set<string>()
   let components = 0
   for (const c of model.componentsInOrder) {
-    if (c.attrs.noDisplay) continue
-    if (!engineMatches(c.effectiveEngine, game)) continue
+    if (!isEligibleForCatalog(model, c, game, selected)) continue
     if (!match(c)) continue
     components += 1
     modKeys.add(resolveModLookupKey(model, c)?.trim() || c.componentId)
@@ -123,10 +140,12 @@ export function countRecommendedContent(
   model: InstallSequenceModel,
   game: SelectedGame,
   token: string,
+  selected: ReadonlySet<string> = new Set(),
 ): RecommendedContentCounts {
   return countComponents(
     model,
     game,
+    selected,
     (c) => c.effectiveRecommended === token && !c.effectivePackage,
   )
 }
@@ -135,20 +154,22 @@ export function countPackageContent(
   model: InstallSequenceModel,
   game: SelectedGame,
   token: string,
+  selected: ReadonlySet<string> = new Set(),
 ): RecommendedContentCounts {
-  return countComponents(model, game, (c) => c.effectivePackage === token)
+  return countComponents(model, game, selected, (c) => c.effectivePackage === token)
 }
 
 export function countAllRecommendedContent(
   model: InstallSequenceModel,
   game: SelectedGame,
   groups: readonly RecommendedGroup[],
+  selected: ReadonlySet<string> = new Set(),
 ): Record<string, RecommendedContentCounts> {
   const out: Record<string, RecommendedContentCounts> = {}
   for (const group of groups) {
-    out[group.token] = countRecommendedContent(model, game, group.token)
+    out[group.token] = countRecommendedContent(model, game, group.token, selected)
     for (const pkg of group.packages) {
-      out[`package:${pkg.token}`] = countPackageContent(model, game, pkg.token)
+      out[`package:${pkg.token}`] = countPackageContent(model, game, pkg.token, selected)
     }
   }
   return out
