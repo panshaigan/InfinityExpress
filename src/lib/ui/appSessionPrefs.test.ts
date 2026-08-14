@@ -86,6 +86,8 @@ describe('appSessionPrefs', () => {
         lastGlobalLowerDifficulty: false,
         lastGlobalHigherDifficulty: false,
         stationLevelPresets: new Map(),
+        recommendedChecked: new Set(),
+        packagesChecked: new Set(),
         modsJourney: null,
       }),
       'components',
@@ -152,6 +154,8 @@ describe('appSessionPrefs', () => {
       lastGlobalLowerDifficulty: false,
       lastGlobalHigherDifficulty: false,
       stationLevelPresets: {},
+      recommendedChecked: [],
+      packagesChecked: [],
       modsJourney: null,
     }
     const model = {
@@ -205,6 +209,8 @@ describe('appSessionPrefs', () => {
           lastGlobalLowerDifficulty: false,
           lastGlobalHigherDifficulty: false,
           stationLevelPresets: new Map(),
+          recommendedChecked: new Set(),
+          packagesChecked: new Set(),
           modsJourney: null,
         }),
         install,

@@ -36,6 +36,8 @@ function minimalSession(overrides: Partial<GameSession> = {}): GameSession {
     lastGlobalLowerDifficulty: false,
     lastGlobalHigherDifficulty: false,
     stationLevelPresets: {},
+    recommendedChecked: [],
+    packagesChecked: [],
     modsJourney: null,
     ...overrides,
   }

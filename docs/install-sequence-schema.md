@@ -56,6 +56,8 @@ Unknown nesting tags still render. Same-tag siblings merge unless `group` / `mod
 | `modId` | Download-folder key (not WeiDU id — see [weidu-install.md](weidu-install.md)) |
 | `engine` | Comma allow-list; inherited |
 | `level` | Category; inherited. Ladder: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `extended`; `restructure` with `blendWell`; `lowerDifficulty` / `higherDifficulty` opt-in only |
+| `recommended` | Preset category token for the recommended strip; inherited (often matches a station id, e.g. `sounds`, `ui`) |
+| `package` | Optional sub-bundle under a recommended category; inherited (e.g. `BG1Sounds`, `vve`, `encounters`) |
 | `complexity` | Install impact tier on this component: `minor`, `moderate`, or `major` |
 | `required` | `1` = auto-select when engine-eligible |
 | `noDisplay` | `1` = hidden by default (may still install); filter can show |

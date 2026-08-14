@@ -20,6 +20,8 @@ export interface SelectionPreset {
   lastGlobalLowerDifficulty: boolean
   lastGlobalHigherDifficulty: boolean
   stationLevelPresets: Record<string, StationLevelPresetData>
+  recommendedChecked: string[]
+  packagesChecked: string[]
 }
 
 export interface LiveStationLevelPreset {
@@ -46,6 +48,8 @@ export interface SelectionLiveSnapshotInput {
   lastGlobalLowerDifficulty: boolean
   lastGlobalHigherDifficulty: boolean
   stationLevelPresets: ReadonlyMap<string, LiveStationLevelPreset>
+  recommendedChecked: ReadonlySet<string>
+  packagesChecked: ReadonlySet<string>
 }
 
 export interface AppliedSelectionPreset {
@@ -61,6 +65,8 @@ export interface AppliedSelectionPreset {
     lowerDifficulty: boolean
     higherDifficulty: boolean
   }>
+  recommendedChecked: Set<string>
+  packagesChecked: Set<string>
 }
 
 function sortedLadder(levels: Iterable<LadderLevel>): LadderLevel[] {
@@ -98,6 +104,8 @@ export function payloadFromLive(input: SelectionLiveSnapshotInput): SelectionPre
     lastGlobalLowerDifficulty: input.lastGlobalLowerDifficulty,
     lastGlobalHigherDifficulty: input.lastGlobalHigherDifficulty,
     stationLevelPresets: serializeStationMap(input.stationLevelPresets),
+    recommendedChecked: [...input.recommendedChecked].sort(),
+    packagesChecked: [...input.packagesChecked].sort(),
   }
 }
 
@@ -123,6 +131,8 @@ export function payloadFromPreset(preset: SelectionPreset): SelectionPresetPaylo
         ]),
       ),
     ),
+    recommendedChecked: [...(preset.recommendedChecked ?? [])].sort(),
+    packagesChecked: [...(preset.packagesChecked ?? [])].sort(),
   }
 }
 
@@ -167,6 +177,8 @@ export function applySelectionPreset(preset: SelectionPreset): AppliedSelectionP
     lastGlobalLowerDifficulty: preset.lastGlobalLowerDifficulty,
     lastGlobalHigherDifficulty: preset.lastGlobalHigherDifficulty,
     stationLevelPresets,
+    recommendedChecked: new Set(preset.recommendedChecked ?? []),
+    packagesChecked: new Set(preset.packagesChecked ?? []),
   }
 }
 

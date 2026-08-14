@@ -11,7 +11,7 @@ import {
   createInitialSelection,
   listSelectionState,
   randomizeDisplaySubtree,
-  selectionMatchesLevelBaseline,
+  selectionMatchesPresetBaseline,
   toggleDisplayNode,
   toggleListSelection,
   type RandomizeOptions,
@@ -23,6 +23,10 @@ import {
   type LadderLevel,
 } from './lib/levels'
 import { countAllLevelContent } from './lib/selection/levelCounts'
+import {
+  buildRecommendedCatalog,
+  countAllRecommendedContent,
+} from './lib/recommended/catalog'
 import { type DisplayNode } from './lib/selection/visibility'
 import {
   collectFilterOptions,
@@ -87,6 +91,7 @@ import { useStationTrees } from './hooks/useStationTrees'
 import { useBranchNav } from './hooks/useBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
 import { useLevelPresets } from './hooks/useLevelPresets'
+import { useRecommendedPresets } from './hooks/useRecommendedPresets'
 import { useChromeHotkeys } from './hooks/useChromeHotkeys'
 import { useRouteNav } from './hooks/useRouteNav'
 import { useTreeFocus } from './hooks/useTreeFocus'
@@ -113,6 +118,7 @@ import {
 import {
   buildGameSessionSnapshot,
   levelPresetsInitialFromSession,
+  recommendedPresetsInitialFromSession,
   sanitizeInstallSession,
   type PersistedInstallSession,
 } from './lib/ui/appSessionPrefs'
@@ -247,6 +253,8 @@ function AppShell() {
   type PendingSelectionReset =
     | { type: 'ladder'; level: LadderLevel; wantChecked: boolean }
     | { type: 'difficulty'; token: DifficultyLevel; want: boolean }
+    | { type: 'recommended'; token: string; wantChecked: boolean }
+    | { type: 'package'; token: string; wantChecked: boolean }
   const [pendingSelectionReset, setPendingSelectionReset] =
     useState<PendingSelectionReset | null>(null)
   const [resetAllConfirmOpen, setResetAllConfirmOpen] = useState(false)
@@ -270,6 +278,12 @@ function AppShell() {
     setSelectedIds,
   })
 
+  const recommended = useRecommendedPresets({
+    model,
+    game,
+    setSelectedIds,
+  })
+
   const presets = useSelectionPresetsState({
     game,
     selectedIds,
@@ -288,6 +302,10 @@ function AppShell() {
     setLastGlobalHigherDifficulty: levels.setLastGlobalHigherDifficulty,
     stationLevelPresets: levels.stationLevelPresets,
     setStationLevelPresets: levels.setStationLevelPresets,
+    recommendedChecked: recommended.checkedRecommended,
+    setRecommendedChecked: recommended.setCheckedRecommended,
+    packagesChecked: recommended.checkedPackages,
+    setPackagesChecked: recommended.setCheckedPackages,
   })
 
   useEffect(() => {
@@ -498,6 +516,16 @@ function AppShell() {
     return countAllLevelContent(model, game, [...LADDER_LEVELS, ...DIFFICULTY_LEVELS])
   }, [game, model])
 
+  const recommendedGroups = useMemo(() => {
+    if (!game) return []
+    return buildRecommendedCatalog(model, game)
+  }, [game, model])
+
+  const presetRecommendedCounts = useMemo(() => {
+    if (!game || recommendedGroups.length === 0) return undefined
+    return countAllRecommendedContent(model, game, recommendedGroups)
+  }, [game, model, recommendedGroups])
+
   const installPhaseReady = useMemo(() => {
     if (!game || !isDesktopApp()) return false
     if (!route.routeComplete) return false
@@ -531,13 +559,15 @@ function AppShell() {
 
   function isSelectionDirty(): boolean {
     if (!game) return false
-    return !selectionMatchesLevelBaseline(
+    return !selectionMatchesPresetBaseline(
       model,
       game,
       selectedIds,
       levels.ladderChecked,
       levels.lowerDifficultyPreset,
       levels.higherDifficultyPreset,
+      recommended.checkedRecommended,
+      recommended.checkedPackages,
     )
   }
 
@@ -565,6 +595,8 @@ function AppShell() {
       lastGlobalLowerDifficulty: levels.lastGlobalLowerDifficulty,
       lastGlobalHigherDifficulty: levels.lastGlobalHigherDifficulty,
       stationLevelPresets: levels.stationLevelPresets,
+      recommendedChecked: recommended.checkedRecommended,
+      packagesChecked: recommended.checkedPackages,
       modsJourney,
       ...(install ? { install } : {}),
     })
@@ -581,6 +613,8 @@ function AppShell() {
     levels.ladderChecked,
     levels.lowerDifficultyPreset,
     levels.stationLevelPresets,
+    recommended.checkedPackages,
+    recommended.checkedRecommended,
     modsJourney,
     presets.activePresetId,
     presets.allSelectionPresets,
@@ -630,6 +664,7 @@ function AppShell() {
       setRouteUnlocked(true)
       setSelectedIds(createInitialSelection(model, engine))
       levels.seedFixesBaseline(engine)
+      recommended.resetRecommendedPresets()
       presets.restoreSelectionPresetsState({
         presets: [],
         activePresetId: null,
@@ -648,6 +683,7 @@ function AppShell() {
       setRouteUnlocked(session.routeUnlocked)
       setSelectedIds(new Set(session.selectedIds))
       levels.restoreLevelState(levelPresetsInitialFromSession(session))
+      recommended.restoreRecommendedState(recommendedPresetsInitialFromSession(session))
       presets.restoreSelectionPresetsState({
         presets: session.selectionPresets,
         activePresetId: session.activePresetId,
@@ -697,6 +733,24 @@ function AppShell() {
     levels.onDifficultyPresetChange(token, want)
   }
 
+  function onPresetsRecommendedToggle(token: string, wantChecked: boolean) {
+    if (installSelectionFrozen) return
+    if (isSelectionDirty()) {
+      setPendingSelectionReset({ type: 'recommended', token, wantChecked })
+      return
+    }
+    recommended.onRecommendedToggle(token, wantChecked)
+  }
+
+  function onPresetsPackageToggle(token: string, wantChecked: boolean) {
+    if (installSelectionFrozen) return
+    if (isSelectionDirty()) {
+      setPendingSelectionReset({ type: 'package', token, wantChecked })
+      return
+    }
+    recommended.onPackageToggle(token, wantChecked)
+  }
+
   function cancelSelectionReset() {
     setPendingSelectionReset(null)
   }
@@ -709,12 +763,21 @@ function AppShell() {
       levels.onLadderToggle(pending.level, pending.wantChecked)
       return
     }
-    levels.onDifficultyPresetChange(pending.token, pending.want)
+    if (pending.type === 'difficulty') {
+      levels.onDifficultyPresetChange(pending.token, pending.want)
+      return
+    }
+    if (pending.type === 'recommended') {
+      recommended.onRecommendedToggle(pending.token, pending.wantChecked)
+      return
+    }
+    recommended.onPackageToggle(pending.token, pending.wantChecked)
   }
 
   function resetComponentSelection() {
     if (!game) return
     levels.resetLevelPresets()
+    recommended.resetRecommendedPresets()
     presets.resetPresetSelection()
     setSelectedIds(createInitialSelection(model, game))
     route.reopenEntireRoute()
@@ -1237,6 +1300,12 @@ function AppShell() {
                       onLadderToggle={onPresetsLadderToggle}
                       onDifficultyChange={onPresetsDifficultyChange}
                       levelCounts={presetLevelCounts}
+                      recommendedGroups={recommendedGroups}
+                      checkedRecommended={recommended.checkedRecommended}
+                      checkedPackages={recommended.checkedPackages}
+                      onRecommendedToggle={onPresetsRecommendedToggle}
+                      onPackageToggle={onPresetsPackageToggle}
+                      recommendedCounts={presetRecommendedCounts}
                       finished={route.currentFinished}
                       canContinue={route.canCycleScreens}
                       onContinue={continueFromPresets}

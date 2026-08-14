@@ -1,7 +1,9 @@
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import type { LevelContentCounts } from '../lib/selection/levelCounts'
+import type { RecommendedGroup, RecommendedContentCounts } from '../lib/recommended/catalog'
 import { IconTip } from './IconTip'
 import { LevelSelectStrip } from './LevelSelectStrip'
+import { RecommendedSelectStrip } from './RecommendedSelectStrip'
 
 interface Props {
   enabled: boolean
@@ -11,6 +13,12 @@ interface Props {
   onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
   onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
   levelCounts?: Readonly<Record<string, LevelContentCounts>>
+  recommendedGroups?: readonly RecommendedGroup[]
+  checkedRecommended?: ReadonlySet<string>
+  checkedPackages?: ReadonlySet<string>
+  onRecommendedToggle?: (token: string, wantChecked: boolean) => void
+  onPackageToggle?: (token: string, wantChecked: boolean) => void
+  recommendedCounts?: Readonly<Record<string, RecommendedContentCounts>>
   finished: boolean
   canContinue: boolean
   onContinue: () => void
@@ -26,6 +34,12 @@ export function PresetsStation({
   onLadderToggle,
   onDifficultyChange,
   levelCounts,
+  recommendedGroups = [],
+  checkedRecommended = new Set<string>(),
+  checkedPackages = new Set<string>(),
+  onRecommendedToggle = () => {},
+  onPackageToggle = () => {},
+  recommendedCounts,
   finished,
   canContinue,
   onContinue,
@@ -83,6 +97,20 @@ export function PresetsStation({
           onDifficultyChange={onDifficultyChange}
           levelCounts={levelCounts}
         />
+        {recommendedGroups.length > 0 ? (
+          <>
+            <hr className="level-difficulty-rule" />
+            <RecommendedSelectStrip
+              enabled={enabled}
+              groups={recommendedGroups}
+              checkedRecommended={checkedRecommended}
+              checkedPackages={checkedPackages}
+              onRecommendedToggle={onRecommendedToggle}
+              onPackageToggle={onPackageToggle}
+              contentCounts={recommendedCounts}
+            />
+          </>
+        ) : null}
       </div>
     </section>
   )

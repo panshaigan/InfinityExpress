@@ -54,9 +54,15 @@ Operands = component ids. `,` = AND, `|` = OR, `()` group. Unparsable → false.
 
 Ladder ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `extended` (`restructure` with `blendWell`). Difficulty tokens are opt-in only.
 
+## Recommended strip (Presets)
+
+- **Recommended tiles** — mass-check components with matching `effectiveRecommended` and **no** `effectivePackage`. Independent toggles; does not change filters.
+- **Package tiles** — nested visually under their recommended parent; mass-check only components with matching `effectivePackage`. Independent from the parent recommended tile and from sibling packages.
+- Dirty detection uses the combined level + recommended + package baseline (`selectionMatchesPresetBaseline`).
+
 ## Presets
 
-In-memory, game-scoped: selected ids + level-strip UI. Not stored: filters, station, folds. Load restores chips **without** re-running ladder mass-check. Shape: `presets/selectionPresets.ts`.
+In-memory, game-scoped: selected ids + level-strip UI + recommended/package chips. Not stored: filters, station, folds. Load restores chips **without** re-running mass-check. Shape: `presets/selectionPresets.ts`.
 
 ## Export
 
@@ -70,4 +76,4 @@ Top-bar export is phase-aware:
 
 ## Key modules
 
-`selection/selectionCore.ts`, `selectionEngine.ts`, `visibility.ts`, `conditions.ts`, `selectionLevels.ts`, `export/installOrder.ts`.
+`selection/selectionCore.ts`, `selectionEngine.ts`, `visibility.ts`, `conditions.ts`, `selectionLevels.ts`, `selectionRecommended.ts`, `export/installOrder.ts`.

@@ -45,6 +45,8 @@ describe('presetsForGame', () => {
         lastGlobalLowerDifficulty: false,
         lastGlobalHigherDifficulty: false,
         stationLevelPresets: new Map(),
+        recommendedChecked: new Set(),
+        packagesChecked: new Set(),
       }),
       snapshotSelectionPreset('b', 'B', {
         game: 'eet',
@@ -56,6 +58,8 @@ describe('presetsForGame', () => {
         lastGlobalLowerDifficulty: false,
         lastGlobalHigherDifficulty: false,
         stationLevelPresets: new Map(),
+        recommendedChecked: new Set(),
+        packagesChecked: new Set(),
       }),
     ]
     expect(presetsForGame(presets, 'bg2').map((p) => p.id)).toEqual(['a'])
@@ -83,6 +87,8 @@ describe('snapshot round-trip', () => {
           },
         ],
       ]),
+      recommendedChecked: new Set(['sounds']),
+      packagesChecked: new Set(['vve']),
     }
 
     const preset = snapshotSelectionPreset('id-1', 'Test', live)
@@ -93,6 +99,8 @@ describe('snapshot round-trip', () => {
       lowerDifficulty: false,
       higherDifficulty: true,
     })
+    expect(preset.recommendedChecked).toEqual(['sounds'])
+    expect(preset.packagesChecked).toEqual(['vve'])
 
     const applied = applySelectionPreset(preset)
     expect([...applied.selectedIds].sort()).toEqual(['a:1', 'b:2'])

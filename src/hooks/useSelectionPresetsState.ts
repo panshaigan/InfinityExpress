@@ -34,6 +34,10 @@ export function useSelectionPresetsState(args: {
   setLastGlobalHigherDifficulty: Dispatch<SetStateAction<boolean>>
   stationLevelPresets: StationLevelMap
   setStationLevelPresets: Dispatch<SetStateAction<StationLevelMap>>
+  recommendedChecked: ReadonlySet<string>
+  setRecommendedChecked: Dispatch<SetStateAction<Set<string>>>
+  packagesChecked: ReadonlySet<string>
+  setPackagesChecked: Dispatch<SetStateAction<Set<string>>>
   initialPresets?: readonly SelectionPreset[]
   initialActivePresetId?: string | null
   initialPresetBaseline?: string | null
@@ -56,6 +60,10 @@ export function useSelectionPresetsState(args: {
     setLastGlobalHigherDifficulty,
     stationLevelPresets,
     setStationLevelPresets,
+    recommendedChecked,
+    setRecommendedChecked,
+    packagesChecked,
+    setPackagesChecked,
     initialPresets,
     initialActivePresetId,
     initialPresetBaseline,
@@ -102,6 +110,8 @@ export function useSelectionPresetsState(args: {
       lastGlobalLowerDifficulty,
       lastGlobalHigherDifficulty,
       stationLevelPresets,
+      recommendedChecked,
+      packagesChecked,
     })
   }, [
     game,
@@ -113,6 +123,8 @@ export function useSelectionPresetsState(args: {
     lastGlobalLowerDifficulty,
     lastGlobalHigherDifficulty,
     stationLevelPresets,
+    recommendedChecked,
+    packagesChecked,
   ])
   const presetDirty =
     activePresetId != null &&
@@ -131,6 +143,8 @@ export function useSelectionPresetsState(args: {
       lastGlobalLowerDifficulty,
       lastGlobalHigherDifficulty,
       stationLevelPresets,
+      recommendedChecked,
+      packagesChecked,
     }
   }
 
@@ -181,6 +195,8 @@ export function useSelectionPresetsState(args: {
       }
       return next
     })
+    setRecommendedChecked(applied.recommendedChecked)
+    setPackagesChecked(applied.packagesChecked)
     setActivePresetId(preset.id)
     setPresetBaseline(fingerprintFromPreset(preset))
     setPresetNotice({

@@ -71,6 +71,10 @@ export interface NodeAttrs {
   modId?: string
   engine?: string
   level?: string
+  /** Preset category token for mass-check tiles; inherited. */
+  recommended?: string
+  /** Optional sub-bundle under a recommended category; inherited. */
+  package?: string
   /** Install impact tier: `minor`, `moderate`, or `major`. */
   complexity?: string
   required?: boolean
@@ -100,6 +104,8 @@ export interface BaseNode {
   /** Inherited effective engine allow-list string (comma tokens), empty = all games. */
   effectiveEngine: string
   effectiveLevel?: string
+  effectiveRecommended?: string
+  effectivePackage?: string
   children: TreeNode[]
   parentKey?: string
 }

@@ -83,6 +83,8 @@ export interface GameSession {
   lastGlobalLowerDifficulty: boolean
   lastGlobalHigherDifficulty: boolean
   stationLevelPresets: Record<string, StationLevelPresetData>
+  recommendedChecked: string[]
+  packagesChecked: string[]
   modsJourney: ModsJourneyState | null
   install?: PersistedInstallSession
 }
@@ -181,6 +183,8 @@ function selectionPresetFrom(value: unknown): SelectionPreset | null {
     lastGlobalLowerDifficulty: o.lastGlobalLowerDifficulty === true,
     lastGlobalHigherDifficulty: o.lastGlobalHigherDifficulty === true,
     stationLevelPresets: stationLevelPresetsFrom(o.stationLevelPresets),
+    recommendedChecked: stringArray(o.recommendedChecked),
+    packagesChecked: stringArray(o.packagesChecked),
   }
 }
 
@@ -350,6 +354,8 @@ function gameSessionFrom(value: unknown): GameSession | null {
     lastGlobalLowerDifficulty: o.lastGlobalLowerDifficulty === true,
     lastGlobalHigherDifficulty: o.lastGlobalHigherDifficulty === true,
     stationLevelPresets: stationLevelPresetsFrom(o.stationLevelPresets),
+    recommendedChecked: stringArray(o.recommendedChecked),
+    packagesChecked: stringArray(o.packagesChecked),
     modsJourney: modsJourneyFrom(o.modsJourney),
     ...(install ? { install } : {}),
   }
@@ -537,6 +543,8 @@ export function buildGameSessionSnapshot(input: {
       higherDifficulty: boolean
     }
   >
+  recommendedChecked: ReadonlySet<string>
+  packagesChecked: ReadonlySet<string>
   modsJourney: ModsJourneyState | null
   install?: PersistedInstallSession
 }): GameSession {
@@ -566,6 +574,8 @@ export function buildGameSessionSnapshot(input: {
     lastGlobalLowerDifficulty: input.lastGlobalLowerDifficulty,
     lastGlobalHigherDifficulty: input.lastGlobalHigherDifficulty,
     stationLevelPresets,
+    recommendedChecked: [...input.recommendedChecked],
+    packagesChecked: [...input.packagesChecked],
     modsJourney: input.modsJourney ? { ...input.modsJourney } : null,
     ...(input.install ? { install: input.install } : {}),
   }
@@ -701,5 +711,17 @@ export function levelPresetsInitialFromSession(
     lastGlobalLowerDifficulty: session.lastGlobalLowerDifficulty,
     lastGlobalHigherDifficulty: session.lastGlobalHigherDifficulty,
     stationLevelPresets,
+  }
+}
+
+export function recommendedPresetsInitialFromSession(
+  session: GameSession,
+): {
+  recommendedChecked: readonly string[]
+  packagesChecked: readonly string[]
+} {
+  return {
+    recommendedChecked: session.recommendedChecked ?? [],
+    packagesChecked: session.packagesChecked ?? [],
   }
 }

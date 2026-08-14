@@ -20,6 +20,14 @@ export {
   buildLevelBaselineSelection,
   selectionMatchesLevelBaseline,
 } from './selectionLevels'
+export {
+  setRecommendedSelection,
+  setPackageSelection,
+  buildRecommendedBaselineSelection,
+  selectionMatchesRecommendedBaseline,
+  buildPresetBaselineSelection,
+  selectionMatchesPresetBaseline,
+} from './selectionRecommended'
 export type { RandomizePercent, RandomizeOptions } from './selectionRandomize'
 export {
   collectRandomUnits,
