@@ -8,9 +8,9 @@
 			<component id="cd_eefp_game_text_update" name="Game Text Update" label="Game text update" modId="EE_Fixpack" noDisplay="1" alwaysIf="cd_eefp_core_fixes" complexity="minor" />
 		</group>
 		<component id="EET:0" name="EET core (resource importation)" label="Baldur's Gate: Enhanced Edition Trilogy (EET)" desc="Merges the whole saga into one game and provides continuity between the events of Baldur's Gate, Tales of the Sword Coast, Shadows of Amn, Throne of Bhaal and Siege of Dragonspear expansions" modId="EET" engine="eet" required="1" noDisplay="1" complexity="major" />
-		<mod id="EEex" label="EEex — an executable extender" desc="Required for advanced modding" engine="bg,eet,iwd" level="vanillaPlus">
+		<mod id="EEex" label="EEex — an executable extender" desc="Required for advanced modding" engine="bg,eet,iwd">
 			<component id="EEex:0" name="Quick Menu Core" label="Quick menu core" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
-			<component id="EEex:1" name="EEex" label="EEex — an executable extender (required for advanced modding)" complexity="major" />
+			<component id="EEex:1" name="EEex" label="EEex — an executable extender (required for advanced modding)" complexity="major" recommended="ui" package="EEex" />
 			<component id="EEex:2" name="Enable effect menu module: LShift-on-hover to view spells affecting creature" label="Enable effect menu module: LShift-on-hover to view spells affecting creature" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
 			<component id="EEex:3" name="Enable empty container module: Highlight empty containers in gray instead of cyan" label="Enable empty container module: Highlight empty containers in gray instead of cyan" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
 			<component id="EEex:4" name="Enable hotkey module: Edit override/B3Hotkey.lua to create advanced spell hotkeys" label="Enable hotkey module: Edit override/B3Hotkey.lua to create advanced spell hotkeys" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
@@ -22,25 +22,25 @@
 
 	<ui engine="bg,eet,iwd">
 		<mod id="InfinityUI" label="InfinityUI">
-			<component id="infinity_ui:0" name="Install Infinity UI++ Core Component" label="Infinity UI++ core component" core="1" level="vanillaPlus" complexity="major" />
-			<component id="infinity_ui:1" name="Add Transparent Tooltip Background" label="Add transparent tooltip background" level="vanillaPlus" complexity="minor" />
+			<component id="infinity_ui:0" name="Install Infinity UI++ Core Component" label="Infinity UI++ core component" core="1" recommended="ui" complexity="major" />
+			<component id="infinity_ui:1" name="Add Transparent Tooltip Background" label="Add transparent tooltip background" recommended="ui" complexity="minor" />
 			<component id="infinity_ui:2" name="Update several strings in Dialog.tlk" label="Update several strings in Dialog.tlk" alwaysIf="infinity_ui:0" noDisplay="1" complexity="minor" />
 			<alternatives label="Quick save slots" horizontal="1">
 				<component id="infinity_ui:3" name="1" label="1" complexity="minor" />
 				<component id="infinity_ui:4" name="2" label="2" complexity="minor" />
-				<component id="infinity_ui:5" name="3" label="3" default="1" level="vanillaPlus" complexity="minor" />
+				<component id="infinity_ui:5" name="3" label="3" default="1" recommended="ui" complexity="minor" />
 				<component id="infinity_ui:6" name="4" label="4" complexity="minor" />
 				<component id="infinity_ui:7" name="5" label="5" complexity="minor" />
 				<component id="infinity_ui:8" name="6" label="6" complexity="minor" />
 			</alternatives>
 		</mod>
-		<component id="B3-BubbsSpellMenuExtended-Main" name="Bubb's Spell Menu Extended" label="Bubb's Spell Menu Extended" modId="Bubbs-Spell-Menu-Extended" level="vanillaPlus" complexity="moderate" />
-		<component id="A7-LEVELUPTWEAKS-MAIN" name="Enable &quot;level up&quot; icon activation switch in baldur.lua" label="Enable Level Up icon activation switch in baldur.lua" core="1" modId="A7-LevelUpTweaks" engine="pst" complexity="minor" />
-		<component id="A7-LEVELUPTWEAKS-ICON_IN_PORTRAIT" name="Move &quot;level up&quot; icon into character portrait" label="Move Level Up icon into character portrait" modId="A7-LevelUpTweaks" engine="pst" complexity="minor" />
-		<component id="A7-RESIZEABLECOMBATLOG-MAIN" name="Freely resizeable combat log" label="Freely resizable combat log"  modId="A7-ResizeableCombatLog" engine="pst" complexity="minor" />
+		<component id="B3-BubbsSpellMenuExtended-Main" name="Bubb's Spell Menu Extended" label="Bubb's Spell Menu Extended" modId="Bubbs-Spell-Menu-Extended" recommended="ui" complexity="moderate" />
+		<component id="A7-LEVELUPTWEAKS-MAIN" name="Enable &quot;level up&quot; icon activation switch in baldur.lua" label="Enable Level Up icon activation switch in baldur.lua" core="1" modId="A7-LevelUpTweaks" engine="pst" recommended="ui" complexity="minor" />
+		<component id="A7-LEVELUPTWEAKS-ICON_IN_PORTRAIT" name="Move &quot;level up&quot; icon into character portrait" label="Move Level Up icon into character portrait" modId="A7-LevelUpTweaks" engine="pst" recommended="ui" complexity="minor" />
+		<component id="A7-RESIZEABLECOMBATLOG-MAIN" name="Freely resizeable combat log" label="Freely resizable combat log"  modId="A7-ResizeableCombatLog" engine="pst" recommended="ui" complexity="minor" />
 		<component id="A7_MISCTWEAKS_CUSTOMIZED_CIRCLE_PSTEE_TRANSLUCENT" name="Translucent" label="Make selection circles translucent"  modId="A7-MiscTweaks" engine="pst" complexity="minor" />
-		<component id="A7_MISCTWEAKS_BREAKABLE_CUTSCENES_PSTEE" name="Breakable cutscenes" label="Breakable cutscenes" modId="A7-MiscTweaks" engine="pst" complexity="minor" />
-		<component id="cd_tweaks_chapter_saves_in_pstee" name="Automatic &quot;Chapter Saves&quot; in PsT:EE" label="Automatic chapter saves" modId="Tweaks-Anthology" engine="pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3370" complexity="minor" />
+		<component id="A7_MISCTWEAKS_BREAKABLE_CUTSCENES_PSTEE" name="Breakable cutscenes" label="Breakable cutscenes" modId="A7-MiscTweaks" engine="pst" recommended="ui" complexity="minor" />
+		<component id="cd_tweaks_chapter_saves_in_pstee" name="Automatic &quot;Chapter Saves&quot; in PsT:EE" label="Automatic chapter saves" modId="Tweaks-Anthology" engine="pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3370" recommended="ui" complexity="minor" />
 	</ui>
 
 	<campaigns>
@@ -68,12 +68,12 @@
 		</mod>
 	</campaigns>
 
-	<gfx level="restoration">
-		<mod id="Baldurs-Gate-Graphical-Overhaul" label="Baldur's Gate Graphical Overhaul" engine="bg,eet">
+	<gfx>
+		<mod id="Baldurs-Gate-Graphical-Overhaul" label="Baldur's Gate Graphical Overhaul" recommended="gfx" package="BGGO" engine="bg,eet">
 			<component id="baldurs_gate_graphical_overhaul" name="Baldurs Gate Graphical Overhaul Core" label="Baldur's Gate Graphical Overhaul" desc="Reinstates the extended night areas that are missing from all main areas" complexity="major" />
 			<component id="baldurs_gate_graphical_overhaul_alternate" name="Baldurs Gate Graphical Overhaul Alternate Graphics" label="Alternate graphics" alwaysIf="baldurs_gate_graphical_overhaul" noDisplay="1" complexity="minor" />
 		</mod>
-		<mod id="Icewind-Dale-Graphical-Overhaul" label="Icewind Dale Graphical Overhaul" displayIf="Tipun_iwd1_eet|iwd2_eet:0" engine="iwd,eet">
+		<mod id="Icewind-Dale-Graphical-Overhaul" label="Icewind Dale Graphical Overhaul" displayIf="Tipun_iwd1_eet|iwd2_eet:0" recommended="gfx" package="IDGO" engine="iwd,eet">
 			<component id="iwdgo:0" name="Icewind Dale Graphical Overhaul Core" label="Icewind Dale Graphical Overhaul" desc="Reinstates the extended night areas that are missing from all main areas" complexity="major" />
 			<component id="iwdgo:4" name="Icewind Dale Graphical Overhaul Alternate Graphics" label="Alternate graphics" alwaysIf="iwdgo:0" noDisplay="1" complexity="minor" />
 		</mod>
@@ -1124,32 +1124,32 @@
 		<warriors label="Warriors" desc="Fighter/ranger/paladin/monk">
 			<fighter label="Fighter">
 				<wizardSlayer label="Wizard Slayer">
-					<component id="ArtisansKitpack:1006" name="Artisan's Kitpack: Wizard Slayer Overhaul" label="Overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" complexity="minor" />
+					<component id="ArtisansKitpack:1006" name="Artisan's Kitpack: Wizard Slayer Overhaul" label="Overhaul" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
 					<component id="METweaks:1600" name="Increase Wizard Slayer Magic Resistance" label="Increase Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" desc="Gain 5% Magic Resistance per level rather than 1%" complexity="minor" />
 				</wizardSlayer>
 				<component id="Morpheus562sKitpackShieldBreaker" name="Install Shield Breaker Kit" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" complexity="minor" />
 			</fighter>
 			<ranger label="Ranger">
-				<beastMaster label="Beast Master" level="blendWell">
+				<beastMaster label="Beast Master" recommended="mechanics">
 					<component id="ArtisansKitpack:2012" name="Artisan's Kitpack: Beast Master Overhaul" label="Overhaul" modId="The-Artisan-s-Kitpack" complexity="minor" />
 					<component id="cd_tweaks_nwn_animal_companion" name="Animal Companion Class Feat for Beastmasters [Luke]" label="Animal Companion class feat" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6340" complexity="minor" />
 				</beastMaster>
 				<archer label="Archer">
 				</archer>
-				<component id="iwdification:110" name="Change Tracking for all rangers and ranger kits" label="Make Tracking an innate ability since level 1" modId="iwdification" engine="bg,eet" level="blendWell" complexity="minor" />
-				<component id="cd_tweaks_nwn_trackless_step" name="Trackless Step Class Feat for Rangers [Luke]" label="Add Trackless Step class feat for rangers" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6240" complexity="minor" />
-				<component id="METweaks:1400" name="Power Up Ranger Charm Animal" label="Power up ranger Charm Animal" modId="Olvyn-Tweaks" level="blendWell" complexity="minor" />
+				<component id="iwdification:110" name="Change Tracking for all rangers and ranger kits" label="Make Tracking an innate ability since level 1" modId="iwdification" engine="bg,eet" recommended="mechanics" complexity="minor" />
+				<component id="cd_tweaks_nwn_trackless_step" name="Trackless Step Class Feat for Rangers [Luke]" label="Add Trackless Step class feat for rangers" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6240" complexity="minor" />
+				<component id="METweaks:1400" name="Power Up Ranger Charm Animal" label="Power up ranger Charm Animal" modId="Olvyn-Tweaks" recommended="mechanics" complexity="minor" />
 			</ranger>
 			<paladin label="Paladin">
 				<inquisitor label="Inquisitor">
 				</inquisitor>
-				<component id="BardicWonders:1012" name="Bardic Wonders: Gallant Paladin Kit" label="Add kit: Gallant — Bardic paladin kit" modId="Bardic-Wonders" displayIf="EEex:1" level="extended" complexity="minor" />
+				<component id="BardicWonders:1012" name="Bardic Wonders: Gallant Paladin Kit" label="Add kit: Gallant — Bardic paladin kit" modId="Bardic-Wonders" displayIf="EEex:1" recommended="mechanics" complexity="minor" />
 			</paladin>
 			<monk label="Monk">
-				<component id="ArtisansKitpack:10001" name="Artisan's Kitpack: Monk Revisions" label="Update class: Revisions" modId="The-Artisan-s-Kitpack" level="blendWell" complexity="minor" />
-				<component id="METweaks:1000" name="Give Monks a cooler Deflect Missiles ability" label="Update Deflect Missiles ability" modId="Olvyn-Tweaks" level="blendWell" complexity="minor" />
+				<component id="ArtisansKitpack:10001" name="Artisan's Kitpack: Monk Revisions" label="Update class: Revisions" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
+				<component id="METweaks:1000" name="Give Monks a cooler Deflect Missiles ability" label="Update Deflect Missiles ability" modId="Olvyn-Tweaks" recommended="mechanics" complexity="minor" />
 			</monk>
-			<component id="ZSTweaks:2120" name="Make War Cry significantly more useful" label="Make War Cry significantly more useful" level="blendWell" modId="ZSTweaks" complexity="minor" />
+			<component id="ZSTweaks:2120" name="Make War Cry significantly more useful" label="Make War Cry significantly more useful" recommended="mechanics" modId="ZSTweaks" complexity="minor" />
 			<component id="METweaks:400" name="Remove the limit of two proficiency points in a weapon at character creation" label="Remove the limit of two Proficiency Points in a weapon at character creation" modId="Olvyn-Tweaks" complexity="minor" />
 			<component id="cd_tweaks_cleave" name="Cleave Class Feat for Fighters and Monks [Luke]" label="Add Cleave class feat for fighters and monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6100" complexity="minor" />
 			<component id="cd_tweaks_nwn_knockdown" name="Knockdown Class Feat for Fighters and Monks [Luke]" label="Add Knockdown class feat for fighters and monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6010" complexity="minor" />
@@ -1157,14 +1157,14 @@
 		</warriors>
 		<rogues label="Rogues" desc="Thief/bard">
 			<thief label="Thief">
-				<mod id="rogue_rebalancing" label="Update kits: Assassin, Swashbuckler, Bounty Hunter revisions" level="blendWell">
+				<mod id="rogue_rebalancing" label="Update kits: Assassin, Swashbuckler, Bounty Hunter revisions" recommended="mechanics">
 					<component id="rr:1" name="Thief kit revisions" label="Thief kit revisions" complexity="moderate" />
 					<component id="rr:2" name="Thief High Level Ability revisions" label="Thief High Level Ability revisions" alwaysIf="rr:1" noDisplay="1" complexity="minor" />
 				</mod>
-				<component id="ArtisansKitpack:7008" name="Artisan's Kitpack: Shadowdancer Overhaul" label="Update kit: Shadowdancer overhaul" modId="The-Artisan-s-Kitpack" level="extended" complexity="minor" />
+				<component id="ArtisansKitpack:7008" name="Artisan's Kitpack: Shadowdancer Overhaul" label="Update kit: Shadowdancer overhaul" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
 			</thief>
 			<bard label="Bard">
-				<mod id="rogue_rebalancing" label="Update class and kits: Blade, Jester, Skald" level="blendWell">
+				<mod id="rogue_rebalancing" label="Update class and kits: Blade, Jester, Skald" recommended="mechanics">
 					<component id="rr:4" name="Bard kit revisions" label="Bard kit revisions" modId="rogue_rebalancing" complexity="moderate" />
 					<component id="rr:5" name="Bard High Level Ability revisions" label="Bard High Level Ability revisions" alwaysIf="rr:4" noDisplay="1" modId="rogue_rebalancing" complexity="minor" />
 					<component id="rr:6" name="Proper spell progression for Bards" label="Proper spell progression for bards" modId="rogue_rebalancing" alwaysIf="rr:4" noDisplay="1" complexity="minor" />
@@ -1173,12 +1173,12 @@
 				</blade>
 				<skald label="Skald">
 				</skald>
-				<component id="cd_tweaks_nwn_armored_caster" name="Armored Caster Class Feat for Bards [Luke]" label="Add Armored Caster class feat" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6230" complexity="minor" />
+				<component id="cd_tweaks_nwn_armored_caster" name="Armored Caster Class Feat for Bards [Luke]" label="Add Armored Caster class feat" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6230" complexity="minor" />
 			</bard>
-			<component id="rr:9" name="Use PnP thievery potions and prevent their effects from stacking" label="Revised Thievery: Adds dialogue options after failed thievery." desc="Additionally PnP the thievery potions and prevents their effects from stacking" modId="rogue_rebalancing" level="vanillaPlus" complexity="moderate" />
-			<component id="rr:0" name="Proper dual-wielding implementation for Thieves and Bards" label="Proper Dual-Wielding implementation for thieves and bards" modId="rogue_rebalancing" level="vanillaPlus" complexity="minor" />
-			<component id="cd_tweaks_thieving_in_heavy_armor" name="Allow Thieving and Stealth in Heavy Armor per PnP" label="Allow Thieving and Stealth in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2100" complexity="minor" />
-			<mod id="Epic-Thieving" label="Epic Thieving" level="blendWell">
+			<component id="rr:9" name="Use PnP thievery potions and prevent their effects from stacking" label="Revised Thievery: Adds dialogue options after failed thievery." desc="Additionally PnP the thievery potions and prevents their effects from stacking" modId="rogue_rebalancing" recommended="mechanics" complexity="moderate" />
+			<component id="rr:0" name="Proper dual-wielding implementation for Thieves and Bards" label="Proper Dual-Wielding implementation for thieves and bards" modId="rogue_rebalancing" recommended="mechanics" complexity="minor" />
+			<component id="cd_tweaks_thieving_in_heavy_armor" name="Allow Thieving and Stealth in Heavy Armor per PnP" label="Allow Thieving and Stealth in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2100" complexity="minor" />
+			<mod id="Epic-Thieving" label="Epic Thieving" recommended="mechanics">
 				<component id="EpicThieving:0" name="Epic Locks" label="EpicThieving — Epic Locks, Traps, Pickpocketing, Illusions"  desc="Gives high valued Thieving skills sense by adding difficult locks, traps, pickpocket opportunities and illusions" complexity="minor" />
 				<component id="EpicThieving:100" name="Epic Traps" label="EpicThieving — Epic Traps" alwaysIf="EpicThieving:0" noDisplay="1" complexity="minor" />
 				<component id="EpicThieving:200" name="Epic Trap Setting" label="EpicThieving — Epic Trap Setting" alwaysIf="EpicThieving:0" noDisplay="1" complexity="minor" />
@@ -1199,26 +1199,26 @@
 			<cleric label="Cleric">
 			</cleric>
 			<druid label="Druid">
-				<component id="ArtisansKitpack:5100" name="Artisan's Kitpack: Shapeshifter Overhaul" label="Update kit: Shapeshifter overhaul" modId="The-Artisan-s-Kitpack" level="blendWell" complexity="minor" />
+				<component id="ArtisansKitpack:5100" name="Artisan's Kitpack: Shapeshifter Overhaul" label="Update kit: Shapeshifter overhaul" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
 				<component id="ArtisansKitpack:5110" name="Shapeshifter Form Only" label="Change Shapeshifter werewolf sprite" modId="The-Artisan-s-Kitpack" alwaysIf="ArtisansKitpack:5100" noDisplay="1" complexity="minor" />
 				<component id="cd_tweaks_shapeshifter_armor" name="Allow Shapeshifters to Wear Armor But Prevent Shapeshifting While Worn" label="Allow Shapeshifters to wear armor but prevent shapeshifting while worn" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2740" complexity="minor" />
 			</druid>
 			<mage label="Mage" noBranches="1">
 				<mod id="TomeAndBlood" label="Tome and Blood: revised specialists and innate Metamagic">
-					<component id="TomeAndBlood:40" name="Revised Specialists" label="Revised specialists" level="extended" complexity="moderate" />
-					<component id="TomeAndBlood:51" name="Innate metamagic, learned automatically by everyone" label="Innate Metamagic, learned automatically by everyone" level="vanillaPlus" complexity="minor" />
-					<component id="TomeAndBlood:56" name="Metamagic: fill sequencers for free" label="Metamagic: Fill Sequencers for free" level="lowerDifficulty" complexity="minor" />
-					<component id="TomeAndBlood:66" name="Innate Find Familiar" label="Innate Find Familiar" level="vanillaPlus" alwaysIf="TomeAndBlood:51" noDisplay="1" complexity="minor" />
+					<component id="TomeAndBlood:40" name="Revised Specialists" label="Revised specialists" recommended="mechanics" complexity="moderate" />
+					<component id="TomeAndBlood:51" name="Innate metamagic, learned automatically by everyone" label="Innate Metamagic, learned automatically by everyone" recommended="mechanics" complexity="minor" />
+					<component id="TomeAndBlood:56" name="Metamagic: fill sequencers for free" label="Metamagic: Fill Sequencers for free" recommended="mechanics" complexity="minor" />
+					<component id="TomeAndBlood:66" name="Innate Find Familiar" label="Innate Find Familiar" recommended="mechanics" alwaysIf="TomeAndBlood:51" noDisplay="1" complexity="minor" />
 				</mod>
 			</mage>
 			<sorcerer label="Sorcerer">
-				<component id="A7-CHAOSSORCERER-MAIN" name="&quot;Chaos Sorcerer&quot; kit" label="Add kit: Chaos Sorcerer — Wild Magic sorcerer" modId="A7-ChaosSorcerer" level="extended" complexity="minor" />
+				<component id="A7-CHAOSSORCERER-MAIN" name="&quot;Chaos Sorcerer&quot; kit" label="Add kit: Chaos Sorcerer — Wild Magic sorcerer" modId="A7-ChaosSorcerer" recommended="mechanics" complexity="minor" />
 				<component id="Morpheus562sKitpackEldritchScionNoXan" name="[Install Eldritch Scion Kit] Do NOT assign kit to an existing NPC" label="Add kit: Eldritch Scion — Warrior sorcerer" modId="morpheus562s-kitpack" complexity="minor" />
 				<component id="cd_tweaks_sorc_spell_progression" name="Un-Nerfed Sorcerer Spell Progression Table" label="Un-nerfed sorcerer spell progression table" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2250" complexity="minor" />
 			</sorcerer>
 			<shaman label="Shaman">
-				<component id="ArtisansKitpack:9001" name="Artisan's Kitpack: Warhorn Shaman Kit" label="Add kit: Warhorn Shaman" modId="The-Artisan-s-Kitpack" level="extended" complexity="minor" />
-				<mod id="A7-ImprovedShamanicDance" label="Improved Shamanic Dance" level="vanillaPlus">
+				<component id="ArtisansKitpack:9001" name="Artisan's Kitpack: Warhorn Shaman Kit" label="Add kit: Warhorn Shaman" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
+				<mod id="A7-ImprovedShamanicDance" label="Improved Shamanic Dance" recommended="mechanics">
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-MAIN" name="Improved Shamanic Dance" label="Improved Shamanic Dance" complexity="minor" />
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-EXPANDED_DANCE" name="Expanded Shamanic Dance for high level characters" label="Expanded Shamanic Dance for high level characters" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" complexity="minor" />
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-APPLY_TO_KITS" name="Apply Shamanic Dance improvements to Shaman kits" label="Apply Shamanic Dance improvements to shaman kits" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" complexity="minor" />
@@ -1228,7 +1228,7 @@
 			<component id="stratagems:4240" name="Treat mages' and priests' High-Level Abilities as innate abilities rather than memorisable spells (each may be taken only once)" label="Treat mages' and priests' HLAs as innate abilities" level="blendWell" modId="SwordCoastStratagems" complexity="minor" />
 		</spellcasters>
 		<multi label="Multi-class / dual-class">
-			<component id="ArtisansKitpack:20000" name="Artisan's Kitpack: Eldritch Knight (Fighter / Mage Kit)" label="Add kit: Eldritch Knight — fighter/mage kit" modId="The-Artisan-s-Kitpack" level="extended" complexity="minor" />
+			<component id="ArtisansKitpack:20000" name="Artisan's Kitpack: Eldritch Knight (Fighter / Mage Kit)" label="Add kit: Eldritch Knight — fighter/mage kit" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
 			<!--component id="cd_tweaks_multiclass_gm" label="Multi-class Grandmastery" level="lowerDifficulty" modId="Tweaks-Anthology" /-->
 			<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" name="Tighten equipment restrictions [Angel]" label="Tighten equipment restrictions for  druid multi- and dual-classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." level="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2431" complexity="minor" />
 			<component id="cd_tweaks_more_dual_classes" name="Expanded Dual-Class Options" label="Expanded dual-class options" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2140" complexity="minor" />
@@ -1237,19 +1237,19 @@
 			<component id="cd_tweaks_alter_thac0_table" name="Un-Nerfed THAC0 Table" label="Un-nerfed THAC0 table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2240" complexity="minor" />
 			<alternatives label="Make Infravision useful" desc="Creatures without infravision have -4 THAC0 at night or in dark places">
 				<component id="cd_tweaks_infravision" name="Make Infravision Useful [Luke]" label="Tweaks Anthology (Luke's) solution" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2680" complexity="moderate" />
-				<component id="METweaks:3200" name="Creatures without infravision have -4 THAC0 at night or in dark places" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" level="blendWell" complexity="moderate" />
+				<component id="METweaks:3200" name="Creatures without infravision have -4 THAC0 at night or in dark places" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" recommended="mechanics" complexity="moderate" />
 				<component id="METweaks:3205" name="Creatures without infravision have reduced visual range at night or in dark places" label="Olvyn's Version (light)" desc="Creatures without infravision have reduced visual range at night or in dark places" modId="Olvyn-Tweaks" complexity="minor" />
 				<component id="METweaks:3210" name="Both 1 and 2" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" level="higherDifficulty" modId="Olvyn-Tweaks" complexity="moderate" />
 			</alternatives>
 			<feats label="Add new feats">
-				<component id="cd_tweaks_planar_turning" name="Planar Turning Class Feat for Clerics/Paladins [Luke]" label="Planar Turning class feat for clerics/paladins" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6140" complexity="minor" />
-				<component id="cd_tweaks_nwn_uncanny_dodge" name="Uncanny Dodge Class Feat for Barbarians and Rogues [Luke]" label="Uncanny Dodge class feat for barbarians and rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6260" complexity="minor" />
-				<component id="cd_tweaks_nwn_evasion" name="Evasion Class Feat for Monks and Rogues [Luke]" label="Evasion class feat for monks and rogues" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6280" complexity="minor" />
+				<component id="cd_tweaks_planar_turning" name="Planar Turning Class Feat for Clerics/Paladins [Luke]" label="Planar Turning class feat for clerics/paladins" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6140" complexity="minor" />
+				<component id="cd_tweaks_nwn_uncanny_dodge" name="Uncanny Dodge Class Feat for Barbarians and Rogues [Luke]" label="Uncanny Dodge class feat for barbarians and rogues" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6260" complexity="minor" />
+				<component id="cd_tweaks_nwn_evasion" name="Evasion Class Feat for Monks and Rogues [Luke]" label="Evasion class feat for monks and rogues" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6280" complexity="minor" />
 			</feats>
 			<weapons label="Weapon Tweaks">
-				<component id="cd_tweaks_universal_four_weapon_slots" name="Give Every Class/Kit Four Weapon Slots" label="Give every class/kit four weapon slots" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3280" complexity="minor" />
-				<component id="cd_tweaks_universal_clubs" name="Universal Clubs" label="Universal clubs" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2040" complexity="minor" />
-				<component id="cd_tweaks_loosen_shield_restrictions" name="Allow Mages to Use Bucklers and Thieves to Use Small Shields [Angel]" label="Allow mages to use bucklers and thieves to use small shields" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2520" complexity="minor" />
+				<component id="cd_tweaks_universal_four_weapon_slots" name="Give Every Class/Kit Four Weapon Slots" label="Give every class/kit four weapon slots" modId="Tweaks-Anthology" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3280" complexity="minor" />
+				<component id="cd_tweaks_universal_clubs" name="Universal Clubs" label="Universal clubs" modId="Tweaks-Anthology" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2040" complexity="minor" />
+				<component id="cd_tweaks_loosen_shield_restrictions" name="Allow Mages to Use Bucklers and Thieves to Use Small Shields [Angel]" label="Allow mages to use bucklers and thieves to use small shields" modId="Tweaks-Anthology" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2520" complexity="minor" />
 			</weapons>
 		</universal>
 		<stats label="Stats">
@@ -1259,7 +1259,7 @@
 			</hp>
 		</stats>
 		<proficiencies label="Proficiencies and Fighting Styles">
-			<component id="cd_tweaks_grandmastery_bonus_true" name="True grandmastery [Baldurdash]" label="True Grandmastery" level="blendWell" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2210" complexity="minor" />
+			<component id="cd_tweaks_grandmastery_bonus_true" name="True grandmastery [Baldurdash]" label="True Grandmastery" recommended="mechanics" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2210" complexity="minor" />
 			<component id="cd_tweaks_specialization_apr_bonus_for_all" name="Everyone Gets Bonus APR from Specialization [subtledoctor]" label="Everyone gets bonus APR from Specialization" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2440" complexity="minor" />
 		</proficiencies>
 	</mechanics>
@@ -1288,18 +1288,18 @@
 		<add label="New Spells" unfolded="1">
 			<component id="A7-IMPROVED_SHAMANIC_DANCE-SHAMANIC_PACT" name="Add spell &quot;Shamanic Pact&quot;" label="Add Shamanic Pact spell for shamans" modId="A7-ImprovedShamanicDance" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" complexity="minor" />
 			<component id="BardicWonders:2008" name="Bardic Wonders: New Bard Spells" label="Add new bard spells" modId="Bardic-Wonders" complexity="minor" />
-			<component id="stratagems:2500" name="+1/level (maximum" label="Add 9 new arcane spells" level="blendWell" modId="SwordCoastStratagems" complexity="moderate" />
-			<component id="stratagems:2510" name="d" label="Add 6 new divine spells" level="blendWell" modId="SwordCoastStratagems" complexity="moderate" />
+			<component id="stratagems:2500" name="+1/level (maximum" label="Add 9 new arcane spells" recommended="spells" modId="SwordCoastStratagems" complexity="moderate" />
+			<component id="stratagems:2510" name="d" label="Add 6 new divine spells" recommended="spells" modId="SwordCoastStratagems" complexity="moderate" />
 		</add>
 		<update label="Spell Corrections" noBranches="1">
-			<component id="ac-miscellaneous-breathfix" name="Dragon Breath Fix" label="Dragon Breath Fix" modId="AC-Miscellaneous-Tweaks" level="vanillaPlus" complexity="minor" />
-			<component id="cd_tweaks_make_grease_ignitable" name="Make Grease ignitable [Luke]" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2650" complexity="minor" />
+			<component id="ac-miscellaneous-breathfix" name="Dragon Breath Fix" label="Dragon Breath Fix" modId="AC-Miscellaneous-Tweaks" recommended="spells" complexity="minor" />
+			<component id="cd_tweaks_make_grease_ignitable" name="Make Grease ignitable [Luke]" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="spells" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2650" complexity="minor" />
 			<component id="cd_tweaks_restoration_no_fatigue" name="Remove Fatigue from Restoration Spells" label="Remove fatigue from Restoration Spells" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3050" complexity="minor" />
 			<component id="A7-CHAOSSORCERER-RECREATE_SPELL_LIST" name="Recreate &quot;Chaos Weave&quot; spell selection lists" label="Recreate Chaos Weave spell selection lists" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" complexity="minor" />
-			<component id="stratagems:2070" name="Spell school changes" label="Spell school adjustements" modId="SwordCoastStratagems" level="blendWell" complexity="minor" />
-			<component id="cd_tweaks_0_weight_created_weapons" name="Change Magically Created Weapons to Zero Weight" label="Change magically created weapons to zero weight" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2220" complexity="minor" />
-			<component id="EET_Tweaks:3000" name="Disable hostile reaction after charm" label="Disable hostile reaction after Charm" level="vanillaPlus" modId="EET_Tweaks" complexity="minor" />
-			<mod id="SwordCoastStratagems" level="blendWell">
+			<component id="stratagems:2070" name="Spell school changes" label="Spell school adjustements" modId="SwordCoastStratagems" recommended="spells" complexity="minor" />
+			<component id="cd_tweaks_0_weight_created_weapons" name="Change Magically Created Weapons to Zero Weight" label="Change magically created weapons to zero weight" recommended="spells" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2220" complexity="minor" />
+			<component id="EET_Tweaks:3000" name="Disable hostile reaction after charm" label="Disable hostile reaction after Charm" recommended="spells" modId="EET_Tweaks" complexity="minor" />
+			<mod id="SwordCoastStratagems" recommended="spells">
 				<component id="stratagems:2010" name="Core Stratagems spell-system changes (installed by default by any AI component)" label="Core stratagems spell-system changes" complexity="minor" />
 				<component id="stratagems:2030" name="Changes to Restoration" label="Changes to Restoration" complexity="minor" />
 				<component id="stratagems:2040" name="The combat protection spells dispelled by Breach are" label="Changes to Shapeshift Spells" complexity="minor" />
@@ -1308,7 +1308,7 @@
 				<component id="stratagems:3540" name="Inquisitors dispel at 1.5 x their level (not twice their level)" label="Inquisitors dispel at 1.5 x their level (not twice their level)" complexity="minor" />
 				<component id="stratagems:3551" name="Spells heal or inflict the maximum amount of damage in this range" label="Spells heal or inflict the maximum amount of damage in this range" level="lowerDifficulty" complexity="minor" />
 			</mod>
-			<mod id="SubtleD_Spell_Tweaks" label="SubtleD's Spell Tweaks" level="blendWell">
+			<mod id="SubtleD_Spell_Tweaks" label="SubtleD's Spell Tweaks" recommended="spells">
 				<component id="SubtleD_Spell_Tweaks:36" name="Add a Saving Throw Against Level Drain" label="Add a Saving Throw against Level Drain" complexity="minor" />
 				<component id="SubtleD_Spell_Tweaks:40" name="Revised Illusionary Clones" label="Revised illusionary clones" complexity="minor" />
 				<component id="SubtleD_Spell_Tweaks:81" name="Choose-Your-Own Familiar" label="Choose-your-own familiar" complexity="minor" />
@@ -1318,7 +1318,7 @@
 				<component id="SubtleD_Spell_Tweaks:2224" name="Improve Glitterdust" label="Improve Glitterdust" complexity="minor" />
 				<component id="SubtleD_Spell_Tweaks:2413" name="Allow Target of Otiluke's Sphere to Use Inventory Screen" label="Allow target of Otiluke's Sphere to use inventory screen" complexity="minor" />
 			</mod>
-			<mod id="Tweaks-Anthology" level="blendWell">
+			<mod id="Tweaks-Anthology" recommended="spells">
 				<component id="cd_tweaks_remove_magical_trap_delay" name="Remove Delay for Magical Traps [Ardanis/GeN1e]" label="Remove delay for magical traps" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2330" complexity="minor" />
 				<component id="cd_tweaks_summoning_cap_removal" name="Remove Summoning Cap for Regular Summons" label="Remove summoning cap for regular summons" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2339" complexity="minor" />
 				<component id="cd_tweaks_celestial_cap_removal" name="Remove Summoning Cap for Celestials [Ardanis/GeN1e]" label="Remove summoning cap for celestials" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2340" complexity="minor" />
@@ -1328,7 +1328,7 @@
 				<component id="cd_tweaks_more_sensible_blade_barrier" name="More Sensible Blade Barrier [Luke]" label="More sensible Blade Barrier" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3460" complexity="minor" />
 				<component id="cd_tweaks_more_sensible_morentherene" name="More Sensible Morentherene [Luke]" label="More sensible Morentherene" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3480" complexity="minor" />
 			</mod>
-			<mod id="ZSTweaks" level="blendWell">
+			<mod id="ZSTweaks" recommended="spells">
 				<component id="ZSTweaks:1559" name="Make Protection From Magic scroll not a cheesy way to dispel all magic from an enemy" label="Make Protection from Magic Scroll not a cheesy way to dispel all magic from an enemy" complexity="minor" />
 			</mod>
 		</update>
@@ -1412,7 +1412,7 @@
 	<combat level="higherDifficulty">
 		<alternatives label="Remove Backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod" level="lowerDifficulty">
 			<component id="ZS_CanIStabYou:99" name="Everything can be backstabbed" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd" complexity="moderate" />
-			<component id="ZS_CanIStabYou:106" name="All humanoids can be backstabbed, except humanoid ToB bosses" label="Keep reasonable Backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" default="1" engine="bg,eet,iwd" level="blendWell" complexity="moderate" />
+			<component id="ZS_CanIStabYou:106" name="All humanoids can be backstabbed, except humanoid ToB bosses" label="Keep reasonable Backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" default="1" engine="bg,eet,iwd" recommended="combat" complexity="moderate" />
 		</alternatives>
 		<mod id="ZS_CanIStabYou-Mod" label="ZS_CanIStabYou" engine="bg,eet">
 			<component id="ZS_CanIStabYou:102" name="Humanoid ToB bosses can be backstabbed" label="Humanoid ToB bosses can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" />
@@ -1432,20 +1432,20 @@
 		</mod>
 		<component id="ForgottenArmament-CritImmunity2" name="Allow Difficult Enemies to Remain Immune to Critical Hits" label="Allow difficult enemies to remain immune to critical hits" modId="forgotten-armament" complexity="minor" />
 		<tweaks label="Creature Tweaks" noBranches="1">
-			<component id="HouseTweaks:20" name="House Tweaks: Faster Troll Unconsciousness" label="Faster troll unconsciousness" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg,iwd,eet" complexity="minor" />
-			<component id="METweaks:3150" name="Give Belhifet more reasonable immunities" label="Give belhifet more reasonable immunities" level="vanillaPlus" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" />
+			<component id="HouseTweaks:20" name="House Tweaks: Faster Troll Unconsciousness" label="Faster troll unconsciousness" modId="House-Rule-Tweaks" recommended="combat" engine="bg,iwd,eet" complexity="minor" />
+			<component id="METweaks:3150" name="Give Belhifet more reasonable immunities" label="Give belhifet more reasonable immunities" recommended="combat" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" />
 			<mod id="ZSTweaks" engine="bg,eet">
-				<component id="ZSTweaks:3030" name="Make celestial summons more powerful or balanced" label="Make celestial summons more powerful or balanced" level="blendWell" engine="bg2,eet" complexity="minor" />
-				<component id="ZSTweaks:3050" name="Make the Balor's vorpal attack not guaranteed to succeed but affected by a saving throw" label="Make the Balor's Vorpal Attack not guaranteed to succeed but affected by a Saving Throw" level="blendWell" engine="bg2,eet" complexity="minor" />
-				<component id="ZSTweaks:3070" name="Make lions and other cat creatures not slow as molasses" label="Make lions and other cat creatures not slow as molasses" level="fixes" complexity="minor" />
-				<component id="ZSTweaks:3080" name="Make creature on-hit effects that should be natural not behave as magical attacks" label="Make creature on-hit effects that should be natural not behave as magical attacks" level="fixes" complexity="minor" />
-				<component id="ZSTweaks:3090" name="Make Shadow creatures slightly more dangerous" label="Make shadow creatures slightly more dangerous" level="higherDifficulty" engine="bg,iwd,eet" complexity="minor" />
+				<component id="ZSTweaks:3030" name="Make celestial summons more powerful or balanced" label="Make celestial summons more powerful or balanced" recommended="combat" engine="bg2,eet" complexity="minor" />
+				<component id="ZSTweaks:3050" name="Make the Balor's vorpal attack not guaranteed to succeed but affected by a saving throw" label="Make the Balor's Vorpal Attack not guaranteed to succeed but affected by a Saving Throw" recommended="combat" engine="bg2,eet" complexity="minor" />
+				<component id="ZSTweaks:3070" name="Make lions and other cat creatures not slow as molasses" label="Make lions and other cat creatures not slow as molasses" recommended="combat" complexity="minor" />
+				<component id="ZSTweaks:3080" name="Make creature on-hit effects that should be natural not behave as magical attacks" label="Make creature on-hit effects that should be natural not behave as magical attacks" recommended="combat" complexity="minor" />
+				<component id="ZSTweaks:3090" name="Make Shadow creatures slightly more dangerous" label="Make shadow creatures slightly more dangerous" recommended="combat" level="higherDifficulty" engine="bg,iwd,eet" complexity="minor" />
 				<component id="ZSTweaks:3130" name="Make minotaurs tougher and more dangerous" label="Make minotaurs tougher and more dangerous" level="higherDifficulty" engine="bg,iwd,eet" complexity="minor" />
 				<component id="ZSTweaks:3140" name="Make ogre / oni mages regenerating fiends, as per PnP" label="Make ogre / oni mages regenerating fiends, as per PnP" level="higherDifficulty" engine="bg,iwd,eet" complexity="minor" />
 			</mod>
 			<component id="METweaks:2200" name="Make creatures take up less space" label="Make creatures take up less space" modId="Olvyn-Tweaks" complexity="minor" />
 		</tweaks>
-		<ai label="AI enhancements / Sword Coast Stratagems (SCS)">
+		<ai label="AI enhancements / Sword Coast Stratagems (SCS)" recommended="combat">
 			<component id="METweaks:2400" name="Make enemies change their attack targets more quickly" label="Make enemies change their attack targets more quickly" level="higherDifficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" />
 			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="iwd">
 				<component id="stratagems:6020" name="Smarter general AI and better calls for help" label="Smarter general AI and better calls for help" complexity="major" />
@@ -1465,7 +1465,7 @@
 				<component id="stratagems:6540" name="Smarter dragons" label="Smarter dragons" complexity="minor" />
 				<component id="stratagems:6550" name="Smarter beholders" label="Smarter beholders" complexity="minor" />
 			</mod>
-			<mod id="SwordCoastStratagems" label="BG1 Encounters" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns">
+			<mod id="SwordCoastStratagems" label="BG1 Encounters" engine="bg1,eet" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
 				<component id="stratagems:6300" name="Smarter sirines and dryads" label="Smarter sirines and dryads" complexity="minor" />
 				<component id="stratagems:6310" name="Slightly smarter carrion crawlers" label="Slightly smarter carrion crawlers" complexity="minor" />
 				<component id="stratagems:6320" name="Smarter basilisks" label="Smarter basilisks" complexity="minor" />
@@ -1491,7 +1491,7 @@
 				<component id="stratagems:7250" name="Improved final battle" label="Improved final battle" complexity="minor" />
 				<component id="stratagems:7900" name="Improved minor encounters" label="Improved minor encounters" complexity="minor" />
 			</mod>
-			<mod id="SwordCoastStratagems" label="BG2 Encounters" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns">
+			<mod id="SwordCoastStratagems" label="BG2 Encounters" engine="bg2,eet" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
 				<component id="stratagems:6500" name="Improved golems" label="Improved golems" complexity="minor" />
 				<component id="stratagems:4150" name="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" label="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" complexity="minor" />
 				<component id="stratagems:6520" name="Smarter genies" label="Smarter genies" complexity="minor" />
@@ -1528,7 +1528,7 @@
 		</ai>
 	</combat>
 
-	<sounds level="vanillaPlus">
+	<sounds recommended="sounds">
 		<group label="Additional voicesets available for the player character" unfolded="1">
 			<component id="ZG-VOICE-BG" name="Baldur's Gate Voice Pack for EE 2.6+" label="Baldur's Gate Voice Pack" modId="Baldurs-Gate-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" complexity="minor" />
 			<component id="ZG-VOICE-BG2" name="Baldur's Gate II Voice Pack for EE 2.6+" label="Baldur's Gate 2 voice pack" modId="Baldurs-Gate-II-Voice-Pack-for-EE-2.6" engine="bg1,iwd" complexity="minor" />
@@ -1537,13 +1537,13 @@
 			<component id="ZG-VOICE-NWN" name="NWN:" label="Neverwinter Nights voice pack" modId="Neverwinter-Nights-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" complexity="minor" />
 		</group>
 		<mod id="Infinity-Sounds" label="Infinity Sounds - Improve many sonic aspects of the game" level="restoration" engine="bg2,eet">
-			<component id="s@-IS-BG1-Spell-Voices" name="Restore BG1 Spellcasting Voices" label="Restore BG1 spellcasting voices" level="vanillaPlus" complexity="minor" />
-			<component id="s@-IS-BG1-Spell-Sounds" name="Restore BG1 Spellcasting Sounds" label="Restore BG1 spellcasting sounds" level="vanillaPlus" complexity="minor" />
-			<component id="s@-IS-BG1-Weapon-Sounds" name="Restore BG1 Weapon Sounds" label="Restore BG1 weapon sounds" level="vanillaPlus" complexity="minor" />
-			<component id="s@-IS-BG1-Armor-Sounds" name="Restore BG1 Armor Sounds" label="Restore BG1 armor sounds" level="vanillaPlus" complexity="minor" />
+			<component id="s@-IS-BG1-Spell-Voices" name="Restore BG1 Spellcasting Voices" label="Restore BG1 spellcasting voices" package="BG1Sounds" complexity="minor" />
+			<component id="s@-IS-BG1-Spell-Sounds" name="Restore BG1 Spellcasting Sounds" label="Restore BG1 spellcasting sounds" package="BG1Sounds" complexity="minor" />
+			<component id="s@-IS-BG1-Weapon-Sounds" name="Restore BG1 Weapon Sounds" label="Restore BG1 weapon sounds" package="BG1Sounds" complexity="minor" />
+			<component id="s@-IS-BG1-Armor-Sounds" name="Restore BG1 Armor Sounds" label="Restore BG1 armor sounds" package="BG1Sounds" complexity="minor" />
 			<component id="s@-IS-Gulp-Sound" name="Restore Gulp Sound" label="Restore gulp sound" complexity="minor" />
 			<component id="s@-IS-Chunked-Death-Sound" name="Restore Chunked Death Sound" label="Restore chunked death sound" complexity="minor" />
-			<component id="s@-IS-Tweak-Volume-Levels" name="Tweak Sound Channel Volume Levels" label="Tweak sound channel volume levels" level="vanillaPlus" complexity="minor" />
+			<component id="s@-IS-Tweak-Volume-Levels" name="Tweak Sound Channel Volume Levels" label="Tweak sound channel volume levels" package="BG1Sounds" complexity="minor" />
 			<component id="s@-IS-Footsteps-Combat" name="Enable Footsteps During Combat" label="Enable footsteps during combat" level="fixes" complexity="minor" />
 			<component id="s@-IS-BG1-Ambient-Sounds" name="Restore BG1 Ambient Sounds" label="Restore BG1 ambient sounds" level="vanillaPlus" complexity="minor" />
 			<component id="s@-IS-Enhance-Pos-Audio" name="Enhance Positional Audio" label="Enhance positional audio" level="fixes" complexity="minor" />
@@ -1551,12 +1551,12 @@
 			<component id="s@-IS-More-Existence-Sounds" name="More Existence Sounds" label="More existence sounds" level="fixes" complexity="minor" />
 			<component id="s@-IS-Tweak-Existence-Sound-Delay" name="Tweak Existence Sound Delay" label="Tweak existence sound delay" level="fixes" complexity="minor" />
 			<component id="s@-IS-Restore-NPC-Voiceovers" name="Restore NPC Voiceovers" label="Restore NPC voiceovers" complexity="minor" />
-			<component id="s@-IS-Salk-NPC-Voiceovers" name="Additional NPC Voiceovers (by Salk)" label="Additional NPC voiceovers (by salk)" level="vanillaPlus" complexity="minor" />
+			<component id="s@-IS-Salk-NPC-Voiceovers" name="Additional NPC Voiceovers (by Salk)" label="Additional NPC voiceovers (by salk)" package="BG1Sounds" complexity="minor" />
 		</mod>
 		<component id="HouseTweaks:24" name="House Tweaks: NPC Soundsets for Icewind Dale" label="NPC soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" displayIfNot="IE_focus_dedicated_campaigns" complexity="minor" />
 		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" name="Install high quality soundclips for new BG2EE content" label="High quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" level="fixes" displayIfNot="IE_focus_dedicated_campaigns" complexity="minor" />
-		<component id="vveBG:0" name="Add Character Sounds for BG" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns" complexity="major" />
-		<component id="vveSOD:0" name="Add Character Sounds for BG: SOD" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns" complexity="major" />
+		<component id="vveBG:0" name="Add Character Sounds for BG" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns" package="vve" complexity="major" />
+		<component id="vveSOD:0" name="Add Character Sounds for BG: SOD" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns" package="vve" complexity="major" />
 		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet" level="restoration" displayIfNot="IE_focus_dedicated_campaigns">
 			<alternatives label="Choose how she should be recast">
 				<component id="jaheirarecast:0" name="[Choose how she should be recast] Use new SoD Character Sounds" label="Use new SoD character sounds" default="1" complexity="minor" />
@@ -1565,7 +1565,7 @@
 			<component id="jaheirarecast:2" name="Jaheira Recast: Dialog Voiceover" label="Dialog voiceover" complexity="minor" />
 		</mod>
 		<component id="HouseTweaks:21" name="House Tweaks: Restore Reputation Increase Sound Effect for BG2" label="Restore reputation increase sound effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" complexity="minor" />
-		<component id="HouseTweaks:26" name="House Tweaks: Soundset Tweaks for Anomen and Sarevok (BG2:EE)" label="Soundset tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" level="vanillaPlus" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" complexity="minor" />
+		<component id="HouseTweaks:26" name="House Tweaks: Soundset Tweaks for Anomen and Sarevok (BG2:EE)" label="Soundset tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" complexity="minor" />
 		<component id="cd_tweaks_fix_boo_squeak" name="Fix Boo's Squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" level="fixes" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_140" complexity="minor" />
 	</sounds>
 
@@ -1698,8 +1698,8 @@
 			<component id="candlekeep_revisited:3" name="Candlekeep Revisited: New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" label="Candlekeep Revisited - new portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" engine="bg1,eet" level="vanillaPlus" complexity="minor" />
 		</group>
 		<group label="PC Portraits" unfolded="1">
-			<component id="sha-tweaks:0" name="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" complexity="minor" />
-			<component id="sha-tweaks:1" name="Add Extended Isandir's Portrait Pack" label="Add Extended Isandir's Portrait Pack" modId="shatweaks" engine="bg,eet" complexity="minor" />
+			<component id="sha-tweaks:0" name="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" recommended="gfx" complexity="minor" />
+			<component id="sha-tweaks:1" name="Add Extended Isandir's Portrait Pack" label="Add Extended Isandir's Portrait Pack" modId="shatweaks" engine="bg,eet" recommended="gfx" complexity="minor" />
 			<component id="cd_icpp_iwd2" name="Icewind Dale AND Icewind Dale II Portraits" label="Install IWD1 and IWD2 portraits" modId="Infinity_Collection_Portrait_Pack" engine="bg,eet,iwd" alwaysIf="IWD_EET_integration:100" complexity="minor" />
 		</group>
 		<group label="Special" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns">
@@ -1714,7 +1714,7 @@
 		</group>
 	</portraits>
 
-	<gfx engine="bg,iwd,eet" level="vanillaPlus">
+	<gfx engine="bg,iwd,eet" recommended="gfx">
 		<component id="cd_tweaks_weapon_animation_tweaks" name="Weapon Animation Tweaks" label="Weapon animation tweaks" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_60" complexity="minor" />
 		<component id="cd_tweaks_icon_improvements" name="Icon Improvements" label="Icon improvements" desc="Uses a combination of BG, IWD, and BG2 icons to better differentiate armor when it is on the ground" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_110" complexity="minor" />
 		<component id="cd_tweaks_unique_icons" name="Only replace icons that aren't already unique" label="Unique icons for special items" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_170" complexity="minor" />
@@ -1730,7 +1730,7 @@
 		<component id="cd_tweaks_static_pst_npc_portraits_status" name="Visualize health and status changes" label="Static character portraits" desc="With health and status changes visualization" engine="pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_270" complexity="minor" />
 		<component id="A7_MISCTWEAKS_UPSCALED_PORTRAITS_PSTEE" name="High-resolution character portraits" label="Argent's Miscellaneous Tweaks - High-Resolution Character Portraits" modId="A7-MiscTweaks" engine="pst" complexity="minor" />
 		<component id="HouseTweaks:51" name="House Tweaks: Remove Unnecessary Persistent Visuals from Long-Duration Spells" label="Remove unnecessary persistent visuals from long-duration spells" modId="House-Rule-Tweaks" complexity="minor" />
-		<mod id="AC-Miscellaneous-Tweaks" label="AC Miscellaneous Tweaks" level="blendWell">
+		<mod id="AC-Miscellaneous-Tweaks" label="AC Miscellaneous Tweaks">
 			<component id="ac-miscellaneous-misctweaks" name="Miscellaneous Tweaks" label="AC miscellaneous tweaks" complexity="minor" />
 			<component id="ac-miscellaneous-random" name="Random Stuff No-one Wants" label="Random stuff no-one wants" alwaysIf="ac-miscellaneous-misctweaks" noDisplay="1" complexity="minor" />
 		</mod>
@@ -1759,15 +1759,15 @@
 
 	<scripts engine="bg,eet,iwd">
 		<mod id="Better-IWD-Pregen" label="Better IWD Pregen scripts" unfolded="1">
-			<component id="D2-SCRIPT-IWDPGEN" name="Better IWD Pregen" label="Better IWD pregen (main)" core="1" complexity="minor" />
-			<component id="D2-SCRIPT-NYMPH" name="Use revised script for nymph summon. Compatible with SCS. (Cooldown hotkeys, faster movement, AI can cast Barkskin, Mass Cure, Entangle, or Summon Insects once each per combat encounter.)" label="Use revised script for Nymph Summon. compatible with SCS." desc="Cooldown hotkeys, faster movement, AI can cast Barkskin, Mass Cure, Entangle, or Summon Insects once each per combat encounter." complexity="minor" />
+			<component id="D2-SCRIPT-IWDPGEN" name="Better IWD Pregen" label="Better IWD pregen (main)" core="1" recommended="combat" package="scripts" complexity="minor" />
+			<component id="D2-SCRIPT-NYMPH" name="Use revised script for nymph summon. Compatible with SCS. (Cooldown hotkeys, faster movement, AI can cast Barkskin, Mass Cure, Entangle, or Summon Insects once each per combat encounter.)" label="Use revised script for Nymph Summon. compatible with SCS." desc="Cooldown hotkeys, faster movement, AI can cast Barkskin, Mass Cure, Entangle, or Summon Insects once each per combat encounter." recommended="combat" package="scripts" complexity="minor" />
 			<component id="D2-SCRIPT-NGAUTO" name="Better IWD Pregen (d2scrp)" label="Auto-assign better IWD Pregen (d2scrp) to new characters" complexity="minor" />
 		</mod>
 		<mod id="enhanced-powergaming-scripts" label="Enhanced Powergaming Scripts">
 			<component id="EnhancedPowergamingScripts-MainAccelerated" name="Accelerated Pre-Buffing Speed" label="Enhanced Powergaming Script - accelerated pre-buffing speed" complexity="minor" />
 			<component id="EnhancedPowergamingScripts-Simulacrum" name="Install Enhanced Scripts for Simulacrum" label="Install enhanced scripts for Simulacrum" alwaysIf="EnhancedPowergamingScripts-MainAccelerated" noDisplay="1" complexity="minor" />
 		</mod>
-		<component id="stratagems:5000" name="Specialist Type" label="Ease-of-Use Party AI" modId="SwordCoastStratagems" level="vanillaPlus" complexity="minor" />
+		<component id="stratagems:5000" name="Specialist Type" label="Ease-of-Use Party AI" modId="SwordCoastStratagems" level="vanillaPlus" recommended="combat" package="scripts" complexity="minor" />
 	</scripts>
 
 	<campaigns engine="eet">
@@ -1794,12 +1794,12 @@
 		/>
 	</campaigns>
 
-	<ui engine="bg,eet,iwd" level="vanillaPlus">
+	<ui engine="bg,eet,iwd" recommended="ui">
 		<component id="AutoLoot:0" name="Bubb's Auto Loot, for Baldur's Gate Enhanced Edition Games" label="Bubb's Auto Loot" modId="AutoLoot" complexity="minor" />
 		<component id="buffbot:0" name="BuffBot: In-Game Buff Automation" label="Buffbot: In-game buff automation" modId="bg-eeex-buffbot" complexity="moderate" />
 		<component id="cd_tweaks_restored_loading_hints" name="Restored Loading Hints" label="Restored loading hints" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3400" complexity="minor" />
 		<group label="Save game tweaks">
-			<component id="cd_tweaks_personalize_savename_opt6" name="Use scheme: 000000000-[Protagonist] Save-Name" label="Use save filenames scheme: 000000000-[protagonist] save-name" level="vanillaPlus" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3295" complexity="minor" />
+			<component id="cd_tweaks_personalize_savename_opt6" name="Use scheme: 000000000-[Protagonist] Save-Name" label="Use save filenames scheme: 000000000-[protagonist] save-name" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3295" complexity="minor" />
 			<component id="cd_tweaks_create_interval_four_saves_15" name="Every 15 minutes (cycle through four saves)" label="Interval saves every 15 minutes" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3354" complexity="minor" />
 		</group>
 		<mod id="A7-HiddenGameplayOptions" label="Reveal Hidden Gameplay Options" engine="bg,eet,iwd,pst">
@@ -1819,7 +1819,6 @@
 			<component id="A7_MISCTWEAKS_DUALCLASS_BACK_BUTTON" name="Reactivate &quot;Back&quot; button in the Dual-Class menu" label="Reactivate 'back' button in the dual-class menu" modId="A7-MiscTweaks" level="fixes" complexity="minor" />
 			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" name="Disable creature tooltips" label="Disable creature tooltips" modId="A7-MiscTweaks" level="higherDifficulty" engine="bg,eet,iwd,pst" complexity="minor" />
 		</mod>
-		
 	</ui>
 
 	<ui engine="bg,eet,iwd">
@@ -1892,7 +1891,7 @@
 				<component id="SkillsAndAbilitiesWeaponProf2" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve High Master (4 pips) in Weapon Proficiencies" label="High master (4 pips)" modId="skills-and-abilities" complexity="minor" />
 				<component id="SkillsAndAbilitiesWeaponProf3" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve Grand Master (5 pips) in Weapon Proficiencies" label="Grand master (5 pips)" modId="skills-and-abilities" complexity="minor" />
 			</alternatives>
-			<component id="cd_tweaks_casting_in_armor" name="Allow Arcane Spellcasting in Heavy Armor" label="Allow arcane spellcasting in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2120" complexity="minor" />
+			<component id="cd_tweaks_casting_in_armor" name="Allow Arcane Spellcasting in Heavy Armor" label="Allow arcane spellcasting in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2120" complexity="minor" />
 			<component id="SkillsAndAbilitiesClericThief" name="Adjust Cleric/Thief Actionbar" label="Adjust cleric/thief action bar" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" />
 			<component id="D5_REVISED_DUAL_CLASS_REQS" name="Lower Dual-Class Requirements" label="Lower dual-class requirements" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" complexity="minor" />
 		</multi>
@@ -1912,7 +1911,7 @@
 				<alternatives label="CON Bonuses/Regeneration">
 					<alternatives label="SubtleD's Hit Dice Overhaul — the new average, compared to vanilla average, is..." modId="SubtleD_Stat_Overhauls" desc="Take some of the randomness out of hit point rolls. Add slow regeneration since 19 CON">
 						<component id="D5_HARDCORE_HD" name="Closer to average hit points" label="Above" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" complexity="minor" />
-						<component id="D5_REVISED_HD" name="Generous (above-average) hit points" label="Similar" modId="SubtleD_Stat_Overhauls" level="blendWell" default="1" complexity="moderate" />
+						<component id="D5_REVISED_HD" name="Generous (above-average) hit points" label="Similar" modId="SubtleD_Stat_Overhauls" recommended="mechanics" default="1" complexity="moderate" />
 						<component id="D5_REDUCED_HD" name="Reduced hit points" label="Reduced" modId="SubtleD_Stat_Overhauls" level="higherDifficulty" complexity="moderate" />
 					</alternatives>
 					<component id="HouseTweaks:9" name="Constitution Bonuses for All Classes + Regeneration Changes" label="House tweaks CON bonuses for all classes + regeneration changes" modId="House-Rule-Tweaks" complexity="moderate" />
@@ -1923,11 +1922,11 @@
 				<component id="HouseTweaks:12" name="House Tweaks: INT/WIS/CHA-based Bonus Spell Slots" label="House Tweaks version" modId="House-Rule-Tweaks" complexity="minor" />
 			</alternatives>
 			<group label="Level Progression">
-				<component id="D5_UNIFORM_XP_TABLES" name="Slower, Standardized XP Tables" label="Slower, standardized XP tables" modId="SubtleD_Stat_Overhauls" level="extended" complexity="moderate" />
+				<component id="D5_UNIFORM_XP_TABLES" name="Slower, Standardized XP Tables" label="Slower, standardized XP tables" modId="SubtleD_Stat_Overhauls" complexity="moderate" />
 				<component id="METweaks:810" name="Both Clerics and Monks" label="Speed-up level progression for clerics and monks" desc="Both clerics and monks will get to level 9 during BG1" modId="Olvyn-Tweaks" level="lowerDifficulty" complexity="minor" />
 			</group>
 			<component id="D5_REVISED_ABILITY_SCORES" name="Ability Score Overhaul" label="Ability score overhaul" desc="Helps to make all stats useful" modId="SubtleD_Stat_Overhauls" complexity="major" />
-			<component id="cd_tweaks_exceptional_strength_weight_limits" name="Exceptional Strength Weight Limit Changes [sarevok57]" label="Exceptional STR weight limit changes" modId="Tweaks-Anthology" level="vanillaPlus" engine="bg,eet,iwd,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2500" complexity="minor" />
+			<component id="cd_tweaks_exceptional_strength_weight_limits" name="Exceptional Strength Weight Limit Changes [sarevok57]" label="Exceptional STR weight limit changes" modId="Tweaks-Anthology" recommended="mechanics" engine="bg,eet,iwd,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2500" complexity="minor" />
 		</stats>
 		<proficiencies>
 			<alternatives label="Proficiency/Fighting Styles Tweaks">
