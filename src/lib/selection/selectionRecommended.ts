@@ -1,8 +1,5 @@
 import { engineMatches } from '../engine/matchEngine'
-import type { LadderLevel } from '../levels'
 import {
-  applyLadderLevelSelection,
-  setDifficultySelection,
   type LevelSelectionScope,
 } from './selectionLevels'
 import { passesDisplayGates, findEnclosingAlternatives, findEnclosingMod } from './treeAncestry'
@@ -217,52 +214,6 @@ export function selectionMatchesRecommendedBaseline(
   const expected = buildRecommendedBaselineSelection(
     model,
     game,
-    checkedRecommended,
-    checkedPackages,
-  )
-  return selectionSetsEqual(selectedIds, expected)
-}
-
-/** Combined preset baseline: levels + recommended + packages. */
-export function buildPresetBaselineSelection(
-  model: InstallSequenceModel,
-  game: SelectedGame,
-  ladder: ReadonlySet<LadderLevel>,
-  lowerDifficulty: boolean,
-  higherDifficulty: boolean,
-  checkedRecommended: ReadonlySet<string>,
-  checkedPackages: ReadonlySet<string>,
-): SelectionSet {
-  let next = createInitialSelection(model, game)
-  next = applyLadderLevelSelection(model, next, game, ladder)
-  next = setDifficultySelection(model, next, game, 'lowerDifficulty', lowerDifficulty)
-  next = setDifficultySelection(model, next, game, 'higherDifficulty', higherDifficulty)
-  for (const token of [...checkedRecommended].sort()) {
-    next = setRecommendedSelection(model, next, game, token, true)
-  }
-  for (const token of [...checkedPackages].sort()) {
-    next = setPackageSelection(model, next, game, token, true)
-  }
-  return next
-}
-
-/** True when live selection matches level + recommended/package preset chips. */
-export function selectionMatchesPresetBaseline(
-  model: InstallSequenceModel,
-  game: SelectedGame,
-  selectedIds: ReadonlySet<string>,
-  ladder: ReadonlySet<LadderLevel>,
-  lowerDifficulty: boolean,
-  higherDifficulty: boolean,
-  checkedRecommended: ReadonlySet<string>,
-  checkedPackages: ReadonlySet<string>,
-): boolean {
-  const expected = buildPresetBaselineSelection(
-    model,
-    game,
-    ladder,
-    lowerDifficulty,
-    higherDifficulty,
     checkedRecommended,
     checkedPackages,
   )

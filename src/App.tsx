@@ -11,7 +11,6 @@ import {
   createInitialSelection,
   listSelectionState,
   randomizeDisplaySubtree,
-  selectionMatchesPresetBaseline,
   toggleDisplayNode,
   toggleListSelection,
   type RandomizeOptions,
@@ -250,13 +249,6 @@ function AppShell() {
   const [exportOpen, setExportOpen] = useState(false)
   const [csvExportOpen, setCsvExportOpen] = useState(false)
   const [weiduExportOpen, setWeiduExportOpen] = useState(false)
-  type PendingSelectionReset =
-    | { type: 'ladder'; level: LadderLevel; wantChecked: boolean }
-    | { type: 'difficulty'; token: DifficultyLevel; want: boolean }
-    | { type: 'recommended'; token: string; wantChecked: boolean }
-    | { type: 'package'; token: string; wantChecked: boolean }
-  const [pendingSelectionReset, setPendingSelectionReset] =
-    useState<PendingSelectionReset | null>(null)
   const [resetAllConfirmOpen, setResetAllConfirmOpen] = useState(false)
   const [resetAllRestartOpen, setResetAllRestartOpen] = useState(false)
   const [pendingVanillaRestartScope, setPendingVanillaRestartScope] =
@@ -557,20 +549,6 @@ function AppShell() {
   const showDetail = !isSetupSlot(activeStation) && !!game
   const showComponentsChrome = appPhase === 'components'
 
-  function isSelectionDirty(): boolean {
-    if (!game) return false
-    return !selectionMatchesPresetBaseline(
-      model,
-      game,
-      selectedIds,
-      levels.ladderChecked,
-      levels.lowerDifficultyPreset,
-      levels.higherDifficultyPreset,
-      recommended.checkedRecommended,
-      recommended.checkedPackages,
-    )
-  }
-
   const buildGameSession = useCallback(() => {
     if (!game) return null
     let install = installSnapshotRef.current ?? undefined
@@ -717,61 +695,22 @@ function AppShell() {
 
   function onPresetsLadderToggle(level: LadderLevel, wantChecked: boolean) {
     if (installSelectionFrozen) return
-    if (isSelectionDirty()) {
-      setPendingSelectionReset({ type: 'ladder', level, wantChecked })
-      return
-    }
     levels.onLadderToggle(level, wantChecked)
   }
 
   function onPresetsDifficultyChange(token: DifficultyLevel, want: boolean) {
     if (installSelectionFrozen) return
-    if (isSelectionDirty()) {
-      setPendingSelectionReset({ type: 'difficulty', token, want })
-      return
-    }
     levels.onDifficultyPresetChange(token, want)
   }
 
   function onPresetsRecommendedToggle(token: string, wantChecked: boolean) {
     if (installSelectionFrozen) return
-    if (isSelectionDirty()) {
-      setPendingSelectionReset({ type: 'recommended', token, wantChecked })
-      return
-    }
     recommended.onRecommendedToggle(token, wantChecked)
   }
 
   function onPresetsPackageToggle(token: string, wantChecked: boolean) {
     if (installSelectionFrozen) return
-    if (isSelectionDirty()) {
-      setPendingSelectionReset({ type: 'package', token, wantChecked })
-      return
-    }
     recommended.onPackageToggle(token, wantChecked)
-  }
-
-  function cancelSelectionReset() {
-    setPendingSelectionReset(null)
-  }
-
-  function confirmSelectionReset() {
-    if (!pendingSelectionReset) return
-    const pending = pendingSelectionReset
-    setPendingSelectionReset(null)
-    if (pending.type === 'ladder') {
-      levels.onLadderToggle(pending.level, pending.wantChecked)
-      return
-    }
-    if (pending.type === 'difficulty') {
-      levels.onDifficultyPresetChange(pending.token, pending.want)
-      return
-    }
-    if (pending.type === 'recommended') {
-      recommended.onRecommendedToggle(pending.token, pending.wantChecked)
-      return
-    }
-    recommended.onPackageToggle(pending.token, pending.wantChecked)
   }
 
   function resetComponentSelection() {
@@ -1512,14 +1451,6 @@ function AppShell() {
           gameFolders={gameFolders}
         />
       ) : null}
-      <ConfirmDialog
-        open={pendingSelectionReset != null}
-        title="Discard selection?"
-        message="Changing this will discard your current selection. Are you sure?"
-        confirmLabel="Discard"
-        onConfirm={confirmSelectionReset}
-        onCancel={cancelSelectionReset}
-      />
       <ConfirmDialog
         open={resetAllConfirmOpen}
         title="Reset all?"

@@ -25,8 +25,6 @@ export {
   setPackageSelection,
   buildRecommendedBaselineSelection,
   selectionMatchesRecommendedBaseline,
-  buildPresetBaselineSelection,
-  selectionMatchesPresetBaseline,
 } from './selectionRecommended'
 export type { RandomizePercent, RandomizeOptions } from './selectionRandomize'
 export {
