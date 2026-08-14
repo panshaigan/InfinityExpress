@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from 'react'
 import type { InstallSequenceModel, SelectedGame, StationId } from '../lib/xml/schema'
-import { toggleLadderPrefix, type LadderLevel } from '../lib/levels'
+import { toggleLadderLevel, type LadderLevel } from '../lib/levels'
 import {
   applyGlobalLevelBaseline,
   applyLadderLevelSelection,
@@ -88,7 +88,7 @@ export function useLevelPresets(args: {
   function onLadderToggle(level: LadderLevel, wantChecked: boolean) {
     if (!game) return
     setLadderChecked((prev) => {
-      const next = toggleLadderPrefix(prev, level, wantChecked)
+      const next = toggleLadderLevel(prev, level, wantChecked)
       if (!next) return prev
       setLastGlobalLadder(new Set(next))
       setSelectedIds((prevSelected) =>
@@ -119,7 +119,7 @@ export function useLevelPresets(args: {
     const scope = componentIdsForStation(relationIndex.stationByComponentId, stationId)
     setStationLevelPresets((prev) => {
       const current = prev.get(stationId) ?? emptyLiveStationPreset()
-      const nextLadder = toggleLadderPrefix(current.ladder, level, wantChecked)
+      const nextLadder = toggleLadderLevel(current.ladder, level, wantChecked)
       if (!nextLadder) return prev
       const next = new Map(prev)
       next.set(stationId, {

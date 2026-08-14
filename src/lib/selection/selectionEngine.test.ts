@@ -424,7 +424,19 @@ const LEVELED = `<?xml version="1.0"?>
 describe('level mass-check', () => {
   const { model } = parseInstallSequence(LEVELED)
 
-  it('vanillaPlus selects fixes + restoration + vanillaPlus, not extended', () => {
+  it('vanillaPlus only selects vanillaPlus tier, not fixes or restoration', () => {
+    let selected = createInitialSelection(model, 'bg1')
+    selected = applyLadderLevelSelection(model, selected, 'bg1', new Set(['vanillaPlus']))
+    expect(selected.has('fix:a')).toBe(false)
+    expect(selected.has('rest:a')).toBe(false)
+    expect(selected.has('vp:a')).toBe(true)
+    expect(selected.has('bw:a')).toBe(false)
+    expect(selected.has('qual:req')).toBe(true)
+    expect(selected.has('alt:vp')).toBe(true)
+    expect(selected.has('alt:rest')).toBe(false)
+  })
+
+  it('vanillaPlus selects fixes + restoration + vanillaPlus when all three ranks enabled', () => {
     let selected = createInitialSelection(model, 'bg1')
     selected = applyLadderLevelSelection(
       model,

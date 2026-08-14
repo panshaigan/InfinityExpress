@@ -1,4 +1,4 @@
-/** Ladder levels in cumulative order (low → high). */
+/** Ladder levels in rank order (low → high); used for filters and alternatives, not preset auto-inclusion. */
 export const LADDER_LEVELS = [
   'fixes',
   'restoration',
@@ -160,19 +160,18 @@ export function levelPassesFilter(
 }
 
 /**
- * When checking a ladder rank, enable all lower ranks too (prefix).
- * Unchecking removes only that rank.
+ * Toggle one ladder rank in the preset strip set (independent checkboxes).
+ * Checking adds only that rank; unchecking removes only that rank.
  */
-export function toggleLadderPrefix(
+export function toggleLadderLevel(
   ladder: ReadonlySet<LadderLevel>,
   level: LadderLevel,
   wantChecked: boolean,
 ): Set<LadderLevel> | null {
-  const idx = LADDER_LEVELS.indexOf(level)
-  if (idx === -1) return null
+  if (!LADDER_LEVELS.includes(level)) return null
   const next = new Set(ladder)
   if (wantChecked) {
-    for (let i = 0; i <= idx; i++) next.add(LADDER_LEVELS[i]!)
+    next.add(level)
   } else {
     next.delete(level)
   }

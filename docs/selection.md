@@ -49,7 +49,7 @@ Operands = component ids. `,` = AND, `|` = OR, `()` group. Unparsable → false.
 
 ## Levels vs filters
 
-- **Level strip** — mass-check by ladder max + independent Lower/Higher difficulty. Does not change filters.
+- **Level strip** — mass-check by independently toggled ladder ranks (each chip selects/deselects only that rank's components) + independent Lower/Higher difficulty. Does not change filters.
 - **Filters** — display-only after `buildDisplayTree` (search, level, stability, tags, size, author, hidden, required, unchecked modes). Never clear selection.
 
 Ladder ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `extended` (`restructure` with `blendWell`). Difficulty tokens are opt-in only.
