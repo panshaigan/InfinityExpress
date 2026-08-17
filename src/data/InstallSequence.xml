@@ -47,8 +47,8 @@
 		<alternatives label="Icewind Dale in Baldur's Gate EET" unfolded="1">
 			<component id="Tipun_iwd1_eet" name="Icewind Dale: Heart of Winter in Baldur's Gate Enhanced Edition Trilogy" label="Full Icewind Dale with HoW and TotL expansions" modId="IWD1_EET" engine="eet" default="1" recommended="iwd" complexity="major" />
 			<group label="IWD expansions without the main IWD1 content">
-				<component id="how_eet:0" name="[Icewind Dale in Baldur's Gate EET] Heart of Winter in Baldur's Gate Enhanced Edition (Trilogy)" label="Heart of Winter" modId="HoW_EET" engine="bg1,eet" recommended="how" complexity="moderate" />
-				<mod id="A7-TotLM-BG2EE" label="Trials of the Luremaster for BG:EET" recommended="totl" engine="bg2,eet">
+				<component id="how_eet:0" name="[Icewind Dale in Baldur's Gate EET] Heart of Winter in Baldur's Gate Enhanced Edition (Trilogy)" label="Heart of Winter" modId="HoW_EET" engine="bg1,eet" complexity="moderate" />
+				<mod id="A7-TotLM-BG2EE" label="Trials of the Luremaster for BG:EET" engine="bg2,eet">
 					<component id="A7-TOTLM-BG2EE-MAIN" name="Trials of the Luremaster for Baldur's Gate" label="Main component" core="1" complexity="moderate" />
 					<component id="A7-TOTLM-BG2EE-REBALANCE_ITEMS" name="Rebalance weapons and equipment" label="Rebalance weapons and equipment" complexity="moderate" />
 					<component id="A7-TOTLM-BG2EE-TRADE_WITH_HOBART" name="Allow to trade with Hobart before starting the adventure" label="Allow trading with Hobart before starting the adventure" complexity="minor" />
@@ -104,21 +104,21 @@
 				<alternatives label="Postgame" desc="Allows playing after killing Sarevok" unfolded="1">
 					<mod id="EndlessBG1" label="Endless BG1" recommended="blendWell">
 						<component id="EBG1_MainComponent" name="Endless BG1: Main Component (Required)" label="Main component" core="1" complexity="moderate" />
-						<component id="EBG1_MoreFlavor" name="More Flavor to Hero of Baldur's Gate (Includes PC's Residence Inside Palace)" label="More flavor to Hero of Baldur's Gate (includes PC's residence inside the Palace)" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_HeroCutscene" name="Short Public Hero Tribute" label="Short public hero tribute" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_SarevokItems" name="Sarevok's Unique Items" label="Sarevok's Unique Items" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_SarevokSword" name="Sarevok's Sword" label="Sarevok's Sword" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_ImoenJannath" name="Imoen and Duke Jannath (Imoen Gets Residence Inside Palace)" label="Imoen and Duke Jannath (Imoen gets residence inside Palace)" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_EltanInPalace" name="Duke Eltan Is in the Palace" label="Duke Eltan is in the Palace" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_FFHealerInBhaalTemple" name="Flaming Fist After Final Fight" label="Flaming Fist after final fight" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_ElminsterAppearance_jastey" name="jastey's Version" label="Jastey's Version" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_RefugeesInBGCity" name="First Refugees Come to Baldur's Gate" label="First refugees come to Baldur's Gate" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_TreasurerInPalaceDungeon" name="Ophyllis the Treasurer is Inside Palace Dungeon" label="Ophyllis the treasurer is inside the Palace Dungeon" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_DenkodCommentsOnSarevoksDeath" name="Denkod in Thieves' Guild Comments on Sarevok's Death" label="Denkod in Thieves' Guild comments on Sarevok's death" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_SkipThievesMazeOnce" name="Skip Thieves' Maze Once After Sarevok's Death" label="Skip Thieves' Maze once after Sarevok's death" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_KorlaszDungeonBG1" name="Korlasz' Dungeon is in BG1" label="Korlasz' Dungeon is in BG1" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_FensterInPalace" name="Fenster the Palace Healer Is in the Palace" label="Fenster the Palace Healer is in the Palace" displayIf="EBG1_MainComponent" complexity="minor" />
-						<component id="EBG1_CorwinInPalace" name="Captain Corwin Is in the Palace" label="Captain Corwin is in the Palace" displayIf="EBG1_MainComponent" complexity="minor" />
+						<component id="EBG1_MoreFlavor" name="More Flavor to Hero of Baldur's Gate (Includes PC's Residence Inside Palace)" label="More flavor to Hero of Baldur's Gate (includes PC's residence inside the Palace)" complexity="minor" />
+						<component id="EBG1_HeroCutscene" name="Short Public Hero Tribute" label="Short public hero tribute" complexity="minor" />
+						<component id="EBG1_SarevokItems" name="Sarevok's Unique Items" label="Sarevok's Unique Items" complexity="minor" />
+						<component id="EBG1_SarevokSword" name="Sarevok's Sword" label="Sarevok's Sword" complexity="minor" />
+						<component id="EBG1_ImoenJannath" name="Imoen and Duke Jannath (Imoen Gets Residence Inside Palace)" label="Imoen and Duke Jannath (Imoen gets residence inside Palace)" complexity="minor" />
+						<component id="EBG1_EltanInPalace" name="Duke Eltan Is in the Palace" label="Duke Eltan is in the Palace" complexity="minor" />
+						<component id="EBG1_FFHealerInBhaalTemple" name="Flaming Fist After Final Fight" label="Flaming Fist after final fight" complexity="minor" />
+						<component id="EBG1_ElminsterAppearance_jastey" name="jastey's Version" label="Jastey's Version" complexity="minor" />
+						<component id="EBG1_RefugeesInBGCity" name="First Refugees Come to Baldur's Gate" label="First refugees come to Baldur's Gate" complexity="minor" />
+						<component id="EBG1_TreasurerInPalaceDungeon" name="Ophyllis the Treasurer is Inside Palace Dungeon" label="Ophyllis the treasurer is inside the Palace Dungeon" complexity="minor" />
+						<component id="EBG1_DenkodCommentsOnSarevoksDeath" name="Denkod in Thieves' Guild Comments on Sarevok's Death" label="Denkod in Thieves' Guild comments on Sarevok's death" complexity="minor" />
+						<component id="EBG1_SkipThievesMazeOnce" name="Skip Thieves' Maze Once After Sarevok's Death" label="Skip Thieves' Maze once after Sarevok's death" complexity="minor" />
+						<component id="EBG1_KorlaszDungeonBG1" name="Korlasz' Dungeon is in BG1" label="Korlasz' Dungeon is in BG1" complexity="minor" />
+						<component id="EBG1_FensterInPalace" name="Fenster the Palace Healer Is in the Palace" label="Fenster the Palace Healer is in the Palace" complexity="minor" />
+						<component id="EBG1_CorwinInPalace" name="Captain Corwin Is in the Palace" label="Captain Corwin is in the Palace" complexity="minor" />
 					</mod>
 					<mod id="Reflections-of-Destiny" label="Reflections of Destiny" desc="Allows staying in BG1 after fulfilling its main quest and deciding when to progress to SoD/SoA">
 						<component id="Reflections_of_Destiny:100" name="Reflections of Destiny BG1: The Future is Now" label="The Future Is Now" complexity="moderate" />
@@ -395,7 +395,7 @@
 					<component id="SoDRoadToDiscovery-additional_infopoints" name="Additional Info Points" label="Additional info points" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" complexity="minor" />
 					<component id="SoDRoadToDiscovery-additional_communication_officers" name="Add Additional Communication with Officers" label="Add additional communication with officers" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" complexity="minor" />
 				</mod>
-				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party">
+				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party" recommended="restructure" package="i4e">
 					<component id="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" name="Imoen 4 Ever in SoD: Imoen Remains in Group in Korlasz' Dungeon" label="Imoen 4 ever - modify the story to allow Imoen staying in the party" complexity="minor" />
 					<component id="Imoen4Ever-SoD-ImoenReturnsCamp" name="Imoen 4 Ever in SoD: Imoen Returns to PC in First Coalition Camp (bd1000)" label="Imoen returns to PC in first Coalition Camp (bd1000)" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" complexity="minor" />
 					<component id="Imoen4Ever-SoD-BetterReasonPalace" name="Imoen 4 Ever in SoD: Imoen Gives Better Reason to Stay Behind in Palace" label="Imoen gives better reason to stay behind in palace" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" complexity="minor" />
@@ -435,7 +435,7 @@
 			<restructure label="Restructure">
 				<component id="Reflections_of_Destiny:320" name="Reflections of Destiny BG2: Imoen Can die, by Jastey" label="Imoean can die" modId="Reflections-of-Destiny" displayIfNot="Imoen4Ever-BGII-ImoenReturnsChapter2" complexity="minor" />
 				<component id="Reflections_of_Destiny:330" name="Reflections of Destiny BG2: Wherever You Go There You Are" label="Wherever You Go, There You Are" modId="Reflections-of-Destiny" displayIf="Reflections_of_Destiny:100" complexity="minor" />
-				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party">
+				<mod id="Imoen4Ever" label="Imoen 4 Ever" desc="Modify the story to allow Imoen staying in the party"  recommended="restructure" package="i4e">
 					<component id="Imoen4Ever-BGII-ImoenReturnsChapter2" name="Imoen 4 Ever in BGII: Imoen Returns after Talking to Gaelan in Chapter 2" label="Imoen 4 ever - modify the story to allow Imoen staying in the party" complexity="minor" />
 					<component id="Imoen4Ever-BGII-DialoguesContentSoA" name="Imoen 4 Ever in BGII: Give Imoen Dialogue Content in SoA" label="Give Imoen dialogue content in SoA" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" complexity="minor" />
 					<component id="Imoen4Ever-BGII-YoshimoBrynnlaw" name="Imoen 4 Ever in BGII: Yoshimo Comes to Brynnlaw" label="Yoshimo comes to brynnlaw" alwaysIf="Imoen4Ever-BGII-ImoenReturnsChapter2" noDisplay="1" complexity="minor" />
@@ -444,9 +444,9 @@
 				</mod>
 				<alternatives label="Restored Rhynn Lanthorn Quest">
 					<component id="dw_lanthorn:10" name="Classic Version (faithful restoration of cut content from the original game)" label="Classic version" desc="Faithful restoration of cut content from the original game" modId="Restored-Rhynn-Lanthorn" default="1" complexity="moderate" />	
-					<component id="dw_lanthorn:20" name="Expanded Version (adds four new locations where lenses can be found)" label="Expanded version" desc="Adds four new locations where lenses can be found" modId="Restored-Rhynn-Lanthorn" complexity="moderate" />
+					<component id="dw_lanthorn:20" name="Expanded Version (adds four new locations where lenses can be found)" label="Expanded version" desc="Adds four new locations where lenses can be found" modId="Restored-Rhynn-Lanthorn" recommended="restructure" package="rhynn" complexity="moderate" />
 				</alternatives>
-				<mod id="Ascension" label="Ascension" recommended="blendWell" >
+				<mod id="Ascension" label="Ascension" recommended="blendWell">
 					<component id="Ascension-RewrittenFinalChapterOfToB" name="Rewritten Final Chapter of Throne of Bhaal" label="Rewritten final chapter of Throne of Bhaal" complexity="moderate" />
 					<component id="Ascension-BalthazarCanBeRedeemed" name="Balthazar can be redeemed" label="Balthazar can be redeemed" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" complexity="minor" />
 					<component id="Ascension-ImprovedSarevokPlayerInteractions" name="Improved Sarevok-Player Interactions" label="Improved Sarevok-player interactions" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" complexity="minor" />
@@ -825,7 +825,7 @@
 					<component id="stratagems:4173" name="Five Levels Drained" label="100,000 gp" modId="SwordCoastStratagems" complexity="minor" />
 					<component id="stratagems:4174" name="Iron Body (Alteration) Level: 8 Range: 0 Duration: 2 turns Casting Time: 8 Area of Effect: The caster Saving Throw: None This spell transforms the caster's body into living iron, granting &lt;PRO_HIMHER&gt; several powerful resistances and abilities. While the spell is in effect, the caster is 100% resistant to electricity and poison, 50% resistant to fire and acid, and 75% resistant to physical damage (though the latter cannot be further improved by other effects). Spells that affect respiration or the physiology of the caster are ignored. In addition, the caster's Strength is raised to 25, and the caster can attack twice per round with iron fists for 2d4 points of damage plus appropriate Strength bonuses. Unfortunately, the caster's movement becomes slow and awkward, setting &lt;PRO_HISHER&gt; movement rate to 25% of &lt;PRO_HISHER&gt; normal, and &lt;PRO_HISHER&gt; spellcasting becomes more sluggish, imposing a -2 penalty on casting times. The spell ends immediately if the caster is affected by any kind of polymorph effect." label="120,000 gp" modId="SwordCoastStratagems" complexity="minor" />
 				</alternatives>
-				<mod id="A7-SkipChateauIrenicus" label="Skip Chateau Irenicus">
+				<mod id="A7-SkipChateauIrenicus" label="Skip Chateau Irenicus" recommended="restructure" package="chateau">
 					<component id="A7-SKIPCHATEAUIRENICUS-MAIN" name="Skip Chateau Irenicus" label="Skip Chateau Irenicus" complexity="minor" />
 					<component id="A7-SKIPCHATEAUIRENICUS-NPCS_ALL" name="All available NPCs" label="All available NPCs" alwaysIf="A7-SKIPCHATEAUIRENICUS-MAIN" noDisplay="1" complexity="minor" />
 					<component id="A7-SKIPCHATEAUIRENICUS-REALISTIC_OPENING_CUTSCENE" name="More realistic opening cutscene" label="More realistic opening cutscene" alwaysIf="A7-SKIPCHATEAUIRENICUS-MAIN" noDisplay="1" complexity="minor" />
@@ -1543,7 +1543,7 @@
 			<component id="s@-IS-BG1-Armor-Sounds" name="Restore BG1 Armor Sounds" label="Restore BG1 armor sounds" recommended="sounds" package="BG1Sounds" complexity="minor" />
 			<component id="s@-IS-Gulp-Sound" name="Restore Gulp Sound" label="Restore gulp sound" complexity="minor" />
 			<component id="s@-IS-Chunked-Death-Sound" name="Restore Chunked Death Sound" label="Restore chunked death sound" complexity="minor" />
-			<component id="s@-IS-Tweak-Volume-Levels" name="Tweak Sound Channel Volume Levels" label="Tweak sound channel volume levels" recommended="sounds" package="BG1Sounds" complexity="minor" />
+			<component id="s@-IS-Tweak-Volume-Levels" name="Tweak Sound Channel Volume Levels" label="Tweak sound channel volume levels" recommended="sounds" complexity="minor" />
 			<component id="s@-IS-Footsteps-Combat" name="Enable Footsteps During Combat" label="Enable footsteps during combat" recommended="fixes" complexity="minor" />
 			<component id="s@-IS-BG1-Ambient-Sounds" name="Restore BG1 Ambient Sounds" label="Restore BG1 ambient sounds" complexity="minor" />
 			<component id="s@-IS-Enhance-Pos-Audio" name="Enhance Positional Audio" label="Enhance positional audio" recommended="fixes" complexity="minor" />
@@ -1742,7 +1742,7 @@
 		<component id="cd_tweaks_remove_portrait_icons" name="Disable Portrait Icons Added by Equipped Items" label="Disable portrait icons added by equipped items" modId="Tweaks-Anthology" engine="bg,iwd,eet,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_90" complexity="minor" />
 		<component id="cd_tweaks_glowing_magical_shields" name="Make Magic Shields Glow [plainab/grogerson]" label="Make magic shields glow" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_160" complexity="minor" />
 		<alternatives label="Use character colors instead of item colors">
-			<component id="cd_tweaks_char_colors_all_helms_shields" name="For all shields and helmets" label="For all shields and helmets" modId="Tweaks-Anthology" recommended="gfx" package="npcColoredEquipment" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_190" complexity="minor" />
+			<component id="cd_tweaks_char_colors_all_helms_shields" name="For all shields and helmets" label="For all shields and helmets" modId="Tweaks-Anthology" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_190" complexity="minor" />
 			<component id="cd_tweaks_char_colors_normal_helms_shields" name="For non-magical shields and helmets" label="For non-magical shields and helmets" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_191" complexity="minor" />
 			<component id="cd_tweaks_char_colors_all_helms" name="For all helmets" label="For all helmets" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_192" complexity="minor" />
 			<component id="cd_tweaks_char_colors_normal_helms" name="For non-magical helmets" label="For non-magical helmets" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_193" complexity="minor" />
@@ -1771,10 +1771,10 @@
 	</scripts>
 
 	<campaigns engine="eet">
-		<component id="iwd_eet-party-banter:0" name="Install IWDEET Party Banter" label="Icewind Dale in EET Party Banter" modId="iwd_eet-party-banter" displayIf="Tipun_iwd1_eet|iwd2_eet:0" complexity="minor" />
+		<component id="iwd_eet-party-banter:0" name="Install IWDEET Party Banter" label="Icewind Dale in EET Party Banter" modId="iwd_eet-party-banter" alwaysIf="Tipun_iwd1_eet|iwd2_eet:0" noDisplay="1" complexity="minor" />
 		<component id="iwd_eet_end:0" name="IWD_EET_End" label="IWD EET end" modId="IWD_EET_End" alwaysIf="Tipun_iwd1_eet|iwd2_eet:0" noDisplay="1" complexity="minor" />
 		<mod id="IWD_EET_Integration" label="IWD Integration tweaks" displayIf="Tipun_iwd1_eet,iwd2_eet:0">
-			<component id="IWD_EET_integration:100" name="Add IWD Campaigns to the EET Menu" label="Install IWD as dedicated campaigns in EET menu" complexity="minor" />
+			<component id="IWD_EET_integration:100" name="Add IWD Campaigns to the EET Menu" label="Install IWD as dedicated campaigns in EET menu" recommended="dedicated" complexity="minor" />
 			<component id="IWD_EET_integration:110" name="Adjust IWD1 XP for Full Campaign" label="Adjust IWD1 XP for full campaign" alwaysIf="IWD_EET_integration:100" noDisplay="1" complexity="minor" />
 			<component id="IWD_EET_integration:115" name="Adjust IWD1 Creature Stats for Full Campaign" label="Adjust IWD1 creature stats for full campaign" alwaysIf="IWD_EET_integration:100" noDisplay="1" complexity="minor" />
 			<component id="IWD_EET_integration:130" name="Adjust IWD2 XP for Full Campaign" label="Adjust IWD2 XP for full campaign" alwaysIf="IWD_EET_integration:100" noDisplay="1" complexity="minor" />
@@ -1784,12 +1784,13 @@
 			<component id="IWD_EET_integration:160" name="Add IWD1 Easter Egg Content to BG2" label="Add IWD1 easter egg content to BG2" complexity="minor" />
 			<component id="IWD_EET_integration:180" name="Play NWN after the IWD1 Campaign" label="Play NWN after the IWD1 campaign" displayIf="NWN_MainComponent" complexity="minor" />
 		</mod>
-		<component id="NWN_WorldmapDedicatedCampaign" name="Install NWN as a dedicated campaign" label="Install NWN as a dedicated campaign" modId="NWNForBG" displayIf="NWN_MainComponent" engine="eet" complexity="minor" />
+		<component id="NWN_WorldmapDedicatedCampaign" name="Install NWN as a dedicated campaign" label="Install NWN as a dedicated campaign" modId="NWNForBG" displayIf="NWN_MainComponent" recommended="dedicated" engine="eet" complexity="minor" />
 		<component
 			id="IE_focus_dedicated_campaigns"
 			label="Focus on dedicated campaigns"
 			desc="Hide Baldur's Gate saga options that do not apply when you mainly play IWD/NWN as dedicated campaigns. Leave unchecked to keep the full component list."
 			displayIf="IWD_EET_integration:100|NWN_WorldmapDedicatedCampaign"
+			recommended="dedicated"
 			noExport="1" complexity="minor"
 		/>
 	</campaigns>
@@ -1822,7 +1823,7 @@
 	</ui>
 
 	<ui engine="bg,eet,iwd">
-		<component id="cd_tweaks_colorize_npc_names_brightness_normal" name="Normal brightness" label="Colorize NPC names and tooltips" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_250" recommended="ui" package="colorizeNpcNames" complexity="minor" />
+		<component id="cd_tweaks_colorize_npc_names_brightness_normal" name="Normal brightness" label="Colorize NPC names and tooltips" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_250" complexity="minor" />
 		<component id="cd_tweaks_colorblind_overlays" name="Enhanced Overlays for Colorblind Players [Fouinto]" label="Enhanced overlays for colorblind players" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_220" complexity="minor" />
 	</ui>
 
@@ -2098,14 +2099,13 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 				<component id="ZG-GRAION-STORES-FROMPLAYERS-150" name="Increase to 150%" label="Increase to 150%" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-FROMPLAYERS-200" name="Increase to 200%" label="Increase to 200%" complexity="moderate" />
 			</alternatives>
-			<component id="ZG-EQUIP-WHAT-I-CAN" name="Equip items from inventory to fill empty slots" label="Equip items from creatures' inventory to fill empty slots" recommended="higherDifficulty" complexity="minor" />
 		</mod>
 		<alternatives label="Alter identification mechanics" engine="bg,eet,iwd,pst">
 			<group label="Make it more strict" recommended="higherDifficulty">
 				<component id="cd_tweaks_shopkeeper_id_lore" name="Identification ability is based on storekeeper's lore" label="Identification ability is limited to Storekeeper's Lore" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" desc="Any storekeeper can identify items up to their personal Lore value, regardless of class." readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2191" complexity="moderate" />
 				<component id="cd_tweaks_lore_for_gems_potions" name="Gems and potions" label="Gems and potions require identification" modId="Tweaks-Anthology" recommended="higherDifficulty" engine="bg,eet,iwd" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1140" complexity="major" />
 			</group>
-			<component id="cd_tweaks_id_all_items" name="Identify All Items" label="Identify all items" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3020" complexity="major" />
+			<component id="cd_tweaks_id_all_items" name="Identify All Items" label="Identify all items" modId="Tweaks-Anthology" recommended="lowerDifficulty" package="disableIdentification" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3020" complexity="major" />
 		</alternatives>
 		<mod id="Tweaks-Anthology" label="Increase item stacks">
 			<component id="cd_tweaks_increase_ammo_stacks_120" name="Stacks of 120" label="Ammo stacks of 120" engine="bg,eet,iwd,pst" recommended="adjustements" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3083" complexity="moderate" />
@@ -2122,8 +2122,9 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			<component id="cd_tweaks_recover_ammo_25_enemy_only" name="25% chance to recover after a successful hit, vs. enemies only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3264" complexity="moderate" />
 			<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" name="50% chance to recover after a successful hit, vs. enemies only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3275" complexity="moderate" />
 		</group>
-		<component id="cd_tweaks_triple_class_hla_table" name="Triple-Class HLA Tables" label="Triple-class HLA tables" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2300" complexity="minor" />
-		<component id="cd_tweaks_no_traps_or_locks" name="Remove traps completely" label="Remove all traps" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3130" complexity="major" />
+		<component id="ZG-EQUIP-WHAT-I-CAN" name="Equip items from inventory to fill empty slots" label="Equip items from creatures' inventory to fill empty slots" modId="RandomGraionTweaks" recommended="higherDifficulty" complexity="minor" />
+		<component id="cd_tweaks_triple_class_hla_table" name="Triple-Class HLA Tables" label="Triple-class HLA tables" modId="Tweaks-Anthology" recommended="adjustements" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2300" complexity="minor" />
+		<component id="cd_tweaks_no_traps_or_locks" name="Remove traps completely" label="Remove all traps" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="lowerDifficulty" package="disableTraps" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3130" complexity="major" />
 		<component id="cd_tweaks_force_all_dialogue_to_pause" name="Force All Dialogue to Pause Game" label="Force all dialogue to pause game" engine="bg,eet,iwd,pst" recommended="adjustements" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_130" complexity="minor" />
 		<component id="cd_tweaks_sensible_regeneration_when_traveling" name="Sensible Regeneration When Traveling" label="Sensible regeneration when traveling" engine="bg,eet,iwd,pst" recommended="adjustements" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3380" complexity="minor" />
 		<component id="cd_tweaks_reveal_city_areas" name="Reveal City Maps When Entering Area" label="Reveal city maps when entering area" engine="bg,eet,iwd,pst" recommended="adjustements" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1100" complexity="minor" />
