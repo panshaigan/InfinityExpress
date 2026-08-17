@@ -3,14 +3,14 @@
 	<base>
 		<component id="A7-DLCMERGER-MERGE_SOD" name="Merge &quot;Siege of Dragonspear&quot; DLC" label='Merge SoD DLC' desc="Required for further BG1 modding" modId="A7-DlcMerger" engine="bg1,eet1" required="1" noDisplay="1" complexity="minor" />
 		<component id="bubb_revert_pathfinding:0" name="Bubb's v2.6.6.0+ Pathfinding Revert" label="Fix (revert) pathfinding" modId="IE-Snippets" engine="bg,eet,iwd,pst" required="1" noDisplay="1" complexity="minor" />
-		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" desc="The Enhanced Edition Fixpack is an unofficial collection of fixes for the Enhanced Editions of Baldur's Gate, Baldur's Gate II, Icewind Dale, and Planescape: Torment." level="fixes">
+		<group engine="bg,eet,eet1,iwd,pst" label="Enhanced Edition Fixpack" desc="The Enhanced Edition Fixpack is an unofficial collection of fixes for the Enhanced Editions of Baldur's Gate, Baldur's Gate II, Icewind Dale, and Planescape: Torment." recommended="fixes">
 			<component id="cd_eefp_core_fixes" name="Core Fixes" label="Core fixes" modId="EE_Fixpack" complexity="major" />
 			<component id="cd_eefp_game_text_update" name="Game Text Update" label="Game text update" modId="EE_Fixpack" noDisplay="1" alwaysIf="cd_eefp_core_fixes" complexity="minor" />
 		</group>
 		<component id="EET:0" name="EET core (resource importation)" label="Baldur's Gate: Enhanced Edition Trilogy (EET)" desc="Merges the whole saga into one game and provides continuity between the events of Baldur's Gate, Tales of the Sword Coast, Shadows of Amn, Throne of Bhaal and Siege of Dragonspear expansions" modId="EET" engine="eet" required="1" noDisplay="1" complexity="major" />
 		<mod id="EEex" label="EEex — an executable extender" desc="Required for advanced modding" engine="bg,eet,iwd">
 			<component id="EEex:0" name="Quick Menu Core" label="Quick menu core" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
-			<component id="EEex:1" name="EEex" label="EEex — an executable extender (required for advanced modding)" complexity="major" recommended="ui" />
+			<component id="EEex:1" name="EEex" label="EEex — an executable extender (required for advanced modding)" complexity="major" recommended="ui" package="EEex" />
 			<component id="EEex:2" name="Enable effect menu module: LShift-on-hover to view spells affecting creature" label="Enable effect menu module: LShift-on-hover to view spells affecting creature" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
 			<component id="EEex:3" name="Enable empty container module: Highlight empty containers in gray instead of cyan" label="Enable empty container module: Highlight empty containers in gray instead of cyan" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
 			<component id="EEex:4" name="Enable hotkey module: Edit override/B3Hotkey.lua to create advanced spell hotkeys" label="Enable hotkey module: Edit override/B3Hotkey.lua to create advanced spell hotkeys" alwaysIf="EEex:1" noDisplay="1" complexity="minor" />
@@ -82,12 +82,12 @@
 	<content displayIfNot="IE_focus_dedicated_campaigns">
 		<bg1 label="BG1" engine="bg1,eet">
 			<restorations label="Restorations" unfolded="1">
-				<mod id="bg1ub" label="Unfinished Business" level="restoration" engine="bg1,eet1" unfolded="1">
+				<mod id="bg1ub" label="Unfinished Business" recommended="restoration" engine="bg1,eet1" unfolded="1">
 					<component id="bg1ub:11" name="Scar and the Sashenstar's Daughter" label="Scar and the Sashenstar's Daughter" complexity="minor" />
 					<component id="bg1ub:12" name="Quoningar, the Cleric" label="Quoningar, the Cleric" complexity="minor" />
 					<component id="bg1ub:13" name="Shilo Chen and the Ogre-Magi" label="Shilo Chen and the Ogre-Magi" complexity="minor" />
 					<component id="bg1ub:14" name="Edie, the Merchant League Applicant" label="Edie, the Merchant League Applicant" complexity="minor" />
-					<component id="bg1ub:16" name="Creature Corrections" label="Creature corrections" level="fixes" complexity="minor" />
+					<component id="bg1ub:16" name="Creature Corrections" label="Creature corrections" recommended="fixes" complexity="minor" />
 					<component id="bg1ub:17" name="Creature Restorations" label="Creature restorations" complexity="minor" />
 					<component id="bg1ub:18" name="Creature Name Restorations" label="Creature name restorations" complexity="minor" />
 					<component id="bg1ub:19" name="Minor Dialogue Restorations" label="Minor dialogue restorations" complexity="minor" />
@@ -102,7 +102,7 @@
 			</restorations>
 			<restructure label="Restructure">
 				<alternatives label="Postgame" desc="Allows playing after killing Sarevok" unfolded="1">
-					<mod id="EndlessBG1" label="Endless BG1" level="blendWell">
+					<mod id="EndlessBG1" label="Endless BG1" recommended="blendWell">
 						<component id="EBG1_MainComponent" name="Endless BG1: Main Component (Required)" label="Main component" core="1" complexity="moderate" />
 						<component id="EBG1_MoreFlavor" name="More Flavor to Hero of Baldur's Gate (Includes PC's Residence Inside Palace)" label="More flavor to Hero of Baldur's Gate (includes PC's residence inside the Palace)" displayIf="EBG1_MainComponent" complexity="minor" />
 						<component id="EBG1_HeroCutscene" name="Short Public Hero Tribute" label="Short public hero tribute" displayIf="EBG1_MainComponent" complexity="minor" />
@@ -125,21 +125,21 @@
 						<component id="Reflections_of_Destiny:110" name="Reflections of Destiny BG1: The Mirror Shard" label="The Mirror Shard" complexity="minor" />
 					</mod>
 				</alternatives>
-				<component id="METweaks:2800" name="Make it possible to enter the Nashkel Mines through the back cave entrance" label="Allow early entry to the Nashkel Mines through the back cave entrance" modId="Olvyn-Tweaks" level="extended" complexity="minor" />
-				<component id="METweaks:3000" name="Make it possible to enter the catacombs beneath Candlekeep early" label="Allow early entry to the catacombs beneath Candlekeep" modId="Olvyn-Tweaks" level="extended" complexity="minor" />
+				<component id="METweaks:2800" name="Make it possible to enter the Nashkel Mines through the back cave entrance" label="Allow early entry to the Nashkel Mines through the back cave entrance" modId="Olvyn-Tweaks" recommended="extended" complexity="minor" />
+				<component id="METweaks:3000" name="Make it possible to enter the catacombs beneath Candlekeep early" label="Allow early entry to the catacombs beneath Candlekeep" modId="Olvyn-Tweaks" recommended="extended" complexity="minor" />
 				<alternatives label="Make Cloakwood areas available before completing the Bandit Camp">
-					<component id="cd_tweaks_reveal_cloakwood_1" name="First area only" label="First area only" modId="Tweaks-Anthology" level="blendWell" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1035" complexity="minor" />
+					<component id="cd_tweaks_reveal_cloakwood_1" name="First area only" label="First area only" modId="Tweaks-Anthology" recommended="blendWell" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1035" complexity="minor" />
 					<component id="cd_tweaks_reveal_cloakwood_4" name="All of Cloakwood except the mines" label="All of Cloakwood except the mines" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1036" complexity="minor" />
 				</alternatives>
-				<component id="cd_tweaks_change_cloakwood_trigger" name="Change Cloakwood Mine Chapter End Change Trigger to Non-TotSC Behavior [plainab]" label="Change Cloakwood mine chapter end change trigger to non-TotSC behavior" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1270" complexity="minor" />
+				<component id="cd_tweaks_change_cloakwood_trigger" name="Change Cloakwood Mine Chapter End Change Trigger to Non-TotSC Behavior [plainab]" label="Change Cloakwood mine chapter end change trigger to non-TotSC behavior" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1270" complexity="minor" />
 				<mod id="Candlekeep-Revisited" label="Candlekeep Revisited">
-					<component id="candlekeep_revisited:0" name="Candlekeep Revisited: BG1 Prologue Expansion" label="BG1 prologue expansion" modId="Candlekeep-Revisited" level="extended" complexity="moderate" />
-					<component id="candlekeep_revisited:1" name="Candlekeep Revisited: BG1 Expanded Starting Sequence" label="BG1 expanded starting sequence" modId="Candlekeep-Revisited" complexity="moderate" />
+					<component id="candlekeep_revisited:0" name="Candlekeep Revisited: BG1 Prologue Expansion" label="BG1 prologue expansion" modId="Candlekeep-Revisited" recommended="extended" complexity="moderate" />
+					<component id="candlekeep_revisited:1" name="Candlekeep Revisited: BG1 Expanded Starting Sequence" label="BG1 expanded starting sequence" modId="Candlekeep-Revisited" recommended="lowerDifficulty" complexity="moderate" />
 				</mod>
 			</restructure>
 			<quest label="Quests and Encounters">
-				<component id="Loretakers:0" name="Loretakers V 2.5" label="Loretakers" modId="Loretakers" level="extended" complexity="major" />
-				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" level="blendWell">
+				<component id="Loretakers:0" name="Loretakers V 2.5" label="Loretakers" modId="Loretakers" recommended="extended" complexity="major" />
+				<mod id="BG_Quests_And_Encounters" label="Baldur's Gate Mini Quests and Encounters" recommended="blendWell">
 					<component id="bgqe_slimequest" name="Slime Quest" label="Slime Quest" complexity="moderate" />
 					<component id="bgqe_nashkelmonster" name="Nashkel Monster Quest" label="Nashkel Monster Quest" complexity="minor" />
 					<component id="bgqe_fallenpaladin" name="Fallen Paladin Quest" label="Fallen Paladin Quest" complexity="minor" />
@@ -149,29 +149,29 @@
 					<component id="bgqe_unexpectedhelp" name="Unexpected Help Quest" label="Unexpected Help Quest" complexity="minor" />
 					<component id="bgqe_drunk" name="Drunk Near Beregost Temple" label="Drunk near Beregost Temple" complexity="minor" />
 					<component id="bgqe_bragesword" name="Brage's Sword" label="Brage's Sword" complexity="minor" />
-					<component id="bgqe_seacharts" name="Legal Sea Charts Sources" label="Legal Sea Charts Sources" level="vanillaPlus" complexity="minor" />
-					<component id="bgqe_waterqueentemple" name="Additions to the Lady's Hall and the Bitch Queen's Temple" label="Additions to the Lady's Hall and the Bitch Queen's Temple" level="vanillaPlus" complexity="minor" />
+					<component id="bgqe_seacharts" name="Legal Sea Charts Sources" label="Legal Sea Charts Sources" recommended="vanillaPlus" complexity="minor" />
+					<component id="bgqe_waterqueentemple" name="Additions to the Lady's Hall and the Bitch Queen's Temple" label="Additions to the Lady's Hall and the Bitch Queen's Temple" recommended="vanillaPlus" complexity="minor" />
 					<component id="bgqe_worriedfarmer" name="A Worried Farmer" label="A Worried Farmer" complexity="minor" />
 					<component id="bgqe_bodiesforgoodcause" name="Bodies for a Good Cause" label="Bodies for a Good Cause" complexity="minor" />
-					<component id="bgqe_cordyrnokillingsil" name="Finish Cordyr's Quest without killing Sil" label="Finish Cordyr's Quest without Killing Sil" level="vanillaPlus" complexity="minor" />
+					<component id="bgqe_cordyrnokillingsil" name="Finish Cordyr's Quest without killing Sil" label="Finish Cordyr's Quest without Killing Sil" recommended="vanillaPlus" complexity="minor" />
 					<component id="bgqe_improved_borda" name="Improved Borda" label="Improved Borda" complexity="minor" />
 				</mod>
-				<mod id="JA-AdventurePack" label="Jarl's Adventure Pack" level="restoration">
-					<component id="JA#BGT_AdvPack-Law_System" name="Extended Law System" label="Extended Law System" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Ramazith" name="Ramazith" label="Ramazith" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Jopi" name="Jopi and his uncle Ragefast" label="Jopi and His Uncle Ragefast" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Yuxi" name="Yuxi - Ragefast's imp" label="Yuxi — Ragefast's Imp" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Husam" name="Husam's story line finished" label="Husam's Story Line Finished" level="vanillaPlus" complexity="minor" />
+				<mod id="JA-AdventurePack" label="Jarl's Adventure Pack" recommended="restoration">
+					<component id="JA#BGT_AdvPack-Law_System" name="Extended Law System" label="Extended Law System" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Ramazith" name="Ramazith" label="Ramazith" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Jopi" name="Jopi and his uncle Ragefast" label="Jopi and His Uncle Ragefast" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Yuxi" name="Yuxi - Ragefast's imp" label="Yuxi — Ragefast's Imp" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Husam" name="Husam's story line finished" label="Husam's Story Line Finished" recommended="vanillaPlus" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Ducal_Palace" name="IMPROVED/RESTORED: Ducal Palace" label="Ducal Palace" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Gervisse_Voltine" name="Gervisse &amp; Voltine" label="Gervisse &amp; Voltine" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Seven_Suns" name="Seven Suns" label="Seven Suns" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Arkhstuff" name="Arkhstuff" label="Arkhstuff" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Iron_Throne" name="Iron Throne Guard" label="Iron Throne Guard" level="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Gervisse_Voltine" name="Gervisse &amp; Voltine" label="Gervisse &amp; Voltine" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Seven_Suns" name="Seven Suns" label="Seven Suns" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Arkhstuff" name="Arkhstuff" label="Arkhstuff" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Iron_Throne" name="Iron Throne Guard" label="Iron Throne Guard" recommended="vanillaPlus" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Nashkel_Garrison" name="RESTORED: Nashkel Garrison soldier" label="Nashkel Garrison Soldier" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Velvet" name="RESTORED: Velvet - Cockfight" label="Velvet — Cockfight" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Caravan_merchant" name="RESTORED: Caravan merchant" label="Caravan Merchant" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Galtoth" name="RESTORED: Galtoth - the fence" label="Galtoth — the Fence" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Phandalyn" name="Phandalyn waits in Elfsong Tavern" label="Phandalyn Waits in Elfsong Tavern" level="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Phandalyn" name="Phandalyn waits in Elfsong Tavern" label="Phandalyn Waits in Elfsong Tavern" recommended="vanillaPlus" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Warehouse_Workers" name="RESTORED: Warehouse Workers" label="Warehouse Workers" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Nobles" name="RESTORED: Nobles" label="Nobles" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Yago" name="RESTORED: Yago's guard in Low Lantern" label="Yago's Guard in Low Lantern" complexity="minor" />
@@ -186,43 +186,43 @@
 					<component id="JA#BGT_AdvPack-Rythes_Last_Arrow" name="RESTORED ITEM: Rythe's Last Arrow" label="Rythe's Last Arrow" complexity="minor" />
 					<component id="JA#BGT_AdvPack-The_Protector_of_the_Unworthy" name="RESTORED ITEM: The Protector of the Unworthy" label="The Protector of the Unworthy" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Counting_House" name="IMPROVED/FIXED: Counting House" label="Counting House" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Merchants_League" name="Merchants' League investigations" label="Merchants' League Investigations" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Aldeth_Seniyad" name="Aldeth &amp; Seniyad" label="Aldeth &amp; Seniyad" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Betrayal" name="Aldeth's betrayal and remorse" label="Aldeth's Betrayal and Remorse" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Tenya" name="Tenya and the fishermen" label="Tenya and the Fishermen" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Tenya2" name="Tenya's quest in Temple of Umberlee" label="Tenya's Quest in Temple of Umberlee" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Nashkel" name="Nashkel" label="Nashkel" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Nashkel_soldiers" name="Stationary soldiers in Nashkel" label="Stationary Soldiers in Nashkel" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Imoen_Winthrop" name="Imoen at Winthrop's inn" label="Imoen at Winthrop's Inn" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Priests" name="Priest of Oghma, Gond and Ilmater in Baldur's Gate" label="Priest of Oghma, Gond and Ilmater in Baldur's Gate" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Improved_dialogues" name="Extended/Improved dialogues" label="Extended/Improved Dialogues" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Caldo" name="Caldo can be charmed" label="Caldo Can Be Charmed" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Hulrik" name="Hulrik and his cows" label="Hulrik and His Cows" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Shop_of_Silence" name="Improved Shop of Silence" label="Improved Shop of Silence" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Ender_Sai" name="Ender Sai in Baldur's Gate" label="Ender Sai in Baldur's Gate" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Sorcerous_Sundries" name="Sorcerous Sundries" label="Sorcerous Sundries" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Miniquest" name="Mini-Quest: &quot;The mystery of the silent ghostly voice&quot;" label="Mini-Quest: &quot;The Mystery of the Silent Ghostly Voice&quot;" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Special_keg" name="Special keg in Elfsong Tavern" label="Special Keg in Elfsong Tavern" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Black_Alarics_Cave" name="Black Alaric's Cave" label="Black Alaric's Cave" level="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Merchants_League" name="Merchants' League investigations" label="Merchants' League Investigations" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Aldeth_Seniyad" name="Aldeth &amp; Seniyad" label="Aldeth &amp; Seniyad" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Betrayal" name="Aldeth's betrayal and remorse" label="Aldeth's Betrayal and Remorse" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Tenya" name="Tenya and the fishermen" label="Tenya and the Fishermen" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Tenya2" name="Tenya's quest in Temple of Umberlee" label="Tenya's Quest in Temple of Umberlee" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Nashkel" name="Nashkel" label="Nashkel" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Nashkel_soldiers" name="Stationary soldiers in Nashkel" label="Stationary Soldiers in Nashkel" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Imoen_Winthrop" name="Imoen at Winthrop's inn" label="Imoen at Winthrop's Inn" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Priests" name="Priest of Oghma, Gond and Ilmater in Baldur's Gate" label="Priest of Oghma, Gond and Ilmater in Baldur's Gate" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Improved_dialogues" name="Extended/Improved dialogues" label="Extended/Improved Dialogues" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Caldo" name="Caldo can be charmed" label="Caldo Can Be Charmed" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Hulrik" name="Hulrik and his cows" label="Hulrik and His Cows" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Shop_of_Silence" name="Improved Shop of Silence" label="Improved Shop of Silence" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Ender_Sai" name="Ender Sai in Baldur's Gate" label="Ender Sai in Baldur's Gate" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Sorcerous_Sundries" name="Sorcerous Sundries" label="Sorcerous Sundries" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Miniquest" name="Mini-Quest: &quot;The mystery of the silent ghostly voice&quot;" label="Mini-Quest: &quot;The Mystery of the Silent Ghostly Voice&quot;" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Special_keg" name="Special keg in Elfsong Tavern" label="Special Keg in Elfsong Tavern" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Black_Alarics_Cave" name="Black Alaric's Cave" label="Black Alaric's Cave" recommended="vanillaPlus" complexity="minor" />
 					<component id="JA#BGT_AdvPack-Cloakwood_druid" name="RESTORED: Cloakwood druid" label="Cloakwood Druid" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Niemain_Zentarim" name="Extended meeting between Xzar and Niemain" label="Extended Meeting between Xzar and Niemain" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Backdoor_Gellana" name="Backdoor to Gellana's temple" label="Backdoor to Gellana's Temple" level="vanillaPlus" complexity="minor" />
-					<component id="JA#BGT_AdvPack-Backdoor_Waterqueen" name="Backdoor to Waterqueen's House" label="Backdoor to Waterqueen's House" level="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Niemain_Zentarim" name="Extended meeting between Xzar and Niemain" label="Extended Meeting between Xzar and Niemain" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Backdoor_Gellana" name="Backdoor to Gellana's temple" label="Backdoor to Gellana's Temple" recommended="vanillaPlus" complexity="minor" />
+					<component id="JA#BGT_AdvPack-Backdoor_Waterqueen" name="Backdoor to Waterqueen's House" label="Backdoor to Waterqueen's House" recommended="vanillaPlus" complexity="minor" />
 				</mod>
-				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" level="extended">
-					<component id="bg1re-required-teen_skip" name="Teen Version and Skip Components with Warnings." label="Core" core="1" level="vanillaPlus" complexity="minor" />
-					<component id="bg1re_late_night_jaheira" name="Late Night with Jaheira, by Kulyok" label="Late Night with Jaheira, by Kulyok" level="vanillaPlus" complexity="minor" />
+				<mod id="BG1_Romantic_Encounters" label="Baldur's Gate Romantic Encounters" recommended="extended">
+					<component id="bg1re-required-teen_skip" name="Teen Version and Skip Components with Warnings." label="Core" core="1" recommended="vanillaPlus" complexity="minor" />
+					<component id="bg1re_late_night_jaheira" name="Late Night with Jaheira, by Kulyok" label="Late Night with Jaheira, by Kulyok" recommended="vanillaPlus" complexity="minor" />
 					<component id="bg1re_mourning_of_centeol" name="The Mourning of Centeol, the Spider Lady, by Lava" label="The Mourning of Centeol, the Spider Lady, by Lava" complexity="minor" />
 					<component id="bg1re_the_novellists" name="The Novelists, by Thimblerig" label="The Novelists, by Thimblerig" complexity="minor" />
-					<component id="bg1re_honest_lies_of_two_riversides" name="The Honest Lies of Two Riversides, By Lava" label="The Honest Lies of Two Riversides, by Lava" level="blendWell" complexity="minor" />
+					<component id="bg1re_honest_lies_of_two_riversides" name="The Honest Lies of Two Riversides, By Lava" label="The Honest Lies of Two Riversides, by Lava" recommended="blendWell" complexity="minor" />
 					<component id="bg1re_necromancers_trouble" name="Necromancer's Trouble, by jastey" label="Necromancer's Trouble, by Jastey" complexity="minor" />
-					<component id="bg1re_gender_girdle_reactions" name="Girdle of Gender Reactions, by Thimblerig, Kulyok, Domi, Lava, Lastknightleft, Twani, Jastey, Daisy Ninja Girl" label="Girdle of Gender Reactions, by Thimblerig, Kulyok, Domi, Lava, Lastknightleft, Twani, Jastey, Daisy Ninja Girl" level="vanillaPlus" complexity="minor" />
+					<component id="bg1re_gender_girdle_reactions" name="Girdle of Gender Reactions, by Thimblerig, Kulyok, Domi, Lava, Lastknightleft, Twani, Jastey, Daisy Ninja Girl" label="Girdle of Gender Reactions, by Thimblerig, Kulyok, Domi, Lava, Lastknightleft, Twani, Jastey, Daisy Ninja Girl" recommended="vanillaPlus" complexity="minor" />
 					<component id="bg1re_della_may_from_thay" name="Della May from Thay, by Kulyok" label="Della May from Thay, by Kulyok" complexity="minor" />
 					<component id="bg1re_camryn_and_tamah" name="Camryn and Tamah, by tibicina" label="Camryn and Tamah, by Tibicina" complexity="minor" />
 					<component id="bg1re_cloakwood_lovers" name="Cloakwood Lovers, by tibicina" label="Cloakwood Lovers, by Tibicina" complexity="minor" />
 				</mod>
-				<component id="BS_BalduransSeatower-main" name="The BS Company presents Balduran's Seatower" label="Balduran's Seatower" modId="BS_Baldurans_Seatower" level="blendWell" complexity="major" />
-				<mod id="Ascalons_Questpack" label="Ascalon's Quest Pack" level="blendWell">
+				<component id="BS_BalduransSeatower-main" name="The BS Company presents Balduran's Seatower" label="Balduran's Seatower" modId="BS_Baldurans_Seatower" recommended="blendWell" complexity="major" />
+				<mod id="Ascalons_Questpack" label="Ascalon's Quest Pack" recommended="blendWell">
 					<component id="AscalonsQuestpack-FeastforGnolls" name="A Feast for the Gnolls" label="A Feast for the Gnolls" complexity="minor" />
 					<component id="AscalonsQuestpack-LostSon" name="The Lost Son" label="The Lost Son" complexity="minor" />
 					<component id="AscalonsQuestpack-WolvesMen_Highhedge" name="[Of Wolves and Men] Quest uses hut near Thalantyr in High Hedge." label="Of Wolves and Men" desc="Quest uses hut near Thalantyr in High Hedge" complexity="moderate" />
@@ -230,25 +230,25 @@
 					<component id="AscalonsQuestpack-Fans" name="Fangirls" label="Fangirls" complexity="minor" />
 					<component id="AscalonsQuestpack-HalflingEyeless" name="A Halfling among the Eyeless" label="A Halfling Among the Eyeless" complexity="minor" />
 				</mod>
-				<mod id="ExtraExpandedEnhancedEncounters" label="Extra Enhanced Expanded Encounters!" level="vanillaPlus">
+				<mod id="ExtraExpandedEnhancedEncounters" label="Extra Enhanced Expanded Encounters!" recommended="vanillaPlus">
 					<component id="OL-EEEE-COAST-WAY" name="EEEE: Melia Quicknight, Crossroads" label="Melia Quicknight, Crossroads" complexity="minor" />
 					<component id="OL-EEEE-LONELY-PEAKS" name="EEEE: Bimmy's Badgering Bandits" label="Bimmy's Badgering Bandits" complexity="minor" />
 					<component id="OL-EEEE-GNOLL-STRONGHOLD-CAVE" name="EEEE: Bear Encounter near the Gnoll Stronghold" label="Bear Encounter near the Gnoll Stronghold" complexity="minor" />
 					<component id="OL-EEEE-CLOAKWOOD-BRIDGE" name="EEEE: Daenni's Bridge Bandits" label="Daenni's Bridge Bandits" complexity="minor" />
 				</mod>
-				<component id="AWizardDidIt-Blackhearts_BG1" name="Install Blackhearts for &quot;BGEE&quot; or &quot;EET including BGEE and BG2EE&quot;" label="Blackhearts" modId="Black-Hearts" level="blendWell" complexity="major" />
-				<component id="SotSC:0" name="Shades of the Sword Coast – Expansion Pack for BGEE" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" level="extended" complexity="major" />
-				<mod id="The_Calling" label="The Calling" level="extended">
+				<component id="AWizardDidIt-Blackhearts_BG1" name="Install Blackhearts for &quot;BGEE&quot; or &quot;EET including BGEE and BG2EE&quot;" label="Blackhearts" modId="Black-Hearts" recommended="blendWell" complexity="major" />
+				<component id="SotSC:0" name="Shades of the Sword Coast – Expansion Pack for BGEE" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" recommended="extended" complexity="major" />
+				<mod id="The_Calling" label="The Calling" recommended="extended">
 					<component id="cd_the_calling_mage" name="The Calling: Mage - The Cursed Bracers" label="Mage — the Cursed Bracers" complexity="moderate" />
 					<component id="cd_the_calling_fighter" name="The Calling: Fighter - Expanded Gnoll Fortress" label="Fighter — Expanded Gnoll Fortress" complexity="moderate" />
 					<component id="cd_the_calling_shaman_golden_text" name="Use color in dialogue text" label="Shaman" complexity="minor" />
 					<component id="cd_the_calling_monk" name="The Calling: Monk - Restoring Saiai no Hito" label="Monk — Restoring Saiai no Hito" complexity="moderate" />
 					<component id="cd_the_calling_thief" name="The Calling: Thief - The Bargain" label="Thief — the Bargain" complexity="moderate" />
-					<component id="cd_the_calling_peaceful_kaishas_resolution" name="Peaceful Werewolf Isle Resolution" label="Peaceful Werewolf Isle Resolution" level="vanillaPlus" complexity="minor" />
+					<component id="cd_the_calling_peaceful_kaishas_resolution" name="Peaceful Werewolf Isle Resolution" label="Peaceful Werewolf Isle Resolution" recommended="vanillaPlus" complexity="minor" />
 				</mod>
-				<component id="Coutelier-AerieBG1" name="Aerie for BG:EE" label="Aerie in BG:EE" level="extended" modId="AerieBG1" complexity="minor" />
-				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" name="The Vanishing of Skie Silvershield – a new quest for BGEE that lets Eldoth and Skie join your party sooner" label="The Vanishing of Skie Silvershield" level="extended" desc="Lets Eldoth and Skie join your party sooner" modId="the-vanishing-of-skie-silvershield" complexity="minor" />
-				<component id="NQR" name="NecromancersQuestRestored. Restores the original BG1 freedom in the Arkion/Nemphre/Ordulinian questline in a bloodless way." label="Necromancers Quest Restored" modId="NecromancersQuestRestored" level="restoration" complexity="minor" />
+				<component id="Coutelier-AerieBG1" name="Aerie for BG:EE" label="Aerie in BG:EE" recommended="extended" modId="AerieBG1" complexity="minor" />
+				<component id="L#-THEVANISHINGOFSKIESILVERSHIELD" name="The Vanishing of Skie Silvershield – a new quest for BGEE that lets Eldoth and Skie join your party sooner" label="The Vanishing of Skie Silvershield" recommended="extended" desc="Lets Eldoth and Skie join your party sooner" modId="the-vanishing-of-skie-silvershield" complexity="minor" />
+				<component id="NQR" name="NecromancersQuestRestored. Restores the original BG1 freedom in the Arkion/Nemphre/Ordulinian questline in a bloodless way." label="Necromancers Quest Restored" modId="NecromancersQuestRestored" recommended="restoration" complexity="minor" />
 				<mod id="gorgon" label="Gorgon's Eye">
 					<component id="gorgon:0" name="Install The Gorgon's Eye" label="Gorgon's Eye" core="1" complexity="major" />
 					<component id="gorgon:1" name="Give portraits to all characters added from this mod" label="Give portraits to all characters added from this mod" alwaysIf="gorgon:0" noDisplay="1" complexity="minor" />
@@ -262,12 +262,12 @@
 			</quest>
 			<npc label="Joinable NPCs">
 				<expansions label="Original Cast Expansions" unfolded="1" recommended="content" package="npcExpansions">
-					<mod id="BG1NPC" label="The BG1NPC Project" desc="Make the original BG1 NPCs talkative as in BG2" level="extended">
+					<mod id="BG1NPC" label="The BG1NPC Project" desc="Make the original BG1 NPCs talkative as in BG2" recommended="extended">
 						<component id="bg1npc_project-main" name="The BG1 NPC Project: Required Modifications" label="Core modifications" core="1" complexity="major" />
 						<component id="bg1npc_project-banters_quests_interjections" name="The BG1 NPC Project: Banters, Quests, and Interjections" label="Banters, quests, and interjections" complexity="major" />
 						<component id="bg1npc_project-pid" name="The BG1 NPC Project: Player-Initiated Dialogues" label="Player-initiated dialogues" complexity="minor" />
 					</mod>
-					<mod id="ChattyImoen" label="Chatty Imoen" desc="Expands Imoen's voice set and adds interaction banters with other NPCs." level="vanillaPlus">
+					<mod id="ChattyImoen" label="Chatty Imoen" desc="Expands Imoen's voice set and adds interaction banters with other NPCs." recommended="vanillaPlus">
 						<component id="AY-ChattyImoen-CharSnds" name="Chatty Imoen: Expanded Character Sounds" label="Expanded character sounds" complexity="minor" />
 						<component id="AY-ChattyImoen-NPCInteractions" name="Chatty Imoen: Add NPC Interactions" label="Add NPC interactions" complexity="minor" />
 					</mod>
@@ -302,14 +302,14 @@
 				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<mod id="BG1NPC">
-						<component id="bg1npc_project-sarevokdiary_sixofspades" name="SixofSpades Extended Sarevok's Diary" label="Extended Sarevok's Diary" displayIf="bg1npc_project-main" level="extended" complexity="minor" />
+						<component id="bg1npc_project-sarevokdiary_sixofspades" name="SixofSpades Extended Sarevok's Diary" label="Extended Sarevok's Diary" displayIf="bg1npc_project-main" recommended="extended" complexity="minor" />
 					</mod>
-					<mod id="Tweaks-Anthology" label="The Tweaks Anthology" level="vanillaPlus" >
+					<mod id="Tweaks-Anthology" label="The Tweaks Anthology" recommended="vanillaPlus" >
 						<component id="cd_tweaks_send_bg_npcs_to_inn" name="Send BioWare NPCs to an Inn [DavidW/Zed Nocear]" label="Send BioWare NPCs to an inn" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1075" complexity="minor" />
 						<component id="cd_tweaks_protect_sharteel" name="Ensure Shar-Teel Doesn't Die in the Original Challenge" label="Ensure Shar-Teel doesn't die in the original challenge" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4170" complexity="minor" />
-						<component id="cd_tweaks_adjust_evil_npc_reactions" name="Adjust Evil Joinable NPC Reaction Rolls" label="Adjust evil joinable NPC reaction rolls" level="fixes" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4000" complexity="minor" />
+						<component id="cd_tweaks_adjust_evil_npc_reactions" name="Adjust Evil Joinable NPC Reaction Rolls" label="Adjust evil joinable NPC reaction rolls" recommended="fixes" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4000" complexity="minor" />
 					</mod>
-					<group label="Move NPCs to convenient locations" noBranches="1" level="blendWell">
+					<group label="Move NPCs to convenient locations" noBranches="1" recommended="blendWell">
 						<mod id="Tweaks-Anthology">
 							<component id="cd_tweaks_move_bg_npcs_alora" name="Move NPCs to Convenient Locations: Move Alora to Gullykin" label="Alora to Gullykin" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1251" complexity="minor" />
 							<component id="cd_tweaks_move_bg_npcs_quayle" name="Move NPCs to Convenient Locations: Move Quayle to the Nashkel Carnival" label="Quayle to the Nashkel Carnival" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1253" complexity="minor" />
@@ -319,33 +319,33 @@
 							<component id="cd_tweaks_move_bg_npcs_eldoth" name="Move NPCs to Convenient Locations: Move Eldoth to the Coast Way" label="Eldoth to the Coastal Way" displayIfNot="L#-THEVANISHINGOFSKIESILVERSHIELD" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1252" complexity="minor" />
 						</mod>
 					</group>
-					<component id="cd_tweaks_allow_npc_pairs_to_separate" name="Allow NPC Pairs to Separate" label="Allow NPC pairs to separate" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4025" level="lowerDifficulty" complexity="minor" />
+					<component id="cd_tweaks_allow_npc_pairs_to_separate" name="Allow NPC Pairs to Separate" label="Allow NPC pairs to separate" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4025" recommended="lowerDifficulty" complexity="minor" />
 				</tweaks>
 			</npc>
 			<items label="Items" unfolded="1">
 				<add label="New Items">
-					<component id="cd_tweaks_taerom_makes_multiple_ankheg_armor" name="Taerom Makes Additional Ankheg Armor [Icendoan/grogerson]" label="Taerom makes additional Ankheg Armor" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3230" complexity="minor" />
+					<component id="cd_tweaks_taerom_makes_multiple_ankheg_armor" name="Taerom Makes Additional Ankheg Armor [Icendoan/grogerson]" label="Taerom makes additional Ankheg Armor" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3230" complexity="minor" />
 					<component id="ForgottenArmament-Breach" name="Add Breach Scrolls to Sorcerous Sundries" label="Add Breach scrolls to Sorcerous Sundries" modId="forgotten-armament" complexity="minor" />   
 				</add>
 				<update label="Item Changes" unfolded="1">
-					<component id="ZSTweaks:1663" name="Make Sandthief Ring consistently grant one use of invisibility per day" label="Make Sandthief Ring consistently grant one use of Invisibility per day" modId="ZSTweaks" level="blendWell" complexity="minor" /> 
-					<component id="stratagems:3021" name="Fine weapons are immune to the iron crisis" label="Replace many +1 items by fine weapons which are immune to the iron crisis" modId="SwordCoastStratagems" level="blendWell" complexity="minor" />
+					<component id="ZSTweaks:1663" name="Make Sandthief Ring consistently grant one use of invisibility per day" label="Make Sandthief Ring consistently grant one use of Invisibility per day" modId="ZSTweaks" recommended="blendWell" complexity="minor" /> 
+					<component id="stratagems:3021" name="Fine weapons are immune to the iron crisis" label="Replace many +1 items by fine weapons which are immune to the iron crisis" modId="SwordCoastStratagems" recommended="blendWell" complexity="minor" />
 				</update>
 				<upgrade label="Thalantyr Item Upgrade">
-					<component id="ThalantyrItemUpgrade-Main" name="Thalantyr Item Upgrade" label="Thalantyr Item Upgrade" desc="Cromwell-like item upgrade in BG1" modId="thalan" level="extended" complexity="moderate" />
+					<component id="ThalantyrItemUpgrade-Main" name="Thalantyr Item Upgrade" label="Thalantyr Item Upgrade" desc="Cromwell-like item upgrade in BG1" modId="thalan" recommended="extended" complexity="moderate" />
 				</upgrade>
 			</items>
 			<tweaks label="Tweaks" noBranches="1">
 				<mod id="Olvyn-Tweaks" label="METweaks">
-					<component id="METweaks:3100" name="Make it so the Jacil and Wiven encounters aren't replaced by other quests" label="Keep the Jacil and Wiven encounters from being replaced by other quests" level="fixes" complexity="minor" />
+					<component id="METweaks:3100" name="Make it so the Jacil and Wiven encounters aren't replaced by other quests" label="Keep the Jacil and Wiven encounters from being replaced by other quests" recommended="fixes" complexity="minor" />
 				</mod>
-				<mod id="House-Rule-Tweaks" label="AionZ's House Rules" level="vanillaPlus">
+				<mod id="House-Rule-Tweaks" label="AionZ's House Rules" recommended="vanillaPlus">
 					<component id="HouseTweaks:14" name="House Tweaks: Improved Dialogues (BG:EE)" label="Improved dialogues" complexity="minor" />
 					<component id="HouseTweaks:15" name="House Tweaks: Not-So-Indestructible Rats" label="Not-so-indestructible rats" complexity="minor" />
 				</mod>
-				<component id="stratagems:4145" name="Remove the tutorial NPCs from Candlekeep" label="Remove the tutorial NPCs from Candlekeep" modId="SwordCoastStratagems" level="blendWell" complexity="minor" />
-				<component id="cd_tweaks_bardic_rep_adjustment" name="Bardic Reputation Adjustment" label="Bardic reputation adjustment" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1260" complexity="minor" />
-				<component id="cd_tweaks_faster_dearnise_keep_timer" name="Speed Up de'Arnise Keep Stronghold Quests" label="Speed up de'Arnise Keep Stronghold quests" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2540" complexity="minor" />
+				<component id="stratagems:4145" name="Remove the tutorial NPCs from Candlekeep" label="Remove the tutorial NPCs from Candlekeep" modId="SwordCoastStratagems" recommended="blendWell" complexity="minor" />
+				<component id="cd_tweaks_bardic_rep_adjustment" name="Bardic Reputation Adjustment" label="Bardic reputation adjustment" modId="Tweaks-Anthology" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1260" complexity="minor" />
+				<component id="cd_tweaks_faster_dearnise_keep_timer" name="Speed Up de'Arnise Keep Stronghold Quests" label="Speed up de'Arnise Keep Stronghold quests" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2540" complexity="minor" />
 			</tweaks>
 		</bg1>
 		<sod label="SoD" engine="bg1,eet">
@@ -358,21 +358,21 @@
 				</mod>
 			</restructure>
 			<tweaks label="Tweaks" noBranches="1">
-				<mod id="themed_tweaks" label="SoD Themed Tweaks" level="vanillaPlus">
+				<mod id="themed_tweaks" label="SoD Themed Tweaks" recommended="vanillaPlus">
 					<component id="#L-SOD-AID_IMOEN" name="SoD - Allow PC to give aid to Imoen after attack in palace" label="Allow PC to give aid to Imoen after attack in palace" complexity="minor" />
 					<component id="#L-SOD-STAT_BASED_OPTIONS" name="SoD - Stat-based observations and quest options" label="Stat-based observations and quest options" complexity="minor" />
 					<component id="#L-SOD-DITCH_CORWIN" name="SoD - Ditch Tour-Guide Corwin Schael" label="Ditch tour-guide Corwin Schael" complexity="minor" />
-					<component id="#L-SOD-COASTWAY_CROSSING_QUEST" name="SoD - Quest: Scouting the Coast Way Crossing" label="Quest: Scouting the Coast Way Crossing" level="blendWell" complexity="minor" />
+					<component id="#L-SOD-COASTWAY_CROSSING_QUEST" name="SoD - Quest: Scouting the Coast Way Crossing" label="Quest: Scouting the Coast Way Crossing" recommended="blendWell" complexity="minor" />
 				</mod>
-				<mod id="Jasteys_SoD_Tweakpack" label="Jastey's Tweaks for SoD and EET" level="vanillaPlus">
+				<mod id="Jasteys_SoD_Tweakpack" label="Jastey's Tweaks for SoD and EET" recommended="vanillaPlus">
 					<component id="JasteySodTweaks-DoNotMissDialogues_NPCInParty" name="For NPCs in Party Only" label="Do not miss dialogues (for NPCs in party only)" complexity="minor" />
 					<component id="JasteySodTweaks-MoreDialogueChoices_PreventDeadEnds" name="More Dialogue Choices &amp; Prevent Dead Ends" label="More dialogue choices &amp; prevent dead ends" complexity="minor" />
 					<component id="JasteySoDTweaks_PortalCloseToril" name="Make Portal Close from Dragonspear Castle (Aun Argent survives always)" label="Make portal close from Dragonspear Castle (aun argent survives always)" complexity="minor" />
-					<component id="JasteySoDTweaks_HephernaanTakesKey" name="Hephernaan takes Dragonspear Vault Key" label="Hephernaan takes Dragonspear vault key" level="blendWell" complexity="minor" />
+					<component id="JasteySoDTweaks_HephernaanTakesKey" name="Hephernaan takes Dragonspear Vault Key" label="Hephernaan takes Dragonspear vault key" recommended="blendWell" complexity="minor" />
 				</mod>
 			</tweaks>
 			<quest label="Quests and Encounters">
-				<mod id="The_Boareskyr_Bridge_Scene" label="The Boareskyr Bridge Scene" level="blendWell" unfolded="1">
+				<mod id="The_Boareskyr_Bridge_Scene" label="The Boareskyr Bridge Scene" recommended="blendWell" unfolded="1">
 					<component id="c#sodboabri_AcknowledgeSceneBoareskyrBridge" name="Scene at Boareskyr Bridge will be Acknowledged: Add NPC Reactions" label="Scene at Boareskyr Bridge Will Be Acknowledged: Add NPC Reactions" alwaysIf="c#sodboabri_DifferentChoices" noDisplay="1" complexity="minor" />
 					<component id="c#sodboabri_TescriptionText" name="Add Description Text to Original Scene at Bridge" label="Add description text to original scene at bridge" alwaysIf="c#sodboabri_DifferentChoices" noDisplay="1" complexity="minor" />
 					<component id="c#sodboabri_DifferentChoices" name="Bridge Scene has Different Choices" label="Bridge Scene Has Different Choices" core="1" complexity="minor" />
@@ -380,12 +380,12 @@
 				</mod>
 			</quest>
 			<restructure label="Restructure">
-				<mod id="Another_Fine_Hell" label="Another Fine Hell" level="extended" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240"  groupWith="sodRewrite" unfolded="1">
+				<mod id="Another_Fine_Hell" label="Another Fine Hell" recommended="extended" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240"  groupWith="sodRewrite" unfolded="1">
 					<component id="C#AnotherFineHell-Main" name="Another Fine Hell - Optional Ending for SoD and BGII Closure" label="Another Fine Hell - optional ending for SoD" core="1" complexity="minor" />
 					<component id="C#AnotherFineHell-Extended" name="Get the Hells Out - Quest Option with Extended BGII Content" label="Get the Hells Out - Quest Option" complexity="minor" />
 					<component id="C#AnotherFineHell-ImoensChest" name="PC's and Imoen's chest in Palace should have their content" label="PC's and Imoen's Chest in the Palace should keep their content" alwaysIf="C#AnotherFineHell-Main" noDisplay="1" complexity="minor" />
 				</mod>
-				<mod id="Road_To_Discovery_for_SoD" label="Road to Discovery" level="blendWell" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240" groupWith="sodRewrite">
+				<mod id="Road_To_Discovery_for_SoD" label="Road to Discovery" recommended="blendWell" displayIfNot="Reflections_of_Destiny:200|Reflections_of_Destiny:220|Reflections_of_Destiny:230|Reflections_of_Destiny:240" groupWith="sodRewrite">
 					<component id="SoDRoadToDiscovery-main" name="Main Component: Tracking System" label="Road to Discovery for SoD - SoD story enhancements" core="1" proposeIf="c#husam-main" complexity="minor" />
 					<component id="SoDRoadToDiscovery-consistency" name="Consistency Changes to Game Dialogues" label="Consistency changes to game dialogues" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" complexity="minor" />
 					<component id="SoDRoadToDiscovery-aware_officers" name="Officers Are Aware" label="Officers are aware" alwaysIf="SoDRoadToDiscovery-main" noDisplay="1" complexity="minor" />
@@ -427,7 +427,7 @@
 					<component id="C#Ajantis_SoD_NPC-crossmod_content" name="Ajantis SoD NPC: Crossmod Content" label="Ajantis crossmod" modId="Ajantis_BG1_Expansion" recommended="content" package="npcExpansions" complexity="minor" />
 				</banters>
 				<tweaks>
-					<component id="A7-CONVENIENTEENPCS-APPEARANCE-CAELAR_FOLLOWER_CONDITIONAL" name="Joins as controllable follower if no free party slots available" label="Caelar joins as controllable follower if no free party slots available" modId="A7-NoEENPCs" tags="Beamdog" level="vanillaPlus" complexity="minor" />
+					<component id="A7-CONVENIENTEENPCS-APPEARANCE-CAELAR_FOLLOWER_CONDITIONAL" name="Joins as controllable follower if no free party slots available" label="Caelar joins as controllable follower if no free party slots available" modId="A7-NoEENPCs" tags="Beamdog" recommended="vanillaPlus" complexity="minor" />
 				</tweaks>
 			</npc>
 		</sod>
@@ -446,7 +446,7 @@
 					<component id="dw_lanthorn:10" name="Classic Version (faithful restoration of cut content from the original game)" label="Classic version" desc="Faithful restoration of cut content from the original game" modId="Restored-Rhynn-Lanthorn" default="1" complexity="moderate" />	
 					<component id="dw_lanthorn:20" name="Expanded Version (adds four new locations where lenses can be found)" label="Expanded version" desc="Adds four new locations where lenses can be found" modId="Restored-Rhynn-Lanthorn" complexity="moderate" />
 				</alternatives>
-				<mod id="Ascension" label="Ascension" level="blendWell" >
+				<mod id="Ascension" label="Ascension" recommended="blendWell" >
 					<component id="Ascension-RewrittenFinalChapterOfToB" name="Rewritten Final Chapter of Throne of Bhaal" label="Rewritten final chapter of Throne of Bhaal" complexity="moderate" />
 					<component id="Ascension-BalthazarCanBeRedeemed" name="Balthazar can be redeemed" label="Balthazar can be redeemed" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" complexity="minor" />
 					<component id="Ascension-ImprovedSarevokPlayerInteractions" name="Improved Sarevok-Player Interactions" label="Improved Sarevok-player interactions" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" complexity="minor" />
@@ -457,28 +457,28 @@
 					<component id="Ascension-SharperPortraitsAbazigalGromnir" name="Sharper portraits of Abazigal and Gromnir for the Enhanced Edition, by DavidW" label="Sharper portraits of Abazigal and Gromnir for the Enhanced Edition, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" complexity="minor" />
 					<component id="Ascension-SlightlyImprovedCutscenes" name="Slightly improved cutscenes, by DavidW" label="Slightly improved cutscenes, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" complexity="minor" />
 				</mod>
-				<component id="SoAExtended:1" name="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" label="Shadows of Amn extended: Book 1 - Quiet Before The Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" level="blendWell" complexity="moderate" />
+				<component id="SoAExtended:1" name="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" label="Shadows of Amn extended: Book 1 - Quiet Before The Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" recommended="blendWell" complexity="moderate" />
 				<component id="FightHeaven-Main" name="Main Component" label="Fight the Heavens" modId="fight-the-heavens" complexity="minor" />
-				<component id="cd_tweaks_reveal_ch6_wilderness" name="Reveal Wilderness Areas Before Chapter Six" label="Reveal wilderness areas before chapter six" level="extended" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1030" complexity="minor" />
+				<component id="cd_tweaks_reveal_ch6_wilderness" name="Reveal Wilderness Areas Before Chapter Six" label="Reveal wilderness areas before chapter six" recommended="extended" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1030" complexity="minor" />
 				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" name="Non-silly version" label="Faster chapter one and two cutscenes and dreams" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3141" complexity="minor" />
-				<component id="lfgp:0" name="Lunia for Good Parties" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" level="blendWell" complexity="minor" />
-				<component id="TPoJ:0" name="The Pursuit of Justice" label="The Pursuit of Justice" modId="the-pursuit-of-justice" level="blendWell" complexity="minor" />
+				<component id="lfgp:0" name="Lunia for Good Parties" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" recommended="blendWell" complexity="minor" />
+				<component id="TPoJ:0" name="The Pursuit of Justice" label="The Pursuit of Justice" modId="the-pursuit-of-justice" recommended="blendWell" complexity="minor" />
 			</restructure>
-			<restorations label="Restorations" level="restoration">
+			<restorations label="Restorations" recommended="restoration">
 				<mod id="UnfinishedBusiness" label="Unfinished Business">
-					<component id="ub:5" name="The Pai'Na/Spider's Bane Quest" label="The Pai'Na/Spider's Bane Quest" level="vanillaPlus" complexity="minor" />
-					<component id="ub:6" name="Restored Crooked Crane Inn" label="Restored Crooked Crane Inn" level="restoration" complexity="minor" />
-					<component id="ub:7" name="Restored Encounters" label="Restored encounters" level="restoration" complexity="minor" />
-					<component id="ub:3" name="&quot;Cat and Mouse&quot; (Bodhi hunts you in Spellhold) by Ghreyfain" label="Unfinished Business - &quot;Cat and Mouse&quot; (Bodhi hunts you in Spellhold) by Ghreyfain" level="higherDifficulty" complexity="minor" />
-					<component id="ub:8" name="Artemis Entreri in Bodhi's Lair" label="Artemis Entreri in Bodhi's Lair" level="vanillaPlus" complexity="minor" />
-					<component id="ub:12" name="Item Restorations" label="Item restorations" level="restoration" complexity="minor" />
-					<component id="ub:17" name="Corrected Character Names and Biographies" label="Corrected character names and biographies" level="fixes" complexity="minor" />
-					<component id="ub:18" name="Restored Minor Dialogs" label="Restored minor dialogues" level="restoration" complexity="minor" />
-					<component id="ub:19" name="Restored Bhaalspawn Powers, by David Gaider" label="Restored Bhaalspawn Powers, by David Gaider" level="restoration" complexity="minor" />
-					<component id="ub:20" name="Extended ToB Item Descriptions" label="Extended ToB item descriptions" level="vanillaPlus" complexity="minor" />
-					<component id="ub:21" name="Throne of Bhaal Minor Restorations" label="Throne of Bhaal minor restorations" level="restoration" complexity="minor" />
+					<component id="ub:5" name="The Pai'Na/Spider's Bane Quest" label="The Pai'Na/Spider's Bane Quest" recommended="vanillaPlus" complexity="minor" />
+					<component id="ub:6" name="Restored Crooked Crane Inn" label="Restored Crooked Crane Inn" recommended="restoration" complexity="minor" />
+					<component id="ub:7" name="Restored Encounters" label="Restored encounters" recommended="restoration" complexity="minor" />
+					<component id="ub:3" name="&quot;Cat and Mouse&quot; (Bodhi hunts you in Spellhold) by Ghreyfain" label="Unfinished Business - &quot;Cat and Mouse&quot; (Bodhi hunts you in Spellhold) by Ghreyfain" recommended="higherDifficulty" complexity="minor" />
+					<component id="ub:8" name="Artemis Entreri in Bodhi's Lair" label="Artemis Entreri in Bodhi's Lair" recommended="vanillaPlus" complexity="minor" />
+					<component id="ub:12" name="Item Restorations" label="Item restorations" recommended="restoration" complexity="minor" />
+					<component id="ub:17" name="Corrected Character Names and Biographies" label="Corrected character names and biographies" recommended="fixes" complexity="minor" />
+					<component id="ub:18" name="Restored Minor Dialogs" label="Restored minor dialogues" recommended="restoration" complexity="minor" />
+					<component id="ub:19" name="Restored Bhaalspawn Powers, by David Gaider" label="Restored Bhaalspawn Powers, by David Gaider" recommended="restoration" complexity="minor" />
+					<component id="ub:20" name="Extended ToB Item Descriptions" label="Extended ToB item descriptions" recommended="vanillaPlus" complexity="minor" />
+					<component id="ub:21" name="Throne of Bhaal Minor Restorations" label="Throne of Bhaal minor restorations" recommended="restoration" complexity="minor" />
 				</mod>
-				<mod id="Almateria-Restoration-Project" label="Almateria's Restoration Project" level="restoration" unfolded="1">
+				<mod id="Almateria-Restoration-Project" label="Almateria's Restoration Project" recommended="restoration" unfolded="1">
 					<component id="Almaterias_Restoration_Project-Restored_Locations" name="Restored Locations" label="Restored locations" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Restored_Characters_and_Dialogs" name="Restored Characters and Dialogs" label="Restored characters and dialogues" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Restored_Sounds" name="Restored Sounds" label="Restored sounds" complexity="minor" />
@@ -488,38 +488,38 @@
 					<component id="Almaterias_Restoration_Project-Lich_Deril" name="Lich Deril" label="Lich Deril" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Restored_Random_Encounters" name="Restored Random Encounters" label="Restored random encounters" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Minor_Restorations" name="Minor Restorations" label="Minor restorations" complexity="minor" />
-					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" name="Alternate Slayer Change" label="Alternate Slayer change" level="higherDifficulty" complexity="minor" />
+					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" name="Alternate Slayer Change" label="Alternate Slayer change" recommended="higherDifficulty" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Restored_Final_Slayer_Dream" name="Restored Final Slayer Dream" label="Restored final Slayer dream" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Restored_Waukeens_Promenade_Cutscene" name="Restored Final Slayer Dream" label="Restored Waukeen's Promenade Cutscene" complexity="minor" />
 				</mod>
 			</restorations>
 			<quest label="Quests and Encounters">
-				<component id="AdalonsBlood-main" name="Adalon's Blood - Modification for BGII by Gandalf the white" label="Adalon's Blood" desc="Allows good characters to finish the skinner quest in a good way" modId="Adalons_Blood" level="vanillaPlus" complexity="minor" />
-				<mod id="hiddenadventure" label="Hidden Adventures" level="extended">
-					<component id="hidden_adventures-ladyelgea" name="Lady Elgea's extended plot" label="Lady Elgea's Extended Plot" level="blendWell" complexity="minor" />
+				<component id="AdalonsBlood-main" name="Adalon's Blood - Modification for BGII by Gandalf the white" label="Adalon's Blood" desc="Allows good characters to finish the skinner quest in a good way" modId="Adalons_Blood" recommended="vanillaPlus" complexity="minor" />
+				<mod id="hiddenadventure" label="Hidden Adventures" recommended="extended">
+					<component id="hidden_adventures-ladyelgea" name="Lady Elgea's extended plot" label="Lady Elgea's Extended Plot" recommended="blendWell" complexity="minor" />
 					<component id="hidden_adventures-anomenplot" name="Anomen's extended plot" label="Anomen's Extended Plot" complexity="minor" />
 					<component id="hidden_adventures-jerliashop" name="Jerlia's Ore Shop" label="Jerlia's Ore Shop" complexity="minor" />
-					<component id="hidden_adventures-waveblade_treasury" name="Wave Blade in Treasury" label="Wave Blade in Treasury" level="blendWell" complexity="minor" />
-					<component id="hidden_adventures-bard_stronghold_resting" name="Bards can spend the night at their stronghold (Five Flagons)" label="Bards Can Spend the Night at Their Stronghold (Five Flagons)" level="fixes" complexity="minor" />
+					<component id="hidden_adventures-waveblade_treasury" name="Wave Blade in Treasury" label="Wave Blade in Treasury" recommended="blendWell" complexity="minor" />
+					<component id="hidden_adventures-bard_stronghold_resting" name="Bards can spend the night at their stronghold (Five Flagons)" label="Bards Can Spend the Night at Their Stronghold (Five Flagons)" recommended="fixes" complexity="minor" />
 					<component id="hidden_adventures-tunnel_saradush" name="A Tunnel for Saradush" label="A Tunnel for Saradush" complexity="minor" />
 					<component id="hidden_adventures-masktemple_docks" name="Temple of Mask in Docks District" label="Temple of Mask in Docks District" complexity="minor" />
 				</mod>
 				<component id="CorthalaRomantique-SphereGuard" name="Install Leonora Content: A Guard for the Sphere" label="A Guard for the Sphere" desc="Corthala Romantique's Leonora Content" modId="Corthala_Romantique" complexity="minor" />
-				<component id="Assassinations:0" name="Assassinations mod for Baldur's Gate II" label="Assassinations" modId="Assassinations" level="extended" complexity="moderate" />
-				<component id="ts_expanded_thief_stronghold_main" name="Expanded Thief Stronghold" label="Expanded Thief Stronghold" modId="Expanded-Thief-Stronghold" level="extended" complexity="moderate" />
-				<component id="Tidings:0" name="Dark Tidings" label="Dark Tidings" modId="Dark-Tidings" level="extended" complexity="major" />
-				<mod id="Call-of-the-Lost-Goddess" label="Call of the Lost Goddess" level="extended">
+				<component id="Assassinations:0" name="Assassinations mod for Baldur's Gate II" label="Assassinations" modId="Assassinations" recommended="extended" complexity="moderate" />
+				<component id="ts_expanded_thief_stronghold_main" name="Expanded Thief Stronghold" label="Expanded Thief Stronghold" modId="Expanded-Thief-Stronghold" recommended="extended" complexity="moderate" />
+				<component id="Tidings:0" name="Dark Tidings" label="Dark Tidings" modId="Dark-Tidings" recommended="extended" complexity="major" />
+				<mod id="Call-of-the-Lost-Goddess" label="Call of the Lost Goddess" recommended="extended">
 					<component id="Godcall:0" name="Call Of The Lost Goddess" label="Call of the Lost Goddess v2.01" complexity="major" />
 					<component id="Godcall:50" name="Install portraits for the major NPCs of the mod" label="Install portraits for the major NPCs of the mod" alwaysIf="Godcall:0" noDisplay="1" complexity="minor" />
 					<component id="Godcall:200" name="Install AI voiceover for major NPCs of the mod (mostly in English)" label="Install AI voiceover for major NPCs of the mod (mostly in English)" complexity="minor" />
 				</mod>
-				<component id="ThroneoftheMadGod:0" name="Throne of the Mad God" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" level="extended" complexity="major" />
-				<component id="Poisoned_pathways:0" name="Poisoned pathways" label="Poisoned Pathways" modId="Poisoned-Pathways" level="extended" complexity="major" />
-				<component id="TangledIsle:0" name="Yes, but don't patch existing save games" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" level="extended" complexity="major" />
-				<component id="L#-OOZESLOUNGE" name="Athkatlan Grounds: The Ooze's Lounge - a new area under Athkatlan Slums" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" level="extended" complexity="major" />
-				<component id="L#-SKIECOST-MAINQUEST" name="Skie: The Cost of One Girl's Soul - New quest for Baldur's Gate 2 EE" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" level="extended" complexity="minor" />
-				<component id="cowledmenace:1000" name="Main Component" label="Cowled Menace" modId="CowledMenace" level="extended" complexity="major" />
-				<component id="AWizardDidIt-Blackhearts_BG2" name="Install Blackhearts for &quot;BG2EE only&quot;" label="Blackhearts" modId="Black-Hearts" level="extended" displayIfNot="AWizardDidIt-Blackhearts_BG1" complexity="moderate" />
+				<component id="ThroneoftheMadGod:0" name="Throne of the Mad God" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" recommended="extended" complexity="major" />
+				<component id="Poisoned_pathways:0" name="Poisoned pathways" label="Poisoned Pathways" modId="Poisoned-Pathways" recommended="extended" complexity="major" />
+				<component id="TangledIsle:0" name="Yes, but don't patch existing save games" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" recommended="extended" complexity="major" />
+				<component id="L#-OOZESLOUNGE" name="Athkatlan Grounds: The Ooze's Lounge - a new area under Athkatlan Slums" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" recommended="extended" complexity="major" />
+				<component id="L#-SKIECOST-MAINQUEST" name="Skie: The Cost of One Girl's Soul - New quest for Baldur's Gate 2 EE" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" recommended="extended" complexity="minor" />
+				<component id="cowledmenace:1000" name="Main Component" label="Cowled Menace" modId="CowledMenace" recommended="extended" complexity="major" />
+				<component id="AWizardDidIt-Blackhearts_BG2" name="Install Blackhearts for &quot;BG2EE only&quot;" label="Blackhearts" modId="Black-Hearts" recommended="extended" displayIfNot="AWizardDidIt-Blackhearts_BG1" complexity="moderate" />
 				<component id="Autumns_Twilight:0" name="Autumn's Twilight MOD" label="Autumn's Twilight" modId="bg2-autumns-twilight-mod" complexity="major" />
 			</quest>
 			<npc label="Joinable NPCs">
@@ -686,34 +686,34 @@
 				<tweaks label="Tweaks">
 					<component id="cd_tweaks_disable_romances" name="Disable Romances" label="Disable BioWare Romances" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3175" complexity="minor" />
 					<component id="LaufeysNewViconiaEnding-Main" name="New ending for Viconia Romance by Laufey" label="New ending for Viconia Romance" modId="Edwin-Romance" complexity="minor" />
-					<component id="SkitiaRomanceTweak:0" name="Skitia's Romance Tweak for BG2:EE" label="Skitia's Romance Tweak" desc="Allow short depatures from the party" modId="SkitiaBG2RomanceTweaks" level="fixes" complexity="minor" />
-					<component id="cd_tweaks_improved_fate_spirit_summoning" name="Improved Fate Spirit Summoning" label="Improved Fate Spirit summoning" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4010" complexity="minor" />
+					<component id="SkitiaRomanceTweak:0" name="Skitia's Romance Tweak for BG2:EE" label="Skitia's Romance Tweak" desc="Allow short depatures from the party" modId="SkitiaBG2RomanceTweaks" recommended="fixes" complexity="minor" />
+					<component id="cd_tweaks_improved_fate_spirit_summoning" name="Improved Fate Spirit Summoning" label="Improved Fate Spirit summoning" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4010" complexity="minor" />
 				</tweaks>
 			</npc>
 			<items label="Items">
 				<add label="New Items" noBranches="1" unfolded="1">
-					<component id="u#_under-represented_items" name="Underrepresented Items From Icewind Dale II" label="Underrepresented items from Icewind Dale II" modId="Under-Respresented_Items" level="blendWell" complexity="minor" />
-					<component id="L#-SKIECOST-SHOP" name="Skie: The Cost of One Girl's Soul - Add brand new SoD-oriented items to BG2" label="Brand new SoD-oriented items" modId="skie-the-cost-of-one-girls-soul" level="extended" complexity="minor" />
-					<component id="A7-IMPROVEDARCHER-BOWS_AND_AMMO" name="Add +4 arrows, bolts and powerful bows to the game" label="+4 arrows, bolts and powerful bows" modId="A7-ImprovedArcher" level="blendWell" complexity="minor" />
-					<component id="cowledmenace:2100" name="Appropriate Rewards for High-Level Spellcasters (recommended)" label="Appropriate items for high-level Spellcasters" modId="CowledMenace" level="extended" complexity="minor" />
-					<component id="jarnip:0" name="Jarnip: New Bonus Merchant in the Adventurers Mart" label="Jarnip: New bonus merchant in the Adventurers Mart" modId="Jarnip" level="extended" complexity="minor" />
+					<component id="u#_under-represented_items" name="Underrepresented Items From Icewind Dale II" label="Underrepresented items from Icewind Dale II" modId="Under-Respresented_Items" recommended="blendWell" complexity="minor" />
+					<component id="L#-SKIECOST-SHOP" name="Skie: The Cost of One Girl's Soul - Add brand new SoD-oriented items to BG2" label="Brand new SoD-oriented items" modId="skie-the-cost-of-one-girls-soul" recommended="extended" complexity="minor" />
+					<component id="A7-IMPROVEDARCHER-BOWS_AND_AMMO" name="Add +4 arrows, bolts and powerful bows to the game" label="+4 arrows, bolts and powerful bows" modId="A7-ImprovedArcher" recommended="blendWell" complexity="minor" />
+					<component id="cowledmenace:2100" name="Appropriate Rewards for High-Level Spellcasters (recommended)" label="Appropriate items for high-level Spellcasters" modId="CowledMenace" recommended="extended" complexity="minor" />
+					<component id="jarnip:0" name="Jarnip: New Bonus Merchant in the Adventurers Mart" label="Jarnip: New bonus merchant in the Adventurers Mart" modId="Jarnip" recommended="extended" complexity="minor" />
 					<component id="PlanarItems:0" name="Revised Items" label="Planaritems" modId="PlanarItems" complexity="minor" />
 					<component id="cd_spc_creslyn_item_pack" name="Creslyn's BG2 Item Pack" label="Creslyn's Item Pack" modId="SP_Collection" complexity="minor" />
 					<mod id="forgotten-armament" label="Forgotten Armament">
 						<component id="ForgottenArmament-RubyRay" name="Add Ruby Ray Scrolls to Trademeet Store" label="Ruby Ray Scrolls in Trademeet Store" complexity="minor" />
 						<component id="ForgottenArmament-FreedomScroll" name="Add Freedom Scrolls to Ribald's Store (Pre-Underdark)" label="Freedom Scrolls in Ribald's Store (pre-Underdark)" complexity="minor" />
 					</mod>
-					<component id="k0_iskp:3102" name="all_imports_random" label="Import SoD Items" modId="sod-items-to-bg2ee-eet" level="extended" complexity="minor" />
-					<component id="hidden_adventures-silverdagger_ID" name="Silver Dagger in Irenicus Dungeon" label="Silver Dagger in Irenicus Dungeon" level="blendWell" modId="hiddenadventure" complexity="minor" />
+					<component id="k0_iskp:3102" name="all_imports_random" label="Import SoD Items" modId="sod-items-to-bg2ee-eet" recommended="extended" complexity="minor" />
+					<component id="hidden_adventures-silverdagger_ID" name="Silver Dagger in Irenicus Dungeon" label="Silver Dagger in Irenicus Dungeon" recommended="blendWell" modId="hiddenadventure" complexity="minor" />
 				</add>
 				<update label="Item Changes">
-					<component id="cd_tweaks_gradual_drow_item_disintegration" name="Gradual Drow Item Disintegration" label="Gradual drow Item Disintegration" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1050" complexity="minor" />
-					<component id="hidden_adventures-silversword" name="Silver Sword" label="Silver Sword against mind flayers and lycanthropes" level="blendWell" modId="hiddenadventure" complexity="minor" />
-					<component id="HouseTweaks:19" name="House Tweaks: Useful Plot Items" label="Useful Plot Items" modId="House-Rule-Tweaks" level="blendWell" complexity="minor" />
-					<component id="stuffofthemagi:0" name="Use new, less cheesy items AND Add them to creatures' equipment (recommended)" label="Nerf Stuff of the Magi condiments and add them to creatures' equipment" modId="Stuff-of-the-Magi" level="blendWell" complexity="minor" />
+					<component id="cd_tweaks_gradual_drow_item_disintegration" name="Gradual Drow Item Disintegration" label="Gradual drow Item Disintegration" modId="Tweaks-Anthology" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1050" complexity="minor" />
+					<component id="hidden_adventures-silversword" name="Silver Sword" label="Silver Sword against mind flayers and lycanthropes" recommended="blendWell" modId="hiddenadventure" complexity="minor" />
+					<component id="HouseTweaks:19" name="House Tweaks: Useful Plot Items" label="Useful Plot Items" modId="House-Rule-Tweaks" recommended="blendWell" complexity="minor" />
+					<component id="stuffofthemagi:0" name="Use new, less cheesy items AND Add them to creatures' equipment (recommended)" label="Nerf Stuff of the Magi condiments and add them to creatures' equipment" modId="Stuff-of-the-Magi" recommended="blendWell" complexity="minor" />
 					<group label="Corrections" noBranches="1">
-						<component id="HouseTweaks:17" name="House Tweaks: Cloak of Dragomir only decreases stats in daylight" label="Cloak of Dragomir only decreases stats in daylight" modId="House-Rule-Tweaks" level="vanillaPlus" complexity="minor" />
-						<mod id="ZSTweaks" label="ZSTweaks" level="blendWell">
+						<component id="HouseTweaks:17" name="House Tweaks: Cloak of Dragomir only decreases stats in daylight" label="Cloak of Dragomir only decreases stats in daylight" modId="House-Rule-Tweaks" recommended="vanillaPlus" complexity="minor" />
+						<mod id="ZSTweaks" label="ZSTweaks" recommended="blendWell">
 							<component id="ZSTweaks:1170" name="Make Shadow Dragon Scale behave less like a Black Dragon Scale" label="Make Shadow Dragon Scale behave less like a Black Dragon Scale" complexity="minor" />
 							<component id="ZSTweaks:1171" name="Make Silver Dragon Scale also grant 40% cold resistance" label="Make Silver Dragon Scale also grant 40% cold resistance" complexity="minor" />
 							<component id="ZSTweaks:1174" name="Make Heartwood Ring grant spell slots and regeneration" label="Make Heartwood Ring grant spell slots and regeneration" complexity="minor" />
@@ -779,48 +779,48 @@
 					</group>
 				</update>
 				<upgrade label="Item Upgrades" noBranches="1">
-					<mod id="Item_Upgrade" level="blendWell" label="Item Upgrade">
+					<mod id="Item_Upgrade" recommended="blendWell" label="Item Upgrade">
 						<component id="c2_item_upgrade_soa_seamless" name="Revised Version (new upgrades presented in the same style as existing upgrades)" label="Item Upgrade" complexity="minor" />
 						<component id="c2_item_upgrade_tob_seamless" name="Revised Version (new upgrades presented in the same style as existing upgrades)" label="Item Upgrade - revised version ToB" alwaysIf="c2_item_upgrade_soa_seamless" noDisplay="1" complexity="minor" />
 					</mod>
-					<component id="randomiser:9000" name="Cespenar can forge SoA items" label="Cespenar can forge SoA items" engine="bg2,eet" level="vanillaPlus" modId="randomiser" complexity="minor" />
-					<component id="swordap:0" name="Improved Haer'Dalis' swords (special for Kania)" label="Improved Haer'Dalis' Swords" modId="HaerDalis-Swords" level="extended" complexity="minor" />
-					<component id="L#-OfHeirloomsAndClasses" name="Of Heirlooms and Classes - new forgeable artifacts for different classes" label="Of Heirlooms and Classes" desc="New artifacts forgeable by Cromwell" modId="of-heirlooms-and-classes" level="extended" complexity="minor" />
-					<mod id="Tweaks-Anthology" label="Item Upgrade" level="blendWell">
+					<component id="randomiser:9000" name="Cespenar can forge SoA items" label="Cespenar can forge SoA items" engine="bg2,eet" recommended="vanillaPlus" modId="randomiser" complexity="minor" />
+					<component id="swordap:0" name="Improved Haer'Dalis' swords (special for Kania)" label="Improved Haer'Dalis' Swords" modId="HaerDalis-Swords" recommended="extended" complexity="minor" />
+					<component id="L#-OfHeirloomsAndClasses" name="Of Heirlooms and Classes - new forgeable artifacts for different classes" label="Of Heirlooms and Classes" desc="New artifacts forgeable by Cromwell" modId="of-heirlooms-and-classes" recommended="extended" complexity="minor" />
+					<mod id="Tweaks-Anthology" label="Item Upgrade" recommended="blendWell">
 						<component id="cd_tweaks_cromwell_updates_wk_items" name="Allow Cromwell to Upgrade Watcher's Keep Items" label="Allow Cromwell to upgrade Watcher's Keep items" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1220" complexity="minor" />
 						<component id="cd_tweaks_cespenar_updates_soa_items" name="Allow Cespenar to Use Cromwell Recipes" label="Allow Cespenar to use Cromwell recipes" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1230" complexity="minor" />
 					</mod>
 				</upgrade>
 			</items>
 			<tweaks label="Tweaks">
-				<component id="#L-TRANSITIONS-RESTORE_POWER" name="BG2EE - Use Irenicus in hell movie as dream to restore Bhaalspawn powers" label="Use Irenicus in Hell movie as dream to restore Bhaalspawn powers" modId="themed_tweaks" level="blendWell" complexity="minor" />
-				<component id="HouseTweaks:16" name="House Tweaks: Good-Aligned Roleplay Rewards (BG2:EE)" label="Good-aligned roleplay rewards" modId="House-Rule-Tweaks" level="blendWell" complexity="minor" />
-				<component id="HouseTweaks:44" name="House Tweaks: Thief Stronghold—Ask Jariel to pay your quota in your stead" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" level="blendWell" complexity="minor" />
-				<component id="cd_tweaks_disable_malchor" name="Keep Drizzt's Loot, Disable Malchor Harpell [Weimer]" label="Keep Drizzt's Loot, disable Malchor Harpell" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3160" complexity="minor" />
-				<component id="cd_tweaks_improved_athkatla_guard" name="Improved Athkatlan City Guard" label="Improved Athkatlan city guard" modId="Tweaks-Anthology" level="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1040" complexity="minor" />
-				<component id="cd_tweaks_more_sensible_cowled_wizards" name="More Sensible Cowled Wizards [Luke]" label="More sensible Cowled Wizards" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3420" complexity="minor" />
-				<component id="ZSTweaks:3010" name="Make inappropriately aligned creatures in BG2 more correct" label="Make inappropriately aligned creatures in BG2 more correct" modId="ZSTweaks" level="fixes" complexity="minor" />
-				<component id="ForcedSlayerTransform:0" name="BG2EE Forced Slayer Transform" label="Forced Slayer transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" level="extended" complexity="minor" />
-				<component id="randomiser:10210" name="Duergar merchants" label="Duergar merchants" engine="bg2,eet" modId="randomiser" level="vanillaPlus" desc="Make it so once you can access the special wares you retain the option of accessing the regular wares" complexity="minor" />
-				<component id="cd_tweaks_alter_wounded_triggers" name="Alter HP Triggers for NPC Wounded Dialogues" label="Alter HP triggers for NPC wounded dialogues" modId="Tweaks-Anthology" desc="Raise the HP trigger level so that the player has a better chance of seeing wound banters" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1020" complexity="minor" />
-				<component id="cd_tweaks_cromwell_forge_time_0" name="Instant forging (original BG2 default)" label="Cromwell's Instant Forging" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1125" complexity="minor" />
-				<component id="cd_tweaks_yoshi_imoen_xp_transfer" name="Yoshimo to Imoen Experience Transfer [dark0dave]" label="Yoshimo to Imoen experience transfer" modId="Tweaks-Anthology" level="vanillaPlus" displayIfNot="Imoen4Ever-BGII-ImoenReturnsChapter2" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2720" complexity="minor" />
+				<component id="#L-TRANSITIONS-RESTORE_POWER" name="BG2EE - Use Irenicus in hell movie as dream to restore Bhaalspawn powers" label="Use Irenicus in Hell movie as dream to restore Bhaalspawn powers" modId="themed_tweaks" recommended="blendWell" complexity="minor" />
+				<component id="HouseTweaks:16" name="House Tweaks: Good-Aligned Roleplay Rewards (BG2:EE)" label="Good-aligned roleplay rewards" modId="House-Rule-Tweaks" recommended="blendWell" complexity="minor" />
+				<component id="HouseTweaks:44" name="House Tweaks: Thief Stronghold—Ask Jariel to pay your quota in your stead" label="Thief Stronghold: Ask Jariel to pay your quota in your stead" modId="House-Rule-Tweaks" recommended="blendWell" complexity="minor" />
+				<component id="cd_tweaks_disable_malchor" name="Keep Drizzt's Loot, Disable Malchor Harpell [Weimer]" label="Keep Drizzt's Loot, disable Malchor Harpell" modId="Tweaks-Anthology" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3160" complexity="minor" />
+				<component id="cd_tweaks_improved_athkatla_guard" name="Improved Athkatlan City Guard" label="Improved Athkatlan city guard" modId="Tweaks-Anthology" recommended="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1040" complexity="minor" />
+				<component id="cd_tweaks_more_sensible_cowled_wizards" name="More Sensible Cowled Wizards [Luke]" label="More sensible Cowled Wizards" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3420" complexity="minor" />
+				<component id="ZSTweaks:3010" name="Make inappropriately aligned creatures in BG2 more correct" label="Make inappropriately aligned creatures in BG2 more correct" modId="ZSTweaks" recommended="fixes" complexity="minor" />
+				<component id="ForcedSlayerTransform:0" name="BG2EE Forced Slayer Transform" label="Forced Slayer transform" desc="When the romance partner dies" modId="ForcedSlayerTransform" engine="bg2,eet" recommended="extended" complexity="minor" />
+				<component id="randomiser:10210" name="Duergar merchants" label="Duergar merchants" engine="bg2,eet" modId="randomiser" recommended="vanillaPlus" desc="Make it so once you can access the special wares you retain the option of accessing the regular wares" complexity="minor" />
+				<component id="cd_tweaks_alter_wounded_triggers" name="Alter HP Triggers for NPC Wounded Dialogues" label="Alter HP triggers for NPC wounded dialogues" modId="Tweaks-Anthology" desc="Raise the HP trigger level so that the player has a better chance of seeing wound banters" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1020" complexity="minor" />
+				<component id="cd_tweaks_cromwell_forge_time_0" name="Instant forging (original BG2 default)" label="Cromwell's Instant Forging" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1125" complexity="minor" />
+				<component id="cd_tweaks_yoshi_imoen_xp_transfer" name="Yoshimo to Imoen Experience Transfer [dark0dave]" label="Yoshimo to Imoen experience transfer" modId="Tweaks-Anthology" recommended="vanillaPlus" displayIfNot="Imoen4Ever-BGII-ImoenReturnsChapter2" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2720" complexity="minor" />
 				<alternatives label="Multiple Strongholds">
 					<component id="cd_tweaks_multi_stronghold_no_restriction" name="No restrictions" label="For any class PC" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1160" complexity="minor" />
-					<component id="cd_tweaks_multi_stronghold_class_restriction" name="Keep class restrictions" label="For multi-class PC" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1161" complexity="minor" />
+					<component id="cd_tweaks_multi_stronghold_class_restriction" name="Keep class restrictions" label="For multi-class PC" modId="Tweaks-Anthology" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1161" complexity="minor" />
 				</alternatives>
 			</tweaks>
 			<restructure>
 				<alternatives label="License for spellcasting costs..." noBranches="1">
-					<component id="stratagems:4160" name="License costs 10,000 gp" label="10,000 gp" level="blendWell" default="1" modId="SwordCoastStratagems" complexity="minor" />
-					<component id="stratagems:4161" name="License costs 15,000 gp" label="15,000 gp" level="extended" modId="SwordCoastStratagems" complexity="minor" />
+					<component id="stratagems:4160" name="License costs 10,000 gp" label="10,000 gp" recommended="blendWell" default="1" modId="SwordCoastStratagems" complexity="minor" />
+					<component id="stratagems:4161" name="License costs 15,000 gp" label="15,000 gp" recommended="extended" modId="SwordCoastStratagems" complexity="minor" />
 					<component id="stratagems:4162" name="License costs 20,000 gp" label="20,000 gp" modId="SwordCoastStratagems" complexity="minor" />
 					<component id="stratagems:4163" name="License costs 30,000 gp" label="30,000 gp" modId="SwordCoastStratagems" complexity="minor" />
 					<component id="stratagems:4164" name="License costs 50,000 gp" label="50,000 gp" modId="SwordCoastStratagems" complexity="minor" />
 				</alternatives>
 				<alternatives modId="SwordCoastStratagems" label="Gaelan Wants..." noBranches="1">
-					<component id="stratagems:4170" name="Telekinesis (Alteration) Level: 5 Range: Visual range of the caster Duration: 3 seconds Casting Time: 5 Area of Effect: All enemies within 5ft. of target creature Saving Throw: Neg. By means of this spell, the caster can telekinetically hurl all hostile creatures within a small region directly away from &lt;PRO_HIMHER&gt;self at high speed, inflicting 3d8 points of crushing damage and knocking the creatures unconscious for a few seconds, unless they save vs. spells at a -2 penalty. The spell is ineffective against any creature of ogre size or larger, and - due to the interaction of the telekinetic field with surrounding solid matter - cannot be used to propel creatures off cliffs or into impassable terrain." label="40,000 gp" level="blendWell" default="1" modId="SwordCoastStratagems" complexity="minor" />
-					<component id="stratagems:4171" name="2 levels of experience" label="60,000 gp" level="extended" modId="SwordCoastStratagems" complexity="minor" />
+					<component id="stratagems:4170" name="Telekinesis (Alteration) Level: 5 Range: Visual range of the caster Duration: 3 seconds Casting Time: 5 Area of Effect: All enemies within 5ft. of target creature Saving Throw: Neg. By means of this spell, the caster can telekinetically hurl all hostile creatures within a small region directly away from &lt;PRO_HIMHER&gt;self at high speed, inflicting 3d8 points of crushing damage and knocking the creatures unconscious for a few seconds, unless they save vs. spells at a -2 penalty. The spell is ineffective against any creature of ogre size or larger, and - due to the interaction of the telekinetic field with surrounding solid matter - cannot be used to propel creatures off cliffs or into impassable terrain." label="40,000 gp" recommended="blendWell" default="1" modId="SwordCoastStratagems" complexity="minor" />
+					<component id="stratagems:4171" name="2 levels of experience" label="60,000 gp" recommended="extended" modId="SwordCoastStratagems" complexity="minor" />
 					<component id="stratagems:4172" name="5 levels of experience" label="80,000 gp" modId="SwordCoastStratagems" complexity="minor" />
 					<component id="stratagems:4173" name="Five Levels Drained" label="100,000 gp" modId="SwordCoastStratagems" complexity="minor" />
 					<component id="stratagems:4174" name="Iron Body (Alteration) Level: 8 Range: 0 Duration: 2 turns Casting Time: 8 Area of Effect: The caster Saving Throw: None This spell transforms the caster's body into living iron, granting &lt;PRO_HIMHER&gt; several powerful resistances and abilities. While the spell is in effect, the caster is 100% resistant to electricity and poison, 50% resistant to fire and acid, and 75% resistant to physical damage (though the latter cannot be further improved by other effects). Spells that affect respiration or the physiology of the caster are ignored. In addition, the caster's Strength is raised to 25, and the caster can attack twice per round with iron fists for 2d4 points of damage plus appropriate Strength bonuses. Unfortunately, the caster's movement becomes slow and awkward, setting &lt;PRO_HISHER&gt; movement rate to 25% of &lt;PRO_HISHER&gt; normal, and &lt;PRO_HISHER&gt; spellcasting becomes more sluggish, imposing a -2 penalty on casting times. The spell ends immediately if the caster is affected by any kind of polymorph effect." label="120,000 gp" modId="SwordCoastStratagems" complexity="minor" />
@@ -926,7 +926,7 @@
 				</banters>
 			</npc>
 			<tweaks label="Tweaks">
-				<component id="HouseTweaks:25" name="House Tweaks: Reputation Bonuses for Icewind Dale" label="Reputation bonuses" modId="House-Rule-Tweaks" level="blendWell" complexity="minor" />
+				<component id="HouseTweaks:25" name="House Tweaks: Reputation Bonuses for Icewind Dale" label="Reputation bonuses" modId="House-Rule-Tweaks" recommended="blendWell" complexity="minor" />
 			</tweaks>
 			<items label="Items">
 				<add label="New Items" noBranches="1">
@@ -982,37 +982,37 @@
 			<npc label="Joinable NPCs">
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<component id="reflection:0" name="Reflection" label="Reflection (new dialogue options)" modId="Reflection" complexity="minor" />
-					<mod id="Tweaks-Anthology" level="blendWell">
+					<mod id="Tweaks-Anthology" recommended="blendWell">
 						<component id="cd_tweaks_more_interjections" name="More Interjections" label="More interjections" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1010" complexity="minor" />
-						<component id="cd_tweaks_move_boo_into_inventory" name="Move Boo Into Minsc's Pack" label="Move Boo into Minsc's Pack" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4150" complexity="minor" />
+						<component id="cd_tweaks_move_boo_into_inventory" name="Move Boo Into Minsc's Pack" label="Move Boo into Minsc's Pack" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4150" complexity="minor" />
 					</mod>
-					<component id="A7-CONVENIENTEENPCS-APPEARANCE-PASSIVE_ALL" name="Make all NPCs passive" label="Make all new EE NPCs passive" desc="Neera, Baeloth, Dorn, Rasaad - originally all of them have forced cutscenes when you met them" modId="A7-NoEENPCs" level="blendWell" tags="Beamdog" complexity="minor" />
-					<component id="cd_tweaks_npcs_never_fight" name="NPCs Don't Fight" label="NPCs don't fight" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3123" complexity="minor" />
+					<component id="A7-CONVENIENTEENPCS-APPEARANCE-PASSIVE_ALL" name="Make all NPCs passive" label="Make all new EE NPCs passive" desc="Neera, Baeloth, Dorn, Rasaad - originally all of them have forced cutscenes when you met them" modId="A7-NoEENPCs" recommended="blendWell" tags="Beamdog" complexity="minor" />
+					<component id="cd_tweaks_npcs_never_fight" name="NPCs Don't Fight" label="NPCs don't fight" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3123" recommended="lowerDifficulty" complexity="minor" />
 				</tweaks>
 			</npc>
 			<items label="Item Changes">
 				<add noBranches="1" label="New Items" unfolded="1">
-					<mod id="EET_Tweaks" label="Baldur's Gate: Enhanced Edition Trilogy Tweaks" level="vanillaPlus">
+					<mod id="EET_Tweaks" label="Baldur's Gate: Enhanced Edition Trilogy Tweaks" recommended="vanillaPlus">
 						<component id="EET_Tweaks:4060" name="Wand Case" label="Add Wand Cases and Key Rings" complexity="minor" />
 						<component id="EET_Tweaks:4070" name="Key Ring" label="Add Key Rings" alwaysIf="EET_Tweaks:4060" noDisplay="1" complexity="minor" />
 						<component id="EET_Tweaks:4050" name="Books/Scrolls categorization" label="Books/scrolls categorization" desc="Allows putting books and scrolls in containers" complexity="minor" />
 					</mod>
-					<component id="stratagems:3015" name="Re-introduce potions of extra-healing" label="Re-introduce Potions of Extra-Healing" modId="SwordCoastStratagems" level="vanillaPlus" complexity="minor" />
-					<component id="stratagems:3505" name="Wider selection of random scrolls" label="Wider selection of random scrolls" modId="SwordCoastStratagems" level="vanillaPlus" complexity="minor" />
-					<component id="cd_iwdification_2h_axes" name="Two-Handed Axe Item Pack" label="Two-Handed Axe Item Pack" modId="iwdification" level="blendWell" complexity="minor" />
+					<component id="stratagems:3015" name="Re-introduce potions of extra-healing" label="Re-introduce Potions of Extra-Healing" modId="SwordCoastStratagems" recommended="vanillaPlus" complexity="minor" />
+					<component id="stratagems:3505" name="Wider selection of random scrolls" label="Wider selection of random scrolls" modId="SwordCoastStratagems" recommended="vanillaPlus" complexity="minor" />
+					<component id="cd_iwdification_2h_axes" name="Two-Handed Axe Item Pack" label="Two-Handed Axe Item Pack" modId="iwdification" recommended="blendWell" complexity="minor" />
 					<component id="ForgottenArmament-AddItems" name="Add New Items to the Game" label="Forgotten Armament's New Items" modId="forgotten-armament" complexity="minor" />
 				</add>
 				<update label="Item Changes">
 					<component id="A7-CONVENIENTEENPCS-APPEARANCE-NPC_ITEMS_FOR_ALL" name="Make NPC-specific items available for everyone" label="Make Beamdog NPC-specific items available for everyone" modId="A7-NoEENPCs" complexity="minor" />
 					<group label="Corrections" noBranches="1">
-						<mod modId="Tweaks-Anthology" level="blendWell">
+						<mod modId="Tweaks-Anthology" recommended="blendWell">
 							<component id="cd_iwdification_spear_damage" name="Increase Spear Damage" label="Increase spear damage" modId="iwdification" complexity="minor" />
 							<component id="cd_tweaks_dorns_sword" name="Make Rancor +1 a Bit More Reliable" label="Make Rancor +1 a bit more reliable" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4200" complexity="minor" />
 							<component id="cdtweaks:150" name="Remove &quot;+x&quot; From Unique Item Names" label="Remove &quot;+x&quot; from unique item names" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_150" complexity="minor" />
 						</mod>
 						<component id="ForgottenArmament-SetBonus" name="Add Set Bonuses to Items" label="Add set bonuses to Planar Items" modId="forgotten-armament" complexity="minor" />
 						<component id="ForgottenArmament-UpdateItems" name="Update Existing In-Game Items" label="Forgotten Armament: Update existing in-game items" modId="forgotten-armament" complexity="minor" />
-						<mod id="ZSTweaks" level="blendWell">
+						<mod id="ZSTweaks" recommended="blendWell">
 							<component id="ZSTweaks:1548" name="Make Void-weapons slightly more effective and logical" label="Make Void-Weapons slightly more effective and logical" complexity="minor" />
 							<component id="ZSTweaks:1532" name="Make bracers, belts and boots grant +1 HP, so even unenchanted variants have an actual use" label="Make bracers, belts and boots grant +1 HP, so even unenchanted variants have an actual use" complexity="minor" />
 							<component id="ZSTweaks:1180" name="Make Ring of Danger Sense grant defensive traits" label="Make Ring of Danger Sense grant defensive traits" complexity="minor" />
@@ -1031,36 +1031,36 @@
 						</mod>
 						<component id="SubtleD_Spell_Tweaks:1351" name="Add Faerie Fire and Slow On Hit to Moonblade" label="Add Faerie Fire and Slow on Hit to Moonblade" modId="SubtleD_Spell_Tweaks" complexity="minor" />
 					</group>
-					<component id="stratagems:3010" name="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" label="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" modId="SwordCoastStratagems" level="blendWell" complexity="minor" />
-					<component id="stratagems:2900" name="Move or modify some overpowered magic items" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" modId="SwordCoastStratagems" level="blendWell" complexity="minor" />
-					<component id="cd_tweaks_removable_npc_items" name="Removable NPC Items" label="Removable NPC items" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4180" complexity="minor" />
+					<component id="stratagems:3010" name="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" label="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" modId="SwordCoastStratagems" recommended="blendWell" complexity="minor" />
+					<component id="stratagems:2900" name="Move or modify some overpowered magic items" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" modId="SwordCoastStratagems" recommended="blendWell" complexity="minor" />
+					<component id="cd_tweaks_removable_npc_items" name="Removable NPC Items" label="Removable NPC items" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4180" complexity="minor" />
 				</update>
 				<delete label="Remove" noBranches="1">
-					<mod id="SwordCoastStratagems" level="higherDifficulty">
+					<mod id="SwordCoastStratagems" recommended="higherDifficulty">
 						<component id="stratagems:4215" name="1 turn/level" label="Remove unrealistically helpful items from certain areas" complexity="minor" />
 						<component id="stratagems:4217" name="Remove ammo up to the +2 level from random containers" label="Remove ammo up to the +2 level from random containers" complexity="minor" />
 					</mod>
 				</delete>
 			</items>
 			<tweaks label="Tweaks" noBranches="1">
-				<mod id="DialogueChoiceAdditions" label="Dialogue Choice Additions" level="extended">
+				<mod id="DialogueChoiceAdditions" label="Dialogue Choice Additions" recommended="extended">
 					<component id="DialogueChoiceAdditions-Core" name="Dialogue Choice Additions: Core" label="Dialogue choice additions" complexity="minor" />
 					<component id="DialogueChoiceAdditions-VVECompatibilityPatch" name="Dialogue Choice Additions: VVE Compatibility Patch" label="VVE compatibility patch" alwaysIf="DialogueChoiceAdditions-Core,vveBG:0" noDisplay="1" complexity="minor" />
 				</mod>
-				<mod id="themed_tweaks" label="Themed Tweaks" level="blendWell">
+				<mod id="themed_tweaks" label="Themed Tweaks" recommended="blendWell">
 					<component id="#L-BG2-SNARK" name="SoD/BG2EE - Add a little snark to dialogues" label="Add a little snark to dialogues (SoD/BG2EE)" complexity="minor" />
-					<component id="#L-BG2-CUTSCENES" name="SoD/BG2EE - Remove cut scenes that the PC shouldn't be privy to" label="Remove cut scenes that the PC shouldn't be privy to" level="blendWell" complexity="minor" />
+					<component id="#L-BG2-CUTSCENES" name="SoD/BG2EE - Remove cut scenes that the PC shouldn't be privy to" label="Remove cut scenes that the PC shouldn't be privy to" recommended="blendWell" complexity="minor" />
 				</mod>
-				<component id="stratagems:4051" name="Reputation increases at about 1/2 the normal rate" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" level="blendWell" complexity="minor" />
-				<component id="randomiser:10100" name="All scrolls from all stores" label="Remove Protection from Undead scrolls from all stores" level="higherDifficulty" engine="bg,eet" modId="randomiser" complexity="minor" />
-				<component id="stratagems:3041" name="Stores sell a maximum of 5 Arrows of Dispelling" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" level="blendWell" complexity="minor" />
-				<component id="cd_tweaks_death_cam" name="Death Cam" label="Death cam" level="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3300" complexity="minor" />
+				<component id="stratagems:4051" name="Reputation increases at about 1/2 the normal rate" label="Reputation increases at about 1/2 the normal rate" modId="SwordCoastStratagems" recommended="blendWell" complexity="minor" />
+				<component id="randomiser:10100" name="All scrolls from all stores" label="Remove Protection from Undead scrolls from all stores" recommended="higherDifficulty" engine="bg,eet" modId="randomiser" complexity="minor" />
+				<component id="stratagems:3041" name="Stores sell a maximum of 5 Arrows of Dispelling" label="Stores sell a maximum of 5 Arrows of Dispelling" modId="SwordCoastStratagems" recommended="blendWell" complexity="minor" />
+				<component id="cd_tweaks_death_cam" name="Death Cam" label="Death cam" recommended="vanillaPlus" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3300" complexity="minor" />
 			</tweaks>
 		</universalBg>
 		<universalBgIwd label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<npc label="Joinable NPCs">
 				<tweaks label="Tweaks" unfolded="1">
-					<component id="cd_tweaks_happy_neutrals" name="Neutral Characters Make Happy Comments at Mid-Range Reputation [Luiz]" label="Neutral characters make happy comments at mid-range reputation" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3125" complexity="minor" />
+					<component id="cd_tweaks_happy_neutrals" name="Neutral Characters Make Happy Comments at Mid-Range Reputation [Luiz]" label="Neutral characters make happy comments at mid-range reputation" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3125" complexity="minor" />
 					<component id="cd_tweaks_happy_patch_never_angry" name="NPCs are never angry about reputation" label="NPCs are never angry about reputation" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3120" complexity="minor" />
 					<component id="cd_tweaks_tob_style_npcs" name="ToB-Style NPCs" label="ToB-style NPCs" desc="Alter all joinable NPCs to immediately level-up upon joining, with a caveat: all creature files are moved down to their lowest experience version" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4020" complexity="minor" />
 					<component id="cd_tweaks_reduced_party_chunking" name="Make Party Members Less Likely to Die Irreversibly" label="Make party members less likely to die irreversibly" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3330" complexity="minor" />
@@ -1074,48 +1074,48 @@
 			<items label="Items">
 				<add noBranches="1">
 					<component id="ForgottenArmament-AcidResist" name="Create Potions of Acid Resistance" label="Create Potions of Acid Resistance" modId="forgotten-armament" complexity="minor" />
-					<component id="cd_tweaks_add_bags_of_holding" name="Add Bags of Holding" label="Add Bags of Holding" modId="Tweaks-Anthology" level="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1080" complexity="minor" />
+					<component id="cd_tweaks_add_bags_of_holding" name="Add Bags of Holding" label="Add Bags of Holding" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1080" complexity="minor" />
 				</add>
 				<update label="Item Changes">
-					<component id="cd_tweaks_protection_items_pnp" name="PnP restrictions" label="PnP restrictions for protection items" modId="Tweaks-Anthology" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2150" complexity="minor" />
+					<component id="cd_tweaks_protection_items_pnp" name="PnP restrictions" label="PnP restrictions for protection items" modId="Tweaks-Anthology" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2150" complexity="minor" />
 					<alternatives label="Unique Containers">
-						<component id="cd_tweaks_unique_containers_fixes_and_icons" name="Unique icons only" label="Unique icons only" engine="bg,eet,iwd" level="blendWell" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_181" complexity="minor" />
-						<component id="cd_tweaks_unique_containers_full" name="Unique icons and names" label="Unique icons and names" engine="bg,eet,iwd" modId="Tweaks-Anthology" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_182" complexity="minor" />
+						<component id="cd_tweaks_unique_containers_fixes_and_icons" name="Unique icons only" label="Unique icons only" engine="bg,eet,iwd" recommended="blendWell" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_181" complexity="minor" />
+						<component id="cd_tweaks_unique_containers_full" name="Unique icons and names" label="Unique icons and names" engine="bg,eet,iwd" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_182" complexity="minor" />
 					</alternatives>
-					<component id="HouseTweaks:39" name="House Tweaks: Ankheg and Dragonscale Armor Count as Medium Armor" label="Ankheg and dragonscale armor count as medium armor" modId="House-Rule-Tweaks" level="blendWell" complexity="minor" />
+					<component id="HouseTweaks:39" name="House Tweaks: Ankheg and Dragonscale Armor Count as Medium Armor" label="Ankheg and dragonscale armor count as medium armor" modId="House-Rule-Tweaks" recommended="blendWell" complexity="minor" />
 					<group label="Updates" noBranches="1">
 						<mod id="ZSTweaks">
 							<component id="ForgottenArmament-ReplaceSpeedBoots" name="Replace Boots of Speed (Paws of the Cheetah)" label="Replace Boots of Speed (Paws of the Cheetah)" modId="forgotten-armament" complexity="minor" />
 							<component id="ForgottenArmament-StatIncreaseItems" name="Update Items Setting an Ability Score to Increment the Increase" label="Update items setting an ability score to increment the increase" modId="forgotten-armament" complexity="minor" />
-							<component id="ZSTweaks:1547" name="Make Protection from Undead more balanced" label="Make Protection from Undead more balanced" level="higherDifficulty" complexity="minor" />
-							<component id="ZSTweaks:1203" name="Make Girdle of Fortitude set Constitution to 18 on equip" label="Make Girdle of Fortitude set CON to 18 on equip" level="blendWell" complexity="minor" />
-							<component id="ZSTweaks:1216" name="Make Ankheg's Plate grant 20% acid resistance" label="Make Ankheg's Plate grant 20% acid resistance" level="blendWell" complexity="minor"  />
-							<component id="ZSTweaks:1317" name="Make the basic arcane robes more remarkable" label="Make the basic Arcane Robes more remarkable" level="blendWell" complexity="minor"  />
-							<component id="ZSTweaks:1344" name="Make Arrows of Biting apply poison faster and improve the misleading description" label="Arrows of Biting apply poison faster and improve the misleading description" level="blendWell" complexity="minor"  />
-							<component id="ZSTweaks:1345" name="Make Arrows of Fire cause fire damage always, same as Arrows of Ice" label="Make Arrows of Fire cause fire damage always, same as Arrows of Ice" level="blendWell" complexity="minor"  />
-							<component id="ZSTweaks:1346" name="Make Arrows of Piercing always cause at least half of the extra piercing damage" label="Make Arrows of Piercing always cause at least half of the extra piercing damage" level="blendWell" complexity="minor"  />
-							<component id="ZSTweaks:1347" name="Make Bolts of Biting slightly more deadly" label="Make Bolts of Biting slightly more deadly" level="blendWell" complexity="minor"  />
-							<component id="ZSTweaks:1371" name="Make Arrows of Dispelling force a save vs. Spell at -2 for them to work" label="Make Arrows of Dispelling force a save vs. spell at -2 for them to work" level="blendWell" complexity="minor"  />
-							<component id="ZSTweaks:1388" name="Make Acid Arrow's extra damage not subject to magic resistance" label="Make Acid Arrow's extra damage not subject to Magic Resistance" level="blendWell" complexity="minor"  />
+							<component id="ZSTweaks:1547" name="Make Protection from Undead more balanced" label="Make Protection from Undead more balanced" recommended="higherDifficulty" complexity="minor" />
+							<component id="ZSTweaks:1203" name="Make Girdle of Fortitude set Constitution to 18 on equip" label="Make Girdle of Fortitude set CON to 18 on equip" recommended="blendWell" complexity="minor" />
+							<component id="ZSTweaks:1216" name="Make Ankheg's Plate grant 20% acid resistance" label="Make Ankheg's Plate grant 20% acid resistance" recommended="blendWell" complexity="minor"  />
+							<component id="ZSTweaks:1317" name="Make the basic arcane robes more remarkable" label="Make the basic Arcane Robes more remarkable" recommended="blendWell" complexity="minor"  />
+							<component id="ZSTweaks:1344" name="Make Arrows of Biting apply poison faster and improve the misleading description" label="Arrows of Biting apply poison faster and improve the misleading description" recommended="blendWell" complexity="minor"  />
+							<component id="ZSTweaks:1345" name="Make Arrows of Fire cause fire damage always, same as Arrows of Ice" label="Make Arrows of Fire cause fire damage always, same as Arrows of Ice" recommended="blendWell" complexity="minor"  />
+							<component id="ZSTweaks:1346" name="Make Arrows of Piercing always cause at least half of the extra piercing damage" label="Make Arrows of Piercing always cause at least half of the extra piercing damage" recommended="blendWell" complexity="minor"  />
+							<component id="ZSTweaks:1347" name="Make Bolts of Biting slightly more deadly" label="Make Bolts of Biting slightly more deadly" recommended="blendWell" complexity="minor"  />
+							<component id="ZSTweaks:1371" name="Make Arrows of Dispelling force a save vs. Spell at -2 for them to work" label="Make Arrows of Dispelling force a save vs. spell at -2 for them to work" recommended="blendWell" complexity="minor"  />
+							<component id="ZSTweaks:1388" name="Make Acid Arrow's extra damage not subject to magic resistance" label="Make Acid Arrow's extra damage not subject to Magic Resistance" recommended="blendWell" complexity="minor"  />
 						</mod>
 					</group>
 				</update>
 			</items>
 			<tweaks label="Tweaks" noBranches="1">
-				<component id="METweaks:2600" name="No Party Required area transitions" label="No party required area transitions" modId="Olvyn-Tweaks" level="extended" complexity="minor" />
+				<component id="METweaks:2600" name="No Party Required area transitions" label="No party required area transitions" modId="Olvyn-Tweaks" recommended="extended" complexity="minor" />
 				<mod id="Tweaks-Anthology">
-					<component id="cd_tweaks_noncombat_speed_casting_increase_50" name="Movement speed by 50 percent and casting speed" label="Increase movement and casting speed by 50% outside of combat" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3343" complexity="minor" />
+					<component id="cd_tweaks_noncombat_speed_casting_increase_50" name="Movement speed by 50 percent and casting speed" label="Increase movement and casting speed by 50% outside of combat" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3343" complexity="minor" />
 				</mod>
-				<component id="stratagems:4130" name="Revised handling of death effects like disintegration, petrification and imprisonment (party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" label="Revised handling of death effects like disintegration, petrification and imprisonment" desc="Party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" modId="SwordCoastStratagems" level="vanillaPlus" complexity="minor" />
-				<mod id="Lore_From_Learning" level="extended">
+				<component id="stratagems:4130" name="Revised handling of death effects like disintegration, petrification and imprisonment (party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" label="Revised handling of death effects like disintegration, petrification and imprisonment" desc="Party members who are disintegrated etc can be resurrected; imprisoned or petrified characters rejoin the party automatically; the game doesn't end if the main character is petrified or imprisoned)" modId="SwordCoastStratagems" recommended="vanillaPlus" complexity="minor" />
+				<mod id="Lore_From_Learning" recommended="extended">
 					<component id="cd_lore_from_learning_books" name="Books Provide Lore Bonuses" label="Lore From Learning" desc="Provide Lore from books, weapons, party members, defeating monsters and exploring areas" complexity="minor" />
 					<component id="cd_lore_from_learning_martial" name="Weapon Knowledge Provides Lore Bonuses" label="Weapon knowledge provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" complexity="minor" />
 					<component id="cd_lore_from_learning_party" name="Party Members Provide Lore Bonuses" label="Party members provide Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" complexity="minor" />
 					<component id="cd_lore_from_learning_monster" name="Defeating Monsters Provides Lore Bonuses" label="Defeating monsters provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" complexity="minor" />
 					<component id="cd_lore_from_learning_area" name="Exploring Areas Provides Lore Bonuses" label="Exploring areas provides Lore bonuses" alwaysIf="cd_lore_from_learning_books" noDisplay="1" complexity="minor" />
 				</mod>
-				<component id="cd_tweaks_hide_vfx_from_invisible_enemies" name="Hide Visual Effects from Invisible Enemies [Luke]" label="Hide visual effects from invisible enemies" modId="Tweaks-Anthology" displayIf="EEex:1" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_260" complexity="minor" />
-				<component id="cd_tweaks_stores_sell_higher_stacks" name="Stores Sell Higher Stacks of Items" label="Stores sell higher stacks of items" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1120" complexity="minor" />
+				<component id="cd_tweaks_hide_vfx_from_invisible_enemies" name="Hide Visual Effects from Invisible Enemies [Luke]" label="Hide visual effects from invisible enemies" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_260" complexity="minor" />
+				<component id="cd_tweaks_stores_sell_higher_stacks" name="Stores Sell Higher Stacks of Items" label="Stores sell higher stacks of items" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1120" complexity="minor" />
 			</tweaks>
 		</universalBgIwd>
 	</content>
@@ -1125,7 +1125,7 @@
 			<fighter label="Fighter">
 				<wizardSlayer label="Wizard Slayer">
 					<component id="ArtisansKitpack:1006" name="Artisan's Kitpack: Wizard Slayer Overhaul" label="Overhaul" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
-					<component id="METweaks:1600" name="Increase Wizard Slayer Magic Resistance" label="Increase Magic Resistance" modId="Olvyn-Tweaks" level="lowerDifficulty" desc="Gain 5% Magic Resistance per level rather than 1%" complexity="minor" />
+					<component id="METweaks:1600" name="Increase Wizard Slayer Magic Resistance" label="Increase Magic Resistance" modId="Olvyn-Tweaks" recommended="lowerDifficulty" desc="Gain 5% Magic Resistance per level rather than 1%" complexity="minor" />
 				</wizardSlayer>
 				<component id="Morpheus562sKitpackShieldBreaker" name="Install Shield Breaker Kit" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" complexity="minor" />
 			</fighter>
@@ -1186,13 +1186,13 @@
 				<component id="EpicThieving:400" name="Epic Detect Illusions" label="EpicThieving — Epic Detect Illusions" alwaysIf="EpicThieving:0" noDisplay="1" complexity="minor" />
 			</mod>
 			<group label="Backstab">
-				<component id="HouseTweaks:38" name="House Tweaks: Backstab With Any Weapon" label="Backstab with any weapon" modId="House-Rule-Tweaks" level="lowerDifficulty" complexity="minor" />
-				<component id="ZSTweaks:1600" name="Make everyone able to perform omnidirectional backstabs" label="Omnidirectional Backstabs" modId="ZSTweaks" level="lowerDifficulty" complexity="minor" />
+				<component id="HouseTweaks:38" name="House Tweaks: Backstab With Any Weapon" label="Backstab with any weapon" modId="House-Rule-Tweaks" recommended="lowerDifficulty" complexity="minor" />
+				<component id="ZSTweaks:1600" name="Make everyone able to perform omnidirectional backstabs" label="Omnidirectional Backstabs" modId="ZSTweaks" recommended="lowerDifficulty" complexity="minor" />
 			</group>
 			<group label="Traps">
-				<component id="HouseTweaks:41" name="House Tweaks: Trap Activation Tweaks" label="Trap activation tweaks" modId="House-Rule-Tweaks" level="lowerDifficulty" complexity="minor" />
-				<component id="HouseTweaks:43" name="Set Traps in enemy range if invisible, does not break stealth" label="Set Traps in enemy range if invisible, does not break Stealth" modId="House-Rule-Tweaks" level="lowerDifficulty" complexity="minor" />
-				<component id="cd_tweaks_trap_cap_removal" name="Trap Cap Removal [Ardanis/GeN1e]" label="Remove concurrent trap cap" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2320" complexity="minor" />
+				<component id="HouseTweaks:41" name="House Tweaks: Trap Activation Tweaks" label="Trap activation tweaks" modId="House-Rule-Tweaks" recommended="lowerDifficulty" complexity="minor" />
+				<component id="HouseTweaks:43" name="Set Traps in enemy range if invisible, does not break stealth" label="Set Traps in enemy range if invisible, does not break Stealth" modId="House-Rule-Tweaks" recommended="lowerDifficulty" complexity="minor" />
+				<component id="cd_tweaks_trap_cap_removal" name="Trap Cap Removal [Ardanis/GeN1e]" label="Remove concurrent trap cap" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2320" complexity="minor" />
 			</group>
 		</rogues>
 		<spellcasters label="Spellcasters" desc="Druid/cleric/mage/sorcerer/shaman">
@@ -1214,7 +1214,7 @@
 			<sorcerer label="Sorcerer">
 				<component id="A7-CHAOSSORCERER-MAIN" name="&quot;Chaos Sorcerer&quot; kit" label="Add kit: Chaos Sorcerer — Wild Magic sorcerer" modId="A7-ChaosSorcerer" recommended="mechanics" complexity="minor" />
 				<component id="Morpheus562sKitpackEldritchScionNoXan" name="[Install Eldritch Scion Kit] Do NOT assign kit to an existing NPC" label="Add kit: Eldritch Scion — Warrior sorcerer" modId="morpheus562s-kitpack" complexity="minor" />
-				<component id="cd_tweaks_sorc_spell_progression" name="Un-Nerfed Sorcerer Spell Progression Table" label="Un-nerfed sorcerer spell progression table" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2250" complexity="minor" />
+				<component id="cd_tweaks_sorc_spell_progression" name="Un-Nerfed Sorcerer Spell Progression Table" label="Un-nerfed sorcerer spell progression table" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2250" complexity="minor" />
 			</sorcerer>
 			<shaman label="Shaman">
 				<component id="ArtisansKitpack:9001" name="Artisan's Kitpack: Warhorn Shaman Kit" label="Add kit: Warhorn Shaman" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
@@ -1229,17 +1229,17 @@
 		</spellcasters>
 		<multi label="Multi-class / dual-class">
 			<component id="ArtisansKitpack:20000" name="Artisan's Kitpack: Eldritch Knight (Fighter / Mage Kit)" label="Add kit: Eldritch Knight — fighter/mage kit" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
-			<!--component id="cd_tweaks_multiclass_gm" label="Multi-class Grandmastery" level="lowerDifficulty" modId="Tweaks-Anthology" /-->
-			<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" name="Tighten equipment restrictions [Angel]" label="Tighten equipment restrictions for  druid multi- and dual-classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." level="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2431" complexity="minor" />
-			<component id="cd_tweaks_more_dual_classes" name="Expanded Dual-Class Options" label="Expanded dual-class options" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2140" complexity="minor" />
+			<!--component id="cd_tweaks_multiclass_gm" label="Multi-class Grandmastery" recommended="lowerDifficulty" modId="Tweaks-Anthology" /-->
+			<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" name="Tighten equipment restrictions [Angel]" label="Tighten equipment restrictions for  druid multi- and dual-classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." recommended="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2431" complexity="minor" />
+			<component id="cd_tweaks_more_dual_classes" name="Expanded Dual-Class Options" label="Expanded dual-class options" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2140" complexity="minor" />
 		</multi>
 		<universal label="Universal">
-			<component id="cd_tweaks_alter_thac0_table" name="Un-Nerfed THAC0 Table" label="Un-nerfed THAC0 table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2240" complexity="minor" />
+			<component id="cd_tweaks_alter_thac0_table" name="Un-Nerfed THAC0 Table" label="Un-nerfed THAC0 table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2240" complexity="minor" />
 			<alternatives label="Make Infravision useful" desc="Creatures without infravision have -4 THAC0 at night or in dark places">
 				<component id="cd_tweaks_infravision" name="Make Infravision Useful [Luke]" label="Tweaks Anthology (Luke's) solution" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2680" complexity="moderate" />
 				<component id="METweaks:3200" name="Creatures without infravision have -4 THAC0 at night or in dark places" label="Olvyn's Version (standard)" desc="Creatures without infravision have -4 THAC0 at night or in dark places" modId="Olvyn-Tweaks" recommended="mechanics" complexity="moderate" />
 				<component id="METweaks:3205" name="Creatures without infravision have reduced visual range at night or in dark places" label="Olvyn's Version (light)" desc="Creatures without infravision have reduced visual range at night or in dark places" modId="Olvyn-Tweaks" complexity="minor" />
-				<component id="METweaks:3210" name="Both 1 and 2" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" level="higherDifficulty" modId="Olvyn-Tweaks" complexity="moderate" />
+				<component id="METweaks:3210" name="Both 1 and 2" label="Olvyn's Version (hard)" desc="Creatures without infravision have -4 THAC0 and reduced visual range at night or in dark places" recommended="higherDifficulty" modId="Olvyn-Tweaks" complexity="moderate" />
 			</alternatives>
 			<feats label="Add new feats">
 				<component id="cd_tweaks_planar_turning" name="Planar Turning Class Feat for Clerics/Paladins [Luke]" label="Planar Turning class feat for clerics/paladins" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6140" complexity="minor" />
@@ -1254,13 +1254,13 @@
 		</universal>
 		<stats label="Stats">
 			<hp label="HP">
-				<component id="cd_tweaks_max_hp_at_l1" name="Max HP at Level One" label="Max HP at level one" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2999" complexity="minor" />
-				<component id="cd_tweaks_extend_hp_rolls_to_l20" name="Allow HP Rolls Through Level 20 [Angel]" label="Allow HP rolls through level 20" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3008" complexity="minor" />
+				<component id="cd_tweaks_max_hp_at_l1" name="Max HP at Level One" label="Max HP at level one" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2999" complexity="minor" />
+				<component id="cd_tweaks_extend_hp_rolls_to_l20" name="Allow HP Rolls Through Level 20 [Angel]" label="Allow HP rolls through level 20" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3008" complexity="minor" />
 			</hp>
 		</stats>
 		<proficiencies label="Proficiencies and Fighting Styles">
 			<component id="cd_tweaks_grandmastery_bonus_true" name="True grandmastery [Baldurdash]" label="True Grandmastery" recommended="mechanics" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2210" complexity="minor" />
-			<component id="cd_tweaks_specialization_apr_bonus_for_all" name="Everyone Gets Bonus APR from Specialization [subtledoctor]" label="Everyone gets bonus APR from Specialization" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2440" complexity="minor" />
+			<component id="cd_tweaks_specialization_apr_bonus_for_all" name="Everyone Gets Bonus APR from Specialization [subtledoctor]" label="Everyone gets bonus APR from Specialization" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2440" complexity="minor" />
 		</proficiencies>
 	</mechanics>
 
@@ -1268,17 +1268,17 @@
 		<universalBgIwd label="Universal BG/IWD mods" engine="bg,eet,iwd">
 			<items>
 				<add>
-					<component id="rr:7" name="Additional equipment for Thieves and Bards" label="Add items for thieves and bards" modId="rogue_rebalancing" level="extended" complexity="minor" />
+					<component id="rr:7" name="Additional equipment for Thieves and Bards" label="Add items for thieves and bards" modId="rogue_rebalancing" recommended="extended" complexity="minor" />
 					<component id="A7-CHAOSSORCERER-PRIMORDIAL_ARTIFACTS" name="Add &quot;Primordial Artifacts&quot;" label="Add Primordial Artifacts for Chaos Sorcerers" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" complexity="minor" />
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-ITEMS" name="Shaman-specific items" label="Add items for shamans" modId="A7-ImprovedShamanicDance" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" complexity="minor" />
 					<component id="BardicWonders:2001" name="Bardic Wonders: Items" label="Add items for bards" modId="Bardic-Wonders" recommended="content" package="npcExpansions" complexity="minor" />
 				</add>
 				<update>
-					<component id="cd_tweaks_2h_bastard_swords" name="Two-Handed Bastard Swords" label="Two-handed bastard swords" modId="Tweaks-Anthology" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2020" complexity="minor" />
-					<component id="cd_tweaks_2h_katanas" name="Two-Handed Katanas" label="Two-handed katanas" modId="Tweaks-Anthology" level="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2030" complexity="minor" />
+					<component id="cd_tweaks_2h_bastard_swords" name="Two-Handed Bastard Swords" label="Two-handed bastard swords" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2020" complexity="minor" />
+					<component id="cd_tweaks_2h_katanas" name="Two-Handed Katanas" label="Two-handed katanas" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2030" complexity="minor" />
 				</update>
 				<upgrade>
-					<component id="rr:8" name="Upgradeable Equipment" label="Upgradeable thieves and bards equipment" modId="rogue_rebalancing" level="extended" complexity="minor" />   
+					<component id="rr:8" name="Upgradeable Equipment" label="Upgradeable thieves and bards equipment" modId="rogue_rebalancing" recommended="extended" complexity="minor" />   
 				</upgrade>
 			</items>
 		</universalBgIwd>
@@ -1294,7 +1294,7 @@
 		<update label="Spell Corrections" noBranches="1">
 			<component id="ac-miscellaneous-breathfix" name="Dragon Breath Fix" label="Dragon Breath Fix" modId="AC-Miscellaneous-Tweaks" recommended="spells" complexity="minor" />
 			<component id="cd_tweaks_make_grease_ignitable" name="Make Grease ignitable [Luke]" label="Make Grease ignitable" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="spells" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2650" complexity="minor" />
-			<component id="cd_tweaks_restoration_no_fatigue" name="Remove Fatigue from Restoration Spells" label="Remove fatigue from Restoration Spells" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3050" complexity="minor" />
+			<component id="cd_tweaks_restoration_no_fatigue" name="Remove Fatigue from Restoration Spells" label="Remove fatigue from Restoration Spells" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3050" complexity="minor" />
 			<component id="A7-CHAOSSORCERER-RECREATE_SPELL_LIST" name="Recreate &quot;Chaos Weave&quot; spell selection lists" label="Recreate Chaos Weave spell selection lists" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" complexity="minor" />
 			<component id="stratagems:2070" name="Spell school changes" label="Spell school adjustements" modId="SwordCoastStratagems" recommended="spells" complexity="minor" />
 			<component id="cd_tweaks_0_weight_created_weapons" name="Change Magically Created Weapons to Zero Weight" label="Change magically created weapons to zero weight" recommended="spells" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2220" complexity="minor" />
@@ -1306,7 +1306,7 @@
 				<component id="stratagems:2060" name="Rebalancings of slightly-too-powerful spells" label="Rebalancings of slightly-too-powerful spells" complexity="minor" />
 				<component id="stratagems:2080" name="Spells increased in power" label="Spells increased in power" complexity="minor" />
 				<component id="stratagems:3540" name="Inquisitors dispel at 1.5 x their level (not twice their level)" label="Inquisitors dispel at 1.5 x their level (not twice their level)" complexity="minor" />
-				<component id="stratagems:3551" name="Spells heal or inflict the maximum amount of damage in this range" label="Spells heal or inflict the maximum amount of damage in this range" level="lowerDifficulty" complexity="minor" />
+				<component id="stratagems:3551" name="Spells heal or inflict the maximum amount of damage in this range" label="Spells heal or inflict the maximum amount of damage in this range" recommended="lowerDifficulty" complexity="minor" />
 			</mod>
 			<mod id="SubtleD_Spell_Tweaks" label="SubtleD's Spell Tweaks" recommended="spells">
 				<component id="SubtleD_Spell_Tweaks:36" name="Add a Saving Throw Against Level Drain" label="Add a Saving Throw against Level Drain" complexity="minor" />
@@ -1323,7 +1323,7 @@
 				<component id="cd_tweaks_summoning_cap_removal" name="Remove Summoning Cap for Regular Summons" label="Remove summoning cap for regular summons" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2339" complexity="minor" />
 				<component id="cd_tweaks_celestial_cap_removal" name="Remove Summoning Cap for Celestials [Ardanis/GeN1e]" label="Remove summoning cap for celestials" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2340" complexity="minor" />
 				<component id="cd_tweaks_nwn_summons" name="NWN-Style Summons [Luke]" label="NWN-style summons" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2710" complexity="minor" />
-				<component id="cd_tweaks_more_stoneskin_feedback" name="More Stoneskin Feedback [Luke]" label="More Stoneskin feedback" level="lowerDifficulty" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3430" complexity="minor" />
+				<component id="cd_tweaks_more_stoneskin_feedback" name="More Stoneskin Feedback [Luke]" label="More Stoneskin feedback" recommended="lowerDifficulty" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3430" complexity="minor" />
 				<component id="cd_tweaks_more_sensible_fireshield" name="More Sensible Fireshield [Luke]" label="More sensible Fireshield" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3450" complexity="minor" />
 				<component id="cd_tweaks_more_sensible_blade_barrier" name="More Sensible Blade Barrier [Luke]" label="More sensible Blade Barrier" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3460" complexity="minor" />
 				<component id="cd_tweaks_more_sensible_morentherene" name="More Sensible Morentherene [Luke]" label="More sensible Morentherene" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3480" complexity="minor" />
@@ -1349,35 +1349,35 @@
 		<group label="Class/kit">
 			<component id="ajantisbg2:5" name="Ajantis kit choice: make Ajantis Cavalier" label="Make Ajantis a Cavalier in BG2" modId="Ajantis_BG2" displayIf="ajantisbg2:0" complexity="minor" />
 			<component id="totemiccernd:0" name="Totemic Cernd" label="Make Cernd a Totemic Druid" modId="Totemic_Cernd" complexity="minor" />
-			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" name="Bard" label="Make Clara a bard" modId="A7-NoEENPCs" recommended="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:3" name="Make Faldorn an Avenger" label="Make Dynaheir a sorcerer" modId="shatweaks" recommended="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:4" name="Make Skie a Shadowdancer" label="Make Faldorn an Avenger" modId="shatweaks" recommended="npcChoices" complexity="minor" />
+			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" name="Bard" label="Make Clara a bard" modId="A7-NoEENPCs" recommended="content" package="npcChoices" complexity="minor" />
+			<component id="sha-tweaks:3" name="Make Faldorn an Avenger" label="Make Dynaheir a sorcerer" modId="shatweaks" recommended="content" package="npcChoices" complexity="minor" />
+			<component id="sha-tweaks:4" name="Make Skie a Shadowdancer" label="Make Faldorn an Avenger" modId="shatweaks" recommended="content" package="npcChoices" complexity="minor" />
 			<alternatives label="Make Hexxat a...">
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_ASSASSIN" name="Assassin" label="Assassin" modId="A7-NoEENPCs" complexity="minor" />
-				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" name="Fighter / Assassin" label="Fighter/Assassin" modId="A7-NoEENPCs" default="1" recommended="npcChoices" complexity="minor" />
+				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" name="Fighter / Assassin" label="Fighter/Assassin" modId="A7-NoEENPCs" default="1" recommended="content" package="npcChoices" complexity="minor" />
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_SHADOWDANCER" name="Fighter / Shadowdancer" label="Shadowdancer" modId="A7-NoEENPCs" complexity="minor" />
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_NECROMANCER_THIEF" name="Necromancer / Thief" label="Necromancer / thief" modId="A7-NoEENPCs" complexity="minor" />
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_SHADOWDANCER" name="Shadowdancer" label="Shadowdancer" modId="A7-NoEENPCs" complexity="minor" />
 			</alternatives>
 			<!-- Make Kagain a Dwarven Defender BGEENPC tweaks.-->
 			<component id="cd_tweaks_make_montaron_assassin" name="Make Montaron an Assassin [Andyr]" label="Make Montaron an Assassin" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4090" complexity="minor" />
-			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" name="Chaos Sorcerer" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" recommended="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:5" name="Change dialog text color to orange" label="Make Skie a Shadowdancer" modId="shatweaks" recommended="npcChoices" complexity="minor" />
+			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" name="Chaos Sorcerer" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" recommended="content" package="npcChoices" complexity="minor" />
+			<component id="sha-tweaks:5" name="Change dialog text color to orange" label="Make Skie a Shadowdancer" modId="shatweaks" recommended="content" package="npcChoices" complexity="minor" />
 			<group label="Make Viconia...">
-				<component id="L#-VIC-REV-M-SH-C" name="Multi-class: Shadowdancer/Cleric" label="...A Shadowdancer/cleric" modId="viconia-revamped" recommended="npcChoices" complexity="minor" />
-				<component id="L#-VIC-REV-ABI" name="Add special ability: Embrace of Shar" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" recommended="npcChoices" complexity="minor" />
+				<component id="L#-VIC-REV-M-SH-C" name="Multi-class: Shadowdancer/Cleric" label="...A Shadowdancer/cleric" modId="viconia-revamped" recommended="content" package="npcChoices" complexity="minor" />
+				<component id="L#-VIC-REV-ABI" name="Add special ability: Embrace of Shar" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" recommended="content" package="npcChoices" complexity="minor" />
 			</group>
 			
 			<component id="p#_kivan_deheriana_wildmage" name="Wild Mage" label="Make Deheriana (f/m/c) a Wild Mage" modId="Kivan_and_Deheriana" displayIf="p#_kivan" complexity="minor" />
 			<alternatives label="Make Xan a..." unfolded="1">
-				<component id="xan:1" name="[Install alternate class for XAN?] Change Xan's class to Fighter/Mage" label="Fighter/mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="1" recommended="npcChoices" complexity="minor" />
+				<component id="xan:1" name="[Install alternate class for XAN?] Change Xan's class to Fighter/Mage" label="Fighter/mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="1" recommended="content" package="npcChoices" complexity="minor" />
 				<component id="xan:3" name="[Install alternate class for XAN?] Change Xan's class to Sorcerer" label="Sorcerer" modId="Xan_for_BGII" displayIfNot="ArtisansKitpack_npc:20002" complexity="minor" />
 			</alternatives>
-			<component id="ArtisansKitpack_npc:20002" name="Artisan's Kitpack: Make Xan an Eldritch Knight" label="Make Xan an Eldritch Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" recommended="npcChoices" complexity="minor" />
+			<component id="ArtisansKitpack_npc:20002" name="Artisan's Kitpack: Make Xan an Eldritch Knight" label="Make Xan an Eldritch Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" recommended="content" package="npcChoices" complexity="minor" />
 			<alternatives label="Upgrade Nalia's thief Class to...">
 				<component id="cd_tweaks_nalia_thief_level_5" name="To Thief level 5" label="Level 5 (further increases Open Locks)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4210" complexity="minor" />
 				<component id="cd_tweaks_nalia_thief_level_6" name="To Thief level 6" label="Level 6 (further increases Find Traps, Pick Pockets)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4211" complexity="minor" />
-				<component id="cd_tweaks_nalia_thief_level_7" name="To Thief level 7" label="Level 7 (further increases Open Locks, Pick Pockets)" modId="Tweaks-Anthology" recommended="npcChoices" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4212" complexity="minor" />
+				<component id="cd_tweaks_nalia_thief_level_7" name="To Thief level 7" label="Level 7 (further increases Open Locks, Pick Pockets)" modId="Tweaks-Anthology" recommended="content" package="npcChoices" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4212" complexity="minor" />
 				<component id="cd_tweaks_nalia_thief_level_8" name="To Thief level 8" label="Level 8 (further increases Pick Pockets, adds Single Weapon Style)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4213" complexity="minor" />
 			</alternatives>
 			<component id="YoshimosRemorse:2" name="Bounty Hunter 13 / Fighter" label="Make Yoshimo a Bounty Hunter 13 / fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" complexity="minor" />
@@ -1386,19 +1386,19 @@
 			<!-- Dual Class Friendly Stats -->
 			<group label="Use consistent (BG2) stats for..." noBranches="1" engine="bg1,eet">
 				<mod id="Tweaks-Anthology">
-					<component id="cd_tweaks_consistent_stats_edwin_bg2" name="Use BG2 values" label="Edwin" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4031" recommended="npcChoices" complexity="minor" />
-					<component id="cd_tweaks_consistent_stats_jaheira_bg2" name="Use BG2 values" label="Jaheira" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4041" recommended="npcChoices" complexity="minor" />
-					<component id="cd_tweaks_consistent_stats_minsc_bg2" name="Use BG2 values" label="Minsc" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4061" recommended="npcChoices" complexity="minor" />
-					<component id="cd_tweaks_consistent_stats_viconia_bg2" name="Use BG2 values" label="Viconia" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4071" recommended="npcChoices" complexity="minor" />
+					<component id="cd_tweaks_consistent_stats_edwin_bg2" name="Use BG2 values" label="Edwin" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4031" recommended="content" package="npcChoices" complexity="minor" />
+					<component id="cd_tweaks_consistent_stats_jaheira_bg2" name="Use BG2 values" label="Jaheira" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4041" recommended="content" package="npcChoices" complexity="minor" />
+					<component id="cd_tweaks_consistent_stats_minsc_bg2" name="Use BG2 values" label="Minsc" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4061" recommended="content" package="npcChoices" complexity="minor" />
+					<component id="cd_tweaks_consistent_stats_viconia_bg2" name="Use BG2 values" label="Viconia" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4071" recommended="content" package="npcChoices" complexity="minor" />
 				</mod>
 			</group>
-			<component id="cd_tweaks_kagain_legal_con" name="Give Kagain a Legal Constitution Score of 19" label="Give Kagain a legal CON score of 19" recommended="npcChoices" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4110" complexity="minor" />
-			<component id="cd_tweaks_coran_legal_dex" name="Give Coran a Legal Dexterity Score of 19" label="Give Coran a legal DEX score of 19" recommended="npcChoices" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4120" complexity="minor" />
-			<component id="cd_tweaks_yoshimo_better_trapsetting" name="Increase Yoshimo's Trapsetting Ability" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" recommended="npcChoices" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4230" complexity="minor" />
-			<component id="bg1npc_project-kivanproficiency_spears" name="Kivan uses spears" label="Kivan uses spears" displayIf="bg1npc_project-main" recommended="npcChoices" modId="BG1NPC" complexity="minor" />
+			<component id="cd_tweaks_kagain_legal_con" name="Give Kagain a Legal Constitution Score of 19" label="Give Kagain a legal CON score of 19" recommended="content" package="npcChoices" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4110" complexity="minor" />
+			<component id="cd_tweaks_coran_legal_dex" name="Give Coran a Legal Dexterity Score of 19" label="Give Coran a legal DEX score of 19" recommended="content" package="npcChoices" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4120" complexity="minor" />
+			<component id="cd_tweaks_yoshimo_better_trapsetting" name="Increase Yoshimo's Trapsetting Ability" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" recommended="content" package="npcChoices" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4230" complexity="minor" />
+			<component id="bg1npc_project-kivanproficiency_spears" name="Kivan uses spears" label="Kivan uses spears" displayIf="bg1npc_project-main" recommended="content" package="npcChoices" modId="BG1NPC" complexity="minor" />
 		</group>
 		<group label="Appearance">
-			<component id="cd_tweaks_nalia_avatar_change" name="Change Nalia's Avatar to Thief" label="Change Nalia's avatar to thief" modId="Tweaks-Anthology" engine="bg2,eet" level="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_30" complexity="minor" />
+			<component id="cd_tweaks_nalia_avatar_change" name="Change Nalia's Avatar to Thief" label="Change Nalia's avatar to thief" modId="Tweaks-Anthology" engine="bg2,eet" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_30" complexity="minor" />
 			<component id="cd_tweaks_imoen_avatar_change" name="Change Imoen's Avatar to Mage" label="Change Imoen's avatar to mage" modId="Tweaks-Anthology" engine="bg2,eet" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_20" complexity="minor" />
 			<component id="cd_tweaks_viconia_skin_color" name="Change Viconia's Skin Color to Dark Blue" label="Change Viconia's skin color to dark blue" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_40" complexity="minor" />
 		</group>
@@ -1409,8 +1409,8 @@
 		<component id="cd_tweaks_mp_kickout_dialogue" name="Improved Multi-Player Kick-Out Dialogues" label="Improved multi-player kick-out dialogues" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1070" complexity="minor" />
 	</npcChoices>
 
-	<combat level="higherDifficulty">
-		<alternatives label="Remove Backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod" level="lowerDifficulty">
+	<combat recommended="higherDifficulty">
+		<alternatives label="Remove Backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod" recommended="lowerDifficulty">
 			<component id="ZS_CanIStabYou:99" name="Everything can be backstabbed" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd" complexity="moderate" />
 			<component id="ZS_CanIStabYou:106" name="All humanoids can be backstabbed, except humanoid ToB bosses" label="Keep reasonable Backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" default="1" engine="bg,eet,iwd" recommended="combat" complexity="moderate" />
 		</alternatives>
@@ -1439,14 +1439,14 @@
 				<component id="ZSTweaks:3050" name="Make the Balor's vorpal attack not guaranteed to succeed but affected by a saving throw" label="Make the Balor's Vorpal Attack not guaranteed to succeed but affected by a Saving Throw" recommended="combat" engine="bg2,eet" complexity="minor" />
 				<component id="ZSTweaks:3070" name="Make lions and other cat creatures not slow as molasses" label="Make lions and other cat creatures not slow as molasses" recommended="combat" complexity="minor" />
 				<component id="ZSTweaks:3080" name="Make creature on-hit effects that should be natural not behave as magical attacks" label="Make creature on-hit effects that should be natural not behave as magical attacks" recommended="combat" complexity="minor" />
-				<component id="ZSTweaks:3090" name="Make Shadow creatures slightly more dangerous" label="Make shadow creatures slightly more dangerous" recommended="combat" level="higherDifficulty" engine="bg,iwd,eet" complexity="minor" />
-				<component id="ZSTweaks:3130" name="Make minotaurs tougher and more dangerous" label="Make minotaurs tougher and more dangerous" level="higherDifficulty" engine="bg,iwd,eet" complexity="minor" />
-				<component id="ZSTweaks:3140" name="Make ogre / oni mages regenerating fiends, as per PnP" label="Make ogre / oni mages regenerating fiends, as per PnP" level="higherDifficulty" engine="bg,iwd,eet" complexity="minor" />
+				<component id="ZSTweaks:3090" name="Make Shadow creatures slightly more dangerous" label="Make shadow creatures slightly more dangerous" recommended="combat" engine="bg,iwd,eet" complexity="minor" />
+				<component id="ZSTweaks:3130" name="Make minotaurs tougher and more dangerous" label="Make minotaurs tougher and more dangerous" recommended="higherDifficulty" engine="bg,iwd,eet" complexity="minor" />
+				<component id="ZSTweaks:3140" name="Make ogre / oni mages regenerating fiends, as per PnP" label="Make ogre / oni mages regenerating fiends, as per PnP" recommended="higherDifficulty" engine="bg,iwd,eet" complexity="minor" />
 			</mod>
 			<component id="METweaks:2200" name="Make creatures take up less space" label="Make creatures take up less space" modId="Olvyn-Tweaks" complexity="minor" />
 		</tweaks>
 		<ai label="AI enhancements / Sword Coast Stratagems (SCS)" recommended="combat">
-			<component id="METweaks:2400" name="Make enemies change their attack targets more quickly" label="Make enemies change their attack targets more quickly" level="higherDifficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" />
+			<component id="METweaks:2400" name="Make enemies change their attack targets more quickly" label="Make enemies change their attack targets more quickly" recommended="higherDifficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" />
 			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="iwd">
 				<component id="stratagems:6020" name="Smarter general AI and better calls for help" label="Smarter general AI and better calls for help" complexity="major" />
 				<component id="stratagems:6700" name="Revised Icewind Dale Undead" label="Revised Icewind Dale undead" complexity="moderate" />
@@ -1465,7 +1465,7 @@
 				<component id="stratagems:6540" name="Smarter dragons" label="Smarter dragons" complexity="minor" />
 				<component id="stratagems:6550" name="Smarter beholders" label="Smarter beholders" complexity="minor" />
 			</mod>
-			<mod id="SwordCoastStratagems" label="BG1 Encounters" engine="bg1,eet" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
+			<mod id="SwordCoastStratagems" label="BG1 Encounters" engine="bg1,eet" recommended="higherDifficulty" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
 				<component id="stratagems:6300" name="Smarter sirines and dryads" label="Smarter sirines and dryads" complexity="minor" />
 				<component id="stratagems:6310" name="Slightly smarter carrion crawlers" label="Slightly smarter carrion crawlers" complexity="minor" />
 				<component id="stratagems:6320" name="Smarter basilisks" label="Smarter basilisks" complexity="minor" />
@@ -1491,7 +1491,7 @@
 				<component id="stratagems:7250" name="Improved final battle" label="Improved final battle" complexity="minor" />
 				<component id="stratagems:7900" name="Improved minor encounters" label="Improved minor encounters" complexity="minor" />
 			</mod>
-			<mod id="SwordCoastStratagems" label="BG2 Encounters" engine="bg2,eet" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
+			<mod id="SwordCoastStratagems" label="BG2 Encounters" engine="bg2,eet" recommended="higherDifficulty" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
 				<component id="stratagems:6500" name="Improved golems" label="Improved golems" complexity="minor" />
 				<component id="stratagems:4150" name="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" label="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" complexity="minor" />
 				<component id="stratagems:6520" name="Smarter genies" label="Smarter genies" complexity="minor" />
@@ -1536,37 +1536,37 @@
 			<component id="ZG-VOICE-IWD2" name="Icewind Dale II Voice Pack for EE 2.6+" label="Icewind Dale II voice pack" modId="Icewind-Dale-II-Voice-Pack-For-EE-2.6" engine="bg,eet,iwd" complexity="minor" />
 			<component id="ZG-VOICE-NWN" name="NWN:" label="Neverwinter Nights voice pack" modId="Neverwinter-Nights-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" complexity="minor" />
 		</group>
-		<mod id="Infinity-Sounds" label="Infinity Sounds - Improve many sonic aspects of the game" level="restoration" engine="bg2,eet">
-			<component id="s@-IS-BG1-Spell-Voices" name="Restore BG1 Spellcasting Voices" label="Restore BG1 spellcasting voices" package="BG1Sounds" complexity="minor" />
-			<component id="s@-IS-BG1-Spell-Sounds" name="Restore BG1 Spellcasting Sounds" label="Restore BG1 spellcasting sounds" package="BG1Sounds" complexity="minor" />
-			<component id="s@-IS-BG1-Weapon-Sounds" name="Restore BG1 Weapon Sounds" label="Restore BG1 weapon sounds" package="BG1Sounds" complexity="minor" />
-			<component id="s@-IS-BG1-Armor-Sounds" name="Restore BG1 Armor Sounds" label="Restore BG1 armor sounds" package="BG1Sounds" complexity="minor" />
+		<mod id="Infinity-Sounds" label="Infinity Sounds - Improve many sonic aspects of the game" recommended="restoration" engine="bg2,eet">
+			<component id="s@-IS-BG1-Spell-Voices" name="Restore BG1 Spellcasting Voices" label="Restore BG1 spellcasting voices" recommended="sounds" package="BG1Sounds" complexity="minor" />
+			<component id="s@-IS-BG1-Spell-Sounds" name="Restore BG1 Spellcasting Sounds" label="Restore BG1 spellcasting sounds" recommended="sounds" package="BG1Sounds" complexity="minor" />
+			<component id="s@-IS-BG1-Weapon-Sounds" name="Restore BG1 Weapon Sounds" label="Restore BG1 weapon sounds" recommended="sounds" package="BG1Sounds" complexity="minor" />
+			<component id="s@-IS-BG1-Armor-Sounds" name="Restore BG1 Armor Sounds" label="Restore BG1 armor sounds" recommended="sounds" package="BG1Sounds" complexity="minor" />
 			<component id="s@-IS-Gulp-Sound" name="Restore Gulp Sound" label="Restore gulp sound" complexity="minor" />
 			<component id="s@-IS-Chunked-Death-Sound" name="Restore Chunked Death Sound" label="Restore chunked death sound" complexity="minor" />
-			<component id="s@-IS-Tweak-Volume-Levels" name="Tweak Sound Channel Volume Levels" label="Tweak sound channel volume levels" package="BG1Sounds" complexity="minor" />
-			<component id="s@-IS-Footsteps-Combat" name="Enable Footsteps During Combat" label="Enable footsteps during combat" level="fixes" complexity="minor" />
+			<component id="s@-IS-Tweak-Volume-Levels" name="Tweak Sound Channel Volume Levels" label="Tweak sound channel volume levels" recommended="sounds" package="BG1Sounds" complexity="minor" />
+			<component id="s@-IS-Footsteps-Combat" name="Enable Footsteps During Combat" label="Enable footsteps during combat" recommended="fixes" complexity="minor" />
 			<component id="s@-IS-BG1-Ambient-Sounds" name="Restore BG1 Ambient Sounds" label="Restore BG1 ambient sounds" complexity="minor" />
-			<component id="s@-IS-Enhance-Pos-Audio" name="Enhance Positional Audio" label="Enhance positional audio" level="fixes" complexity="minor" />
+			<component id="s@-IS-Enhance-Pos-Audio" name="Enhance Positional Audio" label="Enhance positional audio" recommended="fixes" complexity="minor" />
 			<component id="s@-IS-Restore-Tweak-Soundsets" name="Restore &amp; Tweak Soundsets" label="Restore &amp; tweak soundsets" complexity="minor" />
-			<component id="s@-IS-More-Existence-Sounds" name="More Existence Sounds" label="More existence sounds" level="fixes" complexity="minor" />
-			<component id="s@-IS-Tweak-Existence-Sound-Delay" name="Tweak Existence Sound Delay" label="Tweak existence sound delay" level="fixes" complexity="minor" />
+			<component id="s@-IS-More-Existence-Sounds" name="More Existence Sounds" label="More existence sounds" recommended="fixes" complexity="minor" />
+			<component id="s@-IS-Tweak-Existence-Sound-Delay" name="Tweak Existence Sound Delay" label="Tweak existence sound delay" recommended="fixes" complexity="minor" />
 			<component id="s@-IS-Restore-NPC-Voiceovers" name="Restore NPC Voiceovers" label="Restore NPC voiceovers" complexity="minor" />
-			<component id="s@-IS-Salk-NPC-Voiceovers" name="Additional NPC Voiceovers (by Salk)" label="Additional NPC voiceovers (by salk)" package="BG1Sounds" complexity="minor" />
+			<component id="s@-IS-Salk-NPC-Voiceovers" name="Additional NPC Voiceovers (by Salk)" label="Additional NPC voiceovers (by salk)" recommended="sounds" package="BG1Sounds" complexity="minor" />
 		</mod>
 		<component id="HouseTweaks:24" name="House Tweaks: NPC Soundsets for Icewind Dale" label="NPC soundsets for Icewind Dale" modId="House-Rule-Tweaks" engine="iwd" displayIfNot="IE_focus_dedicated_campaigns" complexity="minor" />
-		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" name="Install high quality soundclips for new BG2EE content" label="High quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" level="fixes" displayIfNot="IE_focus_dedicated_campaigns" complexity="minor" />
+		<component id="A7-HQ_SOUNDCLIPS_BG2EE-MAIN" name="Install high quality soundclips for new BG2EE content" label="High quality soundclips for BG2:EE extended content" modId="HQ-SoundClips-BG2EE" engine="bg2,eet" recommended="fixes" displayIfNot="IE_focus_dedicated_campaigns" complexity="minor" />
 		<component id="vveBG:0" name="Add Character Sounds for BG" label="AI-generated English voiceovers for all characters from BG" modId="VoicesVoicesExtravaganza" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns" package="vve" complexity="major" />
 		<component id="vveSOD:0" name="Add Character Sounds for BG: SOD" label="AI-generated English voiceovers for all characters SoD" modId="VoicesVoicesExtravaganza-SOD" engine="bg1,eet" displayIfNot="IE_focus_dedicated_campaigns" package="vve" complexity="major" />
-		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet" level="restoration" displayIfNot="IE_focus_dedicated_campaigns">
+		<mod id="JaheiraRecast" label="Jaheira Recast. Unmute Jaheira in SoD" engine="bg1,eet" recommended="restoration" displayIfNot="IE_focus_dedicated_campaigns">
 			<alternatives label="Choose how she should be recast">
 				<component id="jaheirarecast:0" name="[Choose how she should be recast] Use new SoD Character Sounds" label="Use new SoD character sounds" default="1" complexity="minor" />
 				<component id="jaheirarecast:1" name="[Choose how she should be recast] Use BG1+BG2 Character Sounds" label="Use BG1+BG2 character sounds" complexity="minor" />
 			</alternatives>
 			<component id="jaheirarecast:2" name="Jaheira Recast: Dialog Voiceover" label="Dialog voiceover" complexity="minor" />
 		</mod>
-		<component id="HouseTweaks:21" name="House Tweaks: Restore Reputation Increase Sound Effect for BG2" label="Restore reputation increase sound effect for BG2" modId="House-Rule-Tweaks" level="restoration" engine="bg,eet" complexity="minor" />
+		<component id="HouseTweaks:21" name="House Tweaks: Restore Reputation Increase Sound Effect for BG2" label="Restore reputation increase sound effect for BG2" modId="House-Rule-Tweaks" recommended="restoration" engine="bg,eet" complexity="minor" />
 		<component id="HouseTweaks:26" name="House Tweaks: Soundset Tweaks for Anomen and Sarevok (BG2:EE)" label="Soundset tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" complexity="minor" />
-		<component id="cd_tweaks_fix_boo_squeak" name="Fix Boo's Squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" level="fixes" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_140" complexity="minor" />
+		<component id="cd_tweaks_fix_boo_squeak" name="Fix Boo's Squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" recommended="fixes" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_140" complexity="minor" />
 	</sounds>
 
 	<sounds>
@@ -1742,7 +1742,7 @@
 		<component id="cd_tweaks_remove_portrait_icons" name="Disable Portrait Icons Added by Equipped Items" label="Disable portrait icons added by equipped items" modId="Tweaks-Anthology" engine="bg,iwd,eet,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_90" complexity="minor" />
 		<component id="cd_tweaks_glowing_magical_shields" name="Make Magic Shields Glow [plainab/grogerson]" label="Make magic shields glow" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_160" complexity="minor" />
 		<alternatives label="Use character colors instead of item colors">
-			<component id="cd_tweaks_char_colors_all_helms_shields" name="For all shields and helmets" label="For all shields and helmets" modId="Tweaks-Anthology" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_190" complexity="minor" />
+			<component id="cd_tweaks_char_colors_all_helms_shields" name="For all shields and helmets" label="For all shields and helmets" modId="Tweaks-Anthology" recommended="gfx" package="npcColoredEquipment" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_190" complexity="minor" />
 			<component id="cd_tweaks_char_colors_normal_helms_shields" name="For non-magical shields and helmets" label="For non-magical shields and helmets" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_191" complexity="minor" />
 			<component id="cd_tweaks_char_colors_all_helms" name="For all helmets" label="For all helmets" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_192" complexity="minor" />
 			<component id="cd_tweaks_char_colors_normal_helms" name="For non-magical helmets" label="For non-magical helmets" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_193" complexity="minor" />
@@ -1816,13 +1816,13 @@
 			<component id="A7-HIDDENGAMEPLAYOPTIONS-OPTION_RESTORED_LOADING_HINTS" name="Add in-game options for Tweaks Anthology's &quot;Restored Loading Hints&quot;" label="Add in-game options for Tweaks Anthology's Restored Loading Hints" modId="A7-HiddenGameplayOptions" complexity="minor" />
 		</mod>
 		<mod id="A7-MiscTweaks" label="Tweaks" unfolded="1">
-			<component id="A7_MISCTWEAKS_DUALCLASS_BACK_BUTTON" name="Reactivate &quot;Back&quot; button in the Dual-Class menu" label="Reactivate 'back' button in the dual-class menu" modId="A7-MiscTweaks" level="fixes" complexity="minor" />
-			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" name="Disable creature tooltips" label="Disable creature tooltips" modId="A7-MiscTweaks" level="higherDifficulty" engine="bg,eet,iwd,pst" complexity="minor" />
+			<component id="A7_MISCTWEAKS_DUALCLASS_BACK_BUTTON" name="Reactivate &quot;Back&quot; button in the Dual-Class menu" label="Reactivate 'back' button in the dual-class menu" modId="A7-MiscTweaks" recommended="fixes" complexity="minor" />
+			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" name="Disable creature tooltips" label="Disable creature tooltips" modId="A7-MiscTweaks" recommended="higherDifficulty" engine="bg,eet,iwd,pst" complexity="minor" />
 		</mod>
 	</ui>
 
 	<ui engine="bg,eet,iwd">
-		<component id="cd_tweaks_colorize_npc_names_brightness_normal" name="Normal brightness" label="Colorize NPC names and tooltips" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_250" complexity="minor" />
+		<component id="cd_tweaks_colorize_npc_names_brightness_normal" name="Normal brightness" label="Colorize NPC names and tooltips" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_250" recommended="ui" package="colorizeNpcNames" complexity="minor" />
 		<component id="cd_tweaks_colorblind_overlays" name="Enhanced Overlays for Colorblind Players [Fouinto]" label="Enhanced overlays for colorblind players" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_220" complexity="minor" />
 	</ui>
 
@@ -1834,7 +1834,7 @@
 		<warriors label="Warriors" desc="Fighter/ranger/paladin/monk">
 			<fighter label="Fighter">
 				<wizardSlayer label="Wizard Slayer">
-					<component id="SkillsAndAbilitiesDI1" name="Wizard Slayer Kit Enhancements" label="Add Detect Illusions, Spell Failure and Dispel on Hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." level="lowerDifficulty" complexity="minor" />
+					<component id="SkillsAndAbilitiesDI1" name="Wizard Slayer Kit Enhancements" label="Add Detect Illusions, Spell Failure and Dispel on Hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." recommended="lowerDifficulty" complexity="minor" />
 				</wizardSlayer>
 				<component id="SkillsAndAbilitiesFighter" name="Add New Fighter Abilities" label="Add new abilities" modId="skills-and-abilities" desc="1st level - Second Wind (Once per day, heal 1d10 + fighter level); 9th level - Indomitable (increase saving throws). HLA: increase thac0 and damage" complexity="minor" />
 			</fighter>
@@ -1849,7 +1849,7 @@
 					<component id="SkillsAndAbilitiesDI2" name="Replace Inquisitor True Seeing for Detect Illusion Skill" label="Replace Inquisitor True Seeing with Detect Illusion skill" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" />
 					<component id="SkillsAndAbilitiesInquisitor1" name="Allow Inquisitor Kit to Cast Divine Spells" label="Allow Inquisitor kit to cast divine spells" modId="skills-and-abilities" complexity="minor" />
 				</inquisitor>
-				<component id="METweaks:1500" name="Turn Paladin Detect Evil into a passive ability that can be toggled on and off" label="Turn paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" level="lowerDifficulty" complexity="minor" />
+				<component id="METweaks:1500" name="Turn Paladin Detect Evil into a passive ability that can be toggled on and off" label="Turn paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" recommended="lowerDifficulty" complexity="minor" />
 			</paladin>
 			<monk label="Monk">
 				<component id="SkillsAndAbilitiesMonk" name="Update Skills for Monks" label="Add Open Locks, Find/Disarm Traps and Detect Illusion" modId="skills-and-abilities" displayIf="EEex:1" desc="1 level - Flurry of Blows (extra APR). New HLA - become immune to Time Stop" complexity="minor" />
@@ -1886,19 +1886,19 @@
 			<component id="SkillsAndAbilitiesConcentration" name="Add Concentration Check to Resist Spell Disruption" label="Add Concentration Check to resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" complexity="minor" />
 		</spellcasters>
 		<multi label="Multi-class / dual-class">
-			<alternatives label="Allow fighter multiclasses to achieve higher Weapon Proficiency" level="lowerDifficulty">
+			<alternatives label="Allow fighter multiclasses to achieve higher Weapon Proficiency" recommended="lowerDifficulty">
 				<component id="SkillsAndAbilitiesWeaponProf1" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve Master (3 pips) in Weapon Proficiencies" label="Master (3 pips)" modId="skills-and-abilities" complexity="minor" />
 				<component id="SkillsAndAbilitiesWeaponProf2" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve High Master (4 pips) in Weapon Proficiencies" label="High master (4 pips)" modId="skills-and-abilities" complexity="minor" />
 				<component id="SkillsAndAbilitiesWeaponProf3" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve Grand Master (5 pips) in Weapon Proficiencies" label="Grand master (5 pips)" modId="skills-and-abilities" complexity="minor" />
 			</alternatives>
 			<component id="cd_tweaks_casting_in_armor" name="Allow Arcane Spellcasting in Heavy Armor" label="Allow arcane spellcasting in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2120" complexity="minor" />
 			<component id="SkillsAndAbilitiesClericThief" name="Adjust Cleric/Thief Actionbar" label="Adjust cleric/thief action bar" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" />
-			<component id="D5_REVISED_DUAL_CLASS_REQS" name="Lower Dual-Class Requirements" label="Lower dual-class requirements" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" complexity="minor" />
+			<component id="D5_REVISED_DUAL_CLASS_REQS" name="Lower Dual-Class Requirements" label="Lower dual-class requirements" modId="SubtleD_Stat_Overhauls" recommended="lowerDifficulty" complexity="minor" />
 		</multi>
 		<universal label="Universal">
 			<weapons label="Weapon Tweaks">
-				<component id="ac-miscellaneous-bgarchery" name="BG-style archery for SoA/ToB" label="BG-style archery" modId="AC-Miscellaneous-Tweaks" engine="bg,eet" level="lowerDifficulty" complexity="minor"/>
-				<component id="SkillsAndAbilitiesSTR" name="2H Weapon Additional Strength Bonus" label="2H weapon additional STR bonus" modId="skills-and-abilities" level="lowerDifficulty" complexity="minor" />
+				<component id="ac-miscellaneous-bgarchery" name="BG-style archery for SoA/ToB" label="BG-style archery" modId="AC-Miscellaneous-Tweaks" engine="bg,eet" recommended="lowerDifficulty" complexity="minor"/>
+				<component id="SkillsAndAbilitiesSTR" name="2H Weapon Additional Strength Bonus" label="2H weapon additional STR bonus" modId="skills-and-abilities" recommended="lowerDifficulty" complexity="minor" />
 			</weapons>
 			<group label="HLAs">
 				<component id="SkillsAndAbilitiesNewHLA" name="Add New HLAs for ALL Classes and Kits" label="Add new HLAs for all classes and kits" modId="skills-and-abilities" complexity="minor" />
@@ -1910,9 +1910,9 @@
 			<hp>
 				<alternatives label="CON Bonuses/Regeneration">
 					<alternatives label="SubtleD's Hit Dice Overhaul — the new average, compared to vanilla average, is..." modId="SubtleD_Stat_Overhauls" desc="Take some of the randomness out of hit point rolls. Add slow regeneration since 19 CON">
-						<component id="D5_HARDCORE_HD" name="Closer to average hit points" label="Above" modId="SubtleD_Stat_Overhauls" level="lowerDifficulty" complexity="minor" />
+						<component id="D5_HARDCORE_HD" name="Closer to average hit points" label="Above" modId="SubtleD_Stat_Overhauls" recommended="lowerDifficulty" complexity="minor" />
 						<component id="D5_REVISED_HD" name="Generous (above-average) hit points" label="Similar" modId="SubtleD_Stat_Overhauls" recommended="mechanics" default="1" complexity="moderate" />
-						<component id="D5_REDUCED_HD" name="Reduced hit points" label="Reduced" modId="SubtleD_Stat_Overhauls" level="higherDifficulty" complexity="moderate" />
+						<component id="D5_REDUCED_HD" name="Reduced hit points" label="Reduced" modId="SubtleD_Stat_Overhauls" recommended="higherDifficulty" complexity="moderate" />
 					</alternatives>
 					<component id="HouseTweaks:9" name="Constitution Bonuses for All Classes + Regeneration Changes" label="House tweaks CON bonuses for all classes + regeneration changes" modId="House-Rule-Tweaks" complexity="moderate" />
 				</alternatives>
@@ -1922,8 +1922,8 @@
 				<component id="HouseTweaks:12" name="House Tweaks: INT/WIS/CHA-based Bonus Spell Slots" label="House Tweaks version" modId="House-Rule-Tweaks" complexity="minor" />
 			</alternatives>
 			<group label="Level Progression">
-				<component id="D5_UNIFORM_XP_TABLES" name="Slower, Standardized XP Tables" label="Slower, standardized XP tables" modId="SubtleD_Stat_Overhauls" level="higherDifficulty" complexity="moderate" />
-				<component id="METweaks:810" name="Both Clerics and Monks" label="Speed-up level progression for clerics and monks" desc="Both clerics and monks will get to level 9 during BG1" modId="Olvyn-Tweaks" level="lowerDifficulty" complexity="minor" />
+				<component id="D5_UNIFORM_XP_TABLES" name="Slower, Standardized XP Tables" label="Slower, standardized XP tables" modId="SubtleD_Stat_Overhauls" recommended="higherDifficulty" complexity="moderate" />
+				<component id="METweaks:810" name="Both Clerics and Monks" label="Speed-up level progression for clerics and monks" desc="Both clerics and monks will get to level 9 during BG1" modId="Olvyn-Tweaks" recommended="lowerDifficulty" complexity="minor" />
 			</group>
 			<component id="D5_REVISED_ABILITY_SCORES" name="Ability Score Overhaul" label="Ability score overhaul" desc="Helps to make all stats useful" modId="SubtleD_Stat_Overhauls" complexity="major" />
 			<component id="cd_tweaks_exceptional_strength_weight_limits" name="Exceptional Strength Weight Limit Changes [sarevok57]" label="Exceptional STR weight limit changes" modId="Tweaks-Anthology" recommended="mechanics" engine="bg,eet,iwd,pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2500" complexity="minor" />
@@ -1962,7 +1962,7 @@
 		</proficiencies>
 	</mechanics>
 
-	<randomisation engine="bg,eet" level="higherDifficulty" displayIfNot="IE_focus_dedicated_campaigns">
+	<randomisation engine="bg,eet" recommended="higherDifficulty" displayIfNot="IE_focus_dedicated_campaigns">
 		<alternatives label="Enemies" unfolded="1">
 			<mod id="BGSpawn" label="BG1 Spawn System" engine="bg1,eet">
 				<component id="BGSpawn-Main" name="BGSpawn system based on levels &amp; party members" label="BGSpawn system based on levels and party members" core="1" complexity="major" />
@@ -2036,15 +2036,15 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			</alternatives>
 			<alternatives label="XP for killing creatures">
 				<component id="EET_Tweaks:2050" name="Increase to 150%" label="Increase to 150%" modId="EET_Tweaks" complexity="major" />
-				<component id="EET_Tweaks:2051" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" level="blendWell" default="1" complexity="major" />
-				<component id="EET_Tweaks:2052" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" level="extended" complexity="major" />
+				<component id="EET_Tweaks:2051" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" recommended="blendWell" default="1" complexity="major" />
+				<component id="EET_Tweaks:2052" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" recommended="extended" complexity="major" />
 				<component id="EET_Tweaks:2053" name="Decrease to 25%" label="Decrease to 25%" modId="EET_Tweaks" complexity="major" />
 				<component id="EET_Tweaks:2054" name="Decrease to 10%" label="Decrease to 10%" modId="EET_Tweaks" complexity="major" />
 				<component id="EET_Tweaks:2055" name="Disable" label="Disabled" modId="EET_Tweaks" complexity="major" />
 			</alternatives>
 			<alternatives label="XP for quests">
 				<component id="EET_Tweaks:2060" name="Increase to 150%" label="Increase to 150%" modId="EET_Tweaks" complexity="moderate" />
-				<component id="EET_Tweaks:2061" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" level="extended" default="1" complexity="moderate" />
+				<component id="EET_Tweaks:2061" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" recommended="extended" default="1" complexity="moderate" />
 				<component id="EET_Tweaks:2062" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" complexity="moderate" />
 				<component id="EET_Tweaks:2063" name="Decrease to 25%" label="Decrease to 25%" modId="EET_Tweaks" complexity="moderate" />
 				<component id="EET_Tweaks:2064" name="Decrease to 10%" label="Decrease to 10%" modId="EET_Tweaks" complexity="moderate" />
@@ -2061,9 +2061,9 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 				<component id="ZG-GRAION-GOLD-200" name="Increase to 200%" label="Increase to 200%" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-150" name="Increase to 150%" label="Increase to 150%" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-83" name="Decrease to 83%" label="Decrease to 83%" complexity="moderate" />
-				<component id="ZG-GRAION-GOLD-75" name="Decrease to 75%" label="Decrease to 75%" level="blendWell" default="1" complexity="moderate" />
+				<component id="ZG-GRAION-GOLD-75" name="Decrease to 75%" label="Decrease to 75%" recommended="blendWell" default="1" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-66" name="Decrease to 66%" label="Decrease to 66%" complexity="moderate" />
-				<component id="ZG-GRAION-GOLD-50" name="Decrease to 50%" label="Decrease to 50%" level="extended" complexity="moderate" />
+				<component id="ZG-GRAION-GOLD-50" name="Decrease to 50%" label="Decrease to 50%" recommended="extended" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-33" name="Decrease to 33%" label="Decrease to 33%" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-25" name="Decrease to 25%" label="Decrease to 25%" complexity="moderate" />
 			</alternatives>
@@ -2079,9 +2079,9 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			</alternatives>
 			<alternatives label="Prices in the shops">
 				<component id="ZG-GRAION-STORES-TOPLAYERS-50" name="Decrease to 50%" label="Decrease to 50%" complexity="moderate" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-125" name="Increase to 125%" label="Increase to 125%"  level="blendWell" default="1" complexity="moderate" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-125" name="Increase to 125%" label="Increase to 125%"  recommended="blendWell" default="1" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-133" name="Increase to 133%" label="Increase to 133%" complexity="moderate" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-150" name="Increase to 150%" label="Increase to 150%" level="extended" complexity="moderate" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-150" name="Increase to 150%" label="Increase to 150%" recommended="extended" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-175" name="Increase to 175%" label="Increase to 175%" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-200" name="Increase to 200%" label="Increase to 200%" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-300" name="Increase to 300%" label="Increase to 300%" complexity="moderate" />
@@ -2098,14 +2098,14 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 				<component id="ZG-GRAION-STORES-FROMPLAYERS-150" name="Increase to 150%" label="Increase to 150%" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-FROMPLAYERS-200" name="Increase to 200%" label="Increase to 200%" complexity="moderate" />
 			</alternatives>
-			<component id="ZG-EQUIP-WHAT-I-CAN" name="Equip items from inventory to fill empty slots" label="Equip items from creatures' inventory to fill empty slots" level="higherDifficulty" complexity="minor" />
+			<component id="ZG-EQUIP-WHAT-I-CAN" name="Equip items from inventory to fill empty slots" label="Equip items from creatures' inventory to fill empty slots" recommended="higherDifficulty" complexity="minor" />
 		</mod>
 		<alternatives label="Alter identification mechanics" engine="bg,eet,iwd,pst">
-			<group label="Make it more strict" level="higherDifficulty">
+			<group label="Make it more strict" recommended="higherDifficulty">
 				<component id="cd_tweaks_shopkeeper_id_lore" name="Identification ability is based on storekeeper's lore" label="Identification ability is limited to Storekeeper's Lore" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" desc="Any storekeeper can identify items up to their personal Lore value, regardless of class." readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2191" complexity="moderate" />
-				<component id="cd_tweaks_lore_for_gems_potions" name="Gems and potions" label="Gems and potions require identification" modId="Tweaks-Anthology" level="higherDifficulty" engine="bg,eet,iwd" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1140" complexity="major" />
+				<component id="cd_tweaks_lore_for_gems_potions" name="Gems and potions" label="Gems and potions require identification" modId="Tweaks-Anthology" recommended="higherDifficulty" engine="bg,eet,iwd" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1140" complexity="major" />
 			</group>
-			<component id="cd_tweaks_id_all_items" name="Identify All Items" label="Identify all items" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3020" complexity="major" />
+			<component id="cd_tweaks_id_all_items" name="Identify All Items" label="Identify all items" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3020" complexity="major" />
 		</alternatives>
 		<mod id="Tweaks-Anthology" label="Increase item stacks">
 			<component id="cd_tweaks_increase_ammo_stacks_120" name="Stacks of 120" label="Ammo stacks of 120" engine="bg,eet,iwd,pst" recommended="adjustements" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3083" complexity="moderate" />
@@ -2114,19 +2114,19 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			<component id="cd_tweaks_increase_scroll_stacks_120" name="Stacks of 120" label="Scroll stacks of 120" engine="bg,eet,iwd,pst" recommended="adjustements" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3113" complexity="moderate" />
 		</mod>
 		<group label="Stores">
-			<component id="cd_tweaks_stores_buy_all_items" name="Stores Purchase All Item Types" label="Stores purchase all item types" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3205" complexity="moderate" />
-			<component id="cd_tweaks_no_store_depreciation" name="No Depreciation in Stores" label="No depreciation in stores" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3320" complexity="moderate" />
+			<component id="cd_tweaks_stores_buy_all_items" name="Stores Purchase All Item Types" label="Stores purchase all item types" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3205" complexity="moderate" />
+			<component id="cd_tweaks_no_store_depreciation" name="No Depreciation in Stores" label="No depreciation in stores" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3320" complexity="moderate" />
 			<component id="cd_tweaks_sellable_items" name="Sellable Items [icelus]" label="Sellable items" engine="bg,eet,iwd,pst" modId="Tweaks-Anthology" recommended="adjustements" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3200" complexity="minor" />
 		</group>
 		<group label="Ammo Recovery">
-			<component id="cd_tweaks_recover_ammo_25_enemy_only" name="25% chance to recover after a successful hit, vs. enemies only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3264" complexity="moderate" />
-			<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" name="50% chance to recover after a successful hit, vs. enemies only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3275" complexity="moderate" />
+			<component id="cd_tweaks_recover_ammo_25_enemy_only" name="25% chance to recover after a successful hit, vs. enemies only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3264" complexity="moderate" />
+			<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" name="50% chance to recover after a successful hit, vs. enemies only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3275" complexity="moderate" />
 		</group>
 		<component id="cd_tweaks_triple_class_hla_table" name="Triple-Class HLA Tables" label="Triple-class HLA tables" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2300" complexity="minor" />
-		<component id="cd_tweaks_no_traps_or_locks" name="Remove traps completely" label="Remove all traps" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" level="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3130" complexity="major" />
+		<component id="cd_tweaks_no_traps_or_locks" name="Remove traps completely" label="Remove all traps" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3130" complexity="major" />
 		<component id="cd_tweaks_force_all_dialogue_to_pause" name="Force All Dialogue to Pause Game" label="Force all dialogue to pause game" engine="bg,eet,iwd,pst" recommended="adjustements" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_130" complexity="minor" />
 		<component id="cd_tweaks_sensible_regeneration_when_traveling" name="Sensible Regeneration When Traveling" label="Sensible regeneration when traveling" engine="bg,eet,iwd,pst" recommended="adjustements" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3380" complexity="minor" />
 		<component id="cd_tweaks_reveal_city_areas" name="Reveal City Maps When Entering Area" label="Reveal city maps when entering area" engine="bg,eet,iwd,pst" recommended="adjustements" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1100" complexity="minor" />
-		<component id="XGTCumulativeCasterLevels:100" name="Allow Caster Levels Bonuses and Penalties to Accumulate" label="Allow caster levels bonuses and penalties to accumulate" level="fixes" modId="XGTCumulativeCasterLevels" displayIf="EEex:1" complexity="minor" />
+		<component id="XGTCumulativeCasterLevels:100" name="Allow Caster Levels Bonuses and Penalties to Accumulate" label="Allow caster levels bonuses and penalties to accumulate" recommended="fixes" modId="XGTCumulativeCasterLevels" displayIf="EEex:1" complexity="minor" />
 	</adjustements>
 </installSequence>
