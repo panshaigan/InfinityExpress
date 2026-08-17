@@ -261,7 +261,7 @@
 				</mod>
 			</quest>
 			<npc label="Joinable NPCs">
-				<expansions label="Original Cast Expansions" unfolded="1" recommended="content" package="npcExpansions">
+				<expansions label="Original Cast Expansions" unfolded="1" recommended="npc" package="npcExpansions">
 					<mod id="BG1NPC" label="The BG1NPC Project" desc="Make the original BG1 NPCs talkative as in BG2" recommended="extended">
 						<component id="bg1npc_project-main" name="The BG1 NPC Project: Required Modifications" label="Core modifications" core="1" complexity="major" />
 						<component id="bg1npc_project-banters_quests_interjections" name="The BG1 NPC Project: Banters, Quests, and Interjections" label="Banters, quests, and interjections" complexity="major" />
@@ -281,7 +281,7 @@
 					</mod>
 					<component id="Artisans_Rasaad_BG1:0" name="Rasaad Expansion for Baldur's Gate: Enhanced Edition" label="Rasaad Expansion" modId="Rasaad-Expansion-BG1" tags="Beamdog" complexity="minor" />
 				</expansions>
-				<romances label="Romances" noBranches="1" recommended="content" package="romances">
+				<romances label="Romances" noBranches="1" recommended="npc" package="romances">
 					<mod id="BG1NPC">
 						<component id="bg1npc_project-ajantisromance_1h" name="Speed: 1 hour real time (standard) minimum between LoveTalks" label="Ajantis" complexity="minor" />
 						<component id="bg1npc_project-branwenromance_1h" name="Speed: 1 hour real time (standard) minimum between LoveTalks" label="Branwen" complexity="minor" />
@@ -296,7 +296,7 @@
 						<component id="rasaad_romanceable_by_men" name="Make Rasaad romanceable by men" label="Make Rasaad romanceable by men" complexity="minor" />
 					</mod>
 				</romances>
-				<custom label="Custom NPCs" recommended="content" package="customNpcs">
+				<custom label="Custom NPCs" recommended="npc" package="customNpcs">
 					<component id="valerie:0" name="Valerie NPC Mod for BG1 Tutu, BGT BG:EE and EET" label="Valerie — human LG sorcerer" modId="Valerie-NPC" complexity="minor" />
 					<component id="Drake:0" name="Default Portrait (The Artisan)" label="Drake — human NG Priest of Tyr" modId="Drake" complexity="minor" />
 				</custom>
@@ -408,9 +408,9 @@
 			</restructure>
 			<npc label="Joinable NPCs">
 				<expansions>
-					<component id="kinfriendship:1" name="M'Khiin Friendship for Siege of Dragonspear" label="M'Khiin expansion" modId="M-khiin-Friendship" tags="Beamdog" recommended="content" package="npcExpansions" complexity="minor" />
+					<component id="kinfriendship:1" name="M'Khiin Friendship for Siege of Dragonspear" label="M'Khiin expansion" modId="M-khiin-Friendship" tags="Beamdog" recommended="npc" package="npcExpansions" complexity="minor" />
 				</expansions>
-				<bioware label="Returning Playable NPCs" unfolded="1" recommended="content" package="returningNpcs">
+				<bioware label="Returning Playable NPCs" unfolded="1" recommended="npc" package="returningNpcs">
 					<component id="L#-ELDOTH-SOD" name="Eldoth for the Siege of Dragonspear" label="Eldoth" modId="eldoth-for-sod" complexity="minor" />
 					<component id="L#-Faldorn-SOD" name="Faldorn for Siege of Dragonspear" label="Faldorn" modId="faldorn-for-sod" complexity="minor" />
 					<component id="k9SHarteel-SoD" name="Install Shar-Teel NPC Mod" label="Shar-Teel" modId="Sharteel-NPC-SoD" complexity="minor" />
@@ -424,7 +424,7 @@
 					</group>
 				</bioware>
 				<banters>
-					<component id="C#Ajantis_SoD_NPC-crossmod_content" name="Ajantis SoD NPC: Crossmod Content" label="Ajantis crossmod" modId="Ajantis_BG1_Expansion" recommended="content" package="npcExpansions" complexity="minor" />
+					<component id="C#Ajantis_SoD_NPC-crossmod_content" name="Ajantis SoD NPC: Crossmod Content" label="Ajantis crossmod" modId="Ajantis_BG1_Expansion" recommended="npc" package="npcExpansions" complexity="minor" />
 				</banters>
 				<tweaks>
 					<component id="A7-CONVENIENTEENPCS-APPEARANCE-CAELAR_FOLLOWER_CONDITIONAL" name="Joins as controllable follower if no free party slots available" label="Caelar joins as controllable follower if no free party slots available" modId="A7-NoEENPCs" tags="Beamdog" recommended="vanillaPlus" complexity="minor" />
@@ -523,7 +523,7 @@
 				<component id="Autumns_Twilight:0" name="Autumn's Twilight MOD" label="Autumn's Twilight" modId="bg2-autumns-twilight-mod" complexity="major" />
 			</quest>
 			<npc label="Joinable NPCs">
-				<expansions label="Original Cast Expansions" recommended="content" package="npcExpansions">
+				<expansions label="Original Cast Expansions" recommended="npc" package="npcExpansions">
 					<component id="imoenfriendship:0" name="Imoen Friendship" label="Imoen Friendship" modId="Imoen-Friendship" complexity="minor" />
 					<component id="jaheira_friendship" name="Jaheira Friendship for BG2/BG2EE" label="Jaheira Friendship" modId="Jaheira-Friendship" complexity="minor" />
 					<component id="minsc_friendship" name="Minsc Friendship for BG2 and ToB" label="Minsc Friendship" modId="Minsc-Friendship" complexity="minor" />
@@ -541,7 +541,7 @@
 					<component id="korgan:0" name="Korgan's Redemption" label="Korgan's Redemption" desc="Provides the possibility of redeeming Korgan if Mazzy is in your party." modId="Korgan-Redemption" complexity="minor" />
 					<component id="Wings:0" name="Wings for BG2:EE" label="Wings - Aerie expansion" modId="Wings" complexity="minor" />
 				</expansions>
-				<romances label="Romances" recommended="content" package="romances">
+				<romances label="Romances" recommended="npc" package="romances">
 					<mod id="Imoen-Romance-Mod" label="Imoen Romance">
 						<component id="ImoenRomance:0" name="Imoen NPC Romance Mod for BG2:SoA TOB (4.1.3 Version!)" label="Imoen Romance" complexity="minor" />
 						<component id="ImoenRomance:2" name="Don't Allow multiple Romance (Only valid for Vanilla romances)" label="Don't allow multiple Romance (only valid for vanilla romances)" alwaysIf="ImoenRomance:0" noDisplay="1" complexity="minor" />
@@ -574,7 +574,7 @@
 					<component id="OWRomanceExpanded-Phaere" name="Phaere Expanded" label="Phaere Expanded" modId="BG2-Romance-Expanded" complexity="minor" />
 					<component id="cd_tweaks_stop_hd_aerie_romance" name="Stop Haer'Dalis-Aerie Romance from Starting" label="Stop Haer'Dalis-Aerie Romance from starting" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3124" complexity="minor" />
 				</romances>
-				<bioware label="Returning Original Cast NPCs" recommended="content" package="returningNpcs">
+				<bioware label="Returning Original Cast NPCs" recommended="npc" package="returningNpcs">
 					<component id="AddKagainDD" name="Assign Dwarven Defender kit to Kagain" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" complexity="minor" />
 					<alternatives label="Xan">
 						<component id="AddXan" name="[Xan] Add Xan to SoD and BG2" label="Continuous Xan" desc="Continuous, but mute" modId="continuous-npcs" complexity="minor" />
@@ -640,7 +640,7 @@
 						</mod>
 					</group>
 				</bioware>
-				<custom label="Custom NPCs" recommended="content" package="customNpcs">
+				<custom label="Custom NPCs" recommended="npc" package="customNpcs">
 					<component id="SisterVigilantes_Angelo-main" name="Angelo NPC MOD for Baldur's Gate II" label="Angelo — human CN fighter/mage" modId="Angelo" complexity="minor" />
 					<component id="TheBeaurinLegacy:1000" name="The Beaurin Legacy for BG2:SoA &amp; ToB &amp; BGII:EE" label="Minyae — elven NE Enchanter/thief" desc="Also a hidden Archer NPC" modId="BaldursGateMods" complexity="minor" />
 					<mod id="Adrian-NPC" label="Adrian - half-elven LE sorcerer">
@@ -656,7 +656,7 @@
 						<component id="Fade:2" name="Fade EE: give Fade Shadowdancer kit" label="Give Fade Shadowdancer kit" alwaysIf="Fade:0" noDisplay="1" complexity="minor" />
 					</mod>
 				</custom>
-				<banters label="Banters and Crossmods" recommended="content" package="npcExpansions">
+				<banters label="Banters and Crossmods" recommended="npc" package="npcExpansions">
 					<component id="mkhiinbg2:20" name="Crossmod with Baeloth for BG2" label="M'Khiin crossmod with baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" tags="Beamdog" complexity="minor" />
 					<component id="adrian_crossmod_content" name="Crossmod content" label="Adrian crossmod" modId="Adrian-NPC" alwaysIf="adrian_sorcerer" noDisplay="1" complexity="minor" />
 					<!-- component id="c#husam-crossmod" label="Husam Crossmod Content" modId="Husam_NP" /-->
@@ -1271,7 +1271,7 @@
 					<component id="rr:7" name="Additional equipment for Thieves and Bards" label="Add items for thieves and bards" modId="rogue_rebalancing" recommended="extended" complexity="minor" />
 					<component id="A7-CHAOSSORCERER-PRIMORDIAL_ARTIFACTS" name="Add &quot;Primordial Artifacts&quot;" label="Add Primordial Artifacts for Chaos Sorcerers" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" complexity="minor" />
 					<component id="A7-IMPROVED_SHAMANIC_DANCE-ITEMS" name="Shaman-specific items" label="Add items for shamans" modId="A7-ImprovedShamanicDance" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" complexity="minor" />
-					<component id="BardicWonders:2001" name="Bardic Wonders: Items" label="Add items for bards" modId="Bardic-Wonders" recommended="content" package="npcExpansions" complexity="minor" />
+					<component id="BardicWonders:2001" name="Bardic Wonders: Items" label="Add items for bards" modId="Bardic-Wonders" recommended="npc" package="npcExpansions" complexity="minor" />
 				</add>
 				<update>
 					<component id="cd_tweaks_2h_bastard_swords" name="Two-Handed Bastard Swords" label="Two-handed bastard swords" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2020" complexity="minor" />
@@ -1349,35 +1349,35 @@
 		<group label="Class/kit">
 			<component id="ajantisbg2:5" name="Ajantis kit choice: make Ajantis Cavalier" label="Make Ajantis a Cavalier in BG2" modId="Ajantis_BG2" displayIf="ajantisbg2:0" complexity="minor" />
 			<component id="totemiccernd:0" name="Totemic Cernd" label="Make Cernd a Totemic Druid" modId="Totemic_Cernd" complexity="minor" />
-			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" name="Bard" label="Make Clara a bard" modId="A7-NoEENPCs" recommended="content" package="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:3" name="Make Faldorn an Avenger" label="Make Dynaheir a sorcerer" modId="shatweaks" recommended="content" package="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:4" name="Make Skie a Shadowdancer" label="Make Faldorn an Avenger" modId="shatweaks" recommended="content" package="npcChoices" complexity="minor" />
+			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" name="Bard" label="Make Clara a bard" modId="A7-NoEENPCs" recommended="npc" package="npcChoices" complexity="minor" />
+			<component id="sha-tweaks:3" name="Make Faldorn an Avenger" label="Make Dynaheir a sorcerer" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" />
+			<component id="sha-tweaks:4" name="Make Skie a Shadowdancer" label="Make Faldorn an Avenger" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" />
 			<alternatives label="Make Hexxat a...">
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_ASSASSIN" name="Assassin" label="Assassin" modId="A7-NoEENPCs" complexity="minor" />
-				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" name="Fighter / Assassin" label="Fighter/Assassin" modId="A7-NoEENPCs" default="1" recommended="content" package="npcChoices" complexity="minor" />
+				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" name="Fighter / Assassin" label="Fighter/Assassin" modId="A7-NoEENPCs" default="1" recommended="npc" package="npcChoices" complexity="minor" />
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_SHADOWDANCER" name="Fighter / Shadowdancer" label="Shadowdancer" modId="A7-NoEENPCs" complexity="minor" />
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_NECROMANCER_THIEF" name="Necromancer / Thief" label="Necromancer / thief" modId="A7-NoEENPCs" complexity="minor" />
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_SHADOWDANCER" name="Shadowdancer" label="Shadowdancer" modId="A7-NoEENPCs" complexity="minor" />
 			</alternatives>
 			<!-- Make Kagain a Dwarven Defender BGEENPC tweaks.-->
 			<component id="cd_tweaks_make_montaron_assassin" name="Make Montaron an Assassin [Andyr]" label="Make Montaron an Assassin" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4090" complexity="minor" />
-			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" name="Chaos Sorcerer" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" recommended="content" package="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:5" name="Change dialog text color to orange" label="Make Skie a Shadowdancer" modId="shatweaks" recommended="content" package="npcChoices" complexity="minor" />
+			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" name="Chaos Sorcerer" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" recommended="npc" package="npcChoices" complexity="minor" />
+			<component id="sha-tweaks:5" name="Change dialog text color to orange" label="Make Skie a Shadowdancer" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" />
 			<group label="Make Viconia...">
-				<component id="L#-VIC-REV-M-SH-C" name="Multi-class: Shadowdancer/Cleric" label="...A Shadowdancer/cleric" modId="viconia-revamped" recommended="content" package="npcChoices" complexity="minor" />
-				<component id="L#-VIC-REV-ABI" name="Add special ability: Embrace of Shar" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" recommended="content" package="npcChoices" complexity="minor" />
+				<component id="L#-VIC-REV-M-SH-C" name="Multi-class: Shadowdancer/Cleric" label="...A Shadowdancer/cleric" modId="viconia-revamped" recommended="npc" package="npcChoices" complexity="minor" />
+				<component id="L#-VIC-REV-ABI" name="Add special ability: Embrace of Shar" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" recommended="npc" package="npcChoices" complexity="minor" />
 			</group>
 			
 			<component id="p#_kivan_deheriana_wildmage" name="Wild Mage" label="Make Deheriana (f/m/c) a Wild Mage" modId="Kivan_and_Deheriana" displayIf="p#_kivan" complexity="minor" />
 			<alternatives label="Make Xan a..." unfolded="1">
-				<component id="xan:1" name="[Install alternate class for XAN?] Change Xan's class to Fighter/Mage" label="Fighter/mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="1" recommended="content" package="npcChoices" complexity="minor" />
+				<component id="xan:1" name="[Install alternate class for XAN?] Change Xan's class to Fighter/Mage" label="Fighter/mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="1" recommended="npc" package="npcChoices" complexity="minor" />
 				<component id="xan:3" name="[Install alternate class for XAN?] Change Xan's class to Sorcerer" label="Sorcerer" modId="Xan_for_BGII" displayIfNot="ArtisansKitpack_npc:20002" complexity="minor" />
 			</alternatives>
-			<component id="ArtisansKitpack_npc:20002" name="Artisan's Kitpack: Make Xan an Eldritch Knight" label="Make Xan an Eldritch Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" recommended="content" package="npcChoices" complexity="minor" />
+			<component id="ArtisansKitpack_npc:20002" name="Artisan's Kitpack: Make Xan an Eldritch Knight" label="Make Xan an Eldritch Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" recommended="npc" package="npcChoices" complexity="minor" />
 			<alternatives label="Upgrade Nalia's thief Class to...">
 				<component id="cd_tweaks_nalia_thief_level_5" name="To Thief level 5" label="Level 5 (further increases Open Locks)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4210" complexity="minor" />
 				<component id="cd_tweaks_nalia_thief_level_6" name="To Thief level 6" label="Level 6 (further increases Find Traps, Pick Pockets)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4211" complexity="minor" />
-				<component id="cd_tweaks_nalia_thief_level_7" name="To Thief level 7" label="Level 7 (further increases Open Locks, Pick Pockets)" modId="Tweaks-Anthology" recommended="content" package="npcChoices" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4212" complexity="minor" />
+				<component id="cd_tweaks_nalia_thief_level_7" name="To Thief level 7" label="Level 7 (further increases Open Locks, Pick Pockets)" modId="Tweaks-Anthology" recommended="npc" package="npcChoices" default="1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4212" complexity="minor" />
 				<component id="cd_tweaks_nalia_thief_level_8" name="To Thief level 8" label="Level 8 (further increases Pick Pockets, adds Single Weapon Style)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4213" complexity="minor" />
 			</alternatives>
 			<component id="YoshimosRemorse:2" name="Bounty Hunter 13 / Fighter" label="Make Yoshimo a Bounty Hunter 13 / fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" complexity="minor" />
@@ -1386,16 +1386,16 @@
 			<!-- Dual Class Friendly Stats -->
 			<group label="Use consistent (BG2) stats for..." noBranches="1" engine="bg1,eet">
 				<mod id="Tweaks-Anthology">
-					<component id="cd_tweaks_consistent_stats_edwin_bg2" name="Use BG2 values" label="Edwin" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4031" recommended="content" package="npcChoices" complexity="minor" />
-					<component id="cd_tweaks_consistent_stats_jaheira_bg2" name="Use BG2 values" label="Jaheira" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4041" recommended="content" package="npcChoices" complexity="minor" />
-					<component id="cd_tweaks_consistent_stats_minsc_bg2" name="Use BG2 values" label="Minsc" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4061" recommended="content" package="npcChoices" complexity="minor" />
-					<component id="cd_tweaks_consistent_stats_viconia_bg2" name="Use BG2 values" label="Viconia" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4071" recommended="content" package="npcChoices" complexity="minor" />
+					<component id="cd_tweaks_consistent_stats_edwin_bg2" name="Use BG2 values" label="Edwin" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4031" recommended="npc" package="npcChoices" complexity="minor" />
+					<component id="cd_tweaks_consistent_stats_jaheira_bg2" name="Use BG2 values" label="Jaheira" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4041" recommended="npc" package="npcChoices" complexity="minor" />
+					<component id="cd_tweaks_consistent_stats_minsc_bg2" name="Use BG2 values" label="Minsc" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4061" recommended="npc" package="npcChoices" complexity="minor" />
+					<component id="cd_tweaks_consistent_stats_viconia_bg2" name="Use BG2 values" label="Viconia" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4071" recommended="npc" package="npcChoices" complexity="minor" />
 				</mod>
 			</group>
-			<component id="cd_tweaks_kagain_legal_con" name="Give Kagain a Legal Constitution Score of 19" label="Give Kagain a legal CON score of 19" recommended="content" package="npcChoices" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4110" complexity="minor" />
-			<component id="cd_tweaks_coran_legal_dex" name="Give Coran a Legal Dexterity Score of 19" label="Give Coran a legal DEX score of 19" recommended="content" package="npcChoices" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4120" complexity="minor" />
-			<component id="cd_tweaks_yoshimo_better_trapsetting" name="Increase Yoshimo's Trapsetting Ability" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" recommended="content" package="npcChoices" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4230" complexity="minor" />
-			<component id="bg1npc_project-kivanproficiency_spears" name="Kivan uses spears" label="Kivan uses spears" displayIf="bg1npc_project-main" recommended="content" package="npcChoices" modId="BG1NPC" complexity="minor" />
+			<component id="cd_tweaks_kagain_legal_con" name="Give Kagain a Legal Constitution Score of 19" label="Give Kagain a legal CON score of 19" recommended="npc" package="npcChoices" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4110" complexity="minor" />
+			<component id="cd_tweaks_coran_legal_dex" name="Give Coran a Legal Dexterity Score of 19" label="Give Coran a legal DEX score of 19" recommended="npc" package="npcChoices" engine="bg1,eet" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4120" complexity="minor" />
+			<component id="cd_tweaks_yoshimo_better_trapsetting" name="Increase Yoshimo's Trapsetting Ability" label="Increase Yoshimo's Trapsetting Ability" modId="Tweaks-Anthology" recommended="npc" package="npcChoices" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4230" complexity="minor" />
+			<component id="bg1npc_project-kivanproficiency_spears" name="Kivan uses spears" label="Kivan uses spears" displayIf="bg1npc_project-main" recommended="npc" package="npcChoices" modId="BG1NPC" complexity="minor" />
 		</group>
 		<group label="Appearance">
 			<component id="cd_tweaks_nalia_avatar_change" name="Change Nalia's Avatar to Thief" label="Change Nalia's avatar to thief" modId="Tweaks-Anthology" engine="bg2,eet" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_30" complexity="minor" />
