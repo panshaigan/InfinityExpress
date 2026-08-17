@@ -70,7 +70,6 @@ export function StationPresetsMenu({
         <div className="station-levels-popover" id={levelsPanelId} role="group">
           <div className="station-list-toolbar-levels">
             <LevelSelectStrip
-              compact
               enabled={enabled}
               checkedLadderLevels={checkedLadderLevels}
               lowerDifficulty={lowerDifficulty}

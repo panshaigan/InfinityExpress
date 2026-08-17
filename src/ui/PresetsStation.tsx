@@ -1,24 +1,19 @@
-import type { DifficultyLevel, LadderLevel } from '../lib/levels'
-import type { LevelContentCounts } from '../lib/selection/levelCounts'
+import { PRESET_LAYOUT } from '../data/presetCatalog'
+import type { RecommendedContentCounts, RecommendedGroup } from '../lib/recommended/catalog'
+import { resolvePresetLayout } from '../lib/recommended/catalog'
+import type { InstallSequenceModel } from '../lib/xml/schema'
 import type { PresetTileRef } from '../lib/selection/presetPreview'
-import type { RecommendedGroup, RecommendedContentCounts } from '../lib/recommended/catalog'
 import { IconTip } from './IconTip'
-import { LevelSelectStrip } from './LevelSelectStrip'
-import { RecommendedSelectStrip } from './RecommendedSelectStrip'
+import { PresetLayoutStrip } from './PresetLayoutStrip'
 
 interface Props {
   enabled: boolean
-  checkedLadderLevels: ReadonlySet<LadderLevel>
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
-  onLadderToggle: (level: LadderLevel, wantChecked: boolean) => void
-  onDifficultyChange: (token: DifficultyLevel, want: boolean) => void
-  levelCounts?: Readonly<Record<string, LevelContentCounts>>
-  recommendedGroups?: readonly RecommendedGroup[]
-  checkedRecommended?: ReadonlySet<string>
-  checkedPackages?: ReadonlySet<string>
-  onRecommendedToggle?: (token: string, wantChecked: boolean) => void
-  onPackageToggle?: (token: string, wantChecked: boolean) => void
+  model: InstallSequenceModel
+  recommendedGroups: readonly RecommendedGroup[]
+  checkedRecommended: ReadonlySet<string>
+  checkedPackages: ReadonlySet<string>
+  onRecommendedToggle: (token: string, wantChecked: boolean) => void
+  onPackageToggle: (token: string, wantChecked: boolean) => void
   recommendedCounts?: Readonly<Record<string, RecommendedContentCounts>>
   onTileFocus?: (tile: PresetTileRef) => void
   onTileHover?: (tile: PresetTileRef | null) => void
@@ -32,17 +27,12 @@ interface Props {
 
 export function PresetsStation({
   enabled,
-  checkedLadderLevels,
-  lowerDifficulty,
-  higherDifficulty,
-  onLadderToggle,
-  onDifficultyChange,
-  levelCounts,
-  recommendedGroups = [],
-  checkedRecommended = new Set<string>(),
-  checkedPackages = new Set<string>(),
-  onRecommendedToggle = () => {},
-  onPackageToggle = () => {},
+  model,
+  recommendedGroups,
+  checkedRecommended,
+  checkedPackages,
+  onRecommendedToggle,
+  onPackageToggle,
   recommendedCounts,
   onTileFocus,
   onTileHover,
@@ -53,11 +43,13 @@ export function PresetsStation({
   onReopen,
   reopenDisabled = false,
 }: Props) {
+  const layoutSections = resolvePresetLayout(PRESET_LAYOUT, recommendedGroups)
+
   return (
     <section className="engine-station presets-station">
       <div className="engine-station-header">
         <h2 className="presets-station-heading">
-          <span>Start with a preset</span>
+          <span>Compose your starting preset</span>
           {finished ? (
             <span className="station-finished-mark" aria-label="Finished">
               ✓
@@ -95,35 +87,19 @@ export function PresetsStation({
         )}
       </div>
       <div className="engine-preselect">
-        <LevelSelectStrip
+        <PresetLayoutStrip
           enabled={enabled}
-          checkedLadderLevels={checkedLadderLevels}
-          lowerDifficulty={lowerDifficulty}
-          higherDifficulty={higherDifficulty}
-          onLadderToggle={onLadderToggle}
-          onDifficultyChange={onDifficultyChange}
-          levelCounts={levelCounts}
+          model={model}
+          sections={layoutSections}
+          checkedRecommended={checkedRecommended}
+          checkedPackages={checkedPackages}
+          onRecommendedToggle={onRecommendedToggle}
+          onPackageToggle={onPackageToggle}
+          contentCounts={recommendedCounts}
           onTileFocus={onTileFocus}
           onTileHover={onTileHover}
           isTileFocused={isTileFocused}
         />
-        {recommendedGroups.length > 0 ? (
-          <>
-            <hr className="level-difficulty-rule" />
-            <RecommendedSelectStrip
-              enabled={enabled}
-              groups={recommendedGroups}
-              checkedRecommended={checkedRecommended}
-              checkedPackages={checkedPackages}
-              onRecommendedToggle={onRecommendedToggle}
-              onPackageToggle={onPackageToggle}
-              contentCounts={recommendedCounts}
-              onTileFocus={onTileFocus}
-              onTileHover={onTileHover}
-              isTileFocused={isTileFocused}
-            />
-          </>
-        ) : null}
       </div>
     </section>
   )

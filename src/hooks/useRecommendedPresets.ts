@@ -61,6 +61,13 @@ export function useRecommendedPresets(args: {
     setCheckedPackages(new Set(state.packagesChecked))
   }
 
+  function seedFixesBaseline(game: SelectedGame) {
+    const fixes = new Set<string>(['fixes'])
+    setCheckedRecommended(fixes)
+    setCheckedPackages(new Set())
+    setSelectedIds((prev) => setRecommendedSelection(model, prev, game, 'fixes', true))
+  }
+
   return {
     checkedRecommended,
     setCheckedRecommended,
@@ -70,5 +77,6 @@ export function useRecommendedPresets(args: {
     onPackageToggle,
     resetRecommendedPresets,
     restoreRecommendedState,
+    seedFixesBaseline,
   }
 }

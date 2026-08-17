@@ -3002,6 +3002,45 @@ body.is-resizing-detail * {
   opacity: 0.55;
 }
 
+.preset-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+}
+
+.preset-layout.disabled {
+  opacity: 0.55;
+}
+
+.preset-layout-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.preset-layout-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.preset-layout-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.preset-layout-row {
+  display: grid;
+  gap: 0.85rem;
+  align-items: start;
+}
+
 .recommended-preselect-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

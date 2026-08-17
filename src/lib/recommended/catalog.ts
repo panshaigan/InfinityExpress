@@ -1,3 +1,4 @@
+import type { PresetLayoutSection } from '../../data/presetCatalog'
 import { engineMatches } from '../engine/matchEngine'
 import { resolveModLookupKey } from '../mods/loadMods'
 import { passesOwnAndAncestorDisplayGates } from '../selection/treeAncestry'
@@ -154,6 +155,48 @@ export function countAllRecommendedContent(
     for (const pkg of group.packages) {
       out[`package:${pkg.token}`] = countPackageContent(model, game, pkg.token, selected)
     }
+  }
+  return out
+}
+
+export function catalogGroupByToken(
+  groups: readonly RecommendedGroup[],
+): Map<string, RecommendedGroup> {
+  return new Map(groups.map((g) => [g.token, g]))
+}
+
+export interface ResolvedPresetLayoutCell {
+  token: string
+  group: RecommendedGroup
+}
+
+export interface ResolvedPresetLayoutRow {
+  cells: ResolvedPresetLayoutCell[]
+}
+
+export interface ResolvedPresetLayoutSection {
+  label: string
+  rows: ResolvedPresetLayoutRow[]
+}
+
+/** Whitelist layout tokens against live catalog groups; omit empty rows/sections. */
+export function resolvePresetLayout(
+  layout: readonly PresetLayoutSection[],
+  groups: readonly RecommendedGroup[],
+): ResolvedPresetLayoutSection[] {
+  const byToken = catalogGroupByToken(groups)
+  const out: ResolvedPresetLayoutSection[] = []
+  for (const section of layout) {
+    const rows: ResolvedPresetLayoutRow[] = []
+    for (const row of section.rows) {
+      const cells: ResolvedPresetLayoutCell[] = []
+      for (const token of row.tokens) {
+        const group = byToken.get(token)
+        if (group) cells.push({ token, group })
+      }
+      if (cells.length > 0) rows.push({ cells })
+    }
+    if (rows.length > 0) out.push({ label: section.label, rows })
   }
   return out
 }

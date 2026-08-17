@@ -15,14 +15,7 @@ import {
   toggleListSelection,
   type RandomizeOptions,
 } from './lib/selection/selectionEngine'
-import {
-  DIFFICULTY_LEVELS,
-  LADDER_LEVELS,
-  type DifficultyLevel,
-  type LadderLevel,
-} from './lib/levels'
 import { buildPresetTilePreview } from './lib/selection/presetPreview'
-import { countAllLevelContent } from './lib/selection/levelCounts'
 import {
   buildRecommendedCatalog,
   countAllRecommendedContent,
@@ -508,11 +501,6 @@ function AppShell() {
   )
   const selectedModsCount = neededCodenames.length
 
-  const presetLevelCounts = useMemo(() => {
-    if (!game) return undefined
-    return countAllLevelContent(model, game, [...LADDER_LEVELS, ...DIFFICULTY_LEVELS])
-  }, [game, model])
-
   const recommendedGroups = useMemo(() => {
     if (!game) return []
     return buildRecommendedCatalog(model, game, selectedIds)
@@ -676,7 +664,7 @@ function AppShell() {
       setRouteUnlocked(true)
       setSelectedIds(createInitialSelection(model, engine))
       levels.seedFixesBaseline(engine)
-      recommended.resetRecommendedPresets()
+      recommended.seedFixesBaseline(engine)
       presets.restoreSelectionPresetsState({
         presets: [],
         activePresetId: null,
@@ -725,16 +713,6 @@ function AppShell() {
     setProjectId(null)
     setProjectMeta(null)
     goToProjectEntry()
-  }
-
-  function onPresetsLadderToggle(level: LadderLevel, wantChecked: boolean) {
-    if (installSelectionFrozen) return
-    levels.onLadderToggle(level, wantChecked)
-  }
-
-  function onPresetsDifficultyChange(token: DifficultyLevel, want: boolean) {
-    if (installSelectionFrozen) return
-    levels.onDifficultyPresetChange(token, want)
   }
 
   function onPresetsRecommendedToggle(token: string, wantChecked: boolean) {
@@ -1267,12 +1245,7 @@ function AppShell() {
                   <div className="list-pane-scroll engine-pane-scroll">
                     <PresetsStation
                       enabled={!!game && !route.currentFinished}
-                      checkedLadderLevels={levels.ladderChecked}
-                      lowerDifficulty={levels.lowerDifficultyPreset}
-                      higherDifficulty={levels.higherDifficultyPreset}
-                      onLadderToggle={onPresetsLadderToggle}
-                      onDifficultyChange={onPresetsDifficultyChange}
-                      levelCounts={presetLevelCounts}
+                      model={model}
                       recommendedGroups={recommendedGroups}
                       checkedRecommended={recommended.checkedRecommended}
                       checkedPackages={recommended.checkedPackages}

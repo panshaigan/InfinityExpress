@@ -1,7 +1,6 @@
 import { engineMatches } from '../engine/matchEngine'
 import {
   levelFilterRank,
-  LEVEL_LABELS,
   type DifficultyLevel,
   type LadderLevel,
 } from '../levels'
@@ -10,7 +9,10 @@ import {
   resolveModLookupKey,
   type ModInfo,
 } from '../mods/loadMods'
-import { packageLabel, recommendedLabel } from '../recommended/labels'
+import {
+  resolvePackageTileInfo,
+  resolveRecommendedTileInfo,
+} from '../presets/resolvePresetCopy'
 import {
   passesOwnAndAncestorDisplayGates,
 } from './treeAncestry'
@@ -124,13 +126,13 @@ function isTileChecked(
 function tileLabel(tile: PresetTileRef, model: InstallSequenceModel): string {
   switch (tile.kind) {
     case 'ladder':
-      return LEVEL_LABELS[tile.level] ?? tile.level
+      return resolveRecommendedTileInfo(tile.level).label
     case 'difficulty':
-      return LEVEL_LABELS[tile.token] ?? tile.token
+      return resolveRecommendedTileInfo(tile.token).label
     case 'recommended':
-      return recommendedLabel(tile.token)
+      return resolveRecommendedTileInfo(tile.token).label
     case 'package':
-      return packageLabel(model, tile.token)
+      return resolvePackageTileInfo(tile.token, model).label
   }
 }
 

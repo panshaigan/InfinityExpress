@@ -60,6 +60,16 @@ Ladder ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `e
 - **Package tiles** — nested visually under their recommended parent; mass-check only components with matching `effectivePackage`. Independent from the parent recommended tile and from sibling packages.
 - Tiles are omitted when the current engine has no eligible visible components (engine allow-list, `noDisplay`, and `displayIf` / `displayIfNot` on the component or ancestors — e.g. IDGO stays hidden on EET until IWD-in-EET is selected).
 
+### Presets page catalog (`src/data/presetCatalog.ts`)
+
+Single edit point for the Presets station:
+
+- **`PRESET_TILE_COPY`** — label (optional override), tile subtitle (`summary`), and tooltip copy (`typeAndDepth`, `recommendedFor`) per recommended token.
+- **`PRESET_PACKAGE_COPY`** — same fields for package tokens (labels usually fall back to InstallSequence ancestor `label`).
+- **`PRESET_LAYOUT`** — section headings and rows of recommended tokens (2–3 column flex grid). Only listed tokens render; packages still nest under their parent from the live catalog.
+
+New projects seed **Fixes** via `recommendedChecked` + mass-check (not the legacy level strip on this page). Per-station level overrides in the station header menu still use `effectiveLevel` chips.
+
 ## Presets
 
 In-memory, game-scoped: selected ids + level-strip UI + recommended/package chips. Not stored: filters, station, folds. Load restores chips **without** re-running mass-check. Shape: `presets/selectionPresets.ts`.

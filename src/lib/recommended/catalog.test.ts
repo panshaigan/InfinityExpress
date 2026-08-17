@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseInstallSequence } from '../xml/parseInstallSequence'
-import { buildRecommendedCatalog } from './catalog'
+import { buildRecommendedCatalog, resolvePresetLayout } from './catalog'
 
 const XML = `<?xml version="1.0"?>
 <installSequence>
@@ -51,5 +51,34 @@ describe('buildRecommendedCatalog', () => {
     const groups = buildRecommendedCatalog(model, 'iwd')
     expect(groups.find((g) => g.token === 'gfx')).toBeUndefined()
     expect(groups.find((g) => g.token === 'sounds')?.hasBase).toBe(true)
+  })
+})
+
+describe('resolvePresetLayout', () => {
+  const { model } = parseInstallSequence(XML)
+
+  it('keeps only whitelisted tokens that exist in the catalog', () => {
+    const groups = buildRecommendedCatalog(model, 'eet')
+    const layout = [
+      {
+        label: 'Presence',
+        rows: [{ tokens: ['gfx', 'missing'] }, { tokens: ['sounds'] }],
+      },
+    ]
+    const resolved = resolvePresetLayout(layout, groups)
+    expect(resolved).toHaveLength(1)
+    expect(resolved[0]?.label).toBe('Presence')
+    expect(resolved[0]?.rows).toHaveLength(2)
+    expect(resolved[0]?.rows[0]?.cells.map((c) => c.token)).toEqual(['gfx'])
+    expect(resolved[0]?.rows[1]?.cells.map((c) => c.token)).toEqual(['sounds'])
+  })
+
+  it('omits empty sections', () => {
+    const groups = buildRecommendedCatalog(model, 'eet')
+    const resolved = resolvePresetLayout(
+      [{ label: 'Empty', rows: [{ tokens: ['missing'] }] }],
+      groups,
+    )
+    expect(resolved).toEqual([])
   })
 })
