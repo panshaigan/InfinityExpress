@@ -2801,6 +2801,15 @@ body.is-resizing-detail * {
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
+.level-card.tile-focused {
+  outline: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent-soft) 70%, var(--panel));
+}
+
+.level-card.tile-focused.active {
+  outline: 1px solid var(--accent);
+}
+
 .level-card.disabled {
   cursor: not-allowed;
 }
@@ -3773,6 +3782,17 @@ body.is-resizing-detail * {
   flex-direction: column;
   gap: var(--space-3);
   padding-bottom: var(--space-2);
+}
+
+.preset-detail-lede {
+  margin: 0 0 var(--space-2);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.preset-detail-groups {
+  margin-top: 0;
 }
 
 .detail-block {

@@ -1,5 +1,6 @@
 import type { DifficultyLevel, LadderLevel } from '../lib/levels'
 import type { LevelContentCounts } from '../lib/selection/levelCounts'
+import type { PresetTileRef } from '../lib/selection/presetPreview'
 import type { RecommendedGroup, RecommendedContentCounts } from '../lib/recommended/catalog'
 import { IconTip } from './IconTip'
 import { LevelSelectStrip } from './LevelSelectStrip'
@@ -19,6 +20,9 @@ interface Props {
   onRecommendedToggle?: (token: string, wantChecked: boolean) => void
   onPackageToggle?: (token: string, wantChecked: boolean) => void
   recommendedCounts?: Readonly<Record<string, RecommendedContentCounts>>
+  onTileFocus?: (tile: PresetTileRef) => void
+  onTileHover?: (tile: PresetTileRef | null) => void
+  isTileFocused?: (tile: PresetTileRef) => boolean
   finished: boolean
   canContinue: boolean
   onContinue: () => void
@@ -40,6 +44,9 @@ export function PresetsStation({
   onRecommendedToggle = () => {},
   onPackageToggle = () => {},
   recommendedCounts,
+  onTileFocus,
+  onTileHover,
+  isTileFocused,
   finished,
   canContinue,
   onContinue,
@@ -96,6 +103,9 @@ export function PresetsStation({
           onLadderToggle={onLadderToggle}
           onDifficultyChange={onDifficultyChange}
           levelCounts={levelCounts}
+          onTileFocus={onTileFocus}
+          onTileHover={onTileHover}
+          isTileFocused={isTileFocused}
         />
         {recommendedGroups.length > 0 ? (
           <>
@@ -108,6 +118,9 @@ export function PresetsStation({
               onRecommendedToggle={onRecommendedToggle}
               onPackageToggle={onPackageToggle}
               contentCounts={recommendedCounts}
+              onTileFocus={onTileFocus}
+              onTileHover={onTileHover}
+              isTileFocused={isTileFocused}
             />
           </>
         ) : null}

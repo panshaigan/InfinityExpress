@@ -2,6 +2,7 @@ import type {
   RecommendedContentCounts,
   RecommendedGroup,
 } from '../lib/recommended/catalog'
+import type { PresetTileRef } from '../lib/selection/presetPreview'
 import { IconTip } from './IconTip'
 
 interface Props {
@@ -12,6 +13,9 @@ interface Props {
   onRecommendedToggle: (token: string, wantChecked: boolean) => void
   onPackageToggle: (token: string, wantChecked: boolean) => void
   contentCounts?: Readonly<Record<string, RecommendedContentCounts>>
+  onTileFocus?: (tile: PresetTileRef) => void
+  onTileHover?: (tile: PresetTileRef | null) => void
+  isTileFocused?: (tile: PresetTileRef) => boolean
 }
 
 function formatCounts(counts: RecommendedContentCounts | undefined): string | null {
@@ -23,28 +27,40 @@ function formatCounts(counts: RecommendedContentCounts | undefined): string | nu
 }
 
 function PresetTile({
+  tileRef,
   label,
   hint,
   countsLabel,
   checked,
   enabled,
   coupled,
+  focused,
   onChange,
+  onTileFocus,
+  onTileHover,
 }: {
+  tileRef?: PresetTileRef
   label: string
   hint?: string
   countsLabel?: string | null
   checked: boolean
   enabled: boolean
   coupled?: boolean
+  focused?: boolean
   onChange: (wantChecked: boolean) => void
+  onTileFocus?: (tile: PresetTileRef) => void
+  onTileHover?: (tile: PresetTileRef | null) => void
 }) {
   const showTip = !!countsLabel
   return (
     <label
       className={`level-card${coupled ? ' recommended-package-card' : ''}${
         !enabled ? ' disabled' : ''
-      }${checked ? ' active' : ''}${showTip ? ' has-tip' : ''}`}
+      }${checked ? ' active' : ''}${focused ? ' tile-focused' : ''}${
+        showTip ? ' has-tip' : ''
+      }`}
+      onPointerEnter={() => tileRef && onTileHover?.(tileRef)}
+      onClick={() => tileRef && onTileFocus?.(tileRef)}
     >
       <input
         type="checkbox"
@@ -76,6 +92,9 @@ export function RecommendedSelectStrip({
   onRecommendedToggle,
   onPackageToggle,
   contentCounts,
+  onTileFocus,
+  onTileHover,
+  isTileFocused,
 }: Props) {
   if (groups.length === 0) return null
 
@@ -83,17 +102,24 @@ export function RecommendedSelectStrip({
     <div
       className={`recommended-preselect${!enabled ? ' disabled' : ''}`}
       aria-label="Recommended categories"
+      onPointerLeave={() => onTileHover?.(null)}
     >
       <div className="recommended-preselect-grid">
-        {groups.map((group) => (
+        {groups.map((group) => {
+          const baseTile: PresetTileRef = { kind: 'recommended', token: group.token }
+          return (
           <div key={group.token} className="recommended-group">
             {group.hasBase ? (
               <PresetTile
+                tileRef={baseTile}
                 label={group.label}
                 countsLabel={formatCounts(contentCounts?.[group.token])}
                 checked={checkedRecommended.has(group.token)}
                 enabled={enabled}
+                focused={isTileFocused?.(baseTile)}
                 onChange={(want) => onRecommendedToggle(group.token, want)}
+                onTileFocus={onTileFocus}
+                onTileHover={onTileHover}
               />
             ) : null}
             {group.packages.length > 0 ? (
@@ -102,21 +128,29 @@ export function RecommendedSelectStrip({
                 role="group"
                 aria-label={`${group.label} packages`}
               >
-                {group.packages.map((pkg) => (
+                {group.packages.map((pkg) => {
+                  const pkgTile: PresetTileRef = { kind: 'package', token: pkg.token }
+                  return (
                   <PresetTile
                     key={pkg.token}
+                    tileRef={pkgTile}
                     label={pkg.label}
                     countsLabel={formatCounts(contentCounts?.[`package:${pkg.token}`])}
                     checked={checkedPackages.has(pkg.token)}
                     enabled={enabled}
                     coupled
+                    focused={isTileFocused?.(pkgTile)}
                     onChange={(want) => onPackageToggle(pkg.token, want)}
+                    onTileFocus={onTileFocus}
+                    onTileHover={onTileHover}
                   />
-                ))}
+                  )
+                })}
               </div>
             ) : null}
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

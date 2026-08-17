@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { InstallSequenceModel } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
 import type { RelationIndex } from '../lib/selection/relations'
@@ -11,12 +12,14 @@ interface Props {
   width: number
   onWidthChange: (width: number) => void
   onToggleCollapsed: () => void
-  display: DisplayNode | null
-  model: InstallSequenceModel
-  relationIndex: RelationIndex
-  modsByCodename: ReadonlyMap<string, ModInfo>
-  selectionState: DetailSelectionState | null
-  onNavigateToComponent: (componentId: string) => void
+  display?: DisplayNode | null
+  model?: InstallSequenceModel
+  relationIndex?: RelationIndex
+  modsByCodename?: ReadonlyMap<string, ModInfo>
+  selectionState?: DetailSelectionState | null
+  onNavigateToComponent?: (componentId: string) => void
+  children?: ReactNode
+  ariaLabel?: string
 }
 
 export function DetailPane({
@@ -24,12 +27,14 @@ export function DetailPane({
   width,
   onWidthChange,
   onToggleCollapsed,
-  display,
+  display = null,
   model,
   relationIndex,
   modsByCodename,
-  selectionState,
+  selectionState = null,
   onNavigateToComponent,
+  children,
+  ariaLabel = 'Details',
 }: Props) {
   return (
     <>
@@ -38,7 +43,7 @@ export function DetailPane({
       )}
       <aside
         className={`detail-pane${collapsed ? ' collapsed' : ''}`}
-        aria-label="Component details"
+        aria-label={ariaLabel}
       >
         {collapsed ? (
           <button
@@ -64,14 +69,21 @@ export function DetailPane({
               <IconTip>Hide details (;)</IconTip>
             </button>
             <div className="detail-pane-scroll">
-              <ComponentDetail
-                display={display}
-                model={model}
-                relationIndex={relationIndex}
-                modsByCodename={modsByCodename}
-                selectionState={selectionState}
-                onNavigateToComponent={onNavigateToComponent}
-              />
+              {children ?? (
+                model &&
+                relationIndex &&
+                modsByCodename &&
+                onNavigateToComponent && (
+                  <ComponentDetail
+                    display={display}
+                    model={model}
+                    relationIndex={relationIndex}
+                    modsByCodename={modsByCodename}
+                    selectionState={selectionState}
+                    onNavigateToComponent={onNavigateToComponent}
+                  />
+                )
+              )}
             </div>
           </>
         )}

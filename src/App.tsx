@@ -21,6 +21,7 @@ import {
   type DifficultyLevel,
   type LadderLevel,
 } from './lib/levels'
+import { buildPresetTilePreview } from './lib/selection/presetPreview'
 import { countAllLevelContent } from './lib/selection/levelCounts'
 import {
   buildRecommendedCatalog,
@@ -84,6 +85,7 @@ import {
 import { ConfirmDialog } from './ui/ConfirmDialog'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { AppTopBar } from './ui/AppTopBar'
+import { PresetDetail } from './ui/PresetDetail'
 import { DetailPane } from './ui/DetailPane'
 import { listSelectedModCodenames } from './lib/mods/loadMods'
 import { useStationTrees } from './hooks/useStationTrees'
@@ -93,6 +95,7 @@ import { useLevelPresets } from './hooks/useLevelPresets'
 import { useRecommendedPresets } from './hooks/useRecommendedPresets'
 import { useChromeHotkeys } from './hooks/useChromeHotkeys'
 import { useRouteNav } from './hooks/useRouteNav'
+import { usePresetTileFocus } from './hooks/usePresetTileFocus'
 import { useTreeFocus } from './hooks/useTreeFocus'
 import { useUserCatalog } from './hooks/useUserCatalog'
 import { useProjectSessionPersistence } from './hooks/useProjectSessionPersistence'
@@ -348,6 +351,8 @@ function AppShell() {
     selectContentSub,
   } = branchNav
 
+  const presetFocus = usePresetTileFocus()
+
   const focus = useTreeFocus({
     model,
     game,
@@ -513,10 +518,39 @@ function AppShell() {
     return buildRecommendedCatalog(model, game, selectedIds)
   }, [game, model, selectedIds])
 
+  const onPresetsStation = normalizeStation(activeStation) === 'presets'
+
   const presetRecommendedCounts = useMemo(() => {
     if (!game || recommendedGroups.length === 0) return undefined
     return countAllRecommendedContent(model, game, recommendedGroups, selectedIds)
   }, [game, model, recommendedGroups, selectedIds])
+
+  const presetPreview = useMemo(() => {
+    if (!game || !onPresetsStation || !presetFocus.displayTile) return null
+    return buildPresetTilePreview({
+      model,
+      game,
+      selectedIds,
+      tile: presetFocus.displayTile,
+      ladderChecked: levels.ladderChecked,
+      lowerDifficulty: levels.lowerDifficultyPreset,
+      higherDifficulty: levels.higherDifficultyPreset,
+      checkedRecommended: recommended.checkedRecommended,
+      checkedPackages: recommended.checkedPackages,
+      modsByCodename,
+    })
+  }, [
+    game,
+    onPresetsStation,
+    presetFocus.displayTile,
+    model,
+    selectedIds,
+    levels.ladderChecked,
+    levels.lowerDifficultyPreset,
+    levels.higherDifficultyPreset,
+    recommended.checkedRecommended,
+    recommended.checkedPackages,
+  ])
 
   const installPhaseReady = useMemo(() => {
     if (!game || !isDesktopApp()) return false
@@ -546,7 +580,7 @@ function AppShell() {
     return listSelectionState(nodes, selectedIds, game)
   }, [game, globalSearchHits, selectedIds])
 
-  const showDetail = !isSetupSlot(activeStation) && !!game
+  const showDetail = !!game && (onPresetsStation || !isSetupSlot(activeStation))
   const showComponentsChrome = appPhase === 'components'
 
   const buildGameSession = useCallback(() => {
@@ -1245,6 +1279,9 @@ function AppShell() {
                       onRecommendedToggle={onPresetsRecommendedToggle}
                       onPackageToggle={onPresetsPackageToggle}
                       recommendedCounts={presetRecommendedCounts}
+                      onTileFocus={presetFocus.onTileFocus}
+                      onTileHover={presetFocus.onTileHover}
+                      isTileFocused={presetFocus.isTileFocused}
                       finished={route.currentFinished}
                       canContinue={route.canCycleScreens}
                       onContinue={continueFromPresets}
@@ -1412,13 +1449,21 @@ function AppShell() {
                 width={detailWidth}
                 onWidthChange={setDetailWidth}
                 onToggleCollapsed={toggleDetailCollapsed}
+                ariaLabel={onPresetsStation ? 'Preset details' : 'Component details'}
                 display={focus.detailDisplay}
                 model={model}
                 relationIndex={relationIndex}
                 modsByCodename={modsByCodename}
                 selectionState={focus.detailSelectionState}
                 onNavigateToComponent={onNavigateToComponent}
-              />
+              >
+                {onPresetsStation ? (
+                  <PresetDetail
+                    preview={presetPreview}
+                    onNavigateToComponent={onNavigateToComponent}
+                  />
+                ) : undefined}
+              </DetailPane>
             )}
           </div>
         </div>

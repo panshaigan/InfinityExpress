@@ -8,6 +8,7 @@ import {
   type LadderLevel,
   type LevelInfo,
 } from '../lib/levels'
+import type { PresetTileRef } from '../lib/selection/presetPreview'
 import type { LevelContentCounts } from '../lib/selection/levelCounts'
 import { IconTip } from './IconTip'
 
@@ -22,6 +23,9 @@ interface Props {
   levelCounts?: Readonly<Record<string, LevelContentCounts>>
   /** Dense chips without title/lede — for station title panel. */
   compact?: boolean
+  onTileFocus?: (tile: PresetTileRef) => void
+  onTileHover?: (tile: PresetTileRef | null) => void
+  isTileFocused?: (tile: PresetTileRef) => boolean
 }
 
 /** Engine page rows: Fixes/Restorations, then Vanilla+/Well blended/Extended. */
@@ -39,21 +43,29 @@ function formatLevelCounts(counts: LevelContentCounts | undefined): string | nul
 }
 
 function LevelCard({
+  tileRef,
   label,
   info,
   counts,
   checked,
   enabled,
   compact,
+  focused,
   onChange,
+  onTileFocus,
+  onTileHover,
 }: {
+  tileRef?: PresetTileRef
   label: string
   info?: LevelInfo
   counts?: LevelContentCounts
   checked: boolean
   enabled: boolean
   compact: boolean
+  focused?: boolean
   onChange: (wantChecked: boolean) => void
+  onTileFocus?: (tile: PresetTileRef) => void
+  onTileHover?: (tile: PresetTileRef | null) => void
 }) {
   const showTip = !compact && !!info
   const countsLabel = formatLevelCounts(counts)
@@ -61,8 +73,10 @@ function LevelCard({
   return (
     <label
       className={`level-card${!enabled ? ' disabled' : ''}${checked ? ' active' : ''}${
-        showTip ? ' has-tip' : ''
-      }`}
+        focused ? ' tile-focused' : ''
+      }${showTip ? ' has-tip' : ''}`}
+      onPointerEnter={() => tileRef && onTileHover?.(tileRef)}
+      onClick={() => tileRef && onTileFocus?.(tileRef)}
     >
       <input
         type="checkbox"
@@ -107,6 +121,9 @@ export function LevelSelectStrip({
   onDifficultyChange,
   levelCounts,
   compact = false,
+  onTileFocus,
+  onTileHover,
+  isTileFocused,
 }: Props) {
   const difficultyChecked: Record<DifficultyLevel, boolean> = {
     lowerDifficulty,
@@ -149,6 +166,7 @@ export function LevelSelectStrip({
     <div
       className={`level-preselect${!enabled ? ' disabled' : ''}`}
       aria-label="Start with a preset"
+      onPointerLeave={() => onTileHover?.(null)}
     >
       <div className="level-preselect-layout" role="group" aria-label="Ladder levels">
         {LADDER_ROWS.map((row) => (
@@ -156,18 +174,25 @@ export function LevelSelectStrip({
             key={row.join('-')}
             className={`level-row${row.length === 3 ? ' level-row-triple' : ''}`}
           >
-            {row.map((level) => (
+            {row.map((level) => {
+              const tileRef: PresetTileRef = { kind: 'ladder', level }
+              return (
               <LevelCard
                 key={level}
+                tileRef={tileRef}
                 label={LEVEL_LABELS[level]}
                 info={LADDER_LEVEL_INFO[level]}
                 counts={levelCounts?.[level]}
                 checked={checkedLadderLevels.has(level)}
                 enabled={enabled}
                 compact={false}
+                focused={isTileFocused?.(tileRef)}
                 onChange={(want) => onLadderToggle(level, want)}
+                onTileFocus={onTileFocus}
+                onTileHover={onTileHover}
               />
-            ))}
+              )
+            })}
           </div>
         ))}
       </div>
@@ -177,18 +202,25 @@ export function LevelSelectStrip({
         role="group"
         aria-label="Difficulty"
       >
-        {DIFFICULTY_LEVELS.map((token) => (
+        {DIFFICULTY_LEVELS.map((token) => {
+          const tileRef: PresetTileRef = { kind: 'difficulty', token }
+          return (
           <LevelCard
             key={token}
+            tileRef={tileRef}
             label={LEVEL_LABELS[token]}
             info={DIFFICULTY_LEVEL_INFO[token]}
             counts={levelCounts?.[token]}
             checked={difficultyChecked[token]}
             enabled={enabled}
             compact={false}
+            focused={isTileFocused?.(tileRef)}
             onChange={(want) => onDifficultyChange(token, want)}
+            onTileFocus={onTileFocus}
+            onTileHover={onTileHover}
           />
-        ))}
+          )
+        })}
       </div>
     </div>
   )
