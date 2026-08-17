@@ -160,7 +160,7 @@ export const PRESET_LAYOUT: PresetLayoutSection[] = [
     label: 'Content',
     rows: [
       { tokens: ['vanillaPlus', 'blendWell', 'extended'] },
-      { tokens: ['npc'] },
+      { tokens: ['npc', 'campaign'] },
     ],
   },
   {

@@ -43,7 +43,7 @@
 		<component id="cd_tweaks_chapter_saves_in_pstee" name="Automatic &quot;Chapter Saves&quot; in PsT:EE" label="Automatic chapter saves" modId="Tweaks-Anthology" engine="pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3370" recommended="ui" complexity="minor" />
 	</ui>
 
-	<campaigns>
+	<campaigns recommended="campaign">
 		<alternatives label="Icewind Dale in Baldur's Gate EET" unfolded="1">
 			<component id="Tipun_iwd1_eet" name="Icewind Dale: Heart of Winter in Baldur's Gate Enhanced Edition Trilogy" label="Full Icewind Dale with HoW and TotL expansions" modId="IWD1_EET" engine="eet" default="1" complexity="major" />
 			<group label="IWD expansions without the main IWD1 content">
@@ -262,12 +262,12 @@
 			</quest>
 			<npc label="Joinable NPCs">
 				<expansions label="Original Cast Expansions" unfolded="1" recommended="npc" package="npcExpansions">
-					<mod id="BG1NPC" label="The BG1NPC Project" desc="Make the original BG1 NPCs talkative as in BG2" recommended="extended">
+					<mod id="BG1NPC" label="The BG1NPC Project" desc="Make the original BG1 NPCs talkative as in BG2">
 						<component id="bg1npc_project-main" name="The BG1 NPC Project: Required Modifications" label="Core modifications" core="1" complexity="major" />
 						<component id="bg1npc_project-banters_quests_interjections" name="The BG1 NPC Project: Banters, Quests, and Interjections" label="Banters, quests, and interjections" complexity="major" />
 						<component id="bg1npc_project-pid" name="The BG1 NPC Project: Player-Initiated Dialogues" label="Player-initiated dialogues" complexity="minor" />
 					</mod>
-					<mod id="ChattyImoen" label="Chatty Imoen" desc="Expands Imoen's voice set and adds interaction banters with other NPCs." recommended="vanillaPlus">
+					<mod id="ChattyImoen" label="Chatty Imoen" desc="Expands Imoen's voice set and adds interaction banters with other NPCs.">
 						<component id="AY-ChattyImoen-CharSnds" name="Chatty Imoen: Expanded Character Sounds" label="Expanded character sounds" complexity="minor" />
 						<component id="AY-ChattyImoen-NPCInteractions" name="Chatty Imoen: Add NPC Interactions" label="Add NPC interactions" complexity="minor" />
 					</mod>

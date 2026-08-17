@@ -27,7 +27,7 @@ import {
   resolveModStability,
 } from '../lib/mods/loadMods'
 import { statusBadgeClass } from '../lib/badges/statusBadge'
-import { packageLabel, recommendedLabel } from '../lib/recommended/labels'
+import { resolvePresetTileLabel } from '../lib/presets/resolvePresetCopy'
 import { hasNestedFoldable } from '../lib/ui/treeKeyboard'
 import { FoldAllIcon, UnfoldAllIcon } from './FoldAllIcons'
 import { IconTip } from './IconTip'
@@ -307,9 +307,9 @@ export const CheckboxRow = memo(function CheckboxRow({
   const presetRecommended =
     isComponentRow && !presetPackage ? source.effectiveRecommended : undefined
   const presetBadgeLabel = presetPackage
-    ? packageLabel(model, presetPackage)
+    ? resolvePresetTileLabel(presetPackage, model, 'package')
     : presetRecommended
-      ? recommendedLabel(presetRecommended)
+      ? resolvePresetTileLabel(presetRecommended, model, 'recommended')
       : null
 
   function handleFoldClick(e: MouseEvent) {
