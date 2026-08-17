@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { PRESET_LAYOUT } from '../data/presetCatalog'
 import type { RecommendedContentCounts, RecommendedGroup } from '../lib/recommended/catalog'
 import { resolvePresetLayout } from '../lib/recommended/catalog'
@@ -43,7 +44,15 @@ export function PresetsStation({
   onReopen,
   reopenDisabled = false,
 }: Props) {
-  const layoutSections = resolvePresetLayout(PRESET_LAYOUT, recommendedGroups)
+  const [activeTab, setActiveTab] = useState(0)
+  const layoutTabs = useMemo(
+    () => resolvePresetLayout(PRESET_LAYOUT, recommendedGroups),
+    [recommendedGroups],
+  )
+  const safeTab =
+    layoutTabs.length === 0 ? 0 : Math.min(activeTab, layoutTabs.length - 1)
+  const layoutSections = layoutTabs[safeTab]?.sections ?? []
+  const showTablist = layoutTabs.length > 1
 
   return (
     <section className="engine-station presets-station">
@@ -87,19 +96,45 @@ export function PresetsStation({
         )}
       </div>
       <div className="engine-preselect">
-        <PresetLayoutStrip
-          enabled={enabled}
-          model={model}
-          sections={layoutSections}
-          checkedRecommended={checkedRecommended}
-          checkedPackages={checkedPackages}
-          onRecommendedToggle={onRecommendedToggle}
-          onPackageToggle={onPackageToggle}
-          contentCounts={recommendedCounts}
-          onTileFocus={onTileFocus}
-          onTileHover={onTileHover}
-          isTileFocused={isTileFocused}
-        />
+        {showTablist ? (
+          <div className="preset-layout-tabs" role="tablist" aria-label="Preset groups">
+            {layoutTabs.map((tab, index) => (
+              <button
+                key={tab.label}
+                type="button"
+                role="tab"
+                id={`preset-layout-tab-${index}`}
+                aria-selected={index === safeTab}
+                aria-controls="preset-layout-panel"
+                className={`preset-layout-tab${index === safeTab ? ' active' : ''}`}
+                onClick={() => setActiveTab(index)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <div
+          id="preset-layout-panel"
+          role={showTablist ? 'tabpanel' : undefined}
+          aria-labelledby={
+            showTablist ? `preset-layout-tab-${safeTab}` : undefined
+          }
+        >
+          <PresetLayoutStrip
+            enabled={enabled}
+            model={model}
+            sections={layoutSections}
+            checkedRecommended={checkedRecommended}
+            checkedPackages={checkedPackages}
+            onRecommendedToggle={onRecommendedToggle}
+            onPackageToggle={onPackageToggle}
+            contentCounts={recommendedCounts}
+            onTileFocus={onTileFocus}
+            onTileHover={onTileHover}
+            isTileFocused={isTileFocused}
+          />
+        </div>
       </div>
     </section>
   )

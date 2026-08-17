@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseInstallSequence } from '../xml/parseInstallSequence'
-import { buildRecommendedCatalog, resolvePresetLayout } from './catalog'
+import { buildRecommendedCatalog, resolvePresetLayout, resolvePresetLayoutSections } from './catalog'
 
 const XML = `<?xml version="1.0"?>
 <installSequence>
@@ -54,7 +54,7 @@ describe('buildRecommendedCatalog', () => {
   })
 })
 
-describe('resolvePresetLayout', () => {
+describe('resolvePresetLayoutSections', () => {
   const { model } = parseInstallSequence(XML)
 
   it('keeps only whitelisted tokens that exist in the catalog', () => {
@@ -65,7 +65,7 @@ describe('resolvePresetLayout', () => {
         rows: [{ tokens: ['gfx', 'missing'] }, { tokens: ['sounds'] }],
       },
     ]
-    const resolved = resolvePresetLayout(layout, groups)
+    const resolved = resolvePresetLayoutSections(layout, groups)
     expect(resolved).toHaveLength(1)
     expect(resolved[0]?.label).toBe('Presence')
     expect(resolved[0]?.rows).toHaveLength(2)
@@ -75,10 +75,57 @@ describe('resolvePresetLayout', () => {
 
   it('omits empty sections', () => {
     const groups = buildRecommendedCatalog(model, 'eet')
-    const resolved = resolvePresetLayout(
+    const resolved = resolvePresetLayoutSections(
       [{ label: 'Empty', rows: [{ tokens: ['missing'] }] }],
       groups,
     )
     expect(resolved).toEqual([])
+  })
+})
+
+describe('resolvePresetLayout', () => {
+  const { model } = parseInstallSequence(XML)
+
+  it('keeps nested sections on a non-empty tab', () => {
+    const groups = buildRecommendedCatalog(model, 'eet')
+    const resolved = resolvePresetLayout(
+      [
+        {
+          label: 'Media',
+          sections: [
+            {
+              label: 'Presence',
+              rows: [{ tokens: ['gfx', 'missing'] }, { tokens: ['sounds'] }],
+            },
+            { label: 'Empty', rows: [{ tokens: ['missing'] }] },
+          ],
+        },
+      ],
+      groups,
+    )
+    expect(resolved).toHaveLength(1)
+    expect(resolved[0]?.label).toBe('Media')
+    expect(resolved[0]?.sections).toHaveLength(1)
+    expect(resolved[0]?.sections[0]?.label).toBe('Presence')
+    expect(resolved[0]?.sections[0]?.rows[0]?.cells.map((c) => c.token)).toEqual(['gfx'])
+  })
+
+  it('omits empty tabs', () => {
+    const groups = buildRecommendedCatalog(model, 'eet')
+    const resolved = resolvePresetLayout(
+      [
+        {
+          label: 'Empty',
+          sections: [{ label: 'Missing', rows: [{ tokens: ['missing'] }] }],
+        },
+        {
+          label: 'Media',
+          sections: [{ label: 'Sounds', rows: [{ tokens: ['sounds'] }] }],
+        },
+      ],
+      groups,
+    )
+    expect(resolved).toHaveLength(1)
+    expect(resolved[0]?.label).toBe('Media')
   })
 })

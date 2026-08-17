@@ -4,7 +4,7 @@
  * - PRESET_TILE_COPY — recommended tokens (fixes, ui, npc, …)
  * - PRESET_PACKAGE_COPY — package tokens (BGGO, npcExpansions, …); same fields.
  *   Label falls back to InstallSequence ancestor `label` when omitted.
- * - PRESET_LAYOUT — section headings and rows of recommended tokens
+ * - PRESET_LAYOUT — tabs of section headings and rows of recommended tokens
  */
 
 export interface PresetTileCopy {
@@ -21,6 +21,11 @@ export interface PresetLayoutRow {
 export interface PresetLayoutSection {
   label: string
   rows: PresetLayoutRow[]
+}
+
+export interface PresetLayoutTab {
+  label: string
+  sections: PresetLayoutSection[]
 }
 
 /** Recommended-token tile copy (label optional override). */
@@ -369,36 +374,51 @@ export const PRESET_PACKAGE_COPY: Record<string, PresetTileCopy> = {
   },
 }
 
-/** Presets page section layout (whitelist of recommended tokens). */
-export const PRESET_LAYOUT: PresetLayoutSection[] = [
+/** Presets page tab + section layout (whitelist of recommended tokens). */
+export const PRESET_LAYOUT: PresetLayoutTab[] = [
   {
-    label: 'Base',
-    rows: [{ tokens: ['fixes', 'restoration'] }],
-  },
-  {
-    label: 'Media & Interface',
-    rows: [{ tokens: ['ui', 'gfx', 'sounds'] }],
-  },
-  {
-    label: 'Rules',
-    rows: [{ tokens: ['mechanics', 'spells', 'combat'] }],
-  },
-  {
-    label: 'Campaigns',
-    rows: [
-      { tokens: ['iwd', 'iwd2', 'nwn'] },
-      { tokens: ['dedicated'] }
+    label: 'Base & Interface',
+    sections: [
+      {
+        label: 'Base',
+        rows: [{ tokens: ['fixes', 'restoration'] }],
+      },
+      {
+        label: 'Media & Interface',
+        rows: [{ tokens: ['ui', 'gfx', 'sounds'] }],
+      },
     ],
   },
   {
-    label: 'Content',
-    rows: [
-      { tokens: ['vanillaPlus', 'blendWell', 'extended'] },
-      { tokens: ['npc', 'restructure'] },
+    label: 'Campaigns & Content',
+    sections: [
+      {
+        label: 'Campaigns',
+        rows: [
+          { tokens: ['iwd', 'iwd2', 'nwn'] },
+          { tokens: ['dedicated'] },
+        ],
+      },
+      {
+        label: 'Content',
+        rows: [
+          { tokens: ['vanillaPlus', 'blendWell', 'extended'] },
+          { tokens: ['npc', 'restructure'] },
+        ],
+      },
     ],
   },
   {
-    label: 'Difficulty',
-    rows: [{ tokens: ['lowerDifficulty', 'higherDifficulty', 'adjustements'] }],
+    label: 'Rules & Difficulty',
+    sections: [
+      {
+        label: 'Rules',
+        rows: [{ tokens: ['mechanics', 'spells', 'combat'] }],
+      },
+      {
+        label: 'Difficulty',
+        rows: [{ tokens: ['lowerDifficulty', 'higherDifficulty', 'adjustements'] }],
+      },
+    ],
   },
 ]

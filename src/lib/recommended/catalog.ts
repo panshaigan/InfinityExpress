@@ -1,4 +1,4 @@
-import type { PresetLayoutSection } from '../../data/presetCatalog'
+import type { PresetLayoutSection, PresetLayoutTab } from '../../data/presetCatalog'
 import { engineMatches } from '../engine/matchEngine'
 import { resolveModLookupKey } from '../mods/loadMods'
 import { passesOwnAndAncestorDisplayGates } from '../selection/treeAncestry'
@@ -179,8 +179,13 @@ export interface ResolvedPresetLayoutSection {
   rows: ResolvedPresetLayoutRow[]
 }
 
+export interface ResolvedPresetLayoutTab {
+  label: string
+  sections: ResolvedPresetLayoutSection[]
+}
+
 /** Whitelist layout tokens against live catalog groups; omit empty rows/sections. */
-export function resolvePresetLayout(
+export function resolvePresetLayoutSections(
   layout: readonly PresetLayoutSection[],
   groups: readonly RecommendedGroup[],
 ): ResolvedPresetLayoutSection[] {
@@ -197,6 +202,19 @@ export function resolvePresetLayout(
       if (cells.length > 0) rows.push({ cells })
     }
     if (rows.length > 0) out.push({ label: section.label, rows })
+  }
+  return out
+}
+
+/** Resolve tabs; omit tabs whose sections are all empty after whitelist. */
+export function resolvePresetLayout(
+  layout: readonly PresetLayoutTab[],
+  groups: readonly RecommendedGroup[],
+): ResolvedPresetLayoutTab[] {
+  const out: ResolvedPresetLayoutTab[] = []
+  for (const tab of layout) {
+    const sections = resolvePresetLayoutSections(tab.sections, groups)
+    if (sections.length > 0) out.push({ label: tab.label, sections })
   }
   return out
 }

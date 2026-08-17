@@ -66,7 +66,7 @@ Single edit point for the Presets station:
 
 - **`PRESET_TILE_COPY`** — label (optional override), tile subtitle (`summary`), and tooltip copy (`typeAndDepth`, `recommendedFor`) per recommended token.
 - **`PRESET_PACKAGE_COPY`** — same fields for package tokens. Label falls back to the InstallSequence ancestor `label` when omitted; other fields come only from the catalog (no XML `desc` import). Add an entry per package token you want to customize; unknown packages still show the InstallSequence label with empty subtitle/tooltip.
-- **`PRESET_LAYOUT`** — section headings and rows of recommended tokens (2–3 column flex grid). Only listed tokens render; packages still nest under their parent from the live catalog.
+- **`PRESET_LAYOUT`** — tabs of section headings and rows of recommended tokens (2–3 column flex grid). Each tab has an explicit `label` and nested `sections`. Only listed tokens render; packages still nest under their parent from the live catalog. Empty sections and empty tabs are omitted after engine / visibility filtering. The Presets station shows one tab at a time; Continue still finishes the whole station.
 
 Example package entry (same shape as recommended tiles):
 
