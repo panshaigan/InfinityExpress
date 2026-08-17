@@ -1,4 +1,11 @@
-/** Preset tile copy and page layout — single edit point for the Presets station. */
+/**
+ * Preset tile copy and page layout — single edit point for the Presets station.
+ *
+ * - PRESET_TILE_COPY — recommended tokens (fixes, ui, npc, …)
+ * - PRESET_PACKAGE_COPY — package tokens (BGGO, npcExpansions, …); same fields.
+ *   Label falls back to InstallSequence ancestor `label` when omitted.
+ * - PRESET_LAYOUT — section headings and rows of recommended tokens
+ */
 
 export interface PresetTileCopy {
   label?: string
@@ -127,19 +134,84 @@ export const PRESET_TILE_COPY: Record<string, PresetTileCopy> = {
 
 /** Package-token tile copy (label optional override). */
 export const PRESET_PACKAGE_COPY: Record<string, PresetTileCopy> = {
-  EEex: { label: 'EEex' },
-  BGGO: { label: "Baldur's Gate Graphical Overhaul" },
-  IDGO: { label: 'Icewind Dale Graphical Overhaul' },
-  npcExpansions: { label: 'Original Cast Expansions' },
-  romances: { label: 'Romances' },
-  customNpcs: { label: 'Custom NPCs' },
-  returningNpcs: { label: 'Returning Playable NPCs' },
-  npcChoices: { label: 'NPC Choices' },
-  encounters: { label: 'Encounters' },
-  BG1Sounds: { label: 'BG1 Sounds' },
-  vve: { label: 'Voices Voices Extravaganza' },
-  npcColoredEquipment: { label: 'NPC Colored Equipment' },
-  colorizeNpcNames: { label: 'Colorize NPC Names' },
+  EEex: {
+    label: 'EEex',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  BGGO: {
+    label: "Baldur's Gate Graphical Overhaul",
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  IDGO: {
+    label: 'Icewind Dale Graphical Overhaul',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  npcExpansions: {
+    label: 'Original Cast Expansions',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  romances: {
+    label: 'Romances',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  customNpcs: {
+    label: 'Custom NPCs',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  returningNpcs: {
+    label: 'Returning Playable NPCs',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  npcChoices: {
+    label: 'NPC Choices',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  encounters: {
+    label: 'Encounters',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  BG1Sounds: {
+    label: 'BG1 Sounds',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  vve: {
+    label: 'Voices Voices Extravaganza',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  npcColoredEquipment: {
+    label: 'NPC Colored Equipment',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
+  colorizeNpcNames: {
+    label: 'Colorize NPC Names',
+    summary: '',
+    typeAndDepth: '',
+    recommendedFor: '',
+  },
 }
 
 /** Presets page section layout (whitelist of recommended tokens). */
@@ -157,10 +229,17 @@ export const PRESET_LAYOUT: PresetLayoutSection[] = [
     rows: [{ tokens: ['mechanics', 'spells', 'combat'] }],
   },
   {
+    label: 'Campaigns',
+    rows: [
+      { tokens: ['iwd', 'iwd2', 'nwn'] },
+      { tokens: ['how', 'totl'] }
+    ],
+  },
+  {
     label: 'Content',
     rows: [
       { tokens: ['vanillaPlus', 'blendWell', 'extended'] },
-      { tokens: ['npc', 'campaign'] },
+      { tokens: ['npc', 'restructure'] },
     ],
   },
   {

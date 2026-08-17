@@ -43,12 +43,12 @@
 		<component id="cd_tweaks_chapter_saves_in_pstee" name="Automatic &quot;Chapter Saves&quot; in PsT:EE" label="Automatic chapter saves" modId="Tweaks-Anthology" engine="pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3370" recommended="ui" complexity="minor" />
 	</ui>
 
-	<campaigns recommended="campaign">
+	<campaigns>
 		<alternatives label="Icewind Dale in Baldur's Gate EET" unfolded="1">
-			<component id="Tipun_iwd1_eet" name="Icewind Dale: Heart of Winter in Baldur's Gate Enhanced Edition Trilogy" label="Full Icewind Dale with HoW and TotL expansions" modId="IWD1_EET" engine="eet" default="1" complexity="major" />
+			<component id="Tipun_iwd1_eet" name="Icewind Dale: Heart of Winter in Baldur's Gate Enhanced Edition Trilogy" label="Full Icewind Dale with HoW and TotL expansions" modId="IWD1_EET" engine="eet" default="1" recommended="iwd" complexity="major" />
 			<group label="IWD expansions without the main IWD1 content">
-				<component id="how_eet:0" name="[Icewind Dale in Baldur's Gate EET] Heart of Winter in Baldur's Gate Enhanced Edition (Trilogy)" label="Heart of Winter" modId="HoW_EET" engine="bg1,eet" complexity="moderate" />
-				<mod id="A7-TotLM-BG2EE" label="Trials of the Luremaster for BG:EET" engine="bg2,eet">
+				<component id="how_eet:0" name="[Icewind Dale in Baldur's Gate EET] Heart of Winter in Baldur's Gate Enhanced Edition (Trilogy)" label="Heart of Winter" modId="HoW_EET" engine="bg1,eet" recommended="how" complexity="moderate" />
+				<mod id="A7-TotLM-BG2EE" label="Trials of the Luremaster for BG:EET" recommended="totl" engine="bg2,eet">
 					<component id="A7-TOTLM-BG2EE-MAIN" name="Trials of the Luremaster for Baldur's Gate" label="Main component" core="1" complexity="moderate" />
 					<component id="A7-TOTLM-BG2EE-REBALANCE_ITEMS" name="Rebalance weapons and equipment" label="Rebalance weapons and equipment" complexity="moderate" />
 					<component id="A7-TOTLM-BG2EE-TRADE_WITH_HOBART" name="Allow to trade with Hobart before starting the adventure" label="Allow trading with Hobart before starting the adventure" complexity="minor" />
@@ -61,10 +61,10 @@
 				</mod>
 			</group>
 		</alternatives>
-		<component id="iwd2_eet:0" name="Icewind Dale 2 in Baldur's Gate Enhanced Edition Trilogy" label="Icewind Dale 2 in Baldur's Gate EET" modId="IWD2_EET" engine="eet" complexity="major" />
+		<component id="iwd2_eet:0" name="Icewind Dale 2 in Baldur's Gate Enhanced Edition Trilogy" label="Icewind Dale 2 in Baldur's Gate EET" modId="IWD2_EET" engine="eet" recommended="iwd2" complexity="major" />
 		<mod id="NWNForBG" label="Neverwinter Nights for Baldur's Gate" engine="bg2,eet">
-			<component id="NWN_MainComponent" name="NWN For BG" label="Main component" core="1" complexity="major" />
-			<component id="NWN_WorldmapSelect_NWNWorld" name="Use separate worldmap for NWN areas" label="Use a separate world map for NWN areas" complexity="minor" />
+			<component id="NWN_MainComponent" name="NWN For BG" label="Main component" core="1" recommended="nwn" complexity="major" />
+			<component id="NWN_WorldmapSelect_NWNWorld" name="Use separate worldmap for NWN areas" label="Use a separate world map for NWN areas" recommended="nwn" complexity="minor" />
 		</mod>
 	</campaigns>
 
@@ -2036,15 +2036,15 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			</alternatives>
 			<alternatives label="XP for killing creatures">
 				<component id="EET_Tweaks:2050" name="Increase to 150%" label="Increase to 150%" modId="EET_Tweaks" complexity="major" />
-				<component id="EET_Tweaks:2051" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" recommended="blendWell" default="1" complexity="major" />
-				<component id="EET_Tweaks:2052" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" recommended="extended" complexity="major" />
+				<component id="EET_Tweaks:2051" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" default="1" complexity="major" />
+				<component id="EET_Tweaks:2052" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" complexity="major" />
 				<component id="EET_Tweaks:2053" name="Decrease to 25%" label="Decrease to 25%" modId="EET_Tweaks" complexity="major" />
 				<component id="EET_Tweaks:2054" name="Decrease to 10%" label="Decrease to 10%" modId="EET_Tweaks" complexity="major" />
 				<component id="EET_Tweaks:2055" name="Disable" label="Disabled" modId="EET_Tweaks" complexity="major" />
 			</alternatives>
 			<alternatives label="XP for quests">
 				<component id="EET_Tweaks:2060" name="Increase to 150%" label="Increase to 150%" modId="EET_Tweaks" complexity="moderate" />
-				<component id="EET_Tweaks:2061" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" recommended="extended" default="1" complexity="moderate" />
+				<component id="EET_Tweaks:2061" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" default="1" complexity="moderate" />
 				<component id="EET_Tweaks:2062" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" complexity="moderate" />
 				<component id="EET_Tweaks:2063" name="Decrease to 25%" label="Decrease to 25%" modId="EET_Tweaks" complexity="moderate" />
 				<component id="EET_Tweaks:2064" name="Decrease to 10%" label="Decrease to 10%" modId="EET_Tweaks" complexity="moderate" />
@@ -2061,9 +2061,9 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 				<component id="ZG-GRAION-GOLD-200" name="Increase to 200%" label="Increase to 200%" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-150" name="Increase to 150%" label="Increase to 150%" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-83" name="Decrease to 83%" label="Decrease to 83%" complexity="moderate" />
-				<component id="ZG-GRAION-GOLD-75" name="Decrease to 75%" label="Decrease to 75%" recommended="blendWell" default="1" complexity="moderate" />
+				<component id="ZG-GRAION-GOLD-75" name="Decrease to 75%" label="Decrease to 75%" default="1" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-66" name="Decrease to 66%" label="Decrease to 66%" complexity="moderate" />
-				<component id="ZG-GRAION-GOLD-50" name="Decrease to 50%" label="Decrease to 50%" recommended="extended" complexity="moderate" />
+				<component id="ZG-GRAION-GOLD-50" name="Decrease to 50%" label="Decrease to 50%" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-33" name="Decrease to 33%" label="Decrease to 33%" complexity="moderate" />
 				<component id="ZG-GRAION-GOLD-25" name="Decrease to 25%" label="Decrease to 25%" complexity="moderate" />
 			</alternatives>
@@ -2079,9 +2079,9 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			</alternatives>
 			<alternatives label="Prices in the shops">
 				<component id="ZG-GRAION-STORES-TOPLAYERS-50" name="Decrease to 50%" label="Decrease to 50%" complexity="moderate" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-125" name="Increase to 125%" label="Increase to 125%"  recommended="blendWell" default="1" complexity="moderate" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-125" name="Increase to 125%" label="Increase to 125%"  default="1" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-133" name="Increase to 133%" label="Increase to 133%" complexity="moderate" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-150" name="Increase to 150%" label="Increase to 150%" recommended="extended" complexity="moderate" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-150" name="Increase to 150%" label="Increase to 150%" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-175" name="Increase to 175%" label="Increase to 175%" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-200" name="Increase to 200%" label="Increase to 200%" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-300" name="Increase to 300%" label="Increase to 300%" complexity="moderate" />

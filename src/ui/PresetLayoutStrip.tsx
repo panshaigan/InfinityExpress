@@ -58,7 +58,10 @@ function PresetTile({
   onTileHover?: (tile: PresetTileRef | null) => void
 }) {
   const showTip =
-    !!countsLabel || !!info.typeAndDepth.trim() || !!info.recommendedFor.trim()
+    !!countsLabel ||
+    !!info.summary.trim() ||
+    !!info.typeAndDepth.trim() ||
+    !!info.recommendedFor.trim()
 
   return (
     <label

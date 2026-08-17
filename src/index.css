@@ -3071,8 +3071,18 @@ body.is-resizing-detail * {
   border-left-width: 2px;
 }
 
+.recommended-package-card:has(.level-card-hint) {
+  min-height: 0;
+  align-items: flex-start;
+}
+
 .recommended-package-card .level-card-label {
   font-size: 0.88rem;
+}
+
+.recommended-package-card .level-card-hint {
+  font-size: 0.7rem;
+  line-height: 1.25;
 }
 
 /* —— Component tree —— */

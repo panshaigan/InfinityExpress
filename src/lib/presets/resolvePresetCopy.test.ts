@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { PRESET_PACKAGE_COPY } from '../../data/presetCatalog'
 import { parseInstallSequence } from '../xml/parseInstallSequence'
 import {
   resolvePackageTileInfo,
@@ -51,5 +52,23 @@ describe('resolvePresetCopy', () => {
     expect(resolvePresetTileLabel('BGGO', model, 'package')).toBe(
       "Baldur's Gate Graphical Overhaul",
     )
+  })
+
+  it('uses catalog package copy fields when set', () => {
+    const saved = PRESET_PACKAGE_COPY.EEex
+    PRESET_PACKAGE_COPY.EEex = {
+      label: 'EEex',
+      summary: 'Executable extender for advanced modding.',
+      typeAndDepth: 'Major prerequisite for several UI tweaks.',
+      recommendedFor: 'Lists that use EEex-dependent components.',
+    }
+    try {
+      const info = resolvePackageTileInfo('EEex', model)
+      expect(info.summary).toBe('Executable extender for advanced modding.')
+      expect(info.typeAndDepth).toBe('Major prerequisite for several UI tweaks.')
+      expect(info.recommendedFor).toBe('Lists that use EEex-dependent components.')
+    } finally {
+      PRESET_PACKAGE_COPY.EEex = saved
+    }
   })
 })
