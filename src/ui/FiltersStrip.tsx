@@ -201,7 +201,6 @@ export function FiltersStrip({
       }}
     >
       <div className="filters-row">
-        <span className="filters-label">Filters</span>
         <button
           type="button"
           className={`filters-scope has-icon-tip${searchScope === 'all' ? ' all' : ''}`}
