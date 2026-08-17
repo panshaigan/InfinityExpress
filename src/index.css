@@ -3435,6 +3435,7 @@ body.is-resizing-detail * {
 
 .tree-row .badge-level,
 .tree-row .badge-mod-abbr,
+.tree-row .badge-preset,
 .tree-row .badge-status-chooseOne,
 .tree-row .badge-status-required,
 .tree-row .badge-status-hidden {
@@ -3598,6 +3599,25 @@ body.is-resizing-detail * {
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.02em;
+}
+
+/* —— Preset recommended / package badges —— */
+
+.badge-preset {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+
+.badge-preset-recommended {
+  color: color-mix(in srgb, var(--accent) 75%, var(--muted));
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+.badge-preset-package {
+  color: color-mix(in srgb, var(--accent) 85%, var(--text));
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
+  font-weight: 600;
 }
 
 .empty {

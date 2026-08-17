@@ -1,10 +1,9 @@
 import { engineMatches } from '../engine/matchEngine'
 import { resolveModLookupKey } from '../mods/loadMods'
 import { passesOwnAndAncestorDisplayGates } from '../selection/treeAncestry'
+import { packageLabel, recommendedLabel } from './labels'
 import {
-  STATION_LABELS,
   STATION_ORDER,
-  isStationTag,
   type ComponentNode,
   type InstallSequenceModel,
   type SelectedGame,
@@ -26,22 +25,6 @@ export interface RecommendedGroup {
 export interface RecommendedContentCounts {
   components: number
   mods: number
-}
-
-function recommendedLabel(token: string): string {
-  if (isStationTag(token)) return STATION_LABELS[token]
-  return token
-}
-
-/** Label from the nearest ancestor that declares this package token. */
-function packageLabel(model: InstallSequenceModel, packageToken: string): string {
-  for (const node of model.nodesByKey.values()) {
-    if (node.attrs.package === packageToken) {
-      const label = node.attrs.label?.trim()
-      if (label) return label
-    }
-  }
-  return packageToken
 }
 
 function isEligibleForCatalog(

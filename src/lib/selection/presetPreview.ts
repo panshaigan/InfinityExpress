@@ -10,10 +10,7 @@ import {
   resolveModLookupKey,
   type ModInfo,
 } from '../mods/loadMods'
-import {
-  isStationTag,
-  STATION_LABELS,
-} from '../xml/schema'
+import { packageLabel, recommendedLabel } from '../recommended/labels'
 import {
   passesOwnAndAncestorDisplayGates,
 } from './treeAncestry'
@@ -124,11 +121,6 @@ function isTileChecked(
   }
 }
 
-function recommendedLabel(token: string): string {
-  if (isStationTag(token)) return STATION_LABELS[token]
-  return token
-}
-
 function tileLabel(tile: PresetTileRef, model: InstallSequenceModel): string {
   switch (tile.kind) {
     case 'ladder':
@@ -137,15 +129,8 @@ function tileLabel(tile: PresetTileRef, model: InstallSequenceModel): string {
       return LEVEL_LABELS[tile.token] ?? tile.token
     case 'recommended':
       return recommendedLabel(tile.token)
-    case 'package': {
-      for (const node of model.nodesByKey.values()) {
-        if (node.attrs.package === tile.token) {
-          const label = node.attrs.label?.trim()
-          if (label) return label
-        }
-      }
-      return tile.token
-    }
+    case 'package':
+      return packageLabel(model, tile.token)
   }
 }
 
