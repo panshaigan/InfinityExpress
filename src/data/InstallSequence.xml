@@ -2037,16 +2037,16 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			</alternatives>
 			<alternatives label="XP for killing creatures">
 				<component id="EET_Tweaks:2050" name="Increase to 150%" label="Increase to 150%" modId="EET_Tweaks" complexity="major" />
-				<component id="EET_Tweaks:2051" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" default="1" complexity="major" />
-				<component id="EET_Tweaks:2052" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" complexity="major" />
+				<component id="EET_Tweaks:2051" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" default="1" recommended="blendWell" complexity="major" />
+				<component id="EET_Tweaks:2052" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" recommended="extended" complexity="major" />
 				<component id="EET_Tweaks:2053" name="Decrease to 25%" label="Decrease to 25%" modId="EET_Tweaks" complexity="major" />
 				<component id="EET_Tweaks:2054" name="Decrease to 10%" label="Decrease to 10%" modId="EET_Tweaks" complexity="major" />
 				<component id="EET_Tweaks:2055" name="Disable" label="Disabled" modId="EET_Tweaks" complexity="major" />
 			</alternatives>
 			<alternatives label="XP for quests">
 				<component id="EET_Tweaks:2060" name="Increase to 150%" label="Increase to 150%" modId="EET_Tweaks" complexity="moderate" />
-				<component id="EET_Tweaks:2061" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" default="1" complexity="moderate" />
-				<component id="EET_Tweaks:2062" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" complexity="moderate" />
+				<component id="EET_Tweaks:2061" name="Decrease to 75%" label="Decrease to 75%" modId="EET_Tweaks" default="1" recommended="blendWell" complexity="moderate" />
+				<component id="EET_Tweaks:2062" name="Decrease to 50%" label="Decrease to 50%" modId="EET_Tweaks" recommended="extended" complexity="moderate" />
 				<component id="EET_Tweaks:2063" name="Decrease to 25%" label="Decrease to 25%" modId="EET_Tweaks" complexity="moderate" />
 				<component id="EET_Tweaks:2064" name="Decrease to 10%" label="Decrease to 10%" modId="EET_Tweaks" complexity="moderate" />
 				<component id="EET_Tweaks:2065" name="Disable" label="Disabled" modId="EET_Tweaks" complexity="moderate" />
@@ -2080,9 +2080,9 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			</alternatives>
 			<alternatives label="Prices in the shops">
 				<component id="ZG-GRAION-STORES-TOPLAYERS-50" name="Decrease to 50%" label="Decrease to 50%" complexity="moderate" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-125" name="Increase to 125%" label="Increase to 125%"  default="1" complexity="moderate" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-125" name="Increase to 125%" label="Increase to 125%" recommended="blendWell" default="1" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-133" name="Increase to 133%" label="Increase to 133%" complexity="moderate" />
-				<component id="ZG-GRAION-STORES-TOPLAYERS-150" name="Increase to 150%" label="Increase to 150%" complexity="moderate" />
+				<component id="ZG-GRAION-STORES-TOPLAYERS-150" name="Increase to 150%" label="Increase to 150%" recommended="extended" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-175" name="Increase to 175%" label="Increase to 175%" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-200" name="Increase to 200%" label="Increase to 200%" complexity="moderate" />
 				<component id="ZG-GRAION-STORES-TOPLAYERS-300" name="Increase to 300%" label="Increase to 300%" complexity="moderate" />

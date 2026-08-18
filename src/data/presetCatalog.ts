@@ -208,7 +208,17 @@ export const PRESET_TILE_COPY: Record<string, PresetTileCopy> = {
       'Moderate impact. Changes campaign presentation and availability, allowing dedicated campaigns to be accessed separately from the main Baldur’s Gate saga.',
     recommendedFor:
       'Players primarily interested in playing the additional campaigns as standalone experiences rather than as extensions of the Baldur’s Gate saga.',
-  }
+  },
+
+  adjustments: {
+    label: 'Adjustments',
+    summary:
+      'Practical gameplay tweaks that refine the original experience without fundamentally changing its core systems or adding substantial new content.',
+    typeAndDepth:
+      'Low to moderate impact. Includes adjustments to experience and gold economy, item stacking, identification, store behavior, regeneration, exploration convenience, dialogue behavior, and other everyday gameplay rules.',
+    recommendedFor:
+      'Players who want to fine-tune the original game, reduce minor annoyances, or improve its convenience while keeping the overall gameplay experience familiar.',
+  },
 }
 
 /** Package-token tile copy (label optional override). */
