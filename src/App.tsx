@@ -79,8 +79,7 @@ import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { AppTopBar } from './ui/AppTopBar'
 import { PresetDetail } from './ui/PresetDetail'
 import { DetailPane } from './ui/DetailPane'
-import { formatBytes, listSelectedModCodenames } from './lib/mods/loadMods'
-import { estimateAcquireTotal } from './lib/mods/acquireTargets'
+import { listSelectedModCodenames } from './lib/mods/loadMods'
 import { useStationTrees } from './hooks/useStationTrees'
 import { useBranchNav } from './hooks/useBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
@@ -476,18 +475,6 @@ function AppShell() {
     [model, selectedIds],
   )
   const selectedModsCount = neededCodenames.length
-
-  const selectedModsSizeLabel = useMemo(() => {
-    if (neededCodenames.length === 0) return null
-    const map = new Map(userCatalog.mods.map((m) => [m.codename.toLowerCase(), m]))
-    const targets = neededCodenames
-      .map((c) => map.get(c.toLowerCase()))
-      .filter((m): m is (typeof userCatalog.mods)[number] => m != null)
-    const estimate = estimateAcquireTotal({ targets, pending: new Map() })
-    if (estimate.totalBytes == null) return null
-    const suffix = estimate.unknownCount > 0 ? '+' : ''
-    return `${formatBytes(estimate.totalBytes)}${suffix}`
-  }, [neededCodenames, userCatalog.mods])
 
   const recommendedGroups = useMemo(() => {
     if (!game) return []
@@ -1064,7 +1051,6 @@ function AppShell() {
         switchProjectTip={projectsBlockedTip(blockingFlags)}
         selectedModsCount={selectedModsCount}
         selectedCount={selectedIds.size}
-        selectedModsSizeLabel={selectedModsSizeLabel}
         presets={presets.gamePresets.map((p) => ({ id: p.id, name: p.name }))}
         activePresetId={
           presets.activePreset?.game === game ? presets.activePresetId : null

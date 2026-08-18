@@ -149,24 +149,6 @@ body {
   line-height: 0;
 }
 
-.top-bar-leading {
-  display: flex;
-  align-items: center;
-  gap: 0.15rem;
-  flex-shrink: 0;
-}
-
-.top-bar-icon-btn {
-  border: none;
-  background: transparent;
-  color: var(--ink);
-}
-
-.top-bar-icon-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
-  border-color: transparent;
-}
-
 
 .selection-presets-bar {
   position: relative;

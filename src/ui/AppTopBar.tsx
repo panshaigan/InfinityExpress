@@ -19,7 +19,6 @@ interface Props {
   game: SelectedGame | null
   selectedModsCount: number
   selectedCount: number
-  selectedModsSizeLabel?: string | null
   presets: PresetItem[]
   activePresetId: string | null
   activePresetName: string | null
@@ -99,7 +98,6 @@ export function AppTopBar({
   game,
   selectedModsCount,
   selectedCount,
-  selectedModsSizeLabel = null,
   presets,
   activePresetId,
   activePresetName,
@@ -129,35 +127,17 @@ export function AppTopBar({
 }: Props) {
   return (
     <header className="top-bar">
-      {(onSwitchProject || onResetAll) ? (
-        <div className="top-bar-leading">
-          {onSwitchProject ? (
-            <button
-              type="button"
-              className="btn top-bar-help top-bar-settings top-bar-icon-btn has-icon-tip"
-              aria-label="Projects"
-              disabled={switchProjectDisabled}
-              aria-disabled={switchProjectDisabled || undefined}
-              onClick={onSwitchProject}
-            >
-              <ProjectsIcon />
-              <IconTip align="end">{switchProjectTip}</IconTip>
-            </button>
-          ) : null}
-          {onResetAll ? (
-            <button
-              type="button"
-              className="btn top-bar-help top-bar-settings top-bar-icon-btn has-icon-tip"
-              disabled={resetAllDisabled}
-              aria-label="Reset all"
-              onClick={onResetAll}
-            >
-              <RestartIcon />
-              <IconTip align="end">{resetAllTip}</IconTip>
-            </button>
-          ) : null}
-        </div>
-      ) : null}
+      <button
+        type="button"
+        className="brand has-icon-tip"
+        aria-haspopup="dialog"
+        aria-expanded={aboutOpen}
+        aria-label="About iNfinity eXpress"
+        onClick={onOpenAbout}
+      >
+        <span className="brand-title">iNeX</span>
+        <IconTip>About</IconTip>
+      </button>
       <PhaseNav
         phase={phase}
         onPhaseChange={onPhaseChange}
@@ -168,7 +148,6 @@ export function AppTopBar({
       <div className="top-bar-actions">
         <span className="stats">
           {selectedModsCount} mods · {selectedCount} comps
-          {selectedModsSizeLabel ? ` · ${selectedModsSizeLabel}` : ''}
         </span>
         <SelectionPresetsBar
           disabled={game == null}
@@ -208,17 +187,31 @@ export function AppTopBar({
           settingsOpen={settingsOpen}
           onOpenSettings={onOpenSettings}
         />
-        <button
-          type="button"
-          className="brand has-icon-tip"
-          aria-haspopup="dialog"
-          aria-expanded={aboutOpen}
-          aria-label="About iNfinity eXpress"
-          onClick={onOpenAbout}
-        >
-          <span className="brand-title">iNeX</span>
-          <IconTip>About</IconTip>
-        </button>
+        {onSwitchProject ? (
+          <button
+            type="button"
+            className="btn secondary top-bar-help top-bar-settings has-icon-tip"
+            aria-label="Projects"
+            disabled={switchProjectDisabled}
+            aria-disabled={switchProjectDisabled || undefined}
+            onClick={onSwitchProject}
+          >
+            <ProjectsIcon />
+            <IconTip align="end">{switchProjectTip}</IconTip>
+          </button>
+        ) : null}
+        {onResetAll ? (
+          <button
+            type="button"
+            className="btn secondary top-bar-help top-bar-settings has-icon-tip"
+            disabled={resetAllDisabled}
+            aria-label="Reset all"
+            onClick={onResetAll}
+          >
+            <RestartIcon />
+            <IconTip align="end">{resetAllTip}</IconTip>
+          </button>
+        ) : null}
       </div>
     </header>
   )
