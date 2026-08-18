@@ -1,18 +1,15 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { formatBytes, type AuthorOption, type SizeBounds } from '../lib/mods/loadMods'
+import { type AuthorOption, type SizeBounds } from '../lib/mods/loadMods'
 import {
   createDefaultFilterCriteria,
   cycleUncheckedFilter,
   isAuthorFilterActive,
   isFilterActive,
-  isSizeFilterActive,
-  isTagsFilterActive,
   uncheckedFilterLabel,
   type FilterCriteria,
 } from '../lib/selection/filterDisplayTree'
-import { SizeFilterPanel } from './filters/SizeFilterPanel'
 import { AuthorFilterPanel } from './filters/AuthorFilterPanel'
-import { TagsFilterPanel } from './filters/TagsFilterPanel'
+import { IconTip } from './IconTip'
 
 /** Stable id for chrome hotkey `/` focus jump. */
 export const FILTERS_SEARCH_ID = 'filters-search'
@@ -38,9 +35,10 @@ function ClearFiltersIcon() {
 interface Props {
   criteria: FilterCriteria
   onChange: (next: FilterCriteria) => void
-  /** Discovered tag tokens; Defaults / Clear select all. */
+  /** Discovered tag tokens; used for default criteria seed (no UI chip). */
   tagOptions: string[]
   authorOptions: AuthorOption[]
+  /** Catalog size bounds; used for default criteria seed (no UI chip). */
   sizeBounds: SizeBounds | null
   /** Called when Esc blurs search so focus can return to the component tree. */
   onRequestTreeFocus?: () => void
@@ -51,7 +49,7 @@ interface Props {
   onSearchScopeChange?: (scope: 'section' | 'all') => void
 }
 
-type PanelId = 'size' | 'author' | 'tags'
+type PanelId = 'author'
 
 function FilterChipWrap({
   open,
@@ -110,9 +108,7 @@ export function FiltersStrip({
   const authorNames = authorOptions.map((a) => a.name)
   const seed = { authorOptions: authorNames, sizeBounds }
   const active = isFilterActive(criteria, tagOptions, seed)
-  const sizeActive = isSizeFilterActive(criteria, sizeBounds)
   const authorActive = isAuthorFilterActive(criteria, authorNames)
-  const tagsActive = isTagsFilterActive(criteria, tagOptions)
   const hiddenActive = criteria.showHidden
   const uncheckedActive = criteria.uncheckedFilter !== 'off'
 
@@ -139,18 +135,6 @@ export function FiltersStrip({
     onChange(createDefaultFilterCriteria(tagOptions, seed))
   }
 
-  function setSizeMin(value: number) {
-    if (!sizeBounds) return
-    const max = criteria.sizeMaxBytes ?? sizeBounds.max
-    patch({ sizeMinBytes: Math.min(value, max) })
-  }
-
-  function setSizeMax(value: number) {
-    if (!sizeBounds) return
-    const min = criteria.sizeMinBytes ?? sizeBounds.min
-    patch({ sizeMaxBytes: Math.max(value, min) })
-  }
-
   function renderPopover(id: PanelId, label: string, body: ReactNode) {
     if (openPanel !== id) return null
     const panelId = `${baseId}-${id}`
@@ -160,16 +144,6 @@ export function FiltersStrip({
       </div>
     )
   }
-
-  const sizeChipLabel =
-    sizeActive &&
-    criteria.sizeMinBytes != null &&
-    criteria.sizeMaxBytes != null
-      ? `: ${formatBytes(criteria.sizeMinBytes)}–${formatBytes(criteria.sizeMaxBytes)}`
-      : ''
-
-  const min = criteria.sizeMinBytes ?? sizeBounds?.min ?? 0
-  const max = criteria.sizeMaxBytes ?? sizeBounds?.max ?? 0
 
   return (
     <div
@@ -205,11 +179,11 @@ export function FiltersStrip({
           }
         >
           {searchScope === 'all' ? 'All sections' : 'This section'}
-          <span className="icon-tip" role="tooltip">
+          <IconTip>
             {searchScope === 'all'
               ? 'Matches components across every station'
               : 'Matches only what is listed in this window'}
-          </span>
+          </IconTip>
         </button>
         <input
           ref={searchRef}
@@ -222,30 +196,6 @@ export function FiltersStrip({
           onChange={(e) => patch({ search: e.target.value })}
           aria-label={searchPlaceholder}
         />
-
-        <FilterChipWrap open={openPanel === 'size'}>
-          <button
-            type="button"
-            className={`filter-chip${sizeActive ? ' active' : ''}${openPanel === 'size' ? ' open' : ''}`}
-            aria-expanded={openPanel === 'size'}
-            aria-controls={`${baseId}-size`}
-            onClick={() => togglePanel('size')}
-            disabled={!sizeBounds}
-          >
-            Size{sizeChipLabel}
-          </button>
-          {renderPopover(
-            'size',
-            'Size',
-            <SizeFilterPanel
-              sizeBounds={sizeBounds}
-              min={min}
-              max={max}
-              onSetMin={setSizeMin}
-              onSetMax={setSizeMax}
-            />,
-          )}
-        </FilterChipWrap>
 
         <FilterChipWrap open={openPanel === 'author'}>
           <button
@@ -269,29 +219,6 @@ export function FiltersStrip({
               criteria={criteria}
               authorOptions={authorOptions}
               authorNames={authorNames}
-              onPatch={patch}
-            />,
-          )}
-        </FilterChipWrap>
-
-        <FilterChipWrap open={openPanel === 'tags'}>
-          <button
-            type="button"
-            className={`filter-chip${tagsActive ? ' active' : ''}${openPanel === 'tags' ? ' open' : ''}`}
-            aria-expanded={openPanel === 'tags'}
-            aria-controls={`${baseId}-tags`}
-            onClick={() => togglePanel('tags')}
-            disabled={tagOptions.length === 0}
-          >
-            Tags
-            {tagsActive ? ` (${criteria.tags.size})` : ''}
-          </button>
-          {renderPopover(
-            'tags',
-            'Tags',
-            <TagsFilterPanel
-              criteria={criteria}
-              tagOptions={tagOptions}
               onPatch={patch}
             />,
           )}
@@ -325,9 +252,7 @@ export function FiltersStrip({
             aria-label="Clear filters"
           >
             <ClearFiltersIcon />
-            <span className="icon-tip" role="tooltip">
-              Clear filters
-            </span>
+            <IconTip>Clear filters</IconTip>
           </button>
         )}
       </div>

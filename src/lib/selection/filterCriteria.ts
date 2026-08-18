@@ -55,14 +55,21 @@ export interface FilterCriteria {
   showHidden: boolean
   /** Hide checked rows; see `UncheckedFilterMode`. */
   uncheckedFilter: UncheckedFilterMode
-  /** Allow-list of tag tokens (all discovered tags checked by default). */
+  /**
+   * Allow-list of tag tokens (all discovered tags checked by default).
+   * Filter pipeline only — no UI chip; panel at `src/ui/filters/TagsFilterPanel.tsx`.
+   */
   tags: ReadonlySet<string>
   /**
    * When false (default): untagged always pass; tagged pass if any tag is allowed.
    * When true: only components with at least one allowed tag pass (untagged fail).
+   * Filter pipeline only — no UI chip.
    */
   tagsOnlyChecked: boolean
-  /** Inclusive size range in bytes; null when catalog has no sizes. */
+  /**
+   * Inclusive size range in bytes; null when catalog has no sizes.
+   * Filter pipeline only — no UI chip; panel at `src/ui/filters/SizeFilterPanel.tsx`.
+   */
   sizeMinBytes: number | null
   sizeMaxBytes: number | null
   /** Selected authors for include/exclude mode. */

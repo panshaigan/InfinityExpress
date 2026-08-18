@@ -40,6 +40,7 @@ These work globally except where noted. Station and most chrome keys are ignored
 | --- | --- |
 | `Tab` | When nothing is focused, jump to the first item on the current display (first engine card on Engine; otherwise the component list / search results) |
 | `F3` | Desktop: focus the search field on this display (components or mods) and select its contents |
+| `Ctrl+F` / `Cmd+F` | Desktop: same as F3 — focus search on this display |
 | `F6` | Desktop: focus the list / table on this display (component tree, mods table, or engine cards) |
 | `?` | Open the keys guide |
 | `\` | Collapse / expand the station rail |
@@ -47,7 +48,7 @@ These work globally except where noted. Station and most chrome keys are ignored
 | `[` | Previous station (wraps; order is Engine, then visible content stations) |
 | `]` | Next station (wraps) |
 | `/` | Focus the filter search field and select its contents (so the next keystrokes replace the query). If search is already focused, `/` is typed normally. |
-| `Esc` | If a filter panel (Size / Author / Tags) is open → close it. Else if search is focused → blur search and return focus to the component tree. |
+| `Esc` | If a filter panel (Author) is open → close it. Else if search is focused → blur search and return focus to the component tree. |
 
 ---
 

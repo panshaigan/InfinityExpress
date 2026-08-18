@@ -13,20 +13,17 @@ import {
 import { isDesktopApp } from '../lib/desktop/fsDialogs'
 import { FILTERS_SEARCH_ID } from '../ui/FiltersStrip'
 import { MODS_SEARCH_ID } from '../ui/mods/ModsToolbar'
+import type { AppPhase } from '../ui/PhaseNav'
 import type { AppNavSlot } from '../ui/StationNav'
 
-const SEARCH_IDS = [FILTERS_SEARCH_ID, MODS_SEARCH_ID] as const
-
-function findSearchInput(): HTMLInputElement | null {
-  for (const id of SEARCH_IDS) {
-    const el = document.getElementById(id) as HTMLInputElement | null
-    if (el) return el
-  }
-  return null
+function findSearchInput(phase: AppPhase): HTMLInputElement | null {
+  const id = phase === 'mods' ? MODS_SEARCH_ID : FILTERS_SEARCH_ID
+  return document.getElementById(id) as HTMLInputElement | null
 }
 
 export function useChromeHotkeys(args: {
   keyboardHelpOpen: boolean
+  phase: AppPhase
   showDetail: boolean
   activeStation: AppNavSlot
   visibleStations: StationId[]
@@ -46,6 +43,7 @@ export function useChromeHotkeys(args: {
 }) {
   const {
     keyboardHelpOpen,
+    phase,
     showDetail,
     activeStation,
     visibleStations,
@@ -66,15 +64,28 @@ export function useChromeHotkeys(args: {
 
   useEffect(() => {
     function focusAppSearch() {
-      const el = findSearchInput()
+      const el = findSearchInput(phase)
       if (!el) return
       el.focus()
       el.select()
     }
 
     function onKeyDown(e: KeyboardEvent) {
-      if (e.altKey || e.ctrlKey || e.metaKey) return
       if (document.querySelector('[aria-modal="true"]')) return
+
+      if (
+        isDesktopApp() &&
+        !keyboardHelpOpen &&
+        (e.ctrlKey || e.metaKey) &&
+        e.key === 'f'
+      ) {
+        e.preventDefault()
+        focusAppSearch()
+        return
+      }
+
+      if (e.altKey || e.ctrlKey || e.metaKey) return
+
       if (
         isDesktopApp() &&
         !keyboardHelpOpen &&
@@ -129,7 +140,7 @@ export function useChromeHotkeys(args: {
         onOpenKeyboardHelp()
         return
       }
-      const searchEl = findSearchInput()
+      const searchEl = findSearchInput(phase)
       const cmd = resolveChromeHotkey(e.key, {
         isTypingTarget: isTypingTarget(e.target),
         filterPanelOpen: false,
@@ -180,6 +191,7 @@ export function useChromeHotkeys(args: {
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [
+    phase,
     activeStation,
     keyboardHelpOpen,
     showDetail,

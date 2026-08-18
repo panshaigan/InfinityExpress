@@ -14,6 +14,7 @@ const SHARED: HelpRow[] = [
   { keys: 'Tab', action: 'When nothing focused: first item on this display' },
   { keys: 'F1', action: 'Open this keys guide' },
   { keys: 'F3', action: 'Jump to search in this window (desktop)' },
+  { keys: 'Ctrl+F', action: 'Jump to search in this window (desktop)' },
   { keys: 'F6', action: 'Focus the list / table on this display (desktop)' },
   { keys: '?', action: 'Open this keys guide' },
   { keys: ';', action: 'Collapse / expand the details pane' },

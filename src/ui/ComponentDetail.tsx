@@ -113,9 +113,7 @@ function CopyButton({ value, label }: { value: string; label: string }) {
           />
         </svg>
       )}
-      <span className="icon-tip" role="tooltip">
-        {copied ? 'Copied' : label}
-      </span>
+      <IconTip>{copied ? 'Copied' : label}</IconTip>
     </button>
   )
 }
@@ -150,9 +148,7 @@ function DetailLinks({ links }: { links: { href: string; label: string }[] }) {
             rel="noopener noreferrer"
           >
             {link.label}
-            <span className="icon-tip" role="tooltip">
-              {link.href}
-            </span>
+            <IconTip>{link.href}</IconTip>
           </a>
         </li>
       ))}

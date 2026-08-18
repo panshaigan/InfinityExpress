@@ -50,7 +50,7 @@ Operands = component ids. `,` = AND, `|` = OR, `()` group. Unparsable → false.
 ## Presets vs filters
 
 - **Presets station** — mass-check by independently toggled **recommended** and **package** tiles (`effectiveRecommended` / `effectivePackage`). Does not change filters.
-- **Filters** — display-only after `buildDisplayTree` (search, tags, size, author, hidden, required, unchecked modes). Never clear selection.
+- **Filters** — display-only after `buildDisplayTree`. Visible chips: search, author, show hidden, unchecked modes. **Size and tags** filters remain in `FilterCriteria` and the filter pipeline (`filterDisplayTree.ts`) but have no UI — defaults are all tags allowed and the full catalog size range. Panel components under `src/ui/filters/` are kept for future re-enable. Never clear selection.
 
 ## Recommended strip (Presets)
 
