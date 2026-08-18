@@ -81,13 +81,13 @@ export function SelectionPresetsBar({
     ? 'User preset *'
     : activePresetName
       ? activePresetName
-      : 'User presets'
+      : 'Presets'
 
   const emptyLoadLabel =
     presets.length === 0 ? 'No presets yet' : 'Select preset…'
 
   return (
-    <div ref={rootRef} className="selection-presets-bar" aria-label="User presets">
+    <div ref={rootRef} className="selection-presets-bar" aria-label="Presets">
       <button
         type="button"
         className={`btn secondary selection-presets-trigger${open ? ' open' : ''}${dirty ? ' dirty' : ''}`}

@@ -127,17 +127,31 @@ export function AppTopBar({
 }: Props) {
   return (
     <header className="top-bar">
-      <button
-        type="button"
-        className="brand has-icon-tip"
-        aria-haspopup="dialog"
-        aria-expanded={aboutOpen}
-        aria-label="About iNfinity eXpress"
-        onClick={onOpenAbout}
-      >
-        <span className="brand-title">iNeX</span>
-        <IconTip>About</IconTip>
-      </button>
+      {onSwitchProject ? (
+        <button
+          type="button"
+          className="btn secondary top-bar-help top-bar-settings has-icon-tip"
+          aria-label="Projects"
+          disabled={switchProjectDisabled}
+          aria-disabled={switchProjectDisabled || undefined}
+          onClick={onSwitchProject}
+        >
+          <ProjectsIcon />
+          <IconTip align="end">{switchProjectTip}</IconTip>
+        </button>
+      ) : null}
+      {onResetAll ? (
+        <button
+          type="button"
+          className="btn secondary top-bar-help top-bar-settings has-icon-tip"
+          disabled={resetAllDisabled}
+          aria-label="Reset all"
+          onClick={onResetAll}
+        >
+          <RestartIcon />
+          <IconTip align="end">{resetAllTip}</IconTip>
+        </button>
+      ) : null}
       <PhaseNav
         phase={phase}
         onPhaseChange={onPhaseChange}
@@ -146,13 +160,8 @@ export function AppTopBar({
         processingPhases={processingPhases}
       />
       <div className="top-bar-actions">
-        {projectName ? (
-          <span className="engine-badge">
-            <strong>{projectName}</strong>
-          </span>
-        ) : null}
         <span className="stats">
-          {selectedModsCount} mods · {selectedCount} components
+          {selectedModsCount} mods · {selectedCount} comps
         </span>
         <SelectionPresetsBar
           disabled={game == null}
@@ -192,31 +201,17 @@ export function AppTopBar({
           settingsOpen={settingsOpen}
           onOpenSettings={onOpenSettings}
         />
-        {onResetAll ? (
-          <button
-            type="button"
-            className="btn secondary top-bar-help top-bar-settings has-icon-tip"
-            disabled={resetAllDisabled}
-            aria-label="Reset all"
-            onClick={onResetAll}
-          >
-            <RestartIcon />
-            <IconTip align="end">{resetAllTip}</IconTip>
-          </button>
-        ) : null}
-        {onSwitchProject ? (
-          <button
-            type="button"
-            className="btn secondary top-bar-help top-bar-settings has-icon-tip"
-            aria-label="Projects"
-            disabled={switchProjectDisabled}
-            aria-disabled={switchProjectDisabled || undefined}
-            onClick={onSwitchProject}
-          >
-            <ProjectsIcon />
-            <IconTip align="end">{switchProjectTip}</IconTip>
-          </button>
-        ) : null}
+        <button
+          type="button"
+          className="brand has-icon-tip"
+          aria-haspopup="dialog"
+          aria-expanded={aboutOpen}
+          aria-label="About iNfinity eXpress"
+          onClick={onOpenAbout}
+        >
+          <span className="brand-title">iNeX</span>
+          <IconTip>About</IconTip>
+        </button>
       </div>
     </header>
   )

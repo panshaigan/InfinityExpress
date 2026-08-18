@@ -1409,8 +1409,8 @@ function AppShell() {
                   onSearchScopeChange={setSearchScope}
                   searchPlaceholder={
                     isAllSections
-                      ? 'Search all components...'
-                      : 'Search in this window...'
+                      ? 'Search...'
+                      : 'Search...'
                   }
                 />
               )}

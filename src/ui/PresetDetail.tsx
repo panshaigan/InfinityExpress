@@ -91,11 +91,11 @@ export function PresetDetail({ preview, onNavigateToComponent }: Props) {
             {preview.tileChecked ? 'Checked' : 'Unchecked'}
           </span>
           {willCount > 0 && (
-            <span className="badge badge-status-required">{willCount} will tick</span>
+            <span className="badge badge-status-required">{willCount} will check</span>
           )}
           {alreadyCount > 0 && (
             <span className="badge badge-selection badge-selection-checked">
-              {alreadyCount} ticked
+              {alreadyCount} checked
             </span>
           )}
           {blockedCount > 0 && (
@@ -106,7 +106,7 @@ export function PresetDetail({ preview, onNavigateToComponent }: Props) {
 
       <div className="detail-blocks">
         {willCount > 0 && (
-          <DetailBlock kind="component" title="Will tick">
+          <DetailBlock kind="component" title="Will check">
             <p className="preset-detail-lede">
               Components that would be newly selected if this preset is turned on
               from the current selection.
@@ -119,7 +119,7 @@ export function PresetDetail({ preview, onNavigateToComponent }: Props) {
         )}
 
         {preview.tileChecked && alreadyCount > 0 && (
-          <DetailBlock kind="mod" title="Already ticked">
+          <DetailBlock kind="mod" title="Already checked">
             <p className="preset-detail-lede">
               Matching components already in your selection via this preset.
             </p>
