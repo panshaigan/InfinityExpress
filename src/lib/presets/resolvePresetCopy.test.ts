@@ -22,14 +22,14 @@ describe('resolvePresetCopy', () => {
   it('uses catalog label and copy for known recommended tokens', () => {
     const info = resolveRecommendedTileInfo('fixes')
     expect(info.label).toBe('Fixes')
-    expect(info.summary).toContain('Essential stability')
+    expect(info.summary).toContain('Bug fixes')
     expect(info.typeAndDepth).toContain('Low mechanical impact')
   })
 
-  it('falls back to station labels for ui tokens', () => {
+  it('uses catalog label for ui tokens', () => {
     const info = resolveRecommendedTileInfo('ui')
-    expect(info.label).toBe('UI')
-    expect(info.summary).toBe('')
+    expect(info.label).toBe('UI overhaul')
+    expect(info.summary).toContain('user interface')
   })
 
   it('uses catalog npc label override', () => {

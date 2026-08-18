@@ -1,11 +1,4 @@
-import { LADDER_LEVELS, type LadderLevel } from '../levels'
 import { GAME_LABELS, type SelectedGame } from '../xml/schema'
-
-export interface StationLevelPresetData {
-  ladder: LadderLevel[]
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
-}
 
 /** Serializable selection preset (ready for later file persistence). */
 export interface SelectionPreset {
@@ -13,81 +6,21 @@ export interface SelectionPreset {
   name: string
   game: SelectedGame
   selectedIds: string[]
-  ladderChecked: LadderLevel[]
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
-  lastGlobalLadder: LadderLevel[]
-  lastGlobalLowerDifficulty: boolean
-  lastGlobalHigherDifficulty: boolean
-  stationLevelPresets: Record<string, StationLevelPresetData>
   recommendedChecked: string[]
   packagesChecked: string[]
-}
-
-export interface LiveStationLevelPreset {
-  ladder: ReadonlySet<LadderLevel>
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
-}
-
-export function emptyLiveStationPreset(): {
-  ladder: Set<LadderLevel>
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
-} {
-  return { ladder: new Set(), lowerDifficulty: false, higherDifficulty: false }
 }
 
 export interface SelectionLiveSnapshotInput {
   game: SelectedGame
   selectedIds: ReadonlySet<string>
-  ladderChecked: ReadonlySet<LadderLevel>
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
-  lastGlobalLadder: ReadonlySet<LadderLevel>
-  lastGlobalLowerDifficulty: boolean
-  lastGlobalHigherDifficulty: boolean
-  stationLevelPresets: ReadonlyMap<string, LiveStationLevelPreset>
   recommendedChecked: ReadonlySet<string>
   packagesChecked: ReadonlySet<string>
 }
 
 export interface AppliedSelectionPreset {
   selectedIds: Set<string>
-  ladderChecked: Set<LadderLevel>
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
-  lastGlobalLadder: Set<LadderLevel>
-  lastGlobalLowerDifficulty: boolean
-  lastGlobalHigherDifficulty: boolean
-  stationLevelPresets: Map<string, {
-    ladder: Set<LadderLevel>
-    lowerDifficulty: boolean
-    higherDifficulty: boolean
-  }>
   recommendedChecked: Set<string>
   packagesChecked: Set<string>
-}
-
-function sortedLadder(levels: Iterable<LadderLevel>): LadderLevel[] {
-  const set = levels instanceof Set ? levels : new Set(levels)
-  return LADDER_LEVELS.filter((l) => set.has(l))
-}
-
-function serializeStationMap(
-  map: ReadonlyMap<string, LiveStationLevelPreset>,
-): Record<string, StationLevelPresetData> {
-  const out: Record<string, StationLevelPresetData> = {}
-  const keys = [...map.keys()].sort()
-  for (const key of keys) {
-    const value = map.get(key)!
-    out[key] = {
-      ladder: sortedLadder(value.ladder),
-      lowerDifficulty: value.lowerDifficulty,
-      higherDifficulty: value.higherDifficulty,
-    }
-  }
-  return out
 }
 
 /** Payload used for dirty fingerprints (excludes id/name). */
@@ -97,13 +30,6 @@ export function payloadFromLive(input: SelectionLiveSnapshotInput): SelectionPre
   return {
     game: input.game,
     selectedIds: [...input.selectedIds].sort(),
-    ladderChecked: sortedLadder(input.ladderChecked),
-    lowerDifficulty: input.lowerDifficulty,
-    higherDifficulty: input.higherDifficulty,
-    lastGlobalLadder: sortedLadder(input.lastGlobalLadder),
-    lastGlobalLowerDifficulty: input.lastGlobalLowerDifficulty,
-    lastGlobalHigherDifficulty: input.lastGlobalHigherDifficulty,
-    stationLevelPresets: serializeStationMap(input.stationLevelPresets),
     recommendedChecked: [...input.recommendedChecked].sort(),
     packagesChecked: [...input.packagesChecked].sort(),
   }
@@ -113,24 +39,6 @@ export function payloadFromPreset(preset: SelectionPreset): SelectionPresetPaylo
   return {
     game: preset.game,
     selectedIds: [...preset.selectedIds].sort(),
-    ladderChecked: sortedLadder(preset.ladderChecked),
-    lowerDifficulty: preset.lowerDifficulty,
-    higherDifficulty: preset.higherDifficulty,
-    lastGlobalLadder: sortedLadder(preset.lastGlobalLadder),
-    lastGlobalLowerDifficulty: preset.lastGlobalLowerDifficulty,
-    lastGlobalHigherDifficulty: preset.lastGlobalHigherDifficulty,
-    stationLevelPresets: serializeStationMap(
-      new Map(
-        Object.entries(preset.stationLevelPresets).map(([k, v]) => [
-          k,
-          {
-            ladder: new Set(v.ladder),
-            lowerDifficulty: v.lowerDifficulty,
-            higherDifficulty: v.higherDifficulty,
-          },
-        ]),
-      ),
-    ),
     recommendedChecked: [...(preset.recommendedChecked ?? [])].sort(),
     packagesChecked: [...(preset.packagesChecked ?? [])].sort(),
   }
@@ -157,26 +65,8 @@ export function snapshotSelectionPreset(
 }
 
 export function applySelectionPreset(preset: SelectionPreset): AppliedSelectionPreset {
-  const stationLevelPresets = new Map<
-    string,
-    { ladder: Set<LadderLevel>; lowerDifficulty: boolean; higherDifficulty: boolean }
-  >()
-  for (const [key, value] of Object.entries(preset.stationLevelPresets)) {
-    stationLevelPresets.set(key, {
-      ladder: new Set(value.ladder),
-      lowerDifficulty: value.lowerDifficulty,
-      higherDifficulty: value.higherDifficulty,
-    })
-  }
   return {
     selectedIds: new Set(preset.selectedIds),
-    ladderChecked: new Set(preset.ladderChecked),
-    lowerDifficulty: preset.lowerDifficulty,
-    higherDifficulty: preset.higherDifficulty,
-    lastGlobalLadder: new Set(preset.lastGlobalLadder),
-    lastGlobalLowerDifficulty: preset.lastGlobalLowerDifficulty,
-    lastGlobalHigherDifficulty: preset.lastGlobalHigherDifficulty,
-    stationLevelPresets,
     recommendedChecked: new Set(preset.recommendedChecked ?? []),
     packagesChecked: new Set(preset.packagesChecked ?? []),
   }

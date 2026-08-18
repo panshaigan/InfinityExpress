@@ -19,7 +19,6 @@ function component(id: string): DisplayNode {
     attrs: {},
     children: [],
     effectiveEngine: '',
-    effectiveLevel: undefined,
   }
   return { node, children: [] }
 }
@@ -37,7 +36,6 @@ function branch(
     attrs: { label },
     children: [],
     effectiveEngine: '',
-    effectiveLevel: undefined,
   }
   return { node, children }
 }

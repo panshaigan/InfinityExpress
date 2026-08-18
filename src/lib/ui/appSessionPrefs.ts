@@ -1,5 +1,3 @@
-import type { LadderLevel } from '../levels'
-import { LADDER_LEVELS } from '../levels'
 import { buildInstallPlan } from '../install/planBuilder'
 import type {
   ComponentRunStatus,
@@ -10,7 +8,6 @@ import type {
 } from '../install/types'
 import type {
   SelectionPreset,
-  StationLevelPresetData,
 } from '../presets/selectionPresets'
 import { finalizeSelection } from '../selection/selectionCore'
 import type { InstallSequenceModel, SelectedGame } from '../xml/schema'
@@ -76,13 +73,6 @@ export interface GameSession {
   contentMainKey: string | null
   contentSubKey: string | null
   contentSubTag: string | null
-  ladderChecked: LadderLevel[]
-  lowerDifficultyPreset: boolean
-  higherDifficultyPreset: boolean
-  lastGlobalLadder: LadderLevel[]
-  lastGlobalLowerDifficulty: boolean
-  lastGlobalHigherDifficulty: boolean
-  stationLevelPresets: Record<string, StationLevelPresetData>
   recommendedChecked: string[]
   packagesChecked: string[]
   modsJourney: ModsJourneyState | null
@@ -110,10 +100,6 @@ function isAppPhase(value: unknown): value is AppPhase {
 
 function isStationSlot(value: unknown): value is StationSlot {
   return typeof value === 'string' && STATION_SLOTS.includes(value as StationSlot)
-}
-
-function isLadderLevel(value: unknown): value is LadderLevel {
-  return typeof value === 'string' && LADDER_LEVELS.includes(value as LadderLevel)
 }
 
 function isRunState(value: unknown): value is InstallRunState {
@@ -146,25 +132,6 @@ function plannedSnapshotsFrom(value: unknown): PlannedSnapshot[] {
   return out
 }
 
-function ladderArray(value: unknown): LadderLevel[] {
-  return stringArray(value).filter(isLadderLevel)
-}
-
-function stationLevelPresetsFrom(value: unknown): Record<string, StationLevelPresetData> {
-  if (!value || typeof value !== 'object') return {}
-  const out: Record<string, StationLevelPresetData> = {}
-  for (const [key, raw] of Object.entries(value as Record<string, unknown>)) {
-    if (!raw || typeof raw !== 'object') continue
-    const o = raw as Record<string, unknown>
-    out[key] = {
-      ladder: ladderArray(o.ladder),
-      lowerDifficulty: o.lowerDifficulty === true,
-      higherDifficulty: o.higherDifficulty === true,
-    }
-  }
-  return out
-}
-
 function selectionPresetFrom(value: unknown): SelectionPreset | null {
   if (!value || typeof value !== 'object') return null
   const o = value as Record<string, unknown>
@@ -176,13 +143,6 @@ function selectionPresetFrom(value: unknown): SelectionPreset | null {
     name: o.name,
     game: o.game,
     selectedIds: stringArray(o.selectedIds),
-    ladderChecked: ladderArray(o.ladderChecked),
-    lowerDifficulty: o.lowerDifficulty === true,
-    higherDifficulty: o.higherDifficulty === true,
-    lastGlobalLadder: ladderArray(o.lastGlobalLadder),
-    lastGlobalLowerDifficulty: o.lastGlobalLowerDifficulty === true,
-    lastGlobalHigherDifficulty: o.lastGlobalHigherDifficulty === true,
-    stationLevelPresets: stationLevelPresetsFrom(o.stationLevelPresets),
     recommendedChecked: stringArray(o.recommendedChecked),
     packagesChecked: stringArray(o.packagesChecked),
   }
@@ -347,13 +307,6 @@ function gameSessionFrom(value: unknown): GameSession | null {
     contentMainKey: typeof o.contentMainKey === 'string' ? o.contentMainKey : null,
     contentSubKey: typeof o.contentSubKey === 'string' ? o.contentSubKey : null,
     contentSubTag: typeof o.contentSubTag === 'string' ? o.contentSubTag : null,
-    ladderChecked: ladderArray(o.ladderChecked),
-    lowerDifficultyPreset: o.lowerDifficultyPreset === true,
-    higherDifficultyPreset: o.higherDifficultyPreset === true,
-    lastGlobalLadder: ladderArray(o.lastGlobalLadder),
-    lastGlobalLowerDifficulty: o.lastGlobalLowerDifficulty === true,
-    lastGlobalHigherDifficulty: o.lastGlobalHigherDifficulty === true,
-    stationLevelPresets: stationLevelPresetsFrom(o.stationLevelPresets),
     recommendedChecked: stringArray(o.recommendedChecked),
     packagesChecked: stringArray(o.packagesChecked),
     modsJourney: modsJourneyFrom(o.modsJourney),
@@ -529,33 +482,11 @@ export function buildGameSessionSnapshot(input: {
   contentMainKey: string | null
   contentSubKey: string | null
   contentSubTag: string | null
-  ladderChecked: ReadonlySet<LadderLevel>
-  lowerDifficultyPreset: boolean
-  higherDifficultyPreset: boolean
-  lastGlobalLadder: ReadonlySet<LadderLevel>
-  lastGlobalLowerDifficulty: boolean
-  lastGlobalHigherDifficulty: boolean
-  stationLevelPresets: ReadonlyMap<
-    string,
-    {
-      ladder: Iterable<LadderLevel>
-      lowerDifficulty: boolean
-      higherDifficulty: boolean
-    }
-  >
   recommendedChecked: ReadonlySet<string>
   packagesChecked: ReadonlySet<string>
   modsJourney: ModsJourneyState | null
   install?: PersistedInstallSession
 }): GameSession {
-  const stationLevelPresets: Record<string, StationLevelPresetData> = {}
-  for (const [key, value] of input.stationLevelPresets) {
-    stationLevelPresets[key] = {
-      ladder: [...value.ladder],
-      lowerDifficulty: value.lowerDifficulty,
-      higherDifficulty: value.higherDifficulty,
-    }
-  }
   return {
     selectedIds: [...input.selectedIds].sort(),
     finishedStations: [...input.finishedStations],
@@ -567,13 +498,6 @@ export function buildGameSessionSnapshot(input: {
     contentMainKey: input.contentMainKey,
     contentSubKey: input.contentSubKey,
     contentSubTag: input.contentSubTag,
-    ladderChecked: [...input.ladderChecked],
-    lowerDifficultyPreset: input.lowerDifficultyPreset,
-    higherDifficultyPreset: input.higherDifficultyPreset,
-    lastGlobalLadder: [...input.lastGlobalLadder],
-    lastGlobalLowerDifficulty: input.lastGlobalLowerDifficulty,
-    lastGlobalHigherDifficulty: input.lastGlobalHigherDifficulty,
-    stationLevelPresets,
     recommendedChecked: [...input.recommendedChecked],
     packagesChecked: [...input.packagesChecked],
     modsJourney: input.modsJourney ? { ...input.modsJourney } : null,
@@ -667,50 +591,6 @@ export function bootstrapAppSession(
     session,
     install,
     appPhase: store.lastAppPhase,
-  }
-}
-
-export function levelPresetsInitialFromSession(
-  session: GameSession,
-): {
-  ladderChecked: readonly LadderLevel[]
-  lowerDifficultyPreset: boolean
-  higherDifficultyPreset: boolean
-  lastGlobalLadder: readonly LadderLevel[]
-  lastGlobalLowerDifficulty: boolean
-  lastGlobalHigherDifficulty: boolean
-  stationLevelPresets: Map<
-    string,
-    {
-      ladder: ReadonlySet<LadderLevel>
-      lowerDifficulty: boolean
-      higherDifficulty: boolean
-    }
-  >
-} {
-  const stationLevelPresets = new Map<
-    string,
-    {
-      ladder: ReadonlySet<LadderLevel>
-      lowerDifficulty: boolean
-      higherDifficulty: boolean
-    }
-  >()
-  for (const [key, value] of Object.entries(session.stationLevelPresets)) {
-    stationLevelPresets.set(key, {
-      ladder: new Set(value.ladder),
-      lowerDifficulty: value.lowerDifficulty,
-      higherDifficulty: value.higherDifficulty,
-    })
-  }
-  return {
-    ladderChecked: session.ladderChecked,
-    lowerDifficultyPreset: session.lowerDifficultyPreset,
-    higherDifficultyPreset: session.higherDifficultyPreset,
-    lastGlobalLadder: session.lastGlobalLadder,
-    lastGlobalLowerDifficulty: session.lastGlobalLowerDifficulty,
-    lastGlobalHigherDifficulty: session.lastGlobalHigherDifficulty,
-    stationLevelPresets,
   }
 }
 

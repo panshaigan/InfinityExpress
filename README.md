@@ -105,7 +105,7 @@ Lines follow XML document order (duplicate stations merged in the UI only). For 
 Agent entry point: [AGENTS.md](AGENTS.md) (when to load which doc).
 
 - [docs/architecture.md](docs/architecture.md) — stack, phases, data flow, key modules
-- [docs/selection.md](docs/selection.md) — visibility, selection rules, levels, presets, export
+- [docs/selection.md](docs/selection.md) — visibility, selection rules, presets, export
 - [docs/install-sequence-schema.md](docs/install-sequence-schema.md) — XML tags and attributes
 - [docs/weidu-install.md](docs/weidu-install.md) — install plan, WeiDU IDs, run, backups
 - [docs/keyboard.md](docs/keyboard.md) — tree and chrome keyboard bindings

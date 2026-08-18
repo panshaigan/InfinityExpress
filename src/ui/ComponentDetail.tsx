@@ -11,7 +11,6 @@ import {
   type RelatedRef,
   type RelationIndex,
 } from '../lib/selection/relations'
-import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import {
   splitTags,
   stabilityBadgeClass,
@@ -226,7 +225,6 @@ export function ComponentDetail({
   const title = resolveDetailTitle(node, collapsedComponent)
   const kind = resolveDetailKind(display)
   const desc = node.attrs.desc ?? collapsedComponent?.attrs.desc
-  const level = collapsedComponent?.effectiveLevel ?? node.effectiveLevel
   const tagList = splitTags(source.attrs.tags ?? node.attrs.tags)
   const componentId = collapsedComponent
     ? collapsedComponent.componentId
@@ -301,9 +299,6 @@ export function ComponentDetail({
             >
               {selectionLabel(selectionState)}
             </span>
-          )}
-          {level && (
-            <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
           {complexity && (
             <span className={modTypeBadgeClass(complexity)}>{modTypeBadgeLabel(complexity)}</span>

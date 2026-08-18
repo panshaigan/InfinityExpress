@@ -15,7 +15,7 @@ Boot opens the **Project hub**. A project locks one engine, owns selection + ins
 | Working on | Read first |
 | --- | --- |
 | App map, folders, data flow, Mods overview, Projects, fresh-install localStorage reset | [docs/architecture.md](docs/architecture.md) |
-| Checkboxes, visibility, levels, filters, presets, export | [docs/selection.md](docs/selection.md) |
+| Checkboxes, visibility, filters, presets, export | [docs/selection.md](docs/selection.md) |
 | `InstallSequence.xml` tags / attrs / engine / conditions | [docs/install-sequence-schema.md](docs/install-sequence-schema.md) |
 | Install plan, WeiDU IDs, run, backups | [docs/weidu-install.md](docs/weidu-install.md) |
 | Tree / chrome hotkeys | [docs/keyboard.md](docs/keyboard.md) |

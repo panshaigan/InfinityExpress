@@ -12,7 +12,7 @@ Use **immediate** hover/focus tips — never the browser's native `title` attrib
 | --- | --- |
 | `has-icon-tip` host + `<IconTip>…</IconTip>` | Default for controls inside scrollable panels, detail panes, or any ancestor with `overflow: hidden` / `overflow: auto` |
 | `has-icon-tip` host + `<span className="icon-tip">…</span>` | Only when no clipping ancestors (e.g. top-level toolbar icon buttons with room above) |
-| `level-card-tip` | Engine level cards only (existing richer pattern) |
+| `level-card-tip` | Preset tile cards on the Presets station (richer tooltip pattern) |
 
 `IconTip` portals to `document.body`, positions with `position: fixed`, and flips to `icon-tip-below` when upward space is tight (top bar, phase nav, sticky headers).
 

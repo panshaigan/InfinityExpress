@@ -12,14 +12,7 @@ export {
   listSelectionState,
   toggleListSelection,
 } from './selectionCore'
-export type { LevelSelectionScope } from './selectionLevels'
-export {
-  applyLadderLevelSelection,
-  setDifficultySelection,
-  applyGlobalLevelBaseline,
-  buildLevelBaselineSelection,
-  selectionMatchesLevelBaseline,
-} from './selectionLevels'
+export type { SelectionScope } from './selectionRecommended'
 export {
   setRecommendedSelection,
   setPackageSelection,

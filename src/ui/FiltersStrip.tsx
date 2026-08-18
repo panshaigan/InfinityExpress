@@ -1,5 +1,4 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { LEVEL_LABELS, type LadderLevel } from '../lib/levels'
 import { formatBytes, type AuthorOption, type SizeBounds } from '../lib/mods/loadMods'
 import {
   createDefaultFilterCriteria,
@@ -11,7 +10,6 @@ import {
   uncheckedFilterLabel,
   type FilterCriteria,
 } from '../lib/selection/filterDisplayTree'
-import { LevelFilterPanel } from './filters/LevelFilterPanel'
 import { SizeFilterPanel } from './filters/SizeFilterPanel'
 import { AuthorFilterPanel } from './filters/AuthorFilterPanel'
 import { TagsFilterPanel } from './filters/TagsFilterPanel'
@@ -53,7 +51,7 @@ interface Props {
   onSearchScopeChange?: (scope: 'section' | 'all') => void
 }
 
-type PanelId = 'level' | 'size' | 'author' | 'tags'
+type PanelId = 'size' | 'author' | 'tags'
 
 function FilterChipWrap({
   open,
@@ -112,7 +110,6 @@ export function FiltersStrip({
   const authorNames = authorOptions.map((a) => a.name)
   const seed = { authorOptions: authorNames, sizeBounds }
   const active = isFilterActive(criteria, tagOptions, seed)
-  const levelActive = criteria.maxLevel !== null
   const sizeActive = isSizeFilterActive(criteria, sizeBounds)
   const authorActive = isAuthorFilterActive(criteria, authorNames)
   const tagsActive = isTagsFilterActive(criteria, tagOptions)
@@ -140,13 +137,6 @@ export function FiltersStrip({
 
   function clearFilters() {
     onChange(createDefaultFilterCriteria(tagOptions, seed))
-  }
-
-  function selectLadder(level: LadderLevel | null) {
-    patch({
-      maxLevel: level,
-      levelExact: level ? criteria.levelExact : false,
-    })
   }
 
   function setSizeMin(value: number) {
@@ -232,31 +222,6 @@ export function FiltersStrip({
           onChange={(e) => patch({ search: e.target.value })}
           aria-label={searchPlaceholder}
         />
-
-        <FilterChipWrap open={openPanel === 'level'}>
-          <button
-            type="button"
-            className={`filter-chip${levelActive ? ' active' : ''}${openPanel === 'level' ? ' open' : ''}`}
-            aria-expanded={openPanel === 'level'}
-            aria-controls={`${baseId}-level`}
-            onClick={() => togglePanel('level')}
-          >
-            Show levels
-            {levelActive && criteria.maxLevel
-              ? `: ${LEVEL_LABELS[criteria.maxLevel] ?? criteria.maxLevel}`
-              : ''}
-          </button>
-          {renderPopover(
-            'level',
-            'Show levels',
-            <LevelFilterPanel
-              baseId={baseId}
-              criteria={criteria}
-              onSelectLadder={selectLadder}
-              onPatch={patch}
-            />,
-          )}
-        </FilterChipWrap>
 
         <FilterChipWrap open={openPanel === 'size'}>
           <button

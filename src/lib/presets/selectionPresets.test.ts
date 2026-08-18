@@ -38,26 +38,12 @@ describe('presetsForGame', () => {
       snapshotSelectionPreset('a', 'A', {
         game: 'bg2',
         selectedIds: new Set(['x']),
-        ladderChecked: new Set(),
-        lowerDifficulty: false,
-        higherDifficulty: false,
-        lastGlobalLadder: new Set(),
-        lastGlobalLowerDifficulty: false,
-        lastGlobalHigherDifficulty: false,
-        stationLevelPresets: new Map(),
         recommendedChecked: new Set(),
         packagesChecked: new Set(),
       }),
       snapshotSelectionPreset('b', 'B', {
         game: 'eet',
         selectedIds: new Set(['y']),
-        ladderChecked: new Set(),
-        lowerDifficulty: false,
-        higherDifficulty: false,
-        lastGlobalLadder: new Set(),
-        lastGlobalLowerDifficulty: false,
-        lastGlobalHigherDifficulty: false,
-        stationLevelPresets: new Map(),
         recommendedChecked: new Set(),
         packagesChecked: new Set(),
       }),
@@ -67,46 +53,23 @@ describe('presetsForGame', () => {
 })
 
 describe('snapshot round-trip', () => {
-  it('serializes Sets/Maps and restores equivalent live state', () => {
+  it('serializes Sets and restores equivalent live state', () => {
     const live = {
       game: 'bg1' as const,
       selectedIds: new Set(['b:2', 'a:1']),
-      ladderChecked: new Set(['fixes', 'extended'] as const),
-      lowerDifficulty: true,
-      higherDifficulty: false,
-      lastGlobalLadder: new Set(['fixes'] as const),
-      lastGlobalLowerDifficulty: true,
-      lastGlobalHigherDifficulty: false,
-      stationLevelPresets: new Map([
-        [
-          'content',
-          {
-            ladder: new Set(['restoration'] as const),
-            lowerDifficulty: false,
-            higherDifficulty: true,
-          },
-        ],
-      ]),
-      recommendedChecked: new Set(['sounds']),
+      recommendedChecked: new Set(['sounds', 'fixes']),
       packagesChecked: new Set(['vve']),
     }
 
     const preset = snapshotSelectionPreset('id-1', 'Test', live)
     expect(preset.selectedIds).toEqual(['a:1', 'b:2'])
-    expect(preset.ladderChecked).toEqual(['fixes', 'extended'])
-    expect(preset.stationLevelPresets.content).toEqual({
-      ladder: ['restoration'],
-      lowerDifficulty: false,
-      higherDifficulty: true,
-    })
-    expect(preset.recommendedChecked).toEqual(['sounds'])
+    expect(preset.recommendedChecked).toEqual(['fixes', 'sounds'])
     expect(preset.packagesChecked).toEqual(['vve'])
 
     const applied = applySelectionPreset(preset)
     expect([...applied.selectedIds].sort()).toEqual(['a:1', 'b:2'])
-    expect(applied.lowerDifficulty).toBe(true)
-    expect(applied.stationLevelPresets.get('content')?.higherDifficulty).toBe(true)
-    expect([...applied.stationLevelPresets.get('content')!.ladder]).toEqual(['restoration'])
+    expect([...applied.recommendedChecked].sort()).toEqual(['fixes', 'sounds'])
+    expect([...applied.packagesChecked]).toEqual(['vve'])
 
     expect(fingerprintFromLive(live)).toBe(fingerprintFromPreset(preset))
     expect(payloadFromLive(live).game).toBe('bg1')

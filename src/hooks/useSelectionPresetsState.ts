@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
-import type { SelectedGame, StationId } from '../lib/xml/schema'
-import type { LadderLevel } from '../lib/levels'
+import type { SelectedGame } from '../lib/xml/schema'
 import { diffSelectedIds } from '../lib/presets/diffSelectedIds'
 import {
   applySelectionPreset,
@@ -13,27 +12,12 @@ import {
   uniquePresetName,
   type SelectionPreset,
 } from '../lib/presets/selectionPresets'
-import type { StationLevelMap } from './useLevelPresets'
 import { useAutoDismiss } from './useAutoDismiss'
 
 export function useSelectionPresetsState(args: {
   game: SelectedGame | null
   selectedIds: ReadonlySet<string>
   setSelectedIds: Dispatch<SetStateAction<Set<string>>>
-  ladderChecked: ReadonlySet<LadderLevel>
-  setLadderChecked: Dispatch<SetStateAction<Set<LadderLevel>>>
-  lowerDifficultyPreset: boolean
-  setLowerDifficultyPreset: Dispatch<SetStateAction<boolean>>
-  higherDifficultyPreset: boolean
-  setHigherDifficultyPreset: Dispatch<SetStateAction<boolean>>
-  lastGlobalLadder: ReadonlySet<LadderLevel>
-  setLastGlobalLadder: Dispatch<SetStateAction<Set<LadderLevel>>>
-  lastGlobalLowerDifficulty: boolean
-  setLastGlobalLowerDifficulty: Dispatch<SetStateAction<boolean>>
-  lastGlobalHigherDifficulty: boolean
-  setLastGlobalHigherDifficulty: Dispatch<SetStateAction<boolean>>
-  stationLevelPresets: StationLevelMap
-  setStationLevelPresets: Dispatch<SetStateAction<StationLevelMap>>
   recommendedChecked: ReadonlySet<string>
   setRecommendedChecked: Dispatch<SetStateAction<Set<string>>>
   packagesChecked: ReadonlySet<string>
@@ -46,20 +30,6 @@ export function useSelectionPresetsState(args: {
     game,
     selectedIds,
     setSelectedIds,
-    ladderChecked,
-    setLadderChecked,
-    lowerDifficultyPreset,
-    setLowerDifficultyPreset,
-    higherDifficultyPreset,
-    setHigherDifficultyPreset,
-    lastGlobalLadder,
-    setLastGlobalLadder,
-    lastGlobalLowerDifficulty,
-    setLastGlobalLowerDifficulty,
-    lastGlobalHigherDifficulty,
-    setLastGlobalHigherDifficulty,
-    stationLevelPresets,
-    setStationLevelPresets,
     recommendedChecked,
     setRecommendedChecked,
     packagesChecked,
@@ -103,26 +73,12 @@ export function useSelectionPresetsState(args: {
     return fingerprintFromLive({
       game,
       selectedIds,
-      ladderChecked,
-      lowerDifficulty: lowerDifficultyPreset,
-      higherDifficulty: higherDifficultyPreset,
-      lastGlobalLadder,
-      lastGlobalLowerDifficulty,
-      lastGlobalHigherDifficulty,
-      stationLevelPresets,
       recommendedChecked,
       packagesChecked,
     })
   }, [
     game,
     selectedIds,
-    ladderChecked,
-    lowerDifficultyPreset,
-    higherDifficultyPreset,
-    lastGlobalLadder,
-    lastGlobalLowerDifficulty,
-    lastGlobalHigherDifficulty,
-    stationLevelPresets,
     recommendedChecked,
     packagesChecked,
   ])
@@ -136,13 +92,6 @@ export function useSelectionPresetsState(args: {
     return {
       game: forGame,
       selectedIds,
-      ladderChecked,
-      lowerDifficulty: lowerDifficultyPreset,
-      higherDifficulty: higherDifficultyPreset,
-      lastGlobalLadder,
-      lastGlobalLowerDifficulty,
-      lastGlobalHigherDifficulty,
-      stationLevelPresets,
       recommendedChecked,
       packagesChecked,
     }
@@ -182,19 +131,6 @@ export function useSelectionPresetsState(args: {
     const applied = applySelectionPreset(preset)
     const delta = diffSelectedIds(before, applied.selectedIds)
     setSelectedIds(applied.selectedIds)
-    setLadderChecked(applied.ladderChecked)
-    setLowerDifficultyPreset(applied.lowerDifficulty)
-    setHigherDifficultyPreset(applied.higherDifficulty)
-    setLastGlobalLadder(applied.lastGlobalLadder)
-    setLastGlobalLowerDifficulty(applied.lastGlobalLowerDifficulty)
-    setLastGlobalHigherDifficulty(applied.lastGlobalHigherDifficulty)
-    setStationLevelPresets(() => {
-      const next: StationLevelMap = new Map()
-      for (const [key, value] of applied.stationLevelPresets) {
-        next.set(key as StationId, value)
-      }
-      return next
-    })
     setRecommendedChecked(applied.recommendedChecked)
     setPackagesChecked(applied.packagesChecked)
     setActivePresetId(preset.id)

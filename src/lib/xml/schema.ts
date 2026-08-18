@@ -70,7 +70,6 @@ export interface NodeAttrs {
   readme?: string
   modId?: string
   engine?: string
-  level?: string
   /** Preset category token for mass-check tiles; inherited. */
   recommended?: string
   /** Optional sub-bundle under a recommended category; inherited. */
@@ -103,7 +102,6 @@ export interface BaseNode {
   attrs: NodeAttrs
   /** Inherited effective engine allow-list string (comma tokens), empty = all games. */
   effectiveEngine: string
-  effectiveLevel?: string
   effectiveRecommended?: string
   effectivePackage?: string
   children: TreeNode[]

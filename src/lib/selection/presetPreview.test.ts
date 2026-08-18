@@ -13,8 +13,8 @@ const PREVIEW_XML = `<?xml version="1.0"?>
   </ui>
   <combat>
     <alternatives>
-      <component id="combat:a" label="Option A" level="fixes" default="1" />
-      <component id="combat:b" label="Option B" level="fixes" />
+      <component id="combat:a" label="Option A" recommended="fixes" default="1" />
+      <component id="combat:b" label="Option B" recommended="fixes" />
     </alternatives>
   </combat>
 </installSequence>`
@@ -31,9 +31,6 @@ describe('buildPresetTilePreview', () => {
       game: 'eet',
       selectedIds: selected,
       tile,
-      ladderChecked: new Set(),
-      lowerDifficulty: false,
-      higherDifficulty: false,
       checkedRecommended: new Set(),
       checkedPackages: new Set(),
     })
@@ -48,9 +45,6 @@ describe('buildPresetTilePreview', () => {
       game: 'eet',
       selectedIds: selected,
       tile,
-      ladderChecked: new Set(),
-      lowerDifficulty: false,
-      higherDifficulty: false,
       checkedRecommended: new Set(),
       checkedPackages: new Set(['EEex']),
     })
@@ -59,18 +53,15 @@ describe('buildPresetTilePreview', () => {
     expect(preview.blocked).toHaveLength(0)
   })
 
-  it('marks alternatives losers as blocked for ladder tiles', () => {
+  it('marks alternatives losers as blocked for recommended tiles', () => {
     const selected = createInitialSelection(model, 'eet')
-    const tile: PresetTileRef = { kind: 'ladder', level: 'fixes' }
+    const tile: PresetTileRef = { kind: 'recommended', token: 'fixes' }
 
     const preview = buildPresetTilePreview({
       model,
       game: 'eet',
       selectedIds: selected,
       tile,
-      ladderChecked: new Set(),
-      lowerDifficulty: false,
-      higherDifficulty: false,
       checkedRecommended: new Set(),
       checkedPackages: new Set(),
     })
@@ -90,9 +81,6 @@ describe('buildPresetTilePreview', () => {
       game: 'eet',
       selectedIds: selected,
       tile,
-      ladderChecked: new Set(),
-      lowerDifficulty: false,
-      higherDifficulty: false,
       checkedRecommended: new Set(),
       checkedPackages: new Set(['EEex']),
     })

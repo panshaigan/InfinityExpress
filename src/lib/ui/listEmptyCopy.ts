@@ -30,7 +30,7 @@ export function listEmptyCopy(args: {
     return {
       title: filtersActive ? 'Filters emptied this type' : 'Nothing in this type',
       body: filtersActive
-        ? 'Clear Show levels, Size, Author, or Tags to reveal components here.'
+        ? 'Clear Size, Author, or Tags to reveal components here.'
         : 'This content type has no components for your engine. Try another Type tab.',
     }
   }
@@ -40,14 +40,14 @@ export function listEmptyCopy(args: {
         ? 'Filters emptied this category'
         : 'Nothing in this category',
       body: filtersActive
-        ? 'Clear Show levels, Size, Author, or Tags to reveal components here.'
+        ? 'Clear Size, Author, or Tags to reveal components here.'
         : 'This Mechanics category has no components for your engine. Try another Category.',
     }
   }
   if (filtersActive) {
     return {
       title: 'Filters emptied this stop',
-      body: 'Clear filters, or broaden Show levels / Size / Author / Tags to bring components back.',
+      body: 'Clear filters, or broaden Size / Author / Tags to bring components back.',
     }
   }
   return {

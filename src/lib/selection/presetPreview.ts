@@ -1,10 +1,5 @@
 import { engineMatches } from '../engine/matchEngine'
 import {
-  levelFilterRank,
-  type DifficultyLevel,
-  type LadderLevel,
-} from '../levels'
-import {
   findEnclosingMod,
   resolveModLookupKey,
   type ModInfo,
@@ -17,10 +12,6 @@ import {
   passesOwnAndAncestorDisplayGates,
 } from './treeAncestry'
 import {
-  applyLadderLevelSelection,
-  setDifficultySelection,
-} from './selectionLevels'
-import {
   setRecommendedSelection,
   setPackageSelection,
 } from './selectionRecommended'
@@ -31,8 +22,6 @@ import type {
 } from '../xml/schema'
 
 export type PresetTileRef =
-  | { kind: 'ladder'; level: LadderLevel }
-  | { kind: 'difficulty'; token: DifficultyLevel }
   | { kind: 'recommended'; token: string }
   | { kind: 'package'; token: string }
 
@@ -62,9 +51,6 @@ export interface BuildPresetTilePreviewArgs {
   game: SelectedGame
   selectedIds: ReadonlySet<string>
   tile: PresetTileRef
-  ladderChecked: ReadonlySet<LadderLevel>
-  lowerDifficulty: boolean
-  higherDifficulty: boolean
   checkedRecommended: ReadonlySet<string>
   checkedPackages: ReadonlySet<string>
   modsByCodename?: ReadonlyMap<string, ModInfo>
@@ -78,23 +64,11 @@ function matchesPackage(c: ComponentNode, token: string): boolean {
   return c.effectivePackage === token
 }
 
-function isLadderLeveled(component: ComponentNode): boolean {
-  return levelFilterRank(component.effectiveLevel) !== null
-}
-
 function matchesTile(
   tile: PresetTileRef,
   c: ComponentNode,
 ): boolean {
   switch (tile.kind) {
-    case 'ladder': {
-      if (!isLadderLeveled(c)) return false
-      const targetRank = levelFilterRank(tile.level)
-      const rank = levelFilterRank(c.effectiveLevel)
-      return targetRank !== null && rank === targetRank
-    }
-    case 'difficulty':
-      return c.effectiveLevel === tile.token
     case 'recommended':
       return matchesRecommendedBase(c, tile.token)
     case 'package':
@@ -106,16 +80,10 @@ function isTileChecked(
   tile: PresetTileRef,
   args: Pick<
     BuildPresetTilePreviewArgs,
-    'ladderChecked' | 'lowerDifficulty' | 'higherDifficulty' | 'checkedRecommended' | 'checkedPackages'
+    'checkedRecommended' | 'checkedPackages'
   >,
 ): boolean {
   switch (tile.kind) {
-    case 'ladder':
-      return args.ladderChecked.has(tile.level)
-    case 'difficulty':
-      return tile.token === 'lowerDifficulty'
-        ? args.lowerDifficulty
-        : args.higherDifficulty
     case 'recommended':
       return args.checkedRecommended.has(tile.token)
     case 'package':
@@ -125,10 +93,6 @@ function isTileChecked(
 
 function tileLabel(tile: PresetTileRef, model: InstallSequenceModel): string {
   switch (tile.kind) {
-    case 'ladder':
-      return resolveRecommendedTileInfo(tile.level).label
-    case 'difficulty':
-      return resolveRecommendedTileInfo(tile.token).label
     case 'recommended':
       return resolveRecommendedTileInfo(tile.token).label
     case 'package':
@@ -141,16 +105,8 @@ function simulateTileOn(
   selectedIds: ReadonlySet<string>,
   game: SelectedGame,
   tile: PresetTileRef,
-  ladderChecked: ReadonlySet<LadderLevel>,
 ): ReadonlySet<string> {
   switch (tile.kind) {
-    case 'ladder': {
-      const nextLadder = new Set(ladderChecked)
-      nextLadder.add(tile.level)
-      return applyLadderLevelSelection(model, selectedIds, game, nextLadder)
-    }
-    case 'difficulty':
-      return setDifficultySelection(model, selectedIds, game, tile.token, true)
     case 'recommended':
       return setRecommendedSelection(model, selectedIds, game, tile.token, true)
     case 'package':
@@ -240,11 +196,10 @@ export function buildPresetTilePreview(
     game,
     selectedIds,
     tile,
-    ladderChecked,
     modsByCodename,
   } = args
 
-  const after = simulateTileOn(model, selectedIds, game, tile, ladderChecked)
+  const after = simulateTileOn(model, selectedIds, game, tile)
   const pool = matchingPool(model, game, tile)
 
   const wouldSelect: ComponentNode[] = []
@@ -287,10 +242,6 @@ export function presetTilesEqual(a: PresetTileRef | null, b: PresetTileRef | nul
   if (!a || !b) return false
   if (a.kind !== b.kind) return false
   switch (a.kind) {
-    case 'ladder':
-      return b.kind === 'ladder' && a.level === b.level
-    case 'difficulty':
-      return b.kind === 'difficulty' && a.token === b.token
     case 'recommended':
       return b.kind === 'recommended' && a.token === b.token
     case 'package':

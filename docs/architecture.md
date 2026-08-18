@@ -8,10 +8,10 @@ Stack: React 18 + TypeScript + Vite + Vitest; Tauri 2 desktop shell. Pure domain
 | --- | --- |
 | `src/data/` | Curated `InstallSequence.xml`, `mods.csv` |
 | `src/lib/xml/` | Parse, merge duplicate stations, content remap |
-| `src/lib/selection/` | Toggle, visibility, conditions, levels |
+| `src/lib/selection/` | Toggle, visibility, conditions, recommended presets |
 | `src/lib/engine/` | Engine token allow-lists |
 | `src/lib/mods/` | Catalog, disk presence, acquire helpers |
-| `src/lib/presets/` | Selection + level-strip snapshots |
+| `src/lib/presets/` | Selection + recommended/package snapshots |
 | `src/lib/export/` | Install-order text (`id;label`) |
 | `src/lib/install/` | Plan, WeiDU resolve, console/log |
 | `src/lib/desktop/` | Tauri dialogs / invoke wrappers |
@@ -72,7 +72,7 @@ Selection is a `Set` of **component ids** (XML `id`), not tree keys. Detail pane
 | Fold / remap | `xml/foldSiblings.ts`, `xml/remapContentForGame.ts` |
 | Engine | `engine/matchEngine.ts` |
 | Selection / visibility | `selection/selectionEngine.ts`, `visibility.ts`, `conditions.ts` |
-| Levels | `selection/selectionLevels.ts` |
+| Recommended presets | `selection/selectionRecommended.ts` |
 | Presets | `presets/selectionPresets.ts` |
 | Export | `export/installOrder.ts` |
 | Install | `install/planBuilder.ts`, `weiduResolution.ts`, `hooks/useInstallRun.ts` |

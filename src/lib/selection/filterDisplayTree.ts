@@ -1,4 +1,3 @@
-import { levelPassesFilter } from '../levels'
 import {
   resolveModLookupKey,
   type ModInfo,
@@ -156,7 +155,7 @@ export interface LeafFilterOptions {
 }
 
 /**
- * Whether a leaf display row passes filter criteria (level, hidden, tags, size,
+ * Whether a leaf display row passes filter criteria (hidden, tags, size,
  * author, search). Shared by station tree filtering and global search.
  */
 export function leafMatchesCriteria(
@@ -168,17 +167,6 @@ export function leafMatchesCriteria(
 ): boolean {
   const source = displaySource(display)
   const attrs = source.attrs
-  const level =
-    display.collapsedComponent?.effectiveLevel ?? display.node.effectiveLevel
-
-  if (
-    !levelPassesFilter(level, criteria.maxLevel, criteria.levelExact, {
-      includeLowerDifficulty: criteria.includeLowerDifficulty,
-      includeHigherDifficulty: criteria.includeHigherDifficulty,
-    })
-  ) {
-    return false
-  }
 
   const showHidden = options.forceShowHidden || criteria.showHidden
   const isHidden = Boolean(attrs.noDisplay)

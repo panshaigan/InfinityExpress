@@ -48,11 +48,6 @@ export function uncheckedFilterLabel(mode: UncheckedFilterMode): string {
 
 export interface FilterCriteria {
   search: string
-  /** Ladder max level, or null for no ladder filter. */
-  maxLevel: string | null
-  levelExact: boolean
-  includeLowerDifficulty: boolean
-  includeHigherDifficulty: boolean
   /**
    * When false (default), exclude noDisplay and required components.
    * When true, show both alongside other components.
@@ -94,10 +89,6 @@ export interface FilterSelectionContext {
 
 export const DEFAULT_FILTER_CRITERIA: FilterCriteria = {
   search: '',
-  maxLevel: null,
-  levelExact: false,
-  includeLowerDifficulty: true,
-  includeHigherDifficulty: true,
   showHidden: false,
   uncheckedFilter: 'off',
   tags: new Set(),
@@ -216,10 +207,6 @@ export function isFilterActive(
   const defaults = createDefaultFilterCriteria(tagOptions, extras)
   return (
     criteria.search.trim() !== '' ||
-    criteria.maxLevel !== null ||
-    criteria.levelExact !== defaults.levelExact ||
-    criteria.includeLowerDifficulty !== defaults.includeLowerDifficulty ||
-    criteria.includeHigherDifficulty !== defaults.includeHigherDifficulty ||
     criteria.showHidden !== defaults.showHidden ||
     criteria.uncheckedFilter !== defaults.uncheckedFilter ||
     criteria.tagsOnlyChecked !== defaults.tagsOnlyChecked ||

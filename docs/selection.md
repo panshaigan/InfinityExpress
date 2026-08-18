@@ -47,12 +47,10 @@ Operands = component ids. `,` = AND, `|` = OR, `()` group. Unparsable → false.
 
 **Alternatives:** every enclosing `<alternatives>` applies (inner first). Component siblings = radio. Branch children = picking one branch clears others.
 
-## Levels vs filters
+## Presets vs filters
 
-- **Level strip** — mass-check by independently toggled ladder ranks (each chip selects/deselects only that rank's components) + independent Lower/Higher difficulty. Does not change filters.
-- **Filters** — display-only after `buildDisplayTree` (search, level, stability, tags, size, author, hidden, required, unchecked modes). Never clear selection.
-
-Ladder ranks: `fixes` → `restoration` → `vanillaPlus` → `blendWell` → `extended` (`restructure` with `blendWell`). Difficulty tokens are opt-in only.
+- **Presets station** — mass-check by independently toggled **recommended** and **package** tiles (`effectiveRecommended` / `effectivePackage`). Does not change filters.
+- **Filters** — display-only after `buildDisplayTree` (search, tags, size, author, hidden, required, unchecked modes). Never clear selection.
 
 ## Recommended strip (Presets)
 
@@ -79,11 +77,11 @@ npcExpansions: {
 },
 ```
 
-New projects seed **Fixes** via `recommendedChecked` + mass-check (not the legacy level strip on this page). Per-station level overrides in the station header menu still use `effectiveLevel` chips.
+New projects seed **Fixes** via `recommendedChecked` + mass-check on the Presets station.
 
 ## Presets
 
-In-memory, game-scoped: selected ids + level-strip UI + recommended/package chips. Not stored: filters, station, folds. Load restores chips **without** re-running mass-check. Shape: `presets/selectionPresets.ts`.
+In-memory, game-scoped: selected ids + recommended/package chips. Not stored: filters, station, folds. Load restores chips **without** re-running mass-check. Shape: `presets/selectionPresets.ts`.
 
 ## Export
 
@@ -97,4 +95,4 @@ Top-bar export is phase-aware:
 
 ## Key modules
 
-`selection/selectionCore.ts`, `selectionEngine.ts`, `visibility.ts`, `conditions.ts`, `selectionLevels.ts`, `selectionRecommended.ts`, `export/installOrder.ts`.
+`selection/selectionCore.ts`, `selectionEngine.ts`, `visibility.ts`, `conditions.ts`, `selectionRecommended.ts`, `export/installOrder.ts`.

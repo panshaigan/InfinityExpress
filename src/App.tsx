@@ -60,7 +60,6 @@ import { ScreenNavButtons } from './ui/ScreenNavButtons'
 import { ComponentTree, type TreeFoldApi } from './ui/ComponentTree'
 import { StationBranchNav } from './ui/StationBranchNav'
 import { StationListToolbar } from './ui/StationListToolbar'
-import { StationPresetsMenu } from './ui/StationPresetsMenu'
 import { GlobalSearchList } from './ui/GlobalSearchList'
 import { GlobalSearchToolbar } from './ui/GlobalSearchToolbar'
 import { FiltersStrip } from './ui/FiltersStrip'
@@ -84,7 +83,6 @@ import { listSelectedModCodenames } from './lib/mods/loadMods'
 import { useStationTrees } from './hooks/useStationTrees'
 import { useBranchNav } from './hooks/useBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
-import { useLevelPresets } from './hooks/useLevelPresets'
 import { useRecommendedPresets } from './hooks/useRecommendedPresets'
 import { useChromeHotkeys } from './hooks/useChromeHotkeys'
 import { useRouteNav } from './hooks/useRouteNav'
@@ -112,7 +110,6 @@ import {
 } from './lib/ui/installPathValidation'
 import {
   buildGameSessionSnapshot,
-  levelPresetsInitialFromSession,
   recommendedPresetsInitialFromSession,
   sanitizeInstallSession,
   type PersistedInstallSession,
@@ -258,14 +255,6 @@ function AppShell() {
   const clearFocusRef = useRef(() => {})
   const clearFocus = useCallback(() => clearFocusRef.current(), [])
 
-  const levels = useLevelPresets({
-    model,
-    game,
-    activeStation,
-    relationIndex,
-    setSelectedIds,
-  })
-
   const recommended = useRecommendedPresets({
     model,
     game,
@@ -276,20 +265,6 @@ function AppShell() {
     game,
     selectedIds,
     setSelectedIds,
-    ladderChecked: levels.ladderChecked,
-    setLadderChecked: levels.setLadderChecked,
-    lowerDifficultyPreset: levels.lowerDifficultyPreset,
-    setLowerDifficultyPreset: levels.setLowerDifficultyPreset,
-    higherDifficultyPreset: levels.higherDifficultyPreset,
-    setHigherDifficultyPreset: levels.setHigherDifficultyPreset,
-    lastGlobalLadder: levels.lastGlobalLadder,
-    setLastGlobalLadder: levels.setLastGlobalLadder,
-    lastGlobalLowerDifficulty: levels.lastGlobalLowerDifficulty,
-    setLastGlobalLowerDifficulty: levels.setLastGlobalLowerDifficulty,
-    lastGlobalHigherDifficulty: levels.lastGlobalHigherDifficulty,
-    setLastGlobalHigherDifficulty: levels.setLastGlobalHigherDifficulty,
-    stationLevelPresets: levels.stationLevelPresets,
-    setStationLevelPresets: levels.setStationLevelPresets,
     recommendedChecked: recommended.checkedRecommended,
     setRecommendedChecked: recommended.setCheckedRecommended,
     packagesChecked: recommended.checkedPackages,
@@ -520,9 +495,6 @@ function AppShell() {
       game,
       selectedIds,
       tile: presetFocus.displayTile,
-      ladderChecked: levels.ladderChecked,
-      lowerDifficulty: levels.lowerDifficultyPreset,
-      higherDifficulty: levels.higherDifficultyPreset,
       checkedRecommended: recommended.checkedRecommended,
       checkedPackages: recommended.checkedPackages,
       modsByCodename,
@@ -533,9 +505,6 @@ function AppShell() {
     presetFocus.displayTile,
     model,
     selectedIds,
-    levels.ladderChecked,
-    levels.lowerDifficultyPreset,
-    levels.higherDifficultyPreset,
     recommended.checkedRecommended,
     recommended.checkedPackages,
   ])
@@ -588,13 +557,6 @@ function AppShell() {
       contentMainKey,
       contentSubKey,
       contentSubTag,
-      ladderChecked: levels.ladderChecked,
-      lowerDifficultyPreset: levels.lowerDifficultyPreset,
-      higherDifficultyPreset: levels.higherDifficultyPreset,
-      lastGlobalLadder: levels.lastGlobalLadder,
-      lastGlobalLowerDifficulty: levels.lastGlobalLowerDifficulty,
-      lastGlobalHigherDifficulty: levels.lastGlobalHigherDifficulty,
-      stationLevelPresets: levels.stationLevelPresets,
       recommendedChecked: recommended.checkedRecommended,
       packagesChecked: recommended.checkedPackages,
       modsJourney,
@@ -606,13 +568,6 @@ function AppShell() {
     contentSubKey,
     contentSubTag,
     game,
-    levels.higherDifficultyPreset,
-    levels.lastGlobalHigherDifficulty,
-    levels.lastGlobalLadder,
-    levels.lastGlobalLowerDifficulty,
-    levels.ladderChecked,
-    levels.lowerDifficultyPreset,
-    levels.stationLevelPresets,
     recommended.checkedPackages,
     recommended.checkedRecommended,
     modsJourney,
@@ -663,7 +618,6 @@ function AppShell() {
     if (!session) {
       setRouteUnlocked(true)
       setSelectedIds(createInitialSelection(model, engine))
-      levels.seedFixesBaseline(engine)
       recommended.seedFixesBaseline(engine)
       presets.restoreSelectionPresetsState({
         presets: [],
@@ -682,7 +636,6 @@ function AppShell() {
     } else {
       setRouteUnlocked(session.routeUnlocked)
       setSelectedIds(new Set(session.selectedIds))
-      levels.restoreLevelState(levelPresetsInitialFromSession(session))
       recommended.restoreRecommendedState(recommendedPresetsInitialFromSession(session))
       presets.restoreSelectionPresetsState({
         presets: session.selectionPresets,
@@ -727,7 +680,6 @@ function AppShell() {
 
   function resetComponentSelection() {
     if (!game) return
-    levels.resetLevelPresets()
     recommended.resetRecommendedPresets()
     presets.resetPresetSelection()
     setSelectedIds(createInitialSelection(model, game))
@@ -1314,15 +1266,6 @@ function AppShell() {
                           )}
                         </h2>
                         <div className="list-pane-header-actions">
-                          <StationPresetsMenu
-                            enabled={!route.currentFinished}
-                            checkedLadderLevels={levels.activeStationPreset.ladder}
-                            lowerDifficulty={levels.activeStationPreset.lowerDifficulty}
-                            higherDifficulty={levels.activeStationPreset.higherDifficulty}
-                            onLadderToggle={levels.onStationLadderToggle}
-                            onDifficultyChange={levels.onStationDifficultyChange}
-                            onClearToGlobal={levels.onClearToGlobal}
-                          />
                           <ScreenNavButtons
                             canCycle={route.canCycleScreens}
                             canOk={route.canMarkFinished}
@@ -1475,7 +1418,7 @@ function AppShell() {
         message={
           installLock.mode !== 'none'
             ? 'Clear all component selection, station progress, and restore your game folder from the vanilla backup? The install plan will reset.'
-            : 'Clear all component selection, level presets, and station progress for this project?'
+            : 'Clear all component selection, preset tiles, and station progress for this project?'
         }
         confirmLabel="Reset all"
         danger

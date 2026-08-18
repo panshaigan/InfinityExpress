@@ -14,7 +14,6 @@ import {
   type RandomizePercent,
 } from '../lib/selection/selectionEngine'
 import { isComponentNode, type InstallSequenceModel, type SelectedGame } from '../lib/xml/schema'
-import { levelBadgeClass, levelBadgeLabel } from '../lib/levels'
 import {
   stabilityBadgeClass,
   stabilityBadgeLabel,
@@ -287,7 +286,6 @@ export const CheckboxRow = memo(function CheckboxRow({
     node.attrs.label ??
     (collapsedComponent ? collapsedComponent.attrs.label : undefined) ??
     node.tag
-  const level = collapsedComponent?.effectiveLevel ?? node.effectiveLevel
   const stability = resolveModStability(model, modsByCodename, source)
   const stabilityLabel = stabilityBadgeLabel(stability)
   const stabilityClass = stabilityBadgeClass(stability)
@@ -527,9 +525,6 @@ export const CheckboxRow = memo(function CheckboxRow({
             >
               {presetBadgeLabel}
             </span>
-          )}
-          {level && (
-            <span className={levelBadgeClass(level)}>{levelBadgeLabel(level)}</span>
           )}
           {stabilityLabel && stabilityClass && (
             <span className={stabilityClass}>{stabilityLabel}</span>

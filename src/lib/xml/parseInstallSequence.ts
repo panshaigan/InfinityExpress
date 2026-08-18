@@ -26,7 +26,6 @@ function readAttrs(el: Element): NodeAttrs {
     readme: g('readme'),
     modId: g('modId') ?? g('modid'),
     engine: g('engine'),
-    level: g('level'),
     recommended: g('recommended'),
     package: g('package'),
     complexity: g('complexity'),
@@ -53,10 +52,6 @@ function kindForTag(tag: string): NodeKind {
 }
 
 function inheritEngine(own: string | undefined, parent: string): string {
-  return own?.trim() ? own.trim() : parent
-}
-
-function inheritLevel(own: string | undefined, parent: string | undefined): string | undefined {
   return own?.trim() ? own.trim() : parent
 }
 
@@ -100,7 +95,6 @@ export function parseInstallSequence(xmlText: string): ParseResult {
   function walkElement(
     el: Element,
     parentEngine: string,
-    parentLevel: string | undefined,
     parentRecommended: string | undefined,
     parentPackage: string | undefined,
     parentKey: string | undefined,
@@ -110,7 +104,6 @@ export function parseInstallSequence(xmlText: string): ParseResult {
 
     const attrs = readAttrs(el)
     const effectiveEngine = inheritEngine(attrs.engine, parentEngine)
-    const effectiveLevel = inheritLevel(attrs.level, parentLevel)
     const effectiveRecommended = inheritToken(attrs.recommended, parentRecommended)
     const effectivePackage = inheritToken(attrs.package, parentPackage)
     const kind = kindForTag(tag)
@@ -128,7 +121,6 @@ export function parseInstallSequence(xmlText: string): ParseResult {
         kind: 'component',
         attrs,
         effectiveEngine,
-        effectiveLevel,
         effectiveRecommended,
         effectivePackage,
         children: [],
@@ -148,7 +140,6 @@ export function parseInstallSequence(xmlText: string): ParseResult {
       kind: kind === 'alternatives' ? 'alternatives' : kind === 'station' ? 'station' : 'container',
       attrs,
       effectiveEngine,
-      effectiveLevel,
       effectiveRecommended,
       effectivePackage,
       children: [],
@@ -160,7 +151,6 @@ export function parseInstallSequence(xmlText: string): ParseResult {
       const childNode = walkElement(
         child,
         effectiveEngine,
-        effectiveLevel,
         effectiveRecommended,
         effectivePackage,
         key,
@@ -177,7 +167,7 @@ export function parseInstallSequence(xmlText: string): ParseResult {
       warnings.push(`Skipping unknown top-level tag <${tag}>`)
       continue
     }
-    const stationNode = walkElement(child, '', undefined, undefined, undefined, undefined)
+    const stationNode = walkElement(child, '', undefined, undefined, undefined)
     if (!stationNode || stationNode.kind === 'component') continue
     const list = stationBuckets.get(tag) ?? []
     list.push(stationNode as ContainerNode)

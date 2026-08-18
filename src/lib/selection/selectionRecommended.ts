@@ -1,7 +1,4 @@
 import { engineMatches } from '../engine/matchEngine'
-import {
-  type LevelSelectionScope,
-} from './selectionLevels'
 import { passesDisplayGates, findEnclosingAlternatives, findEnclosingMod } from './treeAncestry'
 import {
   type ComponentNode,
@@ -16,7 +13,10 @@ import {
 } from './selectionInternals'
 import { createInitialSelection, finalizeSelection } from './selectionCore'
 
-function inScope(componentId: string, scope: LevelSelectionScope): boolean {
+/** Optional scope: only touch component ids in this set. Omit for whole install sequence. */
+export type SelectionScope = ReadonlySet<string> | undefined
+
+function inScope(componentId: string, scope: SelectionScope): boolean {
   return scope == null || scope.has(componentId)
 }
 
@@ -97,7 +97,7 @@ export function setRecommendedSelection(
   game: SelectedGame,
   token: string,
   wantSelected: boolean,
-  scope?: LevelSelectionScope,
+  scope?: SelectionScope,
 ): SelectionSet {
   const next = new Set(selected)
 
@@ -142,7 +142,7 @@ export function setPackageSelection(
   game: SelectedGame,
   token: string,
   wantSelected: boolean,
-  scope?: LevelSelectionScope,
+  scope?: SelectionScope,
 ): SelectionSet {
   const next = new Set(selected)
 

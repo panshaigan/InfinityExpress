@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import {
-  levelFilterRank,
-  levelPassesFilter,
-} from '../levels'
-import {
   STABILITY_RELEASED,
   capitalizeStabilityLabel,
   createDefaultFilterCriteria,
@@ -26,19 +22,17 @@ const ALL_TEST_TAGS = ['bigQuest', 'smallQuest']
 
 function component(
   id: string,
-  attrs: ComponentNode['attrs'] & { effectiveLevel?: string } = {},
+  attrs: ComponentNode['attrs'] = {},
 ): DisplayNode {
-  const { effectiveLevel, ...rest } = attrs
   const node: ComponentNode = {
     kind: 'component',
     tag: 'component',
     key: id,
     componentId: id,
     orderIndex: 0,
-    attrs: rest,
+    attrs,
     children: [],
     effectiveEngine: '',
-    effectiveLevel,
   }
   return { node, children: [] }
 }
@@ -51,7 +45,6 @@ function group(key: string, children: DisplayNode[], label = key): DisplayNode {
     attrs: { label },
     children: [],
     effectiveEngine: '',
-    effectiveLevel: undefined,
   }
   return { node, children }
 }
@@ -76,80 +69,6 @@ function ids(nodes: DisplayNode[]): string[] {
   walk(nodes)
   return out
 }
-
-describe('levelFilterRank', () => {
-  it('orders the ladder and maps restructure to blendWell', () => {
-    expect(levelFilterRank('fixes')).toBe(0)
-    expect(levelFilterRank('restoration')).toBe(1)
-    expect(levelFilterRank('vanillaPlus')).toBe(2)
-    expect(levelFilterRank('blendWell')).toBe(3)
-    expect(levelFilterRank('restructure')).toBe(3)
-    expect(levelFilterRank('extended')).toBe(4)
-    expect(levelFilterRank('lowerDifficulty')).toBeNull()
-    expect(levelFilterRank('higherDifficulty')).toBeNull()
-    expect(levelFilterRank(undefined)).toBeNull()
-  })
-})
-
-const NO_DIFF = {
-  includeLowerDifficulty: false,
-  includeHigherDifficulty: false,
-} as const
-
-const ALL_DIFF = {
-  includeLowerDifficulty: true,
-  includeHigherDifficulty: true,
-} as const
-
-describe('levelPassesFilter', () => {
-  it('passes non-difficulty levels when no ladder max is set', () => {
-    expect(levelPassesFilter('extended', null, false, NO_DIFF)).toBe(true)
-    expect(levelPassesFilter(undefined, null, false, NO_DIFF)).toBe(true)
-  })
-
-  it('is cumulative by default', () => {
-    expect(levelPassesFilter('fixes', 'vanillaPlus', false, NO_DIFF)).toBe(true)
-    expect(levelPassesFilter('restoration', 'vanillaPlus', false, NO_DIFF)).toBe(true)
-    expect(levelPassesFilter('vanillaPlus', 'vanillaPlus', false, NO_DIFF)).toBe(true)
-    expect(levelPassesFilter('blendWell', 'vanillaPlus', false, NO_DIFF)).toBe(false)
-    expect(levelPassesFilter('restructure', 'vanillaPlus', false, NO_DIFF)).toBe(false)
-  })
-
-  it('exact mode limits to the bucket (restructure with blendWell)', () => {
-    expect(levelPassesFilter('fixes', 'blendWell', true, NO_DIFF)).toBe(false)
-    expect(levelPassesFilter('blendWell', 'blendWell', true, NO_DIFF)).toBe(true)
-    expect(levelPassesFilter('restructure', 'blendWell', true, NO_DIFF)).toBe(true)
-    expect(levelPassesFilter('extended', 'blendWell', true, NO_DIFF)).toBe(false)
-  })
-
-  it('excludes difficulty tokens unless their include flag is on', () => {
-    expect(levelPassesFilter('higherDifficulty', 'extended', false, NO_DIFF)).toBe(false)
-    expect(
-      levelPassesFilter('higherDifficulty', 'extended', false, {
-        includeLowerDifficulty: false,
-        includeHigherDifficulty: true,
-      }),
-    ).toBe(true)
-    expect(levelPassesFilter('lowerDifficulty', null, false, NO_DIFF)).toBe(false)
-    expect(
-      levelPassesFilter('lowerDifficulty', null, false, {
-        includeLowerDifficulty: true,
-        includeHigherDifficulty: false,
-      }),
-    ).toBe(true)
-    expect(
-      levelPassesFilter('higherDifficulty', null, false, {
-        includeLowerDifficulty: true,
-        includeHigherDifficulty: false,
-      }),
-    ).toBe(false)
-  })
-
-  it('excludes unleveled nodes when filtering by level', () => {
-    expect(levelPassesFilter(undefined, 'fixes', true, NO_DIFF)).toBe(false)
-    expect(levelPassesFilter(undefined, 'extended', false, ALL_DIFF)).toBe(false)
-  })
-})
 
 describe('normalizeStability', () => {
   it('treats missing and released as Released', () => {
@@ -188,108 +107,27 @@ describe('stability labels', () => {
 describe('filterDisplayTree', () => {
   const tree: DisplayNode[] = [
     group('g1', [
-      component('a', { label: 'Alpha Fix', effectiveLevel: 'fixes' }),
-      component('b', { label: 'Beta Quest', effectiveLevel: 'blendWell', tags: 'bigQuest' }),
-      component('c', {
-        label: 'Hard Mode',
-        effectiveLevel: 'higherDifficulty',
-      }),
-      component('cLow', {
-        label: 'Mild Mode',
-        effectiveLevel: 'lowerDifficulty',
-      }),
+      component('a', { label: 'Alpha Fix' }),
+      component('b', { label: 'Beta Quest', tags: 'bigQuest' }),
+      component('c', { label: 'Hard Mode' }),
+      component('cLow', { label: 'Mild Mode' }),
       component('d', {
         label: 'Hidden Req',
         required: true,
         noDisplay: true,
-        effectiveLevel: 'fixes',
       }),
       component('reqVis', {
         label: 'Visible Required',
         required: true,
-        effectiveLevel: 'fixes',
       }),
       component('e', {
         label: 'Restructure Pack',
-        effectiveLevel: 'restructure',
         tags: 'smallQuest',
       }),
-      component('f', { label: 'Plain', effectiveLevel: 'extended' }),
+      component('f', { label: 'Plain' }),
       component('nolevel', { label: 'No Level Item' }),
     ]),
   ]
-
-  it('filters cumulatively by level (required/hidden excluded by defaults)', () => {
-    const out = filterDisplayTree(
-      tree,
-      criteria({
-        maxLevel: 'vanillaPlus',
-        includeLowerDifficulty: false,
-        includeHigherDifficulty: false,
-      }),
-    )
-    expect(ids(out)).toEqual(['a'])
-  })
-
-  it('excludes unleveled when a level filter is active', () => {
-    const out = filterDisplayTree(tree, criteria({ maxLevel: 'extended' }))
-    expect(ids(out)).not.toContain('nolevel')
-    expect(ids(out)).toContain('a')
-    expect(ids(out)).toContain('f')
-  })
-
-  it('exact blendWell includes restructure', () => {
-    const out = filterDisplayTree(
-      tree,
-      criteria({
-        maxLevel: 'blendWell',
-        levelExact: true,
-        includeLowerDifficulty: false,
-        includeHigherDifficulty: false,
-      }),
-    )
-    expect(ids(out)).toEqual(['b', 'e'])
-  })
-
-  it('ORs difficulty tokens when their include flags are on', () => {
-    const out = filterDisplayTree(
-      tree,
-      criteria({
-        maxLevel: 'fixes',
-        includeLowerDifficulty: true,
-        includeHigherDifficulty: true,
-      }),
-    )
-    expect(ids(out)).toEqual(['a', 'c', 'cLow'])
-  })
-
-  it('hides difficulty under All levels when include flags are off', () => {
-    const withDiff = filterDisplayTree(
-      tree,
-      criteria({
-        maxLevel: null,
-        includeLowerDifficulty: true,
-        includeHigherDifficulty: true,
-      }),
-    )
-    expect(ids(withDiff)).toContain('c')
-    expect(ids(withDiff)).toContain('cLow')
-    expect(ids(withDiff)).toContain('a')
-    expect(ids(withDiff)).toContain('nolevel')
-
-    const withoutDiff = filterDisplayTree(
-      tree,
-      criteria({
-        maxLevel: null,
-        includeLowerDifficulty: false,
-        includeHigherDifficulty: false,
-      }),
-    )
-    expect(ids(withoutDiff)).not.toContain('c')
-    expect(ids(withoutDiff)).not.toContain('cLow')
-    expect(ids(withoutDiff)).toContain('a')
-    expect(ids(withoutDiff)).toContain('nolevel')
-  })
 
   it('always includes components regardless of catalog stability', () => {
     const out = filterDisplayTree(tree, criteria())
@@ -359,7 +197,6 @@ describe('filterDisplayTree', () => {
       group('g', [
         component('uniqueCompId:99', {
           label: 'Plain Leaf',
-          effectiveLevel: 'fixes',
         }),
       ]),
     ]
@@ -381,21 +218,6 @@ describe('filterDisplayTree', () => {
       'f',
       'nolevel',
     ])
-    expect(
-      ids(
-        filterDisplayTree(
-          tree,
-          criteria({
-            search: 'g1',
-            maxLevel: 'fixes',
-            levelExact: true,
-            includeLowerDifficulty: false,
-            includeHigherDifficulty: false,
-          }),
-        ),
-      ),
-    ).toEqual(['a'])
-
     const nested: DisplayNode[] = [
       group(
         'outer',
@@ -403,12 +225,12 @@ describe('filterDisplayTree', () => {
           group(
             'inner-mod',
             [
-              component('x', { label: 'Leaf One', effectiveLevel: 'fixes' }),
-              component('y', { label: 'Leaf Two', effectiveLevel: 'extended' }),
+              component('x', { label: 'Leaf One' }),
+              component('y', { label: 'Leaf Two' }),
             ],
             'Reflections of Destiny',
           ),
-          component('z', { label: 'Sibling', effectiveLevel: 'fixes' }),
+          component('z', { label: 'Sibling' }),
         ],
         'Content',
       ),
@@ -448,12 +270,7 @@ describe('filterDisplayTree', () => {
   it('keeps ancestor groups for matching leaves', () => {
     const out = filterDisplayTree(
       tree,
-      criteria({
-        maxLevel: 'fixes',
-        levelExact: true,
-        includeLowerDifficulty: false,
-        includeHigherDifficulty: false,
-      }),
+      criteria({ search: 'Alpha' }),
     )
     expect(out).toHaveLength(1)
     expect(out[0].node.attrs.label).toBe('g1')
@@ -468,9 +285,9 @@ describe('filterDisplayTree size and author', () => {
   function modComponent(
     id: string,
     modId: string,
-    attrs: ComponentNode['attrs'] & { effectiveLevel?: string } = {},
+    attrs: ComponentNode['attrs'] = {},
   ): DisplayNode {
-    return component(id, { ...attrs, modId, effectiveLevel: attrs.effectiveLevel ?? 'fixes' })
+    return component(id, { ...attrs, modId })
   }
 
   function modelFor(...nodes: ComponentNode[]): InstallSequenceModel {
@@ -550,7 +367,7 @@ describe('filterDisplayTree size and author', () => {
     modComponent('s', 'small'),
     modComponent('m', 'mid'),
     modComponent('b', 'big'),
-    component('orphan', { label: 'No Mod', effectiveLevel: 'fixes' }),
+    component('orphan', { label: 'No Mod' }),
   ]
   const sizeTree: DisplayNode[] = [group('g', leaves)]
   const ctx: FilterModContext = {
