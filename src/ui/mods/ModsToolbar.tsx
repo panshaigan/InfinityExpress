@@ -276,7 +276,6 @@ export function ModsToolbar({
               disabled={
                 actionsFrozen ||
                 bulkDisabled ||
-                journeyLocked ||
                 catalogActionsDisabled ||
                 selectedHasShipped
               }

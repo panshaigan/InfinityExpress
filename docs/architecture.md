@@ -23,7 +23,7 @@ Stack: React 18 + TypeScript + Vite + Vitest; Tauri 2 desktop shell. Pure domain
 ## Phases
 
 1. **Components** — XML stations in `STATION_ORDER` (`base` … `adjustments`) after Presets. Content has main/sub branch nav after remap. Engine is chosen once per **Project** (not a station).
-2. **Mods** — Working copy of `mods.csv` (localStorage overlays). Desktop: scan Settings **mods download dir** by Download ID (subdir name); acquire / remove-from-disk. Completing last Components station can open Mods in journey mode.
+2. **Mods** — Working copy of `mods.csv` (localStorage overlays). Desktop: scan Settings **mods download dir** by Download ID (subdir name); acquire / remove-from-disk. Completing last Components station can open Mods in journey mode. Secret About Ctrl/Cmd+click on the author name toggles persisted developer mode, which unlocks catalog edit/delete for built-in rows.
 3. **Install** — Plan/run WeiDU steps; **cursor** (`InstallRun.cursor`) marks the current package in the table; **vanilla** (app-wide) + named snapshots under the data root (see [weidu-install.md](weidu-install.md)); console dock. EET splits Pre-EET (`eet1`) vs EET (`eet`).
 
 ## Projects

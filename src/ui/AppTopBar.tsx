@@ -1,4 +1,5 @@
 import { type SelectedGame } from '../lib/xml/schema'
+import { useDeveloperMode } from './developerModeContext'
 import { IconTip } from './IconTip'
 import { SelectionPresetsBar } from './SelectionPresetsBar'
 import { SettingsOpenButton } from './SettingsOpenButton'
@@ -124,17 +125,32 @@ export function AppTopBar({
   resetAllDisabled = false,
   resetAllTip = 'Reset installation and component selection',
 }: Props) {
+  const { developerMode, brandBurst, clearBrandBurst } = useDeveloperMode()
+  const brandClass = [
+    'brand',
+    'has-icon-tip',
+    developerMode ? 'developer-mode' : '',
+    brandBurst ? 'developer-mode-burst' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <header className="top-bar">
       <button
         type="button"
-        className="brand has-icon-tip"
+        className={brandClass}
         aria-haspopup="dialog"
         aria-expanded={aboutOpen}
         aria-label="About iNfinity eXpress"
         onClick={onOpenAbout}
+        onAnimationEnd={(e) => {
+          if (e.animationName === 'brand-forge-burst') clearBrandBurst()
+        }}
       >
-        <span className="brand-title">iNeX</span>
+        <span className="brand-title" data-glow="iNeX">
+          iNeX
+        </span>
         <IconTip>About</IconTip>
       </button>
       <PhaseNav

@@ -34,6 +34,7 @@ import { isDesktopApp } from '../../lib/desktop/fsDialogs'
 import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
 import { PATHS_CHANGED_EVENT } from '../../lib/ui/pathPrefsEvents'
 import { ConfirmDialog } from '../ConfirmDialog'
+import { useDeveloperMode } from '../developerModeContext'
 import { useToast } from '../toasts/toastContext'
 import { AcquireJobDialog } from './AcquireJobDialog'
 import { AcquireSizeConfirmDialog } from './AcquireSizeConfirmDialog'
@@ -108,6 +109,7 @@ export function ModsStation({
     [installLock],
   )
   const { pushToast } = useToast()
+  const { developerMode } = useDeveloperMode()
   const journeyLocked = routeComplete && !!journey
   const [filters, setFilters] = useState<ModsTableFilters>(() =>
     createDefaultModsTableFilters(),
@@ -252,8 +254,9 @@ export function ModsStation({
   const selectedList = useMemo(() => [...selected], [selected])
 
   const selectedHasShipped = useMemo(
-    () => selectedList.some((code) => shippedMods.has(code)),
-    [selectedList],
+    () =>
+      !developerMode && selectedList.some((code) => shippedMods.has(code)),
+    [developerMode, selectedList],
   )
 
   const allRequiredDownloaded = useMemo(() => {
@@ -438,14 +441,17 @@ export function ModsStation({
   }, [installFrozen, modLocked])
 
   const requestDeleteFromCatalog = useCallback((codenames: string[]) => {
-    if (installFrozen || journeyLocked) return
-    const deletable = codenames.filter((c) => !shippedMods.has(c))
+    if (installFrozen) return
+    if (journeyLocked && !developerMode) return
+    const deletable = developerMode
+      ? codenames
+      : codenames.filter((c) => !shippedMods.has(c))
     if (deletable.length === 0) {
       flashNotice('Built-in mods cannot be removed from the catalog.')
       return
     }
     setPendingDelete(deletable)
-  }, [flashNotice, installFrozen, journeyLocked])
+  }, [developerMode, flashNotice, installFrozen, journeyLocked])
 
   const confirmRemoveFromDisk = useCallback(async () => {
     if (!pendingRemove || removing) return
@@ -541,7 +547,9 @@ export function ModsStation({
               onRemoveFromDisk={() => requestRemoveFromDisk(selectedList)}
               onDeleteFromCatalog={() => requestDeleteFromCatalog(selectedList)}
               onAddMod={() => setEditor({ mode: 'create', initial: null })}
-              catalogActionsDisabled={installFrozen}
+              catalogActionsDisabled={
+                installFrozen || (!developerMode && journeyLocked)
+              }
               selectedHasShipped={selectedHasShipped}
               allRequiredDownloaded={allRequiredDownloaded}
               onProceedToInstall={onProceedToInstall}
@@ -580,11 +588,13 @@ export function ModsStation({
                   if (!mod || mod.diskStatus === 'not_present') return
                   void acquire.runCheck([codename])
                 },
-                editDisabled: journeyLocked || installFrozen,
-                catalogDeleteDisabled: journeyLocked || installFrozen,
-                isModProtected: (codename) => shippedMods.has(codename),
+                editDisabled: (!developerMode && journeyLocked) || installFrozen,
+                catalogDeleteDisabled:
+                  installFrozen || (!developerMode && journeyLocked),
+                isModProtected: (codename) =>
+                  !developerMode && shippedMods.has(codename),
                 onEdit: (codename) => {
-                  if (journeyLocked || installFrozen) return
+                  if ((!developerMode && journeyLocked) || installFrozen) return
                   const mod = mods.find((m) => m.codename === codename)
                   if (mod) setEditor({ mode: 'edit', initial: mod })
                 },
@@ -604,7 +614,7 @@ export function ModsStation({
           onWidthChange={onDetailWidthChange}
           onToggleCollapsed={onToggleDetailCollapsed}
           onEdit={() => {
-            if (journeyLocked || installFrozen) return
+            if ((!developerMode && journeyLocked) || installFrozen) return
             if (focusedMod) {
               setEditor({ mode: 'edit', initial: focusedMod })
             }
@@ -612,14 +622,16 @@ export function ModsStation({
           onDeleteFromCatalog={() => {
             if (focusedMod) requestDeleteFromCatalog([focusedMod.codename])
           }}
-          editDisabled={journeyLocked || installFrozen}
+          editDisabled={(!developerMode && journeyLocked) || installFrozen}
           catalogDeleteDisabled={
             installFrozen ||
-            journeyLocked ||
-            (focusedMod ? shippedMods.has(focusedMod.codename) : false)
+            (!developerMode && journeyLocked) ||
+            (!developerMode &&
+              (focusedMod ? shippedMods.has(focusedMod.codename) : false))
           }
           catalogDeleteProtected={
-            focusedMod ? shippedMods.has(focusedMod.codename) : false
+            !developerMode &&
+            (focusedMod ? shippedMods.has(focusedMod.codename) : false)
           }
           acquireLabel={acquireButtonLabel(focusedAcquireKind)}
           acquireDisabled={

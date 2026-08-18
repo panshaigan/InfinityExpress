@@ -86,11 +86,7 @@ body {
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: background var(--ease), color var(--ease);
-}
-
-.brand:hover {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  transition: color var(--ease);
 }
 
 .brand:focus {
@@ -102,6 +98,8 @@ body {
 }
 
 .brand-title {
+  position: relative;
+  isolation: isolate;
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.2rem;
@@ -110,12 +108,88 @@ body {
   line-height: 1.2;
   white-space: nowrap;
   color: color-mix(in srgb, var(--ink) 92%, var(--accent));
-  transition: color var(--ease);
+  transition: color var(--ease), text-shadow var(--ease);
+}
+
+.brand-title::after {
+  content: attr(data-glow);
+  position: absolute;
+  inset: 0;
+  color: var(--accent);
+  font: inherit;
+  letter-spacing: inherit;
+  white-space: inherit;
+  opacity: 0;
+  filter: blur(12px);
+  pointer-events: none;
+  z-index: -1;
+  transition: opacity var(--ease);
+}
+
+.brand.developer-mode .brand-title {
+  text-shadow:
+    0 0 6px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 0 18px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.brand.developer-mode .brand-title::after {
+  opacity: 0.4;
 }
 
 .brand:hover .brand-title,
 .brand:focus-visible .brand-title {
   color: color-mix(in srgb, var(--ink) 78%, var(--accent));
+  text-shadow:
+    0 0 8px color-mix(in srgb, var(--accent) 70%, transparent),
+    0 0 20px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 0 36px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.brand:hover .brand-title::after,
+.brand:focus-visible .brand-title::after {
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brand.developer-mode-burst .brand-title {
+    animation: brand-forge-burst 0.7s ease-out;
+  }
+
+  .brand.developer-mode-burst .brand-title::after {
+    animation: brand-forge-halo 0.7s ease-out;
+  }
+}
+
+@keyframes brand-forge-burst {
+  0% {
+    text-shadow: 0 0 4px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  35% {
+    text-shadow:
+      0 0 12px color-mix(in srgb, var(--accent) 90%, transparent),
+      0 0 28px color-mix(in srgb, var(--accent) 70%, transparent),
+      0 0 48px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  100% {
+    text-shadow:
+      0 0 6px color-mix(in srgb, var(--accent) 45%, transparent),
+      0 0 18px color-mix(in srgb, var(--accent) 28%, transparent);
+  }
+}
+
+@keyframes brand-forge-halo {
+  0% {
+    opacity: 0.35;
+    filter: blur(10px);
+  }
+  35% {
+    opacity: 0.95;
+    filter: blur(16px);
+  }
+  100% {
+    opacity: 0.4;
+    filter: blur(12px);
+  }
 }
 
 .brand-tagline {
@@ -4435,6 +4509,42 @@ body.is-resizing-detail * {
   font-size: 0.86rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+}
+
+.about-author-secret {
+  cursor: inherit;
+}
+
+.about-author-secret.blooming {
+  color: color-mix(in srgb, var(--ink) 70%, var(--accent));
+  text-shadow:
+    0 0 8px color-mix(in srgb, var(--accent) 80%, transparent),
+    0 0 22px color-mix(in srgb, var(--accent) 55%, transparent),
+    0 0 40px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .about-author-secret.blooming {
+    animation: about-author-bloom 0.3s ease-out;
+  }
+}
+
+@keyframes about-author-bloom {
+  0% {
+    text-shadow: 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  55% {
+    text-shadow:
+      0 0 12px color-mix(in srgb, var(--accent) 90%, transparent),
+      0 0 28px color-mix(in srgb, var(--accent) 60%, transparent),
+      0 0 44px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+  100% {
+    text-shadow:
+      0 0 8px color-mix(in srgb, var(--accent) 80%, transparent),
+      0 0 22px color-mix(in srgb, var(--accent) 55%, transparent),
+      0 0 40px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
 }
 
 .about-section {

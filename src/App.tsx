@@ -99,6 +99,7 @@ import {
   RestartConfirmDialog,
   type RestartScope,
 } from './ui/install/RestartConfirmDialog'
+import { DeveloperModeProvider } from './ui/developerModeContext'
 import { ToastProvider, useToast } from './ui/toasts/toastContext'
 import { isDesktopApp } from './lib/desktop/fsDialogs'
 import { setAppWindowTitle } from './lib/desktop/windowTitle'
@@ -163,7 +164,9 @@ function isDisplaySelectionLocked(
 export default function App() {
   return (
     <ToastProvider>
-      <AppShell />
+      <DeveloperModeProvider>
+        <AppShell />
+      </DeveloperModeProvider>
     </ToastProvider>
   )
 }
