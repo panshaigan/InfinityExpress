@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  buildInstallOrderText,
+  buildInstallOrderLines,
   countInstallOrderMods,
   type ExportPhase,
 } from '../lib/export/installOrder'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import { ExportPreviewDialog } from './ExportPreviewDialog'
+import { InstallOrderPreview } from './InstallOrderPreview'
 
 type EetTab = 'eet1' | 'eet'
 
@@ -43,15 +44,17 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
 
   const phase: ExportPhase = isEet ? tab : 'all'
 
-  const text = useMemo(
-    () => buildInstallOrderText(model, selectedIds, phase),
+  const lines = useMemo(
+    () => buildInstallOrderLines(model, selectedIds, phase),
     [model, selectedIds, phase],
   )
 
-  const lineCount = useMemo(
-    () => (text ? text.trimEnd().split('\n').length : 0),
-    [text],
+  const text = useMemo(
+    () => (lines.length ? lines.join('\n') + '\n' : ''),
+    [lines],
   )
+
+  const lineCount = lines.length
 
   const modCount = useMemo(
     () => countInstallOrderMods(model, selectedIds, phase),
@@ -96,6 +99,7 @@ export function ExportDialog({ open, onClose, model, selectedIds, game }: Props)
       activeTabId={tab}
       onTabChange={(id) => setTab(id as EetTab)}
       tablistAriaLabel="EET install phases"
+      preview={<InstallOrderPreview lines={lines} />}
     />
   )
 }

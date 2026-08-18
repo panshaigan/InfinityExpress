@@ -4764,6 +4764,26 @@ body.is-resizing-detail * {
   outline-offset: 1px;
 }
 
+.export-dialog-code-preview {
+  user-select: text;
+}
+
+.export-install-order-line {
+  white-space: pre;
+}
+
+.export-install-order-id {
+  color: color-mix(in srgb, var(--accent) 78%, var(--ink));
+}
+
+.export-install-order-sep {
+  color: var(--muted);
+}
+
+.export-install-order-label {
+  color: var(--ink);
+}
+
 .export-dialog-actions {
   display: flex;
   align-items: flex-end;

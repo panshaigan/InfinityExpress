@@ -117,7 +117,6 @@ export function AppTopBar({
   onExport,
   exportDisabled = false,
   exportTip = 'Preview and save install order',
-  projectName = null,
   onSwitchProject,
   switchProjectDisabled = false,
   switchProjectTip = 'Projects',

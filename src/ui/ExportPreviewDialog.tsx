@@ -28,6 +28,8 @@ interface Props {
   activeTabId?: string
   onTabChange?: (id: string) => void
   tablistAriaLabel?: string
+  /** When set, replaces the plain textarea with styled preview content. Copy/save still use `text`. */
+  preview?: ReactNode
 }
 
 function CopyIcon({ copied }: { copied: boolean }) {
@@ -83,6 +85,7 @@ export function ExportPreviewDialog({
   activeTabId,
   onTabChange,
   tablistAriaLabel = 'Export tabs',
+  preview,
 }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
   const backdrop = useBackdropDismiss(onClose)
@@ -178,18 +181,32 @@ export function ExportPreviewDialog({
 
         <p className="export-dialog-meta">{meta}</p>
 
-        <textarea
-          id="export-dialog-preview"
-          className="export-dialog-code ie-scroll"
-          readOnly
-          spellCheck={false}
-          value={text}
-          aria-label={previewAriaLabel}
-          role={hasTabs ? 'tabpanel' : undefined}
-          aria-labelledby={
-            hasTabs && activeTab ? `export-tab-${activeTab.id}` : undefined
-          }
-        />
+        {preview != null ? (
+          <div
+            id="export-dialog-preview"
+            className="export-dialog-code export-dialog-code-preview ie-scroll"
+            aria-label={previewAriaLabel}
+            role={hasTabs ? 'tabpanel' : undefined}
+            aria-labelledby={
+              hasTabs && activeTab ? `export-tab-${activeTab.id}` : undefined
+            }
+          >
+            {preview}
+          </div>
+        ) : (
+          <textarea
+            id="export-dialog-preview"
+            className="export-dialog-code ie-scroll"
+            readOnly
+            spellCheck={false}
+            value={text}
+            aria-label={previewAriaLabel}
+            role={hasTabs ? 'tabpanel' : undefined}
+            aria-labelledby={
+              hasTabs && activeTab ? `export-tab-${activeTab.id}` : undefined
+            }
+          />
+        )}
 
         <div className="export-dialog-actions">
           <label className="export-dialog-filename">
