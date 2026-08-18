@@ -1,3 +1,4 @@
+import { useEffect, useRef, type ChangeEvent } from 'react'
 import type { AuthorOption } from '../../lib/mods/loadMods'
 import {
   type AuthorFilterMode,
@@ -9,9 +10,6 @@ const AUTHOR_MODE_OPTIONS: { value: AuthorFilterMode; label: string }[] = [
   { value: 'include', label: 'Include' },
   { value: 'exclude', label: 'Exclude' },
 ]
-
-const MORPHEUS_WARNING =
-  "This author is known for redirecting his site's domain to unsecure sites. If you use his mods, do so with caution."
 
 interface Props {
   baseId: string
@@ -28,10 +26,33 @@ export function AuthorFilterPanel({
   authorNames,
   onPatch,
 }: Props) {
+  const selectAllRef = useRef<HTMLInputElement>(null)
+  const allSelected =
+    authorNames.length > 0 &&
+    authorNames.every((name) => criteria.authors.has(name))
+  const noneSelected = criteria.authors.size === 0
+  const listState = allSelected
+    ? 'checked'
+    : noneSelected
+      ? 'unchecked'
+      : 'indeterminate'
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = listState === 'indeterminate'
+    }
+  }, [listState])
+
   if (authorOptions.length === 0) {
     return (
       <p className="filter-panel-empty">No frequent authors in mods.csv.</p>
     )
+  }
+
+  function handleSelectAllChange(e: ChangeEvent<HTMLInputElement>) {
+    onPatch({
+      authors: e.target.checked ? new Set(authorNames) : new Set(),
+    })
   }
 
   return (
@@ -59,22 +80,16 @@ export function AuthorFilterPanel({
             </label>
           ))}
         </div>
-        <div className="filter-panel-actions">
-          <button
-            type="button"
-            className="filter-inline-action"
-            onClick={() => onPatch({ authors: new Set(authorNames) })}
-          >
-            Select all
-          </button>
-          <button
-            type="button"
-            className="filter-inline-action"
-            onClick={() => onPatch({ authors: new Set() })}
-          >
-            Clear
-          </button>
-        </div>
+        <label className="station-select-all">
+          <input
+            ref={selectAllRef}
+            type="checkbox"
+            checked={allSelected}
+            aria-label="Select all authors"
+            onChange={handleSelectAllChange}
+          />
+          <span>Select all</span>
+        </label>
       </div>
       <div className="filter-panel-list" role="group" aria-label="Authors">
         {authorOptions.map((opt) => (
@@ -86,20 +101,7 @@ export function AuthorFilterPanel({
                 onPatch({ authors: toggleInSet(criteria.authors, opt.name) })
               }
             />
-            <span className="filter-author-name">
-              {opt.name}
-              {opt.name === 'Morpheus562' && (
-                <span
-                  className="filter-author-warning has-icon-tip"
-                  aria-label={MORPHEUS_WARNING}
-                >
-                  !
-                  <span className="icon-tip" role="tooltip">
-                    {MORPHEUS_WARNING}
-                  </span>
-                </span>
-              )}
-            </span>
+            <span className="filter-author-name">{opt.name}</span>
             <span className="filter-author-count">({opt.count})</span>
           </label>
         ))}

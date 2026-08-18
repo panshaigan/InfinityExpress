@@ -323,6 +323,7 @@ export function modSizeBounds(map: Map<string, ModInfo>): SizeBounds | null {
 
 /**
  * Authors with at least `minMods` mods (default 3 = more than two).
+ * The Components author filter catalog uses 5.
  * Co-author cells are split on commas so each person counts separately.
  * Sorted by count descending, then name.
  */

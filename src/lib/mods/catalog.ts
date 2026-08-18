@@ -16,7 +16,7 @@ export const catalogSizeBounds: SizeBounds | null = modSizeBounds(parsedMods)
 
 export const catalogAuthorOptions: AuthorOption[] = collectAuthorOptions(
   parsedMods,
-  3,
+  5,
 )
 
 export const catalogAuthorNames: string[] = catalogAuthorOptions.map((a) => a.name)
