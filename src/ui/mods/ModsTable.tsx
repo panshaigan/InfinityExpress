@@ -539,7 +539,8 @@ export function ModsTable({
       aria-label="Mods"
       tabIndex={rows.length === 0 ? 0 : -1}
       onKeyDown={handleTableKeyDown}
-      onFocus={() => {
+      onFocus={(e) => {
+        if (e.target !== e.currentTarget) return
         if (!focusedCodename && rows[0]) onFocusRow(rows[0].codename)
       }}
     >

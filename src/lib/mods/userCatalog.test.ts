@@ -6,6 +6,7 @@ import {
   migrateStoredModEntry,
   provisionalCodenameFromUrl,
   removeUserMod,
+  removeUserMods,
   replaceOverlays,
   updateUserMod,
   type StoredModEntry,
@@ -188,6 +189,32 @@ describe('user catalog CRUD', () => {
 
     store = removeUserMod(store, 'UserMod')
     expect(store.mods.some((m) => m.codename === 'UserMod')).toBe(false)
+  })
+
+  it('removeUserMods deletes several rows in one pass', () => {
+    let store = storeWith([
+      {
+        ...baseMod({ codename: 'Base' }),
+        origin: 'base',
+        diskStatus: 'not_present',
+        overlays: {},
+      },
+      {
+        ...baseMod({ codename: 'Keep' }),
+        origin: 'user',
+        diskStatus: 'not_present',
+        overlays: {},
+      },
+    ])
+    store = addUserMod(store, baseMod({ codename: 'A', name: 'A' }))
+    store = addUserMod(store, baseMod({ codename: 'B', name: 'B' }))
+    store = addUserMod(store, baseMod({ codename: 'C', name: 'C' }))
+
+    store = removeUserMods(store, ['A', 'B', 'Base'])
+    expect(store.mods.map((m) => m.codename)).toEqual(['C', 'Keep'])
+    expect(store.hiddenBaseCodenames).toContain('Base')
+    expect(store.mods.some((m) => m.codename === 'A')).toBe(false)
+    expect(store.mods.some((m) => m.codename === 'B')).toBe(false)
   })
 
   it('replaceOverlays clears and sets disk status', () => {

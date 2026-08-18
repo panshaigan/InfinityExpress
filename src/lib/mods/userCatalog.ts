@@ -392,6 +392,18 @@ export function removeUserMod(
   }
 }
 
+/** Remove several catalog entries in one pass (single persist). */
+export function removeUserMods(
+  store: UserCatalogStore,
+  codenames: readonly string[],
+): UserCatalogStore {
+  let next = store
+  for (const codename of codenames) {
+    next = removeUserMod(next, codename)
+  }
+  return next
+}
+
 export function patchWorkingMod(
   store: UserCatalogStore,
   codename: string,

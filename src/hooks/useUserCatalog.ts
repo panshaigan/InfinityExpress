@@ -13,6 +13,7 @@ import {
   loadOrCreateUserCatalog,
   patchWorkingMod,
   removeUserMod,
+  removeUserMods,
   replaceOverlays,
   updateUserMod,
   writeUserCatalogStore,
@@ -96,12 +97,22 @@ export function useUserCatalog() {
     [persist, refreshDiskStatus, store],
   )
 
-  const deleteMod = useCallback(
-    (codename: string) => {
-      persist(removeUserMod(store, codename))
-    },
-    [persist, store],
-  )
+  const deleteMod = useCallback((codename: string) => {
+    setStore((prev) => {
+      const next = removeUserMod(prev, codename)
+      writeUserCatalogStore(next)
+      return next
+    })
+  }, [])
+
+  const deleteMods = useCallback((codenames: string[]) => {
+    if (codenames.length === 0) return
+    setStore((prev) => {
+      const next = removeUserMods(prev, codenames)
+      writeUserCatalogStore(next)
+      return next
+    })
+  }, [])
 
   const setDiskStatus = useCallback(
     (codename: string, diskStatus: DiskStatus) => {
@@ -191,6 +202,7 @@ export function useUserCatalog() {
     addMod,
     editMod,
     deleteMod,
+    deleteMods,
     setDiskStatus,
     applyAcquireSuccess,
     refreshDiskStatus,

@@ -29,6 +29,8 @@ interface Props {
   onDeleteFromCatalog: () => void
   editDisabled?: boolean
   catalogDeleteDisabled?: boolean
+  /** Focused mod is shipped; delete stays disabled with an explanatory tip. */
+  catalogDeleteProtected?: boolean
   acquireLabel: string
   acquireDisabled: boolean
   jobRunning?: boolean
@@ -83,6 +85,7 @@ export function ModDetail({
   onDeleteFromCatalog,
   editDisabled = false,
   catalogDeleteDisabled = false,
+  catalogDeleteProtected = false,
   acquireLabel,
   acquireDisabled,
   jobRunning = false,
@@ -162,11 +165,19 @@ export function ModDetail({
                       className="mods-action-icon-btn"
                       disabled={catalogDeleteDisabled}
                       onClick={onDeleteFromCatalog}
-                      aria-label="Remove from catalog"
+                      aria-label={
+                        catalogDeleteProtected
+                          ? 'Built-in mods cannot be removed from the catalog'
+                          : 'Remove from catalog'
+                      }
                     >
                       <DeleteFromCatalogIcon />
                     </button>
-                    <IconTip>Remove from catalog</IconTip>
+                    <IconTip>
+                      {catalogDeleteProtected
+                        ? 'Built-in mods cannot be removed from the catalog.'
+                        : 'Remove from catalog'}
+                    </IconTip>
                   </span>
                   <span className="mods-action-icon-wrap has-icon-tip">
                     <button

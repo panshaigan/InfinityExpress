@@ -57,6 +57,8 @@ interface Props {
   onAddMod: () => void
   allRequiredDownloaded: boolean
   onProceedToInstall?: () => void
+  /** True when the selection includes a shipped (built-in) catalog mod. */
+  selectedHasShipped?: boolean
 }
 
 const ALL_STATUSES: DiskStatus[] = [
@@ -94,6 +96,7 @@ export function ModsToolbar({
   onAddMod,
   allRequiredDownloaded,
   onProceedToInstall,
+  selectedHasShipped = false,
 }: Props) {
   const bulkDisabled = selectedCount === 0
   const acquireBusy = jobRunning
@@ -271,14 +274,26 @@ export function ModsToolbar({
               type="button"
               className="mods-action-icon-btn"
               disabled={
-                actionsFrozen || bulkDisabled || journeyLocked || catalogActionsDisabled
+                actionsFrozen ||
+                bulkDisabled ||
+                journeyLocked ||
+                catalogActionsDisabled ||
+                selectedHasShipped
               }
               onClick={onDeleteFromCatalog}
-              aria-label="Remove from catalog"
+              aria-label={
+                selectedHasShipped
+                  ? 'Built-in mods cannot be removed from the catalog'
+                  : 'Remove from catalog'
+              }
             >
               <DeleteFromCatalogIcon />
             </button>
-            <IconTip>Remove from catalog</IconTip>
+            <IconTip>
+              {selectedHasShipped
+                ? 'Built-in mods cannot be removed from the catalog.'
+                : 'Remove from catalog'}
+            </IconTip>
           </span>
           <span className="mods-action-icon-wrap has-icon-tip">
             <button

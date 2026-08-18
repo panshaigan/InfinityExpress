@@ -1108,7 +1108,7 @@ function AppShell() {
               onToggleDetailCollapsed={toggleDetailCollapsed}
               onAddMod={userCatalog.addMod}
               onEditMod={userCatalog.editMod}
-              onDeleteMod={userCatalog.deleteMod}
+              onDeleteMods={userCatalog.deleteMods}
               onSetDiskStatus={userCatalog.setDiskStatus}
               onApplyAcquireSuccess={userCatalog.applyAcquireSuccess}
               onRefreshDiskStatus={userCatalog.refreshDiskStatus}

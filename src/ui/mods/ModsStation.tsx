@@ -60,7 +60,7 @@ interface Props {
   onToggleDetailCollapsed: () => void
   onAddMod: (input: UserModInput) => void
   onEditMod: (codename: string, input: UserModInput) => void
-  onDeleteMod: (codename: string) => void
+  onDeleteMods: (codenames: string[]) => void
   onSetDiskStatus: (codename: string, status: WorkingMod['diskStatus']) => void
   onApplyAcquireSuccess: (
     codename: string,
@@ -91,7 +91,7 @@ export function ModsStation({
   onToggleDetailCollapsed,
   onAddMod,
   onEditMod,
-  onDeleteMod,
+  onDeleteMods,
   onSetDiskStatus,
   onApplyAcquireSuccess,
   onRefreshDiskStatus,
@@ -250,6 +250,11 @@ export function ModsStation({
   )
 
   const selectedList = useMemo(() => [...selected], [selected])
+
+  const selectedHasShipped = useMemo(
+    () => selectedList.some((code) => shippedMods.has(code)),
+    [selectedList],
+  )
 
   const allRequiredDownloaded = useMemo(() => {
     if (!journey) return false
@@ -537,6 +542,7 @@ export function ModsStation({
               onDeleteFromCatalog={() => requestDeleteFromCatalog(selectedList)}
               onAddMod={() => setEditor({ mode: 'create', initial: null })}
               catalogActionsDisabled={installFrozen}
+              selectedHasShipped={selectedHasShipped}
               allRequiredDownloaded={allRequiredDownloaded}
               onProceedToInstall={onProceedToInstall}
             />
@@ -611,6 +617,9 @@ export function ModsStation({
             installFrozen ||
             journeyLocked ||
             (focusedMod ? shippedMods.has(focusedMod.codename) : false)
+          }
+          catalogDeleteProtected={
+            focusedMod ? shippedMods.has(focusedMod.codename) : false
           }
           acquireLabel={acquireButtonLabel(focusedAcquireKind)}
           acquireDisabled={
@@ -707,21 +716,42 @@ export function ModsStation({
         onConfirm={() => {
           if (pendingDelete) {
             const toDelete = pendingDelete
-            void onRemoveFromDisk(toDelete).then(() => {
-              for (const codename of toDelete) {
-                onDeleteMod(codename)
+            const deleteSet = new Set(toDelete)
+            let nextFocus = focusedCodename
+            if (focusedCodename && deleteSet.has(focusedCodename)) {
+              const idx = rows.findIndex(
+                (r) => r.codename === focusedCodename,
+              )
+              nextFocus = null
+              if (idx >= 0) {
+                for (let i = idx + 1; i < rows.length; i++) {
+                  const code = rows[i]?.codename
+                  if (code && !deleteSet.has(code)) {
+                    nextFocus = code
+                    break
+                  }
+                }
+                if (nextFocus == null) {
+                  for (let i = idx - 1; i >= 0; i--) {
+                    const code = rows[i]?.codename
+                    if (code && !deleteSet.has(code)) {
+                      nextFocus = code
+                      break
+                    }
+                  }
+                }
               }
+            }
+            void onRemoveFromDisk(toDelete).then(() => {
+              onDeleteMods(toDelete)
             })
             setSelected((prev) => {
               const next = new Set(prev)
               for (const codename of toDelete) next.delete(codename)
               return next
             })
-            if (
-              focusedCodename &&
-              toDelete.includes(focusedCodename)
-            ) {
-              setFocusedCodename(null)
+            if (nextFocus !== focusedCodename) {
+              setFocusedCodename(nextFocus)
             }
           }
           setPendingDelete(null)
