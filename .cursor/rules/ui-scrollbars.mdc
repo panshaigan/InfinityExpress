@@ -1,0 +1,24 @@
+---
+description: Keep every overflow scrollbar on the shared thin app style
+alwaysApply: true
+---
+
+# UI scrollbars
+
+Visible scrollbars must use the **shared thin app chrome** — never the native OS/browser bar, and never a one-off per-widget look.
+
+## Do
+
+- Let the global rules in `src/index.css` (`*` + `*::-webkit-scrollbar*`) style any `overflow: auto` / `scroll` container (filter popovers, dialogs, tables, selects).
+- Hide a bar only when the existing pattern already does (horizontal chrome that must not show a gutter): `scrollbar-width: none` plus `::-webkit-scrollbar { display: none; width: 0; height: 0; }` (see `.list-pane-header`, `.station-list-toolbar`).
+
+## Don't
+
+- Do **not** add `scrollbar-width`, `scrollbar-color`, or `::-webkit-scrollbar*` on a new class.
+- Do **not** invent a second scrollbar color, thickness, or thumb shape.
+- Do **not** rely on opt-in classes like `ie-scroll` for appearance — those are leftover markers; overflow alone is enough.
+
+## References
+
+- CSS: `src/index.css` — global `*` scrollbar block near the top; hide exceptions on `.list-pane-header` / `.station-list-toolbar`
+- Guide: [docs/ui.md](../../docs/ui.md)

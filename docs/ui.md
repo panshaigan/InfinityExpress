@@ -30,6 +30,12 @@ Tips show on `:hover` and `:focus-visible` of the host, including disabled hosts
 
 Editable text fields → `OutlinedTextField` from `src/ui/OutlinedTextField.tsx`. See `.cursor/rules/ui-outlined-inputs.mdc`.
 
+## Scrollbars
+
+Every overflow container uses the **same thin app scrollbar** (Firefox `scrollbar-width` / `scrollbar-color` and WebKit thumb/track). Styles live on `*` in `src/index.css` so filter popovers, dialogs, and new scroll areas pick them up automatically.
+
+Do not add per-widget scrollbar CSS. Hide a bar only for the existing horizontal chrome exceptions (`.list-pane-header`, `.station-list-toolbar`). See `.cursor/rules/ui-scrollbars.mdc`.
+
 ## Collapsible chrome
 
 Detail pane, station rail, and install console collapse via **clickable chrome areas** (header strip or empty rail space), not dedicated chevron/arrow buttons:
@@ -42,6 +48,6 @@ CSS classes: `.detail-pane-chrome-interactive`, `.station-nav-rail-hit`, `.insta
 
 ## References
 
-- CSS: `src/index.css` — “Immediate hover tips (engine-style; no native title delay).”
+- CSS: `src/index.css` — “Immediate hover tips (engine-style; no native title delay).” Global `*` scrollbar block; hide exceptions on `.list-pane-header` / `.station-list-toolbar`.
 - Component: `src/ui/IconTip.tsx`
 - Examples: `ModsTable` `TipCell`, `StationListToolbar` fold toggle, `ComponentTreeRow` randomise

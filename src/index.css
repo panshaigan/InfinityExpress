@@ -28,6 +28,30 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted) 50%, var(--line))
+    color-mix(in srgb, var(--panel) 70%, #000);
+}
+
+/* Shared thin scrollbars (every overflow container). Hide only with scrollbar-width: none. */
+*::-webkit-scrollbar {
+  width: 0.55rem;
+  height: 0.55rem;
+}
+
+*::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--panel) 70%, #000);
+  border-radius: var(--radius-sm);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted) 50%, var(--line));
+  border-radius: var(--radius-sm);
+  border: 2px solid color-mix(in srgb, var(--panel) 70%, #000);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--accent) 45%, var(--muted));
 }
 
 input[type='checkbox'],
@@ -1798,78 +1822,6 @@ body.is-resizing-detail * {
   min-height: 0;
   overflow: auto;
   padding: 0.75rem 1rem 1.5rem;
-}
-
-/* Shared thin scrollbars (mods table, list panes, dialogs). */
-.ie-scroll,
-.list-pane-scroll,
-.mods-table-wrap,
-.export-dialog-code,
-.acquire-size-list,
-.backup-restore-list,
-.acquire-job-dialog-body,
-.station-nav-scroll,
-.detail-pane-scroll,
-.keyboard-help {
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--muted) 50%, var(--line))
-    color-mix(in srgb, var(--panel) 70%, #000);
-}
-
-.ie-scroll::-webkit-scrollbar,
-.list-pane-scroll::-webkit-scrollbar,
-.mods-table-wrap::-webkit-scrollbar,
-.export-dialog-code::-webkit-scrollbar,
-.acquire-size-list::-webkit-scrollbar,
-.backup-restore-list::-webkit-scrollbar,
-.acquire-job-dialog-body::-webkit-scrollbar,
-.station-nav-scroll::-webkit-scrollbar,
-.detail-pane-scroll::-webkit-scrollbar,
-.keyboard-help::-webkit-scrollbar {
-  width: 0.55rem;
-  height: 0.55rem;
-}
-
-.ie-scroll::-webkit-scrollbar-track,
-.list-pane-scroll::-webkit-scrollbar-track,
-.mods-table-wrap::-webkit-scrollbar-track,
-.export-dialog-code::-webkit-scrollbar-track,
-.acquire-size-list::-webkit-scrollbar-track,
-.backup-restore-list::-webkit-scrollbar-track,
-.acquire-job-dialog-body::-webkit-scrollbar-track,
-.station-nav-scroll::-webkit-scrollbar-track,
-.detail-pane-scroll::-webkit-scrollbar-track,
-.keyboard-help::-webkit-scrollbar-track {
-  background: color-mix(in srgb, var(--panel) 70%, #000);
-  border-radius: var(--radius-sm);
-}
-
-.ie-scroll::-webkit-scrollbar-thumb,
-.list-pane-scroll::-webkit-scrollbar-thumb,
-.mods-table-wrap::-webkit-scrollbar-thumb,
-.export-dialog-code::-webkit-scrollbar-thumb,
-.acquire-size-list::-webkit-scrollbar-thumb,
-.backup-restore-list::-webkit-scrollbar-thumb,
-.acquire-job-dialog-body::-webkit-scrollbar-thumb,
-.station-nav-scroll::-webkit-scrollbar-thumb,
-.detail-pane-scroll::-webkit-scrollbar-thumb,
-.keyboard-help::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--muted) 50%, var(--line));
-  border-radius: var(--radius-sm);
-  border: 2px solid color-mix(in srgb, var(--panel) 70%, #000);
-}
-
-.ie-scroll::-webkit-scrollbar-thumb:hover,
-.list-pane-scroll::-webkit-scrollbar-thumb:hover,
-.mods-table-wrap::-webkit-scrollbar-thumb:hover,
-.export-dialog-code::-webkit-scrollbar-thumb:hover,
-.acquire-size-list::-webkit-scrollbar-thumb:hover,
-.backup-restore-list::-webkit-scrollbar-thumb:hover,
-.acquire-job-dialog-body::-webkit-scrollbar-thumb:hover,
-.station-nav-scroll::-webkit-scrollbar-thumb:hover,
-.detail-pane-scroll::-webkit-scrollbar-thumb:hover,
-.keyboard-help::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--accent) 45%, var(--muted));
 }
 
 .detail-pane {
@@ -4160,9 +4112,6 @@ body.is-resizing-detail * {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: 0 12px 28px color-mix(in srgb, #000 40%, transparent);
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--muted) 50%, var(--line))
-    color-mix(in srgb, var(--panel) 70%, #000);
 }
 
 /* Portaled over dialogs / overflow parents — position via inline fixed coords. */
@@ -4173,25 +4122,6 @@ body.is-resizing-detail * {
   z-index: 10000;
   min-width: 0;
   max-width: min(22rem, calc(100vw - 1rem));
-}
-
-.outlined-select-popover::-webkit-scrollbar {
-  width: 0.55rem;
-}
-
-.outlined-select-popover::-webkit-scrollbar-track {
-  background: color-mix(in srgb, var(--panel) 70%, #000);
-  border-radius: var(--radius-sm);
-}
-
-.outlined-select-popover::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--muted) 50%, var(--line));
-  border-radius: var(--radius-sm);
-  border: 2px solid color-mix(in srgb, var(--panel) 70%, #000);
-}
-
-.outlined-select-popover::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--accent) 45%, var(--muted));
 }
 
 .outlined-select-option {

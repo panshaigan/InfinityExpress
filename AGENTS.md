@@ -19,7 +19,7 @@ Boot opens the **Project hub**. A project locks one engine, owns selection + ins
 | `InstallSequence.xml` tags / attrs / engine / conditions | [docs/install-sequence-schema.md](docs/install-sequence-schema.md) |
 | Install plan, WeiDU IDs, run, backups | [docs/weidu-install.md](docs/weidu-install.md) |
 | Tree / chrome hotkeys | [docs/keyboard.md](docs/keyboard.md) |
-| Tooltips, inputs, collapsible chrome | [docs/ui.md](docs/ui.md) |
+| Tooltips, inputs, scrollbars, collapsible chrome | [docs/ui.md](docs/ui.md) |
 | Tauri dialogs / FS / ACL | `.cursor/rules/tauri-desktop.mdc` (auto when editing matching files) |
 
 Do **not** re-derive behaviour from a full codebase scan when the doc above covers it.
@@ -31,4 +31,4 @@ Do **not** re-derive behaviour from a full codebase scan when the doc above cove
 
 ## Always-on UI rules
 
-Tooltips → `has-icon-tip` / `.icon-tip` (never native `title=`). Text inputs → `OutlinedTextField`. End file-changing tasks with a suggested commit message.
+Tooltips → `has-icon-tip` / `.icon-tip` (never native `title=`). Text inputs → `OutlinedTextField`. Scrollbars → global thin chrome (never per-widget). End file-changing tasks with a suggested commit message.
