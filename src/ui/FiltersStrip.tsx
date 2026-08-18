@@ -14,6 +14,24 @@ import { IconTip } from './IconTip'
 /** Stable id for chrome hotkey `/` focus jump. */
 export const FILTERS_SEARCH_ID = 'filters-search'
 
+function AuthorsIcon() {
+  return (
+    <svg
+      className="filter-chip-icon-svg"
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M5.5 7.25A2.5 2.5 0 1 0 5.5 2.25a2.5 2.5 0 0 0 0 5ZM1.25 12.6c0-1.9 1.9-3.1 4.25-3.1s4.25 1.2 4.25 3.1v1.15H1.25V12.6ZM11.25 7A2 2 0 1 0 11.25 3a2 2 0 0 0 0 4ZM10.15 9.62c.35-.08.72-.12 1.1-.12 1.9 0 3.5.95 3.5 2.6v1.65h-2.4v-1.4c0-.85-.4-1.55-1.1-2.05a4.3 4.3 0 0 0-1.1-.68Z"
+      />
+    </svg>
+  )
+}
+
 function ClearFiltersIcon() {
   return (
     <svg
@@ -109,6 +127,9 @@ export function FiltersStrip({
   const seed = { authorOptions: authorNames, sizeBounds }
   const active = isFilterActive(criteria, tagOptions, seed)
   const authorActive = isAuthorFilterActive(criteria, authorNames)
+  const authorTip = authorActive
+    ? `Authors ${criteria.authorMode === 'exclude' ? 'excl. ' : ''}(${criteria.authors.size})`
+    : 'Authors'
   const hiddenActive = criteria.showHidden
   const uncheckedActive = criteria.uncheckedFilter !== 'off'
 
@@ -198,22 +219,23 @@ export function FiltersStrip({
         />
 
         <FilterChipWrap open={openPanel === 'author'}>
-          <button
-            type="button"
-            className={`filter-chip${authorActive ? ' active' : ''}${openPanel === 'author' ? ' open' : ''}`}
-            aria-expanded={openPanel === 'author'}
-            aria-controls={`${baseId}-author`}
-            onClick={() => togglePanel('author')}
-            disabled={authorOptions.length === 0}
-          >
-            Author
-            {authorActive
-              ? ` ${criteria.authorMode === 'exclude' ? 'excl.' : ''}(${criteria.authors.size})`
-              : ''}
-          </button>
+          <span className="has-icon-tip">
+            <button
+              type="button"
+              className={`filter-chip filter-chip-icon${authorActive ? ' active' : ''}${openPanel === 'author' ? ' open' : ''}`}
+              aria-expanded={openPanel === 'author'}
+              aria-controls={`${baseId}-author`}
+              aria-label={authorTip}
+              onClick={() => togglePanel('author')}
+              disabled={authorOptions.length === 0}
+            >
+              <AuthorsIcon />
+            </button>
+            {openPanel !== 'author' ? <IconTip>{authorTip}</IconTip> : null}
+          </span>
           {renderPopover(
             'author',
-            'Author',
+            'Authors',
             <AuthorFilterPanel
               baseId={baseId}
               criteria={criteria}
@@ -230,7 +252,7 @@ export function FiltersStrip({
           aria-pressed={hiddenActive}
           onClick={() => patch({ showHidden: !criteria.showHidden })}
         >
-          Show hidden
+          Hidden
         </button>
 
         <button
