@@ -26,7 +26,7 @@ const SHORT_LABELS: Record<Exclude<AppNavSlot, 'engine'>, string> = {
   portraits: 'Port',
   scripts: 'Scr',
   randomisation: 'Rand',
-  adjustements: 'Adj',
+  adjustments: 'Adj',
 }
 
 const SETUP_LABELS: Record<'presets', string> = {

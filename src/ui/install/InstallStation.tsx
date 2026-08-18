@@ -3,7 +3,7 @@ import type { CSSProperties } from 'react'
 import { useInstallRun } from '../../hooks/useInstallRun'
 import { formatPlayerDurationMs } from '../../lib/install/formatDuration'
 import { stepIndexById } from '../../lib/install/cursor'
-import { collectAdjustementsModIds } from '../../lib/install/weiduResolution'
+import { collectadjustmentsModIds } from '../../lib/install/weiduResolution'
 import {
   cleanupInstallArtifacts,
   createNamedBackup,
@@ -129,8 +129,8 @@ export function InstallStation({
   const weiduPath = readWeiduPath()
   void pathTick
 
-  const adjustementsModIds = useMemo(
-    () => collectAdjustementsModIds(model),
+  const adjustmentsModIds = useMemo(
+    () => collectadjustmentsModIds(model),
     [model],
   )
 
@@ -886,7 +886,7 @@ export function InstallStation({
   const onCleanup = useCallback(async () => {
     if (!game || !run) return
     const staged = [...new Set(run.steps.map((s) => s.stagedFolderName).filter(Boolean))]
-    const keep = [...adjustementsModIds].filter((id) => staged.includes(id))
+    const keep = [...adjustmentsModIds].filter((id) => staged.includes(id))
     const phase = run.steps[0]?.phase ?? 'single'
     const gameDir = gameDirForPhase(game, phase, gameFolders)
     try {
@@ -905,7 +905,7 @@ export function InstallStation({
       setNotice(message)
       pushToast({ tone: 'error', message })
     }
-  }, [game, run, adjustementsModIds, gameFolders, weiduPath, pushToast])
+  }, [game, run, adjustmentsModIds, gameFolders, weiduPath, pushToast])
 
   const onSelectStep = useCallback((stepId: string, componentId: string) => {
     setSelectedStepId(stepId)

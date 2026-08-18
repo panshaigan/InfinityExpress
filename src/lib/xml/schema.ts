@@ -16,7 +16,7 @@ export const STATION_ORDER = [
   'portraits',
   'scripts',
   'randomisation',
-  'adjustements',
+  'adjustments',
 ] as const
 
 export type StationId = (typeof STATION_ORDER)[number]
@@ -35,7 +35,7 @@ export const STATION_LABELS: Record<StationId, string> = {
   portraits: 'Portraits',
   scripts: 'Scripts',
   randomisation: 'Randomisation',
-  adjustements: 'Adjustments',
+  adjustments: 'Adjustments',
 }
 
 export const GAME_LABELS: Record<SelectedGame, string> = {

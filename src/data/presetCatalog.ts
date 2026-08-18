@@ -284,7 +284,7 @@ export const PRESET_PACKAGE_COPY: Record<string, PresetTileCopy> = {
   },
 
   npcChoices: {
-    label: 'Original cast adjustements',
+    label: 'Original cast adjustments',
     summary:
       'Optional changes that let you customize the abilities, classes, statistics, alignment, appearance, or other characteristics of existing NPCs.',
     typeAndDepth:
@@ -417,7 +417,7 @@ export const PRESET_LAYOUT: PresetLayoutTab[] = [
       },
       {
         label: 'Difficulty',
-        rows: [{ tokens: ['lowerDifficulty', 'higherDifficulty', 'adjustements'] }],
+        rows: [{ tokens: ['lowerDifficulty', 'higherDifficulty', 'adjustments'] }],
       },
     ],
   },

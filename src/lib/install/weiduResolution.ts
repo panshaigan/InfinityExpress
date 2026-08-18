@@ -132,8 +132,8 @@ export function uniqueModIds(components: ComponentNode[]): string[] {
   return out
 }
 
-/** Whether every component in the list belongs to adjustements station ancestry. */
-export function isAdjustementsComponent(
+/** Whether every component in the list belongs to adjustments station ancestry. */
+export function isadjustmentsComponent(
   model: InstallSequenceModel,
   componentId: string,
 ): boolean {
@@ -141,16 +141,16 @@ export function isAdjustementsComponent(
   if (!node) return false
   let cur = node.parentKey ? model.nodesByKey.get(node.parentKey) : undefined
   while (cur) {
-    if (cur.tag === 'adjustements') return true
+    if (cur.tag === 'adjustments') return true
     cur = cur.parentKey ? model.nodesByKey.get(cur.parentKey) : undefined
   }
   return false
 }
 
-export function collectAdjustementsModIds(model: InstallSequenceModel): Set<string> {
+export function collectadjustmentsModIds(model: InstallSequenceModel): Set<string> {
   const out = new Set<string>()
   for (const c of model.componentsInOrder) {
-    if (!isAdjustementsComponent(model, c.componentId)) continue
+    if (!isadjustmentsComponent(model, c.componentId)) continue
     const modId = c.attrs.modId?.trim()
     if (modId) out.add(modId)
   }

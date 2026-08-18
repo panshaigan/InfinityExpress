@@ -31,7 +31,7 @@ Merged in the UI when the same tag appears more than once; install/export order 
 | `portraits` | Portraits |
 | `scripts` | Scripts |
 | `randomisation` | Randomisation |
-| `adjustements` | Adjustements |
+| `adjustments` | adjustments |
 
 ## Nested structural tags
 
