@@ -9,6 +9,7 @@ import type {
 import type {
   SelectionPreset,
 } from '../presets/selectionPresets'
+import { presetsForEngine } from '../presets/selectionPresetsStore'
 import { finalizeSelection } from '../selection/selectionCore'
 import type { InstallSequenceModel, SelectedGame } from '../xml/schema'
 import { STATION_ORDER } from '../xml/schema'
@@ -66,7 +67,6 @@ export interface GameSession {
   selectedIds: string[]
   finishedStations: StationSlot[]
   routeUnlocked: boolean
-  selectionPresets: SelectionPreset[]
   activePresetId: string | null
   presetBaseline: string | null
   activeStation: AppNavSlot
@@ -132,19 +132,28 @@ function plannedSnapshotsFrom(value: unknown): PlannedSnapshot[] {
   return out
 }
 
-function selectionPresetFrom(value: unknown): SelectionPreset | null {
+function gameSessionFrom(value: unknown): GameSession | null {
   if (!value || typeof value !== 'object') return null
   const o = value as Record<string, unknown>
-  if (typeof o.id !== 'string' || typeof o.name !== 'string' || !isSelectedGame(o.game)) {
-    return null
-  }
+  const finishedStations = stringArray(o.finishedStations).filter(isStationSlot)
+  const activePresetId =
+    typeof o.activePresetId === 'string' ? o.activePresetId : null
+  const activeStation = isStationSlot(o.activeStation) ? o.activeStation : 'presets'
+  const install = o.install != null ? persistedInstallFrom(o.install) : undefined
   return {
-    id: o.id,
-    name: o.name,
-    game: o.game,
     selectedIds: stringArray(o.selectedIds),
+    finishedStations,
+    routeUnlocked: o.routeUnlocked === true,
+    activePresetId,
+    presetBaseline: typeof o.presetBaseline === 'string' ? o.presetBaseline : null,
+    activeStation,
+    contentMainKey: typeof o.contentMainKey === 'string' ? o.contentMainKey : null,
+    contentSubKey: typeof o.contentSubKey === 'string' ? o.contentSubKey : null,
+    contentSubTag: typeof o.contentSubTag === 'string' ? o.contentSubTag : null,
     recommendedChecked: stringArray(o.recommendedChecked),
     packagesChecked: stringArray(o.packagesChecked),
+    modsJourney: modsJourneyFrom(o.modsJourney),
+    ...(install ? { install } : {}),
   }
 }
 
@@ -280,40 +289,6 @@ function persistedInstallFrom(value: unknown): PersistedInstallSession | null {
   }
 }
 
-function gameSessionFrom(value: unknown): GameSession | null {
-  if (!value || typeof value !== 'object') return null
-  const o = value as Record<string, unknown>
-  const finishedStations = stringArray(o.finishedStations).filter(isStationSlot)
-  const selectionPresets = Array.isArray(o.selectionPresets)
-    ? o.selectionPresets
-        .map(selectionPresetFrom)
-        .filter((p): p is SelectionPreset => p != null)
-    : []
-  let activePresetId =
-    typeof o.activePresetId === 'string' ? o.activePresetId : null
-  if (activePresetId && !selectionPresets.some((p) => p.id === activePresetId)) {
-    activePresetId = null
-  }
-  const activeStation = isStationSlot(o.activeStation) ? o.activeStation : 'presets'
-  const install = o.install != null ? persistedInstallFrom(o.install) : undefined
-  return {
-    selectedIds: stringArray(o.selectedIds),
-    finishedStations,
-    routeUnlocked: o.routeUnlocked === true,
-    selectionPresets,
-    activePresetId,
-    presetBaseline: typeof o.presetBaseline === 'string' ? o.presetBaseline : null,
-    activeStation,
-    contentMainKey: typeof o.contentMainKey === 'string' ? o.contentMainKey : null,
-    contentSubKey: typeof o.contentSubKey === 'string' ? o.contentSubKey : null,
-    contentSubTag: typeof o.contentSubTag === 'string' ? o.contentSubTag : null,
-    recommendedChecked: stringArray(o.recommendedChecked),
-    packagesChecked: stringArray(o.packagesChecked),
-    modsJourney: modsJourneyFrom(o.modsJourney),
-    ...(install ? { install } : {}),
-  }
-}
-
 function appSessionStoreFrom(value: unknown): AppSessionStore | null {
   if (!value || typeof value !== 'object') return null
   const o = value as Record<string, unknown>
@@ -422,6 +397,7 @@ export function sanitizeComponentsSession(
   model: InstallSequenceModel,
   game: SelectedGame,
   session: GameSession,
+  enginePresets: readonly SelectionPreset[] = [],
 ): SanitizedGameSession {
   const knownIds = new Set(model.componentsInOrder.map((c) => c.componentId))
   const filtered = session.selectedIds.filter((id) => knownIds.has(id))
@@ -431,7 +407,7 @@ export function sanitizeComponentsSession(
   let presetBaseline = session.presetBaseline
   if (
     activePresetId &&
-    !session.selectionPresets.some((p) => p.id === activePresetId)
+    !enginePresets.some((p) => p.id === activePresetId)
   ) {
     activePresetId = null
     presetBaseline = null
@@ -475,7 +451,6 @@ export function buildGameSessionSnapshot(input: {
   selectedIds: ReadonlySet<string>
   finishedStations: ReadonlySet<StationSlot>
   routeUnlocked: boolean
-  selectionPresets: readonly SelectionPreset[]
   activePresetId: string | null
   presetBaseline: string | null
   activeStation: AppNavSlot
@@ -491,7 +466,6 @@ export function buildGameSessionSnapshot(input: {
     selectedIds: [...input.selectedIds].sort(),
     finishedStations: [...input.finishedStations],
     routeUnlocked: input.routeUnlocked,
-    selectionPresets: input.selectionPresets.map((p) => ({ ...p })),
     activePresetId: input.activePresetId,
     presetBaseline: input.presetBaseline,
     activeStation: input.activeStation,
@@ -578,7 +552,7 @@ export function bootstrapAppSession(
       appPhase: store.lastAppPhase,
     }
   }
-  const session = sanitizeComponentsSession(model, game, raw)
+  const session = sanitizeComponentsSession(model, game, raw, presetsForEngine(game))
   const install = sanitizeInstallSession(
     model,
     game,

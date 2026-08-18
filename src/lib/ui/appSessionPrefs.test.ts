@@ -72,7 +72,6 @@ describe('appSessionPrefs', () => {
         selectedIds: new Set(['a', 'b']),
         finishedStations: new Set(['engine']),
         routeUnlocked: true,
-        selectionPresets: [],
         activePresetId: null,
         presetBaseline: null,
         activeStation: 'base',
@@ -128,12 +127,11 @@ describe('appSessionPrefs', () => {
     ).toBeUndefined()
   })
 
-  it('sanitizeComponentsSession drops unknown component ids', () => {
+  it('sanitizeComponentsSession drops unknown component ids and stale active preset', () => {
     const session: GameSession = {
       selectedIds: ['known', 'unknown'],
       finishedStations: ['engine'],
       routeUnlocked: true,
-      selectionPresets: [],
       activePresetId: 'missing',
       presetBaseline: 'fp',
       activeStation: 'engine',
@@ -153,7 +151,7 @@ describe('appSessionPrefs', () => {
         },
       ],
     } as unknown as import('../xml/schema').InstallSequenceModel
-    const out = sanitizeComponentsSession(model, 'bg2', session)
+    const out = sanitizeComponentsSession(model, 'bg2', session, [])
     expect(out.selectedIds).toEqual(['known'])
     expect(out.activePresetId).toBeNull()
     expect(out.presetBaseline).toBeNull()
@@ -181,7 +179,6 @@ describe('appSessionPrefs', () => {
           selectedIds: new Set(['a', 'b']),
           finishedStations: new Set(),
           routeUnlocked: true,
-          selectionPresets: [],
           activePresetId: null,
           presetBaseline: null,
           activeStation: 'base',

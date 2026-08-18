@@ -13,10 +13,12 @@ import { isDesktopApp } from '../desktop/fsDialogs'
 import { APP_SESSION_STORAGE_KEY } from './appSessionPrefs'
 import { USER_CATALOG_STORAGE_KEY } from '../mods/userCatalog'
 
-/** Projects hub + legacy session migration. */
+/** Projects hub + legacy session migration + engine preset library. */
 export const FRESH_INSTALL_PROJECT_KEYS = [
   'infinity-express.projects-v1',
   'infinity-express.projects-migrated-v1',
+  'infinity-express.selection-presets-v1',
+  'infinity-express.selection-presets-migrated-v1',
   APP_SESSION_STORAGE_KEY,
 ] as const
 

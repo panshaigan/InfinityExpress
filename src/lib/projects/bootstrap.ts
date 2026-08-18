@@ -10,6 +10,7 @@ import {
   type ProjectMeta,
   type ProjectRecord,
 } from '../projects'
+import { migrateSelectionPresetsToEngineStore, presetsForEngine } from '../presets/selectionPresetsStore'
 import {
   sanitizeComponentsSession,
   sanitizeInstallSession,
@@ -36,6 +37,7 @@ export interface ProjectBootstrap {
 
 export function bootstrapProjects(_model: InstallSequenceModel): ProjectBootstrap {
   migrateLegacySessionsToProjects()
+  migrateSelectionPresetsToEngineStore()
   suggestVanillaFromLegacyFolders()
   void syncManagedVanillasFromDisk()
 
@@ -70,7 +72,12 @@ export function loadProjectRecord(
   if (!raw) {
     return { record, session: null, install: undefined }
   }
-  const session = sanitizeComponentsSession(model, record.meta.engine, raw)
+  const session = sanitizeComponentsSession(
+    model,
+    record.meta.engine,
+    raw,
+    presetsForEngine(record.meta.engine),
+  )
   const install = sanitizeInstallSession(
     model,
     record.meta.engine,
@@ -85,7 +92,6 @@ export function emptyWorkspaceSession(): GameSession {
     selectedIds: [],
     finishedStations: [],
     routeUnlocked: true,
-    selectionPresets: [],
     activePresetId: null,
     presetBaseline: null,
     activeStation: 'presets',

@@ -83,6 +83,7 @@ import { listSelectedModCodenames } from './lib/mods/loadMods'
 import { useStationTrees } from './hooks/useStationTrees'
 import { useBranchNav } from './hooks/useBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
+import { useSelectionPresetsPersistence } from './hooks/useSelectionPresetsPersistence'
 import { useRecommendedPresets } from './hooks/useRecommendedPresets'
 import { useChromeHotkeys } from './hooks/useChromeHotkeys'
 import { useRouteNav } from './hooks/useRouteNav'
@@ -132,6 +133,7 @@ import {
   type ProjectId,
   type ProjectMeta,
 } from './lib/projects'
+import { presetsForEngine } from './lib/presets/selectionPresetsStore'
 import './index.css'
 
 const parsed = parseInstallSequence(installSequenceXml)
@@ -550,7 +552,6 @@ function AppShell() {
       selectedIds,
       finishedStations: route.finishedStations,
       routeUnlocked,
-      selectionPresets: presets.allSelectionPresets,
       activePresetId: presets.activePresetId,
       presetBaseline: presets.presetBaseline,
       activeStation,
@@ -572,7 +573,6 @@ function AppShell() {
     recommended.checkedRecommended,
     modsJourney,
     presets.activePresetId,
-    presets.allSelectionPresets,
     presets.presetBaseline,
     route.finishedStations,
     routeUnlocked,
@@ -586,6 +586,11 @@ function AppShell() {
     buildGameSession,
   })
 
+  const { flushPresets } = useSelectionPresetsPersistence({
+    game,
+    presets: presets.allSelectionPresets,
+  })
+
   const { exitConfirmOpen, confirmExit, cancelExit } = useAppExitGuard({
     blocking: appBlocking,
     onFlushSession: flushSession,
@@ -597,10 +602,13 @@ function AppShell() {
   }, [])
 
   function openProject(id: ProjectId) {
+    flushPresets()
+    flushSession()
     const loaded = loadProjectRecord(model, id)
     if (!loaded) return
     const { record, session, install } = loaded
     const engine = record.meta.engine
+    const enginePresets = presetsForEngine(engine)
 
     setProjectId(record.meta.id)
     setProjectMeta(record.meta)
@@ -620,7 +628,7 @@ function AppShell() {
       setSelectedIds(createInitialSelection(model, engine))
       recommended.seedFixesBaseline(engine)
       presets.restoreSelectionPresetsState({
-        presets: [],
+        presets: enginePresets,
         activePresetId: null,
         presetBaseline: null,
       })
@@ -638,7 +646,7 @@ function AppShell() {
       setSelectedIds(new Set(session.selectedIds))
       recommended.restoreRecommendedState(recommendedPresetsInitialFromSession(session))
       presets.restoreSelectionPresetsState({
-        presets: session.selectionPresets,
+        presets: enginePresets,
         activePresetId: session.activePresetId,
         presetBaseline: session.presetBaseline,
       })
@@ -662,6 +670,7 @@ function AppShell() {
 
   function returnToHub() {
     if (appBlocking) return
+    flushPresets()
     flushSession()
     setProjectId(null)
     setProjectMeta(null)

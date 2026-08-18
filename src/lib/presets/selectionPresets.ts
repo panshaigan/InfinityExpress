@@ -110,3 +110,30 @@ export function newPresetId(): string {
   }
   return `preset-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 }
+
+const SELECTED_GAMES: readonly SelectedGame[] = ['bg1', 'bg2', 'eet', 'iwd', 'pst']
+
+function isSelectedGame(value: unknown): value is SelectedGame {
+  return typeof value === 'string' && SELECTED_GAMES.includes(value as SelectedGame)
+}
+
+function stringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value.filter((v): v is string => typeof v === 'string')
+}
+
+export function parseSelectionPreset(value: unknown): SelectionPreset | null {
+  if (!value || typeof value !== 'object') return null
+  const o = value as Record<string, unknown>
+  if (typeof o.id !== 'string' || typeof o.name !== 'string' || !isSelectedGame(o.game)) {
+    return null
+  }
+  return {
+    id: o.id,
+    name: o.name,
+    game: o.game,
+    selectedIds: stringArray(o.selectedIds),
+    recommendedChecked: stringArray(o.recommendedChecked),
+    packagesChecked: stringArray(o.packagesChecked),
+  }
+}

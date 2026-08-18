@@ -22,7 +22,6 @@ function minimalSession(overrides: Partial<GameSession> = {}): GameSession {
     selectedIds: ['a'],
     finishedStations: ['engine', 'presets'],
     routeUnlocked: true,
-    selectionPresets: [],
     activePresetId: null,
     presetBaseline: null,
     activeStation: 'engine',

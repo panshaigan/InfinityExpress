@@ -81,7 +81,7 @@ New projects seed **Fixes** via `recommendedChecked` + mass-check on the Presets
 
 ## Presets
 
-In-memory, game-scoped: selected ids + recommended/package chips. Not stored: filters, station, folds. Load restores chips **without** re-running mass-check. Shape: `presets/selectionPresets.ts`.
+User presets (top-bar **User preset** control) store selected ids + recommended/package chips. The preset **library** is engine-scoped (`presets/selectionPresetsStore.ts`, localStorage `infinity-express.selection-presets-v1`) and shared across projects of the same engine; the **active loaded preset** and dirty baseline stay per-project. Not stored in presets: filters, station, folds. Load restores chips **without** re-running mass-check. Shape: `presets/selectionPresets.ts`.
 
 ## Export
 
