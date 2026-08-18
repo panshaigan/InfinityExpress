@@ -76,7 +76,7 @@ A7-DlcMerger,DLC Merger,,minor,Base,https://github.com/Argent77/A7-DlcMerger,BG1
 Bg2Dorn,Dorn for BG2,,minor,NPC-Expansion,https://github.com/trinit2/Bg2Dorn,BG2,,,2022-05-01,ece4aad,,6595920,trinit,-
 Dorn-Friendship,Dorn Friendship,,minor,NPC-Expansion,https://github.com/Spellhold-Studios/Dorn-Friendship,BG2,,,2026-01-22,v1.2,,221183,Lava,https://spellhold-studios.github.io/readmes/dorn-friendship/DornFriendship-readme-english.html
 Drake,Drake NPC,,minor,NPC,https://github.com/TheArtisanBG/Drake,BG1,main,,2026-02-01,9ea5fa1,,26557003,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/drake-bg1
-downloads.weaselmods.net-dusky-iwdee-npc,Dusky - Weasel Mods - Downloads,,minor,NPC,https://downloads.weaselmods.net/download/dusky-iwdee-npc/,IWD,,,,,,,Lava,
+dusky-iwdee-npc,Dusky,,minor,NPC,https://downloads.weaselmods.net/download/dusky-iwdee-npc/,IWD,,,,,,,Lava,
 dvaradime,Dvaradime NPC,,minor,NPC,https://downloads.weaselmods.net/download/dvaradime,BG2,,,2024-09-30,1.6,,13700621,Lava,-
 dynaheir-bg2ee,Dynaheir for BG2EE,,minor,NPC,https://downloads.weaselmods.net/download/dynaheir-bg2ee,BG2,,,2026-07-28,1.3,,14036710,Lava,-
 Edwin-Romance,Edwin Romance,,minor,NPC-Expansion,https://github.com/Spellhold-Studios/Edwin-Romance,BG2,,,2023-12-04,v4.0,,19413830,laufeygreen,https://spellhold-studios.github.io/readmes/edwin-romance/edwinromance-readme.html
@@ -102,7 +102,7 @@ ForcedSlayerTransform,Forced Slayer Transform,,minor,Tweaks,https://github.com/L
 forgeit-iwd,Forge It! (IWD),,minor,Items,https://downloads.weaselmods.net/download/forgeit-iwd,IWD,,,2024-09-06,1.9,,477675,Lava,-
 forgotten-armament,Forgotten Armament,FA,compilation,Items,https://www.morpheus-mart.com/forgotten-armament,BG-IWD,,,2026-03-15,6.0,,1636005,Morpheus562,-
 IWDEE-Frostforged,Frostforged,,minor,Items,https://github.com/TheArtisanBG/IWDEE-Frostforged,IWD,main,,2025-09-25,1652f9d,WIP,1988522,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/frostforged
-downloads.weaselmods.net-gahesh,Gahesh,,minor,NPC,https://downloads.weaselmods.net/download/gahesh/,BG2,,,,,,,Lava,
+gahesh,Gahesh,,minor,NPC,https://downloads.weaselmods.net/download/gahesh/,BG2,,,,,,,Lava,
 Garrick_Tales-of-a-Troubadour,Garrick: Tales of a Troubadour,,minor,NPC-Expansion,https://github.com/The-Gate-Project/Garrick_Tales-of-a-Troubadour,BG1,,,2025-12-24,v1.28,,7017447,mirandir,-
 Geomantic_Sorcerer,Geomantic Sorcerer,,minor,Mechanics,https://github.com/Gibberlings3/Geomantic_Sorcerer,IWD,,,2025-05-07,v9,,8880834,Caedwyr,https://gibberlings3.github.io/Documentation/readmes/readme-druidsor.html
 Glam-NPC-Pack,Glam's NPC Pack,,medium,NPC,https://github.com/Gibberlings3/Glam-NPC-Pack,BG1,,,,,,,Glam,https://gibberlings3.github.io/Documentation/readmes/readme-glamnpcpack.html
@@ -135,7 +135,7 @@ Imoen-Romance-Mod,Imoen Romance,,minor,NPC-Expansion,https://github.com/Mirrabbo
 A7-ImprovedArcher,Improved Archer,,minor,Mechanics,https://github.com/Argent77/A7-ImprovedArcher,BG2,,,2024-12-07,v4.4,,4211001,Argent77,-
 HaerDalis-Swords,Improved Haer'Dalis Swords,,minor,Items,https://github.com/Spellhold-Studios/HaerDalis-Swords,BG2,,,2024-12-15,v3.1.0,,2701377,"Badgert, Kania Blade",https://spellhold-studios.github.io/readmes/haerdalis-swords/improved-haerdalis-swords-readme-english.html
 A7-ImprovedShamanicDance,Improved Shamanic Dance,,minor,Mechanics,https://github.com/Argent77/A7-ImprovedShamanicDance,BG-IWD,,,2024-12-07,v4.6,,392479,Argent77,-
-downloads.weaselmods.net-ina,Ina,,minor,NPC,https://downloads.weaselmods.net/download/ina/,IWD,,,,,,,Lava,
+ina,Ina,,minor,NPC,https://downloads.weaselmods.net/download/ina/,IWD,,,,,,,Lava,
 Indira_NPC,Indira NPC,,minor,NPC,https://github.com/Pocket-Plane-Group/Indira_NPC,BG1,,,,,,,Ghreyfain,https://htmlpreview.github.io/?https://github.com/Pocket-Plane-Group/Indira_NPC/blob/main/IndiNPC/Docs/indi_readme.html
 Infinity_Collection_Portrait_Pack,Infinity Collection Portrait Pack,,minor,Portraits,https://github.com/Gibberlings3/Infinity_Collection_Portrait_Pack,BG-IWD,,,2022-03-07,v2,,44496778,CamDawg,https://gibberlings3.github.io/Documentation/readmes/readme-cd_icpp.html
 Infinity-Sounds,Infinity Sounds,,minor,Sounds,https://github.com/Spellhold-Studios/Infinity-Sounds,BG-IWD,,,2025-07-09,v2.2,,43478952,"skellytz, Tash",https://spellhold-studios.github.io/readmes/infinity-sounds/readme-infinitysounds.html
