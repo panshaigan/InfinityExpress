@@ -60,14 +60,14 @@ Install table rows (one per component / install step) expose the same actions vi
 | Action | When | Behavior |
 | --- | --- | --- |
 | **Uninstall back to here** | `paused` / `stopped`; target step before cursor | Force-uninstall each package from cursor−1 down to the target step; move cursor to target. Confirms first. |
-| **Add / remove breakpoint** | Future, not-yet-installed steps (including before first Play) | Toggle `InstallRun.breakpointStepIds`. Row class `install-breakpoint`. |
-| **Plan / remove snapshot** | Same eligibility as breakpoints | Adding opens a name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`). Stores `{ stepId, name }` on `InstallRun.plannedSnapshots`. Row class `install-snapshot`. Removing does not prompt. |
+| **Add / remove breakpoint** | Future, not-yet-installed steps (including before first Play) | Toggle `InstallRun.breakpointStepIds`. Row class `install-breakpoint` (top-edge marker line). |
+| **Plan / remove snapshot** | Same eligibility as breakpoints | Adding opens a name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`). Stores `{ stepId, name }` on `InstallRun.plannedSnapshots`. Row class `install-snapshot` (top-edge marker line). Removing does not prompt. |
 | **Move cursor here** | `paused` / `stopped` (immediate), or while `running` / `waitingForInput` (after current step); not on finished steps | Sets `cursor` to the selected install step. Disabled when target is `succeeded` / `alreadyInstalled` / `skipped`. Confirms when moving backward across installed packages. |
 | **Remove from plan** | `paused` / `stopped` / `failed`; step at or after cursor, not yet finished | Unchecks the component in Components (updates selection + syncs the run plan). |
 
-**Breakpoints (mode B):** when the runner reaches a breakpoint step, it pauses **before staging/copying** that package (`runState: paused`, cursor on the breakpoint step).
+**Breakpoints (mode B):** when the runner reaches a breakpoint step, it pauses **before staging/copying** that package (`runState: paused`, cursor on the breakpoint step). The hit breakpoint is removed automatically (one-shot), so resuming continues forward and later breakpoints still trigger.
 
-**Planned snapshots:** when the runner is about to start a marked step, it copies that step’s live game folder (`createNamedBackup`, full copy) under the chosen name, then **continues installing** (no pause). Game mapping: EET `eet1` → BG1, EET `eet` → BG2, other engines → that game. Marker is one-shot (removed after success). Snapshot failure pauses and keeps the marker so Play retries. A breakpoint on the same step still pauses after the snapshot.
+**Planned snapshots:** when the runner is about to start a marked step, it temporarily shows `runState: paused`, copies that step’s live game folder (`createNamedBackup`, full copy), then auto-resumes and continues installing. Game mapping: EET `eet1` → BG1, EET `eet` → BG2, other engines → that game. Marker is one-shot (removed after success). Snapshot failure pauses and keeps the marker so Play retries. A breakpoint on the same step still pauses after the snapshot.
 
 ## Cross-phase install lock
 

@@ -794,9 +794,13 @@ export function useInstallRun(options: {
           current.steps.map((s, idx) => (idx === index ? snapshotting : s)),
         ),
         cursor: index,
-        runState: 'running',
+        runState: 'paused',
       }
       setActiveStepId(step.stepId)
+      pausedRef.current = true
+      pausePendingRef.current = false
+      setPausePending(false)
+      setPaused(true)
       setPlannedSnapshotBusy(true)
       setRun(next)
       runRef.current = next
@@ -865,6 +869,8 @@ export function useInstallRun(options: {
           cursor: index,
           runState: 'running',
         }
+        pausedRef.current = false
+        setPaused(false)
         setRun(next)
         runRef.current = next
         appendCommandLine(`Snapshot saved: ${planned.name} (${gameKey})`)
@@ -978,6 +984,9 @@ export function useInstallRun(options: {
           if (current.breakpointStepIds.includes(step.stepId)) {
             const halted = withNormalizedCursor({
               ...current,
+              breakpointStepIds: current.breakpointStepIds.filter(
+                (id) => id !== step.stepId,
+              ),
               cursor: i,
               runState: 'paused',
             })
@@ -986,6 +995,7 @@ export function useInstallRun(options: {
             setPausePending(false)
             setPaused(true)
             setRun(halted)
+            runRef.current = halted
             appendCommandLine(`Breakpoint hit: ${step.modId}`)
             runningRef.current = false
             return
