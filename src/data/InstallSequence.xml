@@ -56,7 +56,7 @@
 
 	<content displayIfNot="IE_focus_dedicated_campaigns">
 		<bg1 label="BG1">
-			<restructure>
+			<restructure label="Restructure">
 				<alternatives label="Postgame" desc="Allows playing after killing Sarevok" unfolded="1">
 					<mod id="EndlessBG1" label="Endless BG1" recommended="blendWell">
 						<component id="EBG1_MainComponent" name="Endless BG1: Main Component (Required)" label="Main component" core="1" complexity="moderate" />
@@ -585,11 +585,11 @@
 					<component id="AddKagainDD" name="Assign Dwarven Defender kit to Kagain" label="Continuous Kagain (Dwarven Defender)" desc="Continuous, but mute" modId="continuous-npcs" complexity="minor" />
 					<alternatives label="Xan">
 						<component id="AddXan" name="[Xan] Add Xan to SoD and BG2" label="Continuous Xan" desc="Continuous, but mute" modId="continuous-npcs" complexity="minor" />
-						<component id="xan:0" name="[Xan] Xan NPC MOD for Baldur's Gate II" label="Kulyok's Xan" modId="Xan_for_BGII" complexity="minor" />
+						<component id="xan:0" name="[Xan] Xan NPC MOD for Baldur's Gate II" label="Kulyok's Xan" modId="Xan_for_BGII" default="1" complexity="minor" />
 					</alternatives>
 					<alternatives label="Yeslick">
 						<component id="AddYeslick" name="[Yeslick] Add Yeslick to SoD and BG2" label="Continuous Yeslick" desc="Continuous, but mute" modId="continuous-npcs" complexity="minor" />
-						<component id="yeslicknpc:0" name="Yeslick is a regular Fighter-Cleric" label="SHS Yeslick" modId="Yeslick-NPC" complexity="minor" />
+						<component id="yeslicknpc:0" name="Yeslick is a regular Fighter-Cleric" label="SHS Yeslick" modId="Yeslick-NPC" default="1" complexity="minor" />
 					</alternatives>
 					<alternatives label="Kivan">
 						<group label="Continuous Kivan (Archer)">
@@ -597,7 +597,7 @@
 							<component id="KivanTimedQuest" name="[Kivan] Removed Kivan's timed quest" label="Removed Kivan's Timed Quest" modId="continuous-npcs" complexity="minor" />
 							<component id="KivanAbilityScores" name="[Kivan] Slightly Boost Kivan's Ability Scores" label="Slightly boost Kivan's Ability Scores" modId="continuous-npcs" complexity="minor" />
 						</group>
-						<component id="p#_kivan" name="Kivan of Shilmista" label="Kivan and Deheriana" modId="Kivan_and_Deheriana" complexity="minor" />
+						<component id="p#_kivan" name="Kivan of Shilmista" label="Kivan and Deheriana" modId="Kivan_and_Deheriana" default="1" complexity="minor" />
 					</alternatives>
 					<component id="Raven-alora_npc_for_bg2" name="Chosen of Mystra's Alora NPC Mod (Requires Throne of Bhaal)" label="Alora" modId="Alora-NPC-for-BG2" complexity="minor" />
 					<mod id="the-return-of-xzar-and-montaron" label="Xzar and Montaron">
@@ -1157,7 +1157,7 @@
 				<component id="METweaks:1000" name="Give Monks a cooler Deflect Missiles ability" label="Update Deflect Missiles ability" modId="Olvyn-Tweaks" recommended="mechanics" complexity="minor" />
 			</monk>
 			<component id="ZSTweaks:2120" name="Make War Cry significantly more useful" label="Make War Cry significantly more useful" recommended="mechanics" modId="ZSTweaks" complexity="minor" />
-			<component id="METweaks:400" name="Remove the limit of two proficiency points in a weapon at character creation" label="Remove the limit of two Proficiency Points in a weapon at character creation" modId="Olvyn-Tweaks" complexity="minor" />
+			<component id="METweaks:400" name="Remove the limit of two proficiency points in a weapon at character creation" label="Remove the limit of two Proficiency Points in a weapon at character creation" modId="Olvyn-Tweaks" recommended="lowerDifficulty" complexity="minor" />
 			<component id="cd_tweaks_cleave" name="Cleave Class Feat for Fighters and Monks [Luke]" label="Add Cleave class feat for fighters and monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6100" recommended="mechanics" complexity="minor" />
 			<component id="cd_tweaks_nwn_knockdown" name="Knockdown Class Feat for Fighters and Monks [Luke]" label="Add Knockdown class feat for fighters and monks" modId="Tweaks-Anthology" displayIf="EEex:1" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6010" recommended="mechanics" complexity="minor" />
 			<component id="METweaks:900" name="Let Rangers and Paladins cast spells at their full caster level" label="Let rangers and paladins cast spells at their full caster level" modId="Olvyn-Tweaks" complexity="minor" />
@@ -2105,9 +2105,9 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			</alternatives>
 		</mod>
 		<alternatives label="Alter identification mechanics" engine="bg,eet,iwd,pst">
-			<group label="Make it more strict" recommended="higherDifficulty">
+			<group label="Make it more strict" recommended="higherDifficulty" package="strictIdentification">
 				<component id="cd_tweaks_shopkeeper_id_lore" name="Identification ability is based on storekeeper's lore" label="Identification ability is limited to Storekeeper's Lore" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" desc="Any storekeeper can identify items up to their personal Lore value, regardless of class." readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2191" complexity="moderate" />
-				<component id="cd_tweaks_lore_for_gems_potions" name="Gems and potions" label="Gems and potions require identification" modId="Tweaks-Anthology" recommended="higherDifficulty" engine="bg,eet,iwd" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1140" complexity="major" />
+				<component id="cd_tweaks_lore_for_gems_potions" name="Gems and potions" label="Gems and potions require identification" modId="Tweaks-Anthology" engine="bg,eet,iwd" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1140" complexity="major" />
 			</group>
 			<component id="cd_tweaks_id_all_items" name="Identify All Items" label="Identify all items" modId="Tweaks-Anthology" recommended="lowerDifficulty" package="disableIdentification" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3020" complexity="major" />
 		</alternatives>

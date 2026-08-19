@@ -135,6 +135,8 @@ export interface ForceUninstallInput {
   gameDir: string
   componentNumber: number
   languageIndex: number
+  logDir: string
+  stepFolder: string
 }
 
 /** Same setup-{weiduId}.exe path as install; runs --force-uninstall. */
@@ -149,6 +151,8 @@ export async function runWeiduForceUninstall(
       gameDir: input.gameDir,
       componentNumber: input.componentNumber,
       languageIndex: input.languageIndex,
+      logDir: input.logDir,
+      stepFolder: input.stepFolder,
     },
   })
 }

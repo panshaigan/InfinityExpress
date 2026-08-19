@@ -124,6 +124,8 @@ export function InstallStation({
   onInstallActionsReady,
 }: Props) {
   const { pushToast } = useToast()
+  const followCursorForDetailsRef = useRef(true)
+  const [clearedDurationMsTotal, setClearedDurationMsTotal] = useState(0)
   const [pathTick, setPathTick] = useState(0)
   const appDirs = readAppDirPaths()
   const weiduPath = readWeiduPath()
@@ -174,6 +176,10 @@ export function InstallStation({
     initialInstallState: initialInstallSession
       ? { installSession: initialInstallSession }
       : null,
+    onDurationClearedMs: (deltaMs) => {
+      if (!Number.isFinite(deltaMs) || deltaMs <= 0) return
+      setClearedDurationMsTotal((prev) => prev + Math.max(0, Math.floor(deltaMs)))
+    },
   })
 
   const installLock = useMemo(
@@ -227,6 +233,7 @@ export function InstallStation({
   const timedRunIdRef = useRef<string | null>(null)
   const restoredRunIdRef = useRef(initialInstallSession?.run.runId ?? null)
   const restoredElapsedRef = useRef(initialInstallSession?.ui.runElapsedMs ?? 0)
+  const processedClearedDurationRef = useRef(0)
 
   useEffect(() => {
     if (!onInstallSessionChange || !game || !run || run.runState === 'idle') {
@@ -272,7 +279,7 @@ export function InstallStation({
   )
 
   useEffect(() => {
-    if (cursorStepId) {
+    if (cursorStepId && followCursorForDetailsRef.current) {
       setSelectedStepId(cursorStepId)
       const active = steps.find((s) => s.stepId === cursorStepId)
       if (active?.componentId) {
@@ -287,6 +294,14 @@ export function InstallStation({
       setSelectedComponentId(steps[0].componentId)
     }
   }, [steps, selectedStepId, cursorStepId])
+
+  useEffect(() => {
+    const delta = clearedDurationMsTotal - processedClearedDurationRef.current
+    if (delta <= 0) return
+    processedClearedDurationRef.current = clearedDurationMsTotal
+    runElapsedAccumRef.current = Math.max(0, runElapsedAccumRef.current - delta)
+    setRunElapsedMs((prev) => Math.max(0, prev - delta))
+  }, [clearedDurationMsTotal])
 
   useEffect(() => {
     if (run?.runState === 'completed') setCleanupOffer(true)
@@ -340,6 +355,8 @@ export function InstallStation({
   useEffect(() => {
     if (runId !== timedRunIdRef.current) {
       timedRunIdRef.current = runId
+      processedClearedDurationRef.current = 0
+      setClearedDurationMsTotal(0)
       if (runId && runId === restoredRunIdRef.current) {
         runElapsedAccumRef.current = restoredElapsedRef.current
         setRunElapsedMs(restoredElapsedRef.current)
@@ -539,6 +556,7 @@ export function InstallStation({
         clearPlannedSnapshot(stepId)
       },
       onRequestMoveCursor: (stepId: string) => {
+        followCursorForDetailsRef.current = true
         const targetIdx = stepIndexById(tableSteps, stepId)
         if (targetIdx < 0) return
         const crossesInstalled =
@@ -559,6 +577,7 @@ export function InstallStation({
             confirmLabel: 'Move cursor',
             onConfirm: () => {
               setConfirmDialog(null)
+              followCursorForDetailsRef.current = true
               moveCursorToStep(stepId)
             },
           })
@@ -908,6 +927,7 @@ export function InstallStation({
   }, [game, run, adjustmentsModIds, gameFolders, weiduPath, pushToast])
 
   const onSelectStep = useCallback((stepId: string, componentId: string) => {
+    followCursorForDetailsRef.current = false
     setSelectedStepId(stepId)
     setSelectedComponentId(componentId)
   }, [])

@@ -130,8 +130,21 @@ export function useInstallRun(options: {
   gameFolders: GameFolderPaths
   projectId?: string | null
   initialInstallState?: InstallRunInitialState | null
+  /**
+   * Called when we clear elapsed time for a step (Stop/Force-uninstall / Uninstall back).
+   * Used by the UI to keep the top-level "Total install duration" in sync.
+   */
+  onDurationClearedMs?: (deltaMs: number) => void
 }) {
-  const { model, selectedIds, game, gameFolders, projectId, initialInstallState } = options
+  const {
+    model,
+    selectedIds,
+    game,
+    gameFolders,
+    projectId,
+    initialInstallState,
+    onDurationClearedMs,
+  } = options
   const shouldLoadConsoleRef = useRef(!!initialInstallState?.installSession)
   const hydratedRef = useRef(false)
   const [run, setRun] = useState<InstallRun | null>(() => {
@@ -257,10 +270,8 @@ export function useInstallRun(options: {
   /** Append to WeiDU (+ Results if highlighted). Returns stamped line for callers that track per-step results. */
   const pushConsoleLine = useCallback((text: string): string => {
     const stamped = stampLine(text)
-    setConsoleLines((prev) => [...prev.slice(-4999), stamped])
-    if (consoleLineTone(text) != null) {
-      setResultLines((prev) => [...prev.slice(-999), stamped])
-    }
+    setCommandLines((prev) => [...prev.slice(-999), stamped])
+    if (consoleLineTone(text) != null) setResultLines((prev) => [...prev.slice(-999), stamped])
     return stamped
   }, [])
 
@@ -482,8 +493,7 @@ export function useInstallRun(options: {
         }
       })
       if (payload.phase === 'start' || payload.phase === 'done') {
-        const stamped = stampLine(`[stage] ${payload.message}`)
-        setConsoleLines((prev) => [...prev.slice(-4999), stamped])
+        pushConsoleLine(`[stage] ${payload.message}`)
       }
     }).then((fn) => {
       if (cancelled) {
@@ -496,7 +506,7 @@ export function useInstallRun(options: {
       cancelled = true
       unlisten?.()
     }
-  }, [])
+  }, [pushConsoleLine])
 
   const markAlreadyInstalledFromLog = useCallback(
     async (steps: InstallStep[], game: SelectedGame): Promise<InstallStep[]> => {
@@ -592,17 +602,31 @@ export function useInstallRun(options: {
       )
       let step = await ensureStepResolvedForUninstall(current, index)
 
+      const startMs = step.startedAt != null ? Date.parse(step.startedAt) : null
+      const endMs = step.finishedAt != null ? Date.parse(step.finishedAt) : null
+      const clearedMs =
+        startMs != null &&
+        endMs != null &&
+        Number.isFinite(startMs) &&
+        Number.isFinite(endMs)
+          ? Math.max(0, endMs - startMs)
+          : 0
+      onDurationClearedMs?.(clearedMs)
+
       if (step.weiduNumber != null && step.tp2Path && gameDir) {
         try {
           pushConsoleLine(
             `[uninstall] ${step.modId} (${step.weiduNumber})…`,
           )
+          activeStepIdRef.current = step.stepId
           await runWeiduForceUninstall({
             weiduPath: readWeiduPath(),
             tp2Path: step.tp2Path,
             gameDir,
             componentNumber: step.weiduNumber,
             languageIndex: step.languageIndex ?? 0,
+            logDir: current.logDir,
+            stepFolder: stepFolderName(step, index),
           })
           pushConsoleLine(`[uninstall] Finished ${step.modId}`)
         } catch (err) {
@@ -621,7 +645,13 @@ export function useInstallRun(options: {
         startedAt: undefined,
       }
     },
-    [ensureStepResolvedForUninstall, gameFolders, mergeStepResultLines, pushConsoleLine],
+    [
+      ensureStepResolvedForUninstall,
+      gameFolders,
+      mergeStepResultLines,
+      onDurationClearedMs,
+      pushConsoleLine,
+    ],
   )
 
   const applyStoppedAtCursor = useCallback(
@@ -631,17 +661,28 @@ export function useInstallRun(options: {
       step: InstallStep,
       gameDir: string,
     ): Promise<InstallRun> => {
+      const stoppedAt = new Date().toISOString()
+      const startMs = step.startedAt != null ? Date.parse(step.startedAt) : null
+      const endMs = Date.parse(stoppedAt)
+      const clearedMs =
+        startMs != null && Number.isFinite(startMs) && Number.isFinite(endMs)
+          ? Math.max(0, endMs - startMs)
+          : 0
+
       if (step.weiduNumber != null && step.tp2Path && gameDir) {
         try {
           pushConsoleLine(
             `[stop] Force-uninstall ${step.modId} (${step.weiduNumber})…`,
           )
+          activeStepIdRef.current = step.stepId
           await runWeiduForceUninstall({
             weiduPath: readWeiduPath(),
             tp2Path: step.tp2Path,
             gameDir,
             componentNumber: step.weiduNumber,
             languageIndex: step.languageIndex ?? 0,
+            logDir: current.logDir,
+            stepFolder: stepFolderName(step, index),
           })
           pushConsoleLine(`[stop] Force-uninstall finished for ${step.modId}`)
         } catch (err) {
@@ -650,13 +691,15 @@ export function useInstallRun(options: {
         }
       }
 
-      const stoppedAt = new Date().toISOString()
+      onDurationClearedMs?.(clearedMs)
+
       const reset: InstallStep = {
         ...mergeStepResultLines(step),
         status: 'queued',
         progress: null,
         errors: [],
-        finishedAt: step.startedAt ? stoppedAt : undefined,
+        startedAt: undefined,
+        finishedAt: undefined,
       }
       const next: InstallRun = {
         ...current,
@@ -677,7 +720,13 @@ export function useInstallRun(options: {
       appendCommandLine('Installation stopped')
       return next
     },
-    [appendCommandLine, mergeStepResultLines, pushConsoleLine, withMergedResults],
+    [
+      appendCommandLine,
+      mergeStepResultLines,
+      onDurationClearedMs,
+      pushConsoleLine,
+      withMergedResults,
+    ],
   )
 
   const finishStepIteration = useCallback(

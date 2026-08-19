@@ -916,6 +916,8 @@ pub struct ForceUninstallInput {
   pub game_dir: String,
   pub component_number: i32,
   pub language_index: i32,
+  pub log_dir: String,
+  pub step_folder: String,
 }
 
 /// Same launcher as install: copy weidu → `setup-{weiduId}.exe`, run that exe (no tp2 argv)
@@ -935,6 +937,16 @@ pub async fn run_weidu_force_uninstall(
     return Err(format!("Game directory not found: {}", game_dir.display()));
   }
 
+  let log_dir = PathBuf::from(input.log_dir.trim());
+  let step_dir = log_dir.join(input.step_folder.trim());
+  fs::create_dir_all(&step_dir).map_err(|e| e.to_string())?;
+  let stdout_path = step_dir.join("stdout.log");
+  let stderr_path = step_dir.join("stderr.log");
+  let run_stdout = log_dir.join("run-stdout.log");
+  let run_stderr = log_dir.join("run-stderr.log");
+  let _ = fs::write(&stdout_path, "");
+  let _ = fs::write(&stderr_path, "");
+
   let (cwd, _tp2_arg) = weidu_game_cwd_and_tp2_arg(&game_dir, &tp2)?;
   let (weidu_id, setup_exe) = setup_exe_for_tp2(&game_dir, &tp2)?;
   fs::copy(&weidu, &setup_exe).map_err(|e| {
@@ -953,11 +965,39 @@ pub async fn run_weidu_force_uninstall(
 
   emit_command_logged(&app, &setup_exe, &cwd, &args);
 
-  let status = Command::new(&setup_exe)
+  let cancel = Arc::new(AtomicBool::new(false));
+
+  let mut child = Command::new(&setup_exe)
     .current_dir(&cwd)
+    .stdin(Stdio::null())
+    .stdout(Stdio::piped())
+    .stderr(Stdio::piped())
     .args(&args)
-    .status()
+    .spawn()
     .map_err(|e| e.to_string())?;
+
+  if let Some(out) = child.stdout.take() {
+    stream_pipe(
+      BufReader::new(out),
+      "stdout",
+      stdout_path.clone(),
+      run_stdout.clone(),
+      Arc::clone(&cancel),
+      app.clone(),
+    );
+  }
+  if let Some(err) = child.stderr.take() {
+    stream_pipe(
+      BufReader::new(err),
+      "stderr",
+      stderr_path.clone(),
+      run_stderr.clone(),
+      Arc::clone(&cancel),
+      app.clone(),
+    );
+  }
+
+  let status = child.wait().map_err(|e| e.to_string())?;
 
   if !status.success() {
     return Err(format!(
