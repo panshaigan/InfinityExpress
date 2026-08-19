@@ -675,6 +675,7 @@ export function InstallTable({
   const rangeRef = useRef({ start: 0, end: 0 })
   const pendingFocusKeyRef = useRef<string | null>(null)
   const scrollRafRef = useRef<number | null>(null)
+  const syncedSelectionKeyRef = useRef<string | null>(null)
   const visibleRows = useMemo(() => {
     const t0 = profileInstallTable ? performance.now() : 0
     const built = visible.map((row) => {
@@ -714,8 +715,10 @@ export function InstallTable({
     visible,
   ])
 
-  const rowKey = (stepId: string, componentId: string) =>
-    `${stepId}\0${componentId}`
+  const rowKey = useCallback(
+    (stepId: string, componentId: string) => `${stepId}\0${componentId}`,
+    [],
+  )
 
   const focusPendingRow = useCallback(() => {
     const key = pendingFocusKeyRef.current
@@ -841,8 +844,13 @@ export function InstallTable({
   )
 
   useEffect(() => {
-    if (!selectedStepId || !selectedComponentId) return
+    if (!selectedStepId || !selectedComponentId) {
+      syncedSelectionKeyRef.current = null
+      return
+    }
     const key = rowKey(selectedStepId, selectedComponentId)
+    if (syncedSelectionKeyRef.current === key) return
+    syncedSelectionKeyRef.current = key
     const selectedIndex = visibleIndexByRowKey.get(key)
     if (selectedIndex == null) return
     pendingFocusKeyRef.current = key
