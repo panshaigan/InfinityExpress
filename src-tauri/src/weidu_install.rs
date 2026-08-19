@@ -77,6 +77,7 @@ pub struct RunStepInput {
   pub weidu_path: String,
   pub tp2_path: String,
   pub game_dir: String,
+  pub bg1_dir: Option<String>,
   pub component_id: String,
   pub component_number: i32,
   pub language_index: i32,
@@ -718,13 +719,20 @@ fn setup_exe_for_tp2(game_dir: &Path, tp2: &Path) -> Result<(String, PathBuf), S
 
 /// Single edit point for WeiDU install command exceptions.
 /// Key is exact InstallSequence component id (e.g. "EET:0").
-fn weidu_install_exception_args(component_id: &str, game_dir: &Path) -> Option<Vec<String>> {
-  match component_id {
+fn weidu_install_exception_args(input: &RunStepInput, game_dir: &Path) -> Option<Vec<String>> {
+  let bg1_arg = input
+    .bg1_dir
+    .as_deref()
+    .map(str::trim)
+    .filter(|p| !p.is_empty())
+    .map(|p| p.to_string())
+    .unwrap_or_else(|| game_dir.to_string_lossy().into_owned());
+  match input.component_id.as_str() {
     "EET:0" => Some(vec![
       "--skip-at-view".into(),
       "--args-list".into(),
       "sp".into(),
-      game_dir.to_string_lossy().into_owned(),
+      bg1_arg,
     ]),
     _ => None,
   }
@@ -778,7 +786,7 @@ pub async fn run_weidu_step(
     "--force-install".into(),
     input.component_number.to_string(),
   ];
-  if let Some(extra_args) = weidu_install_exception_args(&input.component_id, &game_dir) {
+  if let Some(extra_args) = weidu_install_exception_args(&input, &game_dir) {
     emit_event(
       &app,
       InstallEventPayload::Classified {

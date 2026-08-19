@@ -12,6 +12,7 @@ export interface RunStepInput {
   weiduPath: string
   tp2Path: string
   gameDir: string
+  bg1Dir?: string
   componentId: string
   componentNumber: number
   languageIndex: number
@@ -120,6 +121,7 @@ export async function runWeiduStep(input: RunStepInput): Promise<StepResult> {
       weiduPath: input.weiduPath,
       tp2Path: input.tp2Path,
       gameDir: input.gameDir,
+      bg1Dir: input.bg1Dir ?? null,
       componentId: input.componentId,
       componentNumber: input.componentNumber,
       languageIndex: input.languageIndex,
