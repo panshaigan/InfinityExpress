@@ -178,6 +178,7 @@ function AppShell() {
   const installSnapshotRef = useRef<PersistedInstallSession | null | undefined>(
     undefined,
   )
+  const installSessionKeyRef = useRef<string | null>(null)
   const [shellView, setShellView] = useState<AppShellView>(
     () => projectBootstrap.view,
   )
@@ -600,6 +601,9 @@ function AppShell() {
   })
 
   const onInstallSessionChange = useCallback((session: PersistedInstallSession | null) => {
+    const nextKey = session ? JSON.stringify(session) : null
+    if (installSessionKeyRef.current === nextKey) return
+    installSessionKeyRef.current = nextKey
     installSnapshotRef.current = session ?? undefined
     setInstallSession(session)
   }, [])

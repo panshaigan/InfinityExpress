@@ -123,6 +123,8 @@ export function InstallStation({
   installLock: installLockProp,
   onInstallActionsReady,
 }: Props) {
+  const profileInstallTable =
+    import.meta.env.DEV && (window as Window & { __IX_PROFILE_INSTALL?: boolean }).__IX_PROFILE_INSTALL === true
   const { pushToast } = useToast()
   const followCursorForDetailsRef = useRef(true)
   const [clearedDurationMsTotal, setClearedDurationMsTotal] = useState(0)
@@ -234,24 +236,29 @@ export function InstallStation({
   const restoredRunIdRef = useRef(initialInstallSession?.run.runId ?? null)
   const restoredElapsedRef = useRef(initialInstallSession?.ui.runElapsedMs ?? 0)
   const processedClearedDurationRef = useRef(0)
+  const lastPersistedSessionKeyRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (!onInstallSessionChange || !game || !run || run.runState === 'idle') {
+      lastPersistedSessionKeyRef.current = null
       onInstallSessionChange?.(null)
       return
     }
-    onInstallSessionChange(
-      buildPersistedInstallSession({
-        game,
-        selectedIds,
-        run,
-        paused,
-        selectedStepId,
-        selectedComponentId,
-        hideInstalled,
-        runElapsedMs,
-      }),
-    )
+    const sampledElapsedMs = Math.max(0, Math.floor(runElapsedMs / 1000) * 1000)
+    const nextSession = buildPersistedInstallSession({
+      game,
+      selectedIds,
+      run,
+      paused,
+      selectedStepId,
+      selectedComponentId,
+      hideInstalled,
+      runElapsedMs: sampledElapsedMs,
+    })
+    const nextKey = JSON.stringify(nextSession)
+    if (lastPersistedSessionKeyRef.current === nextKey) return
+    lastPersistedSessionKeyRef.current = nextKey
+    onInstallSessionChange(nextSession)
   }, [
     game,
     hideInstalled,
@@ -927,10 +934,17 @@ export function InstallStation({
   }, [game, run, adjustmentsModIds, gameFolders, weiduPath, pushToast])
 
   const onSelectStep = useCallback((stepId: string, componentId: string) => {
+    const t0 = profileInstallTable ? performance.now() : 0
     followCursorForDetailsRef.current = false
     setSelectedStepId(stepId)
     setSelectedComponentId(componentId)
-  }, [])
+    if (profileInstallTable) {
+      const elapsed = performance.now() - t0
+      if (elapsed > 1) {
+        console.debug('[install-perf] onSelectStep handler ms=', elapsed.toFixed(2))
+      }
+    }
+  }, [profileInstallTable])
 
   const playActive = isRunning && !pausePending && !stopping
   const pauseActive = pausePending || run?.runState === 'paused'

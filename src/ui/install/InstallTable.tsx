@@ -1,4 +1,5 @@
 import {
+  memo,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -11,7 +12,7 @@ import {
   type ReactNode,
 } from 'react'
 import { createPortal } from 'react-dom'
-import { canSetBreakpoint, isStepDone, stepIndexById } from '../../lib/install/cursor'
+import { canSetBreakpoint, isStepDone } from '../../lib/install/cursor'
 import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
 import type {
   InstallRunState,
@@ -191,6 +192,32 @@ function plannedForStep(
 function snapshotGameLabel(game: SelectedGame | null, step: InstallStep): string {
   if (!game) return 'game'
   return gameFolderKeyLabel(gameFolderKeyForPhase(game, step.phase))
+}
+
+function createStepIndexMap(steps: InstallStep[]): Map<string, number> {
+  const map = new Map<string, number>()
+  for (let i = 0; i < steps.length; i += 1) {
+    map.set(steps[i]!.stepId, i)
+  }
+  return map
+}
+
+function createStepIdSet(ids: string[]): Set<string> {
+  const set = new Set<string>()
+  for (const id of ids) set.add(id)
+  return set
+}
+
+type InstallRowViewModel = ReturnType<typeof expandStepsToTableRows>[number] & {
+  step: InstallStep | undefined
+  stepIndex: number
+  hasBreakpoint: boolean
+  hasSnapshot: boolean
+  modDisplay: string
+  modTip: string
+  componentNameTip?: string
+  category: string
+  complexity: string
 }
 
 function InstallStepContextMenu({
@@ -442,6 +469,116 @@ function StepActionButtons({
   )
 }
 
+const StepActionButtonsMemo = memo(StepActionButtons)
+
+function DurationCell({
+  step,
+  runState,
+}: {
+  step: InstallStep | undefined
+  runState: InstallRunState | null
+}) {
+  const live = !!step && isStepDurationLive(step, runState)
+  const [nowMs, setNowMs] = useState(() => Date.now())
+
+  useEffect(() => {
+    if (!live) return
+    setNowMs(Date.now())
+    const id = window.setInterval(() => setNowMs(Date.now()), 1000)
+    return () => window.clearInterval(id)
+  }, [live])
+
+  if (!step) return <span className="mods-cell-clip">-</span>
+  return <span className="mods-cell-clip">{stepDurationLabel(step, nowMs, runState)}</span>
+}
+
+const DurationCellMemo = memo(DurationCell)
+
+interface InstallTableRowProps {
+  row: InstallRowViewModel
+  selectedStepId: string | null
+  selectedComponentId: string | null
+  cursorStepId: string | null
+  cursorLive: boolean
+  runState: InstallRunState | null
+  tableActions: InstallTableActions | null
+  setRowEl: (stepId: string, componentId: string, el: HTMLTableRowElement | null) => void
+  onSelect: (stepId: string, componentId: string) => void
+  onOpenContextMenu: (stepId: string, x: number, y: number) => void
+}
+
+function InstallTableRow({
+  row,
+  selectedStepId,
+  selectedComponentId,
+  cursorStepId,
+  cursorLive,
+  runState,
+  tableActions,
+  setRowEl,
+  onSelect,
+  onOpenContextMenu,
+}: InstallTableRowProps) {
+  const selected = row.stepId === selectedStepId
+  const atCursor = row.stepId === cursorStepId
+  const focused = selected && row.componentId === selectedComponentId
+
+  return (
+    <tr
+      key={row.stepId}
+      ref={(el) => setRowEl(row.stepId, row.componentId, el)}
+      role="row"
+      tabIndex={focused ? 0 : -1}
+      className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${row.hasBreakpoint ? ' install-breakpoint' : ''}${row.hasSnapshot ? ' install-snapshot' : ''}${focused ? ' focused' : ''} install-status-${row.status}`}
+      onClick={() => onSelect(row.stepId, row.componentId)}
+      onContextMenu={(e) => {
+        if (!row.step || row.stepIndex < 0 || !tableActions) return
+        e.preventDefault()
+        onSelect(row.stepId, row.componentId)
+        onOpenContextMenu(row.stepId, e.clientX, e.clientY)
+      }}
+    >
+      <td className="install-col-num">{row.order}</td>
+      <TipCell className="install-col-mod" display={row.modDisplay} tip={row.modTip} />
+      <TipCell
+        className="install-col-component"
+        display={row.componentLabel}
+        tip={row.componentNameTip}
+      />
+      <td className="install-col-component-id has-icon-tip">
+        <span className="install-id-cell">
+          <span className="mods-cell-clip">{row.componentId}</span>
+          <IdCopyButton value={row.componentId} />
+        </span>
+        <IconTip>{row.componentId}</IconTip>
+      </td>
+      <td className="install-col-category">
+        <span className="mods-cell-clip">{row.category || '—'}</span>
+      </td>
+      <td className="install-col-type">
+        <span className="mods-cell-clip">{row.complexity || '—'}</span>
+      </td>
+      <td className="install-col-duration">
+        <DurationCellMemo step={row.step} runState={runState} />
+      </td>
+      <td className="install-col-status">
+        <StatusCell status={row.status} progress={row.step?.progress} />
+      </td>
+      <td className="install-col-actions">
+        {tableActions && row.step && row.stepIndex >= 0 ? (
+          <StepActionButtonsMemo
+            step={row.step}
+            stepIndex={row.stepIndex}
+            actions={tableActions}
+          />
+        ) : null}
+      </td>
+    </tr>
+  )
+}
+
+const InstallTableRowMemo = memo(InstallTableRow)
+
 interface Props {
   steps: InstallStep[]
   model: InstallSequenceModel
@@ -471,17 +608,44 @@ export function InstallTable({
   tableActions,
   onSelectStep,
 }: Props) {
+  const profileInstallTable =
+    import.meta.env.DEV && (window as Window & { __IX_PROFILE_INSTALL?: boolean }).__IX_PROFILE_INSTALL === true
   const rows = useMemo(() => expandStepsToTableRows(steps), [steps])
   const stepById = useMemo(() => {
     const map = new Map<string, InstallStep>()
     for (const s of steps) map.set(s.stepId, s)
     return map
   }, [steps])
+  const stepIndexMap = useMemo(() => createStepIndexMap(steps), [steps])
   const modsByCodename = useMemo(() => {
     const map = new Map<string, WorkingMod>()
     for (const m of mods) map.set(m.codename.toLowerCase(), m)
     return map
   }, [mods])
+  const componentMetaById = useMemo(() => {
+    const map = new Map<
+      string,
+      { weiduName?: string; complexity: string }
+    >()
+    for (const [componentId, component] of model.componentsById.entries()) {
+      map.set(componentId, {
+        weiduName: component.attrs.name?.trim() || undefined,
+        complexity: component.attrs.complexity?.trim() || '',
+      })
+    }
+    return map
+  }, [model.componentsById])
+  const breakpointStepIdSet = useMemo(
+    () => createStepIdSet(tableActions?.breakpointStepIds ?? []),
+    [tableActions?.breakpointStepIds],
+  )
+  const plannedSnapshotByStepId = useMemo(() => {
+    const map = new Map<string, PlannedSnapshot>()
+    for (const snapshot of tableActions?.plannedSnapshots ?? []) {
+      map.set(snapshot.stepId, snapshot)
+    }
+    return map
+  }, [tableActions?.plannedSnapshots])
   const visible = useMemo(
     () =>
       hideInstalled
@@ -491,23 +655,55 @@ export function InstallTable({
         : rows,
     [rows, hideInstalled],
   )
+  const visibleIndexByRowKey = useMemo(() => {
+    const map = new Map<string, number>()
+    for (let i = 0; i < visible.length; i += 1) {
+      const row = visible[i]!
+      map.set(`${row.stepId}\0${row.componentId}`, i)
+    }
+    return map
+  }, [visible])
 
-  const [hoveredStepId, setHoveredStepId] = useState<string | null>(null)
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
-  const [nowMs, setNowMs] = useState(() => Date.now())
   const rowRefs = useRef(new Map<string, HTMLTableRowElement>())
-
-  const anyRunning = useMemo(
-    () => steps.some((s) => isStepDurationLive(s, runState)),
-    [runState, steps],
-  )
-
-  useEffect(() => {
-    if (!anyRunning) return
-    setNowMs(Date.now())
-    const id = window.setInterval(() => setNowMs(Date.now()), 1000)
-    return () => window.clearInterval(id)
-  }, [anyRunning])
+  const visibleRows = useMemo(() => {
+    const t0 = profileInstallTable ? performance.now() : 0
+    const built = visible.map((row) => {
+      const step = stepById.get(row.stepId)
+      const stepIndex = stepIndexMap.get(row.stepId) ?? -1
+      const mod = modsByCodename.get(row.modId.toLowerCase())
+      const eff = mod ? effectiveModFields(mod) : null
+      const componentMeta = componentMetaById.get(row.componentId)
+      return {
+        ...row,
+        step,
+        stepIndex,
+        hasBreakpoint: step != null && breakpointStepIdSet.has(row.stepId),
+        hasSnapshot: step != null && plannedSnapshotByStepId.has(row.stepId),
+        modDisplay: eff?.name?.trim() || row.modId,
+        modTip: mod?.codename ?? row.modId,
+        componentNameTip: componentMeta?.weiduName,
+        category: eff?.category?.trim() || '',
+        complexity: componentMeta?.complexity || '',
+      }
+    })
+    if (profileInstallTable) {
+      const elapsed = performance.now() - t0
+      if (elapsed > 8) {
+        console.debug('[install-perf] build visibleRows ms=', elapsed.toFixed(1), 'rows=', built.length)
+      }
+    }
+    return built
+  }, [
+    breakpointStepIdSet,
+    componentMetaById,
+    modsByCodename,
+    plannedSnapshotByStepId,
+    profileInstallTable,
+    stepById,
+    stepIndexMap,
+    visible,
+  ])
 
   const rowKey = (stepId: string, componentId: string) =>
     `${stepId}\0${componentId}`
@@ -523,7 +719,7 @@ export function InstallTable({
 
   const selectIndex = useCallback(
     (index: number) => {
-      const row = visible[index]
+      const row = visibleRows[index]
       if (!row) return
       onSelectStep(row.stepId, row.componentId)
       requestAnimationFrame(() => {
@@ -531,7 +727,7 @@ export function InstallTable({
         if (el && document.activeElement !== el) el.focus()
       })
     },
-    [onSelectStep, visible],
+    [onSelectStep, visibleRows],
   )
 
   const selectRow = useCallback(
@@ -555,11 +751,7 @@ export function InstallTable({
     if (visible.length === 0) return
     const current =
       selectedStepId && selectedComponentId
-        ? visible.findIndex(
-            (r) =>
-              r.stepId === selectedStepId &&
-              r.componentId === selectedComponentId,
-          )
+        ? (visibleIndexByRowKey.get(rowKey(selectedStepId, selectedComponentId)) ?? -1)
         : 0
     const idx = current < 0 ? 0 : current
 
@@ -595,8 +787,8 @@ export function InstallTable({
         tabIndex={visible.length === 0 ? 0 : -1}
         onKeyDown={handleTableKeyDown}
         onFocus={() => {
-          if ((!selectedStepId || !selectedComponentId) && visible[0]) {
-            onSelectStep(visible[0].stepId, visible[0].componentId)
+          if ((!selectedStepId || !selectedComponentId) && visibleRows[0]) {
+            onSelectStep(visibleRows[0].stepId, visibleRows[0].componentId)
           }
         }}
       >
@@ -627,98 +819,30 @@ export function InstallTable({
               </th>
             </tr>
           </thead>
-          <tbody onMouseLeave={() => setHoveredStepId(null)}>
-            {visible.map((row) => {
-              const selected = row.stepId === selectedStepId
-              const atCursor = row.stepId === cursorStepId
-              const rowHover = row.stepId === hoveredStepId
-              const focused =
-                selected && row.componentId === selectedComponentId
-              const step = stepById.get(row.stepId)
-              const stepIndex = step ? stepIndexById(steps, row.stepId) : -1
-              const hasBreakpoint =
-                !!step && (tableActions?.breakpointStepIds.includes(row.stepId) ?? false)
-              const hasSnapshot =
-                !!step &&
-                (tableActions?.plannedSnapshots.some((s) => s.stepId === row.stepId) ??
-                  false)
-              const mod = modsByCodename.get(row.modId.toLowerCase())
-              const eff = mod ? effectiveModFields(mod) : null
-              const modDisplay = eff?.name?.trim() || row.modId
-              const modTip = mod?.codename ?? row.modId
-              const weiduName = model.componentsById
-                .get(row.componentId)
-                ?.attrs.name?.trim()
-              const category = eff?.category?.trim() || ''
-              const complexity =
-                model.componentsById.get(row.componentId)?.attrs.complexity?.trim() || ''
-              const duration =
-                step != null ? stepDurationLabel(step, nowMs, runState) : null
-
-              return (
-                <tr
-                  key={row.stepId}
-                  ref={(el) => setRowEl(row.stepId, row.componentId, el)}
-                  role="row"
-                  tabIndex={focused ? 0 : -1}
-                  className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${hasBreakpoint ? ' install-breakpoint' : ''}${hasSnapshot ? ' install-snapshot' : ''}${rowHover ? ' row-hover' : ''}${focused ? ' focused' : ''} install-status-${row.status}`}
-                  onClick={() => selectRow(row.stepId, row.componentId)}
-                  onMouseEnter={() => setHoveredStepId(row.stepId)}
-                  onContextMenu={(e) => {
-                    if (!step || stepIndex < 0 || !tableActions) return
-                    e.preventDefault()
-                    selectRow(row.stepId, row.componentId)
-                    setContextMenu({ stepId: row.stepId, x: e.clientX, y: e.clientY })
-                  }}
-                >
-                  <td className="install-col-num">{row.order}</td>
-                  <TipCell
-                    className="install-col-mod"
-                    display={modDisplay}
-                    tip={modTip}
-                  />
-                  <TipCell
-                    className="install-col-component"
-                    display={row.componentLabel}
-                    tip={weiduName || undefined}
-                  />
-                  <td className="install-col-component-id has-icon-tip">
-                    <span className="install-id-cell">
-                      <span className="mods-cell-clip">{row.componentId}</span>
-                      <IdCopyButton value={row.componentId} />
-                    </span>
-                    <IconTip>{row.componentId}</IconTip>
-                  </td>
-                  <td className="install-col-category">
-                    <span className="mods-cell-clip">{category || '—'}</span>
-                  </td>
-                  <td className="install-col-type">
-                    <span className="mods-cell-clip">{complexity || '—'}</span>
-                  </td>
-                  <td className="install-col-duration">
-                    <span className="mods-cell-clip">{duration ?? '—'}</span>
-                  </td>
-                  <td className="install-col-status">
-                    <StatusCell status={row.status} progress={step?.progress} />
-                  </td>
-                  <td className="install-col-actions">
-                    {tableActions && step && stepIndex >= 0 ? (
-                      <StepActionButtons
-                        step={step}
-                        stepIndex={stepIndex}
-                        actions={tableActions}
-                      />
-                    ) : null}
-                  </td>
-                </tr>
-              )
-            })}
+          <tbody>
+            {visibleRows.map((row) => (
+              <InstallTableRowMemo
+                key={row.stepId}
+                row={row}
+                selectedStepId={selectedStepId}
+                selectedComponentId={selectedComponentId}
+                cursorStepId={cursorStepId}
+                cursorLive={cursorLive}
+                runState={runState}
+                tableActions={tableActions}
+                setRowEl={setRowEl}
+                onSelect={selectRow}
+                onOpenContextMenu={(stepId, x, y) =>
+                  setContextMenu({ stepId, x, y })
+                }
+              />
+            ))}
           </tbody>
         </table>
       </div>
       {contextMenu && tableActions ? (() => {
         const step = stepById.get(contextMenu.stepId)
-        const stepIndex = stepIndexById(steps, contextMenu.stepId)
+        const stepIndex = stepIndexMap.get(contextMenu.stepId) ?? -1
         if (!step || stepIndex < 0) return null
         return (
           <InstallStepContextMenu
