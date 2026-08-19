@@ -370,16 +370,20 @@ export function persistedWeiduLogToImport(
   }
 }
 
-/** Union identified hits. Live scan wins on the same component id. */
+function hitKey(componentId: string, phase: InstallPhase): string {
+  return `${componentId}::${phase}`
+}
+
+/** Union identified hits. Live scan wins on the same (componentId, phase). */
 export function mergeWeiduLogImports(
   previous: WeiduLogImportResult | null | undefined,
   live: WeiduLogImportResult,
 ): WeiduLogImportResult {
   if (!previous || !live.hasLog) return live
-  const byId = new Map<string, MappedWeiduLogHit>()
-  for (const hit of previous.hits) byId.set(hit.componentId, hit)
-  for (const hit of live.hits) byId.set(hit.componentId, hit)
-  const hits = [...byId.values()]
+  const byKey = new Map<string, MappedWeiduLogHit>()
+  for (const hit of previous.hits) byKey.set(hitKey(hit.componentId, hit.phase), hit)
+  for (const hit of live.hits) byKey.set(hitKey(hit.componentId, hit.phase), hit)
+  const hits = [...byKey.values()]
   return {
     hasLog: previous.hasLog || live.hasLog,
     hits,
@@ -403,11 +407,11 @@ export function sanitizePersistedWeiduLogInstalls(
   }
 }
 
-function hitsByComponentId(
+function hitsByComponentPhase(
   result: WeiduLogImportResult,
 ): Map<string, MappedWeiduLogHit> {
   const map = new Map<string, MappedWeiduLogHit>()
-  for (const hit of result.hits) map.set(hit.componentId, hit)
+  for (const hit of result.hits) map.set(hitKey(hit.componentId, hit.phase), hit)
   return map
 }
 
@@ -416,10 +420,10 @@ export function applyWeiduLogToSteps(
   result: WeiduLogImportResult | null | undefined,
 ): InstallStep[] {
   if (!result) return steps
-  const byId = hitsByComponentId(result)
+  const byKey = hitsByComponentPhase(result)
   let changed = false
   const next = steps.map((step) => {
-    const hit = byId.get(step.componentId)
+    const hit = byKey.get(hitKey(step.componentId, step.phase))
     if (hit) {
       const canMark =
         step.status === 'queued' ||

@@ -54,6 +54,37 @@ const dlcMerger = comp(
 
 const eeex = comp('EEex:1', { id: 'EEex:1', modId: 'EEex', name: 'EEex core' }, 'eet')
 
+function eefpHit(phase: 'eet1' | 'eet') {
+  const gameDir = phase === 'eet1' ? 'D:/games/bg1' : 'D:/games/bg2'
+  return {
+    componentId: 'cd_eefp_core_fixes',
+    tp2Path: 'eefixpack/eefixpack.tp2',
+    absoluteTp2Path: `${gameDir}/eefixpack/eefixpack.tp2`,
+    stagedFolderName: 'eefixpack',
+    weiduNumber: 0,
+    languageIndex: 0,
+    phase,
+  }
+}
+
+function eefpDualSteps(): InstallStep[] {
+  return (['eet1', 'eet'] as const).map((phase, i) => ({
+    stepId: `${phase}:${String(i).padStart(4, '0')}`,
+    phase,
+    modId: 'EE_Fixpack',
+    tp2Path: '',
+    stagedFolderName: '',
+    componentId: 'cd_eefp_core_fixes',
+    componentLabel: 'Core fixes',
+    weiduNumber: null,
+    languageIndex: null,
+    status: 'queued' as const,
+    warnings: [],
+    errors: [],
+    resultLines: [],
+  }))
+}
+
 const tweaks = comp(
   'cd_tweaks_adjust_evil_npc_reactions',
   {
@@ -423,6 +454,50 @@ describe('applyWeiduLogToSteps', () => {
       stagedFolderName: 'DLCMERGER',
     })
   })
+
+  it('marks only the eet1 step when the id is in the BG1 log', () => {
+    const marked = applyWeiduLogToSteps(eefpDualSteps(), {
+      hasLog: true,
+      unmatched: [],
+      componentIds: new Set(['cd_eefp_core_fixes']),
+      listingErrors: [],
+      hits: [eefpHit('eet1')],
+    })
+    expect(marked[0]?.status).toBe('alreadyInstalled')
+    expect(marked[0]?.tp2Path).toBe('D:/games/bg1/eefixpack/eefixpack.tp2')
+    expect(marked[1]?.status).toBe('queued')
+  })
+
+  it('marks only the eet step when the id is in the BG2 log', () => {
+    const marked = applyWeiduLogToSteps(eefpDualSteps(), {
+      hasLog: true,
+      unmatched: [],
+      componentIds: new Set(['cd_eefp_core_fixes']),
+      listingErrors: [],
+      hits: [eefpHit('eet')],
+    })
+    expect(marked[0]?.status).toBe('queued')
+    expect(marked[1]?.status).toBe('alreadyInstalled')
+    expect(marked[1]?.tp2Path).toBe('D:/games/bg2/eefixpack/eefixpack.tp2')
+  })
+
+  it('marks both phases from their own logs with the matching tp2 path', () => {
+    const marked = applyWeiduLogToSteps(eefpDualSteps(), {
+      hasLog: true,
+      unmatched: [],
+      componentIds: new Set(['cd_eefp_core_fixes']),
+      listingErrors: [],
+      hits: [eefpHit('eet1'), eefpHit('eet')],
+    })
+    expect(marked[0]).toMatchObject({
+      status: 'alreadyInstalled',
+      tp2Path: 'D:/games/bg1/eefixpack/eefixpack.tp2',
+    })
+    expect(marked[1]).toMatchObject({
+      status: 'alreadyInstalled',
+      tp2Path: 'D:/games/bg2/eefixpack/eefixpack.tp2',
+    })
+  })
 })
 
 describe('selectionFromInstalledIds', () => {
@@ -501,5 +576,28 @@ describe('persisted WeiDU.log installs', () => {
       'A7-DLCMERGER-MERGE_SOD',
       'EEex:1',
     ])
+  })
+
+  it('keeps both phases when merging the same component id', () => {
+    const previous = persistedWeiduLogToImport({
+      hasLog: true,
+      componentIds: ['cd_eefp_core_fixes'],
+      hits: [eefpHit('eet1')],
+    })
+    const live: Parameters<typeof mergeWeiduLogImports>[1] = {
+      hasLog: true,
+      unmatched: [],
+      listingErrors: [],
+      componentIds: new Set(['cd_eefp_core_fixes']),
+      hits: [eefpHit('eet')],
+    }
+    const merged = mergeWeiduLogImports(previous, live)
+    expect(merged.hits.map((h) => h.phase).sort()).toEqual(['eet', 'eet1'])
+    expect(
+      merged.hits.find((h) => h.phase === 'eet1')?.absoluteTp2Path,
+    ).toContain('/bg1/')
+    expect(
+      merged.hits.find((h) => h.phase === 'eet')?.absoluteTp2Path,
+    ).toContain('/bg2/')
   })
 })
