@@ -682,11 +682,12 @@ export function InstallTable({
                     display={row.componentLabel}
                     tip={weiduName || undefined}
                   />
-                  <td className="install-col-component-id">
+                  <td className="install-col-component-id has-icon-tip">
                     <span className="install-id-cell">
                       <span className="mods-cell-clip">{row.componentId}</span>
                       <IdCopyButton value={row.componentId} />
                     </span>
+                    <IconTip>{row.componentId}</IconTip>
                   </td>
                   <td className="install-col-category">
                     <span className="mods-cell-clip">{category || '—'}</span>
