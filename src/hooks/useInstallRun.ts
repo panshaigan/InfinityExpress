@@ -1176,6 +1176,7 @@ export function useInstallRun(options: {
               weiduPath: readWeiduPath(),
               tp2Path: step.tp2Path,
               gameDir,
+              componentId: step.componentId,
               componentNumber: weiduNumber,
               languageIndex: step.languageIndex ?? 0,
               stepId: step.stepId,

@@ -77,6 +77,7 @@ pub struct RunStepInput {
   pub weidu_path: String,
   pub tp2_path: String,
   pub game_dir: String,
+  pub component_id: String,
   pub component_number: i32,
   pub language_index: i32,
   pub step_id: String,
@@ -715,6 +716,20 @@ fn setup_exe_for_tp2(game_dir: &Path, tp2: &Path) -> Result<(String, PathBuf), S
   Ok((weidu_id, game_dir.join(&setup_name)))
 }
 
+/// Single edit point for WeiDU install command exceptions.
+/// Key is exact InstallSequence component id (e.g. "EET:0").
+fn weidu_install_exception_args(component_id: &str, game_dir: &Path) -> Option<Vec<String>> {
+  match component_id {
+    "EET:0" => Some(vec![
+      "--skip-at-view".into(),
+      "--args-list".into(),
+      "sp".into(),
+      game_dir.to_string_lossy().into_owned(),
+    ]),
+    _ => None,
+  }
+}
+
 #[tauri::command]
 pub async fn run_weidu_step(
   app: AppHandle,
@@ -753,7 +768,7 @@ pub async fn run_weidu_step(
   // setup-{weiduId}.exe auto-binds the tp2; do not pass the tp2 path as argv.
   // --language = mod TRA; --use-lang = EE game lang/ folder (avoids weidu.conf prompt).
   // --safe-exit enables cleanup via --force-uninstall after a killed install.
-  let args: Vec<String> = vec![
+  let mut args: Vec<String> = vec![
     "--noautoupdate".into(),
     "--safe-exit".into(),
     "--language".into(),
@@ -763,6 +778,19 @@ pub async fn run_weidu_step(
     "--force-install".into(),
     input.component_number.to_string(),
   ];
+  if let Some(extra_args) = weidu_install_exception_args(&input.component_id, &game_dir) {
+    emit_event(
+      &app,
+      InstallEventPayload::Classified {
+        level: "info".into(),
+        message: format!(
+          "Applying WeiDU install exception for {}",
+          input.component_id
+        ),
+      },
+    );
+    args.extend(extra_args);
+  }
 
   emit_event(
     &app,
