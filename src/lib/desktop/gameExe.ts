@@ -16,6 +16,7 @@ export type ProbeGameFolderResult =
 export async function probeGameFolder(
   key: GameFolderKey,
   path: string,
+  opts?: { rejectWeiduLog?: boolean },
 ): Promise<ProbeGameFolderResult> {
   const trimmed = path.trim()
   if (!trimmed) {
@@ -26,9 +27,10 @@ export async function probeGameFolder(
     return { ok: true, version: '' }
   }
   const exeName = GAME_FOLDER_EXE[key]
+  const rejectWeiduLog = opts?.rejectWeiduLog !== false
   try {
     const version = await readGameExeVersion(trimmed, exeName)
-    if (await gameDirHasWeiduLog(trimmed)) {
+    if (rejectWeiduLog && (await gameDirHasWeiduLog(trimmed))) {
       return {
         ok: false,
         error: 'Folder looks modded (WeiDU.log found)',

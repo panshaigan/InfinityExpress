@@ -877,9 +877,6 @@ pub async fn prepare_project_destination(
       "Destination is not empty and is missing {exe} — pick an empty folder or a valid game install"
     ));
   }
-  if crate::mod_fs::dir_has_weidu_log(&target)? {
-    return Err("Folder looks modded (WeiDU.log found)".into());
-  }
 
   Ok(PrepareDestinationResult {
     action: "accepted_existing".into(),

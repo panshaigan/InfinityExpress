@@ -51,7 +51,7 @@ const VANILLA_FOLDER_TIP =
   'Point at an untouched fresh installation — no mods installed yet.'
 
 const DESTINATION_FOLDER_TIP =
-  'Folder where mods will be installed and the game will be modified.'
+  'Folder where mods will be installed and the game will be modified. An existing install with WeiDU.log is allowed; installed components are imported.'
 
 type WizardStep = 'engine' | 'vanilla' | 'destination'
 type VanillaErrorKey = GameFolderKey | 'backupDir'

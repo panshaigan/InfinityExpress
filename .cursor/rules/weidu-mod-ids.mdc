@@ -31,3 +31,11 @@ Full narrative: [docs/weidu-install.md](docs/weidu-install.md).
 - Prefer `:N` suffix → designated number.
 - Else match WeiDU `label[]` to `componentId` (InstallSequence LABEL-as-id).
 - Do not fall back to XML UI `label` / `name` for label-style ids.
+
+## Reverse (WeiDU.log → XML)
+
+Game-dir `WeiDU.log` (`~folder/tp2~ #lang #number`) maps back with the same rules:
+
+- `weiduFolder:N` → match tp2 parent folder + number (no listing).
+- LABEL ids → `--list-components-json` on the **already-installed** game-dir tp2, then invert `resolveComponentNumber` (numbered ids are not matched from another mod’s listing).
+- Do not stage from the download dir when importing. Destination folders may already be modded; vanilla folders may not.

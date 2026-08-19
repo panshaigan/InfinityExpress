@@ -28,7 +28,7 @@ Never treat XML `modId` as WeiDU id, `setup-*.exe` stem, or tp2 path segment.
 
 - Table rows for that step use class `install-cursor` (CSS `--install-cursor`), distinct from selection / keyboard `focused` / row hover.
 - Soft pulse (`install-cursor-live`) while `runState === 'running'`.
-- **Play (fresh start)** sets `cursor: 0` so the first row is highlighted immediately.
+- **Play (fresh start)** places the cursor on the first unfinished step (`alreadyInstalled` / succeeded / skipped are skipped).
 - Pause / Stop keep the cursor on the interrupted package. Skip advances it. Success advances it.
 - Play resume / Skip / Stop all act relative to this index.
 
@@ -40,7 +40,7 @@ Toolbar in `InstallStation.tsx`; state machine in `useInstallRun.ts`.
 
 | Control | Enabled | Behavior |
 | --- | --- | --- |
-| **Play** | Not `running` (and paths/mods ready) | Fresh start when no run / `idle` / `completed`: `initRun` + vanillas + `executeFromCursor` from cursor 0. Resume when `paused` / `stopped` / `failed` / `waitingForInput`: continue from current cursor (no re-init). |
+| **Play** | Not `running` (and paths/mods ready) | Fresh start when no run / `idle` / `completed`: `initRun` + vanillas + `executeFromCursor` from the first unfinished step (`alreadyInstalled` skipped). Resume when `paused` / `stopped` / `failed` / `waitingForInput`: continue from current cursor (no re-init). |
 | **Pause** | `running` or `paused` (toggle) | **Pending pause** while `running`: finishes the current step, then halts before the next. Click again while pending to cancel. **Effective pause** sets `runState: 'paused'`. Click again (or Play) to resume. |
 | **Stop** | `running` or `waitingForInput` | Kills the WeiDU child, then runs `--force-uninstall` via the same `setup-{weiduId}.exe` as install; resets the interrupted step to `queued`; **keeps cursor**; `runState: 'stopped'`. Less safe than Pause (tooltip says so). |
 | **Skip** | `paused`, `stopped`, or `waitingForInput` | Marks the package at the cursor as `skipped`, advances cursor, stays halted — does **not** auto-continue. |
@@ -121,7 +121,7 @@ Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanill
     component-install-times.jsonl  # append-only per-component install samples
 ```
 
-**Project destinations** (live/modded folders) are per-project, not under this tree. Creating a project: empty destination → `prepare_project_destination` copies vanilla into it; non-empty destination must already contain the game executable (and no `WeiDU.log`).
+**Project destinations** (live/modded folders) are per-project, not under this tree. Creating a project: empty destination → `prepare_project_destination` copies vanilla into it; non-empty destination must already contain the game executable (an existing `WeiDU.log` is allowed).
 
 Legacy trees are migrated on `list_backups` / create / delete:
 
@@ -154,10 +154,22 @@ Event: `weidu-backup-progress` (`phase`, `message`, `filesDone`/`bytesDone`, `fi
 
 UI shows message on the left and `copied / total` bytes on the right (no em dash). Indeterminate animated bar when totals are 0.
 
+### Destination WeiDU.log import
+
+Picking a project destination that already has `WeiDU.log` (new project or Settings retarget) reverse-maps installed rows onto InstallSequence component ids:
+
+1. Parse `~tp2~ #lang #number` (`parseWeiduLog`). Language is kept on the install step but **not** used for matching.
+2. Numbered XML ids (`weiduFolder:N`) match the tp2 parent folder + designated number (no WeiDU process).
+3. LABEL ids invert [`resolveComponentNumber`](../src/lib/install/weiduResolution.ts) against `--list-components-json` on the **game-dir** tp2 (do not stage from the download dir).
+4. Components selection is **replaced** with required/`alwaysIf` plus mapped ids (Fixes seed is skipped). Unmapped log rows are skipped.
+5. Matching install-plan steps are `alreadyInstalled`; `tp2Path` / `weiduNumber` / language are filled from the log. Cursor is the first unfinished step.
+
+Vanilla folders still reject `WeiDU.log`. Mapping lives in [`weiduLogMap.ts`](../src/lib/install/weiduLogMap.ts).
+
 ### Restore → install plan
 
 1. Wipe target game dir, then copy snapshot or vanilla tree.
-2. If an install run exists, `restartFromBackup` resets steps to `queued`, marks `alreadyInstalled` from each step’s phase game dir `weidu.log` (`parseWeiduLog` / `~tp2~ #lang #number`), and places the **cursor** on the first unfinished step.
+2. If an install run exists, `restartFromBackup` resets steps to `queued`, reverse-maps each phase game dir `weidu.log` onto component ids, marks those steps `alreadyInstalled`, and places the **cursor** on the first unfinished step.
 3. Leaves `runState: 'idle'` — **does not** start or resume WeiDU. User presses Play.
 4. Vanilla restore (no log) → none marked installed. Does **not** change Components-phase selection checkboxes.
 
@@ -173,6 +185,7 @@ Install toolbar **Restart** restores the vanilla backup (with EET scope choice) 
 | --- | --- |
 | Types / plan | `src/lib/install/types.ts`, `planBuilder.ts` |
 | WeiDU.log parse | `src/lib/install/weiduLog.ts` |
+| WeiDU.log → XML ids | `src/lib/install/weiduLogMap.ts` |
 | Label → number | `src/lib/install/weiduResolution.ts` |
 | Install timings | `src/lib/install/installTiming.ts` — JSONL under `{backupDir}/metrics/` |
 | Run hook | `src/hooks/useInstallRun.ts` |

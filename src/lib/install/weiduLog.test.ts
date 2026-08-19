@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { isComponentInstalledInLog, parseWeiduLogLine } from './weiduLog'
+import {
+  isComponentInstalledInLog,
+  logHasComponent,
+  parseWeiduLogLine,
+  resolveGameTp2Path,
+  weiduFolderFromTp2Path,
+} from './weiduLog'
 import { pickEnglishLanguage, resolveComponentNumber } from './weiduResolution'
 import type { ComponentNode } from '../xml/schema'
 
@@ -18,6 +24,23 @@ describe('weiduLog', () => {
     const log = '~foo/setup-foo.tp2~ #0 #1\n~foo/setup-foo.tp2~ #0 #2\n'
     expect(isComponentInstalledInLog(log, 'foo/setup-foo.tp2', 0, 2)).toBe(true)
     expect(isComponentInstalledInLog(log, 'foo/setup-foo.tp2', 0, 9)).toBe(false)
+  })
+
+  it('matches tp2 + number ignoring language', () => {
+    const log = '~foo/setup-foo.tp2~ #1 #2\n'
+    expect(logHasComponent(log, 'foo/setup-foo.tp2', 2)).toBe(true)
+    expect(isComponentInstalledInLog(log, 'foo/setup-foo.tp2', 0, 2)).toBe(false)
+  })
+
+  it('extracts WeiDU folder from tp2 path', () => {
+    expect(weiduFolderFromTp2Path('DLCMERGER/DLCMERGER.TP2')).toBe('DLCMERGER')
+    expect(weiduFolderFromTp2Path('cdtweaks/setup-cdtweaks.tp2')).toBe('cdtweaks')
+  })
+
+  it('joins game dir with relative tp2', () => {
+    expect(resolveGameTp2Path('D:\\games\\bg2', 'DLCMERGER/DLCMERGER.TP2')).toBe(
+      'D:\\games\\bg2\\DLCMERGER\\DLCMERGER.TP2',
+    )
   })
 })
 

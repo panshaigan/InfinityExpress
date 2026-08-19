@@ -35,7 +35,8 @@ export function pickEnglishLanguage(
   return { language: { index: chosen.index, source: 'auto' }, error: null }
 }
 
-function numericSuffixFromId(componentId: string): number | null {
+/** Designated WeiDU number from `weiduFolder:N` ids; null for LABEL ids. */
+export function numericSuffixFromComponentId(componentId: string): number | null {
   const idx = componentId.lastIndexOf(':')
   if (idx < 0) return null
   const tail = componentId.slice(idx + 1)
@@ -67,7 +68,7 @@ export function resolveComponentNumber(
   component: ComponentNode,
   listing: WeiduComponentInfo[],
 ): ResolutionResult {
-  const suffix = numericSuffixFromId(component.componentId)
+  const suffix = numericSuffixFromComponentId(component.componentId)
   if (suffix != null) {
     if (listing.length === 0) {
       return { weiduNumber: suffix, error: null }

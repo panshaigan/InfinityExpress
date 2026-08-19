@@ -5,6 +5,7 @@ export {
   pruneDisplayGatedSelections,
   finalizeSelection,
   createInitialSelection,
+  selectionFromInstalledIds,
   toggleNode,
   toggleDisplayNode,
   nodeSelectionState,

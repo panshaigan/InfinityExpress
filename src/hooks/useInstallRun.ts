@@ -48,7 +48,12 @@ import {
   componentInstallTimesPath,
   serializeInstallTimingLine,
 } from '../lib/install/installTiming'
-import { isComponentInstalledInLog } from '../lib/install/weiduLog'
+import { logHasComponent } from '../lib/install/weiduLog'
+import {
+  applyWeiduLogToSteps,
+  importInstalledFromDestinations,
+  type WeiduLogImportResult,
+} from '../lib/install/weiduLogMap'
 import { loadInstallConsoleFromRunLog } from '../lib/install/loadRunConsole'
 import type { PersistedInstallSession } from '../lib/ui/appSessionPrefs'
 
@@ -135,6 +140,8 @@ export function useInstallRun(options: {
    * Used by the UI to keep the top-level "Total install duration" in sync.
    */
   onDurationClearedMs?: (deltaMs: number) => void
+  /** Reverse-mapped WeiDU.log hits for alreadyInstalled marks. */
+  weiduLogImport?: WeiduLogImportResult | null
 }) {
   const {
     model,
@@ -144,6 +151,7 @@ export function useInstallRun(options: {
     projectId,
     initialInstallState,
     onDurationClearedMs,
+    weiduLogImport = null,
   } = options
   const shouldLoadConsoleRef = useRef(!!initialInstallState?.installSession)
   const hydratedRef = useRef(false)
@@ -246,26 +254,58 @@ export function useInstallRun(options: {
     [mergeStepResultLines],
   )
 
-  const planSteps = useMemo(() => {
+  const rawPlanSteps = useMemo(() => {
     if (!game) return []
     return buildInstallPlan(model, selectedIds, game)
   }, [model, selectedIds, game])
 
+  const planSteps = useMemo((): InstallStep[] => {
+    const asSteps: InstallStep[] = rawPlanSteps.map((s) => ({
+      ...s,
+      tp2Path: '',
+      stagedFolderName: '',
+      weiduNumber: null,
+      languageIndex: null,
+      progress: null,
+      resultLines: s.resultLines ?? [],
+    }))
+    return weiduLogImport ? applyWeiduLogToSteps(asSteps, weiduLogImport) : asSteps
+  }, [rawPlanSteps, weiduLogImport])
+
   useEffect(() => {
     if (!run) return
     const state = run.runState
+    if (state === 'running' || state === 'waitingForInput') {
+      return
+    }
+    if (planStepsMatchRun(run, rawPlanSteps)) return
+    const synced = syncRunWithPlan(run, rawPlanSteps)
+    const marked = weiduLogImport
+      ? applyWeiduLogToSteps(synced.steps, weiduLogImport)
+      : synced.steps
+    const cursor = nextActionableCursor(marked, synced.cursor)
+    const next = { ...synced, steps: marked, cursor }
+    setRun(next)
+    runRef.current = next
+  }, [rawPlanSteps, run, weiduLogImport])
+
+  useEffect(() => {
+    if (!weiduLogImport) return
+    const current = runRef.current
+    if (!current) return
     if (
-      state === 'idle' ||
-      state === 'running' ||
-      state === 'waitingForInput'
+      current.runState === 'running' ||
+      current.runState === 'waitingForInput'
     ) {
       return
     }
-    if (planStepsMatchRun(run, planSteps)) return
-    const synced = syncRunWithPlan(run, planSteps)
-    setRun(synced)
-    runRef.current = synced
-  }, [planSteps, run])
+    const steps = applyWeiduLogToSteps(current.steps, weiduLogImport)
+    if (steps === current.steps) return
+    const cursor = nextActionableCursor(steps, current.cursor)
+    const next = { ...current, steps, cursor }
+    setRun(next)
+    runRef.current = next
+  }, [weiduLogImport])
 
   /** Append to WeiDU (+ Results if highlighted). Returns stamped line for callers that track per-step results. */
   const pushConsoleLine = useCallback((text: string): string => {
@@ -308,18 +348,14 @@ export function useInstallRun(options: {
     if (logDir) void ensureDir(logDir)
     const steps: InstallStep[] = planSteps.map((s) => ({
       ...s,
-      tp2Path: '',
-      stagedFolderName: '',
-      weiduNumber: null,
-      languageIndex: null,
-      progress: null,
       resultLines: s.resultLines ?? [],
     }))
+    const cursor = nextActionableCursor(steps, 0)
     const next: InstallRun = {
       runId,
       game,
       steps,
-      cursor: 0,
+      cursor,
       runState: 'idle',
       breakpointStepIds: [],
       plannedSnapshots: [],
@@ -337,8 +373,7 @@ export function useInstallRun(options: {
     pausePendingRef.current = false
     stopRequestedRef.current = false
     setStopping(false)
-    // Cursor is 0 — first package is highlighted immediately on Start.
-    setActiveStepId(steps[0]?.stepId ?? null)
+    setActiveStepId(steps[cursor]?.stepId ?? steps[0]?.stepId ?? null)
     cacheRef.current = new Map()
     stepResultLinesRef.current = new Map()
     return next
@@ -510,43 +545,14 @@ export function useInstallRun(options: {
 
   const markAlreadyInstalledFromLog = useCallback(
     async (steps: InstallStep[], game: SelectedGame): Promise<InstallStep[]> => {
-      const logsByDir = new Map<string, string>()
-      async function logFor(dir: string): Promise<string> {
-        if (!dir) return ''
-        const cached = logsByDir.get(dir)
-        if (cached != null) return cached
-        const text = await readGameWeiduLog(dir)
-        logsByDir.set(dir, text)
-        return text
-      }
-
-      const out: InstallStep[] = []
-      for (const step of steps) {
-        if (step.languageIndex == null || step.weiduNumber == null) {
-          out.push(step)
-          continue
-        }
-        const gameDir = gameDirForPhase(game, step.phase, gameFolders)
-        const log = await logFor(gameDir)
-        if (!log.trim()) {
-          out.push(step)
-          continue
-        }
-        const installed = isComponentInstalledInLog(
-          log,
-          step.tp2Path,
-          step.languageIndex,
-          step.weiduNumber,
-        )
-        if (installed && (step.status === 'queued' || step.status === 'copying')) {
-          out.push({ ...step, status: 'alreadyInstalled', progress: null })
-        } else {
-          out.push(step)
-        }
-      }
-      return out
+      const result = await importInstalledFromDestinations(
+        model,
+        game,
+        gameFolders,
+      )
+      return applyWeiduLogToSteps(steps, result)
     },
-    [gameFolders],
+    [gameFolders, model],
   )
 
   const withNormalizedCursor = useCallback((current: InstallRun): InstallRun => {
@@ -1151,14 +1157,8 @@ export function useInstallRun(options: {
 
             const log = await readGameWeiduLog(gameDir)
             if (
-              step.languageIndex != null &&
               step.weiduNumber != null &&
-              isComponentInstalledInLog(
-                log,
-                step.tp2Path,
-                step.languageIndex,
-                step.weiduNumber,
-              )
+              logHasComponent(log, step.tp2Path, step.weiduNumber)
             ) {
               step = { ...step, status: 'alreadyInstalled', progress: null }
               const finished = finishStepIteration(current, i, step, false)
@@ -1609,13 +1609,7 @@ export function useInstallRun(options: {
         }),
       )
       steps = await markAlreadyInstalledFromLog(steps, base.game)
-      const cursor = steps.findIndex(
-        (s) =>
-          s.status !== 'succeeded' &&
-          s.status !== 'alreadyInstalled' &&
-          s.status !== 'skipped',
-      )
-      const nextCursor = cursor >= 0 ? cursor : 0
+      const nextCursor = nextActionableCursor(steps, 0)
       const next: InstallRun = {
         ...base,
         steps,

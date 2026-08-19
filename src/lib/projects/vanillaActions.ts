@@ -76,7 +76,7 @@ export async function ensureProjectLogsDir(projectId: string): Promise<void> {
  * Validate a project destination folder:
  * - missing / creatable (parent exists) → OK (will create + copy)
  * - existing empty → OK (will copy)
- * - existing non-empty → must have game exe and no WeiDU.log
+ * - existing non-empty → must have game exe (WeiDU.log / already-modded is OK)
  */
 export async function validateDestinationFolder(
   key: GameFolderKey,
@@ -100,7 +100,7 @@ export async function validateDestinationFolder(
   }
   if (empty) return trimmed
 
-  const probe = await probeGameFolder(key, trimmed)
+  const probe = await probeGameFolder(key, trimmed, { rejectWeiduLog: false })
   if (!probe.ok) throw new Error(probe.error)
   return trimmed
 }

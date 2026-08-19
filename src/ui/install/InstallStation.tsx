@@ -27,6 +27,7 @@ import {
 } from '../../lib/ui/installPathValidation'
 import { PATHS_CHANGED_EVENT } from '../../lib/ui/pathPrefsEvents'
 import { readWeiduPath } from '../../lib/ui/weiduPrefs'
+import type { WeiduLogImportResult } from '../../lib/install/weiduLogMap'
 import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
 import { RestoreSnapshotDialog } from './RestoreSnapshotDialog'
 import { PlanSnapshotDialog } from './PlanSnapshotDialog'
@@ -91,6 +92,7 @@ interface Props {
   onDeselectComponent?: (componentId: string) => void
   installLock?: InstallLock
   onInstallActionsReady?: (actions: InstallActions | null) => void
+  weiduLogImport?: WeiduLogImportResult | null
 }
 
 function allModsPresent(needed: string[], mods: WorkingMod[]): boolean {
@@ -122,6 +124,7 @@ export function InstallStation({
   onDeselectComponent,
   installLock: installLockProp,
   onInstallActionsReady,
+  weiduLogImport = null,
 }: Props) {
   const profileInstallTable =
     import.meta.env.DEV && (window as Window & { __IX_PROFILE_INSTALL?: boolean }).__IX_PROFILE_INSTALL === true
@@ -178,6 +181,7 @@ export function InstallStation({
     initialInstallState: initialInstallSession
       ? { installSession: initialInstallSession }
       : null,
+    weiduLogImport,
     onDurationClearedMs: (deltaMs) => {
       if (!Number.isFinite(deltaMs) || deltaMs <= 0) return
       setClearedDurationMsTotal((prev) => prev + Math.max(0, Math.floor(deltaMs)))
@@ -271,14 +275,7 @@ export function InstallStation({
     selectedStepId,
   ])
 
-  const steps = run?.steps ?? planSteps.map((s) => ({
-    ...s,
-    tp2Path: '',
-    stagedFolderName: '',
-    weiduNumber: null,
-    languageIndex: null,
-    resultLines: s.resultLines ?? [],
-  }))
+  const steps = run?.steps ?? planSteps
 
   const selectedStep = useMemo(
     () => steps.find((s) => s.stepId === selectedStepId) ?? steps[0] ?? null,

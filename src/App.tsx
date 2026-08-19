@@ -11,6 +11,7 @@ import {
   createInitialSelection,
   listSelectionState,
   randomizeDisplaySubtree,
+  selectionFromInstalledIds,
   toggleDisplayNode,
   toggleListSelection,
   type RandomizeOptions,
@@ -101,7 +102,7 @@ import {
 } from './ui/install/RestartConfirmDialog'
 import { DeveloperModeProvider } from './ui/developerModeContext'
 import { ToastProvider, useToast } from './ui/toasts/toastContext'
-import { isDesktopApp } from './lib/desktop/fsDialogs'
+import { isDesktopApp, normalizeFolderPath } from './lib/desktop/fsDialogs'
 import { setAppWindowTitle } from './lib/desktop/windowTitle'
 import {
   defaultSettingsTabForContext,
@@ -135,7 +136,21 @@ import {
   type ProjectMeta,
 } from './lib/projects'
 import { presetsForEngine } from './lib/presets/selectionPresetsStore'
+import {
+  importInstalledFromDestinations,
+  weiduLogImportMessage,
+  type WeiduLogImportResult,
+} from './lib/install/weiduLogMap'
 import './index.css'
+
+function destinationsImportKey(paths: GameFolderPaths): string {
+  return JSON.stringify({
+    bg1: normalizeFolderPath(paths.bg1),
+    bg2: normalizeFolderPath(paths.bg2),
+    iwd: normalizeFolderPath(paths.iwd),
+    pst: normalizeFolderPath(paths.pst),
+  })
+}
 
 const parsed = parseInstallSequence(installSequenceXml)
 const projectBootstrap = bootstrapProjects(parsed.model)
@@ -253,6 +268,11 @@ function AppShell() {
   const [pendingVanillaRestartScope, setPendingVanillaRestartScope] =
     useState<RestartScope | null>(null)
   const [installActions, setInstallActions] = useState<InstallActions | null>(null)
+  const [weiduLogImport, setWeiduLogImport] = useState<WeiduLogImportResult | null>(
+    null,
+  )
+  const destImportKeyRef = useRef('')
+  const weiduImportGenRef = useRef(0)
   const foldApiRef = useRef<TreeFoldApi | null>(null)
   const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
     foldApiRef.current = api
@@ -276,6 +296,45 @@ function AppShell() {
     packagesChecked: recommended.checkedPackages,
     setPackagesChecked: recommended.setCheckedPackages,
   })
+
+  const refreshWeiduLogImport = useCallback(
+    async (
+      engine: SelectedGame,
+      destinations: GameFolderPaths,
+      opts: {
+        replaceSelection: boolean
+        seedFixesIfNoLog: boolean
+        toast: boolean
+      },
+    ) => {
+      const gen = ++weiduImportGenRef.current
+      const result = await importInstalledFromDestinations(
+        model,
+        engine,
+        destinations,
+      )
+      if (gen !== weiduImportGenRef.current) return result
+      setWeiduLogImport(result)
+      destImportKeyRef.current = destinationsImportKey(destinations)
+      if (opts.replaceSelection && result.hasLog) {
+        setSelectedIds(
+          selectionFromInstalledIds(model, engine, result.componentIds),
+        )
+        recommended.resetRecommendedPresets()
+        installSnapshotRef.current = undefined
+        setRestoredInstallSession(undefined)
+        setInstallSession(null)
+        if (opts.toast) {
+          const msg = weiduLogImportMessage(result)
+          if (msg) pushToast({ tone: 'success', message: msg })
+        }
+      } else if (opts.seedFixesIfNoLog && !result.hasLog) {
+        recommended.seedFixesBaseline(engine)
+      }
+      return result
+    },
+    [model, pushToast, recommended],
+  )
 
   useEffect(() => {
     void setAppWindowTitle(projectMeta?.name ?? null)
@@ -629,11 +688,12 @@ function AppShell() {
     })
     setSearchScope('section')
     clearFocus()
+    setWeiduLogImport(null)
 
     if (!session) {
       setRouteUnlocked(true)
+      recommended.resetRecommendedPresets()
       setSelectedIds(createInitialSelection(model, engine))
-      recommended.seedFixesBaseline(engine)
       presets.restoreSelectionPresetsState({
         presets: enginePresets,
         activePresetId: null,
@@ -648,6 +708,11 @@ function AppShell() {
       installSnapshotRef.current = undefined
       setRestoredInstallSession(undefined)
       setInstallSession(null)
+      void refreshWeiduLogImport(engine, record.meta.destinations, {
+        replaceSelection: true,
+        seedFixesIfNoLog: true,
+        toast: true,
+      })
     } else {
       setRouteUnlocked(session.routeUnlocked)
       setSelectedIds(new Set(session.selectedIds))
@@ -666,6 +731,11 @@ function AppShell() {
       installSnapshotRef.current = install
       setRestoredInstallSession(install)
       setInstallSession(install ?? null)
+      void refreshWeiduLogImport(engine, record.meta.destinations, {
+        replaceSelection: false,
+        seedFixesIfNoLog: false,
+        toast: false,
+      })
     }
 
     setShellView('workspace')
@@ -1158,6 +1228,7 @@ function AppShell() {
               onDeselectComponent={onDeselectComponent}
               installLock={installLock}
               onInstallActionsReady={setInstallActions}
+              weiduLogImport={weiduLogImport}
             />
           </div>
         </div>
@@ -1475,6 +1546,16 @@ function AppShell() {
           updateProjectMeta(projectId, { destinations: paths })
           setGameFolders(paths)
           setProjectMeta((m) => (m ? { ...m, destinations: paths } : m))
+        }}
+        onDestinationsCommitted={(paths) => {
+          if (!game) return
+          const key = destinationsImportKey(paths)
+          if (key === destImportKeyRef.current) return
+          void refreshWeiduLogImport(game, paths, {
+            replaceSelection: true,
+            seedFixesIfNoLog: false,
+            toast: true,
+          })
         }}
         focusField={settingsFocusField}
         highlightMissing={settingsHighlightMissing}

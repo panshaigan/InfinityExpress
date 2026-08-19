@@ -66,6 +66,8 @@ interface Props {
   /** Active project destinations (for missing-path highlight of dest:*). */
   destinations?: GameFolderPaths
   onDestinationsChange?: (paths: GameFolderPaths) => void
+  /** Fires after a destination folder validates (browse / blur). */
+  onDestinationsCommitted?: (paths: GameFolderPaths) => void
   /** Default tab when opening without a focused missing field. */
   initialTab?: SettingsTab
   /** Hide destination folders (new-project wizard). */
@@ -76,7 +78,7 @@ interface Props {
 }
 
 const DESTINATION_FOLDER_TIP =
-  'Folder where mods will be installed and the game will be modified.'
+  'Folder where mods will be installed and the game will be modified. An existing install with WeiDU.log is allowed; installed components are imported.'
 
 const MODS_DOWNLOAD_DIR_TIP =
   'Root folder for downloaded mod archives. The Mods phase scans subfolders here.'
@@ -115,6 +117,7 @@ export function SettingsDialog({
   projectEngine = null,
   destinations = emptyDestinations(),
   onDestinationsChange,
+  onDestinationsCommitted,
   initialTab = 'vanilla',
   hideProjectTab = false,
   focusField = null,
@@ -324,6 +327,9 @@ export function SettingsDialog({
       destinationDistinctOthers(key, destKeys),
     )
     setDestFieldError(key, clash)
+    if (!clash) {
+      onDestinationsCommitted?.({ ...destinations, [key]: trimmed })
+    }
   }
 
   function onDestChange(key: GameFolderKey, value: string) {

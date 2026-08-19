@@ -166,6 +166,28 @@ export function createInitialSelection(
   finalizeSelection(model, selected, game)
   return selected
 }
+
+/** Required + alwaysIf, plus installed ids (installed alternative wins). */
+export function selectionFromInstalledIds(
+  model: InstallSequenceModel,
+  game: SelectedGame,
+  installedIds: ReadonlySet<string>,
+): SelectionSet {
+  const next = createInitialSelection(model, game)
+  const selectedNodes: ComponentNode[] = []
+  for (const c of model.componentsInOrder) {
+    if (!installedIds.has(c.componentId)) continue
+    if (!engineMatches(c.effectiveEngine, game)) continue
+    next.add(c.componentId)
+    selectedNodes.push(c)
+  }
+  for (const node of selectedNodes) {
+    applyAlternativesExclusion(model, next, node)
+  }
+  finalizeSelection(model, next, game)
+  return next
+}
+
 export function toggleNode(
   model: InstallSequenceModel,
   selected: SelectionSet,
