@@ -43,6 +43,48 @@
 		<component id="cd_tweaks_chapter_saves_in_pstee" name="Automatic &quot;Chapter Saves&quot; in PsT:EE" label="Automatic chapter saves" modId="Tweaks-Anthology" engine="pst" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3370" recommended="ui" complexity="minor" />
 	</ui>
 
+	<gfx>
+		<mod id="Baldurs-Gate-Graphical-Overhaul" label="Baldur's Gate Graphical Overhaul" recommended="gfx" package="BGGO" engine="bg,eet">
+			<component id="baldurs_gate_graphical_overhaul" name="Baldurs Gate Graphical Overhaul Core" label="Baldur's Gate Graphical Overhaul" desc="Reinstates the extended night areas that are missing from all main areas" complexity="major" />
+			<component id="baldurs_gate_graphical_overhaul_alternate" name="Baldurs Gate Graphical Overhaul Alternate Graphics" label="Alternate graphics" alwaysIf="baldurs_gate_graphical_overhaul" noDisplay="1" complexity="minor" />
+		</mod>
+		<mod id="Icewind-Dale-Graphical-Overhaul" label="Icewind Dale Graphical Overhaul" displayIf="Tipun_iwd1_eet|iwd2_eet:0" recommended="gfx" package="IDGO" engine="iwd,eet">
+			<component id="iwdgo:0" name="Icewind Dale Graphical Overhaul Core" label="Icewind Dale Graphical Overhaul" desc="Reinstates the extended night areas that are missing from all main areas" complexity="major" />
+			<component id="iwdgo:4" name="Icewind Dale Graphical Overhaul Alternate Graphics" label="Alternate graphics" alwaysIf="iwdgo:0" noDisplay="1" complexity="minor" />
+		</mod>
+	</gfx>
+
+	<content displayIfNot="IE_focus_dedicated_campaigns">
+		<bg1 label="BG1">
+			<restructure>
+				<alternatives label="Postgame" desc="Allows playing after killing Sarevok" unfolded="1">
+					<mod id="EndlessBG1" label="Endless BG1" recommended="blendWell">
+						<component id="EBG1_MainComponent" name="Endless BG1: Main Component (Required)" label="Main component" core="1" complexity="moderate" />
+						<component id="EBG1_MoreFlavor" name="More Flavor to Hero of Baldur's Gate (Includes PC's Residence Inside Palace)" label="More flavor to Hero of Baldur's Gate (includes PC's residence inside the Palace)" complexity="minor" />
+						<component id="EBG1_HeroCutscene" name="Short Public Hero Tribute" label="Short public hero tribute" complexity="minor" />
+						<component id="EBG1_SarevokItems" name="Sarevok's Unique Items" label="Sarevok's Unique Items" complexity="minor" />
+						<component id="EBG1_SarevokSword" name="Sarevok's Sword" label="Sarevok's Sword" complexity="minor" />
+						<component id="EBG1_ImoenJannath" name="Imoen and Duke Jannath (Imoen Gets Residence Inside Palace)" label="Imoen and Duke Jannath (Imoen gets residence inside Palace)" complexity="minor" />
+						<component id="EBG1_EltanInPalace" name="Duke Eltan Is in the Palace" label="Duke Eltan is in the Palace" complexity="minor" />
+						<component id="EBG1_FFHealerInBhaalTemple" name="Flaming Fist After Final Fight" label="Flaming Fist after final fight" complexity="minor" />
+						<component id="EBG1_ElminsterAppearance_jastey" name="jastey's Version" label="Jastey's Version" complexity="minor" />
+						<component id="EBG1_RefugeesInBGCity" name="First Refugees Come to Baldur's Gate" label="First refugees come to Baldur's Gate" complexity="minor" />
+						<component id="EBG1_TreasurerInPalaceDungeon" name="Ophyllis the Treasurer is Inside Palace Dungeon" label="Ophyllis the treasurer is inside the Palace Dungeon" complexity="minor" />
+						<component id="EBG1_DenkodCommentsOnSarevoksDeath" name="Denkod in Thieves' Guild Comments on Sarevok's Death" label="Denkod in Thieves' Guild comments on Sarevok's death" complexity="minor" />
+						<component id="EBG1_SkipThievesMazeOnce" name="Skip Thieves' Maze Once After Sarevok's Death" label="Skip Thieves' Maze once after Sarevok's death" complexity="minor" />
+						<component id="EBG1_KorlaszDungeonBG1" name="Korlasz' Dungeon is in BG1" label="Korlasz' Dungeon is in BG1" complexity="minor" />
+						<component id="EBG1_FensterInPalace" name="Fenster the Palace Healer Is in the Palace" label="Fenster the Palace Healer is in the Palace" complexity="minor" />
+						<component id="EBG1_CorwinInPalace" name="Captain Corwin Is in the Palace" label="Captain Corwin is in the Palace" complexity="minor" />
+					</mod>
+					<mod id="Reflections-of-Destiny" label="Reflections of Destiny" desc="Allows staying in BG1 after fulfilling its main quest and deciding when to progress to SoD/SoA">
+						<component id="Reflections_of_Destiny:100" name="Reflections of Destiny BG1: The Future is Now" label="The Future Is Now" complexity="moderate" />
+						<component id="Reflections_of_Destiny:110" name="Reflections of Destiny BG1: The Mirror Shard" label="The Mirror Shard" complexity="minor" />
+					</mod>
+				</alternatives>
+			</restructure>
+		</bg1>
+	</content>
+
 	<campaigns>
 		<alternatives label="Icewind Dale in Baldur's Gate EET" unfolded="1">
 			<component id="Tipun_iwd1_eet" name="Icewind Dale: Heart of Winter in Baldur's Gate Enhanced Edition Trilogy" label="Full Icewind Dale with HoW and TotL expansions" modId="IWD1_EET" engine="eet" default="1" recommended="iwd" complexity="major" />
@@ -68,17 +110,6 @@
 		</mod>
 	</campaigns>
 
-	<gfx>
-		<mod id="Baldurs-Gate-Graphical-Overhaul" label="Baldur's Gate Graphical Overhaul" recommended="gfx" package="BGGO" engine="bg,eet">
-			<component id="baldurs_gate_graphical_overhaul" name="Baldurs Gate Graphical Overhaul Core" label="Baldur's Gate Graphical Overhaul" desc="Reinstates the extended night areas that are missing from all main areas" complexity="major" />
-			<component id="baldurs_gate_graphical_overhaul_alternate" name="Baldurs Gate Graphical Overhaul Alternate Graphics" label="Alternate graphics" alwaysIf="baldurs_gate_graphical_overhaul" noDisplay="1" complexity="minor" />
-		</mod>
-		<mod id="Icewind-Dale-Graphical-Overhaul" label="Icewind Dale Graphical Overhaul" displayIf="Tipun_iwd1_eet|iwd2_eet:0" recommended="gfx" package="IDGO" engine="iwd,eet">
-			<component id="iwdgo:0" name="Icewind Dale Graphical Overhaul Core" label="Icewind Dale Graphical Overhaul" desc="Reinstates the extended night areas that are missing from all main areas" complexity="major" />
-			<component id="iwdgo:4" name="Icewind Dale Graphical Overhaul Alternate Graphics" label="Alternate graphics" alwaysIf="iwdgo:0" noDisplay="1" complexity="minor" />
-		</mod>
-	</gfx>
-
 	<content displayIfNot="IE_focus_dedicated_campaigns">
 		<bg1 label="BG1" engine="bg1,eet">
 			<restorations label="Restorations" unfolded="1">
@@ -101,30 +132,6 @@
 				</mod>
 			</restorations>
 			<restructure label="Restructure">
-				<alternatives label="Postgame" desc="Allows playing after killing Sarevok" unfolded="1">
-					<mod id="EndlessBG1" label="Endless BG1" recommended="blendWell">
-						<component id="EBG1_MainComponent" name="Endless BG1: Main Component (Required)" label="Main component" core="1" complexity="moderate" />
-						<component id="EBG1_MoreFlavor" name="More Flavor to Hero of Baldur's Gate (Includes PC's Residence Inside Palace)" label="More flavor to Hero of Baldur's Gate (includes PC's residence inside the Palace)" complexity="minor" />
-						<component id="EBG1_HeroCutscene" name="Short Public Hero Tribute" label="Short public hero tribute" complexity="minor" />
-						<component id="EBG1_SarevokItems" name="Sarevok's Unique Items" label="Sarevok's Unique Items" complexity="minor" />
-						<component id="EBG1_SarevokSword" name="Sarevok's Sword" label="Sarevok's Sword" complexity="minor" />
-						<component id="EBG1_ImoenJannath" name="Imoen and Duke Jannath (Imoen Gets Residence Inside Palace)" label="Imoen and Duke Jannath (Imoen gets residence inside Palace)" complexity="minor" />
-						<component id="EBG1_EltanInPalace" name="Duke Eltan Is in the Palace" label="Duke Eltan is in the Palace" complexity="minor" />
-						<component id="EBG1_FFHealerInBhaalTemple" name="Flaming Fist After Final Fight" label="Flaming Fist after final fight" complexity="minor" />
-						<component id="EBG1_ElminsterAppearance_jastey" name="jastey's Version" label="Jastey's Version" complexity="minor" />
-						<component id="EBG1_RefugeesInBGCity" name="First Refugees Come to Baldur's Gate" label="First refugees come to Baldur's Gate" complexity="minor" />
-						<component id="EBG1_TreasurerInPalaceDungeon" name="Ophyllis the Treasurer is Inside Palace Dungeon" label="Ophyllis the treasurer is inside the Palace Dungeon" complexity="minor" />
-						<component id="EBG1_DenkodCommentsOnSarevoksDeath" name="Denkod in Thieves' Guild Comments on Sarevok's Death" label="Denkod in Thieves' Guild comments on Sarevok's death" complexity="minor" />
-						<component id="EBG1_SkipThievesMazeOnce" name="Skip Thieves' Maze Once After Sarevok's Death" label="Skip Thieves' Maze once after Sarevok's death" complexity="minor" />
-						<component id="EBG1_KorlaszDungeonBG1" name="Korlasz' Dungeon is in BG1" label="Korlasz' Dungeon is in BG1" complexity="minor" />
-						<component id="EBG1_FensterInPalace" name="Fenster the Palace Healer Is in the Palace" label="Fenster the Palace Healer is in the Palace" complexity="minor" />
-						<component id="EBG1_CorwinInPalace" name="Captain Corwin Is in the Palace" label="Captain Corwin is in the Palace" complexity="minor" />
-					</mod>
-					<mod id="Reflections-of-Destiny" label="Reflections of Destiny" desc="Allows staying in BG1 after fulfilling its main quest and deciding when to progress to SoD/SoA">
-						<component id="Reflections_of_Destiny:100" name="Reflections of Destiny BG1: The Future is Now" label="The Future Is Now" complexity="moderate" />
-						<component id="Reflections_of_Destiny:110" name="Reflections of Destiny BG1: The Mirror Shard" label="The Mirror Shard" complexity="minor" />
-					</mod>
-				</alternatives>
 				<component id="METweaks:2800" name="Make it possible to enter the Nashkel Mines through the back cave entrance" label="Allow early entry to the Nashkel Mines through the back cave entrance" modId="Olvyn-Tweaks" recommended="extended" complexity="minor" />
 				<component id="METweaks:3000" name="Make it possible to enter the catacombs beneath Candlekeep early" label="Allow early entry to the catacombs beneath Candlekeep" modId="Olvyn-Tweaks" recommended="extended" complexity="minor" />
 				<alternatives label="Make Cloakwood areas available before completing the Bandit Camp">
@@ -1264,26 +1271,6 @@
 		</proficiencies>
 	</mechanics>
 
-	<content displayIfNot="IE_focus_dedicated_campaigns">
-		<universalBgIwd label="Universal BG/IWD mods" engine="bg,eet,iwd">
-			<items>
-				<add>
-					<component id="rr:7" name="Additional equipment for Thieves and Bards" label="Add items for thieves and bards" modId="rogue_rebalancing" recommended="extended" complexity="minor" />
-					<component id="A7-CHAOSSORCERER-PRIMORDIAL_ARTIFACTS" name="Add &quot;Primordial Artifacts&quot;" label="Add Primordial Artifacts for Chaos Sorcerers" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" complexity="minor" />
-					<component id="A7-IMPROVED_SHAMANIC_DANCE-ITEMS" name="Shaman-specific items" label="Add items for shamans" modId="A7-ImprovedShamanicDance" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" complexity="minor" />
-					<component id="BardicWonders:2001" name="Bardic Wonders: Items" label="Add items for bards" modId="Bardic-Wonders" recommended="npc" package="npcExpansions" complexity="minor" />
-				</add>
-				<update>
-					<component id="cd_tweaks_2h_bastard_swords" name="Two-Handed Bastard Swords" label="Two-handed bastard swords" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2020" complexity="minor" />
-					<component id="cd_tweaks_2h_katanas" name="Two-Handed Katanas" label="Two-handed katanas" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2030" complexity="minor" />
-				</update>
-				<upgrade>
-					<component id="rr:8" name="Upgradeable Equipment" label="Upgradeable thieves and bards equipment" modId="rogue_rebalancing" recommended="extended" complexity="minor" />
-				</upgrade>
-			</items>
-		</universalBgIwd>
-	</content>
-
 	<spells engine="bg,eet,iwd">
 		<add label="New Spells" unfolded="1">
 			<component id="A7-IMPROVED_SHAMANIC_DANCE-SHAMANIC_PACT" name="Add spell &quot;Shamanic Pact&quot;" label="Add Shamanic Pact spell for shamans" modId="A7-ImprovedShamanicDance" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" complexity="minor" />
@@ -1343,6 +1330,23 @@
 				</alternatives>
 			</restructure>
 		</bg2>
+		<universalBgIwd label="Universal BG/IWD mods" engine="bg,eet,iwd">
+			<items>
+				<add>
+					<component id="rr:7" name="Additional equipment for Thieves and Bards" label="Add items for thieves and bards" modId="rogue_rebalancing" recommended="extended" complexity="minor" />
+					<component id="A7-CHAOSSORCERER-PRIMORDIAL_ARTIFACTS" name="Add &quot;Primordial Artifacts&quot;" label="Add Primordial Artifacts for Chaos Sorcerers" modId="A7-ChaosSorcerer" alwaysIf="A7-CHAOSSORCERER-MAIN" noDisplay="1" complexity="minor" />
+					<component id="A7-IMPROVED_SHAMANIC_DANCE-ITEMS" name="Shaman-specific items" label="Add items for shamans" modId="A7-ImprovedShamanicDance" alwaysIf="A7-IMPROVED_SHAMANIC_DANCE-MAIN" noDisplay="1" complexity="minor" />
+					<component id="BardicWonders:2001" name="Bardic Wonders: Items" label="Add items for bards" modId="Bardic-Wonders" recommended="extended" complexity="minor" />
+				</add>
+				<update>
+					<component id="cd_tweaks_2h_bastard_swords" name="Two-Handed Bastard Swords" label="Two-handed bastard swords" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2020" complexity="minor" />
+					<component id="cd_tweaks_2h_katanas" name="Two-Handed Katanas" label="Two-handed katanas" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2030" complexity="minor" />
+				</update>
+				<upgrade>
+					<component id="rr:8" name="Upgradeable Equipment" label="Upgradeable thieves and bards equipment" modId="rogue_rebalancing" recommended="extended" complexity="minor" />
+				</upgrade>
+			</items>
+		</universalBgIwd>
 	</content>
 
 	<npcChoices engine="bg,eet" displayIfNot="IE_focus_dedicated_campaigns">
@@ -1350,8 +1354,8 @@
 			<component id="ajantisbg2:5" name="Ajantis kit choice: make Ajantis Cavalier" label="Make Ajantis a Cavalier in BG2" modId="Ajantis_BG2" displayIf="ajantisbg2:0" complexity="minor" />
 			<component id="totemiccernd:0" name="Totemic Cernd" label="Make Cernd a Totemic Druid" modId="Totemic_Cernd" complexity="minor" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" name="Bard" label="Make Clara a bard" modId="A7-NoEENPCs" recommended="npc" package="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:3" name="Make Faldorn an Avenger" label="Make Dynaheir a sorcerer" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:4" name="Make Skie a Shadowdancer" label="Make Faldorn an Avenger" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" />
+			<!--component id="sha-tweaks:3" name="Make Faldorn an Avenger" label="Make Dynaheir a sorcerer" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" />
+			<component id="sha-tweaks:4" name="Make Skie a Shadowdancer" label="Make Faldorn an Avenger" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" /-->
 			<alternatives label="Make Hexxat a...">
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_ASSASSIN" name="Assassin" label="Assassin" modId="A7-NoEENPCs" complexity="minor" />
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" name="Fighter / Assassin" label="Fighter/Assassin" modId="A7-NoEENPCs" default="1" recommended="npc" package="npcChoices" complexity="minor" />
@@ -1362,7 +1366,7 @@
 			<!-- Make Kagain a Dwarven Defender BGEENPC tweaks.-->
 			<component id="cd_tweaks_make_montaron_assassin" name="Make Montaron an Assassin [Andyr]" label="Make Montaron an Assassin" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4090" complexity="minor" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" name="Chaos Sorcerer" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" recommended="npc" package="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:5" name="Change dialog text color to orange" label="Make Skie a Shadowdancer" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" />
+			<!--component id="sha-tweaks:5" name="Change dialog text color to orange" label="Make Skie a Shadowdancer" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" /-->
 			<group label="Make Viconia...">
 				<component id="L#-VIC-REV-M-SH-C" name="Multi-class: Shadowdancer/Cleric" label="...A Shadowdancer/cleric" modId="viconia-revamped" recommended="npc" package="npcChoices" complexity="minor" />
 				<component id="L#-VIC-REV-ABI" name="Add special ability: Embrace of Shar" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" recommended="npc" package="npcChoices" complexity="minor" />
@@ -1698,8 +1702,8 @@
 			<component id="candlekeep_revisited:3" name="Candlekeep Revisited: New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" label="Candlekeep Revisited - new portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" engine="bg1,eet" complexity="minor" />
 		</group>
 		<group label="PC Portraits" unfolded="1">
-			<component id="sha-tweaks:0" name="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" recommended="gfx" complexity="minor" />
-			<component id="sha-tweaks:1" name="Add Extended Isandir's Portrait Pack" label="Add Extended Isandir's Portrait Pack" modId="shatweaks" engine="bg,eet" recommended="gfx" complexity="minor" />
+			<!--component id="sha-tweaks:0" name="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" recommended="gfx" complexity="minor" />
+			<component id="sha-tweaks:1" name="Add Extended Isandir's Portrait Pack" label="Add Extended Isandir's Portrait Pack" modId="shatweaks" engine="bg,eet" recommended="gfx" complexity="minor" /-->
 			<component id="cd_icpp_iwd2" name="Icewind Dale AND Icewind Dale II Portraits" label="Install IWD1 and IWD2 portraits" modId="Infinity_Collection_Portrait_Pack" engine="bg,eet,iwd" alwaysIf="IWD_EET_integration:100" complexity="minor" />
 		</group>
 		<group label="Special" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns">
