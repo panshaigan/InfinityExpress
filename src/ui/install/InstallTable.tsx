@@ -41,6 +41,8 @@ import {
 import { canRemoveStepFromPlan, type InstallLock } from '../../lib/install/installLock'
 
 export const INSTALL_TABLE_ID = 'install-table'
+const INSTALL_ROW_HEIGHT_ESTIMATE = 42
+const INSTALL_ROW_OVERSCAN = 14
 
 const STATUS_LABEL: Record<InstallStep['status'], string> = {
   queued: 'Queued',
@@ -665,7 +667,14 @@ export function InstallTable({
   }, [visible])
 
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
+  const [rowHeight, setRowHeight] = useState(INSTALL_ROW_HEIGHT_ESTIMATE)
+  const [rangeStart, setRangeStart] = useState(0)
+  const [rangeEndExclusive, setRangeEndExclusive] = useState(0)
+  const scrollWrapRef = useRef<HTMLDivElement | null>(null)
   const rowRefs = useRef(new Map<string, HTMLTableRowElement>())
+  const rangeRef = useRef({ start: 0, end: 0 })
+  const pendingFocusKeyRef = useRef<string | null>(null)
+  const scrollRafRef = useRef<number | null>(null)
   const visibleRows = useMemo(() => {
     const t0 = profileInstallTable ? performance.now() : 0
     const built = visible.map((row) => {
@@ -708,6 +717,82 @@ export function InstallTable({
   const rowKey = (stepId: string, componentId: string) =>
     `${stepId}\0${componentId}`
 
+  const focusPendingRow = useCallback(() => {
+    const key = pendingFocusKeyRef.current
+    if (!key) return
+    const el = rowRefs.current.get(key)
+    if (!el) return
+    if (document.activeElement !== el) el.focus()
+    pendingFocusKeyRef.current = null
+  }, [])
+
+  const applyRange = useCallback(
+    (nextStart: number, nextEndExclusive: number) => {
+      const boundedStart = Math.max(0, Math.min(nextStart, visibleRows.length))
+      const boundedEnd = Math.max(boundedStart, Math.min(nextEndExclusive, visibleRows.length))
+      const prev = rangeRef.current
+      if (prev.start === boundedStart && prev.end === boundedEnd) return
+      rangeRef.current = { start: boundedStart, end: boundedEnd }
+      setRangeStart(boundedStart)
+      setRangeEndExclusive(boundedEnd)
+    },
+    [visibleRows.length],
+  )
+
+  const updateRangeForScroll = useCallback(
+    (scrollTop: number, viewportHeight: number) => {
+      const rowsCount = visibleRows.length
+      if (rowsCount === 0) {
+        applyRange(0, 0)
+        return
+      }
+      const start = Math.max(0, Math.floor(scrollTop / rowHeight) - INSTALL_ROW_OVERSCAN)
+      const visibleCount = Math.ceil(viewportHeight / rowHeight)
+      const end = Math.min(
+        rowsCount,
+        start + visibleCount + INSTALL_ROW_OVERSCAN * 2,
+      )
+      applyRange(start, end)
+    },
+    [applyRange, rowHeight, visibleRows.length],
+  )
+
+  const updateRangeFromContainer = useCallback(() => {
+    const container = scrollWrapRef.current
+    if (!container) {
+      applyRange(0, Math.min(visibleRows.length, INSTALL_ROW_OVERSCAN * 4))
+      return
+    }
+    updateRangeForScroll(container.scrollTop, container.clientHeight)
+  }, [applyRange, updateRangeForScroll, visibleRows.length])
+
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      const clamped = Math.max(0, Math.min(index, Math.max(0, visibleRows.length - 1)))
+      const container = scrollWrapRef.current
+      if (!container) return
+      const rowTop = clamped * rowHeight
+      const rowBottom = rowTop + rowHeight
+      const viewTop = container.scrollTop
+      const viewBottom = viewTop + container.clientHeight
+      if (rowTop < viewTop) {
+        container.scrollTop = rowTop
+      } else if (rowBottom > viewBottom) {
+        container.scrollTop = Math.max(0, rowBottom - container.clientHeight)
+      }
+      updateRangeForScroll(container.scrollTop, container.clientHeight)
+    },
+    [rowHeight, updateRangeForScroll, visibleRows.length],
+  )
+
+  const scheduleRangeRefresh = useCallback(() => {
+    if (scrollRafRef.current != null) return
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null
+      updateRangeFromContainer()
+    })
+  }, [updateRangeFromContainer])
+
   const setRowEl = useCallback(
     (stepId: string, componentId: string, el: HTMLTableRowElement | null) => {
       const key = rowKey(stepId, componentId)
@@ -717,35 +802,71 @@ export function InstallTable({
     [],
   )
 
+  useEffect(() => {
+    updateRangeFromContainer()
+  }, [updateRangeFromContainer])
+
+  useEffect(() => {
+    focusPendingRow()
+  }, [focusPendingRow, rangeStart, rangeEndExclusive])
+
+  useEffect(() => {
+    return () => {
+      if (scrollRafRef.current != null) {
+        cancelAnimationFrame(scrollRafRef.current)
+      }
+    }
+  }, [])
+
   const selectIndex = useCallback(
     (index: number) => {
-      const row = visibleRows[index]
+      const bounded = Math.max(0, Math.min(index, visibleRows.length - 1))
+      const row = visibleRows[bounded]
       if (!row) return
+      scrollToIndex(bounded)
+      pendingFocusKeyRef.current = rowKey(row.stepId, row.componentId)
       onSelectStep(row.stepId, row.componentId)
-      requestAnimationFrame(() => {
-        const el = rowRefs.current.get(rowKey(row.stepId, row.componentId))
-        if (el && document.activeElement !== el) el.focus()
-      })
+      requestAnimationFrame(() => focusPendingRow())
     },
-    [onSelectStep, visibleRows],
+    [focusPendingRow, onSelectStep, rowKey, scrollToIndex, visibleRows],
   )
 
   const selectRow = useCallback(
     (stepId: string, componentId: string) => {
+      pendingFocusKeyRef.current = rowKey(stepId, componentId)
       onSelectStep(stepId, componentId)
-      requestAnimationFrame(() => {
-        const el = rowRefs.current.get(rowKey(stepId, componentId))
-        if (el && document.activeElement !== el) el.focus()
-      })
+      requestAnimationFrame(() => focusPendingRow())
     },
-    [onSelectStep],
+    [focusPendingRow, onSelectStep, rowKey],
   )
 
   useEffect(() => {
     if (!selectedStepId || !selectedComponentId) return
-    const el = rowRefs.current.get(rowKey(selectedStepId, selectedComponentId))
-    el?.scrollIntoView({ block: 'nearest' })
-  }, [selectedStepId, selectedComponentId])
+    const key = rowKey(selectedStepId, selectedComponentId)
+    const selectedIndex = visibleIndexByRowKey.get(key)
+    if (selectedIndex == null) return
+    pendingFocusKeyRef.current = key
+    scrollToIndex(selectedIndex)
+    requestAnimationFrame(() => focusPendingRow())
+  }, [focusPendingRow, rowKey, scrollToIndex, selectedComponentId, selectedStepId, visibleIndexByRowKey])
+
+  const renderedRows = useMemo(
+    () => visibleRows.slice(rangeStart, rangeEndExclusive),
+    [rangeEndExclusive, rangeStart, visibleRows],
+  )
+  const spacerTop = rangeStart * rowHeight
+  const spacerBottom = Math.max(0, (visibleRows.length - rangeEndExclusive) * rowHeight)
+
+  useEffect(() => {
+    const first = renderedRows[0]
+    if (!first) return
+    const el = rowRefs.current.get(rowKey(first.stepId, first.componentId))
+    if (!el) return
+    const measured = Math.round(el.getBoundingClientRect().height)
+    if (!Number.isFinite(measured) || measured <= 0) return
+    if (Math.abs(measured - rowHeight) < 1) return
+    setRowHeight(measured)
+  }, [renderedRows, rowHeight])
 
   function handleTableKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
     if (visible.length === 0) return
@@ -784,7 +905,9 @@ export function InstallTable({
         className="mods-table-wrap install-table-scroll"
         role="grid"
         aria-label="Install steps"
-        tabIndex={visible.length === 0 ? 0 : -1}
+        tabIndex={visibleRows.length === 0 ? 0 : -1}
+        ref={scrollWrapRef}
+        onScroll={scheduleRangeRefresh}
         onKeyDown={handleTableKeyDown}
         onFocus={() => {
           if ((!selectedStepId || !selectedComponentId) && visibleRows[0]) {
@@ -820,7 +943,20 @@ export function InstallTable({
             </tr>
           </thead>
           <tbody>
-            {visibleRows.map((row) => (
+            {spacerTop > 0 ? (
+              <tr aria-hidden="true">
+                <td
+                  colSpan={9}
+                  style={{
+                    height: `${spacerTop}px`,
+                    padding: 0,
+                    borderBottom: 'none',
+                    pointerEvents: 'none',
+                  }}
+                />
+              </tr>
+            ) : null}
+            {renderedRows.map((row) => (
               <InstallTableRowMemo
                 key={row.stepId}
                 row={row}
@@ -837,6 +973,19 @@ export function InstallTable({
                 }
               />
             ))}
+            {spacerBottom > 0 ? (
+              <tr aria-hidden="true">
+                <td
+                  colSpan={9}
+                  style={{
+                    height: `${spacerBottom}px`,
+                    padding: 0,
+                    borderBottom: 'none',
+                    pointerEvents: 'none',
+                  }}
+                />
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>

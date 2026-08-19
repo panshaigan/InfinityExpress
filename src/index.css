@@ -6735,7 +6735,8 @@ body.is-resizing-detail * {
   min-width: 0;
 }
 
-.install-row.row-hover:not(.selected):not(.install-cursor):not(.focused) {
+.install-row.row-hover:not(.selected):not(.install-cursor):not(.focused),
+.install-row:hover:not(.selected):not(.install-cursor):not(.focused) {
   background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
 }
 
@@ -6743,7 +6744,8 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
-.install-row.selected:not(.focused):not(.install-cursor).row-hover {
+.install-row.selected:not(.focused):not(.install-cursor).row-hover,
+.install-row.selected:not(.focused):not(.install-cursor):hover {
   background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
@@ -6759,7 +6761,8 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, var(--install-cursor) 28%, transparent);
 }
 
-.install-row.install-cursor.row-hover {
+.install-row.install-cursor.row-hover,
+.install-row.install-cursor:hover {
   background: color-mix(in srgb, var(--install-cursor) 32%, transparent);
 }
 
