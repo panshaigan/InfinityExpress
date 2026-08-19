@@ -3,7 +3,11 @@ import {
   applyWeiduLogToSteps,
   importInstalledFromDestinations,
   mapLogEntriesToComponents,
+  persistedWeiduLogInstallsFrom,
+  persistedWeiduLogToImport,
+  mergeWeiduLogImports,
   weiduLogImportMessage,
+  weiduLogImportToPersisted,
 } from './weiduLogMap'
 import { parseWeiduLog } from './weiduLog'
 import { selectionFromInstalledIds } from '../selection/selectionEngine'
@@ -153,6 +157,61 @@ describe('mapLogEntriesToComponents', () => {
     expect(hits.map((h) => h.componentId)).toEqual(['A7-DLCMERGER-MERGE_SOD'])
   })
 
+  it('matches LABEL case-insensitively', () => {
+    const model = modelWith([dlcMerger])
+    const entries = parseWeiduLog('~DLCMERGER/DLCMERGER.TP2~ #0 #1')
+    const listings = new Map([
+      [
+        'dlcmerger/dlcmerger.tp2',
+        [
+          {
+            index: 0,
+            number: 1,
+            name: 'Merge SoD',
+            label: ['a7-dlcmerger-merge_sod'],
+          },
+        ],
+      ],
+    ])
+    const { hits } = mapLogEntriesToComponents(
+      model,
+      'eet',
+      'eet1',
+      'D:/games/bg1',
+      entries,
+      listings,
+    )
+    expect(hits.map((h) => h.componentId)).toEqual(['A7-DLCMERGER-MERGE_SOD'])
+  })
+
+  it('maps an eet1 LABEL from the BG2 log (no export-phase filter)', () => {
+    const model = modelWith([dlcMerger])
+    const entries = parseWeiduLog('~DLCMERGER/DLCMERGER.TP2~ #0 #1')
+    const listings = new Map([
+      [
+        'dlcmerger/dlcmerger.tp2',
+        [
+          {
+            index: 0,
+            number: 1,
+            name: 'Merge SoD',
+            label: ['A7-DLCMERGER-MERGE_SOD'],
+          },
+        ],
+      ],
+    ])
+    const { hits, unmatched } = mapLogEntriesToComponents(
+      model,
+      'eet',
+      'eet',
+      'D:/games/bg2',
+      entries,
+      listings,
+    )
+    expect(unmatched).toEqual([])
+    expect(hits.map((h) => h.componentId)).toEqual(['A7-DLCMERGER-MERGE_SOD'])
+  })
+
   it('leaves unknown mods unmatched', () => {
     const model = modelWith([eeex])
     const entries = parseWeiduLog('~mystery/setup-mystery.tp2~ #0 #3')
@@ -208,6 +267,32 @@ describe('importInstalledFromDestinations', () => {
       'Checked 1 installed component from WeiDU.log.',
     )
   })
+
+  it('surfaces listing failures instead of swallowing them', async () => {
+    const model = modelWith([dlcMerger])
+    const result = await importInstalledFromDestinations(
+      model,
+      'eet',
+      {
+        bg1: 'D:/games/bg1-fail',
+        bg2: 'D:/games/bg2-fail',
+        iwd: '',
+        pst: '',
+      },
+      {
+        weiduPath: 'C:/weidu.exe',
+        readLog: async (dir) =>
+          dir.includes('bg1-fail') ? '~DLCMERGER/DLCMERGER.TP2~ #0 #1\n' : '',
+        listComponents: async () => {
+          throw new Error('weidu exited 1')
+        },
+      },
+    )
+    expect(result.componentIds.size).toBe(0)
+    expect(result.listingErrors.some((e) => e.includes('weidu exited 1'))).toBe(
+      true,
+    )
+  })
 })
 
 describe('applyWeiduLogToSteps', () => {
@@ -231,6 +316,7 @@ describe('applyWeiduLogToSteps', () => {
       hasLog: true,
       unmatched: [],
       componentIds: new Set(['EEex:1']),
+      listingErrors: [],
       hits: [
         {
           componentId: 'EEex:1',
@@ -272,9 +358,70 @@ describe('applyWeiduLogToSteps', () => {
       hasLog: false,
       unmatched: [],
       componentIds: new Set(),
+      listingErrors: [],
       hits: [],
     })
     expect(marked[0]?.status).toBe('queued')
+  })
+
+  it('does not unmark when the scan result is still in flight', () => {
+    const step: InstallStep = {
+      stepId: 'eet:0000',
+      phase: 'eet',
+      modId: 'EEex',
+      tp2Path: 'D:/games/bg2/EEex/EEex.tp2',
+      stagedFolderName: 'EEex',
+      componentId: 'EEex:1',
+      componentLabel: 'EEex',
+      weiduNumber: 1,
+      languageIndex: 0,
+      status: 'alreadyInstalled',
+      warnings: [],
+      errors: [],
+      resultLines: [],
+    }
+    expect(applyWeiduLogToSteps([step], null)[0]?.status).toBe('alreadyInstalled')
+  })
+
+  it('marks a later-added plan step from persisted hits', () => {
+    const persisted = {
+      hasLog: true,
+      unmatched: [],
+      componentIds: new Set(['A7-DLCMERGER-MERGE_SOD']),
+      listingErrors: [],
+      hits: [
+        {
+          componentId: 'A7-DLCMERGER-MERGE_SOD',
+          tp2Path: 'DLCMERGER/DLCMERGER.TP2',
+          absoluteTp2Path: 'D:/games/bg1/DLCMERGER/DLCMERGER.TP2',
+          stagedFolderName: 'DLCMERGER',
+          weiduNumber: 1,
+          languageIndex: 0,
+          phase: 'eet1' as const,
+        },
+      ],
+    }
+    const step: InstallStep = {
+      stepId: 'eet1:0000',
+      phase: 'eet1' as const,
+      modId: 'A7-DlcMerger',
+      tp2Path: '',
+      stagedFolderName: '',
+      componentId: 'A7-DLCMERGER-MERGE_SOD',
+      componentLabel: 'Merge SoD DLC',
+      weiduNumber: null,
+      languageIndex: null,
+      status: 'queued' as const,
+      warnings: [],
+      errors: [],
+      resultLines: [],
+    }
+    const marked = applyWeiduLogToSteps([step], persisted)
+    expect(marked[0]).toMatchObject({
+      status: 'alreadyInstalled',
+      weiduNumber: 1,
+      stagedFolderName: 'DLCMERGER',
+    })
   })
 })
 
@@ -286,5 +433,73 @@ describe('selectionFromInstalledIds', () => {
     const selected = selectionFromInstalledIds(model, 'eet', new Set(['EEex:1']))
     expect(selected.has('req')).toBe(true)
     expect(selected.has('EEex:1')).toBe(true)
+  })
+})
+
+describe('persisted WeiDU.log installs', () => {
+  it('round-trips identified hits', () => {
+    const result = {
+      hasLog: true,
+      unmatched: [],
+      listingErrors: [],
+      componentIds: new Set(['A7-DLCMERGER-MERGE_SOD']),
+      hits: [
+        {
+          componentId: 'A7-DLCMERGER-MERGE_SOD',
+          tp2Path: 'DLCMERGER/DLCMERGER.TP2',
+          absoluteTp2Path: 'D:/games/bg1/DLCMERGER/DLCMERGER.TP2',
+          stagedFolderName: 'DLCMERGER',
+          weiduNumber: 1,
+          languageIndex: 0,
+          phase: 'eet1' as const,
+        },
+      ],
+    }
+    const persisted = weiduLogImportToPersisted(result)
+    const json = JSON.parse(JSON.stringify(persisted)) as unknown
+    const parsed = persistedWeiduLogInstallsFrom(json)
+    const restored = persistedWeiduLogToImport(parsed)
+    expect(restored?.componentIds.has('A7-DLCMERGER-MERGE_SOD')).toBe(true)
+    expect(restored?.hits[0]?.weiduNumber).toBe(1)
+  })
+
+  it('keeps persisted LABEL hits when a later scan cannot list them', () => {
+    const previous = persistedWeiduLogToImport({
+      hasLog: true,
+      componentIds: ['A7-DLCMERGER-MERGE_SOD'],
+      hits: [
+        {
+          componentId: 'A7-DLCMERGER-MERGE_SOD',
+          tp2Path: 'DLCMERGER/DLCMERGER.TP2',
+          absoluteTp2Path: 'D:/games/bg1/DLCMERGER/DLCMERGER.TP2',
+          stagedFolderName: 'DLCMERGER',
+          weiduNumber: 1,
+          languageIndex: 0,
+          phase: 'eet1',
+        },
+      ],
+    })
+    const live: Parameters<typeof mergeWeiduLogImports>[1] = {
+      hasLog: true,
+      unmatched: [],
+      listingErrors: ['WeiDU.exe is not set — labelled components were not mapped from WeiDU.log'],
+      componentIds: new Set(['EEex:1']),
+      hits: [
+        {
+          componentId: 'EEex:1',
+          tp2Path: 'EEex/EEex.tp2',
+          absoluteTp2Path: 'D:/games/bg2/EEex/EEex.tp2',
+          stagedFolderName: 'EEex',
+          weiduNumber: 1,
+          languageIndex: 0,
+          phase: 'eet',
+        },
+      ],
+    }
+    const merged = mergeWeiduLogImports(previous, live)
+    expect([...merged.componentIds].sort()).toEqual([
+      'A7-DLCMERGER-MERGE_SOD',
+      'EEex:1',
+    ])
   })
 })

@@ -160,9 +160,10 @@ Picking a project destination that already has `WeiDU.log` (new project or Setti
 
 1. Parse `~tp2~ #lang #number` (`parseWeiduLog`). Language is kept on the install step but **not** used for matching.
 2. Numbered XML ids (`weiduFolder:N`) match the tp2 parent folder + designated number (no WeiDU process).
-3. LABEL ids invert [`resolveComponentNumber`](../src/lib/install/weiduResolution.ts) against `--list-components-json` on the **game-dir** tp2 (do not stage from the download dir).
-4. Components selection is **replaced** with required/`alwaysIf` plus mapped ids (Fixes seed is skipped). Unmapped log rows are skipped.
-5. Matching install-plan steps are `alreadyInstalled`; `tp2Path` / `weiduNumber` / language are filled from the log. Cursor is the first unfinished step.
+3. Leftover LABEL ids: `--list-components-json` on the **game-dir** tp2 (do not stage from the download dir). Find the listing row whose `number` equals the log’s component number, then look up each `label[]` in `componentsById` (case-insensitive). Skip numbered `folder:N` ids so `EEex:1` cannot steal another mod’s `#1`. Export-phase is not used as a filter (`engineMatches` only), so an `eet1` component can still map from the BG2 log.
+4. Identified ids are saved on the project session (`installedFromWeiduLog`) and restored on open. Listing failures are reported (not swallowed). If WeiDU.exe is unset, numbered ids still import; the LABEL pass re-runs when a WeiDU path appears. A background rescan **merges** with the persisted hit list while the log is still present (so LABEL hits are not dropped just because listing failed this time).
+5. Components selection is **replaced** with required/`alwaysIf` plus mapped ids (Fixes seed is skipped). Unmapped log rows are skipped.
+6. Install status is **identified ∩ current plan**: matching steps are `alreadyInstalled` with `tp2Path` / `weiduNumber` / language from the saved hit. Checking a previously identified component later still marks it installed. An in-flight rescan (`weiduLogImport == null`) does not unmark.
 
 Vanilla folders still reject `WeiDU.log`. Mapping lives in [`weiduLogMap.ts`](../src/lib/install/weiduLogMap.ts).
 

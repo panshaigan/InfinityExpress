@@ -6,10 +6,6 @@ import {
 } from '../desktop/weiduInstall'
 import { isDesktopApp } from '../desktop/fsDialogs'
 import { readWeiduPath } from '../ui/weiduPrefs'
-import {
-  componentMatchesExportPhase,
-  type ExportPhase,
-} from '../export/installOrder'
 import { tp2SearchHintFromComponentId } from './modResolution'
 import {
   parseWeiduLog,
@@ -18,10 +14,7 @@ import {
   weiduFolderFromTp2Path,
   type WeiduLogEntry,
 } from './weiduLog'
-import {
-  numericSuffixFromComponentId,
-  resolveComponentNumber,
-} from './weiduResolution'
+import { numericSuffixFromComponentId } from './weiduResolution'
 import type { GameFolderPaths } from '../ui/gameFolderPrefs'
 import type {
   ComponentNode,
@@ -49,6 +42,14 @@ export interface WeiduLogImportResult {
   hits: MappedWeiduLogHit[]
   unmatched: WeiduLogEntry[]
   componentIds: Set<string>
+  listingErrors: string[]
+}
+
+/** Project-session copy of identified WeiDU.log installs. */
+export interface PersistedWeiduLogInstalls {
+  hasLog: boolean
+  componentIds: string[]
+  hits: MappedWeiduLogHit[]
 }
 
 export interface WeiduLogMapDeps {
@@ -62,11 +63,7 @@ export interface WeiduLogMapDeps {
   weiduPath?: string
 }
 
-function exportPhaseForInstallPhase(phase: InstallPhase): ExportPhase {
-  if (phase === 'eet1') return 'eet1'
-  if (phase === 'eet') return 'eet'
-  return 'all'
-}
+const INSTALL_PHASES: readonly InstallPhase[] = ['eet1', 'eet', 'single']
 
 function logSourcesForGame(
   game: SelectedGame,
@@ -97,15 +94,6 @@ function findListing(
   return undefined
 }
 
-function componentEligible(
-  component: ComponentNode,
-  game: SelectedGame,
-  phase: InstallPhase,
-): boolean {
-  if (!engineMatches(component.effectiveEngine, game)) return false
-  return componentMatchesExportPhase(component, exportPhaseForInstallPhase(phase))
-}
-
 function hitFrom(
   component: ComponentNode,
   entry: WeiduLogEntry,
@@ -127,13 +115,12 @@ function hitFrom(
 function matchNumberedComponent(
   model: InstallSequenceModel,
   game: SelectedGame,
-  phase: InstallPhase,
   folder: string,
   number: number,
 ): ComponentNode | null {
   const folderLc = folder.toLowerCase()
   for (const c of model.componentsInOrder) {
-    if (!componentEligible(c, game, phase)) continue
+    if (!engineMatches(c.effectiveEngine, game)) continue
     const hint = tp2SearchHintFromComponentId(c.componentId)
     if (!hint || hint.toLowerCase() !== folderLc) continue
     if (numericSuffixFromComponentId(c.componentId) !== number) continue
@@ -142,23 +129,45 @@ function matchNumberedComponent(
   return null
 }
 
-function matchLabelComponent(
+/** LABEL id → node, case-insensitive (skips `folder:N` ids). */
+function labelComponentIndex(
   model: InstallSequenceModel,
+): Map<string, ComponentNode> {
+  const index = new Map<string, ComponentNode>()
+  for (const c of model.componentsInOrder) {
+    if (numericSuffixFromComponentId(c.componentId) != null) continue
+    index.set(c.componentId.toLowerCase(), c)
+    const attrId = c.attrs.id?.trim()
+    if (attrId) index.set(attrId.toLowerCase(), c)
+  }
+  return index
+}
+
+/**
+ * Invert resolveComponentNumber: listing row `number` → `label[]` → XML id.
+ */
+function matchLabelFromListing(
+  byLabel: Map<string, ComponentNode>,
   game: SelectedGame,
-  phase: InstallPhase,
   listing: WeiduComponentInfo[],
   number: number,
 ): ComponentNode | null {
-  let found: ComponentNode | null = null
-  for (const c of model.componentsInOrder) {
-    if (numericSuffixFromComponentId(c.componentId) != null) continue
-    if (!componentEligible(c, game, phase)) continue
-    const resolved = resolveComponentNumber(c, listing)
-    if (resolved.weiduNumber !== number) continue
-    if (found) return null
-    found = c
+  const labels: string[] = []
+  for (const row of listing) {
+    if (row.number !== number) continue
+    for (const label of row.label) {
+      const trimmed = label.trim()
+      if (trimmed) labels.push(trimmed)
+    }
   }
-  return found
+  for (const label of labels) {
+    const node = byLabel.get(label.toLowerCase())
+    if (!node) continue
+    if (numericSuffixFromComponentId(node.componentId) != null) continue
+    if (!engineMatches(node.effectiveEngine, game)) continue
+    return node
+  }
+  return null
 }
 
 /** Pure reverse map: log entries → XML component ids (no FS / WeiDU). */
@@ -172,13 +181,13 @@ export function mapLogEntriesToComponents(
 ): { hits: MappedWeiduLogHit[]; unmatched: WeiduLogEntry[] } {
   const hits: MappedWeiduLogHit[] = []
   const unmatched: WeiduLogEntry[] = []
+  const byLabel = labelComponentIndex(model)
 
   for (const entry of entries) {
     const folder = weiduFolderFromTp2Path(entry.tp2Path)
     const numbered = matchNumberedComponent(
       model,
       game,
-      phase,
       folder,
       entry.componentNumber,
     )
@@ -189,10 +198,9 @@ export function mapLogEntriesToComponents(
 
     const listing = findListing(listingsByTp2, entry.tp2Path)
     if (listing && listing.length > 0) {
-      const labeled = matchLabelComponent(
-        model,
+      const labeled = matchLabelFromListing(
+        byLabel,
         game,
-        phase,
         listing,
         entry.componentNumber,
       )
@@ -223,18 +231,22 @@ async function listForTp2(
   gameDir: string,
   tp2Path: string,
   lang: number,
-): Promise<WeiduComponentInfo[] | null> {
+): Promise<{ listing: WeiduComponentInfo[] | null; error: string | null }> {
   const abs = resolveGameTp2Path(gameDir, tp2Path)
   const cacheKey = listingCacheKey(gameDir, tp2Path, lang)
   const cached = listingCache.get(cacheKey)
-  if (cached) return cached
+  if (cached) return { listing: cached, error: null }
   const list = deps.listComponents ?? listWeiduComponents
   try {
     const listing = await list(weiduPath, abs, gameDir, lang)
     listingCache.set(cacheKey, listing)
-    return listing
-  } catch {
-    return null
+    return { listing, error: null }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return {
+      listing: null,
+      error: `Could not list components for ${tp2Path}: ${message}`,
+    }
   }
 }
 
@@ -248,6 +260,7 @@ export async function importInstalledFromDestinations(
   const weiduPath = (deps.weiduPath ?? readWeiduPath()).trim()
   const allHits: MappedWeiduLogHit[] = []
   const allUnmatched: WeiduLogEntry[] = []
+  const listingErrors: string[] = []
   let hasLog = false
 
   for (const source of logSourcesForGame(game, destinations)) {
@@ -285,7 +298,7 @@ export async function importInstalledFromDestinations(
         if (!unique.has(key)) unique.set(key, entry)
       }
       for (const [key, sample] of unique) {
-        const listing = await listForTp2(
+        const { listing, error } = await listForTp2(
           deps,
           weiduPath,
           source.gameDir,
@@ -293,7 +306,12 @@ export async function importInstalledFromDestinations(
           sample.languageIndex,
         )
         if (listing) listingsByTp2.set(key, listing)
+        if (error) listingErrors.push(error)
       }
+    } else if (leftovers.length > 0 && !weiduPath) {
+      const missing =
+        'WeiDU.exe is not set — labelled components were not mapped from WeiDU.log'
+      if (!listingErrors.includes(missing)) listingErrors.push(missing)
     }
 
     const labelPass = mapLogEntriesToComponents(
@@ -309,15 +327,80 @@ export async function importInstalledFromDestinations(
   }
 
   const componentIds = new Set(allHits.map((h) => h.componentId))
-  return { hasLog, hits: allHits, unmatched: allUnmatched, componentIds }
+  return {
+    hasLog,
+    hits: allHits,
+    unmatched: allUnmatched,
+    componentIds,
+    listingErrors,
+  }
 }
 
 export function weiduLogImportMessage(result: WeiduLogImportResult): string | null {
   if (!result.hasLog) return null
   const n = result.componentIds.size
   const checked = `Checked ${n} installed component${n === 1 ? '' : 's'} from WeiDU.log`
-  if (result.unmatched.length === 0) return `${checked}.`
-  return `${checked} (${result.unmatched.length} unmatched).`
+  const extra: string[] = []
+  if (result.unmatched.length > 0) extra.push(`${result.unmatched.length} unmatched`)
+  if (result.listingErrors.length > 0) extra.push(`${result.listingErrors.length} list errors`)
+  if (extra.length === 0) return `${checked}.`
+  return `${checked} (${extra.join(', ')}).`
+}
+
+export function weiduLogImportToPersisted(
+  result: WeiduLogImportResult,
+): PersistedWeiduLogInstalls {
+  return {
+    hasLog: result.hasLog,
+    componentIds: [...result.componentIds].sort(),
+    hits: result.hits.map((h) => ({ ...h })),
+  }
+}
+
+export function persistedWeiduLogToImport(
+  persisted: PersistedWeiduLogInstalls | null | undefined,
+): WeiduLogImportResult | null {
+  if (!persisted) return null
+  return {
+    hasLog: persisted.hasLog,
+    hits: persisted.hits.map((h) => ({ ...h })),
+    unmatched: [],
+    componentIds: new Set(persisted.componentIds),
+    listingErrors: [],
+  }
+}
+
+/** Union identified hits. Live scan wins on the same component id. */
+export function mergeWeiduLogImports(
+  previous: WeiduLogImportResult | null | undefined,
+  live: WeiduLogImportResult,
+): WeiduLogImportResult {
+  if (!previous || !live.hasLog) return live
+  const byId = new Map<string, MappedWeiduLogHit>()
+  for (const hit of previous.hits) byId.set(hit.componentId, hit)
+  for (const hit of live.hits) byId.set(hit.componentId, hit)
+  const hits = [...byId.values()]
+  return {
+    hasLog: previous.hasLog || live.hasLog,
+    hits,
+    unmatched: live.unmatched,
+    componentIds: new Set(hits.map((h) => h.componentId)),
+    listingErrors: live.listingErrors,
+  }
+}
+
+export function sanitizePersistedWeiduLogInstalls(
+  persisted: PersistedWeiduLogInstalls | null | undefined,
+  knownIds: ReadonlySet<string>,
+): PersistedWeiduLogInstalls | undefined {
+  if (!persisted) return undefined
+  const hits = persisted.hits.filter((h) => knownIds.has(h.componentId))
+  const componentIds = persisted.componentIds.filter((id) => knownIds.has(id))
+  return {
+    hasLog: persisted.hasLog,
+    componentIds,
+    hits,
+  }
 }
 
 function hitsByComponentId(
@@ -330,8 +413,9 @@ function hitsByComponentId(
 
 export function applyWeiduLogToSteps(
   steps: InstallStep[],
-  result: WeiduLogImportResult,
+  result: WeiduLogImportResult | null | undefined,
 ): InstallStep[] {
+  if (!result) return steps
   const byId = hitsByComponentId(result)
   let changed = false
   const next = steps.map((step) => {
@@ -366,4 +450,54 @@ export function applyWeiduLogToSteps(
     return step
   })
   return changed ? next : steps
+}
+
+function isInstallPhase(value: unknown): value is InstallPhase {
+  return typeof value === 'string' && INSTALL_PHASES.includes(value as InstallPhase)
+}
+
+export function persistedWeiduLogInstallsFrom(
+  value: unknown,
+): PersistedWeiduLogInstalls | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  const o = value as Record<string, unknown>
+  const hits: MappedWeiduLogHit[] = []
+  if (Array.isArray(o.hits)) {
+    for (const item of o.hits) {
+      if (!item || typeof item !== 'object') continue
+      const h = item as Record<string, unknown>
+      if (typeof h.componentId !== 'string' || !h.componentId.trim()) continue
+      if (typeof h.tp2Path !== 'string') continue
+      if (typeof h.absoluteTp2Path !== 'string') continue
+      if (typeof h.stagedFolderName !== 'string') continue
+      if (typeof h.weiduNumber !== 'number' || !Number.isFinite(h.weiduNumber)) continue
+      if (typeof h.languageIndex !== 'number' || !Number.isFinite(h.languageIndex)) {
+        continue
+      }
+      if (!isInstallPhase(h.phase)) continue
+      hits.push({
+        componentId: h.componentId,
+        tp2Path: h.tp2Path,
+        absoluteTp2Path: h.absoluteTp2Path,
+        stagedFolderName: h.stagedFolderName,
+        weiduNumber: h.weiduNumber,
+        languageIndex: h.languageIndex,
+        phase: h.phase,
+      })
+    }
+  }
+  const fromHits = hits.map((h) => h.componentId)
+  const ids = [
+    ...new Set([
+      ...(Array.isArray(o.componentIds)
+        ? o.componentIds.filter((v): v is string => typeof v === 'string')
+        : []),
+      ...fromHits,
+    ]),
+  ]
+  return {
+    hasLog: o.hasLog === true || hits.length > 0,
+    componentIds: ids,
+    hits,
+  }
 }

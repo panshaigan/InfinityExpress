@@ -174,6 +174,17 @@ export function selectionFromInstalledIds(
   installedIds: ReadonlySet<string>,
 ): SelectionSet {
   const next = createInitialSelection(model, game)
+  return mergeInstalledIdsIntoSelection(model, game, next, installedIds)
+}
+
+/** Add identified installed ids onto an existing selection (WeiDU path appeared later). */
+export function mergeInstalledIdsIntoSelection(
+  model: InstallSequenceModel,
+  game: SelectedGame,
+  selected: ReadonlySet<string>,
+  installedIds: ReadonlySet<string>,
+): SelectionSet {
+  const next = new Set(selected)
   const selectedNodes: ComponentNode[] = []
   for (const c of model.componentsInOrder) {
     if (!installedIds.has(c.componentId)) continue

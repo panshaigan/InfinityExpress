@@ -37,5 +37,6 @@ Full narrative: [docs/weidu-install.md](docs/weidu-install.md).
 Game-dir `WeiDU.log` (`~folder/tp2~ #lang #number`) maps back with the same rules:
 
 - `weiduFolder:N` → match tp2 parent folder + number (no listing).
-- LABEL ids → `--list-components-json` on the **already-installed** game-dir tp2, then invert `resolveComponentNumber` (numbered ids are not matched from another mod’s listing).
+- LABEL ids → `--list-components-json` on the **already-installed** game-dir tp2, then listing `number` → `label[]` → `componentsById` (case-insensitive). Do not walk every XML LABEL through `resolveComponentNumber`. Skip numbered `folder:N` ids so they cannot steal another mod’s listing number.
+- Persist identified ids on the project session (`installedFromWeiduLog`); install status is identified ∩ current plan.
 - Do not stage from the download dir when importing. Destination folders may already be modded; vanilla folders may not.

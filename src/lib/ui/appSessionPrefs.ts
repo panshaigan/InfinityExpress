@@ -17,6 +17,11 @@ import type { StationSlot } from './chromeHotkeys'
 import type { AppPhase } from '../../ui/PhaseNav.types'
 import type { AppNavSlot } from '../../ui/StationNav'
 import type { ModsJourneyState } from '../../ui/mods/ModsStation'
+import {
+  persistedWeiduLogInstallsFrom,
+  sanitizePersistedWeiduLogInstalls,
+  type PersistedWeiduLogInstalls,
+} from '../install/weiduLogMap'
 
 export const APP_SESSION_STORAGE_KEY = 'infinity-express.app-session'
 
@@ -77,6 +82,8 @@ export interface GameSession {
   packagesChecked: string[]
   modsJourney: ModsJourneyState | null
   install?: PersistedInstallSession
+  /** Identified WeiDU.log installs (independent of current checkboxes). */
+  installedFromWeiduLog?: PersistedWeiduLogInstalls
 }
 
 export interface AppSessionStore {
@@ -140,6 +147,7 @@ function gameSessionFrom(value: unknown): GameSession | null {
     typeof o.activePresetId === 'string' ? o.activePresetId : null
   const activeStation = isStationSlot(o.activeStation) ? o.activeStation : 'presets'
   const install = o.install != null ? persistedInstallFrom(o.install) : undefined
+  const installedFromWeiduLog = persistedWeiduLogInstallsFrom(o.installedFromWeiduLog)
   return {
     selectedIds: stringArray(o.selectedIds),
     finishedStations,
@@ -154,6 +162,7 @@ function gameSessionFrom(value: unknown): GameSession | null {
     packagesChecked: stringArray(o.packagesChecked),
     modsJourney: modsJourneyFrom(o.modsJourney),
     ...(install ? { install } : {}),
+    ...(installedFromWeiduLog ? { installedFromWeiduLog } : {}),
   }
 }
 
@@ -417,6 +426,10 @@ export function sanitizeComponentsSession(
     selectedIds: [...finalized],
     activePresetId,
     presetBaseline,
+    installedFromWeiduLog: sanitizePersistedWeiduLogInstalls(
+      persistedWeiduLogInstallsFrom(session.installedFromWeiduLog),
+      knownIds,
+    ),
   }
 }
 
@@ -461,6 +474,7 @@ export function buildGameSessionSnapshot(input: {
   packagesChecked: ReadonlySet<string>
   modsJourney: ModsJourneyState | null
   install?: PersistedInstallSession
+  installedFromWeiduLog?: PersistedWeiduLogInstalls
 }): GameSession {
   return {
     selectedIds: [...input.selectedIds].sort(),
@@ -476,6 +490,9 @@ export function buildGameSessionSnapshot(input: {
     packagesChecked: [...input.packagesChecked],
     modsJourney: input.modsJourney ? { ...input.modsJourney } : null,
     ...(input.install ? { install: input.install } : {}),
+    ...(input.installedFromWeiduLog
+      ? { installedFromWeiduLog: input.installedFromWeiduLog }
+      : {}),
   }
 }
 

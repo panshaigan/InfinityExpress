@@ -6,6 +6,7 @@ export {
   finalizeSelection,
   createInitialSelection,
   selectionFromInstalledIds,
+  mergeInstalledIdsIntoSelection,
   toggleNode,
   toggleDisplayNode,
   nodeSelectionState,

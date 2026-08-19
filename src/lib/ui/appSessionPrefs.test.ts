@@ -157,6 +157,103 @@ describe('appSessionPrefs', () => {
     expect(out.presetBaseline).toBeNull()
   })
 
+  it('round-trips installedFromWeiduLog on the project session', () => {
+    const installedFromWeiduLog = {
+      hasLog: true,
+      componentIds: ['A7-DLCMERGER-MERGE_SOD'],
+      hits: [
+        {
+          componentId: 'A7-DLCMERGER-MERGE_SOD',
+          tp2Path: 'DLCMERGER/DLCMERGER.TP2',
+          absoluteTp2Path: 'D:/games/bg1/DLCMERGER/DLCMERGER.TP2',
+          stagedFolderName: 'DLCMERGER',
+          weiduNumber: 1,
+          languageIndex: 0,
+          phase: 'eet1' as const,
+        },
+      ],
+    }
+    const store = mergeAppSession(
+      emptyAppSession(),
+      'eet',
+      buildGameSessionSnapshot({
+        selectedIds: new Set(['A7-DLCMERGER-MERGE_SOD']),
+        finishedStations: new Set(),
+        routeUnlocked: true,
+        activePresetId: null,
+        presetBaseline: null,
+        activeStation: 'presets',
+        contentMainKey: null,
+        contentSubKey: null,
+        contentSubTag: null,
+        recommendedChecked: new Set(),
+        packagesChecked: new Set(),
+        modsJourney: null,
+        installedFromWeiduLog,
+      }),
+      'components',
+    )
+    writeAppSession(store)
+    const read = readAppSession()
+    expect(read.byGame.eet?.installedFromWeiduLog).toEqual(installedFromWeiduLog)
+    window.localStorage.removeItem(APP_SESSION_STORAGE_KEY)
+  })
+
+  it('sanitizeComponentsSession drops unknown WeiDU.log ids', () => {
+    const session: GameSession = {
+      selectedIds: ['known'],
+      finishedStations: [],
+      routeUnlocked: true,
+      activePresetId: null,
+      presetBaseline: null,
+      activeStation: 'presets',
+      contentMainKey: null,
+      contentSubKey: null,
+      contentSubTag: null,
+      recommendedChecked: [],
+      packagesChecked: [],
+      modsJourney: null,
+      installedFromWeiduLog: {
+        hasLog: true,
+        componentIds: ['known', 'unknown'],
+        hits: [
+          {
+            componentId: 'known',
+            tp2Path: 'mod/mod.tp2',
+            absoluteTp2Path: 'D:/g/mod/mod.tp2',
+            stagedFolderName: 'mod',
+            weiduNumber: 1,
+            languageIndex: 0,
+            phase: 'single',
+          },
+          {
+            componentId: 'unknown',
+            tp2Path: 'x/x.tp2',
+            absoluteTp2Path: 'D:/g/x/x.tp2',
+            stagedFolderName: 'x',
+            weiduNumber: 2,
+            languageIndex: 0,
+            phase: 'single',
+          },
+        ],
+      },
+    }
+    const model = {
+      componentsInOrder: [
+        {
+          componentId: 'known',
+          attrs: {},
+          effectiveEngine: ['bg2'],
+        },
+      ],
+    } as unknown as import('../xml/schema').InstallSequenceModel
+    const out = sanitizeComponentsSession(model, 'bg2', session, [])
+    expect(out.installedFromWeiduLog?.componentIds).toEqual(['known'])
+    expect(out.installedFromWeiduLog?.hits.map((h) => h.componentId)).toEqual([
+      'known',
+    ])
+  })
+
   it('round-trips plannedSnapshots on the install run', () => {
     const install = buildPersistedInstallSession({
       game: 'bg2',

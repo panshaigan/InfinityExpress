@@ -10,6 +10,7 @@ import {
 import {
   createInitialSelection,
   listSelectionState,
+  mergeInstalledIdsIntoSelection,
   randomizeDisplaySubtree,
   selectionFromInstalledIds,
   toggleDisplayNode,
@@ -104,6 +105,8 @@ import { DeveloperModeProvider } from './ui/developerModeContext'
 import { ToastProvider, useToast } from './ui/toasts/toastContext'
 import { isDesktopApp, normalizeFolderPath } from './lib/desktop/fsDialogs'
 import { setAppWindowTitle } from './lib/desktop/windowTitle'
+import { PATHS_CHANGED_EVENT } from './lib/ui/pathPrefsEvents'
+import { readWeiduPath } from './lib/ui/weiduPrefs'
 import {
   defaultSettingsTabForContext,
   firstMissingFocusField,
@@ -138,7 +141,10 @@ import {
 import { presetsForEngine } from './lib/presets/selectionPresetsStore'
 import {
   importInstalledFromDestinations,
+  mergeWeiduLogImports,
+  persistedWeiduLogToImport,
   weiduLogImportMessage,
+  weiduLogImportToPersisted,
   type WeiduLogImportResult,
 } from './lib/install/weiduLogMap'
 import './index.css'
@@ -305,6 +311,7 @@ function AppShell() {
         replaceSelection: boolean
         seedFixesIfNoLog: boolean
         toast: boolean
+        mergeIdentified?: boolean
       },
     ) => {
       const gen = ++weiduImportGenRef.current
@@ -314,7 +321,11 @@ function AppShell() {
         destinations,
       )
       if (gen !== weiduImportGenRef.current) return result
-      setWeiduLogImport(result)
+      setWeiduLogImport((prev) =>
+        opts.replaceSelection || !result.hasLog
+          ? result
+          : mergeWeiduLogImports(prev, result),
+      )
       destImportKeyRef.current = destinationsImportKey(destinations)
       if (opts.replaceSelection && result.hasLog) {
         setSelectedIds(
@@ -328,13 +339,48 @@ function AppShell() {
           const msg = weiduLogImportMessage(result)
           if (msg) pushToast({ tone: 'success', message: msg })
         }
+      } else if (opts.mergeIdentified && result.componentIds.size > 0) {
+        setSelectedIds((prev) =>
+          mergeInstalledIdsIntoSelection(
+            model,
+            engine,
+            prev,
+            result.componentIds,
+          ),
+        )
+        if (opts.toast) {
+          const msg = weiduLogImportMessage(result)
+          if (msg) pushToast({ tone: 'success', message: msg })
+        }
       } else if (opts.seedFixesIfNoLog && !result.hasLog) {
         recommended.seedFixesBaseline(engine)
+      }
+      if (opts.toast && result.listingErrors.length > 0 && !result.hasLog) {
+        pushToast({ tone: 'error', message: result.listingErrors[0]! })
       }
       return result
     },
     [model, pushToast, recommended],
   )
+
+  const weiduPathRef = useRef(readWeiduPath())
+  useEffect(() => {
+    function onPathsChanged() {
+      const next = readWeiduPath().trim()
+      const prev = weiduPathRef.current.trim()
+      weiduPathRef.current = next
+      if (!game || !projectId) return
+      if (!next || next === prev) return
+      void refreshWeiduLogImport(game, gameFolders, {
+        replaceSelection: false,
+        seedFixesIfNoLog: false,
+        toast: true,
+        mergeIdentified: true,
+      })
+    }
+    window.addEventListener(PATHS_CHANGED_EVENT, onPathsChanged)
+    return () => window.removeEventListener(PATHS_CHANGED_EVENT, onPathsChanged)
+  }, [game, projectId, gameFolders, refreshWeiduLogImport])
 
   useEffect(() => {
     void setAppWindowTitle(projectMeta?.name ?? null)
@@ -625,6 +671,9 @@ function AppShell() {
       packagesChecked: recommended.checkedPackages,
       modsJourney,
       ...(install ? { install } : {}),
+      ...(weiduLogImport
+        ? { installedFromWeiduLog: weiduLogImportToPersisted(weiduLogImport) }
+        : {}),
     })
   }, [
     activeStation,
@@ -641,6 +690,7 @@ function AppShell() {
     routeUnlocked,
     selectedIds,
     model,
+    weiduLogImport,
   ])
 
   const { flushSession } = useProjectSessionPersistence({
@@ -688,7 +738,10 @@ function AppShell() {
     })
     setSearchScope('section')
     clearFocus()
-    setWeiduLogImport(null)
+    const restoredImport = session
+      ? persistedWeiduLogToImport(session.installedFromWeiduLog)
+      : null
+    setWeiduLogImport(restoredImport)
 
     if (!session) {
       setRouteUnlocked(true)
