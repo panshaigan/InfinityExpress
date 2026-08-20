@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
   safeLogSegment,
-  stepAttemptPaths,
+  stepStreamPaths,
+  stepStreamStem,
+  stepStreamStemFromFolder,
   stepFolderName,
 } from './stepLogs'
 
@@ -17,11 +19,28 @@ describe('stepLogs', () => {
     ).toBe('012-Tweaks-Anthology-cd_tweaks_x')
   })
 
-  it('builds attempt paths with mod/component stems', () => {
-    expect(stepAttemptPaths('D:/logs/run/001-m-c', 2)).toEqual({
-      modPath: 'D:/logs/run/001-m-c/mod-2.log',
-      componentPath: 'D:/logs/run/001-m-c/component-2.log',
-      resultsPath: 'D:/logs/run/001-m-c/results-2.log',
+  it('builds single named stream paths with mod/component stem', () => {
+    expect(
+      stepStreamPaths('D:/logs/run/012-Tweaks-Anthology-cd_tweaks_x', {
+        modId: 'Tweaks-Anthology',
+        componentId: 'cd_tweaks_x',
+      }),
+    ).toEqual({
+      modPath:
+        'D:/logs/run/012-Tweaks-Anthology-cd_tweaks_x/Tweaks-Anthology-cd_tweaks_x-mod.log',
+      componentPath:
+        'D:/logs/run/012-Tweaks-Anthology-cd_tweaks_x/Tweaks-Anthology-cd_tweaks_x-component.log',
+      resultsPath:
+        'D:/logs/run/012-Tweaks-Anthology-cd_tweaks_x/Tweaks-Anthology-cd_tweaks_x-results.log',
     })
+  })
+
+  it('derives stream stem from step folder', () => {
+    expect(stepStreamStemFromFolder('012-Tweaks-Anthology-cd_tweaks_x')).toBe(
+      'Tweaks-Anthology-cd_tweaks_x',
+    )
+    expect(
+      stepStreamStem({ modId: 'Tweaks-Anthology', componentId: 'cd_tweaks_x' }),
+    ).toBe('Tweaks-Anthology-cd_tweaks_x')
   })
 })

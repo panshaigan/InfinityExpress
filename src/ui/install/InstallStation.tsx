@@ -99,6 +99,8 @@ interface Props {
   installLock?: InstallLock
   onInstallActionsReady?: (actions: InstallActions | null) => void
   weiduLogImport?: WeiduLogImportResult | null
+  /** True when the Install phase is the visible app phase. */
+  active?: boolean
 }
 
 function allModsPresent(needed: string[], mods: WorkingMod[]): boolean {
@@ -131,11 +133,14 @@ export function InstallStation({
   installLock: installLockProp,
   onInstallActionsReady,
   weiduLogImport = null,
+  active = true,
 }: Props) {
   const profileInstallTable =
     import.meta.env.DEV && (window as Window & { __IX_PROFILE_INSTALL?: boolean }).__IX_PROFILE_INSTALL === true
   const { pushToast } = useToast()
-  const followCursorForDetailsRef = useRef(true)
+  const [followCursor, setFollowCursor] = useState(
+    () => initialInstallSession?.ui.followCursor ?? false,
+  )
   const [pathTick, setPathTick] = useState(0)
   const [pauseOnWarnings, setPauseOnWarnings] = useState(
     () => initialInstallSession?.ui.pauseOnWarnings ?? false,
@@ -191,6 +196,7 @@ export function InstallStation({
       ? { installSession: initialInstallSession }
       : null,
     weiduLogImport,
+    active,
     pauseOnWarnings,
   })
 
@@ -269,6 +275,7 @@ export function InstallStation({
       selectedComponentId,
       hideInstalled,
       pauseOnWarnings,
+      followCursor,
       runElapsedMs: sampledElapsedMs,
     })
     const nextKey = JSON.stringify(nextSession)
@@ -276,6 +283,7 @@ export function InstallStation({
     lastPersistedSessionKeyRef.current = nextKey
     onInstallSessionChange(nextSession)
   }, [
+    followCursor,
     game,
     hideInstalled,
     pauseOnWarnings,
@@ -294,12 +302,12 @@ export function InstallStation({
   )
 
   useEffect(() => {
-    if (cursorStepId && followCursorForDetailsRef.current) {
+    if (cursorStepId && followCursor) {
       setSelectedStepId(cursorStepId)
-      const active = steps.find((s) => s.stepId === cursorStepId)
-      if (active?.componentId) {
+      const activeStep = steps.find((s) => s.stepId === cursorStepId)
+      if (activeStep?.componentId) {
         setSelectedComponentId((prev) =>
-          prev === active.componentId ? prev : active.componentId,
+          prev === activeStep.componentId ? prev : activeStep.componentId,
         )
       }
       return
@@ -308,7 +316,7 @@ export function InstallStation({
       setSelectedStepId(steps[0].stepId)
       setSelectedComponentId(steps[0].componentId)
     }
-  }, [steps, selectedStepId, cursorStepId])
+  }, [steps, selectedStepId, cursorStepId, followCursor])
 
   useEffect(() => {
     if (run?.runState === 'completed') setCleanupOffer(true)
@@ -523,7 +531,7 @@ export function InstallStation({
         clearPlannedSnapshot(stepId)
       },
       onRequestMoveCursor: (stepId: string) => {
-        followCursorForDetailsRef.current = true
+        setFollowCursor(true)
         const targetIdx = stepIndexById(tableSteps, stepId)
         if (targetIdx < 0) return
         const crossesInstalled =
@@ -544,7 +552,7 @@ export function InstallStation({
             confirmLabel: 'Move cursor',
             onConfirm: () => {
               setConfirmDialog(null)
-              followCursorForDetailsRef.current = true
+              setFollowCursor(true)
               moveCursorToStep(stepId)
             },
           })
@@ -899,7 +907,7 @@ export function InstallStation({
 
   const onSelectStep = useCallback((stepId: string, componentId: string) => {
     const t0 = profileInstallTable ? performance.now() : 0
-    followCursorForDetailsRef.current = false
+    setFollowCursor(false)
     setSelectedStepId(stepId)
     setSelectedComponentId(componentId)
     if (profileInstallTable) {
@@ -1020,13 +1028,18 @@ export function InstallStation({
               <span className="install-action-icon-wrap has-icon-tip">
                 <button
                   type="button"
-                  className="install-action-icon-btn"
+                  className={`install-action-icon-btn${followCursor ? ' active' : ''}`}
                   disabled={!cursorStepId}
-                  aria-label="Jump to install cursor"
+                  aria-pressed={followCursor}
+                  aria-label="Follow install cursor"
                   onClick={() => {
+                    if (followCursor) {
+                      setFollowCursor(false)
+                      return
+                    }
                     const step = steps.find((s) => s.stepId === cursorStepId)
                     if (!step) return
-                    followCursorForDetailsRef.current = true
+                    setFollowCursor(true)
                     setSelectedStepId(step.stepId)
                     setSelectedComponentId(step.componentId)
                     setJumpToCursorNonce((n) => n + 1)
@@ -1034,7 +1047,7 @@ export function InstallStation({
                 >
                   <JumpToCursorIcon />
                 </button>
-                <IconTip>Jump to install cursor</IconTip>
+                <IconTip>Follow install cursor</IconTip>
               </span>
               <span className="install-action-icon-wrap has-icon-tip">
                 <button

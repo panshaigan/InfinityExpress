@@ -84,8 +84,6 @@ pub struct RunStepInput {
   pub step_id: String,
   pub log_dir: String,
   pub step_folder: String,
-  /// 1-based attempt index for `mod-N.log` / `component-N.log` (no truncate).
-  pub attempt: u32,
   pub timeout_secs: Option<u64>,
 }
 
@@ -585,6 +583,29 @@ fn append_file(path: &Path, text: &str) -> Result<(), String> {
   file.write_all(text.as_bytes()).map_err(|e| e.to_string())
 }
 
+/// `{NNN}-{safeMod}-{safeComponent}` → `{safeMod}-{safeComponent}` for stream filenames.
+fn stream_stem_from_folder(step_folder: &str) -> String {
+  let trimmed = step_folder.trim();
+  match trimmed.split_once('-') {
+    Some((_, rest)) if !rest.is_empty() => rest.to_string(),
+    _ => {
+      if trimmed.is_empty() {
+        "step".into()
+      } else {
+        trimmed.to_string()
+      }
+    }
+  }
+}
+
+fn step_stream_paths(step_dir: &Path, step_folder: &str) -> (PathBuf, PathBuf) {
+  let stem = stream_stem_from_folder(step_folder);
+  (
+    step_dir.join(format!("{stem}-mod.log")),
+    step_dir.join(format!("{stem}-component.log")),
+  )
+}
+
 fn find_debug_file(tp2: &Path) -> Option<PathBuf> {
   let search_dir = tp2.parent()?;
   let entries = fs::read_dir(search_dir).ok()?;
@@ -731,9 +752,7 @@ pub async fn run_weidu_step(
   let log_dir = PathBuf::from(input.log_dir.trim());
   let step_dir = log_dir.join(&input.step_folder);
   fs::create_dir_all(&step_dir).map_err(|e| e.to_string())?;
-  let attempt = if input.attempt > 0 { input.attempt } else { 1 };
-  let stdout_path = step_dir.join(format!("mod-{attempt}.log"));
-  let stderr_path = step_dir.join(format!("component-{attempt}.log"));
+  let (stdout_path, stderr_path) = step_stream_paths(&step_dir, &input.step_folder);
   let run_stdout = log_dir.join("run-stdout.log");
   let run_stderr = log_dir.join("run-stderr.log");
 
@@ -928,8 +947,6 @@ pub struct ForceUninstallInput {
   pub language_index: i32,
   pub log_dir: String,
   pub step_folder: String,
-  /// 1-based attempt index for `mod-N.log` / `component-N.log` (no truncate).
-  pub attempt: u32,
 }
 
 /// Same launcher as install: copy weidu → `setup-{weiduId}.exe`, run that exe (no tp2 argv)
@@ -952,9 +969,7 @@ pub async fn run_weidu_force_uninstall(
   let log_dir = PathBuf::from(input.log_dir.trim());
   let step_dir = log_dir.join(input.step_folder.trim());
   fs::create_dir_all(&step_dir).map_err(|e| e.to_string())?;
-  let attempt = if input.attempt > 0 { input.attempt } else { 1 };
-  let stdout_path = step_dir.join(format!("mod-{attempt}.log"));
-  let stderr_path = step_dir.join(format!("component-{attempt}.log"));
+  let (stdout_path, stderr_path) = step_stream_paths(&step_dir, &input.step_folder);
   let run_stdout = log_dir.join("run-stdout.log");
   let run_stderr = log_dir.join("run-stderr.log");
 

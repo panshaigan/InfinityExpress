@@ -4,8 +4,8 @@ import { consoleLineTone } from '../../lib/install/consoleLineHighlight'
 import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
 import { readTextFile, fileIsNonempty } from '../../lib/desktop/fsDialogs'
 import {
-  anyAttemptLogNonempty,
-  readConcatenatedAttemptLogs,
+  anyStepStreamNonempty,
+  readStepStreamLog,
   stepDirFromLogPath,
 } from '../../lib/install/stepLogs'
 import {
@@ -63,12 +63,15 @@ function lastNonEmptyLine(text: string): string | null {
   return lines.length > 0 ? lines[lines.length - 1]! : null
 }
 
-async function loadStepResultsText(stepDir: string): Promise<string> {
-  let text = await readConcatenatedAttemptLogs(stepDir, 'results')
+async function loadStepResultsText(
+  stepDir: string,
+  step: { modId: string; componentId: string },
+): Promise<string> {
+  let text = await readStepStreamLog(stepDir, 'results', step)
   if (!text.trim()) {
     const fromPipes = [
-      await readConcatenatedAttemptLogs(stepDir, 'mod'),
-      await readConcatenatedAttemptLogs(stepDir, 'component'),
+      await readStepStreamLog(stepDir, 'mod', step),
+      await readStepStreamLog(stepDir, 'component', step),
     ]
       .join('\n')
       .split(/\r?\n/)
@@ -269,7 +272,10 @@ export function InstallDetailPane({
     stepProcessed && (!!logAvailable.results || !!logAvailable.mod || !!logAvailable.component)
   const urlHref = eff?.url?.trim() || null
   const readmeHref = (() => {
-    const raw = eff?.readme?.trim()
+    const raw =
+      component?.attrs.readme?.trim() ||
+      eff?.readme?.trim() ||
+      null
     if (!raw) return null
     return withHtmlPreviewIfNeeded(raw)
   })()
@@ -295,17 +301,17 @@ export function InstallDetailPane({
       const tasks: Promise<void>[] = []
       if (dir) {
         tasks.push(
-          anyAttemptLogNonempty(dir, 'mod').then((ok) => {
+          anyStepStreamNonempty(dir, 'mod', step).then((ok) => {
             next.mod = ok
           }),
         )
         tasks.push(
-          anyAttemptLogNonempty(dir, 'component').then((ok) => {
+          anyStepStreamNonempty(dir, 'component', step).then((ok) => {
             next.component = ok
           }),
         )
         tasks.push(
-          anyAttemptLogNonempty(dir, 'results').then((ok) => {
+          anyStepStreamNonempty(dir, 'results', step).then((ok) => {
             next.results = ok
           }),
         )
@@ -340,7 +346,7 @@ export function InstallDetailPane({
     }
     let cancelled = false
     async function loadLastResult() {
-      const text = await loadStepResultsText(stepDir!)
+      const text = await loadStepResultsText(stepDir!, step!)
       if (cancelled) return
       setLastResultLine(lastNonEmptyLine(text))
     }
@@ -370,7 +376,7 @@ export function InstallDetailPane({
     setLogContents(null)
     setLogError(null)
     setLogLoading(true)
-    const text = await readConcatenatedAttemptLogs(stepDir, kind)
+    const text = await readStepStreamLog(stepDir, kind, step)
     setLogLoading(false)
     if (!text.trim()) setLogError('Could not read log file.')
     else setLogContents(text)
@@ -400,7 +406,7 @@ export function InstallDetailPane({
     setLogContents(null)
     setLogError(null)
     setLogLoading(true)
-    const text = await loadStepResultsText(stepDir)
+    const text = await loadStepResultsText(stepDir, step)
     setLogLoading(false)
     if (!text.trim()) {
       setLogContents('(No matching result lines found.)')

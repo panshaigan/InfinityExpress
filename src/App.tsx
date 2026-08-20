@@ -1282,6 +1282,7 @@ function AppShell() {
               installLock={installLock}
               onInstallActionsReady={setInstallActions}
               weiduLogImport={weiduLogImport}
+              active={appPhase === 'install'}
             />
           </div>
         </div>

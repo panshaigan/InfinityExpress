@@ -14,40 +14,52 @@ export function stepFolderName(
   return `${String(index + 1).padStart(3, '0')}-${safeMod}-${safeComponent}`
 }
 
+/** `{safeMod}-{safeComponent}` — file stem shared by mod/component/results streams. */
+export function stepStreamStem(step: {
+  modId: string
+  componentId: string
+}): string {
+  return `${safeLogSegment(step.modId)}-${safeLogSegment(step.componentId)}`
+}
+
+/**
+ * Stem from a step folder dirname (`012-mod-comp` → `mod-comp`).
+ * Matches Rust `stream_stem_from_folder`.
+ */
+export function stepStreamStemFromFolder(stepFolder: string): string {
+  const trimmed = stepFolder.trim()
+  const i = trimmed.indexOf('-')
+  if (i >= 0 && i < trimmed.length - 1) return trimmed.slice(i + 1)
+  return trimmed || 'step'
+}
+
 export function joinLogPath(dir: string, name: string): string {
   const base = dir.replace(/\\/g, '/').replace(/\/$/, '')
   return `${base}/${name}`
 }
 
-export function modLogFileName(attempt: number): string {
-  return `mod-${attempt}.log`
+export function modLogFileName(stem: string): string {
+  return `${stem}-mod.log`
 }
 
-export function componentLogFileName(attempt: number): string {
-  return `component-${attempt}.log`
+export function componentLogFileName(stem: string): string {
+  return `${stem}-component.log`
 }
 
-export function resultsLogFileName(attempt: number): string {
-  return `results-${attempt}.log`
+export function resultsLogFileName(stem: string): string {
+  return `${stem}-results.log`
 }
 
-export function stepAttemptPaths(stepDir: string, attempt: number) {
+export function stepStreamPaths(
+  stepDir: string,
+  step: { modId: string; componentId: string },
+) {
+  const stem = stepStreamStem(step)
   return {
-    modPath: joinLogPath(stepDir, modLogFileName(attempt)),
-    componentPath: joinLogPath(stepDir, componentLogFileName(attempt)),
-    resultsPath: joinLogPath(stepDir, resultsLogFileName(attempt)),
+    modPath: joinLogPath(stepDir, modLogFileName(stem)),
+    componentPath: joinLogPath(stepDir, componentLogFileName(stem)),
+    resultsPath: joinLogPath(stepDir, resultsLogFileName(stem)),
   }
-}
-
-/** Next 1-based attempt index: first missing `mod-N.log` in the step folder. */
-export async function nextStepAttempt(stepDir: string): Promise<number> {
-  const base = stepDir.trim()
-  if (!base) return 1
-  for (let n = 1; n < 10_000; n++) {
-    const existing = await readTextFile(joinLogPath(base, modLogFileName(n)))
-    if (existing == null) return n
-  }
-  return 1
 }
 
 export function stepDirFromLogPath(logPath: string | undefined | null): string | null {
@@ -58,14 +70,14 @@ export function stepDirFromLogPath(logPath: string | undefined | null): string |
   return norm.slice(0, i)
 }
 
-/** Concatenate `stem-1.log`, `stem-2.log`, … for every attempt that has a `mod-N.log`. */
-export async function readConcatenatedAttemptLogs(
+/** Legacy attempt files `stem-1.log`, `stem-2.log`, … */
+async function readLegacyConcatenatedAttemptLogs(
   stepDir: string,
   stem: 'mod' | 'component' | 'results',
 ): Promise<string> {
   const parts: string[] = []
   for (let n = 1; n < 10_000; n++) {
-    const modText = await readTextFile(joinLogPath(stepDir, modLogFileName(n)))
+    const modText = await readTextFile(joinLogPath(stepDir, `mod-${n}.log`))
     if (modText == null) break
     if (stem === 'mod') {
       const trimmed = modText.replace(/\s+$/, '')
@@ -80,21 +92,60 @@ export async function readConcatenatedAttemptLogs(
   return parts.join('\n\n')
 }
 
+function streamFileName(
+  streamStem: string,
+  kind: 'mod' | 'component' | 'results',
+): string {
+  if (kind === 'mod') return modLogFileName(streamStem)
+  if (kind === 'component') return componentLogFileName(streamStem)
+  return resultsLogFileName(streamStem)
+}
+
+/**
+ * Read the single named stream file for a step folder.
+ * Falls back to legacy `mod-N.log` / `component-N.log` / `results-N.log` concat.
+ */
+export async function readStepStreamLog(
+  stepDir: string,
+  kind: 'mod' | 'component' | 'results',
+  step?: { modId: string; componentId: string } | null,
+): Promise<string> {
+  const folder = stepDir.replace(/\\/g, '/').replace(/\/$/, '')
+  const folderName = folder.slice(folder.lastIndexOf('/') + 1)
+  const stem = step ? stepStreamStem(step) : stepStreamStemFromFolder(folderName)
+  const text = await readTextFile(joinLogPath(stepDir, streamFileName(stem, kind)))
+  if (text != null) return text.replace(/\s+$/, '')
+  return readLegacyConcatenatedAttemptLogs(stepDir, kind)
+}
+
+export async function anyStepStreamNonempty(
+  stepDir: string,
+  kind: 'mod' | 'component' | 'results',
+  step?: { modId: string; componentId: string } | null,
+): Promise<boolean> {
+  const folder = stepDir.replace(/\\/g, '/').replace(/\/$/, '')
+  const folderName = folder.slice(folder.lastIndexOf('/') + 1)
+  const stem = step ? stepStreamStem(step) : stepStreamStemFromFolder(folderName)
+  const text = await readTextFile(joinLogPath(stepDir, streamFileName(stem, kind)))
+  if (text != null) return text.trim().length > 0
+  const legacy = await readLegacyConcatenatedAttemptLogs(stepDir, kind)
+  return legacy.trim().length > 0
+}
+
+/** @deprecated Prefer `readStepStreamLog` — kept as alias for callers mid-migration. */
+export async function readConcatenatedAttemptLogs(
+  stepDir: string,
+  stem: 'mod' | 'component' | 'results',
+): Promise<string> {
+  return readStepStreamLog(stepDir, stem)
+}
+
+/** @deprecated Prefer `anyStepStreamNonempty`. */
 export async function anyAttemptLogNonempty(
   stepDir: string,
   stem: 'mod' | 'component' | 'results',
 ): Promise<boolean> {
-  for (let n = 1; n < 10_000; n++) {
-    const modText = await readTextFile(joinLogPath(stepDir, modLogFileName(n)))
-    if (modText == null) return false
-    if (stem === 'mod') {
-      if (modText.trim().length > 0) return true
-      continue
-    }
-    const text = await readTextFile(joinLogPath(stepDir, `${stem}-${n}.log`))
-    if (text != null && text.trim().length > 0) return true
-  }
-  return false
+  return anyStepStreamNonempty(stepDir, stem)
 }
 
 export function runCommandsLogPath(logDir: string): string {

@@ -56,11 +56,11 @@ export interface InstallStep {
   finishedAt?: string
   warnings: string[]
   errors: string[]
-  /** Deprecated: detail Results load from on-disk `results-*.log`; kept empty for session compat. */
+  /** Deprecated: detail Results load from on-disk stream log; kept empty for session compat. */
   resultLines: string[]
-  /** Latest attempt mod log (`mod-N.log`, process stdout). */
+  /** Step mod log (`{mod}-{component}-mod.log`, process stdout). */
   stdoutLogPath?: string
-  /** Latest attempt component log (`component-N.log`, process stderr). */
+  /** Step component log (`{mod}-{component}-component.log`, process stderr). */
   stderrLogPath?: string
   debugLogPath?: string
 }

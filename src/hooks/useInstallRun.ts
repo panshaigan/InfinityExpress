@@ -69,8 +69,7 @@ import type { PersistedInstallSession } from '../lib/ui/appSessionPrefs'
 import {
   appendRunLogLine,
   appendStepResultsLine,
-  nextStepAttempt,
-  stepAttemptPaths,
+  stepStreamPaths,
   stepFolderName,
 } from '../lib/install/stepLogs'
 
@@ -155,6 +154,8 @@ export function useInstallRun(options: {
   initialInstallState?: InstallRunInitialState | null
   /** Reverse-mapped WeiDU.log hits for alreadyInstalled marks. */
   weiduLogImport?: WeiduLogImportResult | null
+  /** When true, Install phase is the visible app phase (may stay mounted while hidden). */
+  active?: boolean
   /** When true, pause after a step with WeiDU exit code 3 (installed with warnings). */
   pauseOnWarnings?: boolean
 }) {
@@ -166,11 +167,11 @@ export function useInstallRun(options: {
     projectId,
     initialInstallState,
     weiduLogImport = null,
+    active = true,
     pauseOnWarnings = false,
   } = options
   const pauseOnWarningsRef = useRef(pauseOnWarnings)
   pauseOnWarningsRef.current = pauseOnWarnings
-  const shouldLoadConsoleRef = useRef(!!initialInstallState?.installSession)
   const [run, setRun] = useState<InstallRun | null>(() => {
     const session = initialInstallState?.installSession
     return session?.run ?? null
@@ -201,9 +202,11 @@ export function useInstallRun(options: {
   const stopRequestedRef = useRef(false)
   const activeStepIdRef = useRef<string | null>(null)
   const runRef = useRef<InstallRun | null>(null)
-  /** Current attempt results file for the active WeiDU step (disk-only). */
+  /** Current step results file for the active WeiDU step (disk-only). */
   const activeResultsPathRef = useRef<string | null>(null)
   const logDirRef = useRef<string>('')
+  const wasActiveRef = useRef(false)
+  const lastConsoleLoadKeyRef = useRef<string | null>(null)
 
   useEffect(() => {
     logDirRef.current = run?.logDir ?? ''
@@ -222,10 +225,17 @@ export function useInstallRun(options: {
   }, [run])
 
   useEffect(() => {
-    if (!shouldLoadConsoleRef.current) return
+    const becameActive = active && !wasActiveRef.current
+    wasActiveRef.current = active
+    if (!active) return
     const logDir = run?.logDir
     if (!logDir) return
-    shouldLoadConsoleRef.current = false
+    const live =
+      run?.runState === 'running' || run?.runState === 'waitingForInput'
+    if (live) return
+    const key = `${run?.runId ?? ''}:${logDir}`
+    if (!becameActive && lastConsoleLoadKeyRef.current === key) return
+    lastConsoleLoadKeyRef.current = key
     let cancelled = false
     void loadInstallConsoleFromRunLog(logDir).then((loaded) => {
       if (cancelled) return
@@ -243,7 +253,7 @@ export function useInstallRun(options: {
     return () => {
       cancelled = true
     }
-  }, [run?.logDir, run?.runId])
+  }, [active, run?.logDir, run?.runId, run?.runState])
 
   const rawPlanSteps = useMemo(() => {
     if (!game) return []
@@ -605,8 +615,7 @@ export function useInstallRun(options: {
           const stepDir = current.logDir
             ? `${current.logDir.replace(/\\/g, '/').replace(/\/$/, '')}/${folder}`
             : ''
-          const attempt = stepDir ? await nextStepAttempt(stepDir) : 1
-          const paths = stepDir ? stepAttemptPaths(stepDir, attempt) : null
+          const paths = stepDir ? stepStreamPaths(stepDir, step) : null
           activeResultsPathRef.current = paths?.resultsPath ?? null
           if (paths) {
             step = {
@@ -623,7 +632,6 @@ export function useInstallRun(options: {
             languageIndex: step.languageIndex ?? 0,
             logDir: current.logDir,
             stepFolder: folder,
-            attempt,
           })
           pushConsoleLine(`[uninstall] Finished ${step.modId}`)
         } catch (err) {
@@ -669,8 +677,7 @@ export function useInstallRun(options: {
           const stepDir = current.logDir
             ? `${current.logDir.replace(/\\/g, '/').replace(/\/$/, '')}/${folder}`
             : ''
-          const attempt = stepDir ? await nextStepAttempt(stepDir) : 1
-          const paths = stepDir ? stepAttemptPaths(stepDir, attempt) : null
+          const paths = stepDir ? stepStreamPaths(stepDir, step) : null
           activeResultsPathRef.current = paths?.resultsPath ?? null
           if (paths) {
             step = {
@@ -687,7 +694,6 @@ export function useInstallRun(options: {
             languageIndex: step.languageIndex ?? 0,
             logDir: current.logDir,
             stepFolder: folder,
-            attempt,
           })
           pushConsoleLine(`[stop] Force-uninstall finished for ${step.modId}`)
         } catch (err) {
@@ -1150,16 +1156,14 @@ export function useInstallRun(options: {
               continue
             }
 
-            const attempt = stepLogDir ? await nextStepAttempt(stepLogDir) : 1
-            current = mergeLiveMarkers(current, runRef.current)
-            const attemptPaths = stepLogDir
-              ? stepAttemptPaths(stepLogDir, attempt)
+            const streamPaths = stepLogDir
+              ? stepStreamPaths(stepLogDir, step)
               : null
-            activeResultsPathRef.current = attemptPaths?.resultsPath ?? null
+            activeResultsPathRef.current = streamPaths?.resultsPath ?? null
             step = {
               ...step,
-              stdoutLogPath: attemptPaths?.modPath,
-              stderrLogPath: attemptPaths?.componentPath,
+              stdoutLogPath: streamPaths?.modPath,
+              stderrLogPath: streamPaths?.componentPath,
             }
             current = mergeLiveMarkers(
               {
@@ -1183,7 +1187,6 @@ export function useInstallRun(options: {
               stepId: step.stepId,
               logDir: current.logDir,
               stepFolder,
-              attempt,
             })
             activeResultsPathRef.current = null
             current = mergeLiveMarkers(current, runRef.current)
@@ -1215,9 +1218,9 @@ export function useInstallRun(options: {
               warnings.push('WeiDU.log verification incomplete')
             }
 
-            const resultsTail = attemptPaths
+            const resultsTail = streamPaths
               ? await readTextFileTail(
-                  attemptPaths.resultsPath,
+                  streamPaths.resultsPath,
                   INSTALL_FAILURE_STDERR_TAIL_BYTES,
                 )
               : null
@@ -1244,8 +1247,8 @@ export function useInstallRun(options: {
               ...step,
               status,
               progress: null,
-              stdoutLogPath: result.stdoutPath || attemptPaths?.modPath,
-              stderrLogPath: result.stderrPath || attemptPaths?.componentPath,
+              stdoutLogPath: result.stdoutPath || streamPaths?.modPath,
+              stderrLogPath: result.stderrPath || streamPaths?.componentPath,
               debugLogPath: result.debugPath ?? undefined,
               warnings,
               errors:
