@@ -35,6 +35,8 @@ import {
   BreakpointIcon,
   MoveCursorIcon,
   RemoveFromPlanIcon,
+  SkipNextIcon,
+  SkipPreviousIcon,
   SnapshotIcon,
   UninstallBackIcon,
 } from './InstallControlIcons'
@@ -169,7 +171,11 @@ interface InstallTableActions {
   plannedSnapshots: PlannedSnapshot[]
   game: SelectedGame | null
   canNavigate: boolean
+  canGoPrevious: boolean
+  canSkip: boolean
   installLock: InstallLock
+  onRequestGoPrevious: () => void
+  onSkip: () => void
   onRequestUninstallBack: (stepId: string) => void
   onToggleBreakpoint: (stepId: string) => void
   onRequestPlanSnapshot: (stepId: string) => void
@@ -302,6 +308,26 @@ function InstallStepContextMenu({
       aria-label="Install step actions"
       style={style}
     >
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={!actions.canGoPrevious}
+        onClick={() => run(() => actions.onRequestGoPrevious())}
+      >
+        <SkipPreviousIcon />
+        <span>Go back one step</span>
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={!actions.canSkip}
+        onClick={() => run(() => actions.onSkip())}
+      >
+        <SkipNextIcon />
+        <span>Skip package at cursor</span>
+      </button>
       <button
         type="button"
         role="menuitem"

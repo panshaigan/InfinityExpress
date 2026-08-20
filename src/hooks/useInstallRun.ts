@@ -14,8 +14,10 @@ import { buildInstallPlan } from '../lib/install/planBuilder'
 import { syncRunWithPlan } from '../lib/install/installLock'
 import { planStepsMatchRun } from '../lib/ui/appSessionPrefs'
 import {
+  canGoPreviousAt,
   canMoveCursorImmediately,
   canSetBreakpoint,
+  canSkipAt,
   isStepDone,
   nextActionableCursor,
   stepIndexById,
@@ -1405,24 +1407,13 @@ export function useInstallRun(options: {
   }, [appendCommandLine, applyStoppedAtCursor, gameFolders])
 
   const skipCurrent = useCallback(() => {
-    const current = runRef.current
+    const current = runRef.current ?? ensureIdleRun()
     if (!current) return
-    const halt =
-      current.runState === 'paused' ||
-      current.runState === 'stopped' ||
-      current.runState === 'waitingForInput'
-    if (!halt) return
+    if (!canSkipAt(current.steps, current.cursor, current.runState)) return
 
     const i = current.cursor
     const step = current.steps[i]
     if (!step) return
-    if (
-      step.status === 'succeeded' ||
-      step.status === 'alreadyInstalled' ||
-      step.status === 'skipped'
-    ) {
-      return
-    }
 
     setSkipping(true)
     try {
@@ -1446,12 +1437,14 @@ export function useInstallRun(options: {
     } finally {
       setSkipping(false)
     }
-  }, [appendCommandLine, withNormalizedCursor])
+  }, [appendCommandLine, ensureIdleRun, withNormalizedCursor])
 
   const goToPreviousStep = useCallback(async () => {
-    const current = runRef.current
+    const current = runRef.current ?? ensureIdleRun()
     if (!current) return false
-    if (current.runState !== 'paused' && current.runState !== 'stopped') return false
+    if (!canGoPreviousAt(current.steps, current.cursor, current.runState)) {
+      return false
+    }
 
     const prev = current.cursor - 1
     if (prev < 0) return false
@@ -1475,7 +1468,13 @@ export function useInstallRun(options: {
     } finally {
       setGoingPrevious(false)
     }
-  }, [appendCommandLine, uninstallStepAtIndex, withMergedResults, withNormalizedCursor])
+  }, [
+    appendCommandLine,
+    ensureIdleRun,
+    uninstallStepAtIndex,
+    withMergedResults,
+    withNormalizedCursor,
+  ])
 
   const uninstallBackToStep = useCallback(
     async (targetStepId: string) => {
@@ -1679,6 +1678,16 @@ export function useInstallRun(options: {
     )
   }, [])
 
+  const effectiveSteps = run?.steps ?? planSteps
+  const effectiveCursor = run?.cursor ?? nextActionableCursor(planSteps, 0)
+  const effectiveRunState = run?.runState ?? 'idle'
+  const canGoPrevious = canGoPreviousAt(
+    effectiveSteps,
+    effectiveCursor,
+    effectiveRunState,
+  )
+  const canSkip = canSkipAt(effectiveSteps, effectiveCursor, effectiveRunState)
+
   return {
     run,
     planSteps,
@@ -1712,9 +1721,7 @@ export function useInstallRun(options: {
     sendInput,
     appendCommandLine,
     setRun,
-    canGoPrevious: run
-      ? run.cursor > 0 &&
-        (run.runState === 'paused' || run.runState === 'stopped')
-      : false,
+    canGoPrevious,
+    canSkip,
   }
 }

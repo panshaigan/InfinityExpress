@@ -37,12 +37,13 @@ export function isStepDurationLive(
   return runState === 'running'
 }
 
-/** Elapsed label for an install step; null when not started. */
+/** Elapsed label for an install step; null when not started or failed. */
 export function stepDurationLabel(
   step: Pick<InstallStep, 'status' | 'startedAt' | 'finishedAt'>,
   nowMs: number,
   runState?: InstallRunState | null,
 ): string | null {
+  if (step.status === 'failed') return null
   if (!step.startedAt) return null
   const start = Date.parse(step.startedAt)
   if (!Number.isFinite(start)) return null

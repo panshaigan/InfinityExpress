@@ -40,6 +40,62 @@ export function canMoveCursorImmediately(
   )
 }
 
+/** Run states where Previous (go back one step) is allowed. */
+export function canNavigatePreviousState(
+  runState: InstallRunState | null | undefined,
+): boolean {
+  return (
+    runState == null ||
+    runState === 'idle' ||
+    runState === 'paused' ||
+    runState === 'stopped' ||
+    runState === 'failed'
+  )
+}
+
+/** Run states where Skip (package at cursor) is allowed. */
+export function canSkipState(
+  runState: InstallRunState | null | undefined,
+): boolean {
+  return (
+    runState == null ||
+    runState === 'idle' ||
+    runState === 'paused' ||
+    runState === 'stopped' ||
+    runState === 'waitingForInput' ||
+    runState === 'failed'
+  )
+}
+
+/** Previous enabled when cursor > 0 and state allows navigation. */
+export function canGoPreviousAt(
+  _steps: InstallStep[],
+  cursor: number,
+  runState: InstallRunState | null | undefined,
+): boolean {
+  return canNavigatePreviousState(runState) && cursor > 0
+}
+
+/** Skip enabled when a step exists after the cursor and the cursor step is skippable. */
+export function canSkipAt(
+  steps: InstallStep[],
+  cursor: number,
+  runState: InstallRunState | null | undefined,
+): boolean {
+  if (!canSkipState(runState)) return false
+  if (cursor >= steps.length - 1) return false
+  const step = steps[cursor]
+  if (!step) return false
+  if (
+    step.status === 'succeeded' ||
+    step.status === 'alreadyInstalled' ||
+    step.status === 'skipped'
+  ) {
+    return false
+  }
+  return true
+}
+
 export function stepIndexById(steps: InstallStep[], stepId: string): number {
   return steps.findIndex((s) => s.stepId === stepId)
 }

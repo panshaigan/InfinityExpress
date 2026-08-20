@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
+  canGoPreviousAt,
   canMoveCursorImmediately,
+  canSkipAt,
   nextActionableCursor,
 } from './cursor'
 import type { InstallStep } from './types'
@@ -63,5 +65,37 @@ describe('canMoveCursorImmediately', () => {
     expect(canMoveCursorImmediately('completed')).toBe(false)
     expect(canMoveCursorImmediately('failed')).toBe(false)
     expect(canMoveCursorImmediately(null)).toBe(false)
+  })
+})
+
+describe('canGoPreviousAt', () => {
+  const steps = [step('a'), step('b'), step('c')]
+
+  it('allows idle and failed when cursor > 0', () => {
+    expect(canGoPreviousAt(steps, 1, 'idle')).toBe(true)
+    expect(canGoPreviousAt(steps, 2, 'failed')).toBe(true)
+    expect(canGoPreviousAt(steps, 1, null)).toBe(true)
+  })
+
+  it('blocks when cursor is 0 or run is active', () => {
+    expect(canGoPreviousAt(steps, 0, 'idle')).toBe(false)
+    expect(canGoPreviousAt(steps, 1, 'running')).toBe(false)
+    expect(canGoPreviousAt(steps, 1, 'waitingForInput')).toBe(false)
+  })
+})
+
+describe('canSkipAt', () => {
+  const steps = [step('a'), step('b'), step('c')]
+
+  it('allows idle when a step exists after the cursor', () => {
+    expect(canSkipAt(steps, 0, 'idle')).toBe(true)
+    expect(canSkipAt(steps, 1, 'failed')).toBe(true)
+    expect(canSkipAt(steps, 0, null)).toBe(true)
+  })
+
+  it('blocks on the last step or non-skippable cursor status', () => {
+    expect(canSkipAt(steps, 2, 'idle')).toBe(false)
+    expect(canSkipAt([step('a', 'skipped'), step('b')], 0, 'idle')).toBe(false)
+    expect(canSkipAt(steps, 0, 'running')).toBe(false)
   })
 })

@@ -54,4 +54,15 @@ describe('stepDurationLabel', () => {
     )
     expect(stepDurationLabel(active, Date.parse('2026-01-01T10:00:05.000Z'), 'paused')).toBe('0ms')
   })
+
+  it('hides duration for failed steps', () => {
+    const failed = step({
+      status: 'failed',
+      startedAt: '2026-01-01T10:00:00.000Z',
+      finishedAt: '2026-01-01T10:00:12.000Z',
+    })
+    expect(stepDurationLabel(failed, Date.parse('2026-01-01T10:00:12.000Z'), 'failed')).toBe(
+      null,
+    )
+  })
 })

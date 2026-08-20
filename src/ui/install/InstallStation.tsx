@@ -163,6 +163,7 @@ export function InstallStation({
     plannedSnapshotBusy,
     moveCursorToStep,
     canGoPrevious,
+    canSkip,
     restartFromBackup,
     stopRunningInstall,
     sendInput,
@@ -496,12 +497,7 @@ export function InstallStation({
     !!run &&
     !transportBusy &&
     (run.runState === 'running' || run.runState === 'waitingForInput')
-  const canSkip =
-    !!run &&
-    !transportBusy &&
-    (run.runState === 'paused' ||
-      run.runState === 'stopped' ||
-      run.runState === 'waitingForInput')
+  const canSkipEffective = canSkip && !transportBusy
   const resumeFromCursor =
     !!run &&
     (run.runState === 'paused' ||
@@ -512,6 +508,20 @@ export function InstallStation({
 
   const canNavigateSteps =
     !!run && (run.runState === 'paused' || run.runState === 'stopped')
+
+  const requestGoPrevious = useCallback(() => {
+    setConfirmDialog({
+      title: 'Go to previous step?',
+      message:
+        'Move the cursor back one install step and uninstall that package so you can install it again.',
+      confirmLabel: 'Go back',
+      danger: true,
+      onConfirm: () => {
+        setConfirmDialog(null)
+        void goToPreviousStep()
+      },
+    })
+  }, [goToPreviousStep])
 
   const tableActions = useMemo(() => {
     if (planSteps.length === 0) return null
@@ -528,7 +538,13 @@ export function InstallStation({
       plannedSnapshots: tableSnapshots,
       game,
       canNavigate: canNavigateSteps,
+      canGoPrevious: canGoPreviousEffective,
+      canSkip: canSkipEffective,
       installLock,
+      onRequestGoPrevious: requestGoPrevious,
+      onSkip: () => {
+        skipCurrent()
+      },
       onRequestUninstallBack: (stepId: string) => {
         if (!tableRun) return
         const step = tableRun.steps.find((s) => s.stepId === stepId)
@@ -600,8 +616,12 @@ export function InstallStation({
     run,
     steps,
     canNavigateSteps,
+    canGoPreviousEffective,
+    canSkipEffective,
     installLock,
     onDeselectComponent,
+    requestGoPrevious,
+    skipCurrent,
     uninstallBackToStep,
     toggleBreakpoint,
     clearPlannedSnapshot,
@@ -982,19 +1002,7 @@ export function InstallStation({
                 className={`btn secondary install-control-btn has-icon-tip${previousActive ? ' active' : ''}`}
                 disabled={!canGoPreviousEffective}
                 aria-pressed={previousActive}
-                onClick={() =>
-                  setConfirmDialog({
-                    title: 'Go to previous step?',
-                    message:
-                      'Move the cursor back one install step and uninstall that package so you can install it again.',
-                    confirmLabel: 'Go back',
-                    danger: true,
-                    onConfirm: () => {
-                      setConfirmDialog(null)
-                      void goToPreviousStep()
-                    },
-                  })
-                }
+                onClick={requestGoPrevious}
                 aria-label={previousTip}
               >
                 <SkipPreviousIcon />
@@ -1036,7 +1044,7 @@ export function InstallStation({
               <button
                 type="button"
                 className={`btn secondary install-control-btn has-icon-tip${skipActive ? ' active' : ''}`}
-                disabled={!canSkip}
+                disabled={!canSkipEffective}
                 aria-pressed={skipActive}
                 onClick={() => skipCurrent()}
                 aria-label={skipTip}
