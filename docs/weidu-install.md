@@ -29,10 +29,11 @@ Never treat XML `modId` as WeiDU id, `setup-*.exe` stem, or tp2 path segment.
 - Table rows for that step use class `install-cursor` (CSS `--install-cursor`), distinct from selection / keyboard `focused` / row hover.
 - Soft pulse (`install-cursor-live`) while `runState === 'running'`.
 - **Play (fresh start)** places the cursor on the first unfinished step (`alreadyInstalled` / succeeded / skipped are skipped).
+- Before the first **Play**, the table uses the same rule on the live plan (`planSteps`) so the cursor highlight skips packages already identified from `WeiDU.log`.
 - Pause / Stop keep the cursor on the interrupted package. Skip advances it. Success advances it.
 - Play resume / Skip / Stop all act relative to this index.
 
-Hook: `useInstallRun` exposes `cursorStepId` (`steps[cursor]?.stepId`) for the table.
+Hook: `useInstallRun` exposes `cursorStepId` (`steps[cursor]?.stepId`, or the first unfinished plan step when no run exists yet) for the table.
 
 ## Controls
 
@@ -62,7 +63,7 @@ Install table rows (one per component / install step) expose the same actions vi
 | **Uninstall back to here** | `paused` / `stopped`; target step before cursor | Force-uninstall each package from cursor−1 down to the target step; move cursor to target. Confirms first. |
 | **Add / remove breakpoint** | Future, not-yet-installed steps (including before first Play) | Toggle `InstallRun.breakpointStepIds`. Row class `install-breakpoint` (top-edge marker line). |
 | **Plan / remove snapshot** | Same eligibility as breakpoints | Adding opens a name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`). Stores `{ stepId, name }` on `InstallRun.plannedSnapshots`. Row class `install-snapshot` (top-edge marker line). Removing does not prompt. |
-| **Move cursor here** | `paused` / `stopped` (immediate), or while `running` / `waitingForInput` (after current step); not on finished steps | Sets `cursor` to the selected install step. Disabled when target is `succeeded` / `alreadyInstalled` / `skipped`. Confirms when moving backward across installed packages. |
+| **Move cursor here** | `idle` / `paused` / `stopped` (immediate), or while `running` / `waitingForInput` (after current step); not on finished steps | Sets `cursor` to the selected install step. First use before **Play** creates an idle run via `ensureIdleRun()`. Disabled when target is `succeeded` / `alreadyInstalled` / `skipped`. Confirms when moving backward across installed packages (paused/stopped only). |
 | **Remove from plan** | `paused` / `stopped` / `failed`; step at or after cursor, not yet finished | Unchecks the component in Components (updates selection + syncs the run plan). |
 
 **Breakpoints (mode B):** when the runner reaches a breakpoint step, it pauses **before staging/copying** that package (`runState: paused`, cursor on the breakpoint step). The hit breakpoint is removed automatically (one-shot), so resuming continues forward and later breakpoints still trigger.
@@ -93,8 +94,20 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 
    - `--noautoupdate`
    - `--safe-exit` (so a killed install can be cleaned with force-uninstall)
+   - `--no-exit-pause`, `--skip-at-view` (no interactive pauses)
    - `--language`, `--use-lang`
    - `--force-install` + component number
+
+**Exit codes** (install step status):
+
+| Code | Meaning | Status | Continues? |
+| --- | --- | --- | --- |
+| `0` + WeiDU.log verified | Success | `succeeded` | yes |
+| `0` + log not verified | Soft success | `succeededWithWarnings` | yes |
+| `3` | Installed with warnings | `succeededWithWarnings` | yes |
+| `2` (and other non-0/3) | Failed | `failed` | no |
+
+**Console tabs:** WeiDU tab = raw process stdout/stderr only. Commands tab = setup command lines + app-synthesized status/info/error. Results = keyword highlights from WeiDU (and intentional app lines). See `.cursor/rules/weidu-console-tabs.mdc`.
 
 **Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --force-uninstall` (`run_weidu_force_uninstall`; no `--safe-exit` on uninstall). Do not invoke the configured `weidu.exe` directly for install or uninstall.
 

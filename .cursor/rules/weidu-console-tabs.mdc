@@ -1,0 +1,27 @@
+---
+description: Keep WeiDU console tab raw; app messages only in Commands
+globs: src/hooks/useInstallRun.ts,src/ui/install/InstallConsoleDock.tsx,src/lib/install/**,src-tauri/src/weidu_install.rs
+alwaysApply: false
+---
+
+# WeiDU install console tabs
+
+Install console has three tabs. Do not mix their roles.
+
+## Do
+
+- **WeiDU tab** — raw WeiDU process stdout/stderr only (`InstallEventPayload::Output` / run log files).
+- **Commands tab** — setup command lines (`CommandLogged`) and all **app-synthesized** status / info / error text (`Classified`, `pushConsoleLine`, pause/stop/snapshot messages).
+- **Results tab** — keyword highlights via `consoleLineTone` from WeiDU output (and app lines only when they intentionally go through that helper).
+
+## Don't
+
+- Do **not** append app `Classified` / status / `[info]` / `[error]` lines to the WeiDU (`consoleLines`) stream.
+- Do **not** re-emit stream-classified error/warning phrases as `Classified` into the UI — raw `Output` already feeds WeiDU + Results.
+- Do **not** invent a fourth console channel without an explicit request.
+
+## References
+
+- Hook: `src/hooks/useInstallRun.ts` (event routing)
+- Rust: `src-tauri/src/weidu_install.rs` (`stream_pipe`, `emit_command_logged`, exception `Classified`)
+- Docs: `docs/weidu-install.md` § Resolve & run (console tabs)

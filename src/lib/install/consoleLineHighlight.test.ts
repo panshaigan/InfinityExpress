@@ -4,12 +4,24 @@ import { consoleLineTone, stripConsoleTs } from './consoleLineHighlight'
 describe('consoleLineTone', () => {
   it('detects errors including plurals', () => {
     expect(consoleLineTone('ERROR: boom')).toBe('error')
+    expect(consoleLineTone('Error: boom')).toBe('error')
     expect(consoleLineTone('Not installed due to errors')).toBe('error')
+  })
+
+  it('rejects error embedded in alphanumeric tokens', () => {
+    expect(consoleLineTone('[EET\\temp\\wav/ERROR10.WAV')).toBeNull()
+    expect(consoleLineTone('Error122341')).toBeNull()
+    expect(consoleLineTone('path/to/ERROR10.WAV copied')).toBeNull()
   })
 
   it('detects warnings including plurals', () => {
     expect(consoleLineTone('WARNING: soft')).toBe('warning')
     expect(consoleLineTone('Installed with warnings')).toBe('warning')
+  })
+
+  it('rejects warning embedded in alphanumeric tokens', () => {
+    expect(consoleLineTone('WARNING10.log')).toBeNull()
+    expect(consoleLineTone('Warning123')).toBeNull()
   })
 
   it('detects successfully / successful', () => {

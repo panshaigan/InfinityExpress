@@ -1,4 +1,4 @@
-import type { ComponentRunStatus, InstallStep } from './types'
+import type { ComponentRunStatus, InstallRunState, InstallStep } from './types'
 
 /** Step is finished for install sequencing (skip automatically). */
 export function isStepDone(status: ComponentRunStatus): boolean {
@@ -29,6 +29,15 @@ export function prevActionableCursor(steps: InstallStep[], from: number): number
     if (isStepActionable(steps[i]!)) return i
   }
   return -1
+}
+
+/** Immediate cursor move (not deferred until current step finishes). */
+export function canMoveCursorImmediately(
+  runState: InstallRunState | null | undefined,
+): boolean {
+  return (
+    runState === 'idle' || runState === 'paused' || runState === 'stopped'
+  )
 }
 
 export function stepIndexById(steps: InstallStep[], stepId: string): number {

@@ -2,6 +2,11 @@ export type ConsoleLineTone = 'error' | 'warning' | 'success' | 'skipped' | null
 
 const TS_PREFIX = /^\[[\d]{1,2}:[\d]{2}:[\d]{2}\]\s*/
 
+/** Whole-word error/errors — rejects alphanumeric suffixes like ERROR10.WAV. */
+const ERROR_TOKEN = /(?<![a-z0-9])errors?(?![a-z0-9])/i
+/** Whole-word warning/warnings — same token rule as error. */
+const WARNING_TOKEN = /(?<![a-z0-9])warnings?(?![a-z0-9])/i
+
 /** Strip optional leading `[HH:MM:SS]` so timestamps don’t affect keyword matches. */
 export function stripConsoleTs(line: string): string {
   return line.replace(TS_PREFIX, '')
@@ -14,8 +19,8 @@ export function stripConsoleTs(line: string): string {
 export function consoleLineTone(line: string): ConsoleLineTone {
   const lower = stripConsoleTs(line).toLowerCase()
   if (!lower) return null
-  if (lower.includes('error')) return 'error'
-  if (lower.includes('warning')) return 'warning'
+  if (ERROR_TOKEN.test(lower)) return 'error'
+  if (WARNING_TOKEN.test(lower)) return 'warning'
   if (lower.includes('successfully') || lower.includes('successful')) return 'success'
   if (lower.includes('skipped')) return 'skipped'
   return null

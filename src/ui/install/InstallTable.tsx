@@ -12,7 +12,7 @@ import {
   type ReactNode,
 } from 'react'
 import { createPortal } from 'react-dom'
-import { canSetBreakpoint, isStepDone } from '../../lib/install/cursor'
+import { canMoveCursorImmediately, canSetBreakpoint, isStepDone } from '../../lib/install/cursor'
 import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
 import type {
   InstallRunState,
@@ -250,7 +250,9 @@ function InstallStepContextMenu({
   const canUninstallBack =
     actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
   const canMoveCursor =
-    actions.canNavigate || actions.runState === 'running' || actions.runState === 'waitingForInput'
+    canMoveCursorImmediately(actions.runState) ||
+    actions.runState === 'running' ||
+    actions.runState === 'waitingForInput'
   const moveDisabled = stepIndex === actions.cursor || isStepDone(step.status)
   const canRemove = canRemoveStepFromPlan(stepIndex, step.status, actions.installLock)
 
@@ -392,7 +394,9 @@ function StepActionButtons({
   const canUninstallBack =
     actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
   const canMoveCursor =
-    actions.canNavigate || actions.runState === 'running' || actions.runState === 'waitingForInput'
+    canMoveCursorImmediately(actions.runState) ||
+    actions.runState === 'running' ||
+    actions.runState === 'waitingForInput'
   const moveDisabled = stepIndex === actions.cursor || isStepDone(step.status)
   const moveTip = moveDisabled && isStepDone(step.status)
     ? 'Already installed or finished'

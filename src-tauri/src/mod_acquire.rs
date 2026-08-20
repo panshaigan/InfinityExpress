@@ -1293,8 +1293,7 @@ fn strip_setup_exes(root: &Path) -> Result<(), String> {
         continue;
       }
       let name = entry.file_name().to_string_lossy().to_ascii_lowercase();
-      if (name.starts_with("setup-") && (name.ends_with(".exe") || name.ends_with(".command")))
-        || name == "weidu.exe"
+      if (name.starts_with("setup-") && name.ends_with(".exe"))
       {
         let _ = fs::remove_file(&path);
       }

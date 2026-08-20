@@ -14,6 +14,7 @@ import { buildInstallPlan } from '../lib/install/planBuilder'
 import { syncRunWithPlan } from '../lib/install/installLock'
 import { planStepsMatchRun } from '../lib/ui/appSessionPrefs'
 import {
+  canMoveCursorImmediately,
   canSetBreakpoint,
   isStepDone,
   nextActionableCursor,
@@ -229,13 +230,6 @@ export function useInstallRun(options: {
     }
   }, [run?.logDir, run?.runId])
 
-  /** Install cursor step id for table highlight (`InstallRun.cursor`). */
-  const cursorStepId = useMemo(() => {
-    if (!run) return null
-    const step = run.steps[run.cursor]
-    return step?.stepId ?? null
-  }, [run])
-
   const rememberStepResult = useCallback((stepId: string, stamped: string) => {
     const map = stepResultLinesRef.current
     const prev = map.get(stepId) ?? []
@@ -272,6 +266,14 @@ export function useInstallRun(options: {
     return weiduLogImport ? applyWeiduLogToSteps(asSteps, weiduLogImport) : asSteps
   }, [rawPlanSteps, weiduLogImport])
 
+  /** Install cursor step id for table highlight (`InstallRun.cursor`). */
+  const cursorStepId = useMemo(() => {
+    const displaySteps = run?.steps ?? planSteps
+    const cursorIndex = run?.cursor ?? nextActionableCursor(planSteps, 0)
+    if (cursorIndex >= displaySteps.length) return null
+    return displaySteps[cursorIndex]?.stepId ?? null
+  }, [run, planSteps])
+
   useEffect(() => {
     if (!run) return
     const state = run.runState
@@ -307,7 +309,7 @@ export function useInstallRun(options: {
     runRef.current = next
   }, [weiduLogImport])
 
-  /** Append to WeiDU (+ Results if highlighted). Returns stamped line for callers that track per-step results. */
+  /** Append to Commands (+ Results if highlighted). Returns stamped line for callers that track per-step results. */
   const pushConsoleLine = useCallback((text: string): string => {
     const stamped = stampLine(text)
     setCommandLines((prev) => [...prev.slice(-999), stamped])
@@ -415,9 +417,10 @@ export function useInstallRun(options: {
         setInputPrompt(ev.prompt)
         setRun((r) => (r ? { ...r, runState: 'waitingForInput' } : r))
       } else if (ev.kind === 'classified') {
+        // App-synthesized lines → Commands only (never WeiDU tab).
         const text = `[${ev.level}] ${ev.message}`
         const stamped = stampLine(text)
-        setConsoleLines((prev) => [...prev.slice(-4999), stamped])
+        setCommandLines((prev) => [...prev.slice(-999), stamped])
         if (consoleLineTone(text) != null) {
           setResultLines((prev) => [...prev.slice(-999), stamped])
           const stepId = activeStepIdRef.current
@@ -1201,18 +1204,23 @@ export function useInstallRun(options: {
             let status: InstallStep['status'] = 'failed'
             if (result.timedOut) status = 'failed'
             else if (result.exitCode === 0 && result.logVerified) status = 'succeeded'
-            else if (result.exitCode === 0) status = 'succeededWithWarnings'
+            else if (result.exitCode === 0 || result.exitCode === 3)
+              status = 'succeededWithWarnings'
             else status = 'failed'
+
+            const warnings = [...step.warnings]
+            if (result.exitCode === 3) {
+              warnings.push('Installed with warnings (exit code 3)')
+            } else if (!result.logVerified && status === 'succeededWithWarnings') {
+              warnings.push('WeiDU.log verification incomplete')
+            }
 
             step = mergeStepResultLines({
               ...step,
               status,
               progress: null,
               debugLogPath: result.debugPath ?? undefined,
-              warnings:
-                result.logVerified || status === 'succeeded'
-                  ? step.warnings
-                  : [...step.warnings, 'WeiDU.log verification incomplete'],
+              warnings,
               errors:
                 status === 'failed'
                   ? [...step.errors, `Exit code ${result.exitCode ?? 'unknown'}`]
@@ -1553,14 +1561,23 @@ export function useInstallRun(options: {
       const targetStep = current.steps[targetIdx]
       if (!targetStep || isStepDone(targetStep.status)) return false
 
-      if (current.runState === 'running' || current.runState === 'waitingForInput') {
-        pendingCursorStepIdRef.current = targetStepId
-        appendCommandLine(`Cursor will move to ${current.steps[targetIdx]?.modId} after current step`)
-        return true
+      if (
+        !canMoveCursorImmediately(current.runState) &&
+        current.runState !== 'running' &&
+        current.runState !== 'waitingForInput'
+      ) {
+        return false
       }
 
-      if (current.runState !== 'paused' && current.runState !== 'stopped') {
-        return false
+      if (
+        current.runState === 'running' ||
+        current.runState === 'waitingForInput'
+      ) {
+        pendingCursorStepIdRef.current = targetStepId
+        appendCommandLine(
+          `Cursor will move to ${current.steps[targetIdx]?.modId} after current step`,
+        )
+        return true
       }
 
       const next = withNormalizedCursor({

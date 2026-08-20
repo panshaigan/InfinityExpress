@@ -684,21 +684,13 @@ fn stream_pipe(
           text: line.clone(),
         },
       );
-      if let Some(level) = classify_line(&line) {
-        if level == "inputRequired" {
-          emit_event(
-            &app,
-            InstallEventPayload::InputRequired { prompt: line.clone() },
-          );
-        } else {
-          emit_event(
-            &app,
-            InstallEventPayload::Classified {
-              level: level.into(),
-              message: line,
-            },
-          );
-        }
+      // Only surface interactive prompts here. Error/warning highlighting comes from
+      // raw Output in the UI (WeiDU + Results tabs); do not emit Classified for those.
+      if classify_line(&line) == Some("inputRequired") {
+        emit_event(
+          &app,
+          InstallEventPayload::InputRequired { prompt: line.clone() },
+        );
       }
     }
   });
@@ -729,7 +721,6 @@ fn weidu_install_exception_args(input: &RunStepInput, game_dir: &Path) -> Option
     .unwrap_or_else(|| game_dir.to_string_lossy().into_owned());
   match input.component_id.as_str() {
     "EET:0" => Some(vec![
-      "--skip-at-view".into(),
       "--args-list".into(),
       "sp".into(),
       bg1_arg,
@@ -776,9 +767,12 @@ pub async fn run_weidu_step(
   // setup-{weiduId}.exe auto-binds the tp2; do not pass the tp2 path as argv.
   // --language = mod TRA; --use-lang = EE game lang/ folder (avoids weidu.conf prompt).
   // --safe-exit enables cleanup via --force-uninstall after a killed install.
+  // --no-exit-pause / --skip-at-view avoid interactive pauses during automated installs.
   let mut args: Vec<String> = vec![
     "--noautoupdate".into(),
     "--safe-exit".into(),
+    "--no-exit-pause".into(),
+    "--skip-at-view".into(),
     "--language".into(),
     input.language_index.to_string(),
     "--use-lang".into(),
@@ -902,7 +896,8 @@ pub async fn run_weidu_step(
     input.language_index,
     input.component_number,
   );
-  let success = !timed_out && !cancelled && exit_code == Some(0) && log_verified;
+  // 0 = success, 3 = installed with warnings (non-breaking). Exact status is refined in TS.
+  let success = !timed_out && !cancelled && matches!(exit_code, Some(0) | Some(3));
 
   emit_event(
     &app,

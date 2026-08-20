@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useInstallRun } from '../../hooks/useInstallRun'
 import { formatPlayerDurationMs } from '../../lib/install/formatDuration'
-import { stepIndexById } from '../../lib/install/cursor'
+import { nextActionableCursor, stepIndexById } from '../../lib/install/cursor'
 import { collectadjustmentsModIds } from '../../lib/install/weiduResolution'
 import {
   cleanupInstallArtifacts,
@@ -517,7 +517,7 @@ export function InstallStation({
     if (planSteps.length === 0) return null
     const tableRun = run
     const tableRunState = tableRun?.runState ?? 'idle'
-    const tableCursor = tableRun?.cursor ?? 0
+    const tableCursor = tableRun?.cursor ?? nextActionableCursor(steps, 0)
     const tableSteps = tableRun?.steps ?? steps
     const tableBreakpoints = tableRun?.breakpointStepIds ?? []
     const tableSnapshots = tableRun?.plannedSnapshots ?? []
@@ -1121,7 +1121,7 @@ export function InstallStation({
             mods={mods}
             selectedStepId={selectedStep?.stepId ?? null}
             selectedComponentId={selectedComponentId}
-            cursorStepId={cursorStepId ?? steps[0]?.stepId ?? null}
+            cursorStepId={cursorStepId}
             cursorLive={run?.runState === 'running' && !pausePending}
             runState={run?.runState ?? null}
             hideInstalled={hideInstalled}
