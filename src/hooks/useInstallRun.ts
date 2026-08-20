@@ -1508,7 +1508,19 @@ export function useInstallRun(options: {
       let steps = [...current.steps]
       for (let i = current.cursor - 1; i >= targetIdx; i--) {
         const step = steps[i]!
-        if (isStepDone(step.status)) continue
+        // Skipped packages were never installed; still reset status when rolling back.
+        if (step.status === 'skipped') {
+          steps[i] = {
+            ...step,
+            status: 'queued',
+            progress: null,
+            errors: [],
+            warnings: [],
+            finishedAt: undefined,
+            startedAt: undefined,
+          }
+          continue
+        }
         steps[i] = await uninstallStepAtIndex({ ...current, steps }, i)
       }
 

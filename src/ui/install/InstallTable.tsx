@@ -188,7 +188,7 @@ function InstallStepContextMenu({
     actions.runState,
   )
   const canUninstallBack =
-    actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
+    actions.canNavigate && stepIndex < actions.cursor
   const canMoveCursor = canMoveCursorImmediately(actions.runState)
   const moveDisabled = stepIndex === actions.cursor || isStepDone(step.status)
   const canRemove = canRemoveStepFromPlan(stepIndex, step.status, actions.installLock)
@@ -349,7 +349,7 @@ function StepActionButtons({
     actions.runState,
   )
   const canUninstallBack =
-    actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
+    actions.canNavigate && stepIndex < actions.cursor
   const canMoveCursor = canMoveCursorImmediately(actions.runState)
   const moveDisabled = stepIndex === actions.cursor || isStepDone(step.status)
   const moveTip = moveDisabled && isStepDone(step.status)
