@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
+  commandLinePartClass,
   consoleLineTone,
   consoleLineToneClass,
+  splitCommandLineBody,
   splitConsoleTs,
 } from '../../lib/install/consoleLineHighlight'
 import { readInstallConsoleHeight, writeInstallConsoleHeight } from '../../lib/ui/installConsolePrefs'
@@ -51,6 +53,7 @@ export function InstallConsoleDock({
   const activeLines =
     tab === 'output' ? lines : tab === 'commands' ? commandLines : resultLines
   const colorize = tab === 'output' || tab === 'results'
+  const highlightCommands = tab === 'commands'
 
   useEffect(() => {
     const el = preRef.current
@@ -193,13 +196,25 @@ export function InstallConsoleDock({
               activeLines.map((line, i) => {
                 const tone = colorize ? consoleLineTone(line) : null
                 const { ts, body } = splitConsoleTs(line)
+                const commandParts = highlightCommands ? splitCommandLineBody(body) : null
                 return (
                   <div
                     key={`${i}:${line.slice(0, 48)}`}
                     className={`install-console-line${consoleLineToneClass(tone)}`}
                   >
                     {ts ? <span className="install-console-ts">{ts} </span> : null}
-                    {body}
+                    {commandParts
+                      ? commandParts.map((part, j) => {
+                          const cls = commandLinePartClass(part.kind)
+                          return cls ? (
+                            <span key={j} className={cls}>
+                              {part.text}
+                            </span>
+                          ) : (
+                            <span key={j}>{part.text}</span>
+                          )
+                        })
+                      : body}
                   </div>
                 )
               })

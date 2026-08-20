@@ -37,12 +37,15 @@ export function isStepDurationLive(
   return runState === 'running' || runState === 'waitingForInput'
 }
 
-/** Elapsed label for an install step; null when not started or failed. */
-export function stepDurationLabel(
+/**
+ * Elapsed ms for an install step; null when not started or failed.
+ * Matches {@link stepDurationLabel} so toolbar total equals the sum of row clocks.
+ */
+export function stepDurationMs(
   step: Pick<InstallStep, 'status' | 'startedAt' | 'finishedAt'>,
   nowMs: number,
   runState?: InstallRunState | null,
-): string | null {
+): number | null {
   if (step.status === 'failed') return null
   if (!step.startedAt) return null
   const start = Date.parse(step.startedAt)
@@ -50,7 +53,32 @@ export function stepDurationLabel(
   const live = isStepDurationLive(step, runState)
   const end = step.finishedAt ? Date.parse(step.finishedAt) : live ? nowMs : start
   if (!Number.isFinite(end)) return null
-  const label = formatDurationMs(Math.max(0, end - start))
-  if (live) return `${label} (running)`
+  return Math.max(0, end - start)
+}
+
+/** Elapsed label for an install step; null when not started or failed. */
+export function stepDurationLabel(
+  step: Pick<InstallStep, 'status' | 'startedAt' | 'finishedAt'>,
+  nowMs: number,
+  runState?: InstallRunState | null,
+): string | null {
+  const ms = stepDurationMs(step, nowMs, runState)
+  if (ms == null) return null
+  const label = formatDurationMs(ms)
+  if (isStepDurationLive(step, runState)) return `${label} (running)`
   return label
+}
+
+/** Sum of step clocks (failed / not-started count as 0). */
+export function sumStepDurationsMs(
+  steps: readonly Pick<InstallStep, 'status' | 'startedAt' | 'finishedAt'>[],
+  nowMs: number,
+  runState?: InstallRunState | null,
+): number {
+  let total = 0
+  for (const step of steps) {
+    const ms = stepDurationMs(step, nowMs, runState)
+    if (ms != null) total += ms
+  }
+  return total
 }

@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { isStepDurationLive, stepDurationLabel } from './formatDuration'
+import {
+  isStepDurationLive,
+  stepDurationLabel,
+  stepDurationMs,
+  sumStepDurationsMs,
+} from './formatDuration'
 import type { InstallStep } from './types'
 
 function step(
@@ -68,5 +73,30 @@ describe('stepDurationLabel', () => {
     expect(stepDurationLabel(failed, Date.parse('2026-01-01T10:00:12.000Z'), 'failed')).toBe(
       null,
     )
+  })
+})
+
+describe('sumStepDurationsMs', () => {
+  it('sums finished and live step clocks', () => {
+    const now = Date.parse('2026-01-01T10:00:10.000Z')
+    const steps = [
+      step({
+        status: 'succeeded',
+        startedAt: '2026-01-01T10:00:00.000Z',
+        finishedAt: '2026-01-01T10:00:03.000Z',
+      }),
+      step({
+        status: 'installing',
+        startedAt: '2026-01-01T10:00:05.000Z',
+      }),
+      step({ status: 'queued' }),
+      step({
+        status: 'failed',
+        startedAt: '2026-01-01T09:00:00.000Z',
+        finishedAt: '2026-01-01T09:00:30.000Z',
+      }),
+    ]
+    expect(sumStepDurationsMs(steps, now, 'running')).toBe(3000 + 5000)
+    expect(stepDurationMs(steps[1]!, now, 'running')).toBe(5000)
   })
 })

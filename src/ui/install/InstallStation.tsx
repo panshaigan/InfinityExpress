@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useInstallRun } from '../../hooks/useInstallRun'
-import { formatPlayerDurationMs } from '../../lib/install/formatDuration'
+import {
+  formatPlayerDurationMs,
+  isStepDurationLive,
+  sumStepDurationsMs,
+} from '../../lib/install/formatDuration'
 import { nextActionableCursor, stepIndexById } from '../../lib/install/cursor'
 import { collectadjustmentsModIds } from '../../lib/install/weiduResolution'
 import {
@@ -131,7 +135,6 @@ export function InstallStation({
     import.meta.env.DEV && (window as Window & { __IX_PROFILE_INSTALL?: boolean }).__IX_PROFILE_INSTALL === true
   const { pushToast } = useToast()
   const followCursorForDetailsRef = useRef(true)
-  const [clearedDurationMsTotal, setClearedDurationMsTotal] = useState(0)
   const [pathTick, setPathTick] = useState(0)
   const [pauseOnWarnings, setPauseOnWarnings] = useState(
     () => initialInstallSession?.ui.pauseOnWarnings ?? false,
@@ -188,10 +191,6 @@ export function InstallStation({
       : null,
     weiduLogImport,
     pauseOnWarnings,
-    onDurationClearedMs: (deltaMs) => {
-      if (!Number.isFinite(deltaMs) || deltaMs <= 0) return
-      setClearedDurationMsTotal((prev) => prev + Math.max(0, Math.floor(deltaMs)))
-    },
   })
 
   const installLock = useMemo(
@@ -235,18 +234,22 @@ export function InstallStation({
     danger?: boolean
     onConfirm: () => void
   } | null>(null)
-  const [runElapsedMs, setRunElapsedMs] = useState(
-    () => initialInstallSession?.ui.runElapsedMs ?? 0,
-  )
+  const [nowMs, setNowMs] = useState(() => Date.now())
   const prevRunStateRef = useRef(run?.runState ?? null)
   const promptedMissingPathsRef = useRef(false)
-  const runElapsedAccumRef = useRef(initialInstallSession?.ui.runElapsedMs ?? 0)
-  const runSegmentStartRef = useRef<number | null>(null)
-  const timedRunIdRef = useRef<string | null>(null)
-  const restoredRunIdRef = useRef(initialInstallSession?.run.runId ?? null)
-  const restoredElapsedRef = useRef(initialInstallSession?.ui.runElapsedMs ?? 0)
-  const processedClearedDurationRef = useRef(0)
   const lastPersistedSessionKeyRef = useRef<string | null>(null)
+
+  const steps = run?.steps ?? planSteps
+  const runState = run?.runState ?? null
+  const durationLive = steps.some((s) => isStepDurationLive(s, runState))
+  const runElapsedMs = sumStepDurationsMs(steps, nowMs, runState)
+
+  useEffect(() => {
+    if (!durationLive) return
+    setNowMs(Date.now())
+    const id = window.setInterval(() => setNowMs(Date.now()), 250)
+    return () => window.clearInterval(id)
+  }, [durationLive])
 
   useEffect(() => {
     if (!onInstallSessionChange || !game || !run || run.runState === 'idle') {
@@ -283,8 +286,6 @@ export function InstallStation({
     selectedStepId,
   ])
 
-  const steps = run?.steps ?? planSteps
-
   const selectedStep = useMemo(
     () => steps.find((s) => s.stepId === selectedStepId) ?? steps[0] ?? null,
     [steps, selectedStepId],
@@ -306,14 +307,6 @@ export function InstallStation({
       setSelectedComponentId(steps[0].componentId)
     }
   }, [steps, selectedStepId, cursorStepId])
-
-  useEffect(() => {
-    const delta = clearedDurationMsTotal - processedClearedDurationRef.current
-    if (delta <= 0) return
-    processedClearedDurationRef.current = clearedDurationMsTotal
-    runElapsedAccumRef.current = Math.max(0, runElapsedAccumRef.current - delta)
-    setRunElapsedMs((prev) => Math.max(0, prev - delta))
-  }, [clearedDurationMsTotal])
 
   useEffect(() => {
     if (run?.runState === 'completed') setCleanupOffer(true)
@@ -358,61 +351,6 @@ export function InstallStation({
     plannedSnapshotBusy,
     onExitBlockingChange,
   ])
-
-  const runId = run?.runId ?? null
-  const runState = run?.runState ?? null
-  const isRunTiming =
-    runState === 'running' || runState === 'waitingForInput'
-
-  useEffect(() => {
-    if (runId !== timedRunIdRef.current) {
-      timedRunIdRef.current = runId
-      processedClearedDurationRef.current = 0
-      setClearedDurationMsTotal(0)
-      if (runId && runId === restoredRunIdRef.current) {
-        runElapsedAccumRef.current = restoredElapsedRef.current
-        setRunElapsedMs(restoredElapsedRef.current)
-      } else {
-        runElapsedAccumRef.current = 0
-        runSegmentStartRef.current = null
-        setRunElapsedMs(0)
-      }
-    }
-
-    if (!runId || runState == null || runState === 'idle') {
-      runElapsedAccumRef.current = 0
-      runSegmentStartRef.current = null
-      setRunElapsedMs(0)
-      return
-    }
-
-    if (isRunTiming) {
-      if (runSegmentStartRef.current == null) {
-        runSegmentStartRef.current = Date.now()
-      }
-      return
-    }
-
-    // Pause / stop / failed / completed: freeze elapsed.
-    if (runSegmentStartRef.current != null) {
-      runElapsedAccumRef.current += Date.now() - runSegmentStartRef.current
-      runSegmentStartRef.current = null
-      setRunElapsedMs(runElapsedAccumRef.current)
-    }
-  }, [runId, runState, isRunTiming])
-
-  useEffect(() => {
-    if (!isRunTiming) return
-    const tick = () => {
-      const segment = runSegmentStartRef.current
-      const live =
-        runElapsedAccumRef.current + (segment != null ? Date.now() - segment : 0)
-      setRunElapsedMs(live)
-    }
-    tick()
-    const id = window.setInterval(tick, 250)
-    return () => window.clearInterval(id)
-  }, [isRunTiming])
 
   useEffect(() => {
     function maybePromptMissingPaths() {

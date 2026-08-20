@@ -139,11 +139,6 @@ export function useInstallRun(options: {
   gameFolders: GameFolderPaths
   projectId?: string | null
   initialInstallState?: InstallRunInitialState | null
-  /**
-   * Called when we clear elapsed time for a step (Stop/Force-uninstall / Uninstall back).
-   * Used by the UI to keep the top-level "Total install duration" in sync.
-   */
-  onDurationClearedMs?: (deltaMs: number) => void
   /** Reverse-mapped WeiDU.log hits for alreadyInstalled marks. */
   weiduLogImport?: WeiduLogImportResult | null
   /** When true, pause after a step with WeiDU exit code 3 (installed with warnings). */
@@ -156,7 +151,6 @@ export function useInstallRun(options: {
     gameFolders,
     projectId,
     initialInstallState,
-    onDurationClearedMs,
     weiduLogImport = null,
     pauseOnWarnings = false,
   } = options
@@ -588,17 +582,6 @@ export function useInstallRun(options: {
       )
       let step = await ensureStepResolvedForUninstall(current, index)
 
-      const startMs = step.startedAt != null ? Date.parse(step.startedAt) : null
-      const endMs = step.finishedAt != null ? Date.parse(step.finishedAt) : null
-      const clearedMs =
-        startMs != null &&
-        endMs != null &&
-        Number.isFinite(startMs) &&
-        Number.isFinite(endMs)
-          ? Math.max(0, endMs - startMs)
-          : 0
-      onDurationClearedMs?.(clearedMs)
-
       if (step.weiduNumber != null && step.tp2Path && gameDir) {
         const weiduNumber = step.weiduNumber
         try {
@@ -652,7 +635,6 @@ export function useInstallRun(options: {
     [
       ensureStepResolvedForUninstall,
       gameFolders,
-      onDurationClearedMs,
       pushConsoleLine,
     ],
   )
@@ -664,14 +646,6 @@ export function useInstallRun(options: {
       step: InstallStep,
       gameDir: string,
     ): Promise<InstallRun> => {
-      const stoppedAt = new Date().toISOString()
-      const startMs = step.startedAt != null ? Date.parse(step.startedAt) : null
-      const endMs = Date.parse(stoppedAt)
-      const clearedMs =
-        startMs != null && Number.isFinite(startMs) && Number.isFinite(endMs)
-          ? Math.max(0, endMs - startMs)
-          : 0
-
       if (step.weiduNumber != null && step.tp2Path && gameDir) {
         const weiduNumber = step.weiduNumber
         try {
@@ -712,8 +686,6 @@ export function useInstallRun(options: {
         }
       }
 
-      onDurationClearedMs?.(clearedMs)
-
       const reset: InstallStep = {
         ...step,
         status: 'queued',
@@ -741,7 +713,6 @@ export function useInstallRun(options: {
     },
     [
       appendCommandLine,
-      onDurationClearedMs,
       pushConsoleLine,
     ],
   )

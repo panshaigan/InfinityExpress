@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { consoleLineTone, splitConsoleTs, stripConsoleTs } from './consoleLineHighlight'
+import {
+  consoleLineTone,
+  splitCommandLineBody,
+  splitConsoleTs,
+  stripConsoleTs,
+} from './consoleLineHighlight'
 
 describe('consoleLineTone', () => {
   it('detects errors including plurals', () => {
@@ -66,5 +71,50 @@ describe('splitConsoleTs', () => {
 
   it('returns null ts when unstamped', () => {
     expect(splitConsoleTs('hello')).toEqual({ ts: null, body: 'hello' })
+  })
+})
+
+describe('splitCommandLineBody', () => {
+  it('colors leading tags on status lines', () => {
+    expect(splitCommandLineBody('[stage] Copying files…')).toEqual([
+      { text: '[stage]', kind: 'tag' },
+      { text: ' ', kind: 'plain' },
+      { text: 'Copying files…', kind: 'plain' },
+    ])
+    expect(splitCommandLineBody('[uninstall] Finished cdtweaks')).toEqual([
+      { text: '[uninstall]', kind: 'tag' },
+      { text: ' ', kind: 'plain' },
+      { text: 'Finished cdtweaks', kind: 'plain' },
+    ])
+  })
+
+  it('colors cwd tag and WeiDU path on logged commands', () => {
+    expect(
+      splitCommandLineBody(
+        '[D:\\games\\bg2ee] "D:\\tools\\WeiDU\\weidu.exe" --force-install 4000',
+      ),
+    ).toEqual([
+      { text: '[D:\\games\\bg2ee]', kind: 'tag' },
+      { text: ' ', kind: 'plain' },
+      { text: '"D:\\tools\\WeiDU\\weidu.exe"', kind: 'path' },
+      { text: ' --force-install 4000', kind: 'plain' },
+    ])
+  })
+
+  it('colors unquoted setup.exe paths', () => {
+    expect(
+      splitCommandLineBody('[C:\\BG2] C:\\BG2\\setup-cdtweaks.exe --force-uninstall 1'),
+    ).toEqual([
+      { text: '[C:\\BG2]', kind: 'tag' },
+      { text: ' ', kind: 'plain' },
+      { text: 'C:\\BG2\\setup-cdtweaks.exe', kind: 'path' },
+      { text: ' --force-uninstall 1', kind: 'plain' },
+    ])
+  })
+
+  it('leaves plain lines unchanged', () => {
+    expect(splitCommandLineBody('Installation started')).toEqual([
+      { text: 'Installation started', kind: 'plain' },
+    ])
   })
 })

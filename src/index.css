@@ -6981,6 +6981,11 @@ body.is-resizing-detail * {
   color: color-mix(in srgb, var(--ink) 42%, #000);
 }
 
+.install-console-cmd-tag,
+.install-console-cmd-path {
+  color: var(--accent);
+}
+
 .install-console-line-error {
   color: var(--err);
 }

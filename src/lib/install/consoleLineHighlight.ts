@@ -42,3 +42,57 @@ export function consoleLineToneClass(tone: ConsoleLineTone): string {
   if (!tone) return ''
   return ` install-console-line-${tone}`
 }
+
+export type CommandLinePartKind = 'plain' | 'tag' | 'path'
+
+export interface CommandLinePart {
+  text: string
+  kind: CommandLinePartKind
+}
+
+/** First arg looks like an exe / filesystem path (not a prose message). */
+function looksLikePathToken(token: string): boolean {
+  const bare = token.startsWith('"') && token.endsWith('"') ? token.slice(1, -1) : token
+  if (!bare) return false
+  if (/\.(exe|bat|cmd|sh)$/i.test(bare)) return true
+  return /[\\/]/.test(bare)
+}
+
+/**
+ * Highlight leading `[tag]` and the WeiDU/setup exe path on Commands lines.
+ * Body should already have the optional `[HH:MM:SS]` stamp stripped.
+ */
+export function splitCommandLineBody(body: string): CommandLinePart[] {
+  if (!body) return []
+  const tagMatch = body.match(/^(\[[^\]]+\])(\s*)(.*)$/)
+  if (!tagMatch) return [{ text: body, kind: 'plain' }]
+
+  const parts: CommandLinePart[] = [{ text: tagMatch[1]!, kind: 'tag' }]
+  const space = tagMatch[2] ?? ''
+  const rest = tagMatch[3] ?? ''
+  if (space) parts.push({ text: space, kind: 'plain' })
+  if (!rest) return parts
+
+  const quoted = rest.match(/^("(?:\\.|[^"\\])*")([\s\S]*)$/)
+  if (quoted && looksLikePathToken(quoted[1]!)) {
+    parts.push({ text: quoted[1]!, kind: 'path' })
+    if (quoted[2]) parts.push({ text: quoted[2], kind: 'plain' })
+    return parts
+  }
+
+  const unquoted = rest.match(/^(\S+)([\s\S]*)$/)
+  if (unquoted && looksLikePathToken(unquoted[1]!)) {
+    parts.push({ text: unquoted[1]!, kind: 'path' })
+    if (unquoted[2]) parts.push({ text: unquoted[2], kind: 'plain' })
+    return parts
+  }
+
+  parts.push({ text: rest, kind: 'plain' })
+  return parts
+}
+
+export function commandLinePartClass(kind: CommandLinePartKind): string {
+  if (kind === 'tag') return 'install-console-cmd-tag'
+  if (kind === 'path') return 'install-console-cmd-path'
+  return ''
+}
