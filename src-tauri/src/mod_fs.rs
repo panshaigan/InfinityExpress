@@ -1,5 +1,5 @@
-use std::fs::{self, OpenOptions};
-use std::io::Write;
+use std::fs::{self, File, OpenOptions};
+use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Component, Path, PathBuf};
 
 /// List immediate subdirectory names under `path`.
@@ -28,6 +28,54 @@ pub fn list_subdir_names(path: String) -> Result<Vec<String>, String> {
   }
   names.sort_unstable();
   Ok(names)
+}
+
+/// True when the path is a file with length greater than zero.
+#[tauri::command]
+pub fn file_is_nonempty(path: String) -> Result<bool, String> {
+  let trimmed = path.trim();
+  if trimmed.is_empty() {
+    return Ok(false);
+  }
+  let p = PathBuf::from(trimmed);
+  if !p.is_file() {
+    return Ok(false);
+  }
+  let len = fs::metadata(&p).map_err(|e| e.to_string())?.len();
+  Ok(len > 0)
+}
+
+/// Read up to the last `max_bytes` of a UTF-8 text file (install log tails, etc.).
+#[tauri::command]
+pub fn read_text_file_tail(path: String, max_bytes: u64) -> Result<String, String> {
+  let trimmed = path.trim();
+  if trimmed.is_empty() {
+    return Err("Path is required".into());
+  }
+  let p = PathBuf::from(trimmed);
+  if !p.is_file() {
+    return Err("File not found".into());
+  }
+  let cap = max_bytes.max(1);
+  let mut file = File::open(&p).map_err(|e| e.to_string())?;
+  let len = file.metadata().map_err(|e| e.to_string())?.len();
+  if len == 0 {
+    return Ok(String::new());
+  }
+  let start = len.saturating_sub(cap);
+  file.seek(SeekFrom::Start(start))
+    .map_err(|e| e.to_string())?;
+  let mut buf = Vec::new();
+  file.read_to_end(&mut buf).map_err(|e| e.to_string())?;
+  let mut text = String::from_utf8_lossy(&buf).into_owned();
+  if start > 0 {
+    if let Some(idx) = text.find('\n') {
+      text = text[idx + 1..].to_string();
+    } else {
+      text.clear();
+    }
+  }
+  Ok(text)
 }
 
 /// Read a UTF-8 text file from an absolute path (install logs, etc.).
@@ -280,7 +328,19 @@ pub(crate) fn ensure_under_parent(parent: &Path, child: &Path) -> Result<(), Str
 
 #[cfg(test)]
 mod tests {
-  use super::validate_folder_name;
+  use super::{read_text_file_tail, validate_folder_name};
+  use std::io::Write;
+  use tempfile::NamedTempFile;
+
+  #[test]
+  fn read_text_file_tail_returns_last_bytes() {
+    let mut file = NamedTempFile::new().unwrap();
+    write!(file, "line one\nline two\nline three\n").unwrap();
+    let path = file.path().to_string_lossy().into_owned();
+    let tail = read_text_file_tail(path, 20).unwrap();
+    assert!(tail.contains("line three"));
+    assert!(!tail.contains("line one"));
+  }
 
   #[test]
   fn rejects_path_separators_and_traversal() {

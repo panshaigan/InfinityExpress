@@ -58,6 +58,32 @@ export async function readTextFile(path: string): Promise<string | null> {
   }
 }
 
+/** True when the path is a file with length greater than zero. */
+export async function fileIsNonempty(path: string): Promise<boolean> {
+  if (!isDesktopApp() || !path.trim()) return false
+  try {
+    return await invoke<boolean>('file_is_nonempty', { path: path.trim() })
+  } catch {
+    return false
+  }
+}
+
+/** Read up to the last `maxBytes` of a UTF-8 text file. Returns null if unavailable or on error. */
+export async function readTextFileTail(
+  path: string,
+  maxBytes: number,
+): Promise<string | null> {
+  if (!isDesktopApp() || !path.trim()) return null
+  try {
+    return await invoke<string>('read_text_file_tail', {
+      path: path.trim(),
+      maxBytes: Math.max(1, Math.floor(maxBytes)),
+    })
+  } catch {
+    return null
+  }
+}
+
 /** Write UTF-8 text to an absolute path (creates parents). */
 export async function writeTextFileAt(
   path: string,

@@ -16,6 +16,8 @@ pub fn run() {
       dev_reset::take_fresh_install_env_flag,
       mod_fs::list_subdir_names,
       mod_fs::read_text_file,
+      mod_fs::file_is_nonempty,
+      mod_fs::read_text_file_tail,
       mod_fs::write_text_file,
       mod_fs::append_text_file,
       mod_fs::ensure_dir,

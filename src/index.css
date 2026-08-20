@@ -6560,7 +6560,7 @@ body.is-resizing-detail * {
 }
 
 .install-table col.install-col-mod {
-  width: 14%;
+  width: 10rem;
 }
 
 .install-table col.install-col-component {
@@ -6891,30 +6891,14 @@ body.is-resizing-detail * {
   word-break: break-all;
 }
 
-.install-detail-log-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.install-detail-log-icons {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
-.install-detail-log-link {
-  padding: 0;
-  border: none;
-  background: none;
-  color: var(--accent);
-  font: inherit;
-  font-size: 0.82rem;
-  text-align: left;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 0.12em;
-}
-
-.install-detail-log-link:hover {
-  color: color-mix(in srgb, var(--accent) 80%, var(--ink));
+.install-console-open-log-btn {
+  flex-shrink: 0;
 }
 
 .install-console-dock {

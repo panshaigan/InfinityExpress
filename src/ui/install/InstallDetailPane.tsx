@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import type { InstallRunState, InstallStep } from '../../lib/install/types'
 import { consoleLineTone } from '../../lib/install/consoleLineHighlight'
 import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
-import { readTextFile } from '../../lib/desktop/fsDialogs'
+import { readTextFile, fileIsNonempty } from '../../lib/desktop/fsDialogs'
 import {
   effectiveModFields,
   type WorkingMod,
@@ -14,6 +14,12 @@ import { isHttpUrl } from '../../lib/url'
 import { DetailResizeHandle } from '../DetailResizeHandle'
 import { IconTip } from '../IconTip'
 import { InstallLogDialog } from './InstallLogDialog'
+import {
+  DebugLogIcon,
+  ResultsLogIcon,
+  StderrLogIcon,
+  StdoutLogIcon,
+} from './InstallLogIcons'
 
 const STATUS_LABEL: Record<InstallStep['status'], string> = {
   queued: 'Queued',
@@ -136,6 +142,31 @@ function LinkValue({
   )
 }
 
+function LogIconButton({
+  label,
+  enabled,
+  onClick,
+  children,
+}: {
+  label: string
+  enabled: boolean
+  onClick: () => void
+  children: ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      className="install-action-icon-btn has-icon-tip"
+      disabled={!enabled}
+      onClick={onClick}
+      aria-label={label}
+    >
+      {children}
+      <IconTip>{label}</IconTip>
+    </button>
+  )
+}
+
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="outlined-field">
@@ -171,6 +202,11 @@ export function InstallDetailPane({
   const [logContents, setLogContents] = useState<string | null>(null)
   const [logLoading, setLogLoading] = useState(false)
   const [logError, setLogError] = useState<string | null>(null)
+  const [logAvailable, setLogAvailable] = useState<{
+    stdout?: boolean
+    stderr?: boolean
+    debug?: boolean
+  }>({})
   const [nowMs, setNowMs] = useState(() => Date.now())
 
   const componentId = selectedComponentId ?? step?.componentId ?? null
@@ -185,8 +221,58 @@ export function InstallDetailPane({
   const canOpenResults =
     stepProcessed &&
     ((step.resultLines?.length ?? 0) > 0 ||
-      !!step.stdoutLogPath ||
-      !!step.stderrLogPath)
+      !!logAvailable.stdout ||
+      !!logAvailable.stderr)
+
+  useEffect(() => {
+    if (!step) {
+      setLogAvailable({})
+      return
+    }
+    const stdoutPath = step.stdoutLogPath
+    const stderrPath = step.stderrLogPath
+    const debugPath = step.debugLogPath
+    let cancelled = false
+    async function refreshLogAvailability() {
+      const next: { stdout?: boolean; stderr?: boolean; debug?: boolean } = {}
+      const tasks: Promise<void>[] = []
+      if (stdoutPath) {
+        tasks.push(
+          fileIsNonempty(stdoutPath).then((ok) => {
+            next.stdout = ok
+          }),
+        )
+      }
+      if (stderrPath) {
+        tasks.push(
+          fileIsNonempty(stderrPath).then((ok) => {
+            next.stderr = ok
+          }),
+        )
+      }
+      if (debugPath) {
+        tasks.push(
+          fileIsNonempty(debugPath).then((ok) => {
+            next.debug = ok
+          }),
+        )
+      }
+      await Promise.all(tasks)
+      if (!cancelled) setLogAvailable(next)
+    }
+    void refreshLogAvailability()
+    return () => {
+      cancelled = true
+    }
+  }, [
+    step?.stepId,
+    step?.stdoutLogPath,
+    step?.stderrLogPath,
+    step?.debugLogPath,
+    step?.status,
+    step?.finishedAt,
+    step?.resultLines?.length,
+  ])
 
   useEffect(() => {
     if (!durationLive) return
@@ -248,10 +334,12 @@ export function InstallDetailPane({
     setLogLoading(false)
   }
 
-  const logEntries: { kind: Exclude<LogKind, 'results'>; path: string }[] = []
-  if (step?.stdoutLogPath) logEntries.push({ kind: 'stdout', path: step.stdoutLogPath })
-  if (step?.stderrLogPath) logEntries.push({ kind: 'stderr', path: step.stderrLogPath })
-  if (step?.debugLogPath) logEntries.push({ kind: 'debug', path: step.debugLogPath })
+  const showLogsBlock =
+    step != null &&
+    (stepProcessed ||
+      !!step.stdoutLogPath ||
+      !!step.stderrLogPath ||
+      !!step.debugLogPath)
 
   return (
     <>
@@ -370,32 +458,46 @@ export function InstallDetailPane({
                       </DetailBlock>
                     )}
 
-                    {logEntries.length > 0 || canOpenResults ? (
+                    {showLogsBlock ? (
                       <DetailBlock kind="logs" title="Logs">
-                        <ul className="install-detail-log-list">
-                          {canOpenResults ? (
-                            <li>
-                              <button
-                                type="button"
-                                className="install-detail-log-link"
-                                onClick={() => void openResults()}
-                              >
-                                Results
-                              </button>
-                            </li>
+                        <div className="install-detail-log-icons">
+                          {stepProcessed ? (
+                            <LogIconButton
+                              label="Results"
+                              enabled={canOpenResults}
+                              onClick={() => void openResults()}
+                            >
+                              <ResultsLogIcon />
+                            </LogIconButton>
                           ) : null}
-                          {logEntries.map(({ kind, path }) => (
-                            <li key={kind}>
-                              <button
-                                type="button"
-                                className="install-detail-log-link"
-                                onClick={() => void openLog(kind, path)}
-                              >
-                                {LOG_LABELS[kind]}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
+                          {step.stdoutLogPath ? (
+                            <LogIconButton
+                              label={LOG_LABELS.stdout}
+                              enabled={!!logAvailable.stdout}
+                              onClick={() => void openLog('stdout', step.stdoutLogPath!)}
+                            >
+                              <StdoutLogIcon />
+                            </LogIconButton>
+                          ) : null}
+                          {step.stderrLogPath ? (
+                            <LogIconButton
+                              label={LOG_LABELS.stderr}
+                              enabled={!!logAvailable.stderr}
+                              onClick={() => void openLog('stderr', step.stderrLogPath!)}
+                            >
+                              <StderrLogIcon />
+                            </LogIconButton>
+                          ) : null}
+                          {step.debugLogPath ? (
+                            <LogIconButton
+                              label={LOG_LABELS.debug}
+                              enabled={!!logAvailable.debug}
+                              onClick={() => void openLog('debug', step.debugLogPath!)}
+                            >
+                              <DebugLogIcon />
+                            </LogIconButton>
+                          ) : null}
+                        </div>
                       </DetailBlock>
                     ) : null}
                   </div>

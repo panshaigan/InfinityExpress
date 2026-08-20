@@ -14,6 +14,8 @@
     "opener:default",
     "allow-list-subdir-names",
     "allow-read-text-file",
+    "allow-file-is-nonempty",
+    "allow-read-text-file-tail",
     "allow-write-text-file-path",
     "allow-append-text-file",
     "allow-ensure-dir",

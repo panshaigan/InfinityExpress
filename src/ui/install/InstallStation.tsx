@@ -1146,6 +1146,7 @@ export function InstallStation({
         lines={consoleLines}
         commandLines={commandLines}
         resultLines={resultLines}
+        logDir={run?.logDir ?? null}
         statusText={statusText}
         collapsed={consoleCollapsed}
         onToggleCollapsed={() => setConsoleCollapsed((v) => !v)}

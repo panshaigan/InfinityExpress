@@ -56,6 +56,12 @@ import {
   type WeiduLogImportResult,
 } from '../lib/install/weiduLogMap'
 import { loadInstallConsoleFromRunLog } from '../lib/install/loadRunConsole'
+import {
+  INSTALL_FAILURE_STDERR_TAIL_BYTES,
+  trimConsoleLines,
+} from '../lib/install/consoleLimits'
+import { buildStepFailureErrors } from '../lib/install/stepFailureErrors'
+import { readTextFileTail } from '../lib/desktop/fsDialogs'
 import type { PersistedInstallSession } from '../lib/ui/appSessionPrefs'
 
 function newRunId(): string {
@@ -392,7 +398,7 @@ export function useInstallRun(options: {
     void listenWeiduInstallEvents((ev: WeiduInstallEvent) => {
       if (ev.kind === 'output') {
         const stamped = stampLine(ev.text)
-        setConsoleLines((prev) => [...prev.slice(-4999), stamped])
+        setConsoleLines((prev) => trimConsoleLines([...prev, stamped]))
         if (consoleLineTone(ev.text) != null) {
           setResultLines((prev) => [...prev.slice(-999), stamped])
           const stepId = activeStepIdRef.current
@@ -1215,18 +1221,30 @@ export function useInstallRun(options: {
               warnings.push('WeiDU.log verification incomplete')
             }
 
-            step = mergeStepResultLines({
-              ...step,
+            const stepForErrors = mergeStepResultLines(step)
+            const failureErrors =
+              status === 'failed'
+                ? buildStepFailureErrors(result, {
+                    stderrTail: await readTextFileTail(
+                      result.stderrPath,
+                      INSTALL_FAILURE_STDERR_TAIL_BYTES,
+                    ),
+                    highlightLines: stepForErrors.resultLines,
+                  })
+                : []
+
+            step = {
+              ...stepForErrors,
               status,
               progress: null,
               debugLogPath: result.debugPath ?? undefined,
               warnings,
               errors:
                 status === 'failed'
-                  ? [...step.errors, `Exit code ${result.exitCode ?? 'unknown'}`]
-                  : step.errors,
+                  ? [...stepForErrors.errors, ...failureErrors]
+                  : stepForErrors.errors,
               finishedAt: new Date().toISOString(),
-            })
+            }
 
             logComponentInstallTime({
               backupDir: appDirs.backupDir,

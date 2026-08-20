@@ -4,9 +4,13 @@ import {
   consoleLineToneClass,
 } from '../../lib/install/consoleLineHighlight'
 import { readInstallConsoleHeight, writeInstallConsoleHeight } from '../../lib/ui/installConsolePrefs'
+import { isDesktopApp } from '../../lib/desktop/fsDialogs'
+import { openInstallLogFolder } from '../../lib/desktop/openPath'
+import { INSTALL_CONSOLE_MAX_LINES } from '../../lib/install/consoleLimits'
 import { IconTip } from '../IconTip'
 import { OutlinedTextField } from '../OutlinedTextField'
 import { ChevronDoubleDownIcon, ChevronDoubleUpIcon } from './InstallControlIcons'
+import { OpenLogFolderIcon } from './InstallLogIcons'
 
 type ConsoleTab = 'output' | 'commands' | 'results'
 
@@ -14,6 +18,7 @@ interface Props {
   lines: string[]
   commandLines: string[]
   resultLines: string[]
+  logDir: string | null
   statusText: string
   collapsed: boolean
   onToggleCollapsed: () => void
@@ -26,6 +31,7 @@ export function InstallConsoleDock({
   lines,
   commandLines,
   resultLines,
+  logDir,
   statusText,
   collapsed,
   onToggleCollapsed,
@@ -83,6 +89,12 @@ export function InstallConsoleDock({
 
   const collapseLabel = collapsed ? 'Show output' : 'Hide output'
   const showResponse = waitingForInput && tab === 'output'
+  const canOpenLogFolder = isDesktopApp() && !!logDir?.trim()
+  const consoleTruncated =
+    tab === 'output' && lines.length >= INSTALL_CONSOLE_MAX_LINES
+  const displayStatus = consoleTruncated
+    ? `${statusText} (last ${INSTALL_CONSOLE_MAX_LINES} lines)`
+    : statusText
 
   return (
     <div
@@ -145,8 +157,19 @@ export function InstallConsoleDock({
             </button>
           </div>
         ) : null}
+        {canOpenLogFolder ? (
+          <button
+            type="button"
+            className="btn secondary install-control-btn install-console-open-log-btn has-icon-tip"
+            onClick={() => void openInstallLogFolder(logDir!)}
+            aria-label="Open log folder"
+          >
+            <OpenLogFolderIcon />
+            <IconTip>Open log folder</IconTip>
+          </button>
+        ) : null}
         <span className="install-console-status" role="status" aria-live="polite">
-          {statusText}
+          {displayStatus}
         </span>
       </div>
       {!collapsed ? (

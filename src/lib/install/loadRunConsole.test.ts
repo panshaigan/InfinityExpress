@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { INSTALL_CONSOLE_MAX_LINES } from './consoleLimits'
 import { mergeRunLogLines } from './loadRunConsole'
 
 describe('loadRunConsole', () => {
@@ -19,5 +20,15 @@ describe('loadRunConsole', () => {
     const { consoleLines, resultLines } = mergeRunLogLines(null, null)
     expect(consoleLines).toEqual([])
     expect(resultLines).toEqual([])
+  })
+
+  it('trims console lines to the display cap', () => {
+    const stdout = Array.from({ length: INSTALL_CONSOLE_MAX_LINES + 50 }, (_, i) => `line ${i}`).join(
+      '\n',
+    )
+    const { consoleLines } = mergeRunLogLines(stdout, null)
+    expect(consoleLines).toHaveLength(INSTALL_CONSOLE_MAX_LINES)
+    expect(consoleLines[0]).toBe('line 50')
+    expect(consoleLines.at(-1)).toBe(`line ${INSTALL_CONSOLE_MAX_LINES + 49}`)
   })
 })

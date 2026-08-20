@@ -1,5 +1,10 @@
 import { consoleLineTone } from './consoleLineHighlight'
-import { isDesktopApp, readTextFile } from '../desktop/fsDialogs'
+import {
+  INSTALL_CONSOLE_MAX_LINES,
+  INSTALL_CONSOLE_TAIL_BYTES,
+  trimConsoleLines,
+} from './consoleLimits'
+import { isDesktopApp, readTextFileTail } from '../desktop/fsDialogs'
 
 export interface LoadedRunConsole {
   consoleLines: string[]
@@ -36,20 +41,22 @@ export async function loadInstallConsoleFromRunLog(
   const stdoutPath = joinLogPath(logDir, 'run-stdout.log')
   const stderrPath = joinLogPath(logDir, 'run-stderr.log')
   const [stdoutText, stderrText] = await Promise.all([
-    readTextFile(stdoutPath),
-    readTextFile(stderrPath),
+    readTextFileTail(stdoutPath, INSTALL_CONSOLE_TAIL_BYTES),
+    readTextFileTail(stderrPath, INSTALL_CONSOLE_TAIL_BYTES),
   ])
-  const stdoutLines = linesFromText(stdoutText)
-  const stderrLines = linesFromText(stderrText)
-  const consoleLines = [...stdoutLines, ...stderrLines]
-  return {
-    consoleLines,
-    resultLines: resultLinesFromConsole(consoleLines),
-  }
+  return mergeRunLogLines(stdoutText, stderrText)
 }
 
 /** @internal test helper */
-export function mergeRunLogLines(stdoutText: string | null, stderrText: string | null): LoadedRunConsole {
-  const consoleLines = [...linesFromText(stdoutText), ...linesFromText(stderrText)]
-  return { consoleLines, resultLines: resultLinesFromConsole(consoleLines) }
+export function mergeRunLogLines(
+  stdoutText: string | null,
+  stderrText: string | null,
+): LoadedRunConsole {
+  const stdoutLines = linesFromText(stdoutText)
+  const stderrLines = linesFromText(stderrText)
+  const consoleLines = trimConsoleLines([...stdoutLines, ...stderrLines])
+  const resultLines = trimConsoleLines(resultLinesFromConsole(consoleLines)).slice(
+    -Math.min(999, INSTALL_CONSOLE_MAX_LINES),
+  )
+  return { consoleLines, resultLines }
 }
