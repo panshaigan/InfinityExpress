@@ -114,6 +114,7 @@ describe('appSessionPrefs', () => {
       selectedStepId: 'single:0000',
       selectedComponentId: 'comp-a',
       hideInstalled: false,
+      pauseOnWarnings: false,
       runElapsedMs: 1000,
     })
     const model = {
@@ -263,6 +264,7 @@ describe('appSessionPrefs', () => {
       selectedStepId: 'single:0001',
       selectedComponentId: 'comp-b',
       hideInstalled: false,
+      pauseOnWarnings: false,
       runElapsedMs: 0,
     })
     expect(install.run.plannedSnapshots).toEqual([

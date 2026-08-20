@@ -38,6 +38,7 @@ import { InstallDetailPane } from './InstallDetailPane'
 import { InstallTable } from './InstallTable'
 import {
   HideInstalledIcon,
+  PauseOnWarningsIcon,
   PauseIcon,
   PlayIcon,
   RestartIcon,
@@ -132,6 +133,9 @@ export function InstallStation({
   const followCursorForDetailsRef = useRef(true)
   const [clearedDurationMsTotal, setClearedDurationMsTotal] = useState(0)
   const [pathTick, setPathTick] = useState(0)
+  const [pauseOnWarnings, setPauseOnWarnings] = useState(
+    () => initialInstallSession?.ui.pauseOnWarnings ?? false,
+  )
   const appDirs = readAppDirPaths()
   const weiduPath = readWeiduPath()
   void pathTick
@@ -183,6 +187,7 @@ export function InstallStation({
       ? { installSession: initialInstallSession }
       : null,
     weiduLogImport,
+    pauseOnWarnings,
     onDurationClearedMs: (deltaMs) => {
       if (!Number.isFinite(deltaMs) || deltaMs <= 0) return
       setClearedDurationMsTotal((prev) => prev + Math.max(0, Math.floor(deltaMs)))
@@ -258,6 +263,7 @@ export function InstallStation({
       selectedStepId,
       selectedComponentId,
       hideInstalled,
+      pauseOnWarnings,
       runElapsedMs: sampledElapsedMs,
     })
     const nextKey = JSON.stringify(nextSession)
@@ -267,6 +273,7 @@ export function InstallStation({
   }, [
     game,
     hideInstalled,
+    pauseOnWarnings,
     onInstallSessionChange,
     paused,
     run,
@@ -1069,6 +1076,18 @@ export function InstallStation({
                   <HideInstalledIcon />
                 </button>
                 <IconTip>Hide installed</IconTip>
+              </span>
+              <span className="install-action-icon-wrap has-icon-tip">
+                <button
+                  type="button"
+                  className={`install-action-icon-btn${pauseOnWarnings ? ' active' : ''}`}
+                  aria-pressed={pauseOnWarnings}
+                  aria-label="Pause on installed with warnings"
+                  onClick={() => setPauseOnWarnings((v) => !v)}
+                >
+                  <PauseOnWarningsIcon />
+                </button>
+                <IconTip>Pause on installed with warnings</IconTip>
               </span>
               <span className="install-action-icon-wrap has-icon-tip">
                 <button

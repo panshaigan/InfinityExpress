@@ -208,21 +208,6 @@ fn emit_command_logged(app: &AppHandle, exe: &Path, cwd: &Path, args: &[String])
   );
 }
 
-fn emit_captured_output(app: &AppHandle, text: &str) {
-  for line in text.lines() {
-    if line.is_empty() {
-      continue;
-    }
-    emit_event(
-      app,
-      InstallEventPayload::Output {
-        stream: "stdout".into(),
-        text: line.to_string(),
-      },
-    );
-  }
-}
-
 fn emit_classified_error(app: &AppHandle, message: &str) {
   emit_event(
     app,
@@ -441,7 +426,7 @@ pub fn list_weidu_components(
       return Err(e);
     }
   };
-  emit_captured_output(&app, &out);
+  // Probe stdout is used only for parsing — do not mirror into the WeiDU/Results console.
   parse_json_array(&out).map_err(|e| {
     emit_classified_error(&app, &e);
     e
@@ -525,7 +510,7 @@ pub fn list_weidu_languages(
       return Err(e);
     }
   };
-  emit_captured_output(&app, &out);
+  // Probe stdout is used only for parsing — do not mirror into the WeiDU/Results console.
   parse_languages_output(&out).map_err(|e| {
     emit_classified_error(&app, &e);
     e

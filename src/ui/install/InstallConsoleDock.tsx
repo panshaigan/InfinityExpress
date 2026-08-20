@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   consoleLineTone,
   consoleLineToneClass,
+  splitConsoleTs,
 } from '../../lib/install/consoleLineHighlight'
 import { readInstallConsoleHeight, writeInstallConsoleHeight } from '../../lib/ui/installConsolePrefs'
 import { isDesktopApp } from '../../lib/desktop/fsDialogs'
@@ -191,12 +192,14 @@ export function InstallConsoleDock({
             {activeLines.length > 0 ? (
               activeLines.map((line, i) => {
                 const tone = colorize ? consoleLineTone(line) : null
+                const { ts, body } = splitConsoleTs(line)
                 return (
                   <div
                     key={`${i}:${line.slice(0, 48)}`}
                     className={`install-console-line${consoleLineToneClass(tone)}`}
                   >
-                    {line}
+                    {ts ? <span className="install-console-ts">{ts} </span> : null}
+                    {body}
                   </div>
                 )
               })

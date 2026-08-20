@@ -60,6 +60,7 @@ export interface PersistedInstallSession {
     selectedStepId: string | null
     selectedComponentId: string | null
     hideInstalled: boolean
+    pauseOnWarnings: boolean
     runElapsedMs: number
   }
   transport: {
@@ -286,6 +287,7 @@ function persistedInstallFrom(value: unknown): PersistedInstallSession | null {
           ? uiObj.selectedComponentId
           : null,
       hideInstalled: uiObj.hideInstalled === true,
+      pauseOnWarnings: uiObj.pauseOnWarnings === true,
       runElapsedMs:
         typeof uiObj.runElapsedMs === 'number' && uiObj.runElapsedMs >= 0
           ? uiObj.runElapsedMs
@@ -504,6 +506,7 @@ export function buildPersistedInstallSession(input: {
   selectedStepId: string | null
   selectedComponentId: string | null
   hideInstalled: boolean
+  pauseOnWarnings: boolean
   runElapsedMs: number
 }): PersistedInstallSession {
   const run = normalizeInstallRunForPersist(input.run)
@@ -514,6 +517,7 @@ export function buildPersistedInstallSession(input: {
       selectedStepId: input.selectedStepId,
       selectedComponentId: input.selectedComponentId,
       hideInstalled: input.hideInstalled,
+      pauseOnWarnings: input.pauseOnWarnings,
       runElapsedMs: input.runElapsedMs,
     },
     transport: {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { consoleLineTone, stripConsoleTs } from './consoleLineHighlight'
+import { consoleLineTone, splitConsoleTs, stripConsoleTs } from './consoleLineHighlight'
 
 describe('consoleLineTone', () => {
   it('detects errors including plurals', () => {
@@ -53,5 +53,18 @@ describe('consoleLineTone', () => {
 describe('stripConsoleTs', () => {
   it('removes leading timestamp', () => {
     expect(stripConsoleTs('[14:32:05] hello')).toBe('hello')
+  })
+})
+
+describe('splitConsoleTs', () => {
+  it('splits stamped lines', () => {
+    expect(splitConsoleTs('[14:32:05] hello')).toEqual({
+      ts: '[14:32:05]',
+      body: 'hello',
+    })
+  })
+
+  it('returns null ts when unstamped', () => {
+    expect(splitConsoleTs('hello')).toEqual({ ts: null, body: 'hello' })
   })
 })

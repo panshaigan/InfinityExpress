@@ -54,3 +54,25 @@ export function OpenLogFolderIcon() {
     </svg>
   )
 }
+
+export function ModUrlIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M9.25 2a.75.75 0 0 1 0-1.5h4.5A.75.75 0 0 1 14.5 1.25v4.5a.75.75 0 0 1-1.5 0V3.06L7.78 8.28a.75.75 0 0 1-1.06-1.06L12 2H9.25ZM3.5 3A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V9.25a.75.75 0 0 0-1.5 0v3.25a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h3.25a.75.75 0 0 0 0-1.5H3.5Z"
+      />
+    </svg>
+  )
+}
+
+export function ModReadmeIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M3.5 2A1.5 1.5 0 0 0 2 3.5v9A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 12.5 2h-9ZM3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-9Zm2 1.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5A.75.75 0 0 1 5 5.25Zm0 2.5a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5A.75.75 0 0 1 5 7.75Zm0 2.5a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 0 1.5H5.75A.75.75 0 0 1 5 10.25Z"
+      />
+    </svg>
+  )
+}

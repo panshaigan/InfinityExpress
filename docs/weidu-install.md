@@ -47,6 +47,8 @@ Toolbar in `InstallStation.tsx`; state machine in `useInstallRun.ts`.
 | **Skip** | `idle` / `paused` / `stopped` / `waitingForInput` / `failed` (or before first Play); at least one step after the cursor; cursor step not already finished | Marks the package at the cursor as `skipped`, advances cursor, stays halted — does **not** auto-continue. Creates an idle run via `ensureIdleRun()` when used before Play. |
 | **Previous** | `idle` / `paused` / `stopped` / `failed` (or before first Play); `cursor > 0` | Confirms, then moves cursor back one install step, force-uninstalls that package via `setup-{weiduId}.exe`, resets it to `queued`. Creates an idle run via `ensureIdleRun()` when used before Play. |
 | **Restart** | Vanilla exists; install has started; not mid-copy / WeiDU live | Restores the vanilla backup (EET: stage-only BG2 or full BG1+BG2) and resets the plan. |
+| **Hide installed** | Always | Toolbar icon: hides rows with status `succeeded` / `alreadyInstalled` from the plan table. Persisted in the install session. |
+| **Pause on warnings** | Always | Toolbar icon (next to Hide installed). When **on**, after a step finishes with WeiDU **exit code 3** (installed with warnings), the run pauses like Pause (finish current step → `paused`). When **off**, exit 3 continues as today (`succeededWithWarnings`). Does not auto-pause on exit 0 with incomplete WeiDU.log verify. Persisted in the install session. |
 | **Take snapshot** | Vanilla exists for the current phase game; not mid-copy / WeiDU live | Name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`), then immediately copies that game folder (`createNamedBackup`, full copy). |
 | **Restore snapshot** | At least one named snapshot exists; not mid-copy / WeiDU live | Opens the snapshot table ([`RestoreSnapshotDialog.tsx`](../src/ui/install/RestoreSnapshotDialog.tsx)). Disabled with “No snapshots yet” when the list is empty. |
 
@@ -89,9 +91,9 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 ## Resolve & run
 
 1. Stage by XML `modId` (download folder) → discover tp2 → WeiDU id = tp2 parent folder.
-2. List: `weidu.exe --nogame --noautoupdate --list-components-json <tp2> <lang>`.
+2. List: `weidu.exe --nogame --noautoupdate --list-components-json <tp2> <lang>` (stdout is parsed only — not mirrored to the WeiDU/Results console).
 3. Resolve: prefer `:N` → number; else match WeiDU `label[]` to **component id** (not XML UI `label`/`name`).
-4. Language: prefer English TRA name; else first listed (`pickEnglishLanguage`).
+4. Language: prefer English TRA name; else first listed (`pickEnglishLanguage`). `--list-languages` probe output is likewise not mirrored to the console.
 5. Copy `weidu.exe` → `{gameDir}/setup-{weiduId}.exe`; run **that** exe (no tp2 argv) with:
 
    - `--noautoupdate`
@@ -109,7 +111,7 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 | `3` | Installed with warnings | `succeededWithWarnings` | yes |
 | `2` (and other non-0/3) | Failed | `failed` | no |
 
-**Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). UI keeps / reloads only the last ~800 lines per tab. See `.cursor/rules/weidu-console-tabs.mdc`.
+**Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). List probes (`--list-components-json`, `--list-languages`) stay on the Commands tab as argv only — their JSON/language dumps are not emitted to WeiDU or Results. UI keeps / reloads only the last ~800 lines per tab. See `.cursor/rules/weidu-console-tabs.mdc`.
 
 **Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --force-uninstall` (`run_weidu_force_uninstall`; no `--safe-exit` on uninstall). Do not invoke the configured `weidu.exe` directly for install or uninstall.
 

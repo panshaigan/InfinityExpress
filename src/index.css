@@ -6415,6 +6415,8 @@ body.is-resizing-detail * {
   background: color-mix(in srgb, var(--panel) 70%, #000);
   color: var(--ink);
   cursor: pointer;
+  text-decoration: none;
+  box-sizing: border-box;
 }
 
 .install-action-icon-btn:hover:not(:disabled) {
@@ -6563,23 +6565,15 @@ body.is-resizing-detail * {
 }
 
 .install-table col.install-col-mod {
-  width: 10rem;
+  width: 14rem;
 }
 
 .install-table col.install-col-component {
-  width: 40%;
-}
-
-.install-table col.install-col-component-id {
-  width: 10rem;
+  width: 50%;
 }
 
 .install-table col.install-col-category {
   width: 6rem;
-}
-
-.install-table col.install-col-type {
-  width: 5.5rem;
 }
 
 .install-table col.install-col-duration {
@@ -6710,8 +6704,7 @@ body.is-resizing-detail * {
 }
 
 .install-col-mod,
-.install-col-component,
-.install-col-component-id {
+.install-col-component {
   min-width: 0;
 }
 
@@ -6720,22 +6713,9 @@ body.is-resizing-detail * {
 }
 
 .install-col-category,
-.install-col-type,
 .install-col-duration,
 .install-col-status {
   white-space: nowrap;
-}
-
-.install-id-cell {
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
-  min-width: 0;
-}
-
-.install-id-cell .mods-cell-clip {
-  flex: 1;
-  min-width: 0;
 }
 
 .install-row.row-hover:not(.selected):not(.install-cursor):not(.focused),
@@ -6898,6 +6878,14 @@ body.is-resizing-detail * {
   word-break: break-all;
 }
 
+.install-detail-last-result {
+  display: block;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .install-detail-log-icons {
   display: flex;
   flex-wrap: wrap;
@@ -6989,8 +6977,19 @@ body.is-resizing-detail * {
   white-space: nowrap;
 }
 
+.install-console-ts {
+  color: color-mix(in srgb, var(--ink) 42%, #000);
+}
+
 .install-console-line-error {
   color: var(--err);
+}
+
+.install-console-line-error .install-console-ts,
+.install-console-line-warning .install-console-ts,
+.install-console-line-success .install-console-ts,
+.install-console-line-skipped .install-console-ts {
+  color: color-mix(in srgb, currentColor 55%, #000);
 }
 
 .install-console-line-warning {

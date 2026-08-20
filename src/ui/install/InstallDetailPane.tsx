@@ -13,7 +13,6 @@ import {
   type WorkingMod,
 } from '../../lib/mods/loadMods'
 import { withHtmlPreviewIfNeeded } from '../../lib/mods/modFieldParse'
-import { formatModSize } from '../../lib/mods/modsTable'
 import type { InstallSequenceModel } from '../../lib/xml/schema'
 import { isHttpUrl } from '../../lib/url'
 import { DetailResizeHandle } from '../DetailResizeHandle'
@@ -21,6 +20,8 @@ import { IconTip } from '../IconTip'
 import { InstallLogDialog } from './InstallLogDialog'
 import {
   DebugLogIcon,
+  ModReadmeIcon,
+  ModUrlIcon,
   ResultsLogIcon,
   StderrLogIcon,
   StdoutLogIcon,
@@ -52,6 +53,30 @@ const PROCESSED: ReadonlySet<InstallStep['status']> = new Set([
 function safeResultsFilename(modId: string): string {
   const safe = modId.replace(/[^\w.-]+/g, '_').slice(0, 40) || 'step'
   return `${safe}-results.log`
+}
+
+function lastNonEmptyLine(text: string): string | null {
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trimEnd())
+    .filter((l) => l.length > 0)
+  return lines.length > 0 ? lines[lines.length - 1]! : null
+}
+
+async function loadStepResultsText(stepDir: string): Promise<string> {
+  let text = await readConcatenatedAttemptLogs(stepDir, 'results')
+  if (!text.trim()) {
+    const fromPipes = [
+      await readConcatenatedAttemptLogs(stepDir, 'mod'),
+      await readConcatenatedAttemptLogs(stepDir, 'component'),
+    ]
+      .join('\n')
+      .split(/\r?\n/)
+      .map((l) => l.trimEnd())
+      .filter((l) => l.length > 0 && consoleLineTone(l) != null)
+    text = fromPipes.join('\n')
+  }
+  return text
 }
 
 interface Props {
@@ -122,24 +147,6 @@ function CopyButton({ value, label }: { value: string; label: string }) {
   )
 }
 
-function LinkValue({
-  href,
-  label,
-  htmlPreview,
-}: {
-  href: string
-  label?: string
-  htmlPreview?: boolean
-}) {
-  const resolved = htmlPreview && href ? withHtmlPreviewIfNeeded(href) : href
-  if (!isHttpUrl(resolved)) return <span>{resolved || '—'}</span>
-  return (
-    <a href={resolved} target="_blank" rel="noreferrer">
-      {label ?? resolved}
-    </a>
-  )
-}
-
 function LogIconButton({
   label,
   enabled,
@@ -162,6 +169,43 @@ function LogIconButton({
       {children}
       <IconTip>{label}</IconTip>
     </button>
+  )
+}
+
+function LinkIcon({
+  label,
+  href,
+  children,
+}: {
+  label: string
+  href: string | null
+  children: ReactNode
+}) {
+  const enabled = !!href && isHttpUrl(href)
+  if (!enabled) {
+    return (
+      <button
+        type="button"
+        className="install-action-icon-btn has-icon-tip"
+        disabled
+        aria-label={label}
+      >
+        {children}
+        <IconTip>{label}</IconTip>
+      </button>
+    )
+  }
+  return (
+    <a
+      className="install-action-icon-btn has-icon-tip"
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+    >
+      {children}
+      <IconTip>{label}</IconTip>
+    </a>
   )
 }
 
@@ -206,6 +250,7 @@ export function InstallDetailPane({
     results?: boolean
     debug?: boolean
   }>({})
+  const [lastResultLine, setLastResultLine] = useState<string | null>(null)
   const [nowMs, setNowMs] = useState(() => Date.now())
 
   const componentId = selectedComponentId ?? step?.componentId ?? null
@@ -222,6 +267,13 @@ export function InstallDetailPane({
     stepDirFromLogPath(step?.stderrLogPath)
   const canOpenResults =
     stepProcessed && (!!logAvailable.results || !!logAvailable.mod || !!logAvailable.component)
+  const urlHref = eff?.url?.trim() || null
+  const readmeHref = (() => {
+    const raw = eff?.readme?.trim()
+    if (!raw) return null
+    return withHtmlPreviewIfNeeded(raw)
+  })()
+  const hasLinkIcons = !!(urlHref || readmeHref)
 
   useEffect(() => {
     if (!step) {
@@ -282,6 +334,29 @@ export function InstallDetailPane({
   ])
 
   useEffect(() => {
+    if (!step || !stepProcessed || !stepDir) {
+      setLastResultLine(null)
+      return
+    }
+    let cancelled = false
+    async function loadLastResult() {
+      const text = await loadStepResultsText(stepDir!)
+      if (cancelled) return
+      setLastResultLine(lastNonEmptyLine(text))
+    }
+    void loadLastResult()
+    return () => {
+      cancelled = true
+    }
+  }, [
+    step?.stepId,
+    step?.status,
+    step?.finishedAt,
+    stepProcessed,
+    stepDir,
+  ])
+
+  useEffect(() => {
     if (!durationLive) return
     setNowMs(Date.now())
     const id = window.setInterval(() => setNowMs(Date.now()), 1000)
@@ -325,18 +400,7 @@ export function InstallDetailPane({
     setLogContents(null)
     setLogError(null)
     setLogLoading(true)
-    let text = await readConcatenatedAttemptLogs(stepDir, 'results')
-    if (!text.trim()) {
-      const fromPipes = [
-        await readConcatenatedAttemptLogs(stepDir, 'mod'),
-        await readConcatenatedAttemptLogs(stepDir, 'component'),
-      ]
-        .join('\n')
-        .split(/\r?\n/)
-        .map((l) => l.trimEnd())
-        .filter((l) => l.length > 0 && consoleLineTone(l) != null)
-      text = fromPipes.join('\n')
-    }
+    const text = await loadStepResultsText(stepDir)
     setLogLoading(false)
     if (!text.trim()) {
       setLogContents('(No matching result lines found.)')
@@ -354,7 +418,8 @@ export function InstallDetailPane({
 
   const showLogsBlock =
     step != null &&
-    (stepProcessed ||
+    (hasLinkIcons ||
+      stepProcessed ||
       !!step.stdoutLogPath ||
       !!step.stderrLogPath ||
       !!step.debugLogPath)
@@ -400,85 +465,15 @@ export function InstallDetailPane({
               ) : (
                 <div className="component-detail install-step-detail">
                   <div className="detail-blocks">
-                    <DetailBlock kind="component" title="Component">
-                      <dl className="outlined-fields">
-                        {componentId ? (
-                          <Field label="Id">
-                            <span className="detail-name-value">
-                              <span>{componentId}</span>
-                              <CopyButton value={componentId} label="Copy id" />
-                            </span>
-                          </Field>
-                        ) : null}
-                        {component?.attrs.name ? (
-                          <Field label="WeiDU Label">
-                            <span className="detail-name-value">
-                              <span>{component.attrs.name}</span>
-                              <CopyButton value={component.attrs.name} label="Copy WeiDU label" />
-                            </span>
-                          </Field>
-                        ) : null}
-                        {component?.attrs.complexity ? (
-                          <Field label="Complexity">{component.attrs.complexity}</Field>
-                        ) : null}
-                        <Field label="Status">{STATUS_LABEL[step.status]}</Field>
-                        <Field label="Duration">{durationLabel ?? '—'}</Field>
-                        {step.weiduNumber != null ? (
-                          <Field label="WeiDU #">{step.weiduNumber}</Field>
-                        ) : null}
-                        {step.languageIndex != null ? (
-                          <Field label="Language">{step.languageIndex}</Field>
-                        ) : null}
-                        {step.warnings.length > 0 ? (
-                          <Field label="Warnings">
-                            <ul className="install-detail-list">
-                              {step.warnings.map((w, i) => (
-                                <li key={i}>{w}</li>
-                              ))}
-                            </ul>
-                          </Field>
-                        ) : null}
-                        {step.errors.length > 0 ? (
-                          <Field label="Errors">
-                            <ul className="install-detail-list install-detail-errors">
-                              {step.errors.map((e, i) => (
-                                <li key={i}>{e}</li>
-                              ))}
-                            </ul>
-                          </Field>
-                        ) : null}
-                      </dl>
-                    </DetailBlock>
-
-                    {eff ? (
-                      <DetailBlock kind="mod" title="Mod">
-                        <dl className="outlined-fields mod-detail-dl">
-                          <Field label="Name">{eff.name || eff.codename}</Field>
-                          <Field label="Download ID">{eff.codename}</Field>
-                          <Field label="Category">{eff.category || '—'}</Field>
-                          <Field label="Type">{eff.type || '—'}</Field>
-                          <Field label="Stability">{eff.stability || '—'}</Field>
-                          <Field label="Version">{eff.version || '—'}</Field>
-                          <Field label="Size">{formatModSize(eff.sizeBytes)}</Field>
-                          <Field label="URL">
-                            <LinkValue href={eff.url} />
-                          </Field>
-                          <Field label="Readme">
-                            <LinkValue href={eff.readme} htmlPreview />
-                          </Field>
-                        </dl>
-                      </DetailBlock>
-                    ) : (
-                      <DetailBlock kind="mod" title="Mod">
-                        <dl className="outlined-fields">
-                          <Field label="Download ID">{step.modId}</Field>
-                        </dl>
-                      </DetailBlock>
-                    )}
-
                     {showLogsBlock ? (
                       <DetailBlock kind="logs" title="Logs">
                         <div className="install-detail-log-icons">
+                          <LinkIcon label="URL" href={urlHref}>
+                            <ModUrlIcon />
+                          </LinkIcon>
+                          <LinkIcon label="Readme" href={readmeHref}>
+                            <ModReadmeIcon />
+                          </LinkIcon>
                           {stepProcessed ? (
                             <LogIconButton
                               label="Results"
@@ -518,6 +513,68 @@ export function InstallDetailPane({
                         </div>
                       </DetailBlock>
                     ) : null}
+
+                    <DetailBlock kind="component" title="Component">
+                      <dl className="outlined-fields">
+                        {componentId ? (
+                          <Field label="Id">
+                            <span className="detail-name-value">
+                              <span>{componentId}</span>
+                              <CopyButton value={componentId} label="Copy id" />
+                            </span>
+                          </Field>
+                        ) : null}
+                        {component?.attrs.name ? (
+                          <Field label="WeiDU Label">
+                            <span className="detail-name-value">
+                              <span>{component.attrs.name}</span>
+                              <CopyButton value={component.attrs.name} label="Copy WeiDU label" />
+                            </span>
+                          </Field>
+                        ) : null}
+                        <Field label="Status">{STATUS_LABEL[step.status]}</Field>
+                        <Field label="Last result">
+                          <span className="install-detail-last-result">
+                            {lastResultLine ?? '—'}
+                          </span>
+                        </Field>
+                        <Field label="Duration">{durationLabel ?? '—'}</Field>
+                        {step.warnings.length > 0 ? (
+                          <Field label="Warnings">
+                            <ul className="install-detail-list">
+                              {step.warnings.map((w, i) => (
+                                <li key={i}>{w}</li>
+                              ))}
+                            </ul>
+                          </Field>
+                        ) : null}
+                        {step.errors.length > 0 ? (
+                          <Field label="Errors">
+                            <ul className="install-detail-list install-detail-errors">
+                              {step.errors.map((e, i) => (
+                                <li key={i}>{e}</li>
+                              ))}
+                            </ul>
+                          </Field>
+                        ) : null}
+                      </dl>
+                    </DetailBlock>
+
+                    {eff ? (
+                      <DetailBlock kind="mod" title="Mod">
+                        <dl className="outlined-fields mod-detail-dl">
+                          <Field label="Name">{eff.name || eff.codename}</Field>
+                          <Field label="Stability">{eff.stability || '—'}</Field>
+                          <Field label="Version">{eff.version || '—'}</Field>
+                        </dl>
+                      </DetailBlock>
+                    ) : (
+                      <DetailBlock kind="mod" title="Mod">
+                        <dl className="outlined-fields">
+                          <Field label="Name">{step.modId}</Field>
+                        </dl>
+                      </DetailBlock>
+                    )}
                   </div>
                 </div>
               )}

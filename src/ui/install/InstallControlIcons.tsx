@@ -174,6 +174,18 @@ export function HideInstalledIcon() {
   )
 }
 
+/** Warning triangle with pause bars — auto-pause on WeiDU exit code 3. */
+export function PauseOnWarningsIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M8.87 2.4a1 1 0 0 0-1.74 0L1.2 12.2A1 1 0 0 0 2.07 13.7h11.86a1 1 0 0 0 .87-1.5L8.87 2.4ZM7.5 6.25a.75.75 0 0 1 1.5 0v2.5a.75.75 0 0 1-1.5 0v-2.5Zm.75 5.5a.85.85 0 1 1 0-1.7.85.85 0 0 1 0 1.7Z"
+      />
+    </svg>
+  )
+}
+
 /** Double chevron down — collapse bottom console panel. */
 export function ChevronDoubleDownIcon() {
   return (

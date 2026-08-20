@@ -146,6 +146,8 @@ export function useInstallRun(options: {
   onDurationClearedMs?: (deltaMs: number) => void
   /** Reverse-mapped WeiDU.log hits for alreadyInstalled marks. */
   weiduLogImport?: WeiduLogImportResult | null
+  /** When true, pause after a step with WeiDU exit code 3 (installed with warnings). */
+  pauseOnWarnings?: boolean
 }) {
   const {
     model,
@@ -156,7 +158,10 @@ export function useInstallRun(options: {
     initialInstallState,
     onDurationClearedMs,
     weiduLogImport = null,
+    pauseOnWarnings = false,
   } = options
+  const pauseOnWarningsRef = useRef(pauseOnWarnings)
+  pauseOnWarningsRef.current = pauseOnWarnings
   const shouldLoadConsoleRef = useRef(!!initialInstallState?.installSession)
   const [run, setRun] = useState<InstallRun | null>(() => {
     const session = initialInstallState?.installSession
@@ -747,6 +752,7 @@ export function useInstallRun(options: {
       index: number,
       step: InstallStep,
       failed: boolean,
+      pauseMessage?: string | null,
     ): { current: InstallRun; shouldExit: boolean } => {
       let next: InstallRun = {
         ...current,
@@ -760,13 +766,14 @@ export function useInstallRun(options: {
         return { current: next, shouldExit: true }
       }
 
-      if (pausePendingRef.current) {
+      const shouldPause = pausePendingRef.current || !!pauseMessage
+      if (shouldPause) {
         pausePendingRef.current = false
         pausedRef.current = true
         setPausePending(false)
         setPaused(true)
         setRun({ ...next, runState: 'paused' })
-        appendCommandLine('Installation paused')
+        appendCommandLine(pauseMessage?.trim() || 'Installation paused')
         return { current: next, shouldExit: false }
       }
 
@@ -1271,7 +1278,17 @@ export function useInstallRun(options: {
               installMs: result.durationMs,
             })
 
-            const finished = finishStepIteration(current, i, step, status === 'failed')
+            const finished = finishStepIteration(
+              current,
+              i,
+              step,
+              status === 'failed',
+              status !== 'failed' &&
+                result.exitCode === 3 &&
+                pauseOnWarningsRef.current
+                ? 'Paused after installed with warnings (exit code 3)'
+                : null,
+            )
             current = finished.current
             if (finished.shouldExit) {
               runningRef.current = false

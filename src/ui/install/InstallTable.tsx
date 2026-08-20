@@ -8,8 +8,6 @@ import {
   useState,
   type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
-  type ReactNode,
 } from 'react'
 import { createPortal } from 'react-dom'
 import { canMoveCursorImmediately, canSetBreakpoint, isStepDone } from '../../lib/install/cursor'
@@ -62,67 +60,6 @@ function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`
   return `${(n / (1024 * 1024)).toFixed(1)} MB`
-}
-
-function TipCell({
-  className,
-  display,
-  tip,
-}: {
-  className?: string
-  display: ReactNode
-  tip: string | undefined
-}) {
-  const showTip = !!tip
-  return (
-    <td className={`${className ?? ''}${showTip ? ' has-icon-tip' : ''}`.trim()}>
-      <span className="mods-cell-clip">{display}</span>
-      {showTip ? <IconTip>{tip}</IconTip> : null}
-    </td>
-  )
-}
-
-function IdCopyButton({ value }: { value: string }) {
-  const [copied, setCopied] = useState(false)
-
-  async function onCopy(e: ReactMouseEvent) {
-    e.preventDefault()
-    e.stopPropagation()
-    try {
-      await navigator.clipboard.writeText(value)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1500)
-    } catch {
-      /* clipboard may be unavailable */
-    }
-  }
-
-  return (
-    <button
-      type="button"
-      className="mods-url-copy has-icon-tip"
-      tabIndex={-1}
-      onClick={(e) => void onCopy(e)}
-      aria-label={copied ? 'Copied' : 'Copy id'}
-    >
-      {copied ? (
-        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M6.5 11.2 3.3 8l1.1-1.1 2.1 2.1 4.6-4.6L12.2 5.5z"
-          />
-        </svg>
-      ) : (
-        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M5.5 2A1.5 1.5 0 0 0 4 3.5v7A1.5 1.5 0 0 0 5.5 12h5A1.5 1.5 0 0 0 12 10.5v-7A1.5 1.5 0 0 0 10.5 2zm0 1h5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5zM2.5 5v7.5A1.5 1.5 0 0 0 4 14h6.5v-1H4a.5.5 0 0 1-.5-.5V5z"
-          />
-        </svg>
-      )}
-      <IconTip>{copied ? 'Copied' : 'Copy id'}</IconTip>
-    </button>
-  )
 }
 
 function StatusCell({
@@ -222,10 +159,7 @@ type InstallRowViewModel = ReturnType<typeof expandStepsToTableRows>[number] & {
   hasBreakpoint: boolean
   hasSnapshot: boolean
   modDisplay: string
-  modTip: string
-  componentNameTip?: string
   category: string
-  complexity: string
 }
 
 function InstallStepContextMenu({
@@ -571,24 +505,14 @@ function InstallTableRow({
       }}
     >
       <td className="install-col-num">{row.order}</td>
-      <TipCell className="install-col-mod" display={row.modDisplay} tip={row.modTip} />
-      <TipCell
-        className="install-col-component"
-        display={row.componentLabel}
-        tip={row.componentNameTip}
-      />
-      <td className="install-col-component-id has-icon-tip">
-        <span className="install-id-cell">
-          <span className="mods-cell-clip">{row.componentId}</span>
-          <IdCopyButton value={row.componentId} />
-        </span>
-        <IconTip>{row.componentId}</IconTip>
+      <td className="install-col-mod">
+        <span className="mods-cell-clip">{row.modDisplay}</span>
+      </td>
+      <td className="install-col-component">
+        <span className="mods-cell-clip">{row.componentLabel}</span>
       </td>
       <td className="install-col-category">
         <span className="mods-cell-clip">{row.category || '—'}</span>
-      </td>
-      <td className="install-col-type">
-        <span className="mods-cell-clip">{row.complexity || '—'}</span>
       </td>
       <td className="install-col-duration">
         <DurationCellMemo step={row.step} runState={runState} />
@@ -629,7 +553,7 @@ interface Props {
 
 export function InstallTable({
   steps,
-  model,
+  model: _model,
   mods,
   selectedStepId,
   selectedComponentId,
@@ -654,19 +578,6 @@ export function InstallTable({
     for (const m of mods) map.set(m.codename.toLowerCase(), m)
     return map
   }, [mods])
-  const componentMetaById = useMemo(() => {
-    const map = new Map<
-      string,
-      { weiduName?: string; complexity: string }
-    >()
-    for (const [componentId, component] of model.componentsById.entries()) {
-      map.set(componentId, {
-        weiduName: component.attrs.name?.trim() || undefined,
-        complexity: component.attrs.complexity?.trim() || '',
-      })
-    }
-    return map
-  }, [model.componentsById])
   const breakpointStepIdSet = useMemo(
     () => createStepIdSet(tableActions?.breakpointStepIds ?? []),
     [tableActions?.breakpointStepIds],
@@ -713,7 +624,6 @@ export function InstallTable({
       const stepIndex = stepIndexMap.get(row.stepId) ?? -1
       const mod = modsByCodename.get(row.modId.toLowerCase())
       const eff = mod ? effectiveModFields(mod) : null
-      const componentMeta = componentMetaById.get(row.componentId)
       return {
         ...row,
         step,
@@ -721,10 +631,7 @@ export function InstallTable({
         hasBreakpoint: step != null && breakpointStepIdSet.has(row.stepId),
         hasSnapshot: step != null && plannedSnapshotByStepId.has(row.stepId),
         modDisplay: eff?.name?.trim() || row.modId,
-        modTip: mod?.codename ?? row.modId,
-        componentNameTip: componentMeta?.weiduName,
         category: eff?.category?.trim() || '',
-        complexity: componentMeta?.complexity || '',
       }
     })
     if (profileInstallTable) {
@@ -736,7 +643,6 @@ export function InstallTable({
     return built
   }, [
     breakpointStepIdSet,
-    componentMetaById,
     modsByCodename,
     plannedSnapshotByStepId,
     profileInstallTable,
@@ -958,9 +864,7 @@ export function InstallTable({
             <col className="install-col-num" />
             <col className="install-col-mod" />
             <col className="install-col-component" />
-            <col className="install-col-component-id" />
             <col className="install-col-category" />
-            <col className="install-col-type" />
             <col className="install-col-duration" />
             <col className="install-col-status" />
             <col className="install-col-actions" />
@@ -970,9 +874,7 @@ export function InstallTable({
               <th scope="col">#</th>
               <th scope="col">Mod</th>
               <th scope="col">Component</th>
-              <th scope="col">Component id</th>
               <th scope="col">Category</th>
-              <th scope="col">Complexity</th>
               <th scope="col">Duration</th>
               <th scope="col">Status</th>
               <th scope="col" className="install-col-actions-head">
@@ -984,7 +886,7 @@ export function InstallTable({
             {spacerTop > 0 ? (
               <tr aria-hidden="true">
                 <td
-                  colSpan={9}
+                  colSpan={7}
                   style={{
                     height: `${spacerTop}px`,
                     padding: 0,
@@ -1014,7 +916,7 @@ export function InstallTable({
             {spacerBottom > 0 ? (
               <tr aria-hidden="true">
                 <td
-                  colSpan={9}
+                  colSpan={7}
                   style={{
                     height: `${spacerBottom}px`,
                     padding: 0,
