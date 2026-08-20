@@ -6548,11 +6548,14 @@ body.is-resizing-detail * {
   min-height: 0;
   height: auto;
   border-top: none;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 .install-table-wrap .install-table {
   flex: 1;
   min-height: 0;
+  min-width: 64rem;
 }
 
 .install-table col.install-col-num {
@@ -6875,6 +6878,10 @@ body.is-resizing-detail * {
 .install-status-succeeded,
 .install-status-alreadyInstalled {
   color: color-mix(in srgb, #6a9a5a 75%, var(--ink));
+}
+
+.install-status-succeededWithWarnings {
+  color: color-mix(in srgb, #6a9a5a 45%, var(--ink));
 }
 
 .install-detail-list {

@@ -65,21 +65,16 @@ import {
 import { buildStepFailureErrors } from '../lib/install/stepFailureErrors'
 import { readTextFileTail } from '../lib/desktop/fsDialogs'
 import type { PersistedInstallSession } from '../lib/ui/appSessionPrefs'
+import {
+  appendRunLogLine,
+  appendStepResultsLine,
+  nextStepAttempt,
+  stepAttemptPaths,
+  stepFolderName,
+} from '../lib/install/stepLogs'
 
 function newRunId(): string {
   return `run-${Date.now()}`
-}
-
-function stepFolderName(step: InstallStep, index: number): string {
-  const safeMod = step.modId.replace(/[^\w.-]+/g, '_').slice(0, 40)
-  return `${String(index + 1).padStart(3, '0')}-${safeMod}`
-}
-
-function appendInstallLog(logDir: string, line: string) {
-  // Installation log is written from streamed events in the hook state;
-  // per-step logs are written by Rust. Keep a lightweight in-memory trace.
-  void logDir
-  void line
 }
 
 function formatBytes(n: number): string {
@@ -163,7 +158,6 @@ export function useInstallRun(options: {
     weiduLogImport = null,
   } = options
   const shouldLoadConsoleRef = useRef(!!initialInstallState?.installSession)
-  const hydratedRef = useRef(false)
   const [run, setRun] = useState<InstallRun | null>(() => {
     const session = initialInstallState?.installSession
     return session?.run ?? null
@@ -196,18 +190,13 @@ export function useInstallRun(options: {
   const runRef = useRef<InstallRun | null>(null)
   /** Skip-to-step requested while running; applied between steps. */
   const pendingCursorStepIdRef = useRef<string | null>(null)
-  /** Live WeiDU highlight lines per step; survives executeFromCursor setRun overwrites. */
-  const stepResultLinesRef = useRef<Map<string, string[]>>(new Map())
+  /** Current attempt results file for the active WeiDU step (disk-only). */
+  const activeResultsPathRef = useRef<string | null>(null)
+  const logDirRef = useRef<string>('')
 
-  if (!hydratedRef.current && initialInstallState?.installSession) {
-    hydratedRef.current = true
-    pausedRef.current = initialInstallState.installSession.transport.paused
-    for (const step of initialInstallState.installSession.run.steps) {
-      if (step.resultLines.length > 0) {
-        stepResultLinesRef.current.set(step.stepId, [...step.resultLines])
-      }
-    }
-  }
+  useEffect(() => {
+    logDirRef.current = run?.logDir ?? ''
+  }, [run?.logDir])
 
   useEffect(() => {
     pausedRef.current = paused
@@ -229,32 +218,21 @@ export function useInstallRun(options: {
     let cancelled = false
     void loadInstallConsoleFromRunLog(logDir).then((loaded) => {
       if (cancelled) return
-      if (loaded.consoleLines.length === 0) return
+      if (
+        loaded.consoleLines.length === 0 &&
+        loaded.commandLines.length === 0 &&
+        loaded.resultLines.length === 0
+      ) {
+        return
+      }
       setConsoleLines(loaded.consoleLines)
+      setCommandLines(loaded.commandLines)
       setResultLines(loaded.resultLines)
     })
     return () => {
       cancelled = true
     }
   }, [run?.logDir, run?.runId])
-
-  const rememberStepResult = useCallback((stepId: string, stamped: string) => {
-    const map = stepResultLinesRef.current
-    const prev = map.get(stepId) ?? []
-    map.set(stepId, [...prev, stamped])
-  }, [])
-
-  const mergeStepResultLines = useCallback((step: InstallStep): InstallStep => {
-    const fromRef = stepResultLinesRef.current.get(step.stepId)
-    if (!fromRef || fromRef.length === 0) return step
-    if (step.resultLines.length >= fromRef.length) return step
-    return { ...step, resultLines: fromRef }
-  }, [])
-
-  const withMergedResults = useCallback(
-    (steps: InstallStep[]): InstallStep[] => steps.map(mergeStepResultLines),
-    [mergeStepResultLines],
-  )
 
   const rawPlanSteps = useMemo(() => {
     if (!game) return []
@@ -269,7 +247,7 @@ export function useInstallRun(options: {
       weiduNumber: null,
       languageIndex: null,
       progress: null,
-      resultLines: s.resultLines ?? [],
+      resultLines: [],
     }))
     return weiduLogImport ? applyWeiduLogToSteps(asSteps, weiduLogImport) : asSteps
   }, [rawPlanSteps, weiduLogImport])
@@ -317,13 +295,29 @@ export function useInstallRun(options: {
     runRef.current = next
   }, [weiduLogImport])
 
-  /** Append to Commands (+ Results if highlighted). Returns stamped line for callers that track per-step results. */
-  const pushConsoleLine = useCallback((text: string): string => {
-    const stamped = stampLine(text)
-    setCommandLines((prev) => [...prev.slice(-999), stamped])
-    if (consoleLineTone(text) != null) setResultLines((prev) => [...prev.slice(-999), stamped])
-    return stamped
+  const persistCommandLine = useCallback((stamped: string) => {
+    appendRunLogLine(logDirRef.current, 'run-commands.log', stamped)
   }, [])
+
+  const persistResultLine = useCallback((stamped: string) => {
+    appendRunLogLine(logDirRef.current, 'run-results.log', stamped)
+    appendStepResultsLine(activeResultsPathRef.current, stamped)
+  }, [])
+
+  /** Append to Commands (+ Results if highlighted). Returns stamped line. */
+  const pushConsoleLine = useCallback(
+    (text: string): string => {
+      const stamped = stampLine(text)
+      setCommandLines((prev) => [...prev.slice(-999), stamped])
+      persistCommandLine(stamped)
+      if (consoleLineTone(text) != null) {
+        setResultLines((prev) => [...prev.slice(-999), stamped])
+        persistResultLine(stamped)
+      }
+      return stamped
+    },
+    [persistCommandLine, persistResultLine],
+  )
 
   const pushConsoleLines = useCallback(
     (texts: string[]) => {
@@ -332,19 +326,14 @@ export function useInstallRun(options: {
     [pushConsoleLine],
   )
 
-  const appendStepResultIfHighlighted = (
-    step: InstallStep,
-    stamped: string,
-    rawText: string,
-  ): InstallStep => {
-    if (consoleLineTone(rawText) == null) return step
-    rememberStepResult(step.stepId, stamped)
-    return { ...step, resultLines: [...step.resultLines, stamped] }
-  }
-
-  const appendCommandLine = useCallback((message: string) => {
-    setCommandLines((prev) => [...prev.slice(-999), stampLine(message)])
-  }, [])
+  const appendCommandLine = useCallback(
+    (message: string) => {
+      const stamped = stampLine(message)
+      setCommandLines((prev) => [...prev.slice(-999), stamped])
+      persistCommandLine(stamped)
+    },
+    [persistCommandLine],
+  )
 
   const initRun = useCallback(() => {
     if (!game) return null
@@ -358,7 +347,7 @@ export function useInstallRun(options: {
     if (logDir) void ensureDir(logDir)
     const steps: InstallStep[] = planSteps.map((s) => ({
       ...s,
-      resultLines: s.resultLines ?? [],
+      resultLines: [],
     }))
     const cursor = nextActionableCursor(steps, 0)
     const next: InstallRun = {
@@ -373,6 +362,8 @@ export function useInstallRun(options: {
     }
     setRun(next)
     runRef.current = next
+    logDirRef.current = logDir
+    activeResultsPathRef.current = null
     setConsoleLines([])
     setCommandLines([])
     setResultLines([])
@@ -385,7 +376,6 @@ export function useInstallRun(options: {
     setStopping(false)
     setActiveStepId(steps[cursor]?.stepId ?? steps[0]?.stepId ?? null)
     cacheRef.current = new Map()
-    stepResultLinesRef.current = new Map()
     return next
   }, [game, planSteps, projectId])
 
@@ -403,24 +393,12 @@ export function useInstallRun(options: {
         setConsoleLines((prev) => trimConsoleLines([...prev, stamped]))
         if (consoleLineTone(ev.text) != null) {
           setResultLines((prev) => [...prev.slice(-999), stamped])
-          const stepId = activeStepIdRef.current
-          if (stepId) {
-            rememberStepResult(stepId, stamped)
-            setRun((r) => {
-              if (!r) return r
-              return {
-                ...r,
-                steps: r.steps.map((s) =>
-                  s.stepId === stepId
-                    ? { ...s, resultLines: [...s.resultLines, stamped] }
-                    : s,
-                ),
-              }
-            })
-          }
+          persistResultLine(stamped)
         }
       } else if (ev.kind === 'commandLogged') {
-        setCommandLines((prev) => [...prev.slice(-999), stampLine(ev.command)])
+        const stamped = stampLine(ev.command)
+        setCommandLines((prev) => [...prev.slice(-999), stamped])
+        persistCommandLine(stamped)
       } else if (ev.kind === 'inputRequired') {
         setInputPrompt(ev.prompt)
         setRun((r) => (r ? { ...r, runState: 'waitingForInput' } : r))
@@ -429,25 +407,11 @@ export function useInstallRun(options: {
         const text = `[${ev.level}] ${ev.message}`
         const stamped = stampLine(text)
         setCommandLines((prev) => [...prev.slice(-999), stamped])
+        persistCommandLine(stamped)
         if (consoleLineTone(text) != null) {
           setResultLines((prev) => [...prev.slice(-999), stamped])
-          const stepId = activeStepIdRef.current
-          if (stepId) {
-            rememberStepResult(stepId, stamped)
-            setRun((r) => {
-              if (!r) return r
-              return {
-                ...r,
-                steps: r.steps.map((s) =>
-                  s.stepId === stepId
-                    ? { ...s, resultLines: [...s.resultLines, stamped] }
-                    : s,
-                ),
-              }
-            })
-          }
+          persistResultLine(stamped)
         }
-        appendInstallLog('', `${ev.level}: ${ev.message}`)
       } else if (ev.kind === 'stepStarted') {
         setActiveStepId(ev.stepId)
         setRun((r) => {
@@ -504,7 +468,7 @@ export function useInstallRun(options: {
       cancelled = true
       unlisten.current?.()
     }
-  }, [rememberStepResult])
+  }, [persistCommandLine, persistResultLine])
 
   useEffect(() => {
     let cancelled = false
@@ -631,29 +595,47 @@ export function useInstallRun(options: {
       onDurationClearedMs?.(clearedMs)
 
       if (step.weiduNumber != null && step.tp2Path && gameDir) {
+        const weiduNumber = step.weiduNumber
         try {
           pushConsoleLine(
-            `[uninstall] ${step.modId} (${step.weiduNumber})…`,
+            `[uninstall] ${step.modId} (${weiduNumber})…`,
           )
           activeStepIdRef.current = step.stepId
+          const folder = stepFolderName(step, index)
+          const stepDir = current.logDir
+            ? `${current.logDir.replace(/\\/g, '/').replace(/\/$/, '')}/${folder}`
+            : ''
+          const attempt = stepDir ? await nextStepAttempt(stepDir) : 1
+          const paths = stepDir ? stepAttemptPaths(stepDir, attempt) : null
+          activeResultsPathRef.current = paths?.resultsPath ?? null
+          if (paths) {
+            step = {
+              ...step,
+              stdoutLogPath: paths.modPath,
+              stderrLogPath: paths.componentPath,
+            }
+          }
           await runWeiduForceUninstall({
             weiduPath: readWeiduPath(),
             tp2Path: step.tp2Path,
             gameDir,
-            componentNumber: step.weiduNumber,
+            componentNumber: weiduNumber,
             languageIndex: step.languageIndex ?? 0,
             logDir: current.logDir,
-            stepFolder: stepFolderName(step, index),
+            stepFolder: folder,
+            attempt,
           })
           pushConsoleLine(`[uninstall] Finished ${step.modId}`)
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err)
           pushConsoleLine(`[error] Uninstall failed: ${message}`)
+        } finally {
+          activeResultsPathRef.current = null
         }
       }
 
       return {
-        ...mergeStepResultLines(step),
+        ...step,
         status: 'queued',
         progress: null,
         errors: [],
@@ -665,7 +647,6 @@ export function useInstallRun(options: {
     [
       ensureStepResolvedForUninstall,
       gameFolders,
-      mergeStepResultLines,
       onDurationClearedMs,
       pushConsoleLine,
     ],
@@ -687,31 +668,49 @@ export function useInstallRun(options: {
           : 0
 
       if (step.weiduNumber != null && step.tp2Path && gameDir) {
+        const weiduNumber = step.weiduNumber
         try {
           pushConsoleLine(
-            `[stop] Force-uninstall ${step.modId} (${step.weiduNumber})…`,
+            `[stop] Force-uninstall ${step.modId} (${weiduNumber})…`,
           )
           activeStepIdRef.current = step.stepId
+          const folder = stepFolderName(step, index)
+          const stepDir = current.logDir
+            ? `${current.logDir.replace(/\\/g, '/').replace(/\/$/, '')}/${folder}`
+            : ''
+          const attempt = stepDir ? await nextStepAttempt(stepDir) : 1
+          const paths = stepDir ? stepAttemptPaths(stepDir, attempt) : null
+          activeResultsPathRef.current = paths?.resultsPath ?? null
+          if (paths) {
+            step = {
+              ...step,
+              stdoutLogPath: paths.modPath,
+              stderrLogPath: paths.componentPath,
+            }
+          }
           await runWeiduForceUninstall({
             weiduPath: readWeiduPath(),
             tp2Path: step.tp2Path,
             gameDir,
-            componentNumber: step.weiduNumber,
+            componentNumber: weiduNumber,
             languageIndex: step.languageIndex ?? 0,
             logDir: current.logDir,
-            stepFolder: stepFolderName(step, index),
+            stepFolder: folder,
+            attempt,
           })
           pushConsoleLine(`[stop] Force-uninstall finished for ${step.modId}`)
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err)
           pushConsoleLine(`[error] Force-uninstall failed: ${message}`)
+        } finally {
+          activeResultsPathRef.current = null
         }
       }
 
       onDurationClearedMs?.(clearedMs)
 
       const reset: InstallStep = {
-        ...mergeStepResultLines(step),
+        ...step,
         status: 'queued',
         progress: null,
         errors: [],
@@ -720,9 +719,7 @@ export function useInstallRun(options: {
       }
       const next: InstallRun = {
         ...current,
-        steps: withMergedResults(
-          current.steps.map((s, idx) => (idx === index ? reset : s)),
-        ),
+        steps: current.steps.map((s, idx) => (idx === index ? reset : s)),
         cursor: index,
         runState: 'stopped',
       }
@@ -739,10 +736,8 @@ export function useInstallRun(options: {
     },
     [
       appendCommandLine,
-      mergeStepResultLines,
       onDurationClearedMs,
       pushConsoleLine,
-      withMergedResults,
     ],
   )
 
@@ -755,9 +750,7 @@ export function useInstallRun(options: {
     ): { current: InstallRun; shouldExit: boolean } => {
       let next: InstallRun = {
         ...current,
-        steps: withMergedResults(
-          current.steps.map((s, idx) => (idx === index ? step : s)),
-        ),
+        steps: current.steps.map((s, idx) => (idx === index ? step : s)),
         cursor: index + 1,
       }
       next = withNormalizedCursor(next)
@@ -780,7 +773,7 @@ export function useInstallRun(options: {
       setRun({ ...next, runState: 'running' })
       return { current: next, shouldExit: false }
     },
-    [appendCommandLine, withMergedResults, withNormalizedCursor],
+    [appendCommandLine, withNormalizedCursor],
   )
 
   const takePlannedSnapshot = useCallback(
@@ -807,9 +800,7 @@ export function useInstallRun(options: {
       }
       let next: InstallRun = {
         ...current,
-        steps: withMergedResults(
-          current.steps.map((s, idx) => (idx === index ? snapshotting : s)),
-        ),
+        steps: current.steps.map((s, idx) => (idx === index ? snapshotting : s)),
         cursor: index,
         runState: 'paused',
       }
@@ -880,9 +871,7 @@ export function useInstallRun(options: {
           plannedSnapshots: next.plannedSnapshots.filter(
             (s) => s.stepId !== step.stepId,
           ),
-          steps: withMergedResults(
-            next.steps.map((s, idx) => (idx === index ? cleared : s)),
-          ),
+          steps: next.steps.map((s, idx) => (idx === index ? cleared : s)),
           cursor: index,
           runState: 'running',
         }
@@ -906,9 +895,7 @@ export function useInstallRun(options: {
         }
         const halted = withNormalizedCursor({
           ...next,
-          steps: withMergedResults(
-            next.steps.map((s, idx) => (idx === index ? reset : s)),
-          ),
+          steps: next.steps.map((s, idx) => (idx === index ? reset : s)),
           cursor: index,
           runState: 'paused',
         })
@@ -930,7 +917,6 @@ export function useInstallRun(options: {
       appendCommandLine,
       gameFolders,
       pushToast,
-      withMergedResults,
       withNormalizedCursor,
     ],
   )
@@ -1034,9 +1020,7 @@ export function useInstallRun(options: {
             }
             current = {
               ...current,
-              steps: withMergedResults(
-                current.steps.map((s, idx) => (idx === i ? step : s)),
-              ),
+              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
               cursor: i,
             }
             setRun({ ...current, runState: 'running' })
@@ -1102,8 +1086,9 @@ export function useInstallRun(options: {
               )
             }
 
+            const stepFolder = stepFolderName(step, i)
             const stepLogDir = current.logDir
-              ? `${current.logDir}/${stepFolderName(step, i)}`
+              ? `${current.logDir.replace(/\\/g, '/').replace(/\/$/, '')}/${stepFolder}`
               : ''
 
             if (errors.length > 0 || weiduNumber == null) {
@@ -1116,24 +1101,19 @@ export function useInstallRun(options: {
                 status: 'needsInput',
                 progress: null,
                 errors: [...step.errors, ...errors],
-                stdoutLogPath: stepLogDir ? `${stepLogDir}/stdout.log` : undefined,
-                stderrLogPath: stepLogDir ? `${stepLogDir}/stderr.log` : undefined,
+                resultLines: [],
               }
               for (const err of errors) {
-                const stamped = pushConsoleLine(`[error] ${err}`)
-                step = appendStepResultIfHighlighted(step, stamped, `[error] ${err}`)
+                pushConsoleLine(`[error] ${err}`)
               }
               if (errors.length === 0) {
-                const raw =
-                  `[error] Could not resolve WeiDU component number for ${step.componentId}`
-                const stamped = pushConsoleLine(raw)
-                step = appendStepResultIfHighlighted(step, stamped, raw)
+                pushConsoleLine(
+                  `[error] Could not resolve WeiDU component number for ${step.componentId}`,
+                )
               }
               current = {
                 ...current,
-                steps: withMergedResults(
-                  current.steps.map((s, idx) => (idx === i ? step : s)),
-                ),
+                steps: current.steps.map((s, idx) => (idx === i ? step : s)),
                 cursor: i,
               }
               setRun({ ...current, runState: 'waitingForInput' })
@@ -1154,14 +1134,11 @@ export function useInstallRun(options: {
                 indeterminate: true,
                 label: 'Installing…',
               },
-              stdoutLogPath: stepLogDir ? `${stepLogDir}/stdout.log` : undefined,
-              stderrLogPath: stepLogDir ? `${stepLogDir}/stderr.log` : undefined,
+              resultLines: [],
             }
             current = {
               ...current,
-              steps: withMergedResults(
-                current.steps.map((s, idx) => (idx === i ? step : s)),
-              ),
+              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
               cursor: i,
             }
             setRun({ ...current, runState: 'running' })
@@ -1181,6 +1158,22 @@ export function useInstallRun(options: {
               continue
             }
 
+            const attempt = stepLogDir ? await nextStepAttempt(stepLogDir) : 1
+            const attemptPaths = stepLogDir
+              ? stepAttemptPaths(stepLogDir, attempt)
+              : null
+            activeResultsPathRef.current = attemptPaths?.resultsPath ?? null
+            step = {
+              ...step,
+              stdoutLogPath: attemptPaths?.modPath,
+              stderrLogPath: attemptPaths?.componentPath,
+            }
+            current = {
+              ...current,
+              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+            }
+            setRun({ ...current, runState: 'running' })
+
             const installStartedAt = new Date().toISOString()
             const didStage = resolved.didStage
             const result = await runWeiduStep({
@@ -1193,8 +1186,10 @@ export function useInstallRun(options: {
               languageIndex: step.languageIndex ?? 0,
               stepId: step.stepId,
               logDir: current.logDir,
-              stepFolder: stepFolderName(step, i),
+              stepFolder,
+              attempt,
             })
+            activeResultsPathRef.current = null
 
             if (stopRequestedRef.current) {
               await applyStoppedAtCursor(current, i, step, gameDir)
@@ -1223,7 +1218,19 @@ export function useInstallRun(options: {
               warnings.push('WeiDU.log verification incomplete')
             }
 
-            const stepForErrors = mergeStepResultLines(step)
+            const resultsTail = attemptPaths
+              ? await readTextFileTail(
+                  attemptPaths.resultsPath,
+                  INSTALL_FAILURE_STDERR_TAIL_BYTES,
+                )
+              : null
+            const highlightLines = resultsTail
+              ? resultsTail
+                  .split(/\r?\n/)
+                  .map((l) => l.trimEnd())
+                  .filter((l) => l.length > 0)
+              : []
+
             const failureErrors =
               status === 'failed'
                 ? buildStepFailureErrors(result, {
@@ -1231,20 +1238,23 @@ export function useInstallRun(options: {
                       result.stderrPath,
                       INSTALL_FAILURE_STDERR_TAIL_BYTES,
                     ),
-                    highlightLines: stepForErrors.resultLines,
+                    highlightLines,
                   })
                 : []
 
             step = {
-              ...stepForErrors,
+              ...step,
               status,
               progress: null,
+              stdoutLogPath: result.stdoutPath || attemptPaths?.modPath,
+              stderrLogPath: result.stderrPath || attemptPaths?.componentPath,
               debugLogPath: result.debugPath ?? undefined,
               warnings,
               errors:
                 status === 'failed'
-                  ? [...stepForErrors.errors, ...failureErrors]
-                  : stepForErrors.errors,
+                  ? [...step.errors, ...failureErrors]
+                  : step.errors,
+              resultLines: [],
               finishedAt: new Date().toISOString(),
             }
 
@@ -1280,19 +1290,19 @@ export function useInstallRun(options: {
             }
             const message = err instanceof Error ? err.message : String(err)
             const raw = `[error] ${message}`
-            const stamped = pushConsoleLine(raw)
+            pushConsoleLine(raw)
+            activeResultsPathRef.current = null
             step = {
-              ...appendStepResultIfHighlighted(step, stamped, raw),
+              ...step,
               status: 'failed',
               progress: null,
               errors: [...step.errors, message],
+              resultLines: [],
               finishedAt: new Date().toISOString(),
             }
             current = {
               ...current,
-              steps: withMergedResults(
-                current.steps.map((s, idx) => (idx === i ? step : s)),
-              ),
+              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
               cursor: i,
             }
             setActiveStepId(step.stepId)
@@ -1305,7 +1315,7 @@ export function useInstallRun(options: {
         setActiveStepId(null)
         setRun({
           ...current,
-          steps: withMergedResults(current.steps),
+          steps: current.steps,
           runState: 'completed',
           cursor: current.steps.length,
         })
@@ -1319,8 +1329,6 @@ export function useInstallRun(options: {
       model.componentsById,
       pushConsoleLine,
       pushConsoleLines,
-      mergeStepResultLines,
-      withMergedResults,
       withNormalizedCursor,
       appendCommandLine,
       finishStepIteration,
@@ -1457,7 +1465,7 @@ export function useInstallRun(options: {
 
       const next = withNormalizedCursor({
         ...current,
-        steps: withMergedResults(steps),
+        steps: steps,
         cursor: prev,
         runState: current.runState,
       })
@@ -1472,7 +1480,6 @@ export function useInstallRun(options: {
     appendCommandLine,
     ensureIdleRun,
     uninstallStepAtIndex,
-    withMergedResults,
     withNormalizedCursor,
   ])
 
@@ -1495,7 +1502,7 @@ export function useInstallRun(options: {
 
       const next = withNormalizedCursor({
         ...current,
-        steps: withMergedResults(steps),
+        steps: steps,
         cursor: targetIdx,
         runState: current.runState,
       })
@@ -1504,7 +1511,7 @@ export function useInstallRun(options: {
       appendCommandLine(`Uninstalled back to ${steps[targetIdx]?.modId ?? 'step'}`)
       return true
     },
-    [appendCommandLine, uninstallStepAtIndex, withMergedResults, withNormalizedCursor],
+    [appendCommandLine, uninstallStepAtIndex, withNormalizedCursor],
   )
 
   const toggleBreakpoint = useCallback((stepId: string) => {
@@ -1654,6 +1661,7 @@ export function useInstallRun(options: {
       }
       setRun(next)
       setConsoleLines([])
+      setCommandLines([])
       setResultLines([])
       setInputPrompt(null)
       setActiveStepId(steps[nextCursor]?.stepId ?? null)
@@ -1664,7 +1672,6 @@ export function useInstallRun(options: {
       stopRequestedRef.current = false
       setStopping(false)
       cacheRef.current = new Map()
-      stepResultLinesRef.current = new Map()
       appendCommandLine('Plan reset after restore — press Play to continue')
     },
     [markAlreadyInstalledFromLog, appendCommandLine, stopRunningInstall],

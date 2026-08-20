@@ -23,12 +23,13 @@ function step(
 }
 
 describe('isStepDurationLive', () => {
-  it('is true only while copying/installing and run is running', () => {
+  it('is true while copying/installing and run is running or waiting for input', () => {
     const active = step({
       status: 'installing',
       startedAt: '2026-01-01T10:00:00.000Z',
     })
     expect(isStepDurationLive(active, 'running')).toBe(true)
+    expect(isStepDurationLive(active, 'waitingForInput')).toBe(true)
     expect(isStepDurationLive(active, 'paused')).toBe(false)
     expect(isStepDurationLive(active, 'stopped')).toBe(false)
   })
@@ -52,6 +53,9 @@ describe('stepDurationLabel', () => {
     expect(stepDurationLabel(active, Date.parse('2026-01-01T10:00:05.000Z'), 'running')).toBe(
       '5.0s (running)',
     )
+    expect(
+      stepDurationLabel(active, Date.parse('2026-01-01T10:00:05.000Z'), 'waitingForInput'),
+    ).toBe('5.0s (running)')
     expect(stepDurationLabel(active, Date.parse('2026-01-01T10:00:05.000Z'), 'paused')).toBe('0ms')
   })
 

@@ -8,24 +8,32 @@ describe('loadRunConsole', () => {
     expect(consoleLines).toEqual(['line one', 'line two', 'error line'])
   })
 
-  it('derives result lines from highlight keywords', () => {
-    const { resultLines } = mergeRunLogLines(
+  it('loads command and result lines from their own files', () => {
+    const { commandLines, resultLines } = mergeRunLogLines(
       'Installing component\nSuccessfully installed',
       'WARNING: something',
+      'setup.exe --force-install 1',
+      'Successfully installed\nWARNING: something',
     )
+    expect(commandLines).toEqual(['setup.exe --force-install 1'])
     expect(resultLines).toEqual(['Successfully installed', 'WARNING: something'])
   })
 
   it('returns empty arrays for missing logs', () => {
-    const { consoleLines, resultLines } = mergeRunLogLines(null, null)
+    const { consoleLines, commandLines, resultLines } = mergeRunLogLines(
+      null,
+      null,
+    )
     expect(consoleLines).toEqual([])
+    expect(commandLines).toEqual([])
     expect(resultLines).toEqual([])
   })
 
   it('trims console lines to the display cap', () => {
-    const stdout = Array.from({ length: INSTALL_CONSOLE_MAX_LINES + 50 }, (_, i) => `line ${i}`).join(
-      '\n',
-    )
+    const stdout = Array.from(
+      { length: INSTALL_CONSOLE_MAX_LINES + 50 },
+      (_, i) => `line ${i}`,
+    ).join('\n')
     const { consoleLines } = mergeRunLogLines(stdout, null)
     expect(consoleLines).toHaveLength(INSTALL_CONSOLE_MAX_LINES)
     expect(consoleLines[0]).toBe('line 50')

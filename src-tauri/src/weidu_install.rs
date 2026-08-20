@@ -84,6 +84,8 @@ pub struct RunStepInput {
   pub step_id: String,
   pub log_dir: String,
   pub step_folder: String,
+  /// 1-based attempt index for `mod-N.log` / `component-N.log` (no truncate).
+  pub attempt: u32,
   pub timeout_secs: Option<u64>,
 }
 
@@ -551,11 +553,6 @@ fn classify_line(line: &str) -> Option<&'static str> {
       return Some("inputRequired");
     }
   }
-  if (lower.contains("choice") || lower.contains("choose"))
-    && (lower.contains('?') || lower.contains(':'))
-  {
-    return Some("inputRequired");
-  }
   const ERROR_PHRASES: &[&str] = &[
     "not installed due to errors",
     "stopping installation because of error",
@@ -749,12 +746,11 @@ pub async fn run_weidu_step(
   let log_dir = PathBuf::from(input.log_dir.trim());
   let step_dir = log_dir.join(&input.step_folder);
   fs::create_dir_all(&step_dir).map_err(|e| e.to_string())?;
-  let stdout_path = step_dir.join("stdout.log");
-  let stderr_path = step_dir.join("stderr.log");
+  let attempt = if input.attempt > 0 { input.attempt } else { 1 };
+  let stdout_path = step_dir.join(format!("mod-{attempt}.log"));
+  let stderr_path = step_dir.join(format!("component-{attempt}.log"));
   let run_stdout = log_dir.join("run-stdout.log");
   let run_stderr = log_dir.join("run-stderr.log");
-  let _ = fs::write(&stdout_path, "");
-  let _ = fs::write(&stderr_path, "");
 
   let (cwd, _tp2_arg) = weidu_game_cwd_and_tp2_arg(&game_dir, &tp2)?;
   let (weidu_id, setup_exe) = setup_exe_for_tp2(&game_dir, &tp2)?;
@@ -949,6 +945,8 @@ pub struct ForceUninstallInput {
   pub language_index: i32,
   pub log_dir: String,
   pub step_folder: String,
+  /// 1-based attempt index for `mod-N.log` / `component-N.log` (no truncate).
+  pub attempt: u32,
 }
 
 /// Same launcher as install: copy weidu → `setup-{weiduId}.exe`, run that exe (no tp2 argv)
@@ -971,12 +969,11 @@ pub async fn run_weidu_force_uninstall(
   let log_dir = PathBuf::from(input.log_dir.trim());
   let step_dir = log_dir.join(input.step_folder.trim());
   fs::create_dir_all(&step_dir).map_err(|e| e.to_string())?;
-  let stdout_path = step_dir.join("stdout.log");
-  let stderr_path = step_dir.join("stderr.log");
+  let attempt = if input.attempt > 0 { input.attempt } else { 1 };
+  let stdout_path = step_dir.join(format!("mod-{attempt}.log"));
+  let stderr_path = step_dir.join(format!("component-{attempt}.log"));
   let run_stdout = log_dir.join("run-stdout.log");
   let run_stderr = log_dir.join("run-stderr.log");
-  let _ = fs::write(&stdout_path, "");
-  let _ = fs::write(&stderr_path, "");
 
   let (cwd, _tp2_arg) = weidu_game_cwd_and_tp2_arg(&game_dir, &tp2)?;
   let (weidu_id, setup_exe) = setup_exe_for_tp2(&game_dir, &tp2)?;

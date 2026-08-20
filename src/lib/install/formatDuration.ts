@@ -34,7 +34,7 @@ export function isStepDurationLive(
 ): boolean {
   if (!step.startedAt || step.finishedAt) return false
   if (!ACTIVE_STEP_STATUSES.has(step.status)) return false
-  return runState === 'running'
+  return runState === 'running' || runState === 'waitingForInput'
 }
 
 /** Elapsed label for an install step; null when not started or failed. */

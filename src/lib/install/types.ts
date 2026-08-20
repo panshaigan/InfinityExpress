@@ -56,9 +56,11 @@ export interface InstallStep {
   finishedAt?: string
   warnings: string[]
   errors: string[]
-  /** Highlighted WeiDU lines (error/warning/success/skipped) for this step. */
+  /** Deprecated: detail Results load from on-disk `results-*.log`; kept empty for session compat. */
   resultLines: string[]
+  /** Latest attempt mod log (`mod-N.log`, process stdout). */
   stdoutLogPath?: string
+  /** Latest attempt component log (`component-N.log`, process stderr). */
   stderrLogPath?: string
   debugLogPath?: string
 }

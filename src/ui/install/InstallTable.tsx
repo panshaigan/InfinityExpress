@@ -51,7 +51,7 @@ const STATUS_LABEL: Record<InstallStep['status'], string> = {
   copying: 'Copying',
   installing: 'Installing',
   succeeded: 'Done',
-  succeededWithWarnings: 'Warnings',
+  succeededWithWarnings: 'Installed (w)',
   failed: 'Failed',
   skipped: 'Skipped',
   alreadyInstalled: 'Installed',

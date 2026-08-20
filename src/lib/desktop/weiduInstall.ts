@@ -19,6 +19,8 @@ export interface RunStepInput {
   stepId: string
   logDir: string
   stepFolder: string
+  /** 1-based attempt for mod-N.log / component-N.log */
+  attempt: number
   timeoutSecs?: number
 }
 
@@ -128,6 +130,7 @@ export async function runWeiduStep(input: RunStepInput): Promise<StepResult> {
       stepId: input.stepId,
       logDir: input.logDir,
       stepFolder: input.stepFolder,
+      attempt: input.attempt,
       timeoutSecs: input.timeoutSecs ?? null,
     },
   })
@@ -141,6 +144,8 @@ export interface ForceUninstallInput {
   languageIndex: number
   logDir: string
   stepFolder: string
+  /** 1-based attempt for mod-N.log / component-N.log */
+  attempt: number
 }
 
 /** Same setup-{weiduId}.exe path as install; runs --force-uninstall. */
@@ -157,6 +162,7 @@ export async function runWeiduForceUninstall(
       languageIndex: input.languageIndex,
       logDir: input.logDir,
       stepFolder: input.stepFolder,
+      attempt: input.attempt,
     },
   })
 }

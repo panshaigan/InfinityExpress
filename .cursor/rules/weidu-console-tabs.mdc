@@ -10,9 +10,10 @@ Install console has three tabs. Do not mix their roles.
 
 ## Do
 
-- **WeiDU tab** — raw WeiDU process stdout/stderr only (`InstallEventPayload::Output` / run log files).
-- **Commands tab** — setup command lines (`CommandLogged`) and all **app-synthesized** status / info / error text (`Classified`, `pushConsoleLine`, pause/stop/snapshot messages).
-- **Results tab** — keyword highlights via `consoleLineTone` from WeiDU output (and app lines only when they intentionally go through that helper).
+- **WeiDU tab** — raw WeiDU process stdout/stderr only (`InstallEventPayload::Output` / `run-stdout.log` + `run-stderr.log`).
+- **Commands tab** — setup command lines (`CommandLogged`) and all **app-synthesized** status / info / error text (`Classified`, `pushConsoleLine`, pause/stop/snapshot messages); mirrored to `run-commands.log`.
+- **Results tab** — keyword highlights via `consoleLineTone` from WeiDU output (and app lines only when they intentionally go through that helper); mirrored to `run-results.log`.
+- UI keeps / reloads only a capped tail of each tab; full history stays on disk.
 
 ## Don't
 

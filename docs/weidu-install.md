@@ -109,7 +109,7 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 | `3` | Installed with warnings | `succeededWithWarnings` | yes |
 | `2` (and other non-0/3) | Failed | `failed` | no |
 
-**Console tabs:** WeiDU tab = raw process stdout/stderr only. Commands tab = setup command lines + app-synthesized status/info/error. Results = keyword highlights from WeiDU (and intentional app lines). See `.cursor/rules/weidu-console-tabs.mdc`.
+**Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). UI keeps / reloads only the last ~800 lines per tab. See `.cursor/rules/weidu-console-tabs.mdc`.
 
 **Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --force-uninstall` (`run_weidu_force_uninstall`; no `--safe-exit` on uninstall). Do not invoke the configured `weidu.exe` directly for install or uninstall.
 
@@ -131,7 +131,17 @@ Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanill
   projects/
     {projectId}/
       logs/
-        {runId}/             # WeiDU run stdout/stderr (not game backups)
+        {runId}/
+          run-stdout.log       # WeiDU stdout (append)
+          run-stderr.log       # WeiDU stderr (append)
+          run-commands.log     # Commands tab (append)
+          run-results.log      # Results tab (append)
+          {NNN}-{safeModId}-{safeComponentId}/
+            mod-1.log          # attempt 1 process stdout
+            component-1.log    # attempt 1 process stderr
+            results-1.log      # attempt 1 result highlights
+            mod-2.log          # later install/uninstall/retry (never truncated)
+            …
   metrics/
     component-install-times.jsonl  # append-only per-component install samples
 ```

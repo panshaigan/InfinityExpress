@@ -4,6 +4,11 @@ import { consoleLineTone } from '../../lib/install/consoleLineHighlight'
 import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
 import { readTextFile, fileIsNonempty } from '../../lib/desktop/fsDialogs'
 import {
+  anyAttemptLogNonempty,
+  readConcatenatedAttemptLogs,
+  stepDirFromLogPath,
+} from '../../lib/install/stepLogs'
+import {
   effectiveModFields,
   type WorkingMod,
 } from '../../lib/mods/loadMods'
@@ -26,14 +31,14 @@ const STATUS_LABEL: Record<InstallStep['status'], string> = {
   copying: 'Copying',
   installing: 'Installing',
   succeeded: 'Done',
-  succeededWithWarnings: 'Warnings',
+  succeededWithWarnings: 'Installed (w)',
   failed: 'Failed',
   skipped: 'Skipped',
   alreadyInstalled: 'Installed',
   needsInput: 'Input needed',
 }
 
-type LogKind = 'stdout' | 'stderr' | 'debug' | 'results'
+type LogKind = 'mod' | 'component' | 'debug' | 'results'
 
 const PROCESSED: ReadonlySet<InstallStep['status']> = new Set([
   'succeeded',
@@ -47,13 +52,6 @@ const PROCESSED: ReadonlySet<InstallStep['status']> = new Set([
 function safeResultsFilename(modId: string): string {
   const safe = modId.replace(/[^\w.-]+/g, '_').slice(0, 40) || 'step'
   return `${safe}-results.log`
-}
-
-function filterResultLinesFromText(text: string): string[] {
-  return text
-    .split(/\r?\n/)
-    .map((l) => l.trimEnd())
-    .filter((l) => l.length > 0 && consoleLineTone(l) != null)
 }
 
 interface Props {
@@ -177,8 +175,8 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 const LOG_LABELS: Record<Exclude<LogKind, 'results'>, string> = {
-  stdout: 'Standard output',
-  stderr: 'Standard error',
+  mod: 'Mod log',
+  component: 'Component log',
   debug: 'Debug log',
 }
 
@@ -203,8 +201,9 @@ export function InstallDetailPane({
   const [logLoading, setLogLoading] = useState(false)
   const [logError, setLogError] = useState<string | null>(null)
   const [logAvailable, setLogAvailable] = useState<{
-    stdout?: boolean
-    stderr?: boolean
+    mod?: boolean
+    component?: boolean
+    results?: boolean
     debug?: boolean
   }>({})
   const [nowMs, setNowMs] = useState(() => Date.now())
@@ -218,35 +217,44 @@ export function InstallDetailPane({
   const durationLive = step != null && isStepDurationLive(step, runState)
   const durationLabel = step ? stepDurationLabel(step, nowMs, runState) : null
   const stepProcessed = step != null && PROCESSED.has(step.status)
+  const stepDir =
+    stepDirFromLogPath(step?.stdoutLogPath) ??
+    stepDirFromLogPath(step?.stderrLogPath)
   const canOpenResults =
-    stepProcessed &&
-    ((step.resultLines?.length ?? 0) > 0 ||
-      !!logAvailable.stdout ||
-      !!logAvailable.stderr)
+    stepProcessed && (!!logAvailable.results || !!logAvailable.mod || !!logAvailable.component)
 
   useEffect(() => {
     if (!step) {
       setLogAvailable({})
       return
     }
-    const stdoutPath = step.stdoutLogPath
-    const stderrPath = step.stderrLogPath
     const debugPath = step.debugLogPath
+    const dir =
+      stepDirFromLogPath(step.stdoutLogPath) ??
+      stepDirFromLogPath(step.stderrLogPath)
     let cancelled = false
     async function refreshLogAvailability() {
-      const next: { stdout?: boolean; stderr?: boolean; debug?: boolean } = {}
+      const next: {
+        mod?: boolean
+        component?: boolean
+        results?: boolean
+        debug?: boolean
+      } = {}
       const tasks: Promise<void>[] = []
-      if (stdoutPath) {
+      if (dir) {
         tasks.push(
-          fileIsNonempty(stdoutPath).then((ok) => {
-            next.stdout = ok
+          anyAttemptLogNonempty(dir, 'mod').then((ok) => {
+            next.mod = ok
           }),
         )
-      }
-      if (stderrPath) {
         tasks.push(
-          fileIsNonempty(stderrPath).then((ok) => {
-            next.stderr = ok
+          anyAttemptLogNonempty(dir, 'component').then((ok) => {
+            next.component = ok
+          }),
+        )
+        tasks.push(
+          anyAttemptLogNonempty(dir, 'results').then((ok) => {
+            next.results = ok
           }),
         )
       }
@@ -271,7 +279,6 @@ export function InstallDetailPane({
     step?.debugLogPath,
     step?.status,
     step?.finishedAt,
-    step?.resultLines?.length,
   ])
 
   useEffect(() => {
@@ -281,9 +288,22 @@ export function InstallDetailPane({
     return () => window.clearInterval(id)
   }, [durationLive, step?.stepId, step?.startedAt])
 
-  async function openLog(kind: Exclude<LogKind, 'results'>, path: string) {
+  async function openAttemptLog(kind: 'mod' | 'component') {
+    if (!stepDir) return
     const label = component?.attrs.label ?? step?.modId ?? 'step'
-    setLogDialog({ kind, path, title: `${LOG_LABELS[kind]} — ${label}` })
+    setLogDialog({ kind, title: `${LOG_LABELS[kind]} — ${label}` })
+    setLogContents(null)
+    setLogError(null)
+    setLogLoading(true)
+    const text = await readConcatenatedAttemptLogs(stepDir, kind)
+    setLogLoading(false)
+    if (!text.trim()) setLogError('Could not read log file.')
+    else setLogContents(text)
+  }
+
+  async function openDebugLog(path: string) {
+    const label = component?.attrs.label ?? step?.modId ?? 'step'
+    setLogDialog({ kind: 'debug', path, title: `${LOG_LABELS.debug} — ${label}` })
     setLogContents(null)
     setLogError(null)
     setLogLoading(true)
@@ -294,7 +314,7 @@ export function InstallDetailPane({
   }
 
   async function openResults() {
-    if (!step) return
+    if (!step || !stepDir) return
     const label = component?.attrs.label ?? step.modId
     const saveFilename = safeResultsFilename(step.modId)
     setLogDialog({
@@ -304,26 +324,24 @@ export function InstallDetailPane({
     })
     setLogContents(null)
     setLogError(null)
-
-    if (step.resultLines.length > 0) {
-      setLogContents(step.resultLines.join('\n'))
-      return
-    }
-
     setLogLoading(true)
-    const paths = [step.stdoutLogPath, step.stderrLogPath].filter(
-      (p): p is string => !!p,
-    )
-    const collected: string[] = []
-    for (const path of paths) {
-      const text = await readTextFile(path)
-      if (text) collected.push(...filterResultLinesFromText(text))
+    let text = await readConcatenatedAttemptLogs(stepDir, 'results')
+    if (!text.trim()) {
+      const fromPipes = [
+        await readConcatenatedAttemptLogs(stepDir, 'mod'),
+        await readConcatenatedAttemptLogs(stepDir, 'component'),
+      ]
+        .join('\n')
+        .split(/\r?\n/)
+        .map((l) => l.trimEnd())
+        .filter((l) => l.length > 0 && consoleLineTone(l) != null)
+      text = fromPipes.join('\n')
     }
     setLogLoading(false)
-    if (collected.length === 0) {
+    if (!text.trim()) {
       setLogContents('(No matching result lines found.)')
     } else {
-      setLogContents(collected.join('\n'))
+      setLogContents(text)
     }
   }
 
@@ -470,20 +488,20 @@ export function InstallDetailPane({
                               <ResultsLogIcon />
                             </LogIconButton>
                           ) : null}
-                          {step.stdoutLogPath ? (
+                          {step.stdoutLogPath || stepDir ? (
                             <LogIconButton
-                              label={LOG_LABELS.stdout}
-                              enabled={!!logAvailable.stdout}
-                              onClick={() => void openLog('stdout', step.stdoutLogPath!)}
+                              label={LOG_LABELS.mod}
+                              enabled={!!logAvailable.mod}
+                              onClick={() => void openAttemptLog('mod')}
                             >
                               <StdoutLogIcon />
                             </LogIconButton>
                           ) : null}
-                          {step.stderrLogPath ? (
+                          {step.stderrLogPath || stepDir ? (
                             <LogIconButton
-                              label={LOG_LABELS.stderr}
-                              enabled={!!logAvailable.stderr}
-                              onClick={() => void openLog('stderr', step.stderrLogPath!)}
+                              label={LOG_LABELS.component}
+                              enabled={!!logAvailable.component}
+                              onClick={() => void openAttemptLog('component')}
                             >
                               <StderrLogIcon />
                             </LogIconButton>
@@ -492,7 +510,7 @@ export function InstallDetailPane({
                             <LogIconButton
                               label={LOG_LABELS.debug}
                               enabled={!!logAvailable.debug}
-                              onClick={() => void openLog('debug', step.debugLogPath!)}
+                              onClick={() => void openDebugLog(step.debugLogPath!)}
                             >
                               <DebugLogIcon />
                             </LogIconButton>
