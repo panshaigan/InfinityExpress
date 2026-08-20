@@ -543,6 +543,8 @@ interface Props {
   hideInstalled: boolean
   /** Bump to force scroll/select of the install cursor row. */
   jumpToCursorNonce?: number
+  /** When true, selection changes scroll/focus the row (follow mode). */
+  followCursor?: boolean
   tableActions: InstallTableActions | null
   onSelectStep: (stepId: string, componentId: string) => void
 }
@@ -558,6 +560,7 @@ export function InstallTable({
   runState = null,
   hideInstalled,
   jumpToCursorNonce = 0,
+  followCursor = false,
   tableActions,
   onSelectStep,
 }: Props) {
@@ -614,6 +617,7 @@ export function InstallTable({
   const pendingFocusKeyRef = useRef<string | null>(null)
   const scrollRafRef = useRef<number | null>(null)
   const syncedSelectionKeyRef = useRef<string | null>(null)
+  const lastJumpNonceRef = useRef(0)
   const visibleRows = useMemo(() => {
     const t0 = profileInstallTable ? performance.now() : 0
     const built = visible.map((row) => {
@@ -784,15 +788,28 @@ export function InstallTable({
     const key = rowKey(selectedStepId, selectedComponentId)
     if (syncedSelectionKeyRef.current === key) return
     syncedSelectionKeyRef.current = key
+    // Auto scroll/focus only while following the install cursor.
+    // Manual row clicks scroll via selectRow / selectIndex.
+    if (!followCursor) return
     const selectedIndex = visibleIndexByRowKey.get(key)
     if (selectedIndex == null) return
     pendingFocusKeyRef.current = key
     scrollToIndex(selectedIndex)
     requestAnimationFrame(() => focusPendingRow())
-  }, [focusPendingRow, rowKey, scrollToIndex, selectedComponentId, selectedStepId, visibleIndexByRowKey])
+  }, [
+    focusPendingRow,
+    followCursor,
+    rowKey,
+    scrollToIndex,
+    selectedComponentId,
+    selectedStepId,
+    visibleIndexByRowKey,
+  ])
 
   useEffect(() => {
-    if (!jumpToCursorNonce || !cursorStepId) return
+    if (!jumpToCursorNonce || jumpToCursorNonce === lastJumpNonceRef.current) return
+    lastJumpNonceRef.current = jumpToCursorNonce
+    if (!cursorStepId) return
     const idx = visibleRows.findIndex((r) => r.stepId === cursorStepId)
     if (idx < 0) return
     const row = visibleRows[idx]!

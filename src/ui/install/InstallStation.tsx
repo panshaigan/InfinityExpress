@@ -1118,13 +1118,14 @@ export function InstallStation({
             steps={steps}
             model={model}
             mods={mods}
-            selectedStepId={selectedStep?.stepId ?? null}
+            selectedStepId={selectedStepId}
             selectedComponentId={selectedComponentId}
             cursorStepId={cursorStepId}
             cursorLive={run?.runState === 'running' && !pausePending}
             runState={run?.runState ?? null}
             hideInstalled={hideInstalled}
             jumpToCursorNonce={jumpToCursorNonce}
+            followCursor={followCursor}
             tableActions={tableActions}
             onSelectStep={onSelectStep}
           />

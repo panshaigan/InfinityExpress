@@ -64,6 +64,7 @@ import {
   trimConsoleLines,
 } from '../lib/install/consoleLimits'
 import { buildStepFailureErrors } from '../lib/install/stepFailureErrors'
+import { weiduOutputIndicatesSkipped } from '../lib/install/consoleLineHighlight'
 import { readTextFileTail } from '../lib/desktop/fsDialogs'
 import type { PersistedInstallSession } from '../lib/ui/appSessionPrefs'
 import {
@@ -205,8 +206,8 @@ export function useInstallRun(options: {
   /** Current step results file for the active WeiDU step (disk-only). */
   const activeResultsPathRef = useRef<string | null>(null)
   const logDirRef = useRef<string>('')
-  const wasActiveRef = useRef(false)
-  const lastConsoleLoadKeyRef = useRef<string | null>(null)
+  /** Load disk console tails once per InstallStation mount (first open after app/project). */
+  const didLoadConsoleRef = useRef(false)
 
   useEffect(() => {
     logDirRef.current = run?.logDir ?? ''
@@ -225,17 +226,14 @@ export function useInstallRun(options: {
   }, [run])
 
   useEffect(() => {
-    const becameActive = active && !wasActiveRef.current
-    wasActiveRef.current = active
+    if (didLoadConsoleRef.current) return
     if (!active) return
     const logDir = run?.logDir
     if (!logDir) return
     const live =
       run?.runState === 'running' || run?.runState === 'waitingForInput'
     if (live) return
-    const key = `${run?.runId ?? ''}:${logDir}`
-    if (!becameActive && lastConsoleLoadKeyRef.current === key) return
-    lastConsoleLoadKeyRef.current = key
+    didLoadConsoleRef.current = true
     let cancelled = false
     void loadInstallConsoleFromRunLog(logDir).then((loaded) => {
       if (cancelled) return
@@ -1205,22 +1203,15 @@ export function useInstallRun(options: {
             }
 
             let status: InstallStep['status'] = 'failed'
-            if (result.timedOut) status = 'failed'
-            else if (result.exitCode === 0 && result.logVerified) status = 'succeeded'
-            else if (result.exitCode === 0 || result.exitCode === 3)
-              status = 'succeededWithWarnings'
-            else status = 'failed'
-
-            const warnings = [...step.warnings]
-            if (result.exitCode === 3) {
-              warnings.push('Installed with warnings (exit code 3)')
-            } else if (!result.logVerified && status === 'succeededWithWarnings') {
-              warnings.push('WeiDU.log verification incomplete')
-            }
-
             const resultsTail = streamPaths
               ? await readTextFileTail(
                   streamPaths.resultsPath,
+                  INSTALL_FAILURE_STDERR_TAIL_BYTES,
+                )
+              : null
+            const stdoutTail = streamPaths
+              ? await readTextFileTail(
+                  streamPaths.modPath,
                   INSTALL_FAILURE_STDERR_TAIL_BYTES,
                 )
               : null
@@ -1230,6 +1221,28 @@ export function useInstallRun(options: {
                   .map((l) => l.trimEnd())
                   .filter((l) => l.length > 0)
               : []
+            const weiduSkipped =
+              weiduOutputIndicatesSkipped(resultsTail) ||
+              weiduOutputIndicatesSkipped(stdoutTail) ||
+              weiduOutputIndicatesSkipped(highlightLines)
+
+            if (result.timedOut) status = 'failed'
+            else if (weiduSkipped) status = 'skipped'
+            else if (result.exitCode === 0 && result.logVerified) status = 'succeeded'
+            else if (result.exitCode === 0 || result.exitCode === 3)
+              status = 'succeededWithWarnings'
+            else status = 'failed'
+
+            const warnings = [...step.warnings]
+            if (status !== 'skipped' && result.exitCode === 3) {
+              warnings.push('Installed with warnings (exit code 3)')
+            } else if (
+              status !== 'skipped' &&
+              !result.logVerified &&
+              status === 'succeededWithWarnings'
+            ) {
+              warnings.push('WeiDU.log verification incomplete')
+            }
 
             const failureErrors =
               status === 'failed'
@@ -1278,6 +1291,7 @@ export function useInstallRun(options: {
               step,
               status === 'failed',
               status !== 'failed' &&
+                status !== 'skipped' &&
                 result.exitCode === 3 &&
                 pauseOnWarningsRef.current
                 ? 'Paused after installed with warnings (exit code 3)'

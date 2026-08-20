@@ -109,9 +109,10 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 | `0` + WeiDU.log verified | Success | `succeeded` | yes |
 | `0` + log not verified | Soft success | `succeededWithWarnings` | yes |
 | `3` | Installed with warnings | `succeededWithWarnings` | yes |
+| stdout/results contain `SKIPPING:` | WeiDU skipped the component (predicate / game check) | `skipped` | yes |
 | `2` (and other non-0/3) | Failed | `failed` | no |
 
-**Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). List probes (`--list-components-json`, `--list-languages`) stay on the Commands tab as argv only — their JSON/language dumps are not emitted to WeiDU or Results. UI keeps / reloads only the last ~800 lines per tab. Opening the Install phase (when not mid-WeiDU) reloads those tails from disk into all three tabs. See `.cursor/rules/weidu-console-tabs.mdc`.
+**Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). List probes (`--list-components-json`, `--list-languages`) stay on the Commands tab as argv only — their JSON/language dumps are not emitted to WeiDU or Results. UI keeps / reloads only the last ~800 lines per tab. On the **first** Install open after app/project mount (when not mid-WeiDU), those tails are loaded from disk into all three tabs; later phase switches do not reload. See `.cursor/rules/weidu-console-tabs.mdc`.
 
 **Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --force-uninstall` (`run_weidu_force_uninstall`). Do not invoke the configured `weidu.exe` directly for install or uninstall.
 

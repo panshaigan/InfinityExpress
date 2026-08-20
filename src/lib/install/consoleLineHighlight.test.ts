@@ -4,6 +4,7 @@ import {
   splitCommandLineBody,
   splitConsoleTs,
   stripConsoleTs,
+  weiduOutputIndicatesSkipped,
 } from './consoleLineHighlight'
 
 describe('consoleLineTone', () => {
@@ -37,6 +38,13 @@ describe('consoleLineTone', () => {
 
   it('detects skipped', () => {
     expect(consoleLineTone('SKIPPED component 12')).toBe('skipped')
+    expect(consoleLineTone('SKIPPING: [Not BG2]')).toBe('skipped')
+  })
+
+  it('weiduOutputIndicatesSkipped matches SKIPPING:', () => {
+    expect(weiduOutputIndicatesSkipped('SKIPPING: [Compatibility]')).toBe(true)
+    expect(weiduOutputIndicatesSkipped('[14:32:05] SKIPPING: foo')).toBe(true)
+    expect(weiduOutputIndicatesSkipped('Installed with warnings')).toBe(false)
   })
 
   it('prioritizes error over warning and success', () => {

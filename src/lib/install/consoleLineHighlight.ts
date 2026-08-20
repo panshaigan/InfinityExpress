@@ -34,8 +34,17 @@ export function consoleLineTone(line: string): ConsoleLineTone {
   if (ERROR_TOKEN.test(lower)) return 'error'
   if (WARNING_TOKEN.test(lower)) return 'warning'
   if (lower.includes('successfully') || lower.includes('successful')) return 'success'
-  if (lower.includes('skipped')) return 'skipped'
+  if (lower.includes('skipped') || lower.includes('skipping')) return 'skipped'
   return null
+}
+
+/** WeiDU predicate / game-check skip: `SKIPPING: [component]`. */
+export function weiduOutputIndicatesSkipped(
+  lines: readonly string[] | string | null | undefined,
+): boolean {
+  if (lines == null) return false
+  const list = typeof lines === 'string' ? lines.split(/\r?\n/) : lines
+  return list.some((line) => /skipping\s*:/i.test(stripConsoleTs(line)))
 }
 
 export function consoleLineToneClass(tone: ConsoleLineTone): string {
