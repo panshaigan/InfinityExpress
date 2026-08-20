@@ -466,7 +466,7 @@ export function InstallDetailPane({
                 <div className="component-detail install-step-detail">
                   <div className="detail-blocks">
                     {showLogsBlock ? (
-                      <DetailBlock kind="logs" title="Logs">
+                      <DetailBlock kind="logs" title="Readme & logs">
                         <div className="install-detail-log-icons">
                           <LinkIcon label="URL" href={urlHref}>
                             <ModUrlIcon />
