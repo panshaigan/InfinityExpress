@@ -18,6 +18,7 @@ import {
   canMoveCursorImmediately,
   canSetBreakpoint,
   canSkipAt,
+  canUninstallBackState,
   isStepDone,
   nextActionableCursor,
   stepIndexById,
@@ -81,6 +82,19 @@ function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`
   return `${(n / (1024 * 1024)).toFixed(1)} MB`
+}
+
+/** Keep UI-toggled breakpoints / planned snapshots across stale loop `current`. */
+function mergeLiveMarkers(
+  base: InstallRun,
+  live: InstallRun | null | undefined,
+): InstallRun {
+  if (!live) return base
+  return {
+    ...base,
+    breakpointStepIds: live.breakpointStepIds,
+    plannedSnapshots: live.plannedSnapshots,
+  }
 }
 
 function stampLine(text: string): string {
@@ -187,8 +201,6 @@ export function useInstallRun(options: {
   const stopRequestedRef = useRef(false)
   const activeStepIdRef = useRef<string | null>(null)
   const runRef = useRef<InstallRun | null>(null)
-  /** Skip-to-step requested while running; applied between steps. */
-  const pendingCursorStepIdRef = useRef<string | null>(null)
   /** Current attempt results file for the active WeiDU step (disk-only). */
   const activeResultsPathRef = useRef<string | null>(null)
   const logDirRef = useRef<string>('')
@@ -726,7 +738,7 @@ export function useInstallRun(options: {
       pauseMessage?: string | null,
     ): { current: InstallRun; shouldExit: boolean } => {
       let next: InstallRun = {
-        ...current,
+        ...mergeLiveMarkers(current, runRef.current),
         steps: current.steps.map((s, idx) => (idx === index ? step : s)),
         cursor: index + 1,
       }
@@ -909,17 +921,7 @@ export function useInstallRun(options: {
 
       try {
         for (let i = current.cursor; i < current.steps.length; i++) {
-          const pendingStepId = pendingCursorStepIdRef.current
-          if (pendingStepId) {
-            const pendingIdx = stepIndexById(current.steps, pendingStepId)
-            pendingCursorStepIdRef.current = null
-            if (pendingIdx >= 0 && pendingIdx !== i) {
-              i = pendingIdx - 1
-              current = withNormalizedCursor({ ...current, cursor: pendingIdx })
-              setRun(current)
-              continue
-            }
-          }
+          current = mergeLiveMarkers(current, runRef.current)
 
           while (pausedRef.current) {
             if (stopRequestedRef.current) {
@@ -954,7 +956,7 @@ export function useInstallRun(options: {
           )
           if (planned) {
             const snap = await takePlannedSnapshot(current, i, planned)
-            current = snap.current
+            current = mergeLiveMarkers(snap.current, runRef.current)
             if (snap.failed) {
               runningRef.current = false
               return
@@ -962,6 +964,7 @@ export function useInstallRun(options: {
             step = current.steps[i]!
           }
 
+          current = mergeLiveMarkers(current, runRef.current)
           if (current.breakpointStepIds.includes(step.stepId)) {
             const halted = withNormalizedCursor({
               ...current,
@@ -996,11 +999,14 @@ export function useInstallRun(options: {
                 label: 'Preparing…',
               },
             }
-            current = {
-              ...current,
-              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
-              cursor: i,
-            }
+            current = mergeLiveMarkers(
+              {
+                ...current,
+                steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+                cursor: i,
+              },
+              runRef.current,
+            )
             setRun({ ...current, runState: 'running' })
             pushConsoleLine(
               `[stage] Resolving ${step.modId} for ${gameDir || '(no game dir)'}…`,
@@ -1024,6 +1030,7 @@ export function useInstallRun(options: {
               componentNodes,
               gameVersion,
             )
+            current = mergeLiveMarkers(current, runRef.current)
 
             if (stopRequestedRef.current) {
               step = {
@@ -1089,11 +1096,14 @@ export function useInstallRun(options: {
                   `[error] Could not resolve WeiDU component number for ${step.componentId}`,
                 )
               }
-              current = {
-                ...current,
-                steps: current.steps.map((s, idx) => (idx === i ? step : s)),
-                cursor: i,
-              }
+              current = mergeLiveMarkers(
+                {
+                  ...current,
+                  steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+                  cursor: i,
+                },
+                runRef.current,
+              )
               setRun({ ...current, runState: 'waitingForInput' })
               runningRef.current = false
               return
@@ -1114,14 +1124,18 @@ export function useInstallRun(options: {
               },
               resultLines: [],
             }
-            current = {
-              ...current,
-              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
-              cursor: i,
-            }
+            current = mergeLiveMarkers(
+              {
+                ...current,
+                steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+                cursor: i,
+              },
+              runRef.current,
+            )
             setRun({ ...current, runState: 'running' })
 
             const log = await readGameWeiduLog(gameDir)
+            current = mergeLiveMarkers(current, runRef.current)
             if (
               step.weiduNumber != null &&
               logHasComponent(log, step.tp2Path, step.weiduNumber)
@@ -1137,6 +1151,7 @@ export function useInstallRun(options: {
             }
 
             const attempt = stepLogDir ? await nextStepAttempt(stepLogDir) : 1
+            current = mergeLiveMarkers(current, runRef.current)
             const attemptPaths = stepLogDir
               ? stepAttemptPaths(stepLogDir, attempt)
               : null
@@ -1146,10 +1161,13 @@ export function useInstallRun(options: {
               stdoutLogPath: attemptPaths?.modPath,
               stderrLogPath: attemptPaths?.componentPath,
             }
-            current = {
-              ...current,
-              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
-            }
+            current = mergeLiveMarkers(
+              {
+                ...current,
+                steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+              },
+              runRef.current,
+            )
             setRun({ ...current, runState: 'running' })
 
             const installStartedAt = new Date().toISOString()
@@ -1168,6 +1186,7 @@ export function useInstallRun(options: {
               attempt,
             })
             activeResultsPathRef.current = null
+            current = mergeLiveMarkers(current, runRef.current)
 
             if (stopRequestedRef.current) {
               await applyStoppedAtCursor(current, i, step, gameDir)
@@ -1220,6 +1239,7 @@ export function useInstallRun(options: {
                   })
                 : []
 
+            current = mergeLiveMarkers(current, runRef.current)
             step = {
               ...step,
               status,
@@ -1288,11 +1308,14 @@ export function useInstallRun(options: {
               resultLines: [],
               finishedAt: new Date().toISOString(),
             }
-            current = {
-              ...current,
-              steps: current.steps.map((s, idx) => (idx === i ? step : s)),
-              cursor: i,
-            }
+            current = mergeLiveMarkers(
+              {
+                ...current,
+                steps: current.steps.map((s, idx) => (idx === i ? step : s)),
+                cursor: i,
+              },
+              runRef.current,
+            )
             setActiveStepId(step.stepId)
             setRun({ ...current, runState: 'failed' })
             runningRef.current = false
@@ -1301,6 +1324,7 @@ export function useInstallRun(options: {
         }
 
         setActiveStepId(null)
+        current = mergeLiveMarkers(current, runRef.current)
         setRun({
           ...current,
           steps: current.steps,
@@ -1475,7 +1499,7 @@ export function useInstallRun(options: {
     async (targetStepId: string) => {
       const current = runRef.current
       if (!current) return false
-      if (current.runState !== 'paused' && current.runState !== 'stopped') return false
+      if (!canUninstallBackState(current.runState)) return false
 
       const targetIdx = stepIndexById(current.steps, targetStepId)
       if (targetIdx < 0) return false
@@ -1573,23 +1597,8 @@ export function useInstallRun(options: {
       const targetStep = current.steps[targetIdx]
       if (!targetStep || isStepDone(targetStep.status)) return false
 
-      if (
-        !canMoveCursorImmediately(current.runState) &&
-        current.runState !== 'running' &&
-        current.runState !== 'waitingForInput'
-      ) {
+      if (!canMoveCursorImmediately(current.runState)) {
         return false
-      }
-
-      if (
-        current.runState === 'running' ||
-        current.runState === 'waitingForInput'
-      ) {
-        pendingCursorStepIdRef.current = targetStepId
-        appendCommandLine(
-          `Cursor will move to ${current.steps[targetIdx]?.modId} after current step`,
-        )
-        return true
       }
 
       const next = withNormalizedCursor({

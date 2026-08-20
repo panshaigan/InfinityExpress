@@ -189,10 +189,7 @@ function InstallStepContextMenu({
   )
   const canUninstallBack =
     actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
-  const canMoveCursor =
-    canMoveCursorImmediately(actions.runState) ||
-    actions.runState === 'running' ||
-    actions.runState === 'waitingForInput'
+  const canMoveCursor = canMoveCursorImmediately(actions.runState)
   const moveDisabled = stepIndex === actions.cursor || isStepDone(step.status)
   const canRemove = canRemoveStepFromPlan(stepIndex, step.status, actions.installLock)
 
@@ -353,10 +350,7 @@ function StepActionButtons({
   )
   const canUninstallBack =
     actions.canNavigate && stepIndex < actions.cursor && !isStepDone(step.status)
-  const canMoveCursor =
-    canMoveCursorImmediately(actions.runState) ||
-    actions.runState === 'running' ||
-    actions.runState === 'waitingForInput'
+  const canMoveCursor = canMoveCursorImmediately(actions.runState)
   const moveDisabled = stepIndex === actions.cursor || isStepDone(step.status)
   const moveTip = moveDisabled && isStepDone(step.status)
     ? 'Already installed or finished'
@@ -547,6 +541,8 @@ interface Props {
   cursorLive?: boolean
   runState?: InstallRunState | null
   hideInstalled: boolean
+  /** Bump to force scroll/select of the install cursor row. */
+  jumpToCursorNonce?: number
   tableActions: InstallTableActions | null
   onSelectStep: (stepId: string, componentId: string) => void
 }
@@ -561,6 +557,7 @@ export function InstallTable({
   cursorLive = false,
   runState = null,
   hideInstalled,
+  jumpToCursorNonce = 0,
   tableActions,
   onSelectStep,
 }: Props) {
@@ -793,6 +790,25 @@ export function InstallTable({
     scrollToIndex(selectedIndex)
     requestAnimationFrame(() => focusPendingRow())
   }, [focusPendingRow, rowKey, scrollToIndex, selectedComponentId, selectedStepId, visibleIndexByRowKey])
+
+  useEffect(() => {
+    if (!jumpToCursorNonce || !cursorStepId) return
+    const idx = visibleRows.findIndex((r) => r.stepId === cursorStepId)
+    if (idx < 0) return
+    const row = visibleRows[idx]!
+    const key = rowKey(row.stepId, row.componentId)
+    syncedSelectionKeyRef.current = key
+    pendingFocusKeyRef.current = key
+    scrollToIndex(idx)
+    requestAnimationFrame(() => focusPendingRow())
+  }, [
+    cursorStepId,
+    focusPendingRow,
+    jumpToCursorNonce,
+    rowKey,
+    scrollToIndex,
+    visibleRows,
+  ])
 
   const renderedRows = useMemo(
     () => visibleRows.slice(rangeStart, rangeEndExclusive),

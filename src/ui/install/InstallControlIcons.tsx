@@ -130,6 +130,18 @@ export function MoveCursorIcon() {
   )
 }
 
+/** Jump / scroll the plan table to the current install cursor. */
+export function JumpToCursorIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M7.25 1.5h1.5v2.25h-1.5V1.5Zm0 10.75h1.5V14.5h-1.5v-2.25ZM1.5 7.25h2.25v1.5H1.5v-1.5Zm10.75 0H14.5v1.5h-2.25v-1.5ZM8 4.25a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5Zm0 1.5a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"
+      />
+    </svg>
+  )
+}
+
 /** Remove from install plan (uncheck in Components). */
 export function RemoveFromPlanIcon() {
   return (

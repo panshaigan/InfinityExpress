@@ -53,17 +53,17 @@ describe('nextActionableCursor', () => {
 })
 
 describe('canMoveCursorImmediately', () => {
-  it('allows idle, paused, and stopped', () => {
+  it('allows idle, paused, stopped, and failed', () => {
     expect(canMoveCursorImmediately('idle')).toBe(true)
     expect(canMoveCursorImmediately('paused')).toBe(true)
     expect(canMoveCursorImmediately('stopped')).toBe(true)
+    expect(canMoveCursorImmediately('failed')).toBe(true)
   })
 
-  it('blocks running and terminal states', () => {
+  it('blocks while live or completed', () => {
     expect(canMoveCursorImmediately('running')).toBe(false)
     expect(canMoveCursorImmediately('waitingForInput')).toBe(false)
     expect(canMoveCursorImmediately('completed')).toBe(false)
-    expect(canMoveCursorImmediately('failed')).toBe(false)
     expect(canMoveCursorImmediately(null)).toBe(false)
   })
 })

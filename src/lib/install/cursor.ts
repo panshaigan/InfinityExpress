@@ -31,13 +31,33 @@ export function prevActionableCursor(steps: InstallStep[], from: number): number
   return -1
 }
 
-/** Immediate cursor move (not deferred until current step finishes). */
-export function canMoveCursorImmediately(
+/** Install is actively running or waiting on WeiDU input. */
+export function isInstallInProcess(
+  runState: InstallRunState | null | undefined,
+): boolean {
+  return runState === 'running' || runState === 'waitingForInput'
+}
+
+/**
+ * Uninstall-back / immediate move-cursor: allowed when halted, not while live.
+ * Matches idle / paused / stopped / failed (not completed).
+ */
+export function canUninstallBackState(
   runState: InstallRunState | null | undefined,
 ): boolean {
   return (
-    runState === 'idle' || runState === 'paused' || runState === 'stopped'
+    runState === 'idle' ||
+    runState === 'paused' ||
+    runState === 'stopped' ||
+    runState === 'failed'
   )
+}
+
+/** Immediate cursor move (blocked while install is in process). */
+export function canMoveCursorImmediately(
+  runState: InstallRunState | null | undefined,
+): boolean {
+  return canUninstallBackState(runState)
 }
 
 /** Run states where Previous (go back one step) is allowed. */

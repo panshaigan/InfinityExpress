@@ -24,7 +24,7 @@ Full narrative: [docs/weidu-install.md](docs/weidu-install.md).
 1. Stage by XML modId (download folder) → discover tp2 → WeiDU id = tp2 parent folder.
 2. List: configured `weidu.exe --nogame --noautoupdate --list-components-json <tp2> <lang>`.
 3. Resolve labels to numbers from JSON `label[]` matching the component id (not XML display `label` / `name`).
-4. Copy `weidu.exe` → `{gameDir}/setup-{weiduId}.exe` and run that exe (no tp2 argv) with `--noautoupdate`, `--safe-exit`, `--language`, `--use-lang`, `--force-install`, etc. Force-uninstall / rollback uses the same setup exe with `--force-uninstall` only (no `--safe-exit`).
+4. Copy `weidu.exe` → `{gameDir}/setup-{weiduId}.exe` and run that exe (no tp2 argv) with `--noautoupdate`, `--language`, `--use-lang`, `--force-install`, etc. Force-uninstall / rollback uses the same setup exe with `--force-uninstall`.
 
 ## Resolution
 

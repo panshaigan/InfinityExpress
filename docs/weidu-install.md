@@ -48,6 +48,7 @@ Toolbar in `InstallStation.tsx`; state machine in `useInstallRun.ts`.
 | **Previous** | `idle` / `paused` / `stopped` / `failed` (or before first Play); `cursor > 0` | Confirms, then moves cursor back one install step, force-uninstalls that package via `setup-{weiduId}.exe`, resets it to `queued`. Creates an idle run via `ensureIdleRun()` when used before Play. |
 | **Restart** | Vanilla exists; install has started; not mid-copy / WeiDU live | Restores the vanilla backup (EET: stage-only BG2 or full BG1+BG2) and resets the plan. |
 | **Hide installed** | Always | Toolbar icon: hides rows with status `succeeded` / `alreadyInstalled` from the plan table. Persisted in the install session. |
+| **Jump to install cursor** | Cursor step exists | Toolbar icon (next to Hide installed): selects the cursor package and scrolls it into view in the plan table. |
 | **Pause on warnings** | Always | Toolbar icon (next to Hide installed). When **on**, after a step finishes with WeiDU **exit code 3** (installed with warnings), the run pauses like Pause (finish current step → `paused`). When **off**, exit 3 continues as today (`succeededWithWarnings`). Does not auto-pause on exit 0 with incomplete WeiDU.log verify. Persisted in the install session. |
 | **Take snapshot** | Vanilla exists for the current phase game; not mid-copy / WeiDU live | Name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`), then immediately copies that game folder (`createNamedBackup`, full copy). |
 | **Restore snapshot** | At least one named snapshot exists; not mid-copy / WeiDU live | Opens the snapshot table ([`RestoreSnapshotDialog.tsx`](../src/ui/install/RestoreSnapshotDialog.tsx)). Disabled with “No snapshots yet” when the list is empty. |
@@ -64,10 +65,10 @@ Install table rows (one per component / install step) expose the same actions vi
 | --- | --- | --- |
 | **Go back one step** | Same as toolbar **Previous** (`cursor > 0`; `idle` / `paused` / `stopped` / `failed`) | Same confirm + uninstall as the toolbar control. |
 | **Skip package at cursor** | Same as toolbar **Skip** (step after cursor; skippable cursor package; allowed halt/idle states) | Same as the toolbar Skip control. |
-| **Uninstall back to here** | `paused` / `stopped`; target step before cursor | Force-uninstall each package from cursor−1 down to the target step; move cursor to target. Confirms first. |
+| **Uninstall back to here** | `idle` / `paused` / `stopped` / `failed`; target step before cursor | Force-uninstall each package from cursor−1 down to the target step; move cursor to target. Confirms first. Blocked while `running` / `waitingForInput`. |
 | **Add / remove breakpoint** | Future, not-yet-installed steps (including before first Play) | Toggle `InstallRun.breakpointStepIds`. Row class `install-breakpoint` (top-edge marker line). |
 | **Plan / remove snapshot** | Same eligibility as breakpoints | Adding opens a name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`). Stores `{ stepId, name }` on `InstallRun.plannedSnapshots`. Row class `install-snapshot` (top-edge marker line). Removing does not prompt. |
-| **Move cursor here** | `idle` / `paused` / `stopped` (immediate), or while `running` / `waitingForInput` (after current step); not on finished steps | Sets `cursor` to the selected install step. First use before **Play** creates an idle run via `ensureIdleRun()`. Disabled when target is `succeeded` / `alreadyInstalled` / `skipped`. Confirms when moving backward across installed packages (paused/stopped only). |
+| **Move cursor here** | `idle` / `paused` / `stopped` / `failed`; not on finished steps | Sets `cursor` to the selected install step. First use before **Play** creates an idle run via `ensureIdleRun()`. Disabled when target is `succeeded` / `alreadyInstalled` / `skipped`, and while `running` / `waitingForInput`. Confirms when moving backward across installed packages. |
 | **Remove from plan** | `paused` / `stopped` / `failed`; step at or after cursor, not yet finished | Unchecks the component in Components (updates selection + syncs the run plan). |
 
 **Breakpoints (mode B):** when the runner reaches a breakpoint step, it pauses **before staging/copying** that package (`runState: paused`, cursor on the breakpoint step). The hit breakpoint is removed automatically (one-shot), so resuming continues forward and later breakpoints still trigger.
@@ -97,7 +98,6 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 5. Copy `weidu.exe` → `{gameDir}/setup-{weiduId}.exe`; run **that** exe (no tp2 argv) with:
 
    - `--noautoupdate`
-   - `--safe-exit` (so a killed install can be cleaned with force-uninstall)
    - `--no-exit-pause`, `--skip-at-view` (no interactive pauses)
    - `--language`, `--use-lang`
    - `--force-install` + component number
@@ -113,7 +113,7 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 
 **Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). List probes (`--list-components-json`, `--list-languages`) stay on the Commands tab as argv only — their JSON/language dumps are not emitted to WeiDU or Results. UI keeps / reloads only the last ~800 lines per tab. See `.cursor/rules/weidu-console-tabs.mdc`.
 
-**Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --force-uninstall` (`run_weidu_force_uninstall`; no `--safe-exit` on uninstall). Do not invoke the configured `weidu.exe` directly for install or uninstall.
+**Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --force-uninstall` (`run_weidu_force_uninstall`). Do not invoke the configured `weidu.exe` directly for install or uninstall.
 
 Orchestration: `hooks/useInstallRun.ts` + `lib/desktop/weiduInstall.ts` → Rust `src-tauri/src/weidu_install.rs`. Console/log helpers under `src/lib/install/`.
 

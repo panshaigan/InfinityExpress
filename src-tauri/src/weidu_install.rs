@@ -747,11 +747,9 @@ pub async fn run_weidu_step(
 
   // setup-{weiduId}.exe auto-binds the tp2; do not pass the tp2 path as argv.
   // --language = mod TRA; --use-lang = EE game lang/ folder (avoids weidu.conf prompt).
-  // --safe-exit enables cleanup via --force-uninstall after a killed install.
   // --no-exit-pause / --skip-at-view avoid interactive pauses during automated installs.
   let mut args: Vec<String> = vec![
     "--noautoupdate".into(),
-    "--safe-exit".into(),
     "--no-exit-pause".into(),
     "--skip-at-view".into(),
     "--language".into(),

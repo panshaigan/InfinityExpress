@@ -6,7 +6,7 @@ import {
   isStepDurationLive,
   sumStepDurationsMs,
 } from '../../lib/install/formatDuration'
-import { nextActionableCursor, stepIndexById } from '../../lib/install/cursor'
+import { canUninstallBackState, nextActionableCursor, stepIndexById } from '../../lib/install/cursor'
 import { collectadjustmentsModIds } from '../../lib/install/weiduResolution'
 import {
   cleanupInstallArtifacts,
@@ -42,6 +42,7 @@ import { InstallDetailPane } from './InstallDetailPane'
 import { InstallTable } from './InstallTable'
 import {
   HideInstalledIcon,
+  JumpToCursorIcon,
   PauseOnWarningsIcon,
   PauseIcon,
   PlayIcon,
@@ -207,6 +208,7 @@ export function InstallStation({
   const [hideInstalled, setHideInstalled] = useState(
     () => initialInstallSession?.ui.hideInstalled ?? false,
   )
+  const [jumpToCursorNonce, setJumpToCursorNonce] = useState(0)
   const [consoleCollapsed, setConsoleCollapsed] = useState(false)
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false)
   const [snapshotBusy, setSnapshotBusy] = useState(false)
@@ -452,7 +454,7 @@ export function InstallStation({
   const canGoPreviousEffective = canGoPrevious && !transportBusy
 
   const canNavigateSteps =
-    !!run && (run.runState === 'paused' || run.runState === 'stopped')
+    !!run && canUninstallBackState(run.runState)
 
   const requestGoPrevious = useCallback(() => {
     setConfirmDialog({
@@ -1018,6 +1020,25 @@ export function InstallStation({
               <span className="install-action-icon-wrap has-icon-tip">
                 <button
                   type="button"
+                  className="install-action-icon-btn"
+                  disabled={!cursorStepId}
+                  aria-label="Jump to install cursor"
+                  onClick={() => {
+                    const step = steps.find((s) => s.stepId === cursorStepId)
+                    if (!step) return
+                    followCursorForDetailsRef.current = true
+                    setSelectedStepId(step.stepId)
+                    setSelectedComponentId(step.componentId)
+                    setJumpToCursorNonce((n) => n + 1)
+                  }}
+                >
+                  <JumpToCursorIcon />
+                </button>
+                <IconTip>Jump to install cursor</IconTip>
+              </span>
+              <span className="install-action-icon-wrap has-icon-tip">
+                <button
+                  type="button"
                   className={`install-action-icon-btn${pauseOnWarnings ? ' active' : ''}`}
                   aria-pressed={pauseOnWarnings}
                   aria-label="Pause on installed with warnings"
@@ -1090,6 +1111,7 @@ export function InstallStation({
             cursorLive={run?.runState === 'running' && !pausePending}
             runState={run?.runState ?? null}
             hideInstalled={hideInstalled}
+            jumpToCursorNonce={jumpToCursorNonce}
             tableActions={tableActions}
             onSelectStep={onSelectStep}
           />

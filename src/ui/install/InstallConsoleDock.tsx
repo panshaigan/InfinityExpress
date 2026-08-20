@@ -146,7 +146,7 @@ export function InstallConsoleDock({
               className={`install-console-tab${tab === 'commands' ? ' active' : ''}`}
               onClick={() => setTab('commands')}
             >
-              Commands{commandLines.length > 0 ? ` (${commandLines.length})` : ''}
+              Commands
             </button>
             <button
               type="button"
