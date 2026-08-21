@@ -1,6 +1,7 @@
 mod dev_reset;
 mod mod_acquire;
 mod mod_fs;
+mod system_sound;
 mod weidu_backup;
 mod weidu_install;
 
@@ -46,6 +47,7 @@ pub fn run() {
       weidu_backup::create_named_backup,
       weidu_backup::delete_backup,
       weidu_backup::prepare_project_destination,
+      system_sound::play_system_sound,
     ])
     .setup(|app| {
       if cfg!(debug_assertions) {

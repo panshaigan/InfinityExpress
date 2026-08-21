@@ -1004,6 +1004,10 @@ export function useInstallRun(options: {
             setRun(halted)
             runRef.current = halted
             appendCommandLine(`Breakpoint hit: ${step.modId}`)
+            pushToast({
+              tone: 'success',
+              message: `Breakpoint hit: ${step.modId}`,
+            })
             runningRef.current = false
             return
           }
@@ -1382,6 +1386,7 @@ export function useInstallRun(options: {
       finishStepIteration,
       takePlannedSnapshot,
       projectId,
+      pushToast,
     ],
   )
 

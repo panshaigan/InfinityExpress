@@ -105,3 +105,8 @@ commands.allow = [
 identifier = "allow-take-fresh-install-env-flag"
 description = "Read-once IE_FRESH_INSTALL env flag for dev localStorage wipe"
 commands.allow = ["take_fresh_install_env_flag"]
+
+[[permission]]
+identifier = "allow-play-system-sound"
+description = "Play a short OS system sound for unfocused toast announcements"
+commands.allow = ["play_system_sound"]
