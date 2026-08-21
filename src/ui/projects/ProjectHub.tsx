@@ -3,7 +3,7 @@ import { GAME_FULL_LABELS, GAME_LABELS } from '../../lib/xml/schema'
 import {
   deleteProject,
   listProjects,
-  updateProjectMeta,
+  renameProject,
   type ProjectMeta,
 } from '../../lib/projects'
 import { ConfirmDialog } from '../ConfirmDialog'
@@ -61,16 +61,20 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
     setMenuOpenId(null)
   }
 
-  function confirmRename() {
+  async function confirmRename() {
     if (!pendingRename) return
     const next = renameDraft.trim()
     if (!next || next === pendingRename.name) {
       setPendingRename(null)
       return
     }
-    updateProjectMeta(pendingRename.id, { name: next })
-    setPendingRename(null)
-    refresh()
+    try {
+      await renameProject(pendingRename.id, next)
+      setPendingRename(null)
+      refresh()
+    } catch (err) {
+      window.alert(String(err))
+    }
   }
 
   return (

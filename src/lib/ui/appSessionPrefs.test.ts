@@ -21,7 +21,7 @@ function makeRun(game: SelectedGame = 'bg2'): InstallRun {
   return {
     runId: 'run-test',
     game,
-    logDir: 'D:/backups/projects/proj-test/logs/run-test',
+    logDir: 'D:/backups/projects/My EET/2026-08-21_15-30-45',
     cursor: 1,
     runState: 'running',
     breakpointStepIds: ['single:0000'],

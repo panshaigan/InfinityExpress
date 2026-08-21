@@ -47,6 +47,7 @@ describe('projectStore', () => {
       meta: {
         id,
         name: 'Test BG2',
+        folderName: 'Test BG2',
         engine: 'bg2',
         createdAt: '2026-01-01T00:00:00.000Z',
         lastOpenedAt: '2026-01-02T00:00:00.000Z',
@@ -72,6 +73,7 @@ describe('projectStore', () => {
       meta: {
         id,
         name: defaultProjectName('iwd'),
+        folderName: defaultProjectName('iwd'),
         engine: 'iwd',
         createdAt: '2026-01-01T00:00:00.000Z',
         lastOpenedAt: '2026-01-01T00:00:00.000Z',

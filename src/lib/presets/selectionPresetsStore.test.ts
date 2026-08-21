@@ -44,6 +44,7 @@ function projectWithPresets(
         meta: {
           id,
           name: 'Test',
+          folderName: 'Test',
           engine,
           createdAt: lastOpenedAt,
           lastOpenedAt,

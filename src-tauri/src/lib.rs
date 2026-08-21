@@ -21,6 +21,7 @@ pub fn run() {
       mod_fs::write_text_file,
       mod_fs::append_text_file,
       mod_fs::ensure_dir,
+      mod_fs::rename_path,
       mod_fs::validate_creatable_dir,
       mod_fs::game_dir_has_weidu_log,
       mod_fs::dir_is_empty,

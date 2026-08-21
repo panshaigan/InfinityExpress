@@ -32,12 +32,12 @@ A **Project** is one install universe: locked engine, component selection / pres
 
 - **Boot:** If no projects exist → **New project** wizard; otherwise Project hub → open existing or create new (engine → vanilla if missing → destinations).
 - **Destinations:** Empty folder → copy from app-wide vanilla; non-empty → must contain the game exe (existing `WeiDU.log` is allowed; installed components are reverse-mapped into Components checkboxes and install-step `alreadyInstalled` status, and the identified set is stored on the project session). Vanilla backups still reject a `WeiDU.log`.
-- **Vanilla:** App-wide per `bg1`/`bg2`/`iwd`/`pst` (managed under `{dataRoot}/backups/{key}` preferred; external folder allowed). EET needs both BG1 and BG2 vanillas. Settings → Vanilla backups lists **set** bindings as cards (⋮: choose another clean folder, or copy elsewhere and rebind); first-time creation is in the new-project wizard.
+- **Vanilla:** App-wide per `bg1`/`bg2`/`iwd`/`pst` (managed under `{dataRoot}/backups/{key}/vanilla` preferred; external folder allowed). EET needs both BG1 and BG2 vanillas. Settings → Vanilla backups lists **set** bindings as cards (⋮: choose another clean folder, or copy elsewhere and rebind); first-time creation is in the new-project wizard.
 - **Persistence:** Project meta + session in localStorage (`infinity-express.projects-v1`). Legacy per-game `infinity-express.app-session` buckets migrate once into projects.
 
 Settings (top bar): **Project** (per-project modded destination folders), **Vanilla backups** + **App** (mods download dir, backup/logs/projects dir, WeiDU, GitHub token). Opening Settings defaults to **Project** on Components, **App** on Mods, and **Vanilla backups** on Install. The new-project wizard opens on Vanilla backups and hides the Project tab.
 
-**Session restore:** Selection, station done marks, active preset id/baseline, and install table/cursor live on the active project. The **user preset library** (named snapshots) is engine-scoped in localStorage (`infinity-express.selection-presets-v1`) and shared across projects of the same engine. Install console WeiDU output is **not** stored there — on startup it is reloaded from `{backupDir}/projects/{projectId}/logs/{runId}/run-stdout.log` and `run-stderr.log` when a saved install run exists.
+**Session restore:** Selection, station done marks, active preset id/baseline, and install table/cursor live on the active project. The **user preset library** (named snapshots) is engine-scoped in localStorage (`infinity-express.selection-presets-v1`) and shared across projects of the same engine. Install console WeiDU output is **not** stored there — on startup it is reloaded from `{backupDir}/projects/{folderName}/{runId}/run-stdout.log` and `run-stderr.log` when a saved install run exists.
 
 ### Fresh install (clear projects + Settings)
 

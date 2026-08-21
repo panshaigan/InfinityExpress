@@ -1,5 +1,6 @@
 import {
   adaptSessionForProjects,
+  allocateProjectFolderName,
   newProjectId,
   upsertProject,
   type ProjectId,
@@ -19,11 +20,13 @@ export function createProjectFromWizard(input: {
   const session = input.session
     ? adaptSessionForProjects(input.session)
     : null
+  const folderName = allocateProjectFolderName(input.name)
   upsertProject(
     {
       meta: {
         id,
         name: input.name,
+        folderName,
         engine: input.engine,
         createdAt: iso,
         lastOpenedAt: iso,

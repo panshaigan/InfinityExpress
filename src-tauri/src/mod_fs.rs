@@ -139,6 +139,33 @@ pub fn ensure_dir(path: String) -> Result<(), String> {
   fs::create_dir_all(trimmed).map_err(|e| e.to_string())
 }
 
+/// Rename or move a file/directory. No-op when paths normalize equal.
+#[tauri::command]
+pub fn rename_path(from: String, to: String) -> Result<(), String> {
+  let from = from.trim();
+  let to = to.trim();
+  if from.is_empty() || to.is_empty() {
+    return Err("Path is required".into());
+  }
+  let from_path = PathBuf::from(from);
+  let to_path = PathBuf::from(to);
+  if !from_path.exists() {
+    return Ok(());
+  }
+  if from_path == to_path {
+    return Ok(());
+  }
+  if to_path.exists() {
+    return Err(format!("Destination already exists: {}", to_path.display()));
+  }
+  if let Some(parent) = to_path.parent() {
+    if !parent.as_os_str().is_empty() {
+      fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+  }
+  fs::rename(&from_path, &to_path).map_err(|e| e.to_string())
+}
+
 /// Validate a folder path that may be created: existing path must be a directory;
 /// if missing, its parent must already be an existing directory.
 #[tauri::command]

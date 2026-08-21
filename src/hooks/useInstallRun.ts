@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import type { GameFolderPaths } from '../lib/ui/gameFolderPrefs'
 import { appendTextFileAt, ensureDir } from '../lib/desktop/fsDialogs'
-import { installRunLogDir } from '../lib/projects'
+import { installRunLogDir, newInstallRunId } from '../lib/projects'
 import { readAppDirPaths } from '../lib/ui/appDirPrefs'
 import {
   gameFolderKeyForPhase,
@@ -73,10 +73,6 @@ import {
   stepStreamPaths,
   stepFolderName,
 } from '../lib/install/stepLogs'
-
-function newRunId(): string {
-  return `run-${Date.now()}`
-}
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`
@@ -152,6 +148,8 @@ export function useInstallRun(options: {
   game: SelectedGame | null
   gameFolders: GameFolderPaths
   projectId?: string | null
+  /** On-disk project folder under `{dataRoot}/projects/`. */
+  projectFolderName?: string | null
   initialInstallState?: InstallRunInitialState | null
   /** Reverse-mapped WeiDU.log hits for alreadyInstalled marks. */
   weiduLogImport?: WeiduLogImportResult | null
@@ -166,6 +164,7 @@ export function useInstallRun(options: {
     game,
     gameFolders,
     projectId,
+    projectFolderName,
     initialInstallState,
     weiduLogImport = null,
     active = true,
@@ -357,13 +356,16 @@ export function useInstallRun(options: {
   const initRun = useCallback(() => {
     if (!game) return null
     const appDirs = readAppDirPaths()
-    const runId = newRunId()
+    const existing = runRef.current
+    const reuseId = existing?.runId?.trim() || ''
+    const reuseLog = existing?.logDir?.trim() || ''
+    const runId = reuseId || newInstallRunId()
     const backupDir = appDirs.backupDir.trim()
+    const folder = projectFolderName?.trim() || ''
     const logDir =
-      backupDir && projectId
-        ? installRunLogDir(backupDir, projectId, runId)
-        : ''
-    if (logDir) void ensureDir(logDir)
+      reuseLog ||
+      (backupDir && folder ? installRunLogDir(backupDir, folder, runId) : '')
+    if (logDir && !reuseLog) void ensureDir(logDir)
     const steps: InstallStep[] = planSteps.map((s) => ({
       ...s,
       resultLines: [],
@@ -396,12 +398,31 @@ export function useInstallRun(options: {
     setActiveStepId(steps[cursor]?.stepId ?? steps[0]?.stepId ?? null)
     cacheRef.current = new Map()
     return next
-  }, [game, planSteps, projectId])
+  }, [game, planSteps, projectFolderName])
 
   const ensureIdleRun = useCallback((): InstallRun | null => {
     if (runRef.current) return runRef.current
     return initRun()
   }, [initRun])
+
+  const clearInstallRun = useCallback(() => {
+    setRun(null)
+    runRef.current = null
+    logDirRef.current = ''
+    activeResultsPathRef.current = null
+    setConsoleLines([])
+    setCommandLines([])
+    setResultLines([])
+    setInputPrompt(null)
+    setPaused(false)
+    pausedRef.current = false
+    setPausePending(false)
+    pausePendingRef.current = false
+    stopRequestedRef.current = false
+    setStopping(false)
+    setActiveStepId(null)
+    cacheRef.current = new Map()
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -1737,6 +1758,7 @@ export function useInstallRun(options: {
     cursorStepId,
     initRun,
     ensureIdleRun,
+    clearInstallRun,
     start,
     continueRun,
     pause,

@@ -127,42 +127,35 @@ Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanill
 ```text
 {backupDir}/
   backups/
-    {gameKey}/               # bg1 | bg2 | iwd | pst — managed unmodded copy
     {gameKey}.json           # per-game backup manifest (sidecar)
-  {gameKey}/                 # legacy / named snapshots (until project snapshots land)
-    {snapshotName}/
+    {gameKey}/               # bg1 | bg2 | iwd | pst
+      vanilla/               # managed unmodded game copy
+      {snapshotName}/        # named snapshots (siblings of vanilla)
   projects/
-    {projectId}/
-      logs/
-        {runId}/
-          run-stdout.log       # WeiDU stdout (append)
-          run-stderr.log       # WeiDU stderr (append)
-          run-commands.log     # Commands tab (append)
-          run-results.log      # Results tab (append)
-          {NNN}-{safeModId}-{safeComponentId}/
-            {safeModId}-{safeComponentId}-mod.log        # process stdout (append)
-            {safeModId}-{safeComponentId}-component.log  # process stderr (append)
-            {safeModId}-{safeComponentId}-results.log    # result highlights (append)
+    {folderName}/            # sanitized project display name
+      {YYYY-MM-DD_HH-mm-ss}/ # one install run until Reset all
+        run-stdout.log       # WeiDU stdout (append)
+        run-stderr.log       # WeiDU stderr (append)
+        run-commands.log     # Commands tab (append)
+        run-results.log      # Results tab (append)
+        {NNN}-{safeModId}-{safeComponentId}/
+          {safeModId}-{safeComponentId}-mod.log        # process stdout (append)
+          {safeModId}-{safeComponentId}-component.log  # process stderr (append)
+          {safeModId}-{safeComponentId}-results.log    # result highlights (append)
   metrics/
     component-install-times.jsonl  # append-only per-component install samples
 ```
 
 **Project destinations** (live/modded folders) are per-project, not under this tree. Creating a project: empty destination → `prepare_project_destination` copies vanilla into it; non-empty destination must already contain the game executable (an existing `WeiDU.log` is allowed).
 
-Legacy trees are migrated on `list_backups` / create / delete:
-
-- `baseline/` → managed vanilla under `backups/{gameKey}/`
-- `{gameKey}/vanilla/` → `backups/{gameKey}/`
-- `snapshots/{name}/` → `{gameKey}/{name}/`
-- Manifest field `baseline` is accepted on read; rewritten as `vanilla`
-- Legacy `{gameKey}/manifest.json` is read and rewritten to `backups/{gameKey}.json`
+Project disk folders use `meta.folderName` (from the display name); UUID `meta.id` stays in localStorage only. Renaming a project renames the on-disk folder when possible. A run folder is minted on first Play (or after **Reset all**) and reused across Play / Restart until Reset all clears the install session; prior run folders are kept as history.
 
 ### Vanilla vs snapshot
 
 | Kind | Path | Rules |
 | --- | --- | --- |
-| `vanilla` | `backups/{gameKey}/` | One per game key. Required before install Start. Recreate replaces existing. |
-| `snapshot` | `{gameKey}/{name}/` | Named; same name replaces. Only allowed after vanilla exists for that key. (Project-scoped snapshots under `projects/` are planned later.) |
+| `vanilla` | `backups/{gameKey}/vanilla/` | One per game key. Required before install Start. Recreate replaces existing. |
+| `snapshot` | `backups/{gameKey}/{name}/` | Named; same name replaces. Reserved names: `vanilla`, `baseline`, `snapshots`, `manifest.json`. Only allowed after vanilla exists for that key. |
 
 Named snapshots are created from the Install toolbar (**Take snapshot**) or as planned row snapshots. Both copy the current phase’s live game folder (full copy). Vanilla create/recreate stays in Settings (and the new-project wizard). If vanilla is missing on Play, Install opens Settings.
 

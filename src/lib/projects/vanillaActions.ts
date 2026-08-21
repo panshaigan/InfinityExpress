@@ -4,12 +4,19 @@ import {
   ensureDir,
   isDesktopApp,
   normalizeFolderPath,
+  renamePath,
   validateCreatableDir,
   dirIsEmpty,
 } from '../desktop/fsDialogs'
 import { readAppDirPaths } from '../ui/appDirPrefs'
 import type { GameFolderKey } from '../ui/gameFolderPrefs'
-import { projectLogsDir, projectsRoot } from './projectPaths'
+import {
+  allocateProjectFolderName,
+  getProject,
+  upsertProject,
+  type ProjectId,
+} from './projectStore'
+import { projectDir, projectsRoot } from './projectPaths'
 import type { PrepareDestinationResult } from './types'
 import {
   managedVanillaPath,
@@ -65,11 +72,69 @@ export async function ensureMainDataFolder(path: string): Promise<string> {
   return trimmed
 }
 
-/** Create `{dataRoot}/projects/{projectId}/logs` when the main data folder is set. */
-export async function ensureProjectLogsDir(projectId: string): Promise<void> {
+/** Create `{dataRoot}/projects/{folderName}` when the main data folder is set. */
+export async function ensureProjectDir(folderName: string): Promise<void> {
   const { backupDir } = readAppDirPaths()
   if (!backupDir.trim() || !isDesktopApp()) return
-  await ensureDir(projectLogsDir(backupDir, projectId))
+  await ensureDir(projectDir(backupDir, folderName))
+}
+
+/**
+ * Rename a project's display name and on-disk folder.
+ * Updates persisted install `logDir` paths when the folder moves.
+ */
+export async function renameProject(
+  id: ProjectId,
+  nextName: string,
+): Promise<void> {
+  const trimmed = nextName.trim()
+  if (!trimmed) throw new Error('Name is required')
+  const record = getProject(id)
+  if (!record) throw new Error('Project not found')
+  if (trimmed === record.meta.name) return
+
+  const nextFolder = allocateProjectFolderName(trimmed, id)
+  const prevFolder = record.meta.folderName
+  const { backupDir } = readAppDirPaths()
+
+  if (
+    backupDir.trim() &&
+    isDesktopApp() &&
+    prevFolder !== nextFolder
+  ) {
+    const from = projectDir(backupDir, prevFolder)
+    const to = projectDir(backupDir, nextFolder)
+    await renamePath(from, to)
+  }
+
+  let session = record.session
+  if (session?.install?.run?.logDir && prevFolder !== nextFolder && backupDir.trim()) {
+    const fromPrefix = projectDir(backupDir, prevFolder).replace(/\\/g, '/')
+    const toPrefix = projectDir(backupDir, nextFolder).replace(/\\/g, '/')
+    const logDir = session.install.run.logDir.replace(/\\/g, '/')
+    if (logDir === fromPrefix || logDir.startsWith(`${fromPrefix}/`)) {
+      const rewritten = `${toPrefix}${logDir.slice(fromPrefix.length)}`
+      session = {
+        ...session,
+        install: {
+          ...session.install,
+          run: { ...session.install.run, logDir: rewritten },
+        },
+      }
+    }
+  }
+
+  upsertProject(
+    {
+      meta: {
+        ...record.meta,
+        name: trimmed,
+        folderName: nextFolder,
+      },
+      session,
+    },
+    { setLast: false },
+  )
 }
 
 /**

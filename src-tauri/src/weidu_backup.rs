@@ -90,16 +90,20 @@ fn backups_dir(backup_root: &Path) -> PathBuf {
   backup_root.join("backups")
 }
 
-fn managed_vanilla_dir(backup_root: &Path, game_key: &str) -> PathBuf {
+fn game_backups_dir(backup_root: &Path, game_key: &str) -> PathBuf {
   backups_dir(backup_root).join(game_key)
+}
+
+fn managed_vanilla_dir(backup_root: &Path, game_key: &str) -> PathBuf {
+  game_backups_dir(backup_root, game_key).join("vanilla")
+}
+
+fn snapshot_dir(backup_root: &Path, game_key: &str, name: &str) -> PathBuf {
+  game_backups_dir(backup_root, game_key).join(name)
 }
 
 fn manifest_path(backup_root: &Path, game_key: &str) -> PathBuf {
   backups_dir(backup_root).join(format!("{game_key}.json"))
-}
-
-fn legacy_manifest_path(backup_root: &Path, game_key: &str) -> PathBuf {
-  backup_root.join(game_key).join("manifest.json")
 }
 
 fn empty_manifest(game_key: &str) -> BackupManifest {
@@ -110,18 +114,23 @@ fn empty_manifest(game_key: &str) -> BackupManifest {
   }
 }
 
-fn read_manifest_file(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
-  let path = manifest_path(backup_root, game_key);
-  if path.is_file() {
-    let text = fs::read_to_string(&path).map_err(|e| e.to_string())?;
-    return serde_json::from_str(&text).map_err(|e| e.to_string());
-  }
-  let legacy = legacy_manifest_path(backup_root, game_key);
-  if legacy.is_file() {
-    let text = fs::read_to_string(&legacy).map_err(|e| e.to_string())?;
-    return serde_json::from_str(&text).map_err(|e| e.to_string());
-  }
-  Ok(empty_manifest(game_key))
+fn dir_created_at(path: &Path) -> String {
+  path
+    .metadata()
+    .ok()
+    .and_then(|m| m.created().ok())
+    .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
+    .map(|d| {
+      let secs = d.as_secs();
+      let days = secs / 86_400;
+      let day_secs = secs % 86_400;
+      let (y, m, day) = civil_from_days(days as i64);
+      let hh = day_secs / 3600;
+      let mm = (day_secs % 3600) / 60;
+      let ss = day_secs % 60;
+      format!("{y:04}-{m:02}-{day:02}T{hh:02}:{mm:02}:{ss:02}Z")
+    })
+    .unwrap_or_else(iso_timestamp)
 }
 
 fn write_manifest(backup_root: &Path, manifest: &BackupManifest) -> Result<(), String> {
@@ -145,41 +154,21 @@ fn normalize_kind(kind: &str) -> Result<&'static str, String> {
   }
 }
 
-/// Migrate legacy layouts and rewrite manifest paths/kinds.
-/// Vanilla lives at `{backupRoot}/backups/{gameKey}`; snapshots remain under `{gameKey}/` for now.
-fn migrate_layout(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
-  let game_root = backup_root.join(game_key);
+/// Read manifest for `{backupRoot}/backups/{gameKey}/` (vanilla + snapshot siblings).
+/// Discovers on-disk dirs and rewrites paths; does not migrate legacy layouts.
+fn read_manifest(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
   let vanilla_dir = managed_vanilla_dir(backup_root, game_key);
-  let legacy_vanilla = game_root.join("vanilla");
-  let baseline_dir = game_root.join("baseline");
+  let game_dir = game_backups_dir(backup_root, game_key);
 
-  if baseline_dir.is_dir() && !legacy_vanilla.exists() && !vanilla_dir.exists() {
-    fs::create_dir_all(vanilla_dir.parent().unwrap_or(backup_root)).map_err(|e| e.to_string())?;
-    fs::rename(&baseline_dir, &vanilla_dir).map_err(|e| e.to_string())?;
-  } else if legacy_vanilla.is_dir() && !vanilla_dir.exists() {
-    fs::create_dir_all(vanilla_dir.parent().unwrap_or(backup_root)).map_err(|e| e.to_string())?;
-    fs::rename(&legacy_vanilla, &vanilla_dir).map_err(|e| e.to_string())?;
-  }
-
-  let snapshots_dir = game_root.join("snapshots");
-  if snapshots_dir.is_dir() {
-    for entry in fs::read_dir(&snapshots_dir).map_err(|e| e.to_string())? {
-      let entry = entry.map_err(|e| e.to_string())?;
-      let name = entry.file_name();
-      let name_str = name.to_string_lossy();
-      if is_reserved_name(&name_str) {
-        continue;
-      }
-      let dest = game_root.join(&name);
-      if !dest.exists() {
-        fs::rename(entry.path(), &dest).map_err(|e| e.to_string())?;
-      }
+  let mut manifest = {
+    let path = manifest_path(backup_root, game_key);
+    if path.is_file() {
+      let text = fs::read_to_string(&path).map_err(|e| e.to_string())?;
+      serde_json::from_str(&text).map_err(|e| e.to_string())?
+    } else {
+      empty_manifest(game_key)
     }
-    // Drop empty snapshots folder; ignore if not empty (collision left behind).
-    let _ = fs::remove_dir(&snapshots_dir);
-  }
-
-  let mut manifest = read_manifest_file(backup_root, game_key)?;
+  };
   manifest.game_key = game_key.to_string();
 
   if let Some(ref mut v) = manifest.vanilla {
@@ -187,47 +176,24 @@ fn migrate_layout(backup_root: &Path, game_key: &str) -> Result<BackupManifest, 
     v.name = "vanilla".into();
     v.path = vanilla_dir.to_string_lossy().into_owned();
   } else if vanilla_dir.is_dir() {
-    // On-disk vanilla without manifest entry (legacy or orphan).
-    let meta = vanilla_dir.metadata().ok();
-    let created = meta
-      .and_then(|m| m.created().ok())
-      .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
-      .map(|d| {
-        let secs = d.as_secs();
-        let days = secs / 86_400;
-        let day_secs = secs % 86_400;
-        let (y, m, d) = civil_from_days(days as i64);
-        let hh = day_secs / 3600;
-        let mm = (day_secs % 3600) / 60;
-        let ss = day_secs % 60;
-        format!("{y:04}-{m:02}-{d:02}T{hh:02}:{mm:02}:{ss:02}Z")
-      })
-      .unwrap_or_else(iso_timestamp);
     manifest.vanilla = Some(BackupEntry {
       kind: "vanilla".into(),
       name: "vanilla".into(),
       path: vanilla_dir.to_string_lossy().into_owned(),
-      created_at: created,
+      created_at: dir_created_at(&vanilla_dir),
       exclude_safe_dirs: false,
     });
   }
 
   for snap in &mut manifest.snapshots {
     snap.kind = "snapshot".into();
-    let flat = game_root.join(&snap.name);
-    let nested = game_root.join("snapshots").join(&snap.name);
-    if flat.is_dir() {
-      snap.path = flat.to_string_lossy().into_owned();
-    } else if nested.is_dir() {
-      snap.path = nested.to_string_lossy().into_owned();
-    } else {
-      snap.path = flat.to_string_lossy().into_owned();
-    }
+    snap.path = snapshot_dir(backup_root, game_key, &snap.name)
+      .to_string_lossy()
+      .into_owned();
   }
 
-  // Discover flat snapshot dirs not listed in the manifest.
-  if game_root.is_dir() {
-    for entry in fs::read_dir(&game_root).map_err(|e| e.to_string())? {
+  if game_dir.is_dir() {
+    for entry in fs::read_dir(&game_dir).map_err(|e| e.to_string())? {
       let entry = entry.map_err(|e| e.to_string())?;
       if !entry.path().is_dir() {
         continue;
@@ -239,26 +205,11 @@ fn migrate_layout(backup_root: &Path, game_key: &str) -> Result<BackupManifest, 
       if manifest.snapshots.iter().any(|s| s.name == name) {
         continue;
       }
-      let meta = entry.metadata().ok();
-      let created = meta
-        .and_then(|m| m.created().ok())
-        .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
-        .map(|d| {
-          let secs = d.as_secs();
-          let days = secs / 86_400;
-          let day_secs = secs % 86_400;
-          let (y, m, day) = civil_from_days(days as i64);
-          let hh = day_secs / 3600;
-          let mm = (day_secs % 3600) / 60;
-          let ss = day_secs % 60;
-          format!("{y:04}-{m:02}-{day:02}T{hh:02}:{mm:02}:{ss:02}Z")
-        })
-        .unwrap_or_else(iso_timestamp);
       manifest.snapshots.push(BackupEntry {
         kind: "snapshot".into(),
         name: name.clone(),
         path: entry.path().to_string_lossy().into_owned(),
-        created_at: created,
+        created_at: dir_created_at(&entry.path()),
         exclude_safe_dirs: false,
       });
     }
@@ -269,10 +220,6 @@ fn migrate_layout(backup_root: &Path, game_key: &str) -> Result<BackupManifest, 
     .sort_by(|a, b| a.created_at.cmp(&b.created_at));
   write_manifest(backup_root, &manifest)?;
   Ok(manifest)
-}
-
-fn read_manifest(backup_root: &Path, game_key: &str) -> Result<BackupManifest, String> {
-  migrate_layout(backup_root, game_key)
 }
 
 fn should_exclude(name: &str, exclude_safe: bool) -> bool {
@@ -481,7 +428,7 @@ pub async fn backup_game_dir(
   }
 
   let kind = normalize_kind(&input.kind)?;
-  let _ = migrate_layout(&backup_root, game_key)?;
+  let _ = read_manifest(&backup_root, game_key)?;
 
   let created_at = iso_timestamp();
   let (dest, entry_name) = match kind {
@@ -503,7 +450,7 @@ pub async fn backup_game_dir(
       if name.contains('/') || name.contains('\\') || name.contains("..") {
         return Err("Snapshot name must be a single path segment".into());
       }
-      (backup_root.join(game_key).join(&name), name)
+      (snapshot_dir(&backup_root, game_key, &name), name)
     }
     _ => unreachable!(),
   };
@@ -729,8 +676,8 @@ pub async fn delete_backup(
     return Err(format!("Backup not found: {}", path.display()));
   }
 
-  let _ = migrate_layout(&root, &key)?;
-  // Allow vanilla under backups/ and snapshots under {gameKey}/.
+  let _ = read_manifest(&root, &key)?;
+  // Vanilla and snapshots live under backups/{gameKey}/.
   let safe = resolve_under(&root, &path)?;
 
   let mut manifest = read_manifest(&root, &key)?;

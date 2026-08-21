@@ -16,22 +16,79 @@ function assertSafeSegment(value: string, label: string): string {
   return trimmed
 }
 
+const WIN_RESERVED = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i
+
+/** Sanitize a display name into a single Windows-safe path segment. */
+export function sanitizeProjectFolderName(name: string): string {
+  let s = name.trim().replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_')
+  s = s.replace(/^\.+/, '').replace(/\.+$/, '').trim()
+  if (!s) s = 'project'
+  if (WIN_RESERVED.test(s)) s = `_${s}`
+  return s
+}
+
+/**
+ * Pick a unique folder name among `taken` (case-insensitive).
+ * On collision appends ` (2)`, ` (3)`, …
+ */
+export function allocateUniqueFolderName(
+  desired: string,
+  taken: Iterable<string>,
+): string {
+  const base = sanitizeProjectFolderName(desired)
+  const takenSet = new Set(
+    [...taken].map((t) => t.trim().toLowerCase()).filter(Boolean),
+  )
+  if (!takenSet.has(base.toLowerCase())) return base
+  for (let n = 2; n < 1000; n++) {
+    const candidate = `${base} (${n})`
+    if (!takenSet.has(candidate.toLowerCase())) return candidate
+  }
+  return `${base} (${Date.now()})`
+}
+
+function pad2(n: number): string {
+  return String(n).padStart(2, '0')
+}
+
+/** Local install-run folder stamp: `YYYY-MM-DD_HH-mm-ss`. */
+export function formatRunStamp(now = new Date()): string {
+  return `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}_${pad2(now.getHours())}-${pad2(now.getMinutes())}-${pad2(now.getSeconds())}`
+}
+
+let lastRunStamp = ''
+let runStampSeq = 1
+
+/** Mint a human-readable run id; same-second mints get `-2`, `-3`, … */
+export function newInstallRunId(now = new Date()): string {
+  const stamp = formatRunStamp(now)
+  if (stamp === lastRunStamp) {
+    runStampSeq += 1
+    return `${stamp}-${runStampSeq}`
+  }
+  lastRunStamp = stamp
+  runStampSeq = 1
+  return stamp
+}
+
+/** Test helper: reset same-second run-id sequencing. */
+export function resetRunStampSeqForTests(): void {
+  lastRunStamp = ''
+  runStampSeq = 1
+}
+
 export function projectsRoot(dataRoot: string): string {
   return `${normalizeDataRoot(dataRoot)}/projects`
 }
 
-export function projectDir(dataRoot: string, projectId: string): string {
-  return `${projectsRoot(dataRoot)}/${assertSafeSegment(projectId, 'projectId')}`
-}
-
-export function projectLogsDir(dataRoot: string, projectId: string): string {
-  return `${projectDir(dataRoot, projectId)}/logs`
+export function projectDir(dataRoot: string, folderName: string): string {
+  return `${projectsRoot(dataRoot)}/${assertSafeSegment(folderName, 'folderName')}`
 }
 
 export function installRunLogDir(
   dataRoot: string,
-  projectId: string,
+  folderName: string,
   runId: string,
 ): string {
-  return `${projectLogsDir(dataRoot, projectId)}/${assertSafeSegment(runId, 'runId')}`
+  return `${projectDir(dataRoot, folderName)}/${assertSafeSegment(runId, 'runId')}`
 }

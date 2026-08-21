@@ -10,6 +10,7 @@ import {
 import type { SelectedGame } from '../xml/schema'
 import {
   adaptSessionForProjects,
+  allocateProjectFolderName,
   defaultProjectName,
   newProjectId,
   readProjectIndex,
@@ -77,6 +78,11 @@ export function migrateLegacySessionsToProjects(
         meta: {
           id,
           name: `${defaultProjectName(engine, now)} (migrated)`,
+          folderName: allocateProjectFolderName(
+            `${defaultProjectName(engine, now)} (migrated)`,
+            undefined,
+            index,
+          ),
           engine,
           createdAt: iso,
           lastOpenedAt: iso,

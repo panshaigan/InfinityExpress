@@ -842,6 +842,11 @@ function AppShell() {
       setResetAllRestartOpen(true)
       return
     }
+    installSnapshotRef.current = undefined
+    installSessionKeyRef.current = null
+    setInstallSession(null)
+    setRestoredInstallSession(undefined)
+    installActions?.clearInstallRun()
     resetComponentSelection()
     pushToast({ tone: 'success', message: 'Project reset.' })
   }
@@ -863,6 +868,11 @@ function AppShell() {
     void (async () => {
       const ok = await installActions.performVanillaRestart(scope)
       if (!ok) return
+      installSnapshotRef.current = undefined
+      installSessionKeyRef.current = null
+      setInstallSession(null)
+      setRestoredInstallSession(undefined)
+      installActions.clearInstallRun()
       resetComponentSelection()
       pushToast({ tone: 'success', message: 'Project reset.' })
     })()
@@ -1266,6 +1276,7 @@ function AppShell() {
               game={game}
               gameFolders={gameFolders}
               projectId={projectId}
+              projectFolderName={projectMeta?.folderName ?? null}
               neededCodenames={neededCodenames}
               mods={userCatalog.mods}
               detailCollapsed={detailCollapsed}

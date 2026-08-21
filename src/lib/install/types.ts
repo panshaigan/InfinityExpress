@@ -84,7 +84,7 @@ export interface InstallRun {
   breakpointStepIds: string[]
   /** Named snapshots to take before staging the listed steps (one-shot). */
   plannedSnapshots: PlannedSnapshot[]
-  /** Absolute path to run log directory under backupDir/projects/{projectId}/logs. */
+  /** Absolute path to run log directory under `{dataRoot}/projects/{folderName}/{runId}/`. */
   logDir: string
 }
 

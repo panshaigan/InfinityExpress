@@ -13,7 +13,7 @@ export type VanillaBinding =
     }
   | {
       mode: 'managed'
-      /** Absolute path to `{dataRoot}/backups/{key}`. */
+      /** Absolute path to `{dataRoot}/backups/{key}/vanilla`. */
       path: string
       version?: string
     }
@@ -23,6 +23,8 @@ export type VanillaRegistry = Partial<Record<GameFolderKey, VanillaBinding>>
 export interface ProjectMeta {
   id: ProjectId
   name: string
+  /** On-disk folder under `{dataRoot}/projects/` (sanitized name; may differ from `name`). */
+  folderName: string
   engine: SelectedGame
   createdAt: string
   lastOpenedAt: string

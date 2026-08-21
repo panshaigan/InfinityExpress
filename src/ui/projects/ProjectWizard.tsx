@@ -9,7 +9,8 @@ import {
   destinationsForEngine,
   emptyDestinations,
   ensureMainDataFolder,
-  ensureProjectLogsDir,
+  ensureProjectDir,
+  getProject,
   hasVanillaForKey,
   missingVanillaKeys,
   prepareDestinationForKey,
@@ -510,7 +511,8 @@ export function ProjectWizard({
         engine,
         destinations: destinationsForEngine(engine, destinations),
       })
-      await ensureProjectLogsDir(id)
+      const folderName = getProject(id)?.meta.folderName
+      if (folderName) await ensureProjectDir(folderName)
       onCreated(id)
     } finally {
       setSubmitting(false)

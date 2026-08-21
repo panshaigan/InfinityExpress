@@ -2,6 +2,10 @@ import { GAME_LABELS, type SelectedGame } from '../xml/schema'
 import type { GameFolderKey, GameFolderPaths } from '../ui/gameFolderPrefs'
 import { gameFolderKeysForEngine } from '../ui/installPathValidation'
 import type { GameSession } from '../ui/appSessionPrefs'
+import {
+  allocateUniqueFolderName,
+  sanitizeProjectFolderName,
+} from './projectPaths'
 import type { ProjectId, ProjectIndex, ProjectMeta, ProjectRecord } from './types'
 import { emptyDestinations, emptyProjectIndex } from './types'
 
@@ -31,37 +35,78 @@ function isSelectedGame(value: unknown): value is SelectedGame {
   )
 }
 
-function isProjectMeta(value: unknown): value is ProjectMeta {
-  if (!value || typeof value !== 'object') return false
+function coerceProjectMeta(value: unknown): ProjectMeta | null {
+  if (!value || typeof value !== 'object') return null
   const o = value as Record<string, unknown>
-  return (
-    typeof o.id === 'string' &&
-    typeof o.name === 'string' &&
-    isSelectedGame(o.engine) &&
-    typeof o.createdAt === 'string' &&
-    typeof o.lastOpenedAt === 'string' &&
-    isGameFolderPaths(o.destinations)
-  )
-}
-
-function isProjectRecord(value: unknown): value is ProjectRecord {
-  if (!value || typeof value !== 'object') return false
-  const o = value as Record<string, unknown>
-  if (!isProjectMeta(o.meta)) return false
-  if (o.session != null && typeof o.session !== 'object') return false
-  return true
-}
-
-function isProjectIndex(value: unknown): value is ProjectIndex {
-  if (!value || typeof value !== 'object') return false
-  const o = value as Record<string, unknown>
-  if (o.version !== 1) return false
-  if (o.lastProjectId != null && typeof o.lastProjectId !== 'string') return false
-  if (!o.projects || typeof o.projects !== 'object') return false
-  for (const record of Object.values(o.projects as Record<string, unknown>)) {
-    if (!isProjectRecord(record)) return false
+  if (
+    typeof o.id !== 'string' ||
+    typeof o.name !== 'string' ||
+    !isSelectedGame(o.engine) ||
+    typeof o.createdAt !== 'string' ||
+    typeof o.lastOpenedAt !== 'string' ||
+    !isGameFolderPaths(o.destinations)
+  ) {
+    return null
   }
-  return true
+  const folderName =
+    typeof o.folderName === 'string' && o.folderName.trim()
+      ? o.folderName.trim()
+      : sanitizeProjectFolderName(o.name)
+  return {
+    id: o.id,
+    name: o.name,
+    folderName,
+    engine: o.engine,
+    createdAt: o.createdAt,
+    lastOpenedAt: o.lastOpenedAt,
+    destinations: o.destinations,
+  }
+}
+
+function coerceProjectRecord(value: unknown): ProjectRecord | null {
+  if (!value || typeof value !== 'object') return null
+  const o = value as Record<string, unknown>
+  const meta = coerceProjectMeta(o.meta)
+  if (!meta) return null
+  if (o.session != null && typeof o.session !== 'object') return null
+  return { meta, session: (o.session as GameSession | null) ?? null }
+}
+
+function coerceProjectIndex(value: unknown): ProjectIndex | null {
+  if (!value || typeof value !== 'object') return null
+  const o = value as Record<string, unknown>
+  if (o.version !== 1) return null
+  if (o.lastProjectId != null && typeof o.lastProjectId !== 'string') return null
+  if (!o.projects || typeof o.projects !== 'object') return null
+  const projects: Record<ProjectId, ProjectRecord> = {}
+  for (const [id, raw] of Object.entries(o.projects as Record<string, unknown>)) {
+    const record = coerceProjectRecord(raw)
+    if (!record) return null
+    projects[id] = record
+  }
+  return {
+    version: 1,
+    lastProjectId: (o.lastProjectId as string | null) ?? null,
+    projects,
+  }
+}
+
+/** Folder names already claimed by other projects (optionally excluding one id). */
+export function takenFolderNames(
+  index: ProjectIndex = readProjectIndex(),
+  exceptId?: ProjectId,
+): string[] {
+  return Object.values(index.projects)
+    .filter((p) => p.meta.id !== exceptId)
+    .map((p) => p.meta.folderName)
+}
+
+export function allocateProjectFolderName(
+  displayName: string,
+  exceptId?: ProjectId,
+  index: ProjectIndex = readProjectIndex(),
+): string {
+  return allocateUniqueFolderName(displayName, takenFolderNames(index, exceptId))
 }
 
 export function readProjectIndex(): ProjectIndex {
@@ -69,8 +114,9 @@ export function readProjectIndex(): ProjectIndex {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) return emptyProjectIndex()
     const parsed: unknown = JSON.parse(raw)
-    if (!isProjectIndex(parsed)) return emptyProjectIndex()
-    return parsed
+    const coerced = coerceProjectIndex(parsed)
+    if (!coerced) return emptyProjectIndex()
+    return coerced
   } catch {
     return emptyProjectIndex()
   }
@@ -113,7 +159,9 @@ export function upsertProject(
 
 export function updateProjectMeta(
   id: ProjectId,
-  patch: Partial<Pick<ProjectMeta, 'name' | 'destinations' | 'lastOpenedAt'>>,
+  patch: Partial<
+    Pick<ProjectMeta, 'name' | 'folderName' | 'destinations' | 'lastOpenedAt'>
+  >,
 ): ProjectIndex {
   const index = readProjectIndex()
   const existing = index.projects[id]

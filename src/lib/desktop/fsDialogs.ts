@@ -108,6 +108,15 @@ export async function ensureDir(path: string): Promise<void> {
   await invoke('ensure_dir', { path: path.trim() })
 }
 
+/** Rename or move a path. No-op when missing or paths are equal. */
+export async function renamePath(from: string, to: string): Promise<void> {
+  if (!isDesktopApp()) return
+  const a = from.trim()
+  const b = to.trim()
+  if (!a || !b) return
+  await invoke('rename_path', { from: a, to: b })
+}
+
 /**
  * Validate a folder path that may not exist yet: if missing, its parent must
  * already be a directory. Existing paths must be directories.

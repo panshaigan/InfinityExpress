@@ -74,6 +74,7 @@ import { defaultSnapshotName } from '../../lib/install/snapshotName'
 
 export type InstallActions = {
   performVanillaRestart: (scope: RestartScope) => Promise<boolean>
+  clearInstallRun: () => void
 }
 
 interface Props {
@@ -93,6 +94,7 @@ interface Props {
   /** Per-project live game destinations. */
   gameFolders: GameFolderPaths
   projectId?: string | null
+  projectFolderName?: string | null
   initialInstallSession?: PersistedInstallSession
   onInstallSessionChange?: (session: PersistedInstallSession | null) => void
   onDeselectComponent?: (componentId: string) => void
@@ -127,6 +129,7 @@ export function InstallStation({
   onExitBlockingChange,
   gameFolders,
   projectId = null,
+  projectFolderName = null,
   initialInstallSession,
   onInstallSessionChange,
   onDeselectComponent,
@@ -179,6 +182,7 @@ export function InstallStation({
     canSkip,
     restartFromBackup,
     stopRunningInstall,
+    clearInstallRun,
     sendInput,
     appendCommandLine,
     pausePending,
@@ -192,6 +196,7 @@ export function InstallStation({
     game,
     gameFolders,
     projectId,
+    projectFolderName,
     initialInstallState: initialInstallSession
       ? { installSession: initialInstallSession }
       : null,
@@ -878,9 +883,12 @@ export function InstallStation({
 
   useEffect(() => {
     if (!onInstallActionsReady) return
-    onInstallActionsReady({ performVanillaRestart: onRestartConfirm })
+    onInstallActionsReady({
+      performVanillaRestart: onRestartConfirm,
+      clearInstallRun,
+    })
     return () => onInstallActionsReady(null)
-  }, [onInstallActionsReady, onRestartConfirm])
+  }, [onInstallActionsReady, onRestartConfirm, clearInstallRun])
 
   const onCleanup = useCallback(async () => {
     if (!game || !run) return
