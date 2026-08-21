@@ -24,6 +24,9 @@ import {
   setVanillaBinding,
   vanillaPath,
 } from './vanillaRegistry'
+import {
+  rewriteInstallRunStateLogDir,
+} from '../install/runStateStore'
 
 /** Sync managed vanilla bindings from backup manifests when present. */
 export async function syncManagedVanillasFromDisk(): Promise<void> {
@@ -109,19 +112,20 @@ export async function renameProject(
   }
 
   let session = record.session
-  if (session?.install?.run?.logDir && prevFolder !== nextFolder && backupDir.trim()) {
+  if (session?.installRef?.logDir && prevFolder !== nextFolder && backupDir.trim()) {
     const fromPrefix = projectDir(backupDir, prevFolder).replace(/\\/g, '/')
     const toPrefix = projectDir(backupDir, nextFolder).replace(/\\/g, '/')
-    const logDir = session.install.run.logDir.replace(/\\/g, '/')
+    const logDir = session.installRef.logDir.replace(/\\/g, '/')
     if (logDir === fromPrefix || logDir.startsWith(`${fromPrefix}/`)) {
       const rewritten = `${toPrefix}${logDir.slice(fromPrefix.length)}`
       session = {
         ...session,
-        install: {
-          ...session.install,
-          run: { ...session.install.run, logDir: rewritten },
+        installRef: {
+          runId: session.installRef.runId,
+          logDir: rewritten,
         },
       }
+      void rewriteInstallRunStateLogDir(logDir, rewritten)
     }
   }
 

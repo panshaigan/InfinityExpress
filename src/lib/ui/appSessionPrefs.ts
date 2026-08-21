@@ -70,6 +70,12 @@ export interface PersistedInstallSession {
   }
 }
 
+/** Thin localStorage pointer to on-disk `run-state.json` under the run folder. */
+export interface InstallRunRef {
+  runId: string
+  logDir: string
+}
+
 export interface GameSession {
   selectedIds: string[]
   finishedStations: StationSlot[]
@@ -83,7 +89,13 @@ export interface GameSession {
   recommendedChecked: string[]
   packagesChecked: string[]
   modsJourney: ModsJourneyState | null
-  install?: PersistedInstallSession
+  /** Pointer to `{logDir}/run-state.json` (full install lives on disk). */
+  installRef?: InstallRunRef
+  /**
+   * Transient: set only when deserializing a legacy inlined `install` blob.
+   * Never written back to localStorage.
+   */
+  legacyInstall?: PersistedInstallSession
   /** Identified WeiDU.log installs (independent of current checkboxes). */
   installedFromWeiduLog?: PersistedWeiduLogInstalls
 }
@@ -141,6 +153,16 @@ function plannedSnapshotsFrom(value: unknown): PlannedSnapshot[] {
   return out
 }
 
+function installRunRefFrom(value: unknown): InstallRunRef | null {
+  if (!value || typeof value !== 'object') return null
+  const o = value as Record<string, unknown>
+  if (typeof o.runId !== 'string' || typeof o.logDir !== 'string') return null
+  const runId = o.runId.trim()
+  const logDir = o.logDir.trim()
+  if (!runId || !logDir) return null
+  return { runId, logDir }
+}
+
 function gameSessionFrom(value: unknown): GameSession | null {
   if (!value || typeof value !== 'object') return null
   const o = value as Record<string, unknown>
@@ -148,7 +170,13 @@ function gameSessionFrom(value: unknown): GameSession | null {
   const activePresetId =
     typeof o.activePresetId === 'string' ? o.activePresetId : null
   const activeStation = isStationSlot(o.activeStation) ? o.activeStation : 'presets'
-  const install = o.install != null ? persistedInstallFrom(o.install) : undefined
+  const legacyInstall =
+    o.install != null ? parsePersistedInstallSession(o.install) : null
+  const installRef =
+    installRunRefFrom(o.installRef) ??
+    (legacyInstall
+      ? { runId: legacyInstall.run.runId, logDir: legacyInstall.run.logDir }
+      : null)
   const installedFromWeiduLog = persistedWeiduLogInstallsFrom(o.installedFromWeiduLog)
   return {
     selectedIds: stringArray(o.selectedIds),
@@ -163,7 +191,8 @@ function gameSessionFrom(value: unknown): GameSession | null {
     recommendedChecked: stringArray(o.recommendedChecked),
     packagesChecked: stringArray(o.packagesChecked),
     modsJourney: modsJourneyFrom(o.modsJourney),
-    ...(install ? { install } : {}),
+    ...(installRef ? { installRef } : {}),
+    ...(legacyInstall ? { legacyInstall } : {}),
     ...(installedFromWeiduLog ? { installedFromWeiduLog } : {}),
   }
 }
@@ -264,7 +293,10 @@ function installRunFrom(value: unknown): InstallRun | null {
   }
 }
 
-function persistedInstallFrom(value: unknown): PersistedInstallSession | null {
+/** Parse a persisted install session (localStorage legacy or `run-state.json`). */
+export function parsePersistedInstallSession(
+  value: unknown,
+): PersistedInstallSession | null {
   if (!value || typeof value !== 'object') return null
   const o = value as Record<string, unknown>
   const run = installRunFrom(o.run)
@@ -425,11 +457,16 @@ export function sanitizeComponentsSession(
     activePresetId = null
     presetBaseline = null
   }
+  const { legacyInstall: _legacy, ...rest } = session
   return {
-    ...session,
+    ...rest,
     selectedIds: [...finalized],
     activePresetId,
     presetBaseline,
+    ...(session.installRef ? { installRef: session.installRef } : {}),
+    ...(session.legacyInstall
+      ? { legacyInstall: session.legacyInstall }
+      : {}),
     installedFromWeiduLog: sanitizePersistedWeiduLogInstalls(
       persistedWeiduLogInstallsFrom(session.installedFromWeiduLog),
       knownIds,
@@ -477,7 +514,7 @@ export function buildGameSessionSnapshot(input: {
   recommendedChecked: ReadonlySet<string>
   packagesChecked: ReadonlySet<string>
   modsJourney: ModsJourneyState | null
-  install?: PersistedInstallSession
+  installRef?: InstallRunRef
   installedFromWeiduLog?: PersistedWeiduLogInstalls
 }): GameSession {
   return {
@@ -493,7 +530,7 @@ export function buildGameSessionSnapshot(input: {
     recommendedChecked: [...input.recommendedChecked],
     packagesChecked: [...input.packagesChecked],
     modsJourney: input.modsJourney ? { ...input.modsJourney } : null,
-    ...(input.install ? { install: input.install } : {}),
+    ...(input.installRef ? { installRef: { ...input.installRef } } : {}),
     ...(input.installedFromWeiduLog
       ? { installedFromWeiduLog: input.installedFromWeiduLog }
       : {}),
@@ -582,7 +619,7 @@ export function bootstrapAppSession(
     model,
     game,
     new Set(session.selectedIds),
-    raw.install,
+    raw.legacyInstall,
   )
   return {
     store,

@@ -19,9 +19,13 @@ import {
   type SanitizedGameSession,
 } from '../ui/appSessionPrefs'
 import type { AppPhase } from '../../ui/PhaseNav.types'
-import type { InstallSequenceModel } from '../xml/schema'
+import type { InstallSequenceModel, SelectedGame } from '../xml/schema'
 import { emptyDestinations } from '../projects/types'
 import type { GameFolderPaths } from '../ui/gameFolderPrefs'
+import {
+  readInstallRunState,
+  writeInstallRunState,
+} from '../install/runStateStore'
 
 export type AppShellView = 'hub' | 'wizard' | 'workspace'
 
@@ -30,7 +34,6 @@ export interface ProjectBootstrap {
   projectId: ProjectId | null
   meta: ProjectMeta | null
   session: SanitizedGameSession | null
-  install: PersistedInstallSession | undefined
   destinations: GameFolderPaths
   appPhase: AppPhase
 }
@@ -49,7 +52,6 @@ export function bootstrapProjects(_model: InstallSequenceModel): ProjectBootstra
     projectId: null,
     meta: null,
     session: null,
-    install: undefined,
     destinations: emptyDestinations(),
     appPhase: 'components',
   }
@@ -61,7 +63,6 @@ export function loadProjectRecord(
 ): {
   record: ProjectRecord
   session: SanitizedGameSession | null
-  install: PersistedInstallSession | undefined
 } | null {
   const record = getProject(projectId)
   if (!record) return null
@@ -70,7 +71,7 @@ export function loadProjectRecord(
     ? adaptSessionForProjects(record.session)
     : null
   if (!raw) {
-    return { record, session: null, install: undefined }
+    return { record, session: null }
   }
   const session = sanitizeComponentsSession(
     model,
@@ -78,13 +79,38 @@ export function loadProjectRecord(
     raw,
     presetsForEngine(record.meta.engine),
   )
-  const install = sanitizeInstallSession(
-    model,
-    record.meta.engine,
-    new Set(session.selectedIds),
-    raw.install,
-  )
-  return { record, session, install }
+  return { record, session }
+}
+
+/**
+ * Resolve the full install session for a project: prefer on-disk `run-state.json`,
+ * fall back to a one-shot legacy localStorage blob (and migrate it to disk).
+ */
+export async function resolveProjectInstallSession(
+  model: InstallSequenceModel,
+  session: SanitizedGameSession | null,
+  engine: SelectedGame,
+): Promise<PersistedInstallSession | undefined> {
+  if (!session) return undefined
+  const selectedIds = new Set(session.selectedIds)
+
+  if (session.legacyInstall) {
+    const sanitized = sanitizeInstallSession(
+      model,
+      engine,
+      selectedIds,
+      session.legacyInstall,
+    )
+    if (sanitized?.run.logDir) {
+      void writeInstallRunState(sanitized.run.logDir, sanitized)
+    }
+    return sanitized
+  }
+
+  const logDir = session.installRef?.logDir?.trim()
+  if (!logDir) return undefined
+  const fromDisk = await readInstallRunState(logDir)
+  return sanitizeInstallSession(model, engine, selectedIds, fromDisk ?? undefined)
 }
 
 export function emptyWorkspaceSession(): GameSession {

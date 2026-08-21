@@ -4,7 +4,7 @@ import { isDesktopApp } from '../lib/desktop/fsDialogs'
 
 interface Options {
   blocking: boolean
-  onFlushSession: () => void
+  onFlushSession: () => void | Promise<void>
 }
 
 export function useAppExitGuard({ blocking, onFlushSession }: Options) {
@@ -45,7 +45,7 @@ export function useAppExitGuard({ blocking, onFlushSession }: Options) {
 
   const confirmExit = useCallback(async () => {
     setExitConfirmOpen(false)
-    onFlushSessionRef.current()
+    await onFlushSessionRef.current()
     if (isDesktopApp()) {
       await getCurrentWindow().destroy()
     }

@@ -112,7 +112,9 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 | stdout/results contain `SKIPPING:` | WeiDU skipped the component (predicate / game check) | `skipped` | yes |
 | `2` (and other non-0/3) | Failed | `failed` | no |
 
-**Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). List probes (`--list-components-json`, `--list-languages`) stay on the Commands tab as argv only — their JSON/language dumps are not emitted to WeiDU or Results. UI keeps / reloads only the last ~800 lines per tab. On the **first** Install open after app/project mount (when not mid-WeiDU), those tails are loaded from disk into all three tabs; later phase switches do not reload. See `.cursor/rules/weidu-console-tabs.mdc`.
+**Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). List probes (`--list-components-json`, `--list-languages`) stay on the Commands tab as argv only — their JSON/language dumps are not emitted to WeiDU or Results. UI keeps only the last ~800 lines per tab (live append and reload); full history stays on disk. On **project open** (when not mid-WeiDU), those tails are loaded from disk into all three tabs; later phase switches do not reload. See `.cursor/rules/weidu-console-tabs.mdc`.
+
+**Install run persistence:** Full install session (`InstallRun` statuses/cursor/durations/breakpoints/log paths + UI toggles) is stored as `{runDir}/run-state.json`. Project localStorage keeps only `installRef: { runId, logDir }`. Legacy inlined `session.install` blobs migrate to disk on project open.
 
 **Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --force-uninstall` (`run_weidu_force_uninstall`). Do not invoke the configured `weidu.exe` directly for install or uninstall.
 
@@ -136,6 +138,7 @@ Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanill
   projects/
     {folderName}/            # sanitized project display name
       {YYYY-MM-DD_HH-mm-ss}/ # one install run until Reset all
+        run-state.json       # install session (statuses, cursor, UI, transport)
         run-stdout.log       # WeiDU stdout (append)
         run-stderr.log       # WeiDU stderr (append)
         run-commands.log     # Commands tab (append)
@@ -211,6 +214,7 @@ Install toolbar **Restart** restores the vanilla backup (with EET scope choice) 
 | Label → number | `src/lib/install/weiduResolution.ts` |
 | Install timings | `src/lib/install/installTiming.ts` — JSONL under `{backupDir}/metrics/` |
 | Run hook | `src/hooks/useInstallRun.ts` |
+| Run state on disk | `src/lib/install/runStateStore.ts`, `runStatePersistence.ts` |
 | UI | `src/ui/install/InstallStation.tsx`, `InstallTable.tsx`, `RestoreSnapshotDialog.tsx`, `PlanSnapshotDialog.tsx`, `RestartConfirmDialog.tsx`, console dock |
 | Rust install / backup | `src-tauri/src/weidu_install.rs`, `weidu_backup.rs` |
 

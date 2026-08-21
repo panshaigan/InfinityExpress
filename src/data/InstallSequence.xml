@@ -495,8 +495,8 @@
 					<component id="Almaterias_Restoration_Project-Lich_Deril" name="Lich Deril" label="Lich Deril" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Restored_Random_Encounters" name="Restored Random Encounters" label="Restored random encounters" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Minor_Restorations" name="Minor Restorations" label="Minor restorations" complexity="minor" />
-					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" name="Alternate Slayer Change" label="Alternate Slayer change" recommended="higherDifficulty" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Restored_Final_Slayer_Dream" name="Restored Final Slayer Dream" label="Restored final Slayer dream" complexity="minor" />
+					<component id="Almaterias_Restoration_Project-Alternate_Slayer_Change" name="Alternate Slayer Change" label="Alternate Slayer change" recommended="higherDifficulty" complexity="minor" />
 					<component id="Almaterias_Restoration_Project-Restored_Waukeens_Promenade_Cutscene" name="Restored Final Slayer Dream" label="Restored Waukeen's Promenade Cutscene" complexity="minor" />
 				</mod>
 			</restorations>
@@ -564,7 +564,6 @@
 					</mod>
 					<mod id="yoshimo-romance" label="Yoshimo Romance">
 						<component id="L#-YOSHIMO-ROMANCE" name="Yoshimo Romance and additional friendship talks for BG2 / BG2EE" label="Yoshimo Romance" complexity="minor" />
-						<component id="L#-YOSHIMO-ROMANCE-CMATCH" name="Romance restriction: Keep restrictions from the early version of the mod (elven/half-elven/human/halfling/tiefling female, charisma 13+)" label="Romance restriction: Keep restrictions" desc="elven/half-elven/human/halfling/tiefling female, CHA 13+" alwaysIf="L#-YOSHIMO-ROMANCE" noDisplay="1" complexity="minor" />
 					</mod>
 					<mod id="Edwin-Romance" label="Edwin Romance">
 						<component id="LaufeysEdwinRomance-Main" name="Edwin Romance" label="Edwin Romance" complexity="minor" />
@@ -575,7 +574,6 @@
 					</mod>
 					<component id="CorthalaRomantique-main" name="Corthala Romantique - Main Valygar Romance" label="Valygar Romance" modId="Corthala_Romantique" complexity="minor" />
 					<component id="haerdalisromance:0" label="Haer'Dalis Romance" modId="Haer-Dalis-Romance" complexity="minor" />
-					<component id="Dorn:0" name="Dorn expanded romance by trinit" label="Dorn Expanded Romance" modId="Bg2Dorn" tags="Beamdog" complexity="minor" />
 					<component id="sarevokromance:0" name="Aeryn's Sarevok Romance for BGII: Throne of Bhaal" label="Sarevok Romance" modId="Sarevok-Romance" complexity="minor" />
 					<component id="OWRomanceExpanded-Viconia" name="Viconia Romance Expanded" label="Viconia Romance Expanded" modId="BG2-Romance-Expanded" complexity="minor" />
 					<component id="OWRomanceExpanded-Phaere" name="Phaere Expanded" label="Phaere Expanded" modId="BG2-Romance-Expanded" complexity="minor" />
@@ -694,7 +692,7 @@
 					<component id="cd_tweaks_disable_romances" name="Disable Romances" label="Disable BioWare Romances" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3175" complexity="minor" />
 					<component id="LaufeysNewViconiaEnding-Main" name="New ending for Viconia Romance by Laufey" label="New ending for Viconia Romance" modId="Edwin-Romance" complexity="minor" />
 					<component id="SkitiaRomanceTweak:0" name="Skitia's Romance Tweak for BG2:EE" label="Skitia's Romance Tweak" desc="Allow short depatures from the party" modId="SkitiaBG2RomanceTweaks" recommended="fixes" complexity="minor" />
-					<component id="cd_tweaks_improved_fate_spirit_summoning" name="Improved Fate Spirit Summoning" label="Improved Fate Spirit summoning" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4010" complexity="minor" />
+					<component id="cd_tweaks_improved_fate_spirit_summoning" name="Improved Fate Spirit Summoning" label="Improved Fate Spirit summoning" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4010" complexity="minor" engine="bg2" />
 				</tweaks>
 			</npc>
 			<items label="Items">
@@ -716,7 +714,7 @@
 				<update label="Item Changes">
 					<component id="cd_tweaks_gradual_drow_item_disintegration" name="Gradual Drow Item Disintegration" label="Gradual drow Item Disintegration" modId="Tweaks-Anthology" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1050" complexity="minor" />
 					<component id="hidden_adventures-silversword" name="Silver Sword" label="Silver Sword against mind flayers and lycanthropes" recommended="blendWell" modId="hiddenadventure" complexity="minor" />
-					<component id="HouseTweaks:19" name="House Tweaks: Useful Plot Items" label="Useful Plot Items" modId="House-Rule-Tweaks" recommended="blendWell" complexity="minor" />
+					<component id="HouseTweaks:19" name="House Tweaks: Useful Plot Items" label="Useful Plot Items" modId="House-Rule-Tweaks" recommended="blendWell" complexity="minor" engine="bg2" />
 					<component id="stuffofthemagi:0" name="Use new, less cheesy items AND Add them to creatures' equipment (recommended)" label="Nerf Stuff of the Magi condiments and add them to creatures' equipment" modId="Stuff-of-the-Magi" recommended="blendWell" complexity="minor" />
 					<group label="Corrections" noBranches="1">
 						<component id="HouseTweaks:17" name="House Tweaks: Cloak of Dragomir only decreases stats in daylight" label="Cloak of Dragomir only decreases stats in daylight" modId="House-Rule-Tweaks" recommended="vanillaPlus" complexity="minor" />

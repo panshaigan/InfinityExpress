@@ -153,7 +153,7 @@ export function useInstallRun(options: {
   initialInstallState?: InstallRunInitialState | null
   /** Reverse-mapped WeiDU.log hits for alreadyInstalled marks. */
   weiduLogImport?: WeiduLogImportResult | null
-  /** When true, Install phase is the visible app phase (may stay mounted while hidden). */
+  /** @deprecated Unused — console tails load whenever the run is hydrated (project open). */
   active?: boolean
   /** When true, pause after a step with WeiDU exit code 3 (installed with warnings). */
   pauseOnWarnings?: boolean
@@ -167,7 +167,6 @@ export function useInstallRun(options: {
     projectFolderName,
     initialInstallState,
     weiduLogImport = null,
-    active = true,
     pauseOnWarnings = false,
   } = options
   const pauseOnWarningsRef = useRef(pauseOnWarnings)
@@ -226,7 +225,6 @@ export function useInstallRun(options: {
 
   useEffect(() => {
     if (didLoadConsoleRef.current) return
-    if (!active) return
     const logDir = run?.logDir
     if (!logDir) return
     const live =
@@ -250,7 +248,7 @@ export function useInstallRun(options: {
     return () => {
       cancelled = true
     }
-  }, [active, run?.logDir, run?.runId, run?.runState])
+  }, [run?.logDir, run?.runId, run?.runState])
 
   const rawPlanSteps = useMemo(() => {
     if (!game) return []
@@ -326,10 +324,10 @@ export function useInstallRun(options: {
   const pushConsoleLine = useCallback(
     (text: string): string => {
       const stamped = stampLine(text)
-      setCommandLines((prev) => [...prev.slice(-999), stamped])
+      setCommandLines((prev) => trimConsoleLines([...prev, stamped]))
       persistCommandLine(stamped)
       if (consoleLineTone(text) != null) {
-        setResultLines((prev) => [...prev.slice(-999), stamped])
+        setResultLines((prev) => trimConsoleLines([...prev, stamped]))
         persistResultLine(stamped)
       }
       return stamped
@@ -347,7 +345,7 @@ export function useInstallRun(options: {
   const appendCommandLine = useCallback(
     (message: string) => {
       const stamped = stampLine(message)
-      setCommandLines((prev) => [...prev.slice(-999), stamped])
+      setCommandLines((prev) => trimConsoleLines([...prev, stamped]))
       persistCommandLine(stamped)
     },
     [persistCommandLine],
@@ -432,12 +430,12 @@ export function useInstallRun(options: {
         const stamped = stampLine(ev.text)
         setConsoleLines((prev) => trimConsoleLines([...prev, stamped]))
         if (consoleLineTone(ev.text) != null) {
-          setResultLines((prev) => [...prev.slice(-999), stamped])
+          setResultLines((prev) => trimConsoleLines([...prev, stamped]))
           persistResultLine(stamped)
         }
       } else if (ev.kind === 'commandLogged') {
         const stamped = stampLine(ev.command)
-        setCommandLines((prev) => [...prev.slice(-999), stamped])
+        setCommandLines((prev) => trimConsoleLines([...prev, stamped]))
         persistCommandLine(stamped)
       } else if (ev.kind === 'inputRequired') {
         setInputPrompt(ev.prompt)
@@ -446,10 +444,10 @@ export function useInstallRun(options: {
         // App-synthesized lines → Commands only (never WeiDU tab).
         const text = `[${ev.level}] ${ev.message}`
         const stamped = stampLine(text)
-        setCommandLines((prev) => [...prev.slice(-999), stamped])
+        setCommandLines((prev) => trimConsoleLines([...prev, stamped]))
         persistCommandLine(stamped)
         if (consoleLineTone(text) != null) {
-          setResultLines((prev) => [...prev.slice(-999), stamped])
+          setResultLines((prev) => trimConsoleLines([...prev, stamped]))
           persistResultLine(stamped)
         }
       } else if (ev.kind === 'stepStarted') {

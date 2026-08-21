@@ -256,7 +256,7 @@ describe('appSessionPrefs', () => {
     ])
   })
 
-  it('round-trips plannedSnapshots on the install run', () => {
+  it('parses legacy inlined install into installRef + legacyInstall', () => {
     const install = buildPersistedInstallSession({
       game: 'bg2',
       selectedIds: new Set(['a', 'b']),
@@ -290,15 +290,52 @@ describe('appSessionPrefs', () => {
           packagesChecked: new Set(),
           modsJourney: null,
         }),
-        install,
-      },
+        // Simulate pre-migration localStorage that inlined the full install blob.
+        ...({ install } as object),
+      } as import('./appSessionPrefs').GameSession,
       'install',
     )
     writeAppSession(store)
     const read = readAppSession()
-    expect(read.byGame.bg2?.install?.run.plannedSnapshots).toEqual([
+    expect(read.byGame.bg2?.installRef).toEqual({
+      runId: 'run-test',
+      logDir: 'D:/backups/projects/My EET/2026-08-21_15-30-45',
+    })
+    expect(read.byGame.bg2?.legacyInstall?.run.plannedSnapshots).toEqual([
       { stepId: 'single:0001', name: 'before-tweaks' },
     ])
+    window.localStorage.removeItem(APP_SESSION_STORAGE_KEY)
+  })
+
+  it('round-trips installRef without an inlined install blob', () => {
+    const store = mergeAppSession(
+      emptyAppSession(),
+      'bg2',
+      buildGameSessionSnapshot({
+        selectedIds: new Set(['a']),
+        finishedStations: new Set(),
+        routeUnlocked: true,
+        activePresetId: null,
+        presetBaseline: null,
+        activeStation: 'base',
+        contentMainKey: null,
+        contentSubKey: null,
+        contentSubTag: null,
+        recommendedChecked: new Set(),
+        packagesChecked: new Set(),
+        modsJourney: null,
+        installRef: {
+          runId: 'run-test',
+          logDir: 'D:/backups/projects/My EET/2026-08-21_15-30-45',
+        },
+      }),
+      'install',
+    )
+    writeAppSession(store)
+    const raw = window.localStorage.getItem(APP_SESSION_STORAGE_KEY)
+    expect(raw).toBeTruthy()
+    expect(raw).not.toContain('"steps"')
+    expect(readAppSession().byGame.bg2?.installRef?.runId).toBe('run-test')
     window.localStorage.removeItem(APP_SESSION_STORAGE_KEY)
   })
 })

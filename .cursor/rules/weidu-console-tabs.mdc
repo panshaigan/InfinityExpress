@@ -13,16 +13,22 @@ Install console has three tabs. Do not mix their roles.
 - **WeiDU tab** — raw WeiDU process stdout/stderr only (`InstallEventPayload::Output` / `run-stdout.log` + `run-stderr.log`).
 - **Commands tab** — setup command lines (`CommandLogged`) and all **app-synthesized** status / info / error text (`Classified`, `pushConsoleLine`, pause/stop/snapshot messages); mirrored to `run-commands.log`.
 - **Results tab** — keyword highlights via `consoleLineTone` from WeiDU output (and app lines only when they intentionally go through that helper); mirrored to `run-results.log`.
-- UI keeps / reloads only a capped tail of each tab; full history stays on disk.
+- UI keeps / reloads only a capped tail of each tab (~800 lines); full history stays on disk.
+- On **project open** (Install station may still be hidden), load all three tab tails from the run log files once per `runId`/`logDir`.
 
 ## Don't
 
 - Do **not** append app `Classified` / status / `[info]` / `[error]` lines to the WeiDU (`consoleLines`) stream.
 - Do **not** re-emit stream-classified error/warning phrases as `Classified` into the UI — raw `Output` already feeds WeiDU + Results.
 - Do **not** invent a fourth console channel without an explicit request.
+- Do **not** grow unbounded React console arrays — always `trimConsoleLines` (same cap for WeiDU, Commands, and Results).
+- Do **not** store console line arrays in localStorage; disk logs + `run-state.json` are the source of truth.
 
 ## References
 
 - Hook: `src/hooks/useInstallRun.ts` (event routing)
+- Limits: `src/lib/install/consoleLimits.ts`
+- Reload: `src/lib/install/loadRunConsole.ts`
+- Run state: `src/lib/install/runStateStore.ts`
 - Rust: `src-tauri/src/weidu_install.rs` (`stream_pipe`, `emit_command_logged`, exception `Classified`)
 - Docs: `docs/weidu-install.md` § Resolve & run (console tabs)

@@ -133,11 +133,17 @@ import {
   emptyDestinations,
   listProjects,
   loadProjectRecord,
+  resolveProjectInstallSession,
   updateProjectMeta,
   type AppShellView,
   type ProjectId,
   type ProjectMeta,
 } from './lib/projects'
+import { installRunRefFromSession } from './lib/install/runStateStore'
+import {
+  flushInstallRunStateWrite,
+  scheduleInstallRunStateWrite,
+} from './lib/install/runStatePersistence'
 import { presetsForEngine } from './lib/presets/selectionPresetsStore'
 import {
   importInstalledFromDestinations,
@@ -657,6 +663,7 @@ function AppShell() {
     if (install) {
       install = sanitizeInstallSession(model, game, selectedIds, install)
     }
+    const installRef = install ? installRunRefFromSession(install) : undefined
     return buildGameSessionSnapshot({
       selectedIds,
       finishedStations: route.finishedStations,
@@ -670,7 +677,7 @@ function AppShell() {
       recommendedChecked: recommended.checkedRecommended,
       packagesChecked: recommended.checkedPackages,
       modsJourney,
-      ...(install ? { install } : {}),
+      ...(installRef ? { installRef } : {}),
       ...(weiduLogImport
         ? { installedFromWeiduLog: weiduLogImportToPersisted(weiduLogImport) }
         : {}),
@@ -693,11 +700,19 @@ function AppShell() {
     weiduLogImport,
   ])
 
-  const { flushSession } = useProjectSessionPersistence({
+  const { flushSession: flushProjectSession } = useProjectSessionPersistence({
     projectId,
     appPhase,
     buildGameSession,
   })
+
+  const flushSession = useCallback(
+    async (targetId?: ProjectId | null) => {
+      await flushInstallRunStateWrite()
+      flushProjectSession(targetId)
+    },
+    [flushProjectSession],
+  )
 
   const { flushPresets } = useSelectionPresetsPersistence({
     game,
@@ -715,16 +730,19 @@ function AppShell() {
     installSessionKeyRef.current = nextKey
     installSnapshotRef.current = session ?? undefined
     setInstallSession(session)
+    scheduleInstallRunStateWrite(session)
   }, [])
 
-  function openProject(id: ProjectId) {
+  async function openProject(id: ProjectId) {
     flushPresets()
     flushSession()
+    await flushInstallRunStateWrite()
     const loaded = loadProjectRecord(model, id)
     if (!loaded) return
-    const { record, session, install } = loaded
+    const { record, session } = loaded
     const engine = record.meta.engine
     const enginePresets = presetsForEngine(engine)
+    const install = await resolveProjectInstallSession(model, session, engine)
 
     setProjectId(record.meta.id)
     setProjectMeta(record.meta)
@@ -761,6 +779,7 @@ function AppShell() {
       installSnapshotRef.current = undefined
       setRestoredInstallSession(undefined)
       setInstallSession(null)
+      scheduleInstallRunStateWrite(null)
       void refreshWeiduLogImport(engine, record.meta.destinations, {
         replaceSelection: true,
         seedFixesIfNoLog: true,
@@ -784,6 +803,7 @@ function AppShell() {
       installSnapshotRef.current = install
       setRestoredInstallSession(install)
       setInstallSession(install ?? null)
+      installSessionKeyRef.current = install ? JSON.stringify(install) : null
       void refreshWeiduLogImport(engine, record.meta.destinations, {
         replaceSelection: false,
         seedFixesIfNoLog: false,
@@ -846,6 +866,7 @@ function AppShell() {
     installSessionKeyRef.current = null
     setInstallSession(null)
     setRestoredInstallSession(undefined)
+    scheduleInstallRunStateWrite(null)
     installActions?.clearInstallRun()
     resetComponentSelection()
     pushToast({ tone: 'success', message: 'Project reset.' })
@@ -872,6 +893,7 @@ function AppShell() {
       installSessionKeyRef.current = null
       setInstallSession(null)
       setRestoredInstallSession(undefined)
+      scheduleInstallRunStateWrite(null)
       installActions.clearInstallRun()
       resetComponentSelection()
       pushToast({ tone: 'success', message: 'Project reset.' })

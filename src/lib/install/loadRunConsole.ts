@@ -1,5 +1,4 @@
 import {
-  INSTALL_CONSOLE_MAX_LINES,
   INSTALL_CONSOLE_TAIL_BYTES,
   trimConsoleLines,
 } from './consoleLimits'
@@ -21,7 +20,7 @@ function linesFromText(text: string | null): string[] {
 }
 
 function trimTabLines(lines: string[]): string[] {
-  return lines.slice(-Math.min(999, INSTALL_CONSOLE_MAX_LINES))
+  return trimConsoleLines(lines)
 }
 
 /**
