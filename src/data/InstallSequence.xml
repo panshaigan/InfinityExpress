@@ -351,7 +351,7 @@
 					<component id="HouseTweaks:15" name="House Tweaks: Not-So-Indestructible Rats" label="Not-so-indestructible rats" complexity="minor" />
 				</mod>
 				<component id="stratagems:4145" name="Remove the tutorial NPCs from Candlekeep" label="Remove the tutorial NPCs from Candlekeep" modId="SwordCoastStratagems" recommended="blendWell" complexity="minor" />
-				<component id="cd_tweaks_bardic_rep_adjustment" name="Bardic Reputation Adjustment" label="Bardic reputation adjustment" modId="Tweaks-Anthology" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1260" complexity="minor" />
+				<component id="bg1npc_project-bardicreputation" name="Bardic Reputation Adjustment" label="Bardic Reputation Adjustment" modId="BG1NPC" recommended="blendWell" complexity="minor" />
 				<component id="cd_tweaks_faster_dearnise_keep_timer" name="Speed Up de'Arnise Keep Stronghold Quests" label="Speed up de'Arnise Keep Stronghold quests" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2540" complexity="minor" />
 			</tweaks>
 		</bg1>
