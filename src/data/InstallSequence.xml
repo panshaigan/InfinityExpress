@@ -408,7 +408,7 @@
 					<component id="Imoen4Ever-SoD-BetterReasonPalace" name="Imoen 4 Ever in SoD: Imoen Gives Better Reason to Stay Behind in Palace" label="Imoen gives better reason to stay behind in palace" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" complexity="minor" />
 					<component id="Imoen4Ever-SoD-CutesceneImoenDukeJannath" name="Imoen 4 Ever in SoD: Play Cutscene With Imoen and Duke Jannath" label="Play cutscene with Imoen and Duke Jannath" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" complexity="minor" />
 					<component id="Imoen4Ever-SoD-DialoguesContentChapters8to12" name="Imoen 4 Ever in SoD: Give Imoen Dialogue Content in Chapters 8-12" label="Give Imoen dialogue content in chapters 8-12" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" complexity="minor" />
-					<component id="Imoen4Ever-SoD-ImoenSameAtEnd" name="Imoen at the End of the Game Should be the One that Was in Party (SoD Only)" label="Imoen at the end of the game should be the one that was in party (SoD only)" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" complexity="minor" />
+					<component id="Imoen4Ever-SoD-ImoenSameAtEnd" name="Imoen at the End of the Game Should be the One that Was in Party (SoD Only)" label="Imoen at the end of the game should be the one that was in party (SoD only)" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" complexity="minor" engine="bg1" />
 					<component id="Imoen4Ever-SoD-MoveImoensChest" name="Imoen's chest moves with the campaign, too" label="Imoen's Chest moves with the campaign, too" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" complexity="minor" />
 					<component id="Imoen4Ever-SoD-PIDChapters8to12" name="Imoen 4 Ever in SoD: Give Imoen PID during chapters 8 to 12" label="Give Imoen PID during chapters 8 to 12" alwaysIf="Imoen4Ever-SoD-ImoeninGroupKorlaszDungeon" noDisplay="1" complexity="minor" />
 				</mod>
@@ -623,11 +623,11 @@
 						<component id="L#-SHARTEELBG2EE-PIDS" name="Shar-Teel for Baldur's Gate 2: Enhanced Edition - Player Initiated Dialogues (PIDs)" label="Player-initiated dialogues (PIDs)" complexity="minor" />
 					</mod>
 					<component id="zdbae:0" name="Baeloth BG2" label="Baeloth" modId="BaeBG2" tags="Beamdog" complexity="minor" />
-					<mod id="mkhiinbg2" label="M'Khiin" tags="Beamdog">
+					<mod id="mkhiinbg2" label="M'Khiin" tags="Beamdog" engine="bg2">
 						<component id="mkhiinbg2:0" name="M'Khiin NPC for BG2EE" label="M'Khiin" core="1" complexity="minor" />
 						<component id="mkhiinbg2:10" name="Artastrophe" label="Artastrophe portrait" alwaysIf="mkhiinbg2:0" noDisplay="1" complexity="minor" />
 					</mod>
-					<component id="YF-LivingClara" name="Living Clara" label="Clara instead of Hexxat &amp; darkside Anomen" modId="LivingClara" tags="Beamdog" complexity="minor" />
+					<component id="LivingClara-main" name="Living Clara" label="Clara instead of Hexxat &amp; Darkside Anomen" modId="LivingClara" tags="Beamdog" complexity="minor" />
 					<group label="Returning NPCs swapping the existing ones">
 						<mod id="khalid-bg2" label="Khalid instead of Jaheira">
 							<component id="L#-KHALIDBG2EE" name="Khalid for BG2EE" label="Core" core="1" complexity="minor" />
