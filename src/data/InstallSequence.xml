@@ -1324,7 +1324,7 @@
 			<restructure>
 				<alternatives label="Crucible">
 					<component id="Crucible-FinalAssault" name="[Install Crucible] Mute NPCs" label="Mute NPCs" modId="crucible" complexity="major" />
-					<component id="Crucible-FinalAssaultAI" name="[Install Crucible] Fully Voiced NPCs using AI" label="Fully voiced NPCs using AI" modId="crucible" complexity="minor" />
+					<component id="Crucible-FinalAssaultAI" name="[Install Crucible] Fully Voiced NPCs using AI" label="Fully voiced NPCs using AI" modId="crucible" default="1" complexity="minor" />
 				</alternatives>
 			</restructure>
 		</bg2>
