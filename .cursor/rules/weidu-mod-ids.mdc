@@ -12,7 +12,7 @@ Full narrative: [docs/weidu-install.md](docs/weidu-install.md).
 
 | Concept | Meaning | Example |
 | --- | --- | --- |
-| XML `<mod id>` / `<component modId>` | **Download folder** under the mods download dir only | `Tweaks-Anthology` |
+| XML `<mod id>` / `<component modId>` | **Download folder** under `{backupDir}/mods` only | `Tweaks-Anthology` |
 | WeiDU mod id | Folder that contains the `.tp2` after staging (`stagedFolderName`) | `cdtweaks` |
 | Component id `weiduFolder:N` | Designated WeiDU component **number** `N` | `stratagems:6020` |
 | Component id without `:N` | WeiDU **LABEL**; resolve to `number` via `--list-components-json` | `cd_tweaks_adjust_evil_npc_reactions` → `4000` |

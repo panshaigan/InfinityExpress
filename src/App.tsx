@@ -1130,8 +1130,8 @@ function AppShell() {
     setSettingsHighlightMissing([])
     setSettingsOpen(true)
   }, [])
-  const openSettingsModsDownload = useCallback(() => {
-    setSettingsFocusField('modsDownloadDir')
+  const openSettingsMainData = useCallback(() => {
+    setSettingsFocusField('backupDir')
     setSettingsHighlightMissing([])
     setSettingsOpen(true)
   }, [])
@@ -1253,7 +1253,7 @@ function AppShell() {
               onApplyAcquireSuccess={userCatalog.applyAcquireSuccess}
               onRefreshDiskStatus={userCatalog.refreshDiskStatus}
               onRemoveFromDisk={userCatalog.removeFromDisk}
-              onOpenSettings={openSettingsModsDownload}
+              onOpenSettings={openSettingsMainData}
               onProceedToInstall={() => onPhaseChange('install')}
               onBusyChange={onModsBusyChange}
               onExitBlockingChange={setModsBlocking}

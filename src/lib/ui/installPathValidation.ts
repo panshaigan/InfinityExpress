@@ -9,14 +9,12 @@ import {
 } from '../projects'
 
 export type MissingInstallPath =
-  | 'modsDownloadDir'
   | 'backupDir'
   | 'weiduPath'
   | `vanilla:${GameFolderKey}`
   | `dest:${GameFolderKey}`
 
 export type SettingsFocusField =
-  | 'modsDownloadDir'
   | 'backupDir'
   | 'weiduPath'
   | `vanilla:${GameFolderKey}`
@@ -55,7 +53,6 @@ export function getMissingInstallPaths(
   for (const key of gameFolderKeysForEngine(game)) {
     if (isEmpty(destinations[key])) missing.push(`dest:${key}`)
   }
-  if (isEmpty(appDirs.modsDownloadDir)) missing.push('modsDownloadDir')
   if (isEmpty(appDirs.backupDir)) missing.push('backupDir')
   if (isEmpty(weidu)) missing.push('weiduPath')
 
@@ -68,11 +65,7 @@ export type SettingsOpenContext = 'wizard' | 'components' | 'mods' | 'install'
 
 export function settingsTabForMissing(key: MissingInstallPath): SettingsTab {
   if (key.startsWith('dest:')) return 'project'
-  if (
-    key === 'modsDownloadDir' ||
-    key === 'backupDir' ||
-    key === 'weiduPath'
-  ) {
+  if (key === 'backupDir' || key === 'weiduPath') {
     return 'app'
   }
   return 'vanilla'
@@ -114,7 +107,6 @@ export function firstMissingFocusField(
 }
 
 export function focusElementIdForField(field: SettingsFocusField): string {
-  if (field === 'modsDownloadDir') return 'settings-mods-download-dir'
   if (field === 'backupDir') return 'settings-backup-dir'
   if (field === 'weiduPath') return 'settings-weidu-path'
   if (field.startsWith('vanilla:')) {
@@ -153,7 +145,6 @@ export function isPathStillMissing(
     const folder = key.slice('vanilla:'.length) as GameFolderKey
     return isEmpty(readVanillaRegistry()[folder]?.path)
   }
-  if (key === 'modsDownloadDir') return isEmpty(readAppDirPaths().modsDownloadDir)
   if (key === 'backupDir') return isEmpty(readAppDirPaths().backupDir)
   if (key === 'weiduPath') return isEmpty(readWeiduPath())
   return false

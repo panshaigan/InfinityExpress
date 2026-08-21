@@ -5,6 +5,7 @@ import {
   installRunLogDir,
   newInstallRunId,
   projectDir,
+  modsRoot,
   projectsRoot,
   resetRunStampSeqForTests,
   sanitizeProjectFolderName,
@@ -19,6 +20,9 @@ describe('projectPaths', () => {
     expect(projectsRoot('D:/ie-data')).toBe('D:/ie-data/projects')
     expect(projectsRoot('D:/ie-data/')).toBe('D:/ie-data/projects')
     expect(projectsRoot('D:\\ie-data\\')).toBe('D:/ie-data/projects')
+    expect(modsRoot('D:/ie-data')).toBe('D:/ie-data/mods')
+    expect(modsRoot('D:/ie-data/')).toBe('D:/ie-data/mods')
+    expect(modsRoot('D:\\ie-data\\')).toBe('D:/ie-data/mods')
     expect(projectDir('D:/ie-data', 'My EET')).toBe('D:/ie-data/projects/My EET')
     expect(installRunLogDir('D:/ie-data', 'My EET', '2026-08-21_15-30-45')).toBe(
       'D:/ie-data/projects/My EET/2026-08-21_15-30-45',

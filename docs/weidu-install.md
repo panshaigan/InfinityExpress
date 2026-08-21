@@ -6,7 +6,7 @@ Identity rule also auto-attaches via `.cursor/rules/weidu-mod-ids.mdc`. Architec
 
 | Concept | Meaning | Example |
 | --- | --- | --- |
-| XML `<mod id>` / `<component modId>` | **Download folder** under mods download dir | `Tweaks-Anthology` |
+| XML `<mod id>` / `<component modId>` | **Download folder** under `{backupDir}/mods` | `Tweaks-Anthology` |
 | WeiDU mod id | Folder with `.tp2` after staging (`stagedFolderName`) | `cdtweaks` |
 | Component id `folder:N` | Designated WeiDU **number** `N` | `stratagems:6020` |
 | Component id without `:N` | WeiDU **LABEL** → resolve via `--list-components-json` | `cd_tweaks_…` → `4000` |
@@ -126,6 +126,8 @@ Settings **main data folder directory** (`appDirs.backupDir`). App-wide **vanill
 
 ```text
 {backupDir}/
+  mods/
+    {DownloadId}/            # acquired / staged mod folders (XML mod id)
   backups/
     {gameKey}.json           # per-game backup manifest (sidecar)
     {gameKey}/               # bg1 | bg2 | iwd | pst

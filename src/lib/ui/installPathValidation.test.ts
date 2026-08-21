@@ -19,7 +19,7 @@ describe('resolveSettingsOpenTab', () => {
     expect(
       resolveSettingsOpenTab({
         initialTab: 'project',
-        focusField: 'modsDownloadDir',
+        focusField: 'backupDir',
       }),
     ).toBe('app')
     expect(
@@ -50,6 +50,7 @@ describe('settingsTabForMissing', () => {
   it('maps dest / vanilla / app fields', () => {
     expect(settingsTabForMissing('dest:bg1')).toBe('project')
     expect(settingsTabForMissing('vanilla:bg2')).toBe('vanilla')
+    expect(settingsTabForMissing('backupDir')).toBe('app')
     expect(settingsTabForMissing('weiduPath')).toBe('app')
   })
 })

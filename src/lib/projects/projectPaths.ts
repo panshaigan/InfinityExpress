@@ -81,6 +81,11 @@ export function projectsRoot(dataRoot: string): string {
   return `${normalizeDataRoot(dataRoot)}/projects`
 }
 
+/** Downloaded / acquired mod folders under the main data folder. */
+export function modsRoot(dataRoot: string): string {
+  return `${normalizeDataRoot(dataRoot)}/mods`
+}
+
 export function projectDir(dataRoot: string, folderName: string): string {
   return `${projectsRoot(dataRoot)}/${assertSafeSegment(folderName, 'folderName')}`
 }

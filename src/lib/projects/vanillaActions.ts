@@ -16,7 +16,7 @@ import {
   upsertProject,
   type ProjectId,
 } from './projectStore'
-import { projectDir, projectsRoot } from './projectPaths'
+import { modsRoot, projectDir, projectsRoot } from './projectPaths'
 import type { PrepareDestinationResult } from './types'
 import {
   managedVanillaPath,
@@ -65,6 +65,7 @@ export async function ensureMainDataFolder(path: string): Promise<string> {
     try {
       await ensureDir(trimmed)
       await ensureDir(projectsRoot(trimmed))
+      await ensureDir(modsRoot(trimmed))
     } catch (err) {
       throw new Error(String(err))
     }

@@ -3,7 +3,6 @@ import { openExternalUrl } from '../lib/desktop/openExternalUrl'
 import {
   readAppDirPaths,
   writeAppDirPaths,
-  type AppDirPaths,
 } from '../lib/ui/appDirPrefs'
 import { readWeiduPath, writeWeiduPath } from '../lib/ui/weiduPrefs'
 import {
@@ -80,8 +79,8 @@ interface Props {
 const DESTINATION_FOLDER_TIP =
   'Folder where mods will be installed and the game will be modified. An existing install with WeiDU.log is allowed; installed components are imported.'
 
-const MODS_DOWNLOAD_DIR_TIP =
-  'Root folder for downloaded mod archives. The Mods phase scans subfolders here.'
+const MAIN_DATA_FOLDER_TIP =
+  'Stores vanilla backups, downloaded mods, install logs, and project data for iNfinity eXpress.'
 
 const GITHUB_TOKEN_TIP =
   'Optional personal access token raises API rate limits for checking for updates on large catalogs. Without a token the app still works via public API and HTML scrape fallback. Create a classic token with public_repo (or a fine-grained token with read access to public repositories).'
@@ -258,7 +257,7 @@ export function SettingsDialog({
   ): { label: string; path: string }[] {
     const others: { label: string; path: string }[] = [
       { label: 'Main data folder', path: appDirs.backupDir },
-      { label: 'Mods download directory', path: appDirs.modsDownloadDir },
+      { label: 'Mods folder', path: appDirs.modsDownloadDir },
     ]
     const reg = readVanillaRegistry()
     for (const key of GAME_FOLDER_KEYS) {
@@ -283,7 +282,7 @@ export function SettingsDialog({
   function vanillaDistinctOthers(exclude: GameFolderKey): { label: string; path: string }[] {
     const others: { label: string; path: string }[] = [
       { label: 'Main data folder', path: appDirs.backupDir },
-      { label: 'Mods download directory', path: appDirs.modsDownloadDir },
+      { label: 'Mods folder', path: appDirs.modsDownloadDir },
     ]
     const reg = readVanillaRegistry()
     for (const key of GAME_FOLDER_KEYS) {
@@ -337,12 +336,9 @@ export function SettingsDialog({
     onDestinationsChange({ ...destinations, [key]: value })
   }
 
-  function setAppDir(key: keyof AppDirPaths, value: string) {
-    setAppDirs((prev) => {
-      const next: AppDirPaths = { ...prev, [key]: value }
-      writeAppDirPaths(next)
-      return next
-    })
+  function setBackupDir(value: string) {
+    writeAppDirPaths({ backupDir: value })
+    setAppDirs(readAppDirPaths())
   }
 
   function onGithubTokenChange(value: string) {
@@ -666,24 +662,12 @@ export function SettingsDialog({
           >
             <div className="settings-fields">
               <DirectoryField
-                id="settings-mods-download-dir"
-                label="Mods download directory"
-                tip={MODS_DOWNLOAD_DIR_TIP}
-                tipAriaLabel="About mods download directory"
-                value={appDirs.modsDownloadDir}
-                onChange={(value) => setAppDir('modsDownloadDir', value)}
-                placeholder="Select download folder…"
-                browseTitle="Select mods download folder"
-                error={missingFieldError('modsDownloadDir')}
-                required={activeMissing.includes('modsDownloadDir')}
-              />
-              <DirectoryField
                 id="settings-backup-dir"
                 label="Main data folder"
-                tip="Stores vanilla backups, install logs, and project data for iNfinity eXpress."
+                tip={MAIN_DATA_FOLDER_TIP}
                 tipAriaLabel="About main data folder"
                 value={appDirs.backupDir}
-                onChange={(value) => setAppDir('backupDir', value)}
+                onChange={setBackupDir}
                 placeholder="Select or type the path…"
                 browseTitle="Select main data folder"
                 error={missingFieldError('backupDir')}

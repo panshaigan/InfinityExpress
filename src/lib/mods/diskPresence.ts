@@ -16,7 +16,7 @@ export function folderNameSet(
 
 /**
  * Resolve on-disk status for a catalog row given folder names under the
- * mods download directory. Keeps `update_available` / `busy` when still present.
+ * mods folder (`{mainData}/mods`). Keeps `update_available` / `busy` when still present.
  */
 export function resolveDiskStatus(
   current: DiskStatus,

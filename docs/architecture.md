@@ -23,7 +23,7 @@ Stack: React 18 + TypeScript + Vite + Vitest; Tauri 2 desktop shell. Pure domain
 ## Phases
 
 1. **Components** — XML stations in `STATION_ORDER` (`base` … `adjustments`) after Presets. Content has main/sub branch nav after remap. Engine is chosen once per **Project** (not a station).
-2. **Mods** — Working copy of `mods.csv` (localStorage overlays). Desktop: scan Settings **mods download dir** by Download ID (subdir name); acquire / remove-from-disk. Completing last Components station can open Mods in journey mode. Secret About Ctrl/Cmd+click on the author name toggles persisted developer mode, which unlocks catalog edit/delete for built-in rows.
+2. **Mods** — Working copy of `mods.csv` (localStorage overlays). Desktop: scan `{mainData}/mods` by Download ID (subdir name); acquire / remove-from-disk. Completing last Components station can open Mods in journey mode. Secret About Ctrl/Cmd+click on the author name toggles persisted developer mode, which unlocks catalog edit/delete for built-in rows.
 3. **Install** — Plan/run WeiDU steps; **cursor** (`InstallRun.cursor`) marks the current package in the table; **vanilla** (app-wide) + named snapshots under the data root (see [weidu-install.md](weidu-install.md)); console dock. EET splits Pre-EET (`eet1`) vs EET (`eet`).
 
 ## Projects
@@ -35,7 +35,7 @@ A **Project** is one install universe: locked engine, component selection / pres
 - **Vanilla:** App-wide per `bg1`/`bg2`/`iwd`/`pst` (managed under `{dataRoot}/backups/{key}/vanilla` preferred; external folder allowed). EET needs both BG1 and BG2 vanillas. Settings → Vanilla backups lists **set** bindings as cards (⋮: choose another clean folder, or copy elsewhere and rebind); first-time creation is in the new-project wizard.
 - **Persistence:** Project meta + session in localStorage (`infinity-express.projects-v1`). Legacy per-game `infinity-express.app-session` buckets migrate once into projects.
 
-Settings (top bar): **Project** (per-project modded destination folders), **Vanilla backups** + **App** (mods download dir, backup/logs/projects dir, WeiDU, GitHub token). Opening Settings defaults to **Project** on Components, **App** on Mods, and **Vanilla backups** on Install. The new-project wizard opens on Vanilla backups and hides the Project tab.
+Settings (top bar): **Project** (per-project modded destination folders), **Vanilla backups** + **App** (main data folder for backups/logs/projects/mods, WeiDU, GitHub token). Opening Settings defaults to **Project** on Components, **App** on Mods, and **Vanilla backups** on Install. The new-project wizard opens on Vanilla backups and hides the Project tab.
 
 **Session restore:** Selection, station done marks, active preset id/baseline, and install table/cursor live on the active project. The **user preset library** (named snapshots) is engine-scoped in localStorage (`infinity-express.selection-presets-v1`) and shared across projects of the same engine. Install console WeiDU output is **not** stored there — on startup it is reloaded from `{backupDir}/projects/{folderName}/{runId}/run-stdout.log` and `run-stderr.log` when a saved install run exists.
 

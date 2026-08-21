@@ -166,7 +166,7 @@ export function useUserCatalog() {
       if (!downloadDir) {
         return {
           removed,
-          errors: ['Set a mods download directory in Settings first.'],
+          errors: ['Set a main data folder in Settings first.'],
         }
       }
       if (!isDesktopApp()) {

@@ -481,9 +481,9 @@ export function ModsStation({
   const removeConfirmMessage = useMemo(() => {
     if (!pendingRemove || pendingRemove.length === 0) return ''
     if (pendingRemove.length === 1) {
-      return `Permanently delete the \"${pendingRemove[0]}\" folder from the mods download directory? The catalog entry is kept.`
+      return `Permanently delete the \"${pendingRemove[0]}\" folder from the mods folder? The catalog entry is kept.`
     }
-    return `Permanently delete ${pendingRemove.length} mod folders from the mods download directory? Catalog entries are kept.`
+    return `Permanently delete ${pendingRemove.length} mod folders from the mods folder? Catalog entries are kept.`
   }, [pendingRemove])
 
   const deleteConfirmMessage = useMemo(() => {

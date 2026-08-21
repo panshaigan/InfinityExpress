@@ -46,7 +46,7 @@ const ENGINE_ROWS: SelectedGame[][] = [
 ]
 
 const MAIN_DATA_FOLDER_TIP =
-  'Stores vanilla backups, install logs, and project data for iNfinity eXpress.'
+  'Stores vanilla backups, downloaded mods, install logs, and project data for iNfinity eXpress.'
 
 const VANILLA_FOLDER_TIP =
   'Point at an untouched fresh installation — no mods installed yet.'
@@ -269,7 +269,7 @@ export function ProjectWizard({
   ): { label: string; path: string }[] {
     const others: { label: string; path: string }[] = [
       { label: 'Main data folder', path: appDirs.backupDir },
-      { label: 'Mods download directory', path: appDirs.modsDownloadDir },
+      { label: 'Mods folder', path: appDirs.modsDownloadDir },
     ]
     const registry = readVanillaRegistry()
     for (const key of ['bg1', 'bg2', 'iwd', 'pst'] as const) {
@@ -424,9 +424,8 @@ export function ProjectWizard({
 
       try {
         const ensured = await ensureMainDataFolder(backupDir)
-        const nextDirs = { ...appDirs, backupDir: ensured }
-        setAppDirs(nextDirs)
-        writeAppDirPaths(nextDirs)
+        writeAppDirPaths({ backupDir: ensured })
+        setAppDirs(readAppDirPaths())
       } catch (err) {
         setVanillaFieldError('backupDir', String(err))
         return
@@ -575,9 +574,8 @@ export function ProjectWizard({
             tipAriaLabel="About main data folder"
             value={appDirs.backupDir}
             onChange={(value) => {
-              const next = { ...appDirs, backupDir: value }
-              setAppDirs(next)
-              writeAppDirPaths(next)
+              writeAppDirPaths({ backupDir: value })
+              setAppDirs(readAppDirPaths())
               clearVanillaError('backupDir')
             }}
             onValidate={(value) => void validateBackupDir(value)}

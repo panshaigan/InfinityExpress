@@ -99,7 +99,7 @@ await invoke('remove_mod_dir', { downloadDir, folderName })
 
 ## Mods disk semantics
 
-- Settings `modsDownloadDir` (`infinity-express.app-dirs`) is the scan root.
+- Derived `{backupDir}/mods` (`infinity-express.app-dirs` stores only `backupDir`) is the scan root.
 - Download ID (`codename`) = subdirectory name under that root.
 - Presence logic (pure TS): [`diskPresence.ts`](src/lib/mods/diskPresence.ts); hook refreshes on load + `ie-paths-changed`.
 - Remove from disk deletes the folder; catalog row stays.
