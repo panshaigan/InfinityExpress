@@ -64,9 +64,7 @@ export function stepDurationLabel(
 ): string | null {
   const ms = stepDurationMs(step, nowMs, runState)
   if (ms == null) return null
-  const label = formatDurationMs(ms)
-  if (isStepDurationLive(step, runState)) return `${label} (running)`
-  return label
+  return formatPlayerDurationMs(ms)
 }
 
 /** Sum of step clocks (failed / not-started count as 0). */

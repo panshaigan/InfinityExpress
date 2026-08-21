@@ -28,6 +28,7 @@ interface Props {
   waitingForInput: boolean
   inputPrompt: string | null
   onSendInput: (text: string) => void
+  onResizeActiveChange?: (active: boolean) => void
 }
 
 export function InstallConsoleDock({
@@ -41,6 +42,7 @@ export function InstallConsoleDock({
   waitingForInput,
   inputPrompt,
   onSendInput,
+  onResizeActiveChange,
 }: Props) {
   const [height, setHeight] = useState(() => readInstallConsoleHeight())
   const [input, setInput] = useState('')
@@ -70,6 +72,7 @@ export function InstallConsoleDock({
   const onResizeStart = useCallback(
     (clientY: number) => {
       dragRef.current = { startY: clientY, startH: height }
+      onResizeActiveChange?.(true)
       function onMove(ev: MouseEvent) {
         const d = dragRef.current
         if (!d) return
@@ -80,6 +83,7 @@ export function InstallConsoleDock({
         dragRef.current = null
         window.removeEventListener('mousemove', onMove)
         window.removeEventListener('mouseup', onUp)
+        onResizeActiveChange?.(false)
         setHeight((h) => {
           writeInstallConsoleHeight(h)
           return h
@@ -88,7 +92,7 @@ export function InstallConsoleDock({
       window.addEventListener('mousemove', onMove)
       window.addEventListener('mouseup', onUp)
     },
-    [height],
+    [height, onResizeActiveChange],
   )
 
   const collapseLabel = collapsed ? 'Show output' : 'Hide output'
@@ -157,7 +161,7 @@ export function InstallConsoleDock({
               className={`install-console-tab${tab === 'results' ? ' active' : ''}`}
               onClick={() => setTab('results')}
             >
-              Results{resultLines.length > 0 ? ` (${resultLines.length})` : ''}
+              Results
             </button>
           </div>
         ) : null}

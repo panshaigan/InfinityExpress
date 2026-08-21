@@ -216,6 +216,7 @@ export function InstallStation({
   )
   const [jumpToCursorNonce, setJumpToCursorNonce] = useState(0)
   const [consoleCollapsed, setConsoleCollapsed] = useState(false)
+  const [consoleResizing, setConsoleResizing] = useState(false)
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false)
   const [snapshotBusy, setSnapshotBusy] = useState(false)
   const [snapshotCount, setSnapshotCount] = useState(0)
@@ -1126,6 +1127,7 @@ export function InstallStation({
             hideInstalled={hideInstalled}
             jumpToCursorNonce={jumpToCursorNonce}
             followCursor={followCursor}
+            interactionBlocked={consoleResizing}
             tableActions={tableActions}
             onSelectStep={onSelectStep}
           />
@@ -1156,6 +1158,7 @@ export function InstallStation({
         }
         inputPrompt={inputPrompt}
         onSendInput={(text) => void sendInput(text)}
+        onResizeActiveChange={setConsoleResizing}
       />
 
       <RestoreSnapshotDialog

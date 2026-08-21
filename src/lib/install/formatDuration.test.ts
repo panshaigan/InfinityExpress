@@ -50,18 +50,20 @@ describe('isStepDurationLive', () => {
 })
 
 describe('stepDurationLabel', () => {
-  it('appends running suffix only for live steps', () => {
+  it('uses h:mm:ss clock for live and finished steps', () => {
     const active = step({
       status: 'installing',
       startedAt: '2026-01-01T10:00:00.000Z',
     })
     expect(stepDurationLabel(active, Date.parse('2026-01-01T10:00:05.000Z'), 'running')).toBe(
-      '5.0s (running)',
+      '0:00:05',
     )
     expect(
       stepDurationLabel(active, Date.parse('2026-01-01T10:00:05.000Z'), 'waitingForInput'),
-    ).toBe('5.0s (running)')
-    expect(stepDurationLabel(active, Date.parse('2026-01-01T10:00:05.000Z'), 'paused')).toBe('0ms')
+    ).toBe('0:00:05')
+    expect(stepDurationLabel(active, Date.parse('2026-01-01T10:00:05.000Z'), 'paused')).toBe(
+      '0:00:00',
+    )
   })
 
   it('hides duration for failed steps', () => {

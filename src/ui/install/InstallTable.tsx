@@ -461,6 +461,7 @@ interface InstallTableRowProps {
   cursorStepId: string | null
   cursorLive: boolean
   runState: InstallRunState | null
+  followCursor: boolean
   tableActions: InstallTableActions | null
   setRowEl: (stepId: string, componentId: string, el: HTMLTableRowElement | null) => void
   onSelect: (stepId: string, componentId: string) => void
@@ -474,6 +475,7 @@ function InstallTableRow({
   cursorStepId,
   cursorLive,
   runState,
+  followCursor,
   tableActions,
   setRowEl,
   onSelect,
@@ -488,7 +490,7 @@ function InstallTableRow({
       key={row.stepId}
       ref={(el) => setRowEl(row.stepId, row.componentId, el)}
       role="row"
-      tabIndex={focused ? 0 : -1}
+      tabIndex={focused && followCursor ? 0 : -1}
       className={`install-row${selected ? ' selected' : ''}${atCursor ? ' install-cursor' : ''}${atCursor && cursorLive ? ' install-cursor-live' : ''}${row.hasBreakpoint ? ' install-breakpoint' : ''}${row.hasSnapshot ? ' install-snapshot' : ''}${focused ? ' focused' : ''} install-status-${row.status}`}
       onClick={() => onSelect(row.stepId, row.componentId)}
       onContextMenu={(e) => {
@@ -545,6 +547,8 @@ interface Props {
   jumpToCursorNonce?: number
   /** When true, selection changes scroll/focus the row (follow mode). */
   followCursor?: boolean
+  /** Block pointer/focus interaction (e.g. while console dock is resizing). */
+  interactionBlocked?: boolean
   tableActions: InstallTableActions | null
   onSelectStep: (stepId: string, componentId: string) => void
 }
@@ -561,6 +565,7 @@ export function InstallTable({
   hideInstalled,
   jumpToCursorNonce = 0,
   followCursor = false,
+  interactionBlocked = false,
   tableActions,
   onSelectStep,
 }: Props) {
@@ -662,7 +667,7 @@ export function InstallTable({
     if (!key) return
     const el = rowRefs.current.get(key)
     if (!el) return
-    if (document.activeElement !== el) el.focus()
+    if (document.activeElement !== el) el.focus({ preventScroll: true })
     pendingFocusKeyRef.current = null
   }, [])
 
@@ -747,6 +752,21 @@ export function InstallTable({
   }, [updateRangeFromContainer])
 
   useEffect(() => {
+    const container = scrollWrapRef.current
+    if (!container || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(() => {
+      updateRangeFromContainer()
+    })
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [updateRangeFromContainer])
+
+  useEffect(() => {
+    if (followCursor) return
+    pendingFocusKeyRef.current = null
+  }, [cursorStepId, followCursor, steps])
+
+  useEffect(() => {
     focusPendingRow()
   }, [focusPendingRow, rangeStart, rangeEndExclusive])
 
@@ -764,20 +784,16 @@ export function InstallTable({
       const row = visibleRows[bounded]
       if (!row) return
       scrollToIndex(bounded)
-      pendingFocusKeyRef.current = rowKey(row.stepId, row.componentId)
       onSelectStep(row.stepId, row.componentId)
-      requestAnimationFrame(() => focusPendingRow())
     },
-    [focusPendingRow, onSelectStep, rowKey, scrollToIndex, visibleRows],
+    [onSelectStep, scrollToIndex, visibleRows],
   )
 
   const selectRow = useCallback(
     (stepId: string, componentId: string) => {
-      pendingFocusKeyRef.current = rowKey(stepId, componentId)
       onSelectStep(stepId, componentId)
-      requestAnimationFrame(() => focusPendingRow())
     },
-    [focusPendingRow, onSelectStep, rowKey],
+    [onSelectStep],
   )
 
   useEffect(() => {
@@ -809,7 +825,7 @@ export function InstallTable({
   useEffect(() => {
     if (!jumpToCursorNonce || jumpToCursorNonce === lastJumpNonceRef.current) return
     lastJumpNonceRef.current = jumpToCursorNonce
-    if (!cursorStepId) return
+    if (!followCursor || !cursorStepId) return
     const idx = visibleRows.findIndex((r) => r.stepId === cursorStepId)
     if (idx < 0) return
     const row = visibleRows[idx]!
@@ -821,6 +837,7 @@ export function InstallTable({
   }, [
     cursorStepId,
     focusPendingRow,
+    followCursor,
     jumpToCursorNonce,
     rowKey,
     scrollToIndex,
@@ -875,8 +892,23 @@ export function InstallTable({
     }
   }
 
+  const handleTableScroll = useCallback(() => {
+    scheduleRangeRefresh()
+    if (followCursor) return
+    const container = scrollWrapRef.current
+    const active = document.activeElement
+    if (
+      container &&
+      active instanceof HTMLElement &&
+      active.classList.contains('install-row') &&
+      container.contains(active)
+    ) {
+      active.blur()
+    }
+  }, [followCursor, scheduleRangeRefresh])
+
   return (
-    <div className="install-table-wrap">
+    <div className={`install-table-wrap${interactionBlocked ? ' install-table-blocked' : ''}`}>
       <div
         id={INSTALL_TABLE_ID}
         className="mods-table-wrap install-table-scroll"
@@ -884,7 +916,7 @@ export function InstallTable({
         aria-label="Install steps"
         tabIndex={visibleRows.length === 0 ? 0 : -1}
         ref={scrollWrapRef}
-        onScroll={scheduleRangeRefresh}
+        onScroll={handleTableScroll}
         onKeyDown={handleTableKeyDown}
         onFocus={() => {
           if ((!selectedStepId || !selectedComponentId) && visibleRows[0]) {
@@ -938,6 +970,7 @@ export function InstallTable({
                 cursorStepId={cursorStepId}
                 cursorLive={cursorLive}
                 runState={runState}
+                followCursor={followCursor}
                 tableActions={tableActions}
                 setRowEl={setRowEl}
                 onSelect={selectRow}

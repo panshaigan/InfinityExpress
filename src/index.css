@@ -6535,6 +6535,15 @@ body.is-resizing-detail * {
   flex-direction: column;
 }
 
+.install-table-wrap.install-table-blocked {
+  pointer-events: none;
+  user-select: none;
+}
+
+.install-table-wrap.install-table-blocked .install-table-scroll {
+  overflow: hidden;
+}
+
 .install-table-toolbar {
   flex-shrink: 0;
   display: flex;
