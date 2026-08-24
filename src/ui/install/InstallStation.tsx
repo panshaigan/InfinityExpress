@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useInstallRun } from '../../hooks/useInstallRun'
-import {
-  formatPlayerDurationMs,
-  isStepDurationLive,
-  sumStepDurationsMs,
-} from '../../lib/install/formatDuration'
+import { isStepDurationLive, sumStepDurationsMs } from '../../lib/install/formatDuration'
 import { canUninstallBackState, nextActionableCursor, stepIndexById } from '../../lib/install/cursor'
 import { collectadjustmentsModIds } from '../../lib/install/weiduResolution'
 import {
@@ -41,6 +37,7 @@ import { InstallConsoleDock } from './InstallConsoleDock'
 import { InstallDetailPane } from './InstallDetailPane'
 import { InstallTable } from './InstallTable'
 import {
+  AutoSkipOnErrorsIcon,
   HideInstalledIcon,
   JumpToCursorIcon,
   PauseOnWarningsIcon,
@@ -53,6 +50,7 @@ import {
   SnapshotIcon,
   StopIcon,
 } from './InstallControlIcons'
+import { DurationClock } from './DurationClock'
 import { IconTip } from '../IconTip'
 import { useToast } from '../toasts/toastContext'
 import {
@@ -148,6 +146,9 @@ export function InstallStation({
   const [pauseOnWarnings, setPauseOnWarnings] = useState(
     () => initialInstallSession?.ui.pauseOnWarnings ?? false,
   )
+  const [autoSkipOnErrors, setAutoSkipOnErrors] = useState(
+    () => initialInstallSession?.ui.autoSkipOnErrors ?? false,
+  )
   const appDirs = readAppDirPaths()
   const weiduPath = readWeiduPath()
   void pathTick
@@ -203,6 +204,7 @@ export function InstallStation({
     weiduLogImport,
     active,
     pauseOnWarnings,
+    autoSkipOnErrors,
   })
 
   const installLock = useMemo(
@@ -281,6 +283,7 @@ export function InstallStation({
       selectedComponentId,
       hideInstalled,
       pauseOnWarnings,
+      autoSkipOnErrors,
       followCursor,
       runElapsedMs: sampledElapsedMs,
     })
@@ -293,6 +296,7 @@ export function InstallStation({
     game,
     hideInstalled,
     pauseOnWarnings,
+    autoSkipOnErrors,
     onInstallSessionChange,
     paused,
     run,
@@ -401,13 +405,17 @@ export function InstallStation({
   const installStarted = hasInstallStarted(run)
   const snapshotTarget = useMemo(() => {
     if (!game) return null
-    const step = run?.steps[run.cursor] ?? run?.steps[0]
-    const phase = step?.phase ?? 'single'
+    const steps = run?.steps ?? planSteps
+    const cursor = run?.cursor ?? nextActionableCursor(steps, 0)
+    const current = steps[cursor] ?? steps[0]
+    const previous = cursor > 0 ? steps[cursor - 1] : undefined
+    const step = previous ?? current
+    if (!step) return null
     return {
-      gameKey: gameFolderKeyForPhase(game, phase),
-      sourceDir: gameDirForPhase(game, phase, gameFolders),
+      gameKey: gameFolderKeyForPhase(game, step.phase),
+      sourceDir: gameDirForPhase(game, step.phase, gameFolders),
     }
-  }, [game, run, gameFolders])
+  }, [game, run, planSteps, gameFolders])
   const takeVanillaMissing =
     snapshotTarget != null && !hasVanillaForKey(vanillaRegistry, snapshotTarget.gameKey)
   const snapshotActionBusy = snapshotBusy || plannedSnapshotBusy || transportBusy
@@ -415,13 +423,18 @@ export function InstallStation({
     canSnapshot &&
     missingVanillas.length === 0 &&
     !snapshotActionBusy &&
-    installStarted
+    installStarted &&
+    !installLive
   const restartTip =
     missingVanillas.length > 0
       ? 'Set vanilla backup in Settings'
       : !installStarted
         ? 'Start installation first'
-        : 'Restart from vanilla backup'
+        : installLive
+          ? 'Pause or stop installation first'
+          : snapshotActionBusy
+            ? 'Snapshot in progress'
+            : 'Restart from vanilla backup'
   const canTakeSnapshot =
     canSnapshot &&
     !!snapshotTarget?.sourceDir &&
@@ -959,7 +972,7 @@ export function InstallStation({
                 className="install-run-duration"
                 aria-label="Total install duration"
               >
-                {formatPlayerDurationMs(runElapsedMs)}
+                <DurationClock ms={runElapsedMs} />
               </span>
               <button
                 type="button"
@@ -1069,6 +1082,18 @@ export function InstallStation({
                   <PauseOnWarningsIcon />
                 </button>
                 <IconTip>Pause on installed with warnings</IconTip>
+              </span>
+              <span className="install-action-icon-wrap has-icon-tip">
+                <button
+                  type="button"
+                  className={`install-action-icon-btn${autoSkipOnErrors ? ' active' : ''}`}
+                  aria-pressed={autoSkipOnErrors}
+                  aria-label="Auto skip on errors"
+                  onClick={() => setAutoSkipOnErrors((v) => !v)}
+                >
+                  <AutoSkipOnErrorsIcon />
+                </button>
+                <IconTip>Auto skip on errors</IconTip>
               </span>
               <span className="install-action-icon-wrap has-icon-tip">
                 <button

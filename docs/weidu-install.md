@@ -46,11 +46,12 @@ Toolbar in `InstallStation.tsx`; state machine in `useInstallRun.ts`.
 | **Stop** | `running` or `waitingForInput` | Kills the WeiDU child, then runs `--force-uninstall` via the same `setup-{weiduId}.exe` as install; resets the interrupted step to `queued`; **keeps cursor**; `runState: 'stopped'`. Less safe than Pause (tooltip says so). |
 | **Skip** | `idle` / `paused` / `stopped` / `waitingForInput` / `failed` (or before first Play); at least one step after the cursor; cursor step not already finished | Marks the package at the cursor as `skipped`, advances cursor, stays halted — does **not** auto-continue. Creates an idle run via `ensureIdleRun()` when used before Play. |
 | **Previous** | `idle` / `paused` / `stopped` / `failed` (or before first Play); `cursor > 0` | Confirms, then moves cursor back one install step, force-uninstalls that package via `setup-{weiduId}.exe`, resets it to `queued`. Creates an idle run via `ensureIdleRun()` when used before Play. |
-| **Restart** | Vanilla exists; install has started; not mid-copy / WeiDU live | Restores the vanilla backup (EET: stage-only BG2 or full BG1+BG2) and resets the plan. |
+| **Restart** | Vanilla exists; install has started; not mid-copy / WeiDU live (`running` / `waitingForInput`) | Restores the vanilla backup (EET: stage-only BG2 or full BG1+BG2) and resets the plan. Enabled at **paused** / **stopped** / **failed** / **completed**. |
 | **Hide installed** | Always | Toolbar icon: hides rows with status `succeeded` / `alreadyInstalled` from the plan table. Persisted in the install session. |
 | **Follow install cursor** | Cursor step exists | Toolbar toggle (next to Hide installed). When **on**, selection and table scroll track the install cursor as it advances. When **off**, selection stays put (row click also turns follow off). Turning **on** jumps to the cursor once. Persisted in the install session. |
 | **Pause on warnings** | Always | Toolbar icon (next to Hide installed). When **on**, after a step finishes with WeiDU **exit code 3** (installed with warnings), the run pauses like Pause (finish current step → `paused`). When **off**, exit 3 continues as today (`succeededWithWarnings`). Does not auto-pause on exit 0 with incomplete WeiDU.log verify. Persisted in the install session. |
-| **Take snapshot** | Vanilla exists for the current phase game; not mid-copy / WeiDU live | Name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`), then immediately copies that game folder (`createNamedBackup`, full copy). |
+| **Auto skip on errors** | Always | Toolbar icon (next to Pause on warnings). When **on**, a WeiDU **failed** step stays `failed` in the table and the run continues to the next package. When **off**, failure halts (`runState: failed`). Persisted in the install session. |
+| **Take snapshot** | Vanilla exists for the snapshot target folder; not mid-copy / WeiDU live | Name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`), then immediately copies that game folder (`createNamedBackup`, full copy). Target is the **previous** plan step’s folder (cursor on the first EET-phase package → last Pre-EET / BG1). First plan step (no previous) uses the current step’s folder. |
 | **Restore snapshot** | At least one named snapshot exists; not mid-copy / WeiDU live | Opens the snapshot table ([`RestoreSnapshotDialog.tsx`](../src/ui/install/RestoreSnapshotDialog.tsx)). Disabled with “No snapshots yet” when the list is empty. |
 
 `InstallRunState` includes `stopped` (hard stop after kill/cleanup), separate from soft `paused`.
@@ -110,9 +111,9 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 | `0` + log not verified | Soft success | `succeededWithWarnings` | yes |
 | `3` | Installed with warnings | `succeededWithWarnings` | yes |
 | stdout/results contain `SKIPPING:` | WeiDU skipped the component (predicate / game check) | `skipped` | yes |
-| `2` (and other non-0/3) | Failed | `failed` | no |
+| `2` (and other non-0/3) | Failed | `failed` | no (yes if **Auto skip on errors**) |
 
-**Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). List probes (`--list-components-json`, `--list-languages`) stay on the Commands tab as argv only — their JSON/language dumps are not emitted to WeiDU or Results. UI keeps only the last ~800 lines per tab (live append and reload); full history stays on disk. On **project open** (when not mid-WeiDU), those tails are loaded from disk into all three tabs; later phase switches do not reload. See `.cursor/rules/weidu-console-tabs.mdc`.
+**Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). List probes (`--list-components-json`, `--list-languages`) stay on the Commands tab as argv only — their JSON/language dumps are not emitted to WeiDU or Results. Header **Response** icon shows the stdin field on demand (auto-opens when WeiDU waits for input). UI keeps only the last ~800 lines per tab (live append and reload); full history stays on disk. On **project open** (when not mid-WeiDU), those tails are loaded from disk into all three tabs; later phase switches do not reload. See `.cursor/rules/weidu-console-tabs.mdc`.
 
 **Install run persistence:** Full install session (`InstallRun` statuses/cursor/durations/breakpoints/log paths + UI toggles) is stored as `{runDir}/run-state.json`. Project localStorage keeps only `installRef: { runId, logDir }`. Legacy inlined `session.install` blobs migrate to disk on project open.
 
@@ -162,9 +163,9 @@ Project disk folders use `meta.folderName` (from the display name); UUID `meta.i
 | `vanilla` | `backups/{gameKey}/vanilla/` | One per game key. Required before install Start. Recreate replaces existing. |
 | `snapshot` | `backups/{gameKey}/{name}/` | Named; same name replaces. Reserved names: `vanilla`, `baseline`, `snapshots`, `manifest.json`. Only allowed after vanilla exists for that key. |
 
-Named snapshots are created from the Install toolbar (**Take snapshot**) or as planned row snapshots. Both copy the current phase’s live game folder (full copy). Vanilla create/recreate stays in Settings (and the new-project wizard). If vanilla is missing on Play, Install opens Settings.
+Named snapshots are created from the Install toolbar (**Take snapshot**) or as planned row snapshots. Take snapshot copies the **previous** plan step’s live game folder (full copy); planned row snapshots still copy the marked step’s own phase folder. Vanilla create/recreate stays in Settings (and the new-project wizard). If vanilla is missing on Play, Install opens Settings.
 
-**EET:** Start requires **both** `bg1` and `bg2` vanillas. A vanilla created earlier under a non-EET BG1/BG2 install counts. Take / planned snapshot uses the current phase folder (`eet1` → BG1, `eet` → BG2). Restore list merges both keys (Game column). **Restart** offers EET stage only (BG2) or full installation (BG1 + BG2).
+**EET:** Start requires **both** `bg1` and `bg2` vanillas. A vanilla created earlier under a non-EET BG1/BG2 install counts. Take snapshot uses the previous step’s folder (first `eet` package → last `eet1` / BG1). Planned snapshots still map `eet1` → BG1, `eet` → BG2. Restore list merges both keys (Game column). **Restart** offers EET stage only (BG2) or full installation (BG1 + BG2); it is disabled while the install is running or waiting for input.
 
 ### Operations & progress
 

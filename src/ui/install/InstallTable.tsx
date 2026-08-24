@@ -11,7 +11,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { canMoveCursorImmediately, canSetBreakpoint, isStepDone } from '../../lib/install/cursor'
-import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
+import { isStepDurationLive, stepDurationMs } from '../../lib/install/formatDuration'
 import type {
   InstallRunState,
   InstallStep,
@@ -29,6 +29,7 @@ import {
 } from '../../lib/ui/gameFolderPrefs'
 import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
 import { IconTip } from '../IconTip'
+import { DurationClock } from './DurationClock'
 import {
   BreakpointIcon,
   MoveCursorIcon,
@@ -449,7 +450,11 @@ function DurationCell({
   }, [live])
 
   if (!step) return <span className="mods-cell-clip">-</span>
-  return <span className="mods-cell-clip">{stepDurationLabel(step, nowMs, runState)}</span>
+  return (
+    <span className="mods-cell-clip">
+      <DurationClock ms={stepDurationMs(step, nowMs, runState)} />
+    </span>
+  )
 }
 
 const DurationCellMemo = memo(DurationCell)

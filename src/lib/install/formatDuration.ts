@@ -17,13 +17,23 @@ export function formatDurationMs(ms: number): string {
   return `${minutes}m ${seconds}s`
 }
 
+export function playerDurationParts(ms: number): {
+  hours: number
+  minutes: number
+  seconds: number
+} {
+  if (!Number.isFinite(ms) || ms < 0) return { hours: 0, minutes: 0, seconds: 0 }
+  const totalSec = Math.floor(ms / 1000)
+  return {
+    hours: Math.floor(totalSec / 3600),
+    minutes: Math.floor((totalSec % 3600) / 60),
+    seconds: totalSec % 60,
+  }
+}
+
 /** Media-player style clock: always `h:mm:ss`. */
 export function formatPlayerDurationMs(ms: number): string {
-  if (!Number.isFinite(ms) || ms < 0) return '0:00:00'
-  const totalSec = Math.floor(ms / 1000)
-  const hours = Math.floor(totalSec / 3600)
-  const minutes = Math.floor((totalSec % 3600) / 60)
-  const seconds = totalSec % 60
+  const { hours, minutes, seconds } = playerDurationParts(ms)
   return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
 

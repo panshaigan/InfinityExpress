@@ -115,6 +115,7 @@ describe('appSessionPrefs', () => {
       selectedComponentId: 'comp-a',
       hideInstalled: false,
       pauseOnWarnings: false,
+      autoSkipOnErrors: false,
       followCursor: false,
       runElapsedMs: 1000,
     })
@@ -266,6 +267,7 @@ describe('appSessionPrefs', () => {
       selectedComponentId: 'comp-b',
       hideInstalled: false,
       pauseOnWarnings: false,
+      autoSkipOnErrors: false,
       followCursor: false,
       runElapsedMs: 0,
     })

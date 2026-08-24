@@ -6425,6 +6425,34 @@ body.is-resizing-detail * {
   user-select: none;
 }
 
+.install-duration {
+  font-variant-numeric: tabular-nums;
+}
+
+.install-duration-sep {
+  color: color-mix(in srgb, var(--muted) 55%, transparent);
+}
+
+.install-duration-h {
+  color: color-mix(in srgb, var(--muted) 70%, var(--line));
+}
+
+.install-duration-h.is-set {
+  color: color-mix(in srgb, var(--accent) 55%, var(--muted));
+}
+
+.install-duration-m {
+  color: color-mix(in srgb, var(--muted) 85%, var(--line));
+}
+
+.install-duration-m.is-set {
+  color: color-mix(in srgb, var(--ok) 65%, var(--ink));
+}
+
+.install-duration-s {
+  color: color-mix(in srgb, var(--ink) 78%, var(--muted));
+}
+
 .install-action-icon-wrap {
   display: inline-flex;
   position: relative;
@@ -6928,7 +6956,8 @@ body.is-resizing-detail * {
   gap: 0.4rem;
 }
 
-.install-console-open-log-btn {
+.install-console-open-log-btn,
+.install-console-response-btn {
   flex-shrink: 0;
 }
 

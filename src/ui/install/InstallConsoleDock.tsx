@@ -13,7 +13,7 @@ import { INSTALL_CONSOLE_MAX_LINES } from '../../lib/install/consoleLimits'
 import { IconTip } from '../IconTip'
 import { OutlinedTextField } from '../OutlinedTextField'
 import { ChevronDoubleDownIcon, ChevronDoubleUpIcon } from './InstallControlIcons'
-import { OpenLogFolderIcon } from './InstallLogIcons'
+import { OpenLogFolderIcon, ResponseInputIcon } from './InstallLogIcons'
 
 type ConsoleTab = 'output' | 'commands' | 'results'
 
@@ -47,6 +47,7 @@ export function InstallConsoleDock({
   const [height, setHeight] = useState(() => readInstallConsoleHeight())
   const [input, setInput] = useState('')
   const [tab, setTab] = useState<ConsoleTab>('output')
+  const [responseOpen, setResponseOpen] = useState(false)
   const [responseCollapsed, setResponseCollapsed] = useState(false)
   const preRef = useRef<HTMLPreElement>(null)
   const dragRef = useRef<{ startY: number; startH: number } | null>(null)
@@ -64,7 +65,9 @@ export function InstallConsoleDock({
 
   useEffect(() => {
     if (waitingForInput && !prevWaitingRef.current) {
+      setResponseOpen(true)
       setResponseCollapsed(false)
+      setTab('output')
     }
     prevWaitingRef.current = waitingForInput
   }, [waitingForInput])
@@ -96,7 +99,8 @@ export function InstallConsoleDock({
   )
 
   const collapseLabel = collapsed ? 'Show output' : 'Hide output'
-  const showResponse = waitingForInput && tab === 'output'
+  const showResponse = responseOpen && tab === 'output' && !collapsed
+  const responseTip = showResponse && !responseCollapsed ? 'Hide response' : 'Show response'
   const canOpenLogFolder = isDesktopApp() && !!logDir?.trim()
   const consoleTruncated =
     tab === 'output' && lines.length >= INSTALL_CONSOLE_MAX_LINES
@@ -176,6 +180,27 @@ export function InstallConsoleDock({
             <IconTip>Open log folder</IconTip>
           </button>
         ) : null}
+        <button
+          type="button"
+          className={`btn secondary install-control-btn install-console-response-btn has-icon-tip${
+            waitingForInput || responseOpen ? ' active' : ''
+          }`}
+          aria-pressed={responseOpen}
+          aria-label={responseTip}
+          onClick={() => {
+            if (collapsed) onToggleCollapsed()
+            if (tab !== 'output' || collapsed || !responseOpen) {
+              setTab('output')
+              setResponseOpen(true)
+              setResponseCollapsed(false)
+              return
+            }
+            setResponseOpen(false)
+          }}
+        >
+          <ResponseInputIcon />
+          <IconTip>{responseTip}</IconTip>
+        </button>
         <span className="install-console-status" role="status" aria-live="polite">
           {displayStatus}
         </span>
@@ -249,7 +274,7 @@ export function InstallConsoleDock({
                     {responseCollapsed ? 'Show response' : 'Hide response'}
                   </IconTip>
                 </button>
-                {responseCollapsed ? (
+                {responseCollapsed && waitingForInput ? (
                   <span className="install-console-response-needed">Response needed</span>
                 ) : null}
               </div>

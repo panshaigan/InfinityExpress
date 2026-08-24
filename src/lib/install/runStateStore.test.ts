@@ -59,6 +59,7 @@ describe('runStateStore', () => {
       selectedComponentId: 'comp-a',
       hideInstalled: false,
       pauseOnWarnings: false,
+      autoSkipOnErrors: false,
       followCursor: true,
       runElapsedMs: 1000,
     })
@@ -78,6 +79,7 @@ describe('runStateStore', () => {
       selectedComponentId: null,
       hideInstalled: false,
       pauseOnWarnings: false,
+      autoSkipOnErrors: false,
       followCursor: false,
       runElapsedMs: 0,
     })

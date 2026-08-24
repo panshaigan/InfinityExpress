@@ -157,6 +157,8 @@ export function useInstallRun(options: {
   active?: boolean
   /** When true, pause after a step with WeiDU exit code 3 (installed with warnings). */
   pauseOnWarnings?: boolean
+  /** When true, keep a failed step as Failed and continue to the next package. */
+  autoSkipOnErrors?: boolean
 }) {
   const {
     model,
@@ -168,9 +170,12 @@ export function useInstallRun(options: {
     initialInstallState,
     weiduLogImport = null,
     pauseOnWarnings = false,
+    autoSkipOnErrors = false,
   } = options
   const pauseOnWarningsRef = useRef(pauseOnWarnings)
   pauseOnWarningsRef.current = pauseOnWarnings
+  const autoSkipOnErrorsRef = useRef(autoSkipOnErrors)
+  autoSkipOnErrorsRef.current = autoSkipOnErrors
   const [run, setRun] = useState<InstallRun | null>(() => {
     const session = initialInstallState?.installSession
     return session?.run ?? null
@@ -1308,11 +1313,20 @@ export function useInstallRun(options: {
               installMs: result.durationMs,
             })
 
+            const haltOnFail =
+              status === 'failed' && !autoSkipOnErrorsRef.current
+            const autoSkippedFail =
+              status === 'failed' && autoSkipOnErrorsRef.current
+            if (autoSkippedFail) {
+              appendCommandLine(
+                `Auto-skipped after error: ${step.modId} (${step.componentId})`,
+              )
+            }
             const finished = finishStepIteration(
               current,
               i,
               step,
-              status === 'failed',
+              haltOnFail,
               status !== 'failed' &&
                 status !== 'skipped' &&
                 result.exitCode === 3 &&
@@ -1356,6 +1370,18 @@ export function useInstallRun(options: {
               },
               runRef.current,
             )
+            if (autoSkipOnErrorsRef.current) {
+              appendCommandLine(
+                `Auto-skipped after error: ${step.modId} (${step.componentId})`,
+              )
+              const finished = finishStepIteration(current, i, step, false)
+              current = finished.current
+              if (finished.shouldExit) {
+                runningRef.current = false
+                return
+              }
+              continue
+            }
             setActiveStepId(step.stepId)
             setRun({ ...current, runState: 'failed' })
             runningRef.current = false

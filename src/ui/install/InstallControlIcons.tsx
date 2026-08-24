@@ -198,6 +198,20 @@ export function PauseOnWarningsIcon() {
   )
 }
 
+/** Skip-next plus error mark — continue past failed WeiDU steps. */
+export function AutoSkipOnErrorsIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path fill="currentColor" d="M1.6 3.35v9.3L8.85 8 1.6 3.35Z" />
+      <path fill="currentColor" d="M10.1 3.35h1.75v9.3H10.1z" />
+      <path
+        fill="currentColor"
+        d="M14.35 4.15a.6.6 0 0 1 0 .85L13.2 6.15l1.15 1.15a.6.6 0 1 1-.85.85L12.35 7l-1.15 1.15a.6.6 0 1 1-.85-.85L11.5 6.15 10.35 5a.6.6 0 1 1 .85-.85l1.15 1.15 1.15-1.15a.6.6 0 0 1 .85 0Z"
+      />
+    </svg>
+  )
+}
+
 /** Double chevron down — collapse bottom console panel. */
 export function ChevronDoubleDownIcon() {
   return (

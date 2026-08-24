@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   isStepDurationLive,
+  playerDurationParts,
   stepDurationLabel,
   stepDurationMs,
   sumStepDurationsMs,
@@ -46,6 +47,19 @@ describe('isStepDurationLive', () => {
     })
     expect(isStepDurationLive(halted, 'running')).toBe(false)
     expect(isStepDurationLive(halted, 'paused')).toBe(false)
+  })
+})
+
+describe('playerDurationParts', () => {
+  it('splits hours, minutes, and seconds', () => {
+    expect(playerDurationParts(5_000)).toEqual({ hours: 0, minutes: 0, seconds: 5 })
+    expect(playerDurationParts(125_000)).toEqual({ hours: 0, minutes: 2, seconds: 5 })
+    expect(playerDurationParts(3_661_000)).toEqual({ hours: 1, minutes: 1, seconds: 1 })
+  })
+
+  it('clamps invalid values to zeros', () => {
+    expect(playerDurationParts(-10)).toEqual({ hours: 0, minutes: 0, seconds: 0 })
+    expect(playerDurationParts(Number.NaN)).toEqual({ hours: 0, minutes: 0, seconds: 0 })
   })
 })
 

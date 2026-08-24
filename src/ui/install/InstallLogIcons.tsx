@@ -44,6 +44,18 @@ export function ResultsLogIcon() {
   )
 }
 
+/** Reply / stdin field — show the console Response input. */
+export function ResponseInputIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M2.5 3A1.5 1.5 0 0 0 1 4.5v5A1.5 1.5 0 0 0 2.5 11H4v2.15a.6.6 0 0 0 1.02.43L7.7 11H13.5A1.5 1.5 0 0 0 15 9.5v-5A1.5 1.5 0 0 0 13.5 3h-11ZM2.5 4.5h11v5h-6.05L5.5 11.2V9.5H2.5v-5Z"
+      />
+    </svg>
+  )
+}
+
 export function OpenLogFolderIcon() {
   return (
     <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">

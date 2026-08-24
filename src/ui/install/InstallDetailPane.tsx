@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import type { InstallRunState, InstallStep } from '../../lib/install/types'
 import { consoleLineTone } from '../../lib/install/consoleLineHighlight'
-import { isStepDurationLive, stepDurationLabel } from '../../lib/install/formatDuration'
+import { isStepDurationLive, stepDurationMs } from '../../lib/install/formatDuration'
 import { readTextFile, fileIsNonempty } from '../../lib/desktop/fsDialogs'
 import {
   anyStepStreamNonempty,
@@ -17,6 +17,7 @@ import type { InstallSequenceModel } from '../../lib/xml/schema'
 import { isHttpUrl } from '../../lib/url'
 import { DetailResizeHandle } from '../DetailResizeHandle'
 import { IconTip } from '../IconTip'
+import { DurationClock } from './DurationClock'
 import { InstallLogDialog } from './InstallLogDialog'
 import {
   DebugLogIcon,
@@ -263,7 +264,7 @@ export function InstallDetailPane({
     : undefined
   const eff = mod ? effectiveModFields(mod) : null
   const durationLive = step != null && isStepDurationLive(step, runState)
-  const durationLabel = step ? stepDurationLabel(step, nowMs, runState) : null
+  const durationMs = step ? stepDurationMs(step, nowMs, runState) : null
   const stepProcessed = step != null && PROCESSED.has(step.status)
   const stepDir =
     stepDirFromLogPath(step?.stdoutLogPath) ??
@@ -544,7 +545,9 @@ export function InstallDetailPane({
                             {lastResultLine ?? '—'}
                           </span>
                         </Field>
-                        <Field label="Duration">{durationLabel ?? '—'}</Field>
+                        <Field label="Duration">
+                          <DurationClock ms={durationMs} />
+                        </Field>
                         {step.warnings.length > 0 ? (
                           <Field label="Warnings">
                             <ul className="install-detail-list">
