@@ -1289,6 +1289,7 @@ function AppShell() {
               onBusyChange={onModsBusyChange}
               onExitBlockingChange={setModsBlocking}
               installLock={installLock}
+              visible={appPhase === 'mods'}
             />
           </div>
         </div>

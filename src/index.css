@@ -5396,7 +5396,7 @@ body.is-resizing-detail * {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.65rem 0.7rem;
-  padding-top: 0.45rem;
+  padding: 0.45rem;
   position: relative;
   z-index: 5;
   width: 100%;

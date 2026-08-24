@@ -329,8 +329,7 @@ export function ModsToolbar({
         </span>
       </div>
 
-      {!journeyLocked ? (
-        <div className="mods-facets">
+      <div className="mods-facets">
           <label className="mods-search">
             <span className="visually-hidden">Search mods</span>
             <input
@@ -436,8 +435,7 @@ export function ModsToolbar({
               </span>
             </button>
           ) : null}
-        </div>
-      ) : null}
+      </div>
     </div>
   )
 }

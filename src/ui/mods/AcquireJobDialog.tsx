@@ -86,7 +86,6 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
   const titleId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
   const cancelRef = useRef<HTMLButtonElement>(null)
-  const logRef = useRef<HTMLDivElement>(null)
   const [hideUpToDate, setHideUpToDate] = useState(true)
 
   const dismiss = job.running ? onMinimize : onClose
@@ -118,13 +117,6 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [job.open, job.running, dismiss])
-
-  useEffect(() => {
-    if (!job.open) return
-    const el = logRef.current
-    if (!el) return
-    el.scrollTop = el.scrollHeight
-  }, [visibleEntries, job.progress, job.open])
 
   if (!job.open) return null
 
@@ -212,7 +204,7 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
             ) : null}
           </label>
 
-          <div className="acquire-job-log" ref={logRef} role="log">
+          <div className="acquire-job-log" role="log">
             {visibleEntries.map((entry) => (
               <div
                 key={entry.codename}

@@ -19,8 +19,17 @@ import {
   formatBytes,
   type WorkingMod,
 } from '../lib/mods/loadMods'
+import { modsByCodename } from '../lib/mods/catalog'
+import {
+  readUserCatalogStore,
+  workingModsFromStore,
+} from '../lib/mods/userCatalog'
 import { readGithubToken } from '../lib/ui/githubTokenPrefs'
 import { readAppDirPaths } from '../lib/ui/appDirPrefs'
+
+function workingModsSnapshot(): WorkingMod[] {
+  return workingModsFromStore(readUserCatalogStore(), modsByCodename)
+}
 
 export type JobKind = 'check' | 'acquire'
 
@@ -245,7 +254,18 @@ export function useModAcquireJob(args: {
 
       cancelRef.current = false
       const token = readGithubToken()
-      const targets = modsRef.current.filter((m) => codenames.includes(m.codename))
+      await refreshDiskStatus()
+      const fromStore = new Map(
+        workingModsSnapshot().map((m) => [m.codename, m]),
+      )
+      const targets = codenames
+        .map(
+          (code) =>
+            fromStore.get(code) ??
+            modsRef.current.find((m) => m.codename === code),
+        )
+        .filter((m): m is WorkingMod => m != null)
+      if (targets.length === 0) return
       setJob({
         kind: 'check',
         running: true,
@@ -370,11 +390,12 @@ export function useModAcquireJob(args: {
         summary,
       )
     },
-    [finishCancelled, notifyFinished, patchDiskStatus, setEntry],
+    [finishCancelled, notifyFinished, patchDiskStatus, refreshDiskStatus, setEntry],
   )
 
-  const requestAcquire = useCallback((codenames: string[]) => {
-    const targets = modsNeedingAcquire(modsRef.current, codenames)
+  const requestAcquire = useCallback(async (codenames: string[]) => {
+    await refreshDiskStatus()
+    const targets = modsNeedingAcquire(workingModsSnapshot(), codenames)
     if (targets.length === 0) return
 
     const downloadDir = readAppDirPaths().modsDownloadDir.trim()
@@ -425,13 +446,18 @@ export function useModAcquireJob(args: {
       totalLabel: parts[0] ?? 'unknown',
       detail: parts.slice(1).join(' · '),
     })
-  }, [notifyFinished])
+  }, [notifyFinished, refreshDiskStatus])
 
   const confirmAcquire = useCallback(async () => {
     const confirm = sizeConfirm
     setSizeConfirm(null)
     if (!confirm) return
-    const targets = confirm.targets
+    await refreshDiskStatus()
+    const latest = workingModsSnapshot()
+    const latestByCode = new Map(latest.map((m) => [m.codename, m]))
+    const targets = confirm.targets.map(
+      (m) => latestByCode.get(m.codename) ?? m,
+    )
     const downloadDir = readAppDirPaths().modsDownloadDir.trim()
     if (!downloadDir) {
       onMissingDownloadDirRef.current?.()

@@ -77,6 +77,8 @@ interface Props {
   onBusyChange?: (busy: boolean) => void
   onExitBlockingChange?: (busy: boolean) => void
   installLock: InstallLock
+  /** True while the Mods phase is showing (station stays mounted when hidden). */
+  visible: boolean
 }
 
 export function ModsStation({
@@ -102,6 +104,7 @@ export function ModsStation({
   onBusyChange,
   onExitBlockingChange,
   installLock,
+  visible,
 }: Props) {
   const installFrozen = installLock.mode === 'working'
   const modLocked = useCallback(
@@ -149,6 +152,16 @@ export function ModsStation({
     onMissingDownloadDir: onOpenSettings,
     onJobFinished: pushToast,
   })
+
+  useEffect(() => {
+    if (!visible) return
+    void onRefreshDiskStatus()
+    function onWindowFocus() {
+      void onRefreshDiskStatus()
+    }
+    window.addEventListener('focus', onWindowFocus)
+    return () => window.removeEventListener('focus', onWindowFocus)
+  }, [visible, onRefreshDiskStatus])
 
   useEffect(() => {
     onBusyChange?.(acquire.job.running)
@@ -538,7 +551,7 @@ export function ModsStation({
               acquireDisabled={installFrozen || selectedAcquireKind === 'none'}
               jobRunning={jobRunning}
               actionsFrozen={installFrozen}
-              onAcquire={() => acquire.requestAcquire(acquirableSelectedList)}
+              onAcquire={() => void acquire.requestAcquire(acquirableSelectedList)}
               onCheckUpdates={() => {
                 void acquire.runCheck(checkableSelectedList)
               }}
@@ -580,7 +593,7 @@ export function ModsStation({
                 jobRunning,
                 onAcquire: (codename) => {
                   if (modLocked(codename) || installFrozen) return
-                  acquire.requestAcquire([codename])
+                  void acquire.requestAcquire([codename])
                 },
                 onCheckUpdates: (codename) => {
                   if (installFrozen || modLocked(codename)) return
@@ -642,7 +655,7 @@ export function ModsStation({
           jobRunning={jobRunning}
           onAcquire={() =>
             focusedMod && !modLocked(focusedMod.codename) &&
-            acquire.requestAcquire([focusedMod.codename])
+            void acquire.requestAcquire([focusedMod.codename])
           }
           onCheckUpdates={() => {
             if (
