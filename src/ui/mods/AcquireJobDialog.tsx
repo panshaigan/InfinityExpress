@@ -106,8 +106,7 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
 
   useEffect(() => {
     if (!job.open) return
-    if (job.running) cancelRef.current?.focus()
-    else panelRef.current?.focus()
+    cancelRef.current?.focus()
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault()
@@ -157,7 +156,16 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
                 Cancel
                 <IconTip>Stop the job and skip remaining mods</IconTip>
               </button>
-            ) : null}
+            ) : (
+              <button
+                ref={cancelRef}
+                type="button"
+                className="btn secondary"
+                onClick={onClose}
+              >
+                Close
+              </button>
+            )}
           </div>
         </div>
 
