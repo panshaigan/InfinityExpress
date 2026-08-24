@@ -11,17 +11,9 @@ import { ClearFiltersIcon } from '../mods/ModsActionIcons'
 
 export const INSTALL_SEARCH_ID = 'install-search'
 
-type FacetId = 'status' | 'category' | 'mod'
-
-interface FacetOptions {
-  categories: string[]
-  mods: { modId: string; label: string }[]
-}
-
 interface Props {
   filters: InstallTableFilters
   onChange: (next: InstallTableFilters) => void
-  facets: FacetOptions
   visibleCount: number
   totalCount: number
 }
@@ -29,20 +21,12 @@ interface Props {
 export function InstallFiltersBar({
   filters,
   onChange,
-  facets,
   visibleCount,
   totalCount,
 }: Props) {
-  const [openFacet, setOpenFacet] = useState<FacetId | null>(null)
+  const [statusOpen, setStatusOpen] = useState(false)
   const hasFacetFilters =
-    filters.statuses.length > 0 ||
-    filters.categories.length > 0 ||
-    filters.modIds.length > 0 ||
-    !!filters.search.trim()
-
-  function facetOpenChange(id: FacetId, open: boolean) {
-    setOpenFacet(open ? id : null)
-  }
+    filters.statuses.length > 0 || !!filters.search.trim()
 
   return (
     <div className="mods-facets install-facets">
@@ -60,8 +44,8 @@ export function InstallFiltersBar({
       <OutlinedSelect
         label="Status"
         value={filters.statuses[0] ?? ''}
-        open={openFacet === 'status'}
-        onOpenChange={(open) => facetOpenChange('status', open)}
+        open={statusOpen}
+        onOpenChange={setStatusOpen}
         onChange={(next) =>
           onChange({
             ...filters,
@@ -74,38 +58,6 @@ export function InstallFiltersBar({
             value: s,
             label: STATUS_LABEL[s],
           })),
-        ]}
-      />
-      <OutlinedSelect
-        label="Category"
-        value={filters.categories[0] ?? ''}
-        open={openFacet === 'category'}
-        onOpenChange={(open) => facetOpenChange('category', open)}
-        onChange={(next) =>
-          onChange({
-            ...filters,
-            categories: next ? [next] : [],
-          })
-        }
-        options={[
-          { value: '', label: 'All' },
-          ...facets.categories.map((c) => ({ value: c, label: c })),
-        ]}
-      />
-      <OutlinedSelect
-        label="Mod"
-        value={filters.modIds[0] ?? ''}
-        open={openFacet === 'mod'}
-        onOpenChange={(open) => facetOpenChange('mod', open)}
-        onChange={(next) =>
-          onChange({
-            ...filters,
-            modIds: next ? [next] : [],
-          })
-        }
-        options={[
-          { value: '', label: 'All' },
-          ...facets.mods.map((m) => ({ value: m.modId, label: m.label })),
         ]}
       />
       {hasFacetFilters ? (

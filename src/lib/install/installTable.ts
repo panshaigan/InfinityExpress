@@ -43,8 +43,6 @@ export type InstallSortDir = 'asc' | 'desc'
 export interface InstallTableFilters {
   search: string
   statuses: ComponentRunStatus[]
-  categories: string[]
-  modIds: string[]
 }
 
 export interface InstallFilterRow {
@@ -65,8 +63,6 @@ export function createDefaultInstallTableFilters(): InstallTableFilters {
   return {
     search: '',
     statuses: [],
-    categories: [],
-    modIds: [],
   }
 }
 
@@ -100,25 +96,6 @@ export function buildInstallFilterRows(
   })
 }
 
-export function collectInstallFacetOptions(rows: readonly InstallFilterRow[]): {
-  categories: string[]
-  mods: { modId: string; label: string }[]
-} {
-  const categories = new Set<string>()
-  const mods = new Map<string, string>()
-  for (const row of rows) {
-    if (row.category) categories.add(row.category)
-    if (!mods.has(row.modId)) mods.set(row.modId, row.modDisplay)
-  }
-  const collator = new Intl.Collator(undefined, { sensitivity: 'base' })
-  return {
-    categories: [...categories].sort(collator.compare),
-    mods: [...mods.entries()]
-      .map(([modId, label]) => ({ modId, label }))
-      .sort((a, b) => collator.compare(a.label, b.label)),
-  }
-}
-
 function matchesSearch(row: InstallFilterRow, search: string): boolean {
   const q = search.trim().toLowerCase()
   if (!q) return true
@@ -134,10 +111,6 @@ export function filterInstallRows(
   hideInstalled = false,
 ): InstallFilterRow[] {
   const statuses = filters.statuses.length ? new Set(filters.statuses) : null
-  const categories = filters.categories.length
-    ? new Set(filters.categories)
-    : null
-  const modIds = filters.modIds.length ? new Set(filters.modIds) : null
 
   return rows.filter((row) => {
     if (
@@ -148,8 +121,6 @@ export function filterInstallRows(
     }
     if (!matchesSearch(row, filters.search)) return false
     if (statuses && !statuses.has(row.status)) return false
-    if (categories && !categories.has(row.category)) return false
-    if (modIds && !modIds.has(row.modId)) return false
     return true
   })
 }
@@ -192,6 +163,9 @@ export function sortInstallRows(
   })
 }
 
+/**
+ * Display-only. Play / Skip / cursor still walk `InstallRun.steps` in plan order.
+ */
 export function filterAndSortInstallRows(
   rows: readonly InstallFilterRow[],
   filters: InstallTableFilters,

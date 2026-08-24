@@ -72,7 +72,6 @@ import {
 import { defaultSnapshotName } from '../../lib/install/snapshotName'
 import {
   buildInstallFilterRows,
-  collectInstallFacetOptions,
   createDefaultInstallTableFilters,
   filterInstallRows,
   type InstallSortDir,
@@ -278,10 +277,6 @@ export function InstallStation({
   const filterRows = useMemo(
     () => buildInstallFilterRows(steps, mods, model, Date.now(), runState),
     [steps, mods, model, runState],
-  )
-  const facets = useMemo(
-    () => collectInstallFacetOptions(filterRows),
-    [filterRows],
   )
   const visibleCount = useMemo(
     () => filterInstallRows(filterRows, filters, hideInstalled).length,
@@ -1173,7 +1168,6 @@ export function InstallStation({
           <InstallFiltersBar
             filters={filters}
             onChange={setFilters}
-            facets={facets}
             visibleCount={visibleCount}
             totalCount={filterRows.length}
           />

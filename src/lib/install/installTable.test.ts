@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import {
-  collectInstallFacetOptions,
   createDefaultInstallTableFilters,
   filterAndSortInstallRows,
   filterInstallRows,
@@ -122,7 +121,7 @@ describe('installTable filter/sort', () => {
     ).toEqual(['s5'])
   })
 
-  it('filters by status, category, and modId', () => {
+  it('filters by status', () => {
     const failed: ComponentRunStatus[] = ['failed']
     expect(
       filterInstallRows(rows, {
@@ -130,20 +129,6 @@ describe('installTable filter/sort', () => {
         statuses: failed,
       }).map((r) => r.stepId),
     ).toEqual(['s4'])
-
-    expect(
-      filterInstallRows(rows, {
-        ...createDefaultInstallTableFilters(),
-        categories: ['NPC'],
-      }).map((r) => r.stepId),
-    ).toEqual(['s2', 's3'])
-
-    expect(
-      filterInstallRows(rows, {
-        ...createDefaultInstallTableFilters(),
-        modIds: ['alpha'],
-      }).map((r) => r.stepId),
-    ).toEqual(['s2', 's3'])
   })
 
   it('ANDs hideInstalled with other filters', () => {
@@ -152,17 +137,17 @@ describe('installTable filter/sort', () => {
         rows,
         {
           ...createDefaultInstallTableFilters(),
-          categories: ['NPC'],
+          statuses: ['queued', 'alreadyInstalled'],
         },
         true,
       ).map((r) => r.stepId),
     ).toEqual(['s2'])
   })
 
-  it('collects unique categories and mods from the unfiltered plan', () => {
-    const facets = collectInstallFacetOptions(rows)
-    expect(facets.categories).toEqual(['NPC', 'Quest', 'Tweaks'])
-    expect(facets.mods.map((m) => m.modId)).toEqual(['alpha', 'beta', 'zebra'])
+  it('does not mutate plan order when sorting the table view', () => {
+    const snapshot = rows.map((r) => r.stepId)
+    sortInstallRows(rows, 'mod', 'asc')
+    expect(rows.map((r) => r.stepId)).toEqual(snapshot)
   })
 
   it('keeps plan order by default and sorts by mod/status', () => {

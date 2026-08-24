@@ -608,6 +608,7 @@ export function InstallTable({
   }, [tableActions?.plannedSnapshots])
   const visible = useMemo(
     () =>
+      // Display order only — WeiDU still follows `steps` / install cursor.
       filterAndSortInstallRows(
         filterRows,
         filters,
