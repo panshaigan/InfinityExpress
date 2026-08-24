@@ -108,6 +108,18 @@ export function RestoreSnapshotIcon() {
   )
 }
 
+/** Remove leftover mod folders, setup-*.exe, and *.DEBUG from the game dir. */
+export function CleanGameFolderIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M3.2 3.15h9.6v1.15H3.2zm1.15 1.9h7.3l-.55 8.05H4.9L4.35 5.05Zm1.7 1.35.25 5.2h.95l-.25-5.2h-.95Zm2.15 0v5.2h.95V6.4h-.95Zm2.1 0-.25 5.2h.95l.25-5.2h-.95Z"
+      />
+    </svg>
+  )
+}
+
 /** Roll back / uninstall to here (undo arrow). */
 export function UninstallBackIcon() {
   return (

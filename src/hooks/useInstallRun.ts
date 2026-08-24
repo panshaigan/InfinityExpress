@@ -384,6 +384,7 @@ export function useInstallRun(options: {
       breakpointStepIds: [],
       plannedSnapshots: [],
       logDir,
+      artifactsCleaned: false,
     }
     setRun(next)
     runRef.current = next
@@ -1736,6 +1737,7 @@ export function useInstallRun(options: {
         runState: 'idle',
         breakpointStepIds: base.breakpointStepIds ?? [],
         plannedSnapshots: base.plannedSnapshots ?? [],
+        artifactsCleaned: false,
       }
       setRun(next)
       setConsoleLines([])

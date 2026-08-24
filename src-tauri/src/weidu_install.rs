@@ -1329,59 +1329,51 @@ pub fn read_game_exe_version(game_dir: String, exe_name: String) -> Result<Strin
 pub struct CleanupInput {
   pub game_dir: String,
   pub staged_folders: Vec<String>,
+  #[serde(default)]
   pub keep_folders: Vec<String>,
+  #[serde(default)]
   pub weidu_path: String,
+  #[serde(default)]
   pub log_dir: String,
+}
+
+pub(crate) fn is_setup_exe_name(name: &str) -> bool {
+  let n = name.to_ascii_lowercase();
+  n.starts_with("setup-") && n.ends_with(".exe")
+}
+
+pub(crate) fn is_debug_file_name(name: &str) -> bool {
+  name.to_ascii_lowercase().ends_with(".debug")
 }
 
 #[tauri::command]
 pub fn cleanup_install_artifacts(input: CleanupInput) -> Result<(), String> {
   let game = PathBuf::from(input.game_dir.trim());
-  let log_dir = PathBuf::from(input.log_dir.trim());
-  fs::create_dir_all(&log_dir).map_err(|e| e.to_string())?;
-  let keep: std::collections::HashSet<String> = input
-    .keep_folders
-    .iter()
-    .map(|s| s.trim().to_ascii_lowercase())
-    .collect();
+  if !game.is_dir() {
+    return Err(format!("Game folder not found: {}", game.display()));
+  }
 
   for folder in &input.staged_folders {
     let name = folder.trim();
-    if name.is_empty() || keep.contains(&name.to_ascii_lowercase()) {
+    if name.is_empty() {
       continue;
     }
+    validate_folder_name(name)?;
     let path = game.join(name);
     if path.is_dir() {
       fs::remove_dir_all(&path).map_err(|e| e.to_string())?;
     }
-    // Install copies weidu.exe → setup-{weiduId}.exe in the game dir.
-    let setup_exe = game.join(format!("setup-{name}.exe"));
-    if setup_exe.is_file() {
-      let _ = fs::remove_file(&setup_exe);
-    }
   }
 
-  let weidu_src = validate_weidu_path(&input.weidu_path)?;
-  let weidu_dest = game.join(
-    weidu_src
-      .file_name()
-      .ok_or_else(|| "Invalid WeiDU path".to_string())?,
-  );
-  fs::copy(&weidu_src, &weidu_dest).map_err(|e| e.to_string())?;
-
-  if game.is_dir() {
-    if let Ok(entries) = fs::read_dir(&game) {
-      for entry in entries.flatten() {
-        let path = entry.path();
-        if !path.is_file() {
-          continue;
-        }
-        let name = entry.file_name().to_string_lossy().to_ascii_lowercase();
-        if name.ends_with(".debug") && name.contains("setup") {
-          let dest = log_dir.join(entry.file_name());
-          let _ = fs::rename(&path, &dest).or_else(|_| fs::copy(&path, &dest).map(|_| ()));
-          let _ = fs::remove_file(&path);
-        }
+  if let Ok(entries) = fs::read_dir(&game) {
+    for entry in entries.flatten() {
+      let path = entry.path();
+      if !path.is_file() {
+        continue;
+      }
+      let name = entry.file_name().to_string_lossy().into_owned();
+      if is_setup_exe_name(&name) || is_debug_file_name(&name) {
+        let _ = fs::remove_file(&path);
       }
     }
   }
@@ -1451,5 +1443,44 @@ mod tests {
     assert!(line.contains(r"D:\dev\weidu.exe"));
     assert!(line.contains("--list-components-json"));
     assert!(line.contains("0"));
+  }
+
+  #[test]
+  fn setup_exe_and_debug_name_matchers() {
+    assert!(is_setup_exe_name("setup-cdtweaks.exe"));
+    assert!(is_setup_exe_name("SETUP-FOO.EXE"));
+    assert!(!is_setup_exe_name("weidu.exe"));
+    assert!(!is_setup_exe_name("setup-cdtweaks.debug"));
+    assert!(is_debug_file_name("setup-cdtweaks.debug"));
+    assert!(is_debug_file_name("SETUP-FOO.DEBUG"));
+    assert!(is_debug_file_name("other.debug"));
+    assert!(!is_debug_file_name("weidu.log"));
+  }
+
+  #[test]
+  fn cleanup_deletes_mod_folder_setup_exe_and_debug() {
+    let dir = tempfile::tempdir().unwrap();
+    let game = dir.path();
+    fs::create_dir_all(game.join("cdtweaks")).unwrap();
+    fs::write(game.join("cdtweaks").join("readme.txt"), b"x").unwrap();
+    fs::write(game.join("setup-cdtweaks.exe"), b"x").unwrap();
+    fs::write(game.join("SETUP-FOO.DEBUG"), b"x").unwrap();
+    fs::write(game.join("weidu.log"), b"keep").unwrap();
+    fs::write(game.join("other.txt"), b"keep").unwrap();
+
+    cleanup_install_artifacts(CleanupInput {
+      game_dir: game.to_string_lossy().into_owned(),
+      staged_folders: vec!["cdtweaks".into()],
+      keep_folders: vec![],
+      weidu_path: String::new(),
+      log_dir: String::new(),
+    })
+    .expect("cleanup");
+
+    assert!(!game.join("cdtweaks").exists());
+    assert!(!game.join("setup-cdtweaks.exe").exists());
+    assert!(!game.join("SETUP-FOO.DEBUG").exists());
+    assert!(game.join("weidu.log").is_file());
+    assert!(game.join("other.txt").is_file());
   }
 }

@@ -9,6 +9,7 @@ interface Props {
   installDisabled?: boolean
   installTitle?: string
   processingPhases?: Partial<Record<AppPhase, boolean>>
+  completedPhases?: Partial<Record<AppPhase, boolean>>
 }
 
 const BASE_PHASES: { id: AppPhase; label: string }[] = [
@@ -23,6 +24,7 @@ export function PhaseNav({
   installDisabled = false,
   installTitle,
   processingPhases,
+  completedPhases,
 }: Props) {
   return (
     <nav className="phase-nav" aria-label="App phases">
@@ -30,6 +32,7 @@ export function PhaseNav({
         {BASE_PHASES.map((item, index) => {
           const active = phase === item.id
           const processing = !!processingPhases?.[item.id]
+          const completed = !processing && !!completedPhases?.[item.id]
           const disabled =
             item.id === 'install' ? installDisabled && !processing : false
           const title = item.id === 'install' && !processing ? installTitle : undefined
@@ -38,13 +41,15 @@ export function PhaseNav({
               type="button"
               className={`phase-nav-btn${active ? ' active' : ''}${
                 disabled ? ' disabled' : ''
-              }${processing ? ' processing' : ''}`}
+              }${processing ? ' processing' : ''}${completed ? ' completed' : ''}`}
               aria-current={active ? 'page' : undefined}
               aria-disabled={disabled || undefined}
               aria-label={
                 processing
                   ? `${item.label}, processing`
-                  : undefined
+                  : completed
+                    ? `${item.label}, finished`
+                    : undefined
               }
               disabled={disabled}
               onClick={() => {
@@ -52,10 +57,16 @@ export function PhaseNav({
               }}
             >
               <span
-                className={`phase-nav-index${processing ? ' processing' : ''}`}
+                className={`phase-nav-index${processing ? ' processing' : ''}${
+                  completed ? ' completed' : ''
+                }`}
                 aria-hidden="true"
               >
-                {processing ? null : index + 1}
+                {processing ? null : completed ? (
+                  <span className="phase-nav-check">✓</span>
+                ) : (
+                  index + 1
+                )}
               </span>
               <span className="phase-nav-label">{item.label}</span>
             </button>

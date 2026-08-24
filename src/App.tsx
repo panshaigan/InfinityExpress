@@ -1224,6 +1224,9 @@ function AppShell() {
         installDisabled={!installPhaseReady}
         installTitle={installPhaseTitle}
         processingPhases={phaseBusy}
+        completedPhases={{
+          install: installSession?.run.runState === 'completed',
+        }}
         game={game}
         projectName={projectMeta?.name ?? null}
         onSwitchProject={returnToHub}

@@ -223,8 +223,8 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 const LOG_LABELS: Record<Exclude<LogKind, 'results'>, string> = {
-  mod: 'Mod log',
-  component: 'Component log',
+  mod: 'Mod install log',
+  component: 'Component install log',
   debug: 'Debug log',
 }
 
@@ -475,7 +475,7 @@ export function InstallDetailPane({
                     {showLogsBlock ? (
                       <DetailBlock kind="logs" title="Readme & logs">
                         <div className="install-detail-log-icons">
-                          <LinkIcon label="URL" href={urlHref}>
+                          <LinkIcon label="Mod Page" href={urlHref}>
                             <ModUrlIcon />
                           </LinkIcon>
                           <LinkIcon label="Readme" href={readmeHref}>
@@ -483,7 +483,7 @@ export function InstallDetailPane({
                           </LinkIcon>
                           {stepProcessed ? (
                             <LogIconButton
-                              label="Results"
+                              label="Key results"
                               enabled={canOpenResults}
                               onClick={() => void openResults()}
                             >

@@ -4740,6 +4740,62 @@ body.is-resizing-detail * {
   gap: 0.55rem;
 }
 
+.install-finished-dialog {
+  width: min(32rem, 100%);
+}
+
+.install-finished-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.85rem;
+  margin: 0.75rem 0;
+}
+
+.install-finished-stats > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.install-finished-stats dt {
+  color: var(--muted);
+}
+
+.install-finished-stats dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.install-finished-folders p {
+  margin: 0 0 0.3rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.install-finished-folders ul {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.install-finished-folders li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-bottom: 0.35rem;
+}
+
+.install-finished-folder-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.install-finished-folders code {
+  font-size: 0.75rem;
+  word-break: break-all;
+}
+
 /* —— Export dialog —— */
 
 .export-dialog-backdrop {
@@ -5122,6 +5178,22 @@ body.is-resizing-detail * {
 
 .phase-nav-btn.processing {
   color: var(--ink);
+}
+
+.phase-nav-btn.completed .phase-nav-index {
+  background: var(--ok);
+  color: #1a120c;
+}
+
+.phase-nav-btn.active.completed .phase-nav-index {
+  background: var(--ok);
+  color: #1a120c;
+}
+
+.phase-nav-check {
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 @keyframes phase-nav-spin {
@@ -6553,17 +6625,6 @@ body.is-resizing-detail * {
   font-size: 0.8rem;
   color: var(--muted);
   border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
-}
-
-.install-cleanup-offer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.4rem 0.75rem;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--accent-soft) 35%, transparent);
-  font-size: 0.82rem;
 }
 
 .install-workspace {

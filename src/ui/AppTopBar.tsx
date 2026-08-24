@@ -17,6 +17,7 @@ interface Props {
   installDisabled?: boolean
   installTitle?: string
   processingPhases?: Partial<Record<AppPhase, boolean>>
+  completedPhases?: Partial<Record<AppPhase, boolean>>
   game: SelectedGame | null
   selectedModsCount: number
   selectedCount: number
@@ -96,6 +97,7 @@ export function AppTopBar({
   installDisabled,
   installTitle,
   processingPhases,
+  completedPhases,
   game,
   selectedModsCount,
   selectedCount,
@@ -159,6 +161,7 @@ export function AppTopBar({
         installDisabled={installDisabled}
         installTitle={installTitle}
         processingPhases={processingPhases}
+        completedPhases={completedPhases}
       />
       <div className="top-bar-actions">
         <span className="stats">

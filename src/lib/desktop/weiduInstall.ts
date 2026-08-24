@@ -75,9 +75,6 @@ export interface StageProgress {
 export interface CleanupInput {
   gameDir: string
   stagedFolders: string[]
-  keepFolders: string[]
-  weiduPath: string
-  logDir: string
 }
 
 function requireDesktop() {

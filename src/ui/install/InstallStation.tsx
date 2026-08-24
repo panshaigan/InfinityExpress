@@ -3,7 +3,11 @@ import type { CSSProperties } from 'react'
 import { useInstallRun } from '../../hooks/useInstallRun'
 import { isStepDurationLive, sumStepDurationsMs } from '../../lib/install/formatDuration'
 import { canUninstallBackState, nextActionableCursor, stepIndexById } from '../../lib/install/cursor'
-import { collectadjustmentsModIds } from '../../lib/install/weiduResolution'
+import {
+  buildInstallFinishedSummary,
+  stagedFoldersForGameDir,
+  uniqueGameDirsForRun,
+} from '../../lib/install/installFinished'
 import {
   cleanupInstallArtifacts,
   createNamedBackup,
@@ -33,6 +37,7 @@ import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
 import { RestoreSnapshotDialog } from './RestoreSnapshotDialog'
 import { PlanSnapshotDialog } from './PlanSnapshotDialog'
 import { RestartConfirmDialog, type RestartScope } from './RestartConfirmDialog'
+import { InstallFinishedDialog } from './InstallFinishedDialog'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { InstallConsoleDock } from './InstallConsoleDock'
 import { InstallDetailPane } from './InstallDetailPane'
@@ -46,6 +51,7 @@ import {
   PlayIcon,
   RestartIcon,
   RestoreSnapshotIcon,
+  CleanGameFolderIcon,
   SkipNextIcon,
   SkipPreviousIcon,
   SnapshotIcon,
@@ -163,11 +169,6 @@ export function InstallStation({
   const weiduPath = readWeiduPath()
   void pathTick
 
-  const adjustmentsModIds = useMemo(
-    () => collectadjustmentsModIds(model),
-    [model],
-  )
-
   const {
     run,
     planSteps,
@@ -201,6 +202,7 @@ export function InstallStation({
     stopping,
     skipping,
     goingPrevious,
+    setRun,
   } = useInstallRun({
     model,
     selectedIds,
@@ -256,7 +258,9 @@ export function InstallStation({
     name: string
   } | null>(null)
   const [restartDialogOpen, setRestartDialogOpen] = useState(false)
-  const [cleanupOffer, setCleanupOffer] = useState(false)
+  const [finishedDialogOpen, setFinishedDialogOpen] = useState(false)
+  const [cleanupBusy, setCleanupBusy] = useState(false)
+  const [cleanupError, setCleanupError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [confirmDialog, setConfirmDialog] = useState<{
     title: string
@@ -267,6 +271,7 @@ export function InstallStation({
   } | null>(null)
   const [nowMs, setNowMs] = useState(() => Date.now())
   const prevRunStateRef = useRef(run?.runState ?? null)
+  const skipAutoFinishedRef = useRef(false)
   const promptedMissingPathsRef = useRef(false)
   const lastPersistedSessionKeyRef = useRef<string | null>(null)
 
@@ -360,17 +365,21 @@ export function InstallStation({
   }, [steps, selectedStepId, cursorStepId, followCursor])
 
   useEffect(() => {
-    if (run?.runState === 'completed') setCleanupOffer(true)
-  }, [run?.runState])
+    if (run?.runState === 'completed' && !run.artifactsCleaned && !skipAutoFinishedRef.current) {
+      setFinishedDialogOpen(true)
+    }
+    if (run?.runState !== 'completed') {
+      skipAutoFinishedRef.current = false
+      setFinishedDialogOpen(false)
+    }
+  }, [run?.runState, run?.artifactsCleaned])
 
   useEffect(() => {
     const next = run?.runState ?? null
     const prev = prevRunStateRef.current
     if (next === prev) return
     prevRunStateRef.current = next
-    if (next === 'completed') {
-      pushToast({ tone: 'success', message: 'Install completed.' })
-    } else if (next === 'failed') {
+    if (next === 'failed') {
       pushToast({ tone: 'error', message: 'Install failed.' })
     } else if (next === 'waitingForInput') {
       pushToast({ tone: 'success', message: 'Install needs your input.' })
@@ -484,6 +493,13 @@ export function InstallStation({
     snapshotCount > 0 &&
     !snapshotActionBusy &&
     !installLive
+  const canCleanGameFolder =
+    run?.runState === 'completed' && !run.artifactsCleaned && isDesktopApp()
+  const cleanTip = !run || run.runState !== 'completed'
+    ? 'Available after installation finishes'
+    : run.artifactsCleaned
+      ? 'Game folder already cleaned'
+      : 'Remove leftover mod folders, setup-*.exe, and *.DEBUG'
   const restoreTip =
     snapshotCount === 0
       ? 'No snapshots yet'
@@ -639,11 +655,20 @@ export function InstallStation({
     const done = run.steps.filter(
       (s) =>
         s.status === 'succeeded' ||
+        s.status === 'succeededWithWarnings' ||
         s.status === 'alreadyInstalled' ||
         s.status === 'skipped',
     ).length
+    if (run.runState === 'completed') {
+      return `Installation finished · ${done}/${run.steps.length}`
+    }
     return `${done}/${run.steps.length} - ${run.runState}`
   }, [run, planSteps.length])
+
+  const finishedSummary = useMemo(() => {
+    if (!run || run.runState !== 'completed') return null
+    return buildInstallFinishedSummary(run, gameFolders)
+  }, [run, gameFolders])
 
   const ensureVanillas = useCallback(async (): Promise<boolean> => {
     if (!game) return false
@@ -936,27 +961,43 @@ export function InstallStation({
 
   const onCleanup = useCallback(async () => {
     if (!game || !run) return
-    const staged = [...new Set(run.steps.map((s) => s.stagedFolderName).filter(Boolean))]
-    const keep = [...adjustmentsModIds].filter((id) => staged.includes(id))
-    const phase = run.steps[0]?.phase ?? 'single'
-    const gameDir = gameDirForPhase(game, phase, gameFolders)
+    const dirs = uniqueGameDirsForRun(game, run.steps, gameFolders)
+    if (dirs.length === 0) {
+      const message = 'No game folder is set for this install.'
+      setCleanupError(message)
+      pushToast({ tone: 'error', message })
+      return
+    }
+    setCleanupBusy(true)
+    setCleanupError(null)
     try {
-      await cleanupInstallArtifacts({
-        gameDir,
-        stagedFolders: staged,
-        keepFolders: keep,
-        weiduPath,
-        logDir: run.logDir,
-      })
-      setCleanupOffer(false)
+      for (const folder of dirs) {
+        await cleanupInstallArtifacts({
+          gameDir: folder.path,
+          stagedFolders: stagedFoldersForGameDir(
+            game,
+            run.steps,
+            gameFolders,
+            folder.path,
+          ),
+        })
+      }
+      setRun((current) =>
+        current ? { ...current, artifactsCleaned: true } : current,
+      )
+      skipAutoFinishedRef.current = true
+      setFinishedDialogOpen(false)
       setNotice('Cleanup finished.')
       pushToast({ tone: 'success', message: 'Cleanup finished.' })
     } catch (e) {
       const message = String(e)
+      setCleanupError(message)
       setNotice(message)
       pushToast({ tone: 'error', message })
+    } finally {
+      setCleanupBusy(false)
     }
-  }, [game, run, adjustmentsModIds, gameFolders, weiduPath, pushToast])
+  }, [game, run, gameFolders, setRun, pushToast])
 
   const onSelectStep = useCallback((stepId: string, componentId: string) => {
     const t0 = profileInstallTable ? performance.now() : 0
@@ -1069,18 +1110,6 @@ export function InstallStation({
               <span className="install-action-icon-wrap has-icon-tip">
                 <button
                   type="button"
-                  className={`install-action-icon-btn${hideInstalled ? ' active' : ''}`}
-                  aria-pressed={hideInstalled}
-                  aria-label="Hide installed"
-                  onClick={() => setHideInstalled((v) => !v)}
-                >
-                  <HideInstalledIcon />
-                </button>
-                <IconTip>Hide installed</IconTip>
-              </span>
-              <span className="install-action-icon-wrap has-icon-tip">
-                <button
-                  type="button"
                   className={`install-action-icon-btn${followCursor ? ' active' : ''}`}
                   disabled={!cursorStepId}
                   aria-pressed={followCursor}
@@ -1101,6 +1130,18 @@ export function InstallStation({
                   <JumpToCursorIcon />
                 </button>
                 <IconTip>Follow install cursor</IconTip>
+              </span>
+              <span className="install-action-icon-wrap has-icon-tip">
+                <button
+                  type="button"
+                  className={`install-action-icon-btn${hideInstalled ? ' active' : ''}`}
+                  aria-pressed={hideInstalled}
+                  aria-label="Hide installed"
+                  onClick={() => setHideInstalled((v) => !v)}
+                >
+                  <HideInstalledIcon />
+                </button>
+                <IconTip>Hide installed</IconTip>
               </span>
               <span className="install-action-icon-wrap has-icon-tip">
                 <button
@@ -1130,18 +1171,6 @@ export function InstallStation({
                 <button
                   type="button"
                   className="install-action-icon-btn"
-                  disabled={!canRestart}
-                  aria-label={restartTip}
-                  onClick={() => setRestartDialogOpen(true)}
-                >
-                  <RestartIcon />
-                </button>
-                <IconTip>{restartTip}</IconTip>
-              </span>
-              <span className="install-action-icon-wrap has-icon-tip">
-                <button
-                  type="button"
-                  className="install-action-icon-btn"
                   disabled={!canTakeSnapshot}
                   aria-label={takeTip}
                   onClick={openTakeSnapshot}
@@ -1162,6 +1191,33 @@ export function InstallStation({
                 </button>
                 <IconTip>{restoreTip}</IconTip>
               </span>
+              <span className="install-action-icon-wrap has-icon-tip">
+                <button
+                  type="button"
+                  className="install-action-icon-btn"
+                  disabled={!canRestart}
+                  aria-label={restartTip}
+                  onClick={() => setRestartDialogOpen(true)}
+                >
+                  <RestartIcon />
+                </button>
+                <IconTip>{restartTip}</IconTip>
+              </span>
+              <span className="install-action-icon-wrap has-icon-tip">
+                <button
+                  type="button"
+                  className="install-action-icon-btn"
+                  disabled={!canCleanGameFolder || cleanupBusy}
+                  aria-label={cleanTip}
+                  onClick={() => {
+                    setCleanupError(null)
+                    setFinishedDialogOpen(true)
+                  }}
+                >
+                  <CleanGameFolderIcon />
+                </button>
+                <IconTip>{cleanTip}</IconTip>
+              </span>
             </div>
           </div>
 
@@ -1173,18 +1229,6 @@ export function InstallStation({
           />
 
           {notice ? <p className="install-notice">{notice}</p> : null}
-
-          {cleanupOffer ? (
-            <div className="install-cleanup-offer">
-              <span>Run finished.</span>
-              <button type="button" className="btn secondary" onClick={() => void onCleanup()}>
-                Clean up mod folders
-              </button>
-              <button type="button" className="btn secondary" onClick={() => setCleanupOffer(false)}>
-                Dismiss
-              </button>
-            </div>
-          ) : null}
 
           <InstallTable
             steps={steps}
@@ -1253,6 +1297,18 @@ export function InstallStation({
         eetMode={game === 'eet'}
         onCancel={() => setRestartDialogOpen(false)}
         onConfirm={(scope) => void onRestartConfirm(scope)}
+      />
+
+      <InstallFinishedDialog
+        open={finishedDialogOpen}
+        summary={finishedSummary}
+        busy={cleanupBusy}
+        error={cleanupError}
+        onClean={() => void onCleanup()}
+        onClose={() => {
+          skipAutoFinishedRef.current = true
+          setFinishedDialogOpen(false)
+        }}
       />
 
       <ConfirmDialog

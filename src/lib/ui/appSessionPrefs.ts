@@ -291,6 +291,7 @@ function installRunFrom(value: unknown): InstallRun | null {
     breakpointStepIds: stringArray(o.breakpointStepIds),
     plannedSnapshots: plannedSnapshotsFrom(o.plannedSnapshots),
     logDir: o.logDir,
+    artifactsCleaned: o.artifactsCleaned === true,
   }
 }
 
