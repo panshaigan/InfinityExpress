@@ -7,6 +7,7 @@ import { readAppDirPaths } from '../lib/ui/appDirPrefs'
 import {
   gameFolderKeyForPhase,
   gameFolderKeyLabel,
+  snapshotSourceStep,
   readGameFolderVersions,
 } from '../lib/ui/gameFolderPrefs'
 import { readWeiduPath } from '../lib/ui/weiduPrefs'
@@ -801,9 +802,10 @@ export function useInstallRun(options: {
       planned: PlannedSnapshot,
     ): Promise<{ current: InstallRun; failed: boolean }> => {
       const step = current.steps[index]!
-      const gameKey = gameFolderKeyForPhase(current.game, step.phase)
+      const source = snapshotSourceStep(current.steps, index) ?? step
+      const gameKey = gameFolderKeyForPhase(current.game, source.phase)
       const gameLabel = gameFolderKeyLabel(gameKey)
-      const gameDir = gameDirForPhase(current.game, step.phase, gameFolders)
+      const gameDir = gameDirForPhase(current.game, source.phase, gameFolders)
       const backupRoot = readAppDirPaths().backupDir.trim()
 
       const snapshotting: InstallStep = {

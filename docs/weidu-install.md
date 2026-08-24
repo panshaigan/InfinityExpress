@@ -68,13 +68,13 @@ Install table rows (one per component / install step) expose the same actions vi
 | **Skip package at cursor** | Same as toolbar **Skip** (step after cursor; skippable cursor package; allowed halt/idle states) | Same as the toolbar Skip control. |
 | **Uninstall back to here** | `idle` / `paused` / `stopped` / `failed`; target step before cursor | Force-uninstall each package from cursor−1 down to the target step (including Done / Installed); move cursor to target. Confirms first. Blocked while `running` / `waitingForInput`. |
 | **Add / remove breakpoint** | Future, not-yet-installed steps (including before first Play) | Toggle `InstallRun.breakpointStepIds`. Row class `install-breakpoint` (top-edge marker line). |
-| **Plan / remove snapshot** | Same eligibility as breakpoints | Adding opens a name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`). Stores `{ stepId, name }` on `InstallRun.plannedSnapshots`. Row class `install-snapshot` (top-edge marker line). Removing does not prompt. |
+| **Plan / remove snapshot** | Same eligibility as breakpoints | Adding opens a name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`). Label uses the **previous** step’s game (first EET-phase row → BG1). Stores `{ stepId, name }` on `InstallRun.plannedSnapshots`. Row class `install-snapshot` (top-edge marker line). Removing does not prompt. |
 | **Move cursor here** | `idle` / `paused` / `stopped` / `failed`; not on finished steps | Sets `cursor` to the selected install step. First use before **Play** creates an idle run via `ensureIdleRun()`. Disabled when target is `succeeded` / `alreadyInstalled` / `skipped`, and while `running` / `waitingForInput`. Confirms when moving backward across installed packages. |
 | **Remove from plan** | `paused` / `stopped` / `failed`; step at or after cursor, not yet finished | Unchecks the component in Components (updates selection + syncs the run plan). |
 
 **Breakpoints (mode B):** when the runner reaches a breakpoint step, it pauses **before staging/copying** that package (`runState: paused`, cursor on the breakpoint step). The hit breakpoint is removed automatically (one-shot), so resuming continues forward and later breakpoints still trigger.
 
-**Planned snapshots:** when the runner is about to start a marked step, it temporarily shows `runState: paused`, copies that step’s live game folder (`createNamedBackup`, full copy), then auto-resumes and continues installing. Game mapping: EET `eet1` → BG1, EET `eet` → BG2, other engines → that game. Marker is one-shot (removed after success). Snapshot failure pauses and keeps the marker so Play retries. A breakpoint on the same step still pauses after the snapshot.
+**Planned snapshots:** when the runner is about to start a marked step, it temporarily shows `runState: paused`, copies the **previous** plan step’s live game folder (`createNamedBackup`, full copy), then auto-resumes and continues installing. First plan step (no previous) uses that step’s folder. EET: first `eet` package → last `eet1` / BG1. Marker is one-shot (removed after success). Snapshot failure pauses and keeps the marker so Play retries. A breakpoint on the same step still pauses after the snapshot.
 
 ## Cross-phase install lock
 
@@ -163,9 +163,9 @@ Project disk folders use `meta.folderName` (from the display name); UUID `meta.i
 | `vanilla` | `backups/{gameKey}/vanilla/` | One per game key. Required before install Start. Recreate replaces existing. |
 | `snapshot` | `backups/{gameKey}/{name}/` | Named; same name replaces. Reserved names: `vanilla`, `baseline`, `snapshots`, `manifest.json`. Only allowed after vanilla exists for that key. |
 
-Named snapshots are created from the Install toolbar (**Take snapshot**) or as planned row snapshots. Take snapshot copies the **previous** plan step’s live game folder (full copy); planned row snapshots still copy the marked step’s own phase folder. Vanilla create/recreate stays in Settings (and the new-project wizard). If vanilla is missing on Play, Install opens Settings.
+Named snapshots are created from the Install toolbar (**Take snapshot**) or as planned row snapshots. Both copy the **previous** plan step’s live game folder (full copy); the first plan step (no previous) uses that step’s own folder. Vanilla create/recreate stays in Settings (and the new-project wizard). If vanilla is missing on Play, Install opens Settings.
 
-**EET:** Start requires **both** `bg1` and `bg2` vanillas. A vanilla created earlier under a non-EET BG1/BG2 install counts. Take snapshot uses the previous step’s folder (first `eet` package → last `eet1` / BG1). Planned snapshots still map `eet1` → BG1, `eet` → BG2. Restore list merges both keys (Game column). **Restart** offers EET stage only (BG2) or full installation (BG1 + BG2); it is disabled while the install is running or waiting for input.
+**EET:** Start requires **both** `bg1` and `bg2` vanillas. A vanilla created earlier under a non-EET BG1/BG2 install counts. Take / planned snapshot uses the previous step’s folder (first `eet` package → last `eet1` / BG1). Restore list merges both keys (Game column). **Restart** offers EET stage only (BG2) or full installation (BG1 + BG2); it is disabled while the install is running or waiting for input.
 
 ### Operations & progress
 

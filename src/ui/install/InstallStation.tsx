@@ -19,6 +19,7 @@ import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
 import {
   gameFolderKeyForPhase,
   gameFolderKeyLabel,
+  snapshotSourceStep,
   type GameFolderPaths,
 } from '../../lib/ui/gameFolderPrefs'
 import {
@@ -407,13 +408,11 @@ export function InstallStation({
     if (!game) return null
     const steps = run?.steps ?? planSteps
     const cursor = run?.cursor ?? nextActionableCursor(steps, 0)
-    const current = steps[cursor] ?? steps[0]
-    const previous = cursor > 0 ? steps[cursor - 1] : undefined
-    const step = previous ?? current
-    if (!step) return null
+    const source = snapshotSourceStep(steps, cursor)
+    if (!source) return null
     return {
-      gameKey: gameFolderKeyForPhase(game, step.phase),
-      sourceDir: gameDirForPhase(game, step.phase, gameFolders),
+      gameKey: gameFolderKeyForPhase(game, source.phase),
+      sourceDir: gameDirForPhase(game, source.phase, gameFolders),
     }
   }, [game, run, planSteps, gameFolders])
   const takeVanillaMissing =
@@ -510,6 +509,7 @@ export function InstallStation({
       cursor: tableCursor,
       breakpointStepIds: tableBreakpoints,
       plannedSnapshots: tableSnapshots,
+      steps: tableSteps,
       game,
       canNavigate: canNavigateSteps,
       canGoPrevious: canGoPreviousEffective,
@@ -538,11 +538,12 @@ export function InstallStation({
         toggleBreakpoint(stepId)
       },
       onRequestPlanSnapshot: (stepId: string) => {
-        const step = tableSteps.find((s) => s.stepId === stepId)
-        if (!step || !game) return
+        const stepIndex = tableSteps.findIndex((s) => s.stepId === stepId)
+        const source = snapshotSourceStep(tableSteps, stepIndex)
+        if (!source || !game) return
         setPlanSnapshotDialog({
           stepId,
-          gameKey: gameFolderKeyForPhase(game, step.phase),
+          gameKey: gameFolderKeyForPhase(game, source.phase),
           name: defaultSnapshotName(),
         })
       },

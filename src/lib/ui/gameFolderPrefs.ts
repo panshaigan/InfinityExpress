@@ -97,6 +97,27 @@ export function gameFolderKeyForPhase(
   return 'bg2'
 }
 
+/**
+ * Step whose live game folder a snapshot at `index` should copy.
+ * Previous plan step when one exists (first `eet` package → last `eet1` / BG1).
+ */
+export function snapshotSourceStep<T>(
+  steps: readonly T[],
+  index: number,
+): T | undefined {
+  if (index > 0) return steps[index - 1] ?? steps[index]
+  return steps[index]
+}
+
+export function snapshotGameKeyForStep(
+  game: import('../xml/schema').SelectedGame,
+  steps: readonly { phase: import('../install/types').InstallPhase }[],
+  index: number,
+): GameFolderKey {
+  const source = snapshotSourceStep(steps, index)
+  return gameFolderKeyForPhase(game, source?.phase ?? 'single')
+}
+
 export function gameFolderKeyLabel(key: string): string {
   if (key === 'bg1') return 'BG1'
   if (key === 'bg2') return 'BG2'

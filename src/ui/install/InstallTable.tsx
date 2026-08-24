@@ -24,8 +24,8 @@ import {
   type WorkingMod,
 } from '../../lib/mods/loadMods'
 import {
-  gameFolderKeyForPhase,
   gameFolderKeyLabel,
+  snapshotGameKeyForStep,
 } from '../../lib/ui/gameFolderPrefs'
 import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
 import { IconTip } from '../IconTip'
@@ -107,6 +107,7 @@ interface InstallTableActions {
   cursor: number
   breakpointStepIds: string[]
   plannedSnapshots: PlannedSnapshot[]
+  steps: InstallStep[]
   game: SelectedGame | null
   canNavigate: boolean
   canGoPrevious: boolean
@@ -135,9 +136,13 @@ function plannedForStep(
   return plannedSnapshots.find((s) => s.stepId === stepId)
 }
 
-function snapshotGameLabel(game: SelectedGame | null, step: InstallStep): string {
+function snapshotGameLabel(
+  game: SelectedGame | null,
+  steps: InstallStep[],
+  stepIndex: number,
+): string {
   if (!game) return 'game'
-  return gameFolderKeyLabel(gameFolderKeyForPhase(game, step.phase))
+  return gameFolderKeyLabel(snapshotGameKeyForStep(game, steps, stepIndex))
 }
 
 function createStepIndexMap(steps: InstallStep[]): Map<string, number> {
@@ -181,7 +186,7 @@ function InstallStepContextMenu({
   const hasBreakpoint = actions.breakpointStepIds.includes(step.stepId)
   const planned = plannedForStep(actions.plannedSnapshots, step.stepId)
   const hasSnapshot = !!planned
-  const snapshotLabel = snapshotGameLabel(actions.game, step)
+  const snapshotLabel = snapshotGameLabel(actions.game, actions.steps, stepIndex)
   const canBreakpoint = canSetBreakpoint(
     step,
     stepIndex,
@@ -337,7 +342,7 @@ function StepActionButtons({
   const hasBreakpoint = actions.breakpointStepIds.includes(step.stepId)
   const planned = plannedForStep(actions.plannedSnapshots, step.stepId)
   const hasSnapshot = !!planned
-  const snapshotLabel = snapshotGameLabel(actions.game, step)
+  const snapshotLabel = snapshotGameLabel(actions.game, actions.steps, stepIndex)
   const snapshotTip = hasSnapshot
     ? planned.name
       ? `Remove planned snapshot (${planned.name})`
