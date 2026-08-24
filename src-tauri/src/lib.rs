@@ -5,6 +5,8 @@ mod system_sound;
 mod weidu_backup;
 mod weidu_install;
 
+use tauri::Manager;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -50,6 +52,12 @@ pub fn run() {
       system_sound::play_system_sound,
     ])
     .setup(|app| {
+      let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/32x32.png"))
+        .expect("failed to load window icon");
+      for (_, window) in app.webview_windows() {
+        window.set_icon(icon.clone())?;
+      }
+
       if cfg!(debug_assertions) {
         app.handle().plugin(
           tauri_plugin_log::Builder::default()
