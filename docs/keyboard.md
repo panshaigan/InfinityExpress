@@ -39,7 +39,7 @@ These work globally except where noted. Station and most chrome keys are ignored
 | Key | Action |
 | --- | --- |
 | `Tab` | When nothing is focused, jump to the first item on the current display (first engine card on Engine; otherwise the component list / search results) |
-| `F3` | Desktop: focus the search field on this display (components or mods) and select its contents |
+| `F3` | Desktop: focus the search field on this display (components, mods, or install) and select its contents |
 | `Ctrl+F` / `Cmd+F` | Desktop: same as F3 — focus search on this display |
 | `F6` | Desktop: focus the list / table on this display (component tree, mods table, or engine cards) |
 | `?` | Open the keys guide |

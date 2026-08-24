@@ -12,12 +12,18 @@ import {
 } from '../lib/ui/chromeHotkeys'
 import { isDesktopApp } from '../lib/desktop/fsDialogs'
 import { FILTERS_SEARCH_ID } from '../ui/FiltersStrip'
+import { INSTALL_SEARCH_ID } from '../ui/install/InstallFiltersBar'
 import { MODS_SEARCH_ID } from '../ui/mods/ModsToolbar'
 import type { AppPhase } from '../ui/PhaseNav'
 import type { AppNavSlot } from '../ui/StationNav'
 
 function findSearchInput(phase: AppPhase): HTMLInputElement | null {
-  const id = phase === 'mods' ? MODS_SEARCH_ID : FILTERS_SEARCH_ID
+  const id =
+    phase === 'mods'
+      ? MODS_SEARCH_ID
+      : phase === 'install'
+        ? INSTALL_SEARCH_ID
+        : FILTERS_SEARCH_ID
   return document.getElementById(id) as HTMLInputElement | null
 }
 

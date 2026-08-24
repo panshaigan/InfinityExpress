@@ -6413,6 +6413,16 @@ body.is-resizing-detail * {
   margin-left: auto;
 }
 
+.install-facets {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 92%, #000);
+}
+
+.install-facets .mods-count {
+  margin-left: auto;
+}
+
 .install-run-duration {
   min-width: 4.25rem;
   padding: 0 0.15rem;
@@ -6625,7 +6635,7 @@ body.is-resizing-detail * {
 }
 
 .install-table col.install-col-num {
-  width: 2.75rem;
+  width: 3.75rem;
 }
 
 .install-table col.install-col-mod {
@@ -6765,6 +6775,11 @@ body.is-resizing-detail * {
   font-variant-numeric: tabular-nums;
   color: var(--muted);
   white-space: nowrap;
+}
+
+.install-table th.install-col-num .mods-sort-btn {
+  justify-content: flex-end;
+  width: 100%;
 }
 
 .install-col-mod,

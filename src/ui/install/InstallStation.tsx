@@ -70,6 +70,16 @@ import {
   type InstallLock,
 } from '../../lib/install/installLock'
 import { defaultSnapshotName } from '../../lib/install/snapshotName'
+import {
+  buildInstallFilterRows,
+  collectInstallFacetOptions,
+  createDefaultInstallTableFilters,
+  filterInstallRows,
+  type InstallSortDir,
+  type InstallSortKey,
+  type InstallTableFilters,
+} from '../../lib/install/installTable'
+import { InstallFiltersBar } from './InstallFiltersBar'
 
 export type InstallActions = {
   performVanillaRestart: (scope: RestartScope) => Promise<boolean>
@@ -222,6 +232,11 @@ export function InstallStation({
   const [hideInstalled, setHideInstalled] = useState(
     () => initialInstallSession?.ui.hideInstalled ?? false,
   )
+  const [filters, setFilters] = useState<InstallTableFilters>(() =>
+    createDefaultInstallTableFilters(),
+  )
+  const [sortKey, setSortKey] = useState<InstallSortKey>('order')
+  const [sortDir, setSortDir] = useState<InstallSortDir>('asc')
   const [jumpToCursorNonce, setJumpToCursorNonce] = useState(0)
   const [consoleCollapsed, setConsoleCollapsed] = useState(false)
   const [consoleResizing, setConsoleResizing] = useState(false)
@@ -260,6 +275,26 @@ export function InstallStation({
   const runState = run?.runState ?? null
   const durationLive = steps.some((s) => isStepDurationLive(s, runState))
   const runElapsedMs = sumStepDurationsMs(steps, nowMs, runState)
+  const filterRows = useMemo(
+    () => buildInstallFilterRows(steps, mods, model, Date.now(), runState),
+    [steps, mods, model, runState],
+  )
+  const facets = useMemo(
+    () => collectInstallFacetOptions(filterRows),
+    [filterRows],
+  )
+  const visibleCount = useMemo(
+    () => filterInstallRows(filterRows, filters, hideInstalled).length,
+    [filterRows, filters, hideInstalled],
+  )
+  const onSort = useCallback((key: InstallSortKey) => {
+    if (key === sortKey) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+      return
+    }
+    setSortKey(key)
+    setSortDir('asc')
+  }, [sortKey])
 
   useEffect(() => {
     if (!durationLive) return
@@ -1135,6 +1170,14 @@ export function InstallStation({
             </div>
           </div>
 
+          <InstallFiltersBar
+            filters={filters}
+            onChange={setFilters}
+            facets={facets}
+            visibleCount={visibleCount}
+            totalCount={filterRows.length}
+          />
+
           {notice ? <p className="install-notice">{notice}</p> : null}
 
           {cleanupOffer ? (
@@ -1151,8 +1194,11 @@ export function InstallStation({
 
           <InstallTable
             steps={steps}
-            model={model}
-            mods={mods}
+            filterRows={filterRows}
+            filters={filters}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSort={onSort}
             selectedStepId={selectedStepId}
             selectedComponentId={selectedComponentId}
             cursorStepId={cursorStepId}

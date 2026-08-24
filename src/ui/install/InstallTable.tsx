@@ -18,16 +18,19 @@ import type {
   PlannedSnapshot,
   StepProgress,
 } from '../../lib/install/types'
-import { expandStepsToTableRows } from '../../lib/install/planBuilder'
 import {
-  effectiveModFields,
-  type WorkingMod,
-} from '../../lib/mods/loadMods'
+  STATUS_LABEL,
+  filterAndSortInstallRows,
+  type InstallFilterRow,
+  type InstallSortDir,
+  type InstallSortKey,
+  type InstallTableFilters,
+} from '../../lib/install/installTable'
 import {
   gameFolderKeyLabel,
   snapshotGameKeyForStep,
 } from '../../lib/ui/gameFolderPrefs'
-import type { InstallSequenceModel, SelectedGame } from '../../lib/xml/schema'
+import type { SelectedGame } from '../../lib/xml/schema'
 import { IconTip } from '../IconTip'
 import { DurationClock } from './DurationClock'
 import {
@@ -45,17 +48,18 @@ export const INSTALL_TABLE_ID = 'install-table'
 const INSTALL_ROW_HEIGHT_ESTIMATE = 42
 const INSTALL_ROW_OVERSCAN = 14
 
-const STATUS_LABEL: Record<InstallStep['status'], string> = {
-  queued: 'Queued',
-  copying: 'Copying',
-  installing: 'Installing',
-  succeeded: 'Done',
-  succeededWithWarnings: 'Installed (w)',
-  failed: 'Failed',
-  skipped: 'Skipped',
-  alreadyInstalled: 'Installed',
-  needsInput: 'Input needed',
-}
+const SORT_COLUMNS: {
+  key: InstallSortKey
+  label: string
+  className: string
+}[] = [
+  { key: 'order', label: '#', className: 'install-col-num' },
+  { key: 'mod', label: 'Mod', className: 'install-col-mod' },
+  { key: 'component', label: 'Component', className: 'install-col-component' },
+  { key: 'category', label: 'Category', className: 'install-col-category' },
+  { key: 'duration', label: 'Duration', className: 'install-col-duration' },
+  { key: 'status', label: 'Status', className: 'install-col-status' },
+]
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`
@@ -159,13 +163,11 @@ function createStepIdSet(ids: string[]): Set<string> {
   return set
 }
 
-type InstallRowViewModel = ReturnType<typeof expandStepsToTableRows>[number] & {
+type InstallRowViewModel = InstallFilterRow & {
   step: InstallStep | undefined
   stepIndex: number
   hasBreakpoint: boolean
   hasSnapshot: boolean
-  modDisplay: string
-  category: string
 }
 
 function InstallStepContextMenu({
@@ -543,8 +545,11 @@ const InstallTableRowMemo = memo(InstallTableRow)
 
 interface Props {
   steps: InstallStep[]
-  model: InstallSequenceModel
-  mods: WorkingMod[]
+  filterRows: InstallFilterRow[]
+  filters: InstallTableFilters
+  sortKey: InstallSortKey
+  sortDir: InstallSortDir
+  onSort: (key: InstallSortKey) => void
   selectedStepId: string | null
   selectedComponentId: string | null
   /** Step under `InstallRun.cursor` (install cursor highlight). */
@@ -565,8 +570,11 @@ interface Props {
 
 export function InstallTable({
   steps,
-  model: _model,
-  mods,
+  filterRows,
+  filters,
+  sortKey,
+  sortDir,
+  onSort,
   selectedStepId,
   selectedComponentId,
   cursorStepId,
@@ -581,18 +589,12 @@ export function InstallTable({
 }: Props) {
   const profileInstallTable =
     import.meta.env.DEV && (window as Window & { __IX_PROFILE_INSTALL?: boolean }).__IX_PROFILE_INSTALL === true
-  const rows = useMemo(() => expandStepsToTableRows(steps), [steps])
   const stepById = useMemo(() => {
     const map = new Map<string, InstallStep>()
     for (const s of steps) map.set(s.stepId, s)
     return map
   }, [steps])
   const stepIndexMap = useMemo(() => createStepIndexMap(steps), [steps])
-  const modsByCodename = useMemo(() => {
-    const map = new Map<string, WorkingMod>()
-    for (const m of mods) map.set(m.codename.toLowerCase(), m)
-    return map
-  }, [mods])
   const breakpointStepIdSet = useMemo(
     () => createStepIdSet(tableActions?.breakpointStepIds ?? []),
     [tableActions?.breakpointStepIds],
@@ -606,12 +608,14 @@ export function InstallTable({
   }, [tableActions?.plannedSnapshots])
   const visible = useMemo(
     () =>
-      hideInstalled
-        ? rows.filter(
-            (r) => r.status !== 'succeeded' && r.status !== 'alreadyInstalled',
-          )
-        : rows,
-    [rows, hideInstalled],
+      filterAndSortInstallRows(
+        filterRows,
+        filters,
+        sortKey,
+        sortDir,
+        hideInstalled,
+      ),
+    [filterRows, filters, hideInstalled, sortDir, sortKey],
   )
   const visibleIndexByRowKey = useMemo(() => {
     const map = new Map<string, number>()
@@ -638,16 +642,12 @@ export function InstallTable({
     const built = visible.map((row) => {
       const step = stepById.get(row.stepId)
       const stepIndex = stepIndexMap.get(row.stepId) ?? -1
-      const mod = modsByCodename.get(row.modId.toLowerCase())
-      const eff = mod ? effectiveModFields(mod) : null
       return {
         ...row,
         step,
         stepIndex,
         hasBreakpoint: step != null && breakpointStepIdSet.has(row.stepId),
         hasSnapshot: step != null && plannedSnapshotByStepId.has(row.stepId),
-        modDisplay: eff?.name?.trim() || row.modId,
-        category: eff?.category?.trim() || '',
       }
     })
     if (profileInstallTable) {
@@ -659,7 +659,6 @@ export function InstallTable({
     return built
   }, [
     breakpointStepIdSet,
-    modsByCodename,
     plannedSnapshotByStepId,
     profileInstallTable,
     stepById,
@@ -873,7 +872,7 @@ export function InstallTable({
   }, [renderedRows, rowHeight])
 
   function handleTableKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
-    if (visible.length === 0) return
+    if (visibleRows.length === 0) return
     const current =
       selectedStepId && selectedComponentId
         ? (visibleIndexByRowKey.get(rowKey(selectedStepId, selectedComponentId)) ?? -1)
@@ -882,7 +881,7 @@ export function InstallTable({
 
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      selectIndex(Math.min(idx + 1, visible.length - 1))
+      selectIndex(Math.min(idx + 1, visibleRows.length - 1))
       return
     }
     if (e.key === 'ArrowUp') {
@@ -897,7 +896,7 @@ export function InstallTable({
     }
     if (e.key === 'End') {
       e.preventDefault()
-      selectIndex(visible.length - 1)
+      selectIndex(visibleRows.length - 1)
       return
     }
   }
@@ -946,18 +945,51 @@ export function InstallTable({
           </colgroup>
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Mod</th>
-              <th scope="col">Component</th>
-              <th scope="col">Category</th>
-              <th scope="col">Duration</th>
-              <th scope="col">Status</th>
+              {SORT_COLUMNS.map((col) => {
+                const active = sortKey === col.key
+                return (
+                  <th
+                    key={col.key}
+                    scope="col"
+                    className={col.className}
+                    aria-sort={
+                      active
+                        ? sortDir === 'asc'
+                          ? 'ascending'
+                          : 'descending'
+                        : 'none'
+                    }
+                  >
+                    <button
+                      type="button"
+                      className={`mods-sort-btn${active ? ' active' : ''}`}
+                      onClick={() => onSort(col.key)}
+                    >
+                      {col.label}
+                      <span
+                        className={`mods-sort-indicator${active ? ' active' : ''}`}
+                        aria-hidden="true"
+                      >
+                        {active ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}
+                      </span>
+                    </button>
+                  </th>
+                )
+              })}
               <th scope="col" className="install-col-actions-head">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody>
+            {visibleRows.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="mods-table-empty">
+                  No steps match the current filters.
+                </td>
+              </tr>
+            ) : (
+              <>
             {spacerTop > 0 ? (
               <tr aria-hidden="true">
                 <td
@@ -1002,6 +1034,8 @@ export function InstallTable({
                 />
               </tr>
             ) : null}
+              </>
+            )}
           </tbody>
         </table>
       </div>
