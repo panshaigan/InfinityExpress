@@ -1,5 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from 'react'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
+import { applyPresetGroupToCheckedSets } from '../lib/recommended/presetGroups'
 import {
   setRecommendedSelection,
   setPackageSelection,
@@ -60,6 +61,42 @@ export function useRecommendedPresets(args: {
     })
   }
 
+  function onPresetGroupToggle(
+    recommendedTokens: readonly string[],
+    packageTokens: readonly string[],
+    wantChecked: boolean,
+  ) {
+    if (!game) return
+    const applied = applyPresetGroupToCheckedSets(
+      checkedRecommended,
+      checkedPackages,
+      recommendedTokens,
+      packageTokens,
+      wantChecked,
+    )
+    setCheckedRecommended(applied.recommended)
+    setCheckedPackages(applied.packages)
+    setSelectedIds((prevSelected) => {
+      if (wantChecked) {
+        return applyCheckedPresetTiles(
+          model,
+          prevSelected,
+          game,
+          applied.recommended,
+          applied.packages,
+        )
+      }
+      let next = prevSelected
+      for (const token of recommendedTokens) {
+        next = setRecommendedSelection(model, next, game, token, false)
+      }
+      for (const token of packageTokens) {
+        next = setPackageSelection(model, next, game, token, false)
+      }
+      return next
+    })
+  }
+
   function resetRecommendedPresets() {
     setCheckedRecommended(new Set())
     setCheckedPackages(new Set())
@@ -84,6 +121,7 @@ export function useRecommendedPresets(args: {
     setCheckedPackages,
     onRecommendedToggle,
     onPackageToggle,
+    onPresetGroupToggle,
     resetRecommendedPresets,
     restoreRecommendedState,
     seedFixesBaseline,

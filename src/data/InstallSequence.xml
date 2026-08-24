@@ -1956,59 +1956,6 @@
 		</proficiencies>
 	</mechanics>
 
-	<randomisation engine="bg,eet" recommended="higherDifficulty" displayIfNot="IE_focus_dedicated_campaigns">
-		<alternatives label="Enemies" unfolded="1">
-			<mod id="BGSpawn" label="BG1 Spawn System" engine="bg1,eet">
-				<component id="BGSpawn-Main" name="BGSpawn system based on levels &amp; party members" label="BGSpawn system based on levels and party members" core="1" complexity="major" />
-				<alternatives label="How often to check for respawn?">
-					<component id="BGSpawn-RespawnTime8Hours" name="[How often to check for respawn?] Re-spawn time = 8 hours (standard ad&amp;d rules)" label="8 hours (standard PnP rules)" default="1" complexity="minor" />
-					<component id="BGSpawn-RespawnTime1Day" name="[How often to check for respawn?] Re-spawn time = 24 hours" label="1 day" complexity="minor" />
-				</alternatives>
-				<alternatives label="How sure a respawn should be?">
-					<component id="BGSpawn-SpawnProbability-100" name="100%" label="100%" default="1" complexity="minor" />
-					<component id="BGSpawn-SpawnProbability-75" name="75%" label="75%" complexity="minor" />
-					<component id="BGSpawn-SpawnProbability-50" name="50%" label="50%" complexity="minor" />
-					<component id="BGSpawn-SpawnProbability-25" name="25%" label="25%" complexity="minor" />
-				</alternatives>
-				<component id="BGSpawn-VampiricWolfLord" name="Vampiric Wolf Lord (inspired to DavidW Wolf of Ulcaster)" label="New Vampiric Wolf Lord" complexity="minor" />
-				<component id="BGSpawn-RandomEncounters" name="BGSpawn random encounters between areas" label="Random encounters between areas" complexity="minor" />
-			</mod>
-			<mod id="bg_enemy_randomizer" label="BG1/BG2 Enemy Randomiser" engine="bg,eet" default="1">
-				<component id="gaEnemyRando:1" name="With SoD creatures (Makes BG1 slightly tougher)" label="Spawn point randomizer" engine="bg1" complexity="major" />
-				<component id="gaEnemyRando:2" name="BG2 Spawn Point Randomizer" label="Spawn point randomizer" engine="bg2" complexity="major" />
-				<component id="gaEnemyRando:3" name="With SoD creatures (Makes BG1 slightly tougher)" label="Spawn point randomizer" engine="eet" complexity="major" />
-				<component id="gaEnemyRando:6" name="With SoD creatures (Makes BG1 slightly tougher)" label="Rest encounter randomizer" engine="bg1" complexity="major" />
-				<component id="gaEnemyRando:7" name="Include starting dungeon" label="Rest encounter randomizer" engine="bg2" complexity="major" />
-				<component id="gaEnemyRando:11" name="With SoD creatures (Makes BG1 slightly tougher) - Include Chateau Irenicus" label="Rest encounter randomizer" engine="eet" complexity="major" />
-				<component id="gaEnemyRando:15" name="With SoD creatures (Makes BG1 slightly tougher) - Keep enemies roughly similar in power" label="Set creature randomizer" engine="bg1" complexity="major" />
-				<component id="gaEnemyRando:18" name="Include starting dungeon - Completely random" label="Set creature randomizer" engine="bg2" complexity="major" />
-				<component id="gaEnemyRando:25" name="With SoD creatures (Makes BG1 slightly tougher) - Include Chateau Irenicus - Keep enemies roughly similar in power" label="Set creature randomizer" engine="eet" complexity="major" />
-			</mod>
-		</alternatives>
-		<mod id="randomiser" label="Items" engine="bg,eet" unfolded="1">
-			<component id="randomiser:500" name="Randomly replace the WIS tome normally found in TotSC with one of the 6 available types" label="Randomly replace the WIS tome normally found in TotSC with one of the 6 available types" engine="bg1,eet" complexity="minor" />
-			<component id="randomiser:520" name="Kangaxx further sealed away" label="Kangaxx further sealed away" engine="bg2,eet" complexity="minor" />
-			<component id="randomiser:530" name="Randomise scrolls" label="Randomise scrolls" complexity="minor" />
-			<component id="randomiser:540" name="Randomise the heads of the Flail of Ages" label="Randomise the heads of the Flail of Ages" engine="bg2,eet" complexity="minor" />
-			<component id="randomiser:560" name="More Spell Shield scrolls" label="More spell shield scrolls" engine="bg2,eet" complexity="minor" />
-			<component id="randomiser:570" name="Randomise the appearance of cursed items" label="Randomise the appearance of cursed items" engine="bg1,eet" complexity="minor" />
-			<alternatives label="Randomisation Mode" unfolded="1">
-				<component id="randomiser:1100" name="Mode 1: Randomise with in-game scripts. No items are lost" label="Mode 1: Randomise at starting new game." desc="Less items can be randomized. If you leave the initial area before the termination sound (rat or squirell), some items will be lost" complexity="major" />
-				<component id="randomiser:1300" name="Mode 2: Randomise with WeiDU. No items are lost" label="Mode 2: Randomise at mod installation." desc="More items can be randomized. If the randomized weapon are better, they are auto equipped by the enemies." complexity="major" />
-			</alternatives>
-			<component id="randomiser:5005" name="Beholders have no items equipped" label="Beholders have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
-			<component id="randomiser:5015" name="Demi-liches have no items equipped" label="Demi-liches have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
-			<component id="randomiser:5025" name="Dragons have no items equipped" label="Dragons have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
-			<component id="randomiser:5035" name="Elementals have no items equipped" label="Elementals have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
-			<component id="randomiser:5045" name="Fiends have no items equipped" label="Fiends have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
-			<component id="randomiser:5055" name="Golems have no items equipped" label="Golems have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
-			<component id="randomiser:5065" name="Master Brains have no items equipped" label="Master brains have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
-			<component id="randomiser:5075" name="Slimes have no items equipped" label="Slimes have no items equipped" engine="bg1,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
-			<component id="randomiser:5085" name="Trolls have no items equipped" label="Trolls have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
-			<component id="randomiser:10300" name="Prevent Watcher's Keep statues from disappearing" label="Prevent Watcher's Keep statues from disappearing" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" engine="bg2,eet" complexity="minor" />
-		</mod>
-	</randomisation>
-
 	<!--
 
 DaxTweaks:50;DaxTweaks - Add Cowled Menace spellcasters to the list of SCS spellcasters that receive HLA's (unlock their HLA's)
@@ -2115,12 +2062,68 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 			<component id="cd_tweaks_recover_ammo_25_enemy_only" name="25% chance to recover after a successful hit, vs. enemies only" label="25% chance to recover ammo after a successful hit, vs. enemies only" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3264" complexity="moderate" />
 			<component id="cd_tweaks_recover_throwing_weapons_50_enemy_only" name="50% chance to recover after a successful hit, vs. enemies only" label="50% chance to recover throwing weapons after a successful hit, vs. enemies only" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3275" complexity="moderate" />
 		</group>
-		<component id="ZG-EQUIP-WHAT-I-CAN" name="Equip items from inventory to fill empty slots" label="Equip items from creatures' inventory to fill empty slots" modId="RandomGraionTweaks" recommended="higherDifficulty" complexity="minor" />
 		<component id="cd_tweaks_triple_class_hla_table" name="Triple-Class HLA Tables" label="Triple-class HLA tables" modId="Tweaks-Anthology" recommended="adjustments" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2300" complexity="minor" />
 		<component id="cd_tweaks_no_traps_or_locks" name="Remove traps completely" label="Remove all traps" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="lowerDifficulty" package="disableTraps" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3130" complexity="major" />
 		<component id="cd_tweaks_force_all_dialogue_to_pause" name="Force All Dialogue to Pause Game" label="Force all dialogue to pause game" engine="bg,eet,iwd,pst" recommended="adjustments" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_130" complexity="minor" />
 		<component id="cd_tweaks_sensible_regeneration_when_traveling" name="Sensible Regeneration When Traveling" label="Sensible regeneration when traveling" engine="bg,eet,iwd,pst" recommended="adjustments" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3380" complexity="minor" />
 		<component id="cd_tweaks_reveal_city_areas" name="Reveal City Maps When Entering Area" label="Reveal city maps when entering area" engine="bg,eet,iwd,pst" recommended="adjustments" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1100" complexity="minor" />
 		<component id="XGTCumulativeCasterLevels:100" name="Allow Caster Levels Bonuses and Penalties to Accumulate" label="Allow caster levels bonuses and penalties to accumulate" recommended="fixes" modId="XGTCumulativeCasterLevels" displayIf="EEex:1" complexity="minor" />
+	</adjustments>
+
+	<randomisation engine="bg,eet" displayIfNot="IE_focus_dedicated_campaigns">
+		<alternatives label="Enemies">
+			<mod id="bg_enemy_randomizer" label="BG1/BG2 Enemy Randomiser" engine="bg,eet" default="1" recommended="adjustments" package="randomisation">
+				<component id="gaEnemyRando:1" name="With SoD creatures (Makes BG1 slightly tougher)" label="Spawn point randomizer" engine="bg1" complexity="major" />
+				<component id="gaEnemyRando:2" name="BG2 Spawn Point Randomizer" label="Spawn point randomizer" engine="bg2" complexity="major" />
+				<component id="gaEnemyRando:3" name="With SoD creatures (Makes BG1 slightly tougher)" label="Spawn point randomizer" engine="eet" complexity="major" />
+				<component id="gaEnemyRando:6" name="With SoD creatures (Makes BG1 slightly tougher)" label="Rest encounter randomizer" engine="bg1" complexity="major" />
+				<component id="gaEnemyRando:7" name="Include starting dungeon" label="Rest encounter randomizer" engine="bg2" complexity="major" />
+				<component id="gaEnemyRando:11" name="With SoD creatures (Makes BG1 slightly tougher) - Include Chateau Irenicus" label="Rest encounter randomizer" engine="eet" complexity="major" />
+				<component id="gaEnemyRando:15" name="With SoD creatures (Makes BG1 slightly tougher) - Keep enemies roughly similar in power" label="Set creature randomizer" engine="bg1" complexity="major" />
+				<component id="gaEnemyRando:18" name="Include starting dungeon - Completely random" label="Set creature randomizer" engine="bg2" complexity="major" />
+				<component id="gaEnemyRando:25" name="With SoD creatures (Makes BG1 slightly tougher) - Include Chateau Irenicus - Keep enemies roughly similar in power" label="Set creature randomizer" engine="eet" complexity="major" />
+			</mod>
+			<mod id="BGSpawn" label="BG1 Spawn System" engine="bg1,eet">
+				<component id="BGSpawn-Main" name="BGSpawn system based on levels &amp; party members" label="BGSpawn system based on levels and party members" core="1" complexity="major" />
+				<alternatives label="How often to check for respawn?">
+					<component id="BGSpawn-RespawnTime8Hours" name="[How often to check for respawn?] Re-spawn time = 8 hours (standard ad&amp;d rules)" label="8 hours (standard PnP rules)" complexity="minor" />
+					<component id="BGSpawn-RespawnTime1Day" name="[How often to check for respawn?] Re-spawn time = 24 hours" label="1 day" complexity="minor" />
+				</alternatives>
+				<alternatives label="How sure a respawn should be?">
+					<component id="BGSpawn-SpawnProbability-100" name="100%" label="100%" complexity="minor" />
+					<component id="BGSpawn-SpawnProbability-75" name="75%" label="75%" complexity="minor" />
+					<component id="BGSpawn-SpawnProbability-50" name="50%" label="50%" complexity="minor" />
+					<component id="BGSpawn-SpawnProbability-25" name="25%" label="25%" complexity="minor" />
+				</alternatives>
+				<component id="BGSpawn-VampiricWolfLord" name="Vampiric Wolf Lord (inspired to DavidW Wolf of Ulcaster)" label="New Vampiric Wolf Lord" complexity="minor" />
+				<component id="BGSpawn-RandomEncounters" name="BGSpawn random encounters between areas" label="Random encounters between areas" complexity="minor" />
+			</mod>
+		</alternatives>
+		<mod id="randomiser" label="Items" engine="bg,eet" unfolded="1" recommended="adjustments" package="randomisation">
+			<component id="randomiser:500" name="Randomly replace the WIS tome normally found in TotSC with one of the 6 available types" label="Randomly replace the WIS tome normally found in TotSC with one of the 6 available types" engine="bg1,eet" complexity="minor" />
+			<component id="randomiser:520" name="Kangaxx further sealed away" label="Kangaxx further sealed away" engine="bg2,eet" complexity="minor" />
+			<component id="randomiser:530" name="Randomise scrolls" label="Randomise scrolls" complexity="minor" />
+			<component id="randomiser:540" name="Randomise the heads of the Flail of Ages" label="Randomise the heads of the Flail of Ages" engine="bg2,eet" complexity="minor" />
+			<component id="randomiser:560" name="More Spell Shield scrolls" label="More spell shield scrolls" engine="bg2,eet" complexity="minor" />
+			<component id="randomiser:570" name="Randomise the appearance of cursed items" label="Randomise the appearance of cursed items" engine="bg1,eet" complexity="minor" />
+			<alternatives label="Randomisation Mode" unfolded="1">
+				<component id="randomiser:1100" name="Mode 1: Randomise with in-game scripts. No items are lost" label="Mode 1: Randomise at starting new game." desc="Less items can be randomized. If you leave the initial area before the termination sound (rat or squirell), some items will be lost" complexity="major" />
+				<component id="randomiser:1300" name="Mode 2: Randomise with WeiDU. No items are lost" label="Mode 2: Randomise at mod installation." desc="More items can be randomized. If the randomized weapon are better, they are auto equipped by the enemies." default="1" complexity="major" />
+			</alternatives>
+			<component id="randomiser:5005" name="Beholders have no items equipped" label="Beholders have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
+			<component id="randomiser:5015" name="Demi-liches have no items equipped" label="Demi-liches have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
+			<component id="randomiser:5025" name="Dragons have no items equipped" label="Dragons have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
+			<component id="randomiser:5035" name="Elementals have no items equipped" label="Elementals have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
+			<component id="randomiser:5045" name="Fiends have no items equipped" label="Fiends have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
+			<component id="randomiser:5055" name="Golems have no items equipped" label="Golems have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
+			<component id="randomiser:5065" name="Master Brains have no items equipped" label="Master brains have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
+			<component id="randomiser:5075" name="Slimes have no items equipped" label="Slimes have no items equipped" engine="bg1,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
+			<component id="randomiser:5085" name="Trolls have no items equipped" label="Trolls have no items equipped" engine="bg2,eet" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" complexity="minor" />
+			<component id="randomiser:10300" name="Prevent Watcher's Keep statues from disappearing" label="Prevent Watcher's Keep statues from disappearing" alwaysIf="randomiser:1100|randomiser:1300" noDisplay="1" engine="bg2,eet" complexity="minor" />
+		</mod>
+	</randomisation>
+
+	<adjustments engine="bg,eet,iwd">
+		<component id="ZG-EQUIP-WHAT-I-CAN" name="Equip items from inventory to fill empty slots" label="Equip items from creatures' inventory to fill empty slots" modId="RandomGraionTweaks" recommended="higherDifficulty" complexity="minor" />
 	</adjustments>
 </installSequence>

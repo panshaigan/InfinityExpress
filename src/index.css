@@ -2877,6 +2877,33 @@ body.is-resizing-detail * {
   opacity: 0.55;
 }
 
+.preset-group-checks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1.15rem;
+  margin-bottom: 0.85rem;
+}
+
+.preset-group-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.preset-group-check.disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.preset-group-check-label {
+  line-height: 1.2;
+}
+
 .preset-layout-tabs {
   display: flex;
   gap: 0.5rem;

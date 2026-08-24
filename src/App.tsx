@@ -837,6 +837,15 @@ function AppShell() {
     recommended.onPackageToggle(token, wantChecked)
   }
 
+  function onPresetsGroupToggle(
+    recommendedTokens: readonly string[],
+    packageTokens: readonly string[],
+    wantChecked: boolean,
+  ) {
+    if (installSelectionFrozen) return
+    recommended.onPresetGroupToggle(recommendedTokens, packageTokens, wantChecked)
+  }
+
   function resetComponentSelection() {
     if (!game) return
     recommended.resetRecommendedPresets()
@@ -1378,6 +1387,7 @@ function AppShell() {
                       checkedPackages={recommended.checkedPackages}
                       onRecommendedToggle={onPresetsRecommendedToggle}
                       onPackageToggle={onPresetsPackageToggle}
+                      onPresetGroupToggle={onPresetsGroupToggle}
                       recommendedCounts={presetRecommendedCounts}
                       onTileFocus={presetFocus.onTileFocus}
                       onTileHover={presetFocus.onTileHover}

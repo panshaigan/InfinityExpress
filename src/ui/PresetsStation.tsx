@@ -5,6 +5,7 @@ import { resolvePresetLayout } from '../lib/recommended/catalog'
 import type { InstallSequenceModel } from '../lib/xml/schema'
 import type { PresetTileRef } from '../lib/selection/presetPreview'
 import { IconTip } from './IconTip'
+import { PresetGroupChecks } from './PresetGroupChecks'
 import { PresetLayoutStrip } from './PresetLayoutStrip'
 
 interface Props {
@@ -15,6 +16,11 @@ interface Props {
   checkedPackages: ReadonlySet<string>
   onRecommendedToggle: (token: string, wantChecked: boolean) => void
   onPackageToggle: (token: string, wantChecked: boolean) => void
+  onPresetGroupToggle: (
+    recommended: readonly string[],
+    packages: readonly string[],
+    wantChecked: boolean,
+  ) => void
   recommendedCounts?: Readonly<Record<string, RecommendedContentCounts>>
   onTileFocus?: (tile: PresetTileRef) => void
   onTileHover?: (tile: PresetTileRef | null) => void
@@ -34,6 +40,7 @@ export function PresetsStation({
   checkedPackages,
   onRecommendedToggle,
   onPackageToggle,
+  onPresetGroupToggle,
   recommendedCounts,
   onTileFocus,
   onTileHover,
@@ -96,8 +103,16 @@ export function PresetsStation({
         )}
       </div>
       <div className="engine-preselect">
+        <PresetGroupChecks
+          enabled={enabled}
+          model={model}
+          recommendedGroups={recommendedGroups}
+          checkedRecommended={checkedRecommended}
+          checkedPackages={checkedPackages}
+          onPresetGroupToggle={onPresetGroupToggle}
+        />
         {showTablist ? (
-          <div className="preset-layout-tabs" role="tablist" aria-label="Preset groups">
+          <div className="preset-layout-tabs" role="tablist" aria-label="Preset layout tabs">
             {layoutTabs.map((tab, index) => (
               <button
                 key={tab.label}

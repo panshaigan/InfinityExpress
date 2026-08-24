@@ -5,6 +5,7 @@
  * - PRESET_PACKAGE_COPY — package tokens (BGGO, npcExpansions, …); same fields.
  *   Label falls back to InstallSequence ancestor `label` when omitted.
  * - PRESET_LAYOUT — tabs of section headings and rows of recommended tokens
+ * - PRESET_GROUPS — checkboxes above the tabs that toggle listed tiles
  */
 
 export interface PresetTileCopy {
@@ -26,6 +27,23 @@ export interface PresetLayoutSection {
 export interface PresetLayoutTab {
   label: string
   sections: PresetLayoutSection[]
+}
+
+/**
+ * String = recommended tile only.
+ * `{ token, packages: true }` = recommended tile plus nested packages.
+ * `{ token, packages: 'only' }` = nested packages, not the recommended tile.
+ * `{ package }` = that package tile only.
+ */
+export type PresetGroupInclude =
+  | string
+  | { token: string; packages: true | 'only' }
+  | { package: string }
+
+export interface PresetGroup {
+  id: string
+  label: string
+  include: readonly PresetGroupInclude[]
 }
 
 /** Recommended-token tile copy (label optional override). */
@@ -382,6 +400,25 @@ export const PRESET_PACKAGE_COPY: Record<string, PresetTileCopy> = {
     recommendedFor:
       'Players who want to minimize exploration hazards and avoid trap-related gameplay mechanics.',
   },
+  strictIdentification: {
+    label: 'Strict Identification',
+    summary:
+      'Changes item identification rules to make identifying items more demanding and meaningful.',
+    typeAndDepth:
+      'Moderate to major impact. Limits identification based on storekeeper Lore and can require gems and potions to be identified, increasing the importance of identification skills and resources.',
+    recommendedFor:
+      'Experienced players who want identification to play a larger role and provide an additional gameplay consideration.',
+  },
+
+  randomisation: {
+    label: 'Randomisation',
+    summary:
+      'Randomizes enemies, encounters, items, and other elements to make playthroughs less predictable.',
+    typeAndDepth:
+      'Moderate to high impact. Can randomize enemy spawn points and compositions, rest encounters, item locations, scrolls, equipment, and other game elements, substantially changing the experience between playthroughs.',
+    recommendedFor:
+      'Experienced players looking for unpredictable playthroughs, greater replayability, or a fresh challenge after becoming familiar with the original game.',
+  },
 }
 
 /** Presets page tab + section layout (whitelist of recommended tokens). */
@@ -430,5 +467,42 @@ export const PRESET_LAYOUT: PresetLayoutTab[] = [
         rows: [{ tokens: ['lowerDifficulty', 'higherDifficulty', 'adjustments'] }],
       },
     ],
+  },
+]
+
+/** Group checkboxes above Presets tabs (toggle listed recommended/package tiles). */
+export const PRESET_GROUPS: PresetGroup[] = [
+  {
+    id: 'allRecommended',
+    label: 'All recommended',
+    include: [
+      'fixes',
+      'restoration',
+      { token: 'ui', packages: true },
+      { token: 'gfx', packages: true },
+      { token: 'sounds', packages: true },
+      'vanillaPlus',
+      'blendWell',
+      'extended',
+      'mechanics',
+      'spells',
+      'combat',
+      'adjustments',
+    ],
+  },
+  {
+    id: 'npc',
+    label: 'NPC',
+    include: [{ token: 'npc', packages: 'only' }],
+  },
+  {
+    id: 'lowerDifficulty',
+    label: 'Lower difficulty',
+    include: ['lowerDifficulty'],
+  },
+  {
+    id: 'higherDifficulty',
+    label: 'Higher difficulty',
+    include: ['higherDifficulty', { package: 'encounters' }],
   },
 ]
