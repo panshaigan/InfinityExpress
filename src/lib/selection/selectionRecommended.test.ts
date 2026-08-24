@@ -4,6 +4,7 @@ import { createInitialSelection } from './selectionCore'
 import {
   setRecommendedSelection,
   setPackageSelection,
+  applyCheckedPresetTiles,
   buildRecommendedBaselineSelection,
   selectionMatchesRecommendedBaseline,
 } from './selectionRecommended'
@@ -110,5 +111,120 @@ describe('recommended mass-check', () => {
     expect(
       selectionMatchesRecommendedBaseline(model, 'eet', selected, new Set(['sounds']), new Set()),
     ).toBe(false)
+  })
+})
+
+const ALTS_XML = `<?xml version="1.0"?>
+<installSequence>
+  <content>
+    <alternatives label="Postgame">
+      <mod id="EndlessBG1" label="Endless BG1" recommended="blendWell">
+        <component id="EBG1_Main" label="Main" core="1" />
+        <component id="EBG1_Flavor" label="Flavor" />
+        <component id="EBG1_Sword" label="Sword" />
+      </mod>
+      <mod id="Reflections" label="Reflections of Destiny">
+        <component id="RoD_Main" label="Future" />
+      </mod>
+    </alternatives>
+    <alternatives label="Competing blendWell">
+      <mod id="FirstBranch" label="First" recommended="blendWell">
+        <component id="first:a" label="A" />
+        <component id="first:b" label="B" />
+      </mod>
+      <mod id="DefaultBranch" label="Default" recommended="blendWell">
+        <component id="def:a" label="DA" default="1" />
+        <component id="def:b" label="DB" />
+      </mod>
+    </alternatives>
+    <alternatives label="Radio">
+      <component id="radio:a" label="A" recommended="radioPick" />
+      <component id="radio:b" label="B" recommended="radioPick" default="1" />
+      <component id="radio:c" label="C" recommended="radioPick" />
+    </alternatives>
+  </content>
+</installSequence>`
+
+describe('recommended mass-check alternatives', () => {
+  const { model } = parseInstallSequence(ALTS_XML)
+
+  it('selects every matching component in a recommended mod branch', () => {
+    let selected = createInitialSelection(model, 'eet')
+    selected = setRecommendedSelection(model, selected, 'eet', 'blendWell', true)
+    expect(selected.has('EBG1_Main')).toBe(true)
+    expect(selected.has('EBG1_Flavor')).toBe(true)
+    expect(selected.has('EBG1_Sword')).toBe(true)
+    expect(selected.has('RoD_Main')).toBe(false)
+  })
+
+  it('picks the default alternatives branch when both match', () => {
+    let selected = createInitialSelection(model, 'eet')
+    selected = setRecommendedSelection(model, selected, 'eet', 'blendWell', true)
+    expect(selected.has('def:a')).toBe(true)
+    expect(selected.has('def:b')).toBe(true)
+    expect(selected.has('first:a')).toBe(false)
+    expect(selected.has('first:b')).toBe(false)
+  })
+
+  it('still picks a single option for component-only radios', () => {
+    let selected = createInitialSelection(model, 'eet')
+    selected = setRecommendedSelection(model, selected, 'eet', 'radioPick', true)
+    expect(selected.has('radio:b')).toBe(true)
+    expect(selected.has('radio:a')).toBe(false)
+    expect(selected.has('radio:c')).toBe(false)
+  })
+})
+
+const UNLOCK_XML = `<?xml version="1.0"?>
+<installSequence>
+  <content>
+    <mod id="BG1NPC" label="BG1NPC" recommended="npc" package="npcExpansions">
+      <component id="bg1npc_project-main" label="Core" core="1" />
+    </mod>
+    <component id="bg1npc_project-sarevokdiary_sixofspades" label="Diary"
+      displayIf="bg1npc_project-main" recommended="extended" />
+  </content>
+</installSequence>`
+
+describe('recommended mass-check cross-tile unlock', () => {
+  const { model } = parseInstallSequence(UNLOCK_XML)
+
+  it('selects a displayIf component after a later package unlocks it', () => {
+    let selected = createInitialSelection(model, 'eet')
+    selected = setRecommendedSelection(model, selected, 'eet', 'extended', true)
+    expect(selected.has('bg1npc_project-sarevokdiary_sixofspades')).toBe(false)
+    selected = applyCheckedPresetTiles(
+      model,
+      selected,
+      'eet',
+      new Set(['extended']),
+      new Set(['npcExpansions']),
+    )
+    expect(selected.has('bg1npc_project-main')).toBe(true)
+    expect(selected.has('bg1npc_project-sarevokdiary_sixofspades')).toBe(true)
+  })
+
+  it('selects a displayIf component when the unlocking package is applied first', () => {
+    let selected = createInitialSelection(model, 'eet')
+    selected = setPackageSelection(model, selected, 'eet', 'npcExpansions', true)
+    selected = applyCheckedPresetTiles(
+      model,
+      selected,
+      'eet',
+      new Set(['extended']),
+      new Set(['npcExpansions']),
+    )
+    expect(selected.has('bg1npc_project-sarevokdiary_sixofspades')).toBe(true)
+  })
+
+  it('baseline converges regardless of tile order', () => {
+    const selected = buildRecommendedBaselineSelection(
+      model,
+      'eet',
+      new Set(['extended']),
+      new Set(['npcExpansions']),
+    )
+    expect(selected.has('bg1npc_project-main')).toBe(true)
+    expect(selected.has('bg1npc_project-sarevokdiary_sixofspades')).toBe(true)
   })
 })

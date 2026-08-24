@@ -56,6 +56,8 @@ Operands = component ids. `,` = AND, `|` = OR, `()` group. Unparsable → false.
 
 - **Recommended tiles** — mass-check components with matching `effectiveRecommended` and **no** `effectivePackage`. Independent toggles; does not change filters.
 - **Package tiles** — nested visually under their recommended parent; mass-check only components with matching `effectivePackage`. Independent from the parent recommended tile and from sibling packages.
+- **Alternatives** — mass-check picks one enclosing `<alternatives>` **branch** (prefer `default`), then every matching component in that branch. Component-only radios still pick a single option.
+- Turning a tile **on** re-applies every already-checked recommended/package tile so `displayIf` dependents that just unlocked are selected too. Uncheck only clears that tile’s components (gated-out non-required ids are pruned as usual).
 - Tiles are omitted when the current engine has no eligible visible components (engine allow-list, `noDisplay`, and `displayIf` / `displayIfNot` on the component or ancestors — e.g. IDGO stays hidden on EET until IWD-in-EET is selected).
 
 ### Presets page catalog (`src/data/presetCatalog.ts`)

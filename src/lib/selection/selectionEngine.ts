@@ -18,6 +18,7 @@ export type { SelectionScope } from './selectionRecommended'
 export {
   setRecommendedSelection,
   setPackageSelection,
+  applyCheckedPresetTiles,
   buildRecommendedBaselineSelection,
   selectionMatchesRecommendedBaseline,
 } from './selectionRecommended'

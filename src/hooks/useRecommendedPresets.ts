@@ -3,6 +3,7 @@ import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import {
   setRecommendedSelection,
   setPackageSelection,
+  applyCheckedPresetTiles,
 } from '../lib/selection/selectionEngine'
 
 export interface RecommendedPresetsInitialState {
@@ -27,26 +28,34 @@ export function useRecommendedPresets(args: {
 
   function onRecommendedToggle(token: string, wantChecked: boolean) {
     if (!game) return
+    const packages = checkedPackages
     setCheckedRecommended((prev) => {
       const next = new Set(prev)
       if (wantChecked) next.add(token)
       else next.delete(token)
-      setSelectedIds((prevSelected) =>
-        setRecommendedSelection(model, prevSelected, game, token, wantChecked),
-      )
+      setSelectedIds((prevSelected) => {
+        if (!wantChecked) {
+          return setRecommendedSelection(model, prevSelected, game, token, false)
+        }
+        return applyCheckedPresetTiles(model, prevSelected, game, next, packages)
+      })
       return next
     })
   }
 
   function onPackageToggle(token: string, wantChecked: boolean) {
     if (!game) return
+    const recommended = checkedRecommended
     setCheckedPackages((prev) => {
       const next = new Set(prev)
       if (wantChecked) next.add(token)
       else next.delete(token)
-      setSelectedIds((prevSelected) =>
-        setPackageSelection(model, prevSelected, game, token, wantChecked),
-      )
+      setSelectedIds((prevSelected) => {
+        if (!wantChecked) {
+          return setPackageSelection(model, prevSelected, game, token, false)
+        }
+        return applyCheckedPresetTiles(model, prevSelected, game, recommended, next)
+      })
       return next
     })
   }
