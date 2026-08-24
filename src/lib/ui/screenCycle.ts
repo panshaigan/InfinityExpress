@@ -88,3 +88,38 @@ export function cycleScreen(
   }
   return null
 }
+
+function screenInList(
+  screens: readonly NavScreen[],
+  screen: NavScreen,
+): NavScreen | undefined {
+  return screens.find((s) => navScreensEqual(s, screen))
+}
+
+/**
+ * When `missing` drops out of the cycle (e.g. Unchecked filter emptied it),
+ * pick the next remaining unfinished screen after its former position, wrapping.
+ */
+export function advancePastMissingScreen(
+  previousScreens: readonly NavScreen[],
+  missing: NavScreen,
+  nextScreens: readonly NavScreen[],
+  skip?: (screen: NavScreen) => boolean,
+): NavScreen | null {
+  const isSkipped = skip ?? (() => false)
+  const eligible = nextScreens.filter((s) => !isSkipped(s))
+  if (eligible.length === 0) return null
+
+  const startIdx = previousScreens.findIndex((s) => navScreensEqual(s, missing))
+  if (startIdx < 0) return eligible[0] ?? null
+
+  for (let step = 1; step <= previousScreens.length; step++) {
+    const idx = (startIdx + step) % previousScreens.length
+    const candidate = previousScreens[idx]!
+    if (isSkipped(candidate)) continue
+    const live = screenInList(nextScreens, candidate)
+    if (live) return live
+  }
+
+  return eligible[0] ?? null
+}

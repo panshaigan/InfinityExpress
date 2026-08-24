@@ -10,6 +10,7 @@ import { createPortal } from 'react-dom'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { cycleTabIndex } from '../lib/ui/chromeHotkeys'
 import type { BranchNavStationId } from '../lib/stationBranchNav'
+import { IconTip } from './IconTip'
 
 function branchLabel(display: DisplayNode): string {
   return display.node.attrs.label ?? display.node.tag
@@ -167,9 +168,7 @@ function BranchMenu({
         onClick={() => cycle(-1)}
       >
         ‹
-        <span className="icon-tip" role="tooltip">
-          {prevTitle}
-        </span>
+        <IconTip>{prevTitle}</IconTip>
       </button>
       <button
         ref={triggerRef}
@@ -204,9 +203,7 @@ function BranchMenu({
         onClick={() => cycle(1)}
       >
         ›
-        <span className="icon-tip" role="tooltip">
-          {nextTitle}
-        </span>
+        <IconTip>{nextTitle}</IconTip>
       </button>
       {open && createPortal(
         <div

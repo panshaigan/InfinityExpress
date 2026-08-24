@@ -1032,7 +1032,7 @@
 							<component id="ZSTweaks:1342" name="Make Protector of the Dryads deal +2 damage to orcs, ogres, gnolls, and goblinoids" label="Make Protector of the Dryads deal +2 damage to orcs, ogres, gnolls, and goblinoids" complexity="minor" />
 							<component id="ZSTweaks:1641" name="Make the item creation abilities of vanilla NPCs slightly better" label="Make the item creation abilities of vanilla NPCs slightly better" complexity="minor" />
 						</mod>
-						<component id="SubtleD_Spell_Tweaks:1351" name="Add Faerie Fire and Slow On Hit to Moonblade" label="Add Faerie Fire and Slow on Hit to Moonblade" modId="SubtleD_Spell_Tweaks" complexity="minor" />
+						<component id="SubtleD_Spell_Tweaks:1351" name="Add Faerie Fire and Slow On Hit to Moonblade" label="Add Faerie Fire and Slow on Hit to Moonblade" modId="SubtleD_Spell_Tweaks" recommended="blendWell" complexity="minor" />
 					</group>
 					<component id="stratagems:3010" name="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" label="Replace +1 arrows and other projectiles with nonmagical &quot;fine&quot; ones" modId="SwordCoastStratagems" recommended="blendWell" complexity="minor" />
 					<component id="stratagems:2900" name="Move or modify some overpowered magic items" label="Move or modify some overpowered magic items" displayIfNot="randomiser:1100|randomiser:1300" modId="SwordCoastStratagems" recommended="blendWell" complexity="minor" />
@@ -1238,7 +1238,6 @@
 		</multi>
 		<universal label="Universal">
 			<component id="cd_tweaks_alter_thac0_table" name="Un-Nerfed THAC0 Table" label="Un-nerfed THAC0 table" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2240" complexity="minor" />
-			<component id="cd_tweaks_infravision" name="Make Infravision Useful [Luke]" label="Make Infravision Useful" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2680" complexity="moderate" />
 			<feats label="Add new feats">
 				<component id="cd_tweaks_planar_turning" name="Planar Turning Class Feat for Clerics/Paladins [Luke]" label="Planar Turning class feat for clerics/paladins" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6140" complexity="minor" />
 				<component id="cd_tweaks_nwn_uncanny_dodge" name="Uncanny Dodge Class Feat for Barbarians and Rogues [Luke]" label="Uncanny Dodge class feat for barbarians and rogues" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6260" complexity="minor" />
@@ -1570,7 +1569,7 @@
 	<portraits engine="bg,eet">
 		<group label="Original Non-joinable NPCs" unfolded="1" displayIfNot="IE_focus_dedicated_campaigns">
 			<component id="EET_Tweaks:1050" name="Cameo NPCs appearance" label="Cameo NPCs from BG1" desc="Coran, Tiax, etc" modId="EET_Tweaks" engine="bg2,eet" complexity="minor" />
-			<mod id="HPS-Portraits-Project-1.0" label="HPS Portraits Project" engine="bg,eet">
+			<mod id="HPS-Portraits-Project-1.0" label="HPS Portraits Project" recommended="blendWell" engine="bg,eet">
 				<component id="HPSPP-Core" name="Add missing Portraits to Base Game Unique NPCs" label="Base game unique NPCs" complexity="major" />
 				<component id="HPSPP-MinorNpcs" name="Add missing Portraits to Minor and Common NPCs" label="Minor and common NPCs" complexity="moderate" />
 				<component id="HPSPP-MonsterSpecialNpcs" name="Add missing Portraits to Monsters and other Special NPCs" label="Monsters and other special NPCs" complexity="moderate" />
@@ -1612,9 +1611,9 @@
 		</group>
 		<group label="Mod NPC Portraits" displayIfNot="IE_focus_dedicated_campaigns">
 			<component id="zdbae:10" name="altportrait" label="Baeloth - alternative portrait" modId="BaeBG2" displayIf="zdbae:0" engine="bg2,eet" complexity="minor" />
-			<component id="Drake:1" name="BG2-style (The Artisan)" label="Default portrait (the artisan)" modId="Drake" alwaysIf="Drake:0" complexity="minor" />
+			<component id="Drake:1" name="BG2-style (The Artisan)" label="Drake - Default portrait" modId="Drake" alwaysIf="Drake:0" noDisplay="1" complexity="minor" />
 			<component id="SisterVigilantes_Angelo-Portrait_cassinus_free_fr" name="Angelo's alternative portrait from http://cassinus.free.fr" label="Angelo - alternative portrait" modId="Angelo" displayIf="SisterVigilantes_Angelo-main" engine="bg2,eet" complexity="minor" />
-			<mod id="HPS-Portraits-Project-1.0" label="Add lacking portraits" engine="bg,eet">
+			<mod id="HPS-Portraits-Project-1.0" label="Add lacking portraits" recommended="blendWell" engine="bg,eet">
 				<component id="HPSPP-ModNpcsACQ" name="Add new portraits to NPCs from mod: Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and other stories" label="Ascalon's Quest Pack: The Serpents of Abbathor Part 1 and Other Stories" complexity="minor" />
 				<component id="HPSPP-ModNpcsAdalonsBlood" name="Add new portraits to NPCs from mod: Adalon's Blood" label="Adalon's Blood" complexity="minor" />
 				<component id="HPSPP-ModNpcsAerieWings" name="Add new portraits to NPCs from mod: Aerie Wings" label="Aerie Wings" complexity="minor" />
@@ -1649,46 +1648,46 @@
 			<mod id="HPS-Portraits-Project-1.0" label="Add just lacking portraits or add and replace all">
 				<alternatives label="BG2 Unfinished Business">
 					<component id="HPSPP-ModNpcsBG2UB_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsBG2UB_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsBG2UB_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 				<alternatives label="Solaufein's Rescue">
 					<component id="HPSPP-ModNpcsSolaufeinRescue_opt1" name="Add portraits for all NPCs including replacing Solaufein's portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsSolaufeinRescue_opt2" name="Add portraits for all NPCs but do not replace Solaufein's portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsSolaufeinRescue_opt2" name="Add portraits for all NPCs but do not replace Solaufein's portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 				<alternatives label="Blackhearts">
 					<component id="HPSPP-ModNpcsBlackhearts_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsBlackhearts_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsBlackhearts_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 				<alternatives label="Rogue Rebalancing">
 					<component id="HPSPP-ModNpcsRR_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsRR_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsRR_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 				<alternatives label="Skie: The Cost of One Girl's Soul">
 					<component id="HPSPP-ModNpcsSkieCost_opt1" name="Add portraits for all NPCs including replacing Skie's portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsSkieCost_opt2" name="Add portraits for all NPCs but do not replace Skie's portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsSkieCost_opt2" name="Add portraits for all NPCs but do not replace Skie's portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 				<alternatives label="Yoshimo's Remorse">
 					<component id="HPSPP-ModNpcsYosh_Remorse_opt1" name="Add portraits for all NPCs including replacing Yoshimo's portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsYosh_Remorse_opt2" name="Add portraits for all NPCs but do not replace Yoshimo's portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsYosh_Remorse_opt2" name="Add portraits for all NPCs but do not replace Yoshimo's portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 				<alternatives label="Adrian NPC">
 					<component id="HPSPP-ModNpcsAdrianBG2_opt1" name="Add portraits for all NPCs including replacing Adrian's portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsAdrianBG2_opt2" name="Add portraits for all NPCs but do not replace Adrian's portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsAdrianBG2_opt2" name="Add portraits for all NPCs but do not replace Adrian's portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 				<alternatives label="Angelo NPC">
 					<component id="HPSPP-ModNpcsAngelo_opt1" name="Add portraits for all NPCs including replacing Angelo's portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsAngelo_opt2" name="Add portraits for all NPCs but do not replace Angelo's portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsAngelo_opt2" name="Add portraits for all NPCs but do not replace Angelo's portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 				<alternatives label="Cowled Menace">
 					<component id="HPSPP-ModNpcsCowledMenace_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsCowledMenace_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsCowledMenace_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 				<alternatives label="Ooze's Lounge">
 					<component id="HPSPP-ModNpcsOozeLounge_opt1" name="Add portraits for all NPCs including replacing the original mod NPCs portraits" label="Add and replace" complexity="minor" />
-					<component id="HPSPP-ModNpcsOozeLounge_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" />
+					<component id="HPSPP-ModNpcsOozeLounge_opt2" name="Add portraits for all NPCs but do not replace the original mod NPCs portraits" label="Just add lacking ones" complexity="minor" recommended="blendWell" />
 				</alternatives>
 			</mod>
-			<component id="candlekeep_revisited:3" name="Candlekeep Revisited: New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" label="Candlekeep Revisited - new portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" engine="bg1,eet" complexity="minor" />
+			<component id="candlekeep_revisited:3" name="Candlekeep Revisited: New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" label="Candlekeep Revisited - new portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" engine="bg1,eet" complexity="minor" recommended="blendWell" />
 		</group>
 		<group label="PC Portraits" unfolded="1">
 			<!--component id="sha-tweaks:0" name="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" recommended="gfx" complexity="minor" />
@@ -1703,7 +1702,7 @@
 			</alternatives>
 			<component id="PPE:40" name="Vampire NPCs" label="PPE vampire NPCs" engine="bg,eet,iwd" modId="Portraits-Portraits-Everywhere" complexity="minor" />
 			<component id="cd_tweaks_edwina" name="Female Edwina [Davide Carte, Wendy Yung, Weimer]" label="Female Edwina" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1180" complexity="minor" />
-			<component id="SPC:0" name="Slayer Portrait Change, for BG2EE" label="Slayer portrait change" desc="Changes the PC portrait during the Slayer transformation" modId="BG2EE-Slayer-Portrait-Change" complexity="minor" />
+			<component id="SPC:0" name="Slayer Portrait Change, for BG2EE" label="Slayer portrait change" desc="Changes the PC portrait during the Slayer transformation" modId="BG2EE-Slayer-Portrait-Change" complexity="minor" recommended="blendWell" />
 		</group>
 	</portraits>
 
@@ -2068,6 +2067,7 @@ DaxTweaks:610;DaxTweaks - Only for Spell Trap (recommended)
 		<component id="cd_tweaks_sensible_regeneration_when_traveling" name="Sensible Regeneration When Traveling" label="Sensible regeneration when traveling" engine="bg,eet,iwd,pst" recommended="adjustments" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3380" complexity="minor" />
 		<component id="cd_tweaks_reveal_city_areas" name="Reveal City Maps When Entering Area" label="Reveal city maps when entering area" engine="bg,eet,iwd,pst" recommended="adjustments" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1100" complexity="minor" />
 		<component id="XGTCumulativeCasterLevels:100" name="Allow Caster Levels Bonuses and Penalties to Accumulate" label="Allow caster levels bonuses and penalties to accumulate" recommended="fixes" modId="XGTCumulativeCasterLevels" displayIf="EEex:1" complexity="minor" />
+		<component id="cd_tweaks_infravision" name="Make Infravision Useful [Luke]" label="Make Infravision Useful" desc="All creatures without the Infravision ability will incur a -4 penalty to THAC0 in darkness (dungeon or night areas). May bring performance problems" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2680" recommended="higherDifficulty" complexity="moderate" />
 	</adjustments>
 
 	<randomisation engine="bg,eet" displayIfNot="IE_focus_dedicated_campaigns">

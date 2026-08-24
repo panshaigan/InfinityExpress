@@ -1,7 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { SelectedGame, StationId } from '../lib/xml/schema'
 import { isSetupSlot, type StationSlot } from '../lib/ui/chromeHotkeys'
-import { cycleScreen, type NavScreen } from '../lib/ui/screenCycle'
+import {
+  advancePastMissingScreen,
+  cycleScreen,
+  navScreensEqual,
+  type NavScreen,
+} from '../lib/ui/screenCycle'
 import type { AppNavSlot } from '../ui/StationNav'
 
 export function useRouteNav(args: {
@@ -82,6 +87,8 @@ export function useRouteNav(args: {
     return { stationId: activeStation }
   }, [activeStation, contentMainKey, contentSubKey, contentSubTag, game])
 
+  const prevNavigableScreensRef = useRef<NavScreen[]>(navigableScreens)
+
   const canCycleScreens =
     !!game && navigableScreens.some((s) => !finishedStations.has(s.stationId))
 
@@ -103,6 +110,20 @@ export function useRouteNav(args: {
   function skipFinishedScreen(screen: NavScreen): boolean {
     return finishedStations.has(screen.stationId)
   }
+
+  useLayoutEffect(() => {
+    const previous = prevNavigableScreensRef.current
+    prevNavigableScreensRef.current = navigableScreens
+    if (!currentNavScreen) return
+    if (navigableScreens.some((s) => navScreensEqual(s, currentNavScreen))) return
+    const next = advancePastMissingScreen(
+      previous,
+      currentNavScreen,
+      navigableScreens,
+      skipFinishedScreen,
+    )
+    if (next) applyNavScreen(next)
+  }, [currentNavScreen, navigableScreens, finishedStations])
 
   function goPrevScreen() {
     const next = cycleScreen(

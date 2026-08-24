@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { sortContentSubBranches } from '../lib/contentBranchOrder'
 import {
@@ -71,43 +71,55 @@ export function useBranchNav(args: {
       ? `${activeStation}:${mainKey ?? ''}`
       : activeStation
 
+  const prevStationRef = useRef(activeStation)
+
   useEffect(() => {
     if (!branched) return
 
-    const mainValid =
-      mainKey != null && mainBranches.some((b) => b.node.key === mainKey)
-    const main = mainValid
-      ? mainBranches.find((b) => b.node.key === mainKey)!
-      : mainBranches[0]
+    const stationChanged = prevStationRef.current !== activeStation
+    prevStationRef.current = activeStation
 
-    if (!main) {
+    if (mainBranches.length === 0) {
       if (mainKey != null) setMainKey(null)
       if (subKey != null) setSubKey(null)
       return
     }
 
+    const firstMain = mainBranches[0]!
+    const mainValid =
+      mainKey != null && mainBranches.some((b) => b.node.key === mainKey)
+    const main = mainValid
+      ? mainBranches.find((b) => b.node.key === mainKey)!
+      : firstMain
+
     if (isMechanicsStation) {
-      if (!mainValid) setMainKey(main.node.key)
       if (subKey != null) setSubKey(null)
+      if (mainKey == null || (stationChanged && !mainValid)) {
+        setMainKey(firstMain.node.key)
+      }
       return
     }
 
-    // Content: two-level
-    if (!mainValid) {
-      const sub = preferredContentSub(main, subTag)
-      setMainKey(main.node.key)
+    if (mainKey == null || (stationChanged && !mainValid)) {
+      const sub = preferredContentSub(firstMain, subTag)
+      setMainKey(firstMain.node.key)
       setSubKey(sub?.node.key ?? null)
       if (!subTag && sub) setSubTag(sub.node.tag)
       return
     }
+
+    if (!mainValid) return
+
     const subValid =
       subKey != null && main.children.some((b) => b.node.key === subKey)
-    if (!subValid) {
+    if (subKey == null || (stationChanged && !subValid)) {
       const sub = preferredContentSub(main, subTag)
       setSubKey(sub?.node.key ?? null)
       if (!subTag && sub) setSubTag(sub.node.tag)
+      return
     }
   }, [
+    activeStation,
     branched,
     isMechanicsStation,
     mainBranches,

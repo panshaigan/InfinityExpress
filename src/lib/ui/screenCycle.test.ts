@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { DisplayNode } from '../selection/visibility'
 import type { ComponentNode, TreeNode } from '../xml/schema'
 import {
+  advancePastMissingScreen,
   buildNavigableScreens,
   cycleScreen,
   expandStationToScreens,
@@ -210,5 +211,44 @@ describe('navScreensEqual', () => {
         { stationId: 'mechanics', mainKey: 'rogues' },
       ),
     ).toBe(false)
+  })
+})
+
+describe('advancePastMissingScreen', () => {
+  const a: NavScreen = { stationId: 'base' }
+  const b: NavScreen = {
+    stationId: 'content',
+    mainKey: 'm',
+    subKey: 's1',
+    subTag: 'quest',
+  }
+  const c: NavScreen = {
+    stationId: 'content',
+    mainKey: 'm',
+    subKey: 's2',
+    subTag: 'tweaks',
+  }
+  const d: NavScreen = { stationId: 'spells' }
+  const previous = [a, b, c, d]
+
+  it('advances to the next remaining screen, not the first', () => {
+    expect(advancePastMissingScreen(previous, c, [a, b, d])).toEqual(d)
+  })
+
+  it('wraps from the last stop to the first remaining', () => {
+    expect(advancePastMissingScreen(previous, d, [a, b, c])).toEqual(a)
+  })
+
+  it('skips finished stations while walking forward', () => {
+    const skip = (s: NavScreen) => s.stationId === 'spells'
+    expect(advancePastMissingScreen(previous, c, [a, b, d], skip)).toEqual(a)
+  })
+
+  it('returns null when nothing remains', () => {
+    expect(advancePastMissingScreen(previous, b, [])).toBeNull()
+  })
+
+  it('falls back to the first eligible when missing was not in the prior list', () => {
+    expect(advancePastMissingScreen([a, d], c, [a, d])).toEqual(a)
   })
 })
