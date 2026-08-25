@@ -1,38 +1,81 @@
 # iNfinity eXpress
 
-Desktop **mod route planner** for Infinity Engine Enhanced Edition games (Baldur’s Gate, Icewind Dale, Planescape: Torment, and EET).
+Desktop **mod route planner** for Infinity Engine Enhanced Edition games (Baldur’s Gate, EET,  Icewind Dale, Planescape: Torment).
 
-Pick components station by station, acquire mods, then run a WeiDU install — with vanilla backups and named snapshots built in. Public beta **0.9.0**.
+Use recommended presets or pick components station by station, acquire mods, then run an automatic WeiDU install — with vanilla backups and named snapshots built in. Public beta **0.10.0**.
 
 ## Screenshots
 
-![Project hub and first launch](docs/screenshots/intro-02.webp)
+*Click a thumbnail to open the full-size image.*
 
-*Projects — create or open an install universe for one engine.*
+### Intro / Projects
 
-![Components phase](docs/screenshots/components-02.webp)
+*Create or open a project for one engine.*
 
-*Components — browse stations, check components, apply presets and filters.*
+<p>
+<a href="docs/screenshots/intro-01.webp"><img src="docs/screenshots/intro-01.webp" width="180" alt="Intro screenshot 1"></a>
+<a href="docs/screenshots/intro-02.webp"><img src="docs/screenshots/intro-02.webp" width="180" alt="Intro screenshot 2"></a>
+<a href="docs/screenshots/intro-03.webp"><img src="docs/screenshots/intro-03.webp" width="180" alt="Intro screenshot 3"></a>
+<a href="docs/screenshots/intro-04.webp"><img src="docs/screenshots/intro-04.webp" width="180" alt="Intro screenshot 4"></a>
+<a href="docs/screenshots/intro-05.webp"><img src="docs/screenshots/intro-05.webp" width="180" alt="Intro screenshot 5"></a>
+</p>
 
-![Mods phase](docs/screenshots/mods-01.webp)
+### Components
 
-*Mods — catalog, disk presence, and acquire missing packages.*
+*Browse stations, check components, apply presets and filters.*
 
-![Install phase](docs/screenshots/installation-03.webp)
+<p>
+<a href="docs/screenshots/components-01.webp"><img src="docs/screenshots/components-01.webp" width="180" alt="Components screenshot 1"></a>
+<a href="docs/screenshots/components-02.webp"><img src="docs/screenshots/components-02.webp" width="180" alt="Components screenshot 2"></a>
+<a href="docs/screenshots/components-03.webp"><img src="docs/screenshots/components-03.webp" width="180" alt="Components screenshot 3"></a>
+<a href="docs/screenshots/components-04.webp"><img src="docs/screenshots/components-04.webp" width="180" alt="Components screenshot 4"></a>
+<a href="docs/screenshots/components-05.webp"><img src="docs/screenshots/components-05.webp" width="180" alt="Components screenshot 5"></a>
+<a href="docs/screenshots/components-06.webp"><img src="docs/screenshots/components-06.webp" width="180" alt="Components screenshot 6"></a>
+<a href="docs/screenshots/components-07.webp"><img src="docs/screenshots/components-07.webp" width="180" alt="Components screenshot 7"></a>
+<a href="docs/screenshots/components-08.webp"><img src="docs/screenshots/components-08.webp" width="180" alt="Components screenshot 8"></a>
+<a href="docs/screenshots/components-09.webp"><img src="docs/screenshots/components-09.webp" width="180" alt="Components screenshot 9"></a>
+<a href="docs/screenshots/components-10.webp"><img src="docs/screenshots/components-10.webp" width="180" alt="Components screenshot 10"></a>
+</p>
 
-*Install — review the WeiDU plan, run it, and manage backups.*
+### Mods
+
+*Catalog, disk presence, update and acquire missing packages.*
+
+<p>
+<a href="docs/screenshots/mods-01.webp"><img src="docs/screenshots/mods-01.webp" width="180" alt="Mods screenshot 1"></a>
+<a href="docs/screenshots/mods-02.webp"><img src="docs/screenshots/mods-02.webp" width="180" alt="Mods screenshot 2"></a>
+<a href="docs/screenshots/mods-03.webp"><img src="docs/screenshots/mods-03.webp" width="180" alt="Mods screenshot 3"></a>
+<a href="docs/screenshots/mods-04.webp"><img src="docs/screenshots/mods-04.webp" width="180" alt="Mods screenshot 4"></a>
+<a href="docs/screenshots/mods-05.webp"><img src="docs/screenshots/mods-05.webp" width="180" alt="Mods screenshot 5"></a>
+<a href="docs/screenshots/mods-06.webp"><img src="docs/screenshots/mods-06.webp" width="180" alt="Mods screenshot 6"></a>
+</p>
+
+### Installation
+
+*Review the WeiDU install plan, run it, and manage backups/snapshots.*
+
+<p>
+<a href="docs/screenshots/installation-01.webp"><img src="docs/screenshots/installation-01.webp" width="180" alt="Installation screenshot 1"></a>
+<a href="docs/screenshots/installation-02.webp"><img src="docs/screenshots/installation-02.webp" width="180" alt="Installation screenshot 2"></a>
+<a href="docs/screenshots/installation-03.webp"><img src="docs/screenshots/installation-03.webp" width="180" alt="Installation screenshot 3"></a>
+<a href="docs/screenshots/installation-04.webp"><img src="docs/screenshots/installation-04.webp" width="180" alt="Installation screenshot 4"></a>
+<a href="docs/screenshots/installation-05.webp"><img src="docs/screenshots/installation-05.webp" width="180" alt="Installation screenshot 5"></a>
+<a href="docs/screenshots/installation-06.webp"><img src="docs/screenshots/installation-06.webp" width="180" alt="Installation screenshot 6"></a>
+<a href="docs/screenshots/installation-07.webp"><img src="docs/screenshots/installation-07.webp" width="180" alt="Installation screenshot 7"></a>
+<a href="docs/screenshots/installation-08.webp"><img src="docs/screenshots/installation-08.webp" width="180" alt="Installation screenshot 8"></a>
+</p>
 
 ## What it does
 
-Work happens inside a **Project**: one engine, your component selection, install run state, and destination game folder(s). Vanilla backups and app paths are shared in Settings.
+Work happens inside a **Project**: one engine, your component selection, mods catalog and install run state.
 
 Three phases:
 
-1. **Components** — curated install sequence as stations (plus presets). Check what you want; conditions and alternatives keep the tree honest. Optionally export an install-order list.
-2. **Mods** — see which packages are on disk under the app data `mods` folder; download/acquire where the catalog supports it.
+1. **Components** — curated, sorted components catalog, which carries a working installation sequence underneath. Rules, conditions and alternatives keep the tree installable without conflicts.
+2. **Mods** — see which packages are on disk under the app data `mods` folder. Download the lacking ones, update the existing.
 3. **Install** — build a WeiDU plan from your selection, run it with an in-app console, and keep **vanilla** backups plus named snapshots. For EET, Pre-EET (BG1) and EET steps stay split where needed.
 
-The desktop app **bundles WeiDU and 7-Zip** — you do not need to install them separately. Settings → App can still point at a custom WeiDU executable.
+The desktop app **bundles WeiDU 2.49 and 7-Zip** — you do not need to install them separately. Settings → App can still point at a custom WeiDU executable.
 
 ## Requirements
 
@@ -44,7 +87,7 @@ The desktop app **bundles WeiDU and 7-Zip** — you do not need to install them 
 
 1. Open [Releases](https://github.com/panshaigan/InfinityExpress/releases).
 2. Download the latest Windows build from the release assets.
-3. Install or unpack and run **iNfinity eXpress**.
+3. Install and run **iNfinity eXpress**.
 
 The app can check for updates on startup (About → **Check for updates**).
 
@@ -62,21 +105,11 @@ Work through the station list (after Presets). Expand groups, check components, 
 
 ### 3. Mods
 
-Review the catalog against what is already under your main data `mods` folder. Acquire missing mods when download metadata is available; remove from disk when you no longer need a package there.
+Review the catalog against what is already under your main data `mods` folder. Acquire missing mods when download metadata is available. Remove from disk when you no longer need a package there.
 
 ### 4. Install
 
-Open **Install**, review the plan table, then run. Watch the console for WeiDU output; pause or stop if needed. Use vanilla restore and named snapshots from the backup tools when you want a known-good baseline again.
-
-While an install is running, Components and Mods lock appropriately so the plan stays consistent with the cursor.
-
-## Settings
-
-Top-bar **Settings** covers:
-
-- **Project** — destination folders for the active project
-- **Vanilla backups** — clean baselines per game (BG1 / BG2 / IWD / PST)
-- **App** — main data folder (backups, logs, projects, mods), WeiDU path override, optional GitHub token for acquire
+Open **Install**, review the plan table, then run. Watch the console for WeiDU output. Pause or stop if needed. Use vanilla restore and named snapshots from the backup tools when you want a known-good baseline again.
 
 ## Further reading
 
