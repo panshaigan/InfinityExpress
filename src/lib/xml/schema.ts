@@ -76,6 +76,16 @@ export interface NodeAttrs {
   package?: string
   /** Install impact tier: `minor`, `moderate`, or `major`. */
   complexity?: string
+  /**
+   * Relative install weight (integer ≥ 1 ≈ reference wall-seconds).
+   * Not a promised clock time — see `costScale` and install Cost column.
+   */
+  cost?: string
+  /**
+   * Optional integer ≥ 1. Extra weight: round(priorBaseCostSum * costScale / 1000).
+   * Used for stack-sensitive components (e.g. EET_end).
+   */
+  costScale?: string
   required?: boolean
   noDisplay?: boolean
   /** When true, selected component is kept out of install-order export (UI-only marker). */

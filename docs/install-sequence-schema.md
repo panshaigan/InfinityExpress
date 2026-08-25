@@ -58,6 +58,8 @@ Unknown nesting tags still render. Same-tag siblings merge unless `group` / `mod
 | `recommended` | Preset category token for the recommended strip; inherited (ladder tokens like `fixes`, station ids like `sounds`, or opt-in tokens like `lowerDifficulty`) |
 | `package` | Optional sub-bundle under a recommended category; inherited (e.g. `BG1Sounds`, `vve`, `encounters`) |
 | `complexity` | Install impact tier on this component: `minor`, `moderate`, or `major` |
+| `cost` | Relative install weight (integer ≥ 1 ≈ reference wall-seconds from metrics). Not a promised clock time. Recalculate via `npm run cost:from-metrics` / `.cursor/skills/cost-from-metrics` |
+| `costScale` | Optional integer ≥ 1 for stack-sensitive components. Effective weight = `cost + round(priorBaseCostSum × costScale / 1000)` where `priorBaseCostSum` is the sum of base `cost` of earlier plan steps |
 | `required` | `1` = auto-select when engine-eligible |
 | `noDisplay` | `1` = hidden by default (may still install); filter can show |
 | `noExport` | `1` = selectable but omitted from export / install plan |

@@ -29,6 +29,8 @@ function readAttrs(el: Element): NodeAttrs {
     recommended: g('recommended'),
     package: g('package'),
     complexity: g('complexity'),
+    cost: g('cost'),
+    costScale: g('costScale'),
     required: truthyAttr(el.getAttribute('required')),
     noDisplay: truthyAttr(el.getAttribute('noDisplay')),
     noExport: truthyAttr(el.getAttribute('noExport')),

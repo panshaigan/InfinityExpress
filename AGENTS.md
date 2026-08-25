@@ -28,6 +28,7 @@ Do **not** re-derive behaviour from a full codebase scan when the doc above cove
 
 - `.cursor/skills/weidu-component-names` — fill component `name` from tp2/TRA
 - `.cursor/skills/g3-readme-component-links` — G3 readme section → component `readme` URLs
+- `.cursor/skills/cost-from-metrics` — metrics JSONL → component `cost` / `costScale` (`npm run cost:from-metrics`)
 
 ## Always-on UI rules
 

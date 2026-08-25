@@ -1,4 +1,5 @@
 import { stepDurationMs } from './formatDuration'
+import { planEffectiveCosts } from './componentCost'
 import type { ComponentRunStatus, InstallRunState, InstallStep } from './types'
 import {
   effectiveModFields,
@@ -35,6 +36,7 @@ export type InstallSortKey =
   | 'mod'
   | 'component'
   | 'category'
+  | 'cost'
   | 'duration'
   | 'status'
 
@@ -56,6 +58,10 @@ export interface InstallFilterRow {
   xmlLabel: string
   category: string
   status: ComponentRunStatus
+  /** Plan-order effective cost (base + costScale); null when no `cost` attr. */
+  effectiveCost: number | null
+  /** Max effective cost in this plan (shared across rows); 0 when none. */
+  planMaxCost: number
   durationMs: number | null
 }
 
@@ -76,6 +82,11 @@ export function buildInstallFilterRows(
   const modsByCodename = new Map<string, WorkingMod>()
   for (const m of mods) modsByCodename.set(m.codename.toLowerCase(), m)
 
+  const { effectiveCosts, planMax } = planEffectiveCosts(
+    steps,
+    model.componentsById,
+  )
+
   return steps.map((step, stepIndex) => {
     const component = model.componentsById.get(step.componentId)
     const mod = modsByCodename.get(step.modId.toLowerCase())
@@ -91,6 +102,8 @@ export function buildInstallFilterRows(
       xmlLabel: component?.attrs.label?.trim() ?? '',
       category: eff?.category?.trim() || '',
       status: step.status,
+      effectiveCost: effectiveCosts[stepIndex] ?? null,
+      planMaxCost: planMax,
       durationMs: stepDurationMs(step, nowMs, runState),
     }
   })
@@ -138,6 +151,8 @@ function sortValue(
       return row.componentLabel.toLowerCase()
     case 'category':
       return row.category.toLowerCase()
+    case 'cost':
+      return row.effectiveCost ?? -1
     case 'duration':
       return row.durationMs ?? -1
     case 'status':

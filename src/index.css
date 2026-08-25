@@ -6720,8 +6720,23 @@ body.is-resizing-detail * {
   width: 6rem;
 }
 
+.install-table col.install-col-cost {
+  width: 4.75rem;
+}
+
 .install-table col.install-col-duration {
   width: 5.5rem;
+}
+
+.install-cost-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 1.1rem;
+}
+
+.install-cost-track {
+  height: 0.35rem;
 }
 
 .install-table col.install-col-status {
@@ -6862,6 +6877,7 @@ body.is-resizing-detail * {
 }
 
 .install-col-category,
+.install-col-cost,
 .install-col-duration,
 .install-col-status {
   white-space: nowrap;

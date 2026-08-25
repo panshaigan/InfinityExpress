@@ -20,6 +20,8 @@ function row(
     xmlLabel: '',
     category: 'NPC',
     status: 'queued',
+    effectiveCost: null,
+    planMaxCost: 0,
     durationMs: null,
     ...partial,
   }

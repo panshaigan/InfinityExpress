@@ -55,6 +55,7 @@ const SORT_COLUMNS: {
   { key: 'mod', label: 'Mod', className: 'install-col-mod' },
   { key: 'component', label: 'Component', className: 'install-col-component' },
   { key: 'category', label: 'Category', className: 'install-col-category' },
+  { key: 'cost', label: 'Cost', className: 'install-col-cost' },
   { key: 'duration', label: 'Duration', className: 'install-col-duration' },
   { key: 'status', label: 'Status', className: 'install-col-status' },
 ]
@@ -440,6 +441,41 @@ function DurationCell({
 
 const DurationCellMemo = memo(DurationCell)
 
+function CostCell({
+  effectiveCost,
+  planMaxCost,
+}: {
+  effectiveCost: number | null
+  planMaxCost: number
+}) {
+  if (effectiveCost == null || planMaxCost <= 0) {
+    return <span className="mods-cell-clip">—</span>
+  }
+  const pct = Math.min(100, Math.max(0, (effectiveCost / planMaxCost) * 100))
+  return (
+    <div
+      className="install-cost-bar has-icon-tip"
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={planMaxCost}
+      aria-valuenow={effectiveCost}
+      aria-label={`Relative install weight ${effectiveCost} of ${planMaxCost}`}
+    >
+      <div className="backup-progress-track install-cost-track">
+        <div
+          className="backup-progress-fill"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <IconTip>
+        Relative install weight vs heaviest step in this plan
+      </IconTip>
+    </div>
+  )
+}
+
+const CostCellMemo = memo(CostCell)
+
 interface InstallTableRowProps {
   row: InstallRowViewModel
   selectedStepId: string | null
@@ -495,6 +531,12 @@ function InstallTableRow({
       </td>
       <td className="install-col-category">
         <span className="mods-cell-clip">{row.category || '—'}</span>
+      </td>
+      <td className="install-col-cost">
+        <CostCellMemo
+          effectiveCost={row.effectiveCost}
+          planMaxCost={row.planMaxCost}
+        />
       </td>
       <td className="install-col-duration">
         <DurationCellMemo step={row.step} runState={runState} />
@@ -914,6 +956,7 @@ export function InstallTable({
             <col className="install-col-mod" />
             <col className="install-col-component" />
             <col className="install-col-category" />
+            <col className="install-col-cost" />
             <col className="install-col-duration" />
             <col className="install-col-status" />
             <col className="install-col-actions" />
@@ -959,7 +1002,7 @@ export function InstallTable({
           <tbody>
             {visibleRows.length === 0 ? (
               <tr>
-                <td colSpan={7} className="mods-table-empty">
+                <td colSpan={8} className="mods-table-empty">
                   No steps match the current filters.
                 </td>
               </tr>
@@ -968,7 +1011,7 @@ export function InstallTable({
             {spacerTop > 0 ? (
               <tr aria-hidden="true">
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   style={{
                     height: `${spacerTop}px`,
                     padding: 0,
@@ -999,7 +1042,7 @@ export function InstallTable({
             {spacerBottom > 0 ? (
               <tr aria-hidden="true">
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   style={{
                     height: `${spacerBottom}px`,
                     padding: 0,
