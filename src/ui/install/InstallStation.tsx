@@ -562,13 +562,7 @@ export function InstallStation({
       steps: tableSteps,
       game,
       canNavigate: canNavigateSteps,
-      canGoPrevious: canGoPreviousEffective,
-      canSkip: canSkipEffective,
       installLock,
-      onRequestGoPrevious: requestGoPrevious,
-      onSkip: () => {
-        skipCurrent()
-      },
       onRequestUninstallBack: (stepId: string) => {
         if (!tableRun) return
         const step = tableRun.steps.find((s) => s.stepId === stepId)
@@ -641,12 +635,8 @@ export function InstallStation({
     run,
     steps,
     canNavigateSteps,
-    canGoPreviousEffective,
-    canSkipEffective,
     installLock,
     onDeselectComponent,
-    requestGoPrevious,
-    skipCurrent,
     uninstallBackToStep,
     toggleBreakpoint,
     clearPlannedSnapshot,

@@ -27,6 +27,7 @@ import {
 import { consoleLineTone } from '../lib/install/consoleLineHighlight'
 import { formatConsoleTs } from '../lib/install/formatConsoleTs'
 import type {
+  ComponentRunStatus,
   InstallRun,
   InstallRunState,
   InstallStep,
@@ -34,6 +35,23 @@ import type {
   PlannedSnapshot,
   WeiduInstallEvent,
 } from '../lib/install/types'
+
+/** Queued/skipped were never installed — roll back status only, no WeiDU uninstall. */
+function shouldSkipWeiduUninstall(status: ComponentRunStatus): boolean {
+  return status === 'queued' || status === 'skipped'
+}
+
+function resetStepToQueued(step: InstallStep): InstallStep {
+  return {
+    ...step,
+    status: 'queued',
+    progress: null,
+    errors: [],
+    warnings: [],
+    finishedAt: undefined,
+    startedAt: undefined,
+  }
+}
 import { resolveModForInstall } from '../lib/install/modResolution'
 import {
   cancelWeiduStep,
@@ -1550,7 +1568,10 @@ export function useInstallRun(options: {
     setGoingPrevious(true)
     try {
       let steps = [...current.steps]
-      const reset = await uninstallStepAtIndex(current, prev)
+      const prevStep = steps[prev]!
+      const reset = shouldSkipWeiduUninstall(prevStep.status)
+        ? resetStepToQueued(prevStep)
+        : await uninstallStepAtIndex(current, prev)
       steps[prev] = reset
 
       const next = withNormalizedCursor({
@@ -1586,17 +1607,9 @@ export function useInstallRun(options: {
       let steps = [...current.steps]
       for (let i = current.cursor - 1; i >= targetIdx; i--) {
         const step = steps[i]!
-        // Skipped packages were never installed; still reset status when rolling back.
-        if (step.status === 'skipped') {
-          steps[i] = {
-            ...step,
-            status: 'queued',
-            progress: null,
-            errors: [],
-            warnings: [],
-            finishedAt: undefined,
-            startedAt: undefined,
-          }
+        // Queued/skipped were never installed; still reset status when rolling back.
+        if (shouldSkipWeiduUninstall(step.status)) {
+          steps[i] = resetStepToQueued(step)
           continue
         }
         steps[i] = await uninstallStepAtIndex({ ...current, steps }, i)
