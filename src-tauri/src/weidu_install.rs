@@ -1,5 +1,6 @@
 //! WeiDU process spawning, listing, staging, and cleanup.
 
+use crate::file_version::read_exe_file_version;
 use crate::mod_fs::{find_subdir_ci, validate_folder_name};
 use crate::process_util::configure_headless;
 use regex::Regex;
@@ -1316,23 +1317,7 @@ pub fn read_game_exe_version(game_dir: String, exe_name: String) -> Result<Strin
     }
     let exe = find_named_game_exe(&game, &exe_name)
         .ok_or_else(|| format!("No {} found in game directory", exe_name.trim()))?;
-    let exe_str = exe.to_string_lossy().replace('\'', "''");
-    let script = format!("(Get-Item -LiteralPath '{exe_str}').VersionInfo.FileVersion");
-    let mut cmd = Command::new("powershell");
-    configure_headless(&mut cmd);
-    let output = cmd
-        .args(["-NoProfile", "-NonInteractive", "-Command", &script])
-        .output()
-        .map_err(|e| format!("Failed to read exe version: {e}"))?;
-    if !output.status.success() {
-        let err = String::from_utf8_lossy(&output.stderr);
-        return Err(format!("Failed to read exe version: {}", err.trim()));
-    }
-    let version = String::from_utf8_lossy(&output.stdout).trim().to_string();
-    if version.is_empty() {
-        return Err("Exe FileVersion was empty".into());
-    }
-    Ok(version)
+    read_exe_file_version(&exe)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

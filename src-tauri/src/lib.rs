@@ -1,5 +1,6 @@
 mod bundled_tools;
 mod dev_reset;
+mod file_version;
 mod mod_acquire;
 mod mod_fs;
 mod process_util;
