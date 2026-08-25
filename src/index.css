@@ -4741,7 +4741,16 @@ body.is-resizing-detail * {
 }
 
 .install-finished-dialog {
-  width: min(32rem, 100%);
+  width: min(36rem, 100%);
+}
+
+.install-finished-dialog .install-cleanup-fieldset {
+  margin-top: 0.65rem;
+}
+
+.install-cleanup-bg1-path {
+  font-size: 0.78rem;
+  word-break: break-all;
 }
 
 .install-finished-stats {

@@ -1324,13 +1324,23 @@ pub fn read_game_exe_version(game_dir: String, exe_name: String) -> Result<Strin
 #[serde(rename_all = "camelCase")]
 pub struct CleanupInput {
     pub game_dir: String,
+    #[serde(default)]
     pub staged_folders: Vec<String>,
     #[serde(default)]
-    pub keep_folders: Vec<String>,
+    pub remove_mod_folders: bool,
     #[serde(default)]
-    pub weidu_path: String,
+    pub remove_setup_exes: bool,
     #[serde(default)]
-    pub log_dir: String,
+    pub remove_debug_files: bool,
+    #[serde(default)]
+    pub remove_weidu_external: bool,
+    #[serde(default)]
+    pub remove_zstweaks_logs: bool,
+    #[serde(default)]
+    pub remove_weidu_conf: bool,
+    /// Delete the entire game_dir (EET BG1 wipe). Skips per-artifact cleanup.
+    #[serde(default)]
+    pub remove_entire_game_dir: bool,
 }
 
 pub(crate) fn is_setup_exe_name(name: &str) -> bool {
@@ -1342,6 +1352,28 @@ pub(crate) fn is_debug_file_name(name: &str) -> bool {
     name.to_ascii_lowercase().ends_with(".debug")
 }
 
+fn is_weidu_conf_name(name: &str) -> bool {
+    name.eq_ignore_ascii_case("weidu.conf")
+}
+
+/// Reject drive roots / bare paths that must never be wiped.
+fn is_unsafe_entire_dir_wipe(path: &Path) -> bool {
+    let trimmed = path.as_os_str().is_empty();
+    if trimmed {
+        return true;
+    }
+    path.file_name().is_none()
+}
+
+fn remove_named_subdir(game: &Path, name: &str) -> Result<(), String> {
+    validate_folder_name(name)?;
+    let path = game.join(name);
+    if path.is_dir() {
+        fs::remove_dir_all(&path).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 #[tauri::command]
 pub fn cleanup_install_artifacts(input: CleanupInput) -> Result<(), String> {
     let game = PathBuf::from(input.game_dir.trim());
@@ -1349,27 +1381,48 @@ pub fn cleanup_install_artifacts(input: CleanupInput) -> Result<(), String> {
         return Err(format!("Game folder not found: {}", game.display()));
     }
 
-    for folder in &input.staged_folders {
-        let name = folder.trim();
-        if name.is_empty() {
-            continue;
+    if input.remove_entire_game_dir {
+        if is_unsafe_entire_dir_wipe(&game) {
+            return Err(format!(
+                "Refusing to delete unsafe path: {}",
+                game.display()
+            ));
         }
-        validate_folder_name(name)?;
-        let path = game.join(name);
-        if path.is_dir() {
-            fs::remove_dir_all(&path).map_err(|e| e.to_string())?;
+        fs::remove_dir_all(&game).map_err(|e| e.to_string())?;
+        return Ok(());
+    }
+
+    if input.remove_mod_folders {
+        for folder in &input.staged_folders {
+            let name = folder.trim();
+            if name.is_empty() {
+                continue;
+            }
+            remove_named_subdir(&game, name)?;
         }
     }
 
-    if let Ok(entries) = fs::read_dir(&game) {
-        for entry in entries.flatten() {
-            let path = entry.path();
-            if !path.is_file() {
-                continue;
-            }
-            let name = entry.file_name().to_string_lossy().into_owned();
-            if is_setup_exe_name(&name) || is_debug_file_name(&name) {
-                let _ = fs::remove_file(&path);
+    if input.remove_weidu_external {
+        remove_named_subdir(&game, "weidu_external")?;
+    }
+    if input.remove_zstweaks_logs {
+        remove_named_subdir(&game, "zstweaks_logs")?;
+    }
+
+    if input.remove_setup_exes || input.remove_debug_files || input.remove_weidu_conf {
+        if let Ok(entries) = fs::read_dir(&game) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                if !path.is_file() {
+                    continue;
+                }
+                let name = entry.file_name().to_string_lossy().into_owned();
+                let drop = (input.remove_setup_exes && is_setup_exe_name(&name))
+                    || (input.remove_debug_files && is_debug_file_name(&name))
+                    || (input.remove_weidu_conf && is_weidu_conf_name(&name));
+                if drop {
+                    let _ = fs::remove_file(&path);
+                }
             }
         }
     }
@@ -1467,9 +1520,13 @@ mod tests {
         cleanup_install_artifacts(CleanupInput {
             game_dir: game.to_string_lossy().into_owned(),
             staged_folders: vec!["cdtweaks".into()],
-            keep_folders: vec![],
-            weidu_path: String::new(),
-            log_dir: String::new(),
+            remove_mod_folders: true,
+            remove_setup_exes: true,
+            remove_debug_files: true,
+            remove_weidu_external: false,
+            remove_zstweaks_logs: false,
+            remove_weidu_conf: false,
+            remove_entire_game_dir: false,
         })
         .expect("cleanup");
 
@@ -1478,5 +1535,84 @@ mod tests {
         assert!(!game.join("SETUP-FOO.DEBUG").exists());
         assert!(game.join("weidu.log").is_file());
         assert!(game.join("other.txt").is_file());
+    }
+
+    #[test]
+    fn cleanup_respects_flags_and_extra_artifacts() {
+        let dir = tempfile::tempdir().unwrap();
+        let game = dir.path();
+        fs::create_dir_all(game.join("cdtweaks")).unwrap();
+        fs::create_dir_all(game.join("weidu_external")).unwrap();
+        fs::create_dir_all(game.join("zstweaks_logs")).unwrap();
+        fs::write(game.join("setup-cdtweaks.exe"), b"x").unwrap();
+        fs::write(game.join("setup-foo.debug"), b"x").unwrap();
+        fs::write(game.join("weidu.conf"), b"lang").unwrap();
+        fs::write(game.join("weidu.log"), b"keep").unwrap();
+
+        cleanup_install_artifacts(CleanupInput {
+            game_dir: game.to_string_lossy().into_owned(),
+            staged_folders: vec!["cdtweaks".into()],
+            remove_mod_folders: false,
+            remove_setup_exes: false,
+            remove_debug_files: true,
+            remove_weidu_external: true,
+            remove_zstweaks_logs: true,
+            remove_weidu_conf: true,
+            remove_entire_game_dir: false,
+        })
+        .expect("cleanup");
+
+        assert!(game.join("cdtweaks").is_dir());
+        assert!(game.join("setup-cdtweaks.exe").is_file());
+        assert!(!game.join("setup-foo.debug").exists());
+        assert!(!game.join("weidu_external").exists());
+        assert!(!game.join("zstweaks_logs").exists());
+        assert!(!game.join("weidu.conf").exists());
+        assert!(game.join("weidu.log").is_file());
+    }
+
+    #[test]
+    fn cleanup_can_remove_entire_game_dir() {
+        let parent = tempfile::tempdir().unwrap();
+        let game = parent.path().join("bg1-install");
+        fs::create_dir_all(game.join("data")).unwrap();
+        fs::write(game.join("chitin.key"), b"x").unwrap();
+
+        cleanup_install_artifacts(CleanupInput {
+            game_dir: game.to_string_lossy().into_owned(),
+            staged_folders: vec![],
+            remove_mod_folders: false,
+            remove_setup_exes: false,
+            remove_debug_files: false,
+            remove_weidu_external: false,
+            remove_zstweaks_logs: false,
+            remove_weidu_conf: false,
+            remove_entire_game_dir: true,
+        })
+        .expect("cleanup");
+
+        assert!(!game.exists());
+        assert!(parent.path().is_dir());
+    }
+
+    #[test]
+    fn cleanup_refuses_drive_root_wipe() {
+        let err = cleanup_install_artifacts(CleanupInput {
+            game_dir: if cfg!(windows) {
+                "C:\\".into()
+            } else {
+                "/".into()
+            },
+            staged_folders: vec![],
+            remove_mod_folders: false,
+            remove_setup_exes: false,
+            remove_debug_files: false,
+            remove_weidu_external: false,
+            remove_zstweaks_logs: false,
+            remove_weidu_conf: false,
+            remove_entire_game_dir: true,
+        })
+        .expect_err("must refuse");
+        assert!(err.contains("Refusing") || err.contains("not found"));
     }
 }

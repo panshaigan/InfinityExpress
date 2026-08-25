@@ -9,6 +9,10 @@ import {
   uniqueGameDirsForRun,
 } from '../../lib/install/installFinished'
 import {
+  showBg1FolderCleanupOption,
+  type CleanupSelection,
+} from '../../lib/install/cleanupOptions'
+import {
   cleanupInstallArtifacts,
   createNamedBackup,
   gameDirForPhase,
@@ -499,7 +503,7 @@ export function InstallStation({
     ? 'Available after installation finishes'
     : run.artifactsCleaned
       ? 'Game folder already cleaned'
-      : 'Remove leftover mod folders, setup-*.exe, and *.DEBUG'
+      : 'Choose leftover install files to remove from the game folder'
   const restoreTip =
     snapshotCount === 0
       ? 'No snapshots yet'
@@ -959,45 +963,82 @@ export function InstallStation({
     return () => onInstallActionsReady(null)
   }, [onInstallActionsReady, onRestartConfirm, clearInstallRun])
 
-  const onCleanup = useCallback(async () => {
-    if (!game || !run) return
-    const dirs = uniqueGameDirsForRun(game, run.steps, gameFolders)
-    if (dirs.length === 0) {
-      const message = 'No game folder is set for this install.'
-      setCleanupError(message)
-      pushToast({ tone: 'error', message })
-      return
-    }
-    setCleanupBusy(true)
-    setCleanupError(null)
-    try {
-      for (const folder of dirs) {
-        await cleanupInstallArtifacts({
-          gameDir: folder.path,
-          stagedFolders: stagedFoldersForGameDir(
-            game,
-            run.steps,
-            gameFolders,
-            folder.path,
-          ),
-        })
+  const bg1CleanupPath = gameFolders.bg1.trim()
+  const showBg1Cleanup = showBg1FolderCleanupOption(game, bg1CleanupPath)
+
+  const onCleanup = useCallback(
+    async (selection: CleanupSelection) => {
+      if (!game || !run) return
+      const dirs = uniqueGameDirsForRun(game, run.steps, gameFolders)
+      const wipeBg1 =
+        showBg1Cleanup && selection.bg1Folder && Boolean(bg1CleanupPath)
+      if (dirs.length === 0 && !wipeBg1) {
+        const message = 'No game folder is set for this install.'
+        setCleanupError(message)
+        pushToast({ tone: 'error', message })
+        return
       }
-      setRun((current) =>
-        current ? { ...current, artifactsCleaned: true } : current,
-      )
-      skipAutoFinishedRef.current = true
-      setFinishedDialogOpen(false)
-      setNotice('Cleanup finished.')
-      pushToast({ tone: 'success', message: 'Cleanup finished.' })
-    } catch (e) {
-      const message = String(e)
-      setCleanupError(message)
-      setNotice(message)
-      pushToast({ tone: 'error', message })
-    } finally {
-      setCleanupBusy(false)
-    }
-  }, [game, run, gameFolders, setRun, pushToast])
+      const bg1Key = bg1CleanupPath.replace(/\\/g, '/').toLowerCase()
+      setCleanupBusy(true)
+      setCleanupError(null)
+      try {
+        for (const folder of dirs) {
+          const folderKey = folder.path.replace(/\\/g, '/').toLowerCase()
+          if (wipeBg1 && folderKey === bg1Key) {
+            continue
+          }
+          await cleanupInstallArtifacts({
+            gameDir: folder.path,
+            stagedFolders: selection.modFolders
+              ? stagedFoldersForGameDir(
+                  game,
+                  run.steps,
+                  gameFolders,
+                  folder.path,
+                )
+              : [],
+            removeModFolders: selection.modFolders,
+            removeSetupExes: selection.setupExes,
+            removeDebugFiles: selection.debugFiles,
+            removeWeiduExternal: selection.weiduExternal,
+            removeZstweaksLogs: selection.zstweaksLogs,
+            removeWeiduConf: selection.weiduConf,
+            removeEntireGameDir: false,
+          })
+        }
+        if (wipeBg1) {
+          await cleanupInstallArtifacts({
+            gameDir: bg1CleanupPath,
+            stagedFolders: [],
+            removeEntireGameDir: true,
+          })
+        }
+        setRun((current) =>
+          current ? { ...current, artifactsCleaned: true } : current,
+        )
+        skipAutoFinishedRef.current = true
+        setFinishedDialogOpen(false)
+        setNotice('Cleanup finished.')
+        pushToast({ tone: 'success', message: 'Cleanup finished.' })
+      } catch (e) {
+        const message = String(e)
+        setCleanupError(message)
+        setNotice(message)
+        pushToast({ tone: 'error', message })
+      } finally {
+        setCleanupBusy(false)
+      }
+    },
+    [
+      game,
+      run,
+      gameFolders,
+      showBg1Cleanup,
+      bg1CleanupPath,
+      setRun,
+      pushToast,
+    ],
+  )
 
   const onSelectStep = useCallback((stepId: string, componentId: string) => {
     const t0 = profileInstallTable ? performance.now() : 0
@@ -1304,7 +1345,9 @@ export function InstallStation({
         summary={finishedSummary}
         busy={cleanupBusy}
         error={cleanupError}
-        onClean={() => void onCleanup()}
+        showBg1Folder={showBg1Cleanup}
+        bg1Path={bg1CleanupPath}
+        onClean={(selection) => void onCleanup(selection)}
         onClose={() => {
           skipAutoFinishedRef.current = true
           setFinishedDialogOpen(false)

@@ -1,13 +1,22 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useBackdropDismiss } from '../backdropDismiss'
 import type { InstallFinishedSummary } from '../../lib/install/installFinished'
+import {
+  CLEANUP_ARTIFACT_OPTIONS,
+  defaultCleanupSelection,
+  hasAnyCleanupSelection,
+  type CleanupSelection,
+} from '../../lib/install/cleanupOptions'
 
 interface Props {
   open: boolean
   summary: InstallFinishedSummary | null
   busy?: boolean
   error?: string | null
-  onClean: () => void
+  /** Show EET-only “whole BG1 folder” option. */
+  showBg1Folder?: boolean
+  bg1Path?: string
+  onClean: (selection: CleanupSelection) => void
   onClose: () => void
 }
 
@@ -16,14 +25,18 @@ export function InstallFinishedDialog({
   summary,
   busy = false,
   error = null,
+  showBg1Folder = false,
+  bg1Path = '',
   onClean,
   onClose,
 }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const backdrop = useBackdropDismiss(busy ? undefined : onClose)
+  const [selection, setSelection] = useState<CleanupSelection>(defaultCleanupSelection)
 
   useEffect(() => {
     if (!open) return
+    setSelection(defaultCleanupSelection())
     closeRef.current?.focus()
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape' && !busy) {
@@ -36,6 +49,12 @@ export function InstallFinishedDialog({
   }, [open, busy, onClose])
 
   if (!open || !summary) return null
+
+  const canClean = hasAnyCleanupSelection(selection, { showBg1Folder }) && !busy
+
+  function toggle<K extends keyof CleanupSelection>(id: K, checked: boolean) {
+    setSelection((prev) => ({ ...prev, [id]: checked }))
+  }
 
   return (
     <div className="confirm-dialog-backdrop" role="presentation" {...backdrop}>
@@ -95,11 +114,42 @@ export function InstallFinishedDialog({
             </div>
           ) : null}
           <p>
-            Cleaning removes copied mod folders, <code>setup-*.exe</code>, and{' '}
-            <code>*.DEBUG</code> from the game folder
-            {summary.folders.length > 1 ? 's' : ''}. WeiDU.log and the installed
-            override stay in place.
+            Choose what to remove from the game folder
+            {summary.folders.length > 1 ? 's' : ''}. WeiDU.log and installed
+            override content stay in place
+            {showBg1Folder ? ' (unless you delete the whole BG1 folder)' : ''}.
           </p>
+          <fieldset className="backup-include-fieldset install-cleanup-fieldset" disabled={busy}>
+            <legend>Clean up</legend>
+            {CLEANUP_ARTIFACT_OPTIONS.map((opt) => (
+              <label key={opt.id} className="install-filter-toggle">
+                <input
+                  type="checkbox"
+                  checked={selection[opt.id]}
+                  onChange={(e) => toggle(opt.id, e.target.checked)}
+                />
+                <span>{opt.label}</span>
+              </label>
+            ))}
+            {showBg1Folder ? (
+              <label className="install-filter-toggle">
+                <input
+                  type="checkbox"
+                  checked={selection.bg1Folder}
+                  onChange={(e) => toggle('bg1Folder', e.target.checked)}
+                />
+                <span>
+                  Whole BG1 game folder
+                  {bg1Path.trim() ? (
+                    <>
+                      {' '}
+                      (<code className="install-cleanup-bg1-path">{bg1Path.trim()}</code>)
+                    </>
+                  ) : null}
+                </span>
+              </label>
+            ) : null}
+          </fieldset>
           {error ? <p className="install-dialog-error">{error}</p> : null}
         </div>
         <div className="confirm-dialog-actions">
@@ -115,8 +165,8 @@ export function InstallFinishedDialog({
           <button
             type="button"
             className="btn danger"
-            disabled={busy}
-            onClick={onClean}
+            disabled={!canClean}
+            onClick={() => onClean(selection)}
           >
             {busy ? 'Cleaning…' : 'Clean game folder'}
           </button>

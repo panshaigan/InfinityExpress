@@ -108,7 +108,7 @@ export function RestoreSnapshotIcon() {
   )
 }
 
-/** Remove leftover mod folders, setup-*.exe, and *.DEBUG from the game dir. */
+/** Remove selectable leftover install files from the game dir. */
 export function CleanGameFolderIcon() {
   return (
     <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">

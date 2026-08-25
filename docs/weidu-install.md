@@ -54,19 +54,26 @@ Toolbar in `InstallStation.tsx`; state machine in `useInstallRun.ts`.
 | **Auto skip on errors** | Always | Toolbar icon (next to Pause on warnings). When **on**, a WeiDU **failed** step stays `failed` in the table and the run continues to the next package. When **off**, failure halts (`runState: failed`). Persisted in the install session. |
 | **Take snapshot** | Vanilla exists for the snapshot target folder; not mid-copy / WeiDU live | Name popup (`OutlinedTextField`, default `snapshot-{Ymd-His}`), then immediately copies that game folder (`createNamedBackup`, full copy). Target is the **previous** plan step’s folder (cursor on the first EET-phase package → last Pre-EET / BG1). First plan step (no previous) uses the current step’s folder. |
 | **Restore snapshot** | At least one named snapshot exists; not mid-copy / WeiDU live | Opens the snapshot table ([`RestoreSnapshotDialog.tsx`](../src/ui/install/RestoreSnapshotDialog.tsx)). Disabled with “No snapshots yet” when the list is empty. |
-| **Clean game folder** | `runState === 'completed'` and leftovers not yet cleaned | Reopens the **Installation finished** dialog. Enabled after the last plan step is processed, including when you reopen the project. Disabled after a successful cleanup (`artifactsCleaned`). |
+| **Clean game folder** | `runState === 'completed'` and leftovers not yet cleaned | Reopens the **Installation finished** dialog with checkboxes for what to remove. Enabled after the last plan step is processed, including when you reopen the project. Disabled after a successful cleanup (`artifactsCleaned`). |
 
 When the last install-order component is processed, `runState` becomes `completed`. Phase nav shows a checkmark on **Install**. The console status reads **Installation finished**. An **Installation finished** dialog opens with duration, outcome counts, and game folder path(s). **Close** dismisses it for this session; the toolbar control stays available until cleanup succeeds.
 
 ## Cleanup
 
-`cleanup_install_artifacts` (Rust) deletes leftover install files from each unique game folder used by the plan (EET: BG1 and BG2):
+The **Installation finished** dialog lets you choose what to remove (checkboxes). Defaults check leftover artifacts; whole BG1 is opt-in (EET only).
+
+`cleanup_install_artifacts` (Rust) runs per unique game folder used by the plan (EET: BG1 and BG2), for the selected items:
 
 - Copied mod folders (`stagedFolderName` directories)
 - All `setup-*.exe` (case-insensitive)
 - All `*.DEBUG` / `*.debug` (case-insensitive)
+- `weidu_external` folder
+- `zstweaks_logs` folder
+- `weidu.conf`
 
-It does **not** recopy `weidu.exe`, and it leaves `weidu.log` / override content intact. After success, `InstallRun.artifactsCleaned` is persisted in `run-state.json` so the dialog does not auto-open again.
+For EET, an optional **Whole BG1 game folder** deletes the configured BG1 path entirely (`removeEntireGameDir`; refuses drive roots). That call skips per-artifact cleanup for BG1.
+
+It does **not** recopy `weidu.exe`, and it leaves `weidu.log` / override content intact (unless the whole BG1 folder is deleted). After success, `InstallRun.artifactsCleaned` is persisted in `run-state.json` so the dialog does not auto-open again.
 
 `InstallRunState` includes `stopped` (hard stop after kill/cleanup), separate from soft `paused`.
 

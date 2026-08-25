@@ -86,7 +86,7 @@ export interface InstallRun {
   plannedSnapshots: PlannedSnapshot[]
   /** Absolute path to run log directory under `{dataRoot}/projects/{folderName}/{runId}/`. */
   logDir: string
-  /** True after leftover mod folders / setup-*.exe / *.DEBUG were removed from the game dir(s). */
+  /** True after a successful post-install cleanup of selected leftovers from the game dir(s). */
   artifactsCleaned?: boolean
 }
 

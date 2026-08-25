@@ -75,6 +75,14 @@ export interface StageProgress {
 export interface CleanupInput {
   gameDir: string
   stagedFolders: string[]
+  removeModFolders?: boolean
+  removeSetupExes?: boolean
+  removeDebugFiles?: boolean
+  removeWeiduExternal?: boolean
+  removeZstweaksLogs?: boolean
+  removeWeiduConf?: boolean
+  /** Delete the entire gameDir (EET BG1 wipe). Skips per-artifact cleanup. */
+  removeEntireGameDir?: boolean
 }
 
 function requireDesktop() {
