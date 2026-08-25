@@ -401,7 +401,7 @@ export function InstallDetailPane({
     const saveFilename = safeResultsFilename(step.modId)
     setLogDialog({
       kind: 'results',
-      title: `Results — ${label}`,
+      title: `Key results — ${label}`,
       saveFilename,
     })
     setLogContents(null)

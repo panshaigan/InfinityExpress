@@ -96,7 +96,7 @@ export function PresetsStation({
               disabled={!canContinue}
               onClick={onContinue}
             >
-              Continue
+              Done
             </button>
             <IconTip>Start selecting components</IconTip>
           </span>

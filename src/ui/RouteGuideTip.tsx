@@ -9,7 +9,7 @@ export function RouteGuideTip({ visible, onDismiss }: Props) {
   return (
     <aside className="route-tip" aria-label="Getting started">
       <p className="route-tip-text">
-        <strong>Done</strong> walks you stop by stop.
+        <strong>"Done" buttons</strong> walks you stop by stop.
         The left rail always lets you jump freely.
       </p>
       <button

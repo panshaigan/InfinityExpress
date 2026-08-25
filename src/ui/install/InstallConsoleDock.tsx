@@ -165,7 +165,7 @@ export function InstallConsoleDock({
               className={`install-console-tab${tab === 'results' ? ' active' : ''}`}
               onClick={() => setTab('results')}
             >
-              Results
+              Key results
             </button>
           </div>
         ) : null}
@@ -259,25 +259,6 @@ export function InstallConsoleDock({
           </pre>
           {showResponse ? (
             <div className="install-console-input">
-              <div className="install-console-input-chrome">
-                <button
-                  type="button"
-                  className="btn secondary install-control-btn install-console-response-fold has-icon-tip"
-                  onClick={() => setResponseCollapsed((v) => !v)}
-                  aria-expanded={!responseCollapsed}
-                  aria-label={
-                    responseCollapsed ? 'Show response input' : 'Hide response input'
-                  }
-                >
-                  {responseCollapsed ? <ChevronDoubleUpIcon /> : <ChevronDoubleDownIcon />}
-                  <IconTip>
-                    {responseCollapsed ? 'Show response' : 'Hide response'}
-                  </IconTip>
-                </button>
-                {responseCollapsed && waitingForInput ? (
-                  <span className="install-console-response-needed">Response needed</span>
-                ) : null}
-              </div>
               {!responseCollapsed ? (
                 <form
                   className="install-console-input-form"
