@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "InfinityExpress",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "identifier": "com.infinityexpress.app",
   "build": {
     "frontendDist": "../dist",
@@ -28,6 +28,11 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "createUpdaterArtifacts": true,
+    "resources": {
+      "resources/weidu/": "weidu/",
+      "resources/7zip/": "7zip/"
+    },
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -37,6 +42,14 @@
     ],
     "android": {
       "debugApplicationIdSuffix": ".debug"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "UPDATER_PUBKEY",
+      "endpoints": [
+        "https://github.com/panshaigan/InfinityExpress/releases/latest/download/latest.json"
+      ]
     }
   }
 }

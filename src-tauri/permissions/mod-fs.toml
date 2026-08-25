@@ -102,6 +102,11 @@ commands.allow = [
 ]
 
 [[permission]]
+identifier = "allow-bundled-tools"
+description = "Resolve bundled WeiDU and other shipped tool paths"
+commands.allow = ["bundled_weidu_path"]
+
+[[permission]]
 identifier = "allow-take-fresh-install-env-flag"
 description = "Read-once IE_FRESH_INSTALL env flag for dev localStorage wipe"
 commands.allow = ["take_fresh_install_env_flag"]

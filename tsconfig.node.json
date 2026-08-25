@@ -1,4 +1,11 @@
 {
-  "files": [],
-  "references": [{ "path": "./tsconfig.json" }]
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["vite.config.ts"]
 }

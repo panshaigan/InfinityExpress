@@ -1,2 +1,5 @@
-/** Keep in sync with package.json / tauri.conf.json / Cargo.toml. */
-export const APP_VERSION = '0.1.0'
+/** Injected at build time from package.json via vite.config.ts */
+declare const __APP_VERSION__: string
+
+export const APP_VERSION =
+  typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : '0.9.0'

@@ -66,6 +66,7 @@ import { GlobalSearchList } from './ui/GlobalSearchList'
 import { GlobalSearchToolbar } from './ui/GlobalSearchToolbar'
 import { FiltersStrip } from './ui/FiltersStrip'
 import { AboutDialog } from './ui/AboutDialog'
+import { checkForAppUpdate } from './lib/desktop/appUpdater'
 import { KeyboardHelp } from './ui/KeyboardHelp'
 import { RouteGuideTip } from './ui/RouteGuideTip'
 import { RouteCaughtUp } from './ui/RouteCaughtUp'
@@ -391,6 +392,18 @@ function AppShell() {
   useEffect(() => {
     void setAppWindowTitle(projectMeta?.name ?? null)
   }, [projectMeta?.name])
+
+  useEffect(() => {
+    void checkForAppUpdate({
+      silent: true,
+      onAvailable: (version) => {
+        pushToast({
+          tone: 'success',
+          message: `Update v${version} is available — open About to install.`,
+        })
+      },
+    })
+  }, [pushToast])
 
   const filtersActive = useMemo(
     () => isFilterActive(filters, filterOptions.tags, filterSeed),

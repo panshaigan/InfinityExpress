@@ -56,3 +56,6 @@ Desktop.ini
 !.cursor/rules/**
 !.cursor/skills/
 !.cursor/skills/**
+
+# Updater signing (public .pub may be committed; never the private key)
+src-tauri/keys/*.key

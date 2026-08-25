@@ -30,6 +30,7 @@
     "allow-weidu-install",
     "allow-weidu-backup",
     "allow-take-fresh-install-env-flag",
-    "allow-play-system-sound"
+    "allow-play-system-sound",
+    "allow-bundled-tools"
   ]
 }

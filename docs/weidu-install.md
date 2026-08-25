@@ -104,6 +104,10 @@ Logic: [`installLock.ts`](../src/lib/install/installLock.ts). Session snapshot i
 
 Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx) (`confirm-dialog-backdrop` / `confirm-dialog`; `danger` for destructive confirms).
 
+## Bundled WeiDU (desktop)
+
+The installed app ships `weidu.exe` under Tauri resources (`src-tauri/resources/weidu/`). On first launch the desktop shell seeds Settings → App **WeiDU executable** from the bundled path. Users can override via Browse; install still copies the configured exe to `{gameDir}/setup-{weiduId}.exe` as before.
+
 ## Resolve & run
 
 1. Stage by XML `modId` (download folder) → discover tp2 → WeiDU id = tp2 parent folder.

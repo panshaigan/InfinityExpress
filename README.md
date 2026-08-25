@@ -19,6 +19,14 @@ Domain and keyboard command resolution stay in pure TypeScript under `src/lib/` 
 - Node.js 18+
 - For the desktop shell: Rust (rustup), MSVC C++ Build Tools, WebView2 (usually already on Windows 10/11)
 
+The **installed desktop app** ships with WeiDU and 7-Zip — users do not need to install those separately. Settings → App still allows a custom WeiDU path override.
+
+## Public beta (0.9.0)
+
+Production builds bundle WeiDU and 7-Zip, check for app updates on startup (About → **Check for updates**), and block the native WebView right-click menu.
+
+Release builds use GitHub Actions (`.github/workflows/release.yml`). Maintainers: see [src-tauri/keys/README.md](src-tauri/keys/README.md) for updater signing key setup before tagging `v0.9.0`.
+
 ## Setup
 
 ```bash

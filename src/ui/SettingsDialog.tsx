@@ -678,7 +678,7 @@ export function SettingsDialog({
                 label="WeiDU executable"
                 value={weiduPath}
                 onChange={onWeiduPathChange}
-                placeholder="Path to weidu.exe"
+                placeholder="Bundled with the app (override via Browse)"
                 spellCheck={false}
                 autoComplete="off"
                 error={missingFieldError('weiduPath')}
@@ -698,6 +698,10 @@ export function SettingsDialog({
                   </button>
                 }
               />
+              <p className="settings-help">
+                WeiDU ships with the desktop app. Browse only if you want to use
+                your own copy.
+              </p>
               <OutlinedTextField
                 id="settings-github-token"
                 label="GitHub token"
