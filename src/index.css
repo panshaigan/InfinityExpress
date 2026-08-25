@@ -6520,7 +6520,7 @@ body.is-resizing-detail * {
 }
 
 .install-duration-h.is-set {
-  color: color-mix(in srgb, var(--accent) 55%, var(--muted));
+  color: color-mix(in srgb, var(--ink) 78%, var(--muted));
 }
 
 .install-duration-m {
@@ -6528,7 +6528,7 @@ body.is-resizing-detail * {
 }
 
 .install-duration-m.is-set {
-  color: color-mix(in srgb, var(--ok) 65%, var(--ink));
+  color: color-mix(in srgb, var(--ink) 78%, var(--muted));
 }
 
 .install-duration-s {
