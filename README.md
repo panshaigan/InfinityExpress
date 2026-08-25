@@ -1,119 +1,84 @@
 # iNfinity eXpress
 
-Desktop mod route planner for Infinity Engine Enhanced Edition games.
+Desktop **mod route planner** for Infinity Engine Enhanced Edition games (Baldur’s Gate, Icewind Dale, Planescape: Torment, and EET).
 
-Station-based component picker, mods catalog, and WeiDU install runner driven by curated data:
+Pick components station by station, acquire mods, then run a WeiDU install — with vanilla backups and named snapshots built in. Public beta **0.9.0**.
 
-- `src/data/InstallSequence.xml`
-- `src/data/mods.csv` (detail panel + Mods phase catalog)
+## Screenshots
 
-## Tech stack
+![Project hub and first launch](docs/screenshots/intro-02.webp)
 
-- React 18 + TypeScript + Vite + Vitest
-- **Tauri 2** (`src-tauri/`) — native webview; dialogs, FS, WeiDU install, backups, mod acquire
+*Projects — create or open an install universe for one engine.*
 
-Domain and keyboard command resolution stay in pure TypeScript under `src/lib/` so the web and Tauri hosts share behaviour.
+![Components phase](docs/screenshots/components-02.webp)
+
+*Components — browse stations, check components, apply presets and filters.*
+
+![Mods phase](docs/screenshots/mods-01.webp)
+
+*Mods — catalog, disk presence, and acquire missing packages.*
+
+![Install phase](docs/screenshots/installation-03.webp)
+
+*Install — review the WeiDU plan, run it, and manage backups.*
+
+## What it does
+
+Work happens inside a **Project**: one engine, your component selection, install run state, and destination game folder(s). Vanilla backups and app paths are shared in Settings.
+
+Three phases:
+
+1. **Components** — curated install sequence as stations (plus presets). Check what you want; conditions and alternatives keep the tree honest. Optionally export an install-order list.
+2. **Mods** — see which packages are on disk under the app data `mods` folder; download/acquire where the catalog supports it.
+3. **Install** — build a WeiDU plan from your selection, run it with an in-app console, and keep **vanilla** backups plus named snapshots. For EET, Pre-EET (BG1) and EET steps stay split where needed.
+
+The desktop app **bundles WeiDU and 7-Zip** — you do not need to install them separately. Settings → App can still point at a custom WeiDU executable.
 
 ## Requirements
 
-- Node.js 18+
-- For the desktop shell: Rust (rustup), MSVC C++ Build Tools, WebView2 (usually already on Windows 10/11)
+- **Windows 10/11** with WebView2 (usually already installed)
+- Infinity Engine **Enhanced Edition** games you want to mod (BG1EE, BG2EE, EET, IWDEE, PSTEE as supported by the curated sequence)
+- Clean **vanilla** game folders for backups (EET needs both BG1 and BG2 vanillas)
 
-The **installed desktop app** ships with WeiDU and 7-Zip — users do not need to install those separately. Settings → App still allows a custom WeiDU path override.
+## Install
 
-## Public beta (0.9.0)
+1. Open [Releases](https://github.com/panshaigan/InfinityExpress/releases).
+2. Download the latest Windows build from the release assets.
+3. Install or unpack and run **iNfinity eXpress**.
 
-Production builds bundle WeiDU and 7-Zip, check for app updates on startup (About → **Check for updates**), and block the native WebView right-click menu.
+The app can check for updates on startup (About → **Check for updates**).
 
-Release builds use GitHub Actions (`.github/workflows/release.yml`). Maintainers: see [src-tauri/keys/README.md](src-tauri/keys/README.md) for updater signing key setup before tagging `v0.9.0`.
+Building from source is for contributors — see [docs/development.md](docs/development.md).
 
-## Setup
+## How to use
 
-```bash
-npm install
-npm run dev
-```
+### 1. Create or open a project
 
-Desktop shell (starts Vite, then opens the native window):
+On first launch, create a project: choose an engine, set up vanilla backups if prompted, and choose destination (live/modded) game folder(s). Later, the **Project hub** lists your projects so you can reopen one or start another.
 
-```bash
-npm run tauri:dev
-```
+### 2. Components
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the Vite development server (browser) |
-| `npm run tauri:dev` | Start Vite + Tauri desktop window |
-| `npm run tauri:build` | Production desktop bundle |
-| `npm run build` | Typecheck (`tsc --noEmit`) then production web build |
-| `npm run preview` | Serve the production build locally |
-| `npm test` | Run the frontend (Vitest) suite once |
-| `npm run test:watch` | Run Vitest in watch mode |
-| `cd src-tauri; cargo test` | Run Rust unit tests for the Tauri backend (PowerShell) |
+Work through the station list (after Presets). Expand groups, check components, use filters and recommended/user presets. Open a row’s detail for mod notes and links. When ready, move on to Mods (or export install order from the UI if you only need a text list).
 
-### WSL / cross-OS installs
+### 3. Mods
 
-Native packages (Rollup, esbuild) are platform-specific. If `node_modules` was installed on Windows and you run the project under Linux/WSL (or the reverse), reinstall on the OS you are using:
+Review the catalog against what is already under your main data `mods` folder. Acquire missing mods when download metadata is available; remove from disk when you no longer need a package there.
 
-```bash
-rm -rf node_modules && npm install
-```
+### 4. Install
 
-Otherwise `npm test` / `npm run dev` may fail looking for the wrong `@rollup/rollup-*` binary.
+Open **Install**, review the plan table, then run. Watch the console for WeiDU output; pause or stop if needed. Use vanilla restore and named snapshots from the backup tools when you want a known-good baseline again.
 
-## Testing
+While an install is running, Components and Mods lock appropriately so the plan stays consistent with the cursor.
 
-### Frontend (Vitest)
+## Settings
 
-```bash
-npm test
-npm run test:watch
-```
+Top-bar **Settings** covers:
 
-Tests live next to the code as `src/**/*.test.ts` and cover:
+- **Project** — destination folders for the active project
+- **Vanilla backups** — clean baselines per game (BG1 / BG2 / IWD / PST)
+- **App** — main data folder (backups, logs, projects, mods), WeiDU path override, optional GitHub token for acquire
 
-- Engine token matching (`matchEngine`)
-- `alwaysIf` / `displayIf` condition parsing and evaluation
-- Selection, station merge, alternatives, visibility, and install-order export
-- Parsing the curated `InstallSequence.xml`
-- Install plan builder / WeiDU resolution helpers where present
+## Further reading
 
-### Desktop / Rust (`src-tauri`)
-
-Unit tests for Tauri backend logic live as `#[cfg(test)]` modules next to the Rust sources (not a separate `tests/` crate). From the repo root on Windows/PowerShell:
-
-```powershell
-cd src-tauri; cargo test
-```
-
-On bash/WSL: `cd src-tauri && cargo test`.
-
-Covered modules today:
-
-| File | Focus |
-| --- | --- |
-| `src-tauri/src/mod_fs.rs` | Safe folder-name validation for mod dirs |
-| `src-tauri/src/mod_acquire.rs` | GitHub release asset URL picking / href absolutizing |
-| `src-tauri/src/weidu_install.rs` | Setup exe path from tp2, component JSON labels, WeiDU command formatting |
-
-There is no npm script for these; run `cargo test` directly under `src-tauri/`.
-
-## Export
-
-**Export install order** opens a preview dialog. You can browse the list, copy it, or save with a custom file name. Lines are:
-
-```text
-componentId;componentLabel
-```
-
-Lines follow XML document order (duplicate stations merged in the UI only). For **EET**, the dialog splits into **Pre-EET (install on BG1)** (`eet1` tokens) and **EET** (`eet` tokens); components marked with both appear in both lists.
-
-## Documentation
-
-Agent entry point: [AGENTS.md](AGENTS.md) (when to load which doc).
-
-- [docs/architecture.md](docs/architecture.md) — stack, phases, data flow, key modules
-- [docs/selection.md](docs/selection.md) — visibility, selection rules, presets, export
-- [docs/install-sequence-schema.md](docs/install-sequence-schema.md) — XML tags and attributes
-- [docs/weidu-install.md](docs/weidu-install.md) — install plan, WeiDU IDs, run, backups
-- [docs/keyboard.md](docs/keyboard.md) — tree and chrome keyboard bindings
+- [Keyboard reference](docs/keyboard.md) — tree and chrome shortcuts
+- [Development](docs/development.md) — build from source, tests, releases, domain docs for contributors

@@ -1,7 +1,8 @@
 # iNfinity eXpress — agent guide
 
-Desktop mod route planner for Infinity Engine EE games. **React 18 + TypeScript + Vite** UI; **Tauri 2** shell (`src-tauri/`). Domain logic stays in pure TS under `src/lib/`.
+End-user docs: [README.md](README.md); contributor setup: [docs/development.md](docs/development.md).
 
+Desktop mod route planner for Infinity Engine EE games. **React 18 + TypeScript + Vite** UI; **Tauri 2** shell (`src-tauri/`). Domain logic stays in pure TS under `src/lib/`.
 ## Projects
 
 Boot opens the **Project hub**. A project locks one engine, owns selection + install run state, and has destination game folder(s). Vanilla backups and app paths are global (Settings).
