@@ -121,6 +121,8 @@ The installed app ships `weidu.exe` under Tauri resources (`src-tauri/resources/
    - `--language`, `--use-lang`
    - `--force-install` + component number
 
+On Windows, WeiDU and other CLI helpers (PowerShell version probe, 7-Zip extract) are spawned with `CREATE_NO_WINDOW` so no console window appears; stdout/stderr/stdin stay in the app console.
+
 **Exit codes** (install step status):
 
 | Code | Meaning | Status | Continues? |

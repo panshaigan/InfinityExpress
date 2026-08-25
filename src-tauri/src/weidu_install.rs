@@ -1,6 +1,7 @@
 //! WeiDU process spawning, listing, staging, and cleanup.
 
 use crate::mod_fs::{find_subdir_ci, validate_folder_name};
+use crate::process_util::configure_headless;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::fs::{self, OpenOptions};
@@ -316,7 +317,9 @@ fn run_weidu_capture(
     args: &[String],
 ) -> Result<String, String> {
     emit_command_logged(app, weidu, cwd, args);
-    let output = Command::new(weidu)
+    let mut cmd = Command::new(weidu);
+    configure_headless(&mut cmd);
+    let output = cmd
         .current_dir(cwd)
         .args(args)
         .output()
@@ -807,7 +810,9 @@ pub async fn run_weidu_step(
     let timeout = Duration::from_secs(input.timeout_secs.unwrap_or(DEFAULT_TIMEOUT_SECS));
     let cancel = Arc::clone(&state.cancel);
 
-    let mut child = Command::new(&setup_exe)
+    let mut cmd = Command::new(&setup_exe);
+    configure_headless(&mut cmd);
+    let mut child = cmd
         .current_dir(&cwd)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -997,7 +1002,9 @@ pub async fn run_weidu_force_uninstall(
 
     let cancel = Arc::new(AtomicBool::new(false));
 
-    let mut child = Command::new(&setup_exe)
+    let mut cmd = Command::new(&setup_exe);
+    configure_headless(&mut cmd);
+    let mut child = cmd
         .current_dir(&cwd)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
@@ -1311,7 +1318,9 @@ pub fn read_game_exe_version(game_dir: String, exe_name: String) -> Result<Strin
         .ok_or_else(|| format!("No {} found in game directory", exe_name.trim()))?;
     let exe_str = exe.to_string_lossy().replace('\'', "''");
     let script = format!("(Get-Item -LiteralPath '{exe_str}').VersionInfo.FileVersion");
-    let output = Command::new("powershell")
+    let mut cmd = Command::new("powershell");
+    configure_headless(&mut cmd);
+    let output = cmd
         .args(["-NoProfile", "-NonInteractive", "-Command", &script])
         .output()
         .map_err(|e| format!("Failed to read exe version: {e}"))?;

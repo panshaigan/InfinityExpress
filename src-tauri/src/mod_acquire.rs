@@ -2,6 +2,7 @@
 
 use crate::bundled_tools::bundled_7z_path;
 use crate::mod_fs::{ensure_under_parent, find_subdir_ci, validate_folder_name};
+use crate::process_util::configure_headless;
 use futures_util::StreamExt;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -1214,7 +1215,9 @@ fn extract_with_7z(app: &AppHandle, archive: &Path, dest: &Path) -> Result<(), S
             .to_string()
     })?;
     fs::create_dir_all(dest).map_err(|e| e.to_string())?;
-    let status = Command::new(bin)
+    let mut cmd = Command::new(bin);
+    configure_headless(&mut cmd);
+    let status = cmd
         .args([
             "x",
             "-y",

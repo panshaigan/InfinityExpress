@@ -2,6 +2,7 @@ mod bundled_tools;
 mod dev_reset;
 mod mod_acquire;
 mod mod_fs;
+mod process_util;
 mod system_sound;
 mod weidu_backup;
 mod weidu_install;
