@@ -47,6 +47,17 @@ export function weiduOutputIndicatesSkipped(
   return list.some((line) => /skipping\s*:/i.test(stripConsoleTs(line)))
 }
 
+/** WeiDU success line: `SUCCESSFULLY INSTALLED …`. */
+export function weiduOutputIndicatesSuccessfullyInstalled(
+  lines: readonly string[] | string | null | undefined,
+): boolean {
+  if (lines == null) return false
+  const list = typeof lines === 'string' ? lines.split(/\r?\n/) : lines
+  return list.some((line) =>
+    /successfully\s+installed/i.test(stripConsoleTs(line)),
+  )
+}
+
 export function consoleLineToneClass(tone: ConsoleLineTone): string {
   if (!tone) return ''
   return ` install-console-line-${tone}`

@@ -65,7 +65,11 @@ import {
   trimConsoleLines,
 } from '../lib/install/consoleLimits'
 import { buildStepFailureErrors } from '../lib/install/stepFailureErrors'
-import { weiduOutputIndicatesSkipped } from '../lib/install/consoleLineHighlight'
+import {
+  weiduOutputIndicatesSkipped,
+  weiduOutputIndicatesSuccessfullyInstalled,
+} from '../lib/install/consoleLineHighlight'
+import { resolveWeiduStepStatus } from '../lib/install/stepStatus'
 import { readTextFileTail } from '../lib/desktop/fsDialogs'
 import type { PersistedInstallSession } from '../lib/ui/appSessionPrefs'
 import {
@@ -1233,7 +1237,6 @@ export function useInstallRun(options: {
               return
             }
 
-            let status: InstallStep['status'] = 'failed'
             const resultsTail = streamPaths
               ? await readTextFileTail(
                   streamPaths.resultsPath,
@@ -1256,13 +1259,18 @@ export function useInstallRun(options: {
               weiduOutputIndicatesSkipped(resultsTail) ||
               weiduOutputIndicatesSkipped(stdoutTail) ||
               weiduOutputIndicatesSkipped(highlightLines)
+            const weiduSuccessfullyInstalled =
+              weiduOutputIndicatesSuccessfullyInstalled(resultsTail) ||
+              weiduOutputIndicatesSuccessfullyInstalled(stdoutTail) ||
+              weiduOutputIndicatesSuccessfullyInstalled(highlightLines)
 
-            if (result.timedOut) status = 'failed'
-            else if (weiduSkipped) status = 'skipped'
-            else if (result.exitCode === 0 && result.logVerified) status = 'succeeded'
-            else if (result.exitCode === 0 || result.exitCode === 3)
-              status = 'succeededWithWarnings'
-            else status = 'failed'
+            const status = resolveWeiduStepStatus({
+              timedOut: result.timedOut,
+              exitCode: result.exitCode,
+              logVerified: result.logVerified,
+              skippedFromOutput: weiduSkipped,
+              successfullyInstalledFromOutput: weiduSuccessfullyInstalled,
+            })
 
             const warnings = [...step.warnings]
             if (status !== 'skipped' && result.exitCode === 3) {

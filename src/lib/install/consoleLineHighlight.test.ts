@@ -5,6 +5,7 @@ import {
   splitConsoleTs,
   stripConsoleTs,
   weiduOutputIndicatesSkipped,
+  weiduOutputIndicatesSuccessfullyInstalled,
 } from './consoleLineHighlight'
 
 describe('consoleLineTone', () => {
@@ -45,6 +46,22 @@ describe('consoleLineTone', () => {
     expect(weiduOutputIndicatesSkipped('SKIPPING: [Compatibility]')).toBe(true)
     expect(weiduOutputIndicatesSkipped('[14:32:05] SKIPPING: foo')).toBe(true)
     expect(weiduOutputIndicatesSkipped('Installed with warnings')).toBe(false)
+  })
+
+  it('weiduOutputIndicatesSuccessfullyInstalled matches SUCCESSFULLY INSTALLED', () => {
+    expect(
+      weiduOutputIndicatesSuccessfullyInstalled(
+        'SUCCESSFULLY INSTALLED EET end (last mod in install order)',
+      ),
+    ).toBe(true)
+    expect(
+      weiduOutputIndicatesSuccessfullyInstalled(
+        '[14:32:05] SUCCESSFULLY INSTALLED cdtweaks',
+      ),
+    ).toBe(true)
+    expect(weiduOutputIndicatesSuccessfullyInstalled('SKIPPING: foo')).toBe(
+      false,
+    )
   })
 
   it('prioritizes error over warning and success', () => {

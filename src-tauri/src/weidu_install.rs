@@ -227,7 +227,7 @@ fn emit_classified_error(app: &AppHandle, message: &str) {
 }
 
 fn validate_weidu_path(path: &str) -> Result<PathBuf, String> {
-    let p = PathBuf::from(path.trim());
+    let p = strip_verbatim_prefix(&PathBuf::from(path.trim()));
     if p.as_os_str().is_empty() {
         return Err("WeiDU executable path is not set".into());
     }

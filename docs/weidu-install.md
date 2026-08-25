@@ -130,7 +130,7 @@ On Windows, WeiDU and 7-Zip are spawned with `CREATE_NO_WINDOW` so no console wi
 | `0` + WeiDU.log verified | Success | `succeeded` | yes |
 | `0` + log not verified | Soft success | `succeededWithWarnings` | yes |
 | `3` | Installed with warnings | `succeededWithWarnings` | yes |
-| stdout/results contain `SKIPPING:` | WeiDU skipped the component (predicate / game check) | `skipped` | yes |
+| stdout/results contain `SKIPPING:` and no success evidence | WeiDU skipped the target component (predicate / game check); sibling SUBCOMPONENT `SKIPPING:` is ignored when `SUCCESSFULLY INSTALLED` or WeiDU.log verify | `skipped` | yes |
 | `2` (and other non-0/3) | Failed | `failed` | no (yes if **Auto skip on errors**) |
 
 **Console tabs:** WeiDU tab = raw process stdout/stderr only (`run-stdout.log` / `run-stderr.log`). Commands tab = setup command lines + app-synthesized status/info/error (`run-commands.log`). Results = keyword highlights (`run-results.log`). List probes (`--list-components-json`, `--list-languages`) stay on the Commands tab as argv only — their JSON/language dumps are not emitted to WeiDU or Results. Header **Response** icon shows the stdin field on demand (auto-opens when WeiDU waits for input). UI keeps only the last ~800 lines per tab (live append and reload); full history stays on disk. On **project open** (when not mid-WeiDU), those tails are loaded from disk into all three tabs; later phase switches do not reload. See `.cursor/rules/weidu-console-tabs.mdc`.
