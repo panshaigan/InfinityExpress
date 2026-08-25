@@ -21,7 +21,6 @@ Add GitHub repository secrets:
 | Secret | Value |
 | --- | --- |
 | `TAURI_SIGNING_PRIVATE_KEY` | contents of `infinityexpress.key` |
-| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | empty unless you set a password |
 | `TAURI_SIGNING_PUBLIC_KEY` | contents of `infinityexpress.key.pub` (single string) |
 
 The release workflow runs `scripts/inject-updater-pubkey.mjs` to paste the public key into `tauri.conf.json` before `tauri build`.
