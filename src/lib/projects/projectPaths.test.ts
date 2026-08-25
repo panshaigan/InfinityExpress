@@ -1,6 +1,8 @@
 import { describe, expect, it, beforeEach } from 'vitest'
 import {
   allocateUniqueFolderName,
+  appendDestinationLeaf,
+  destinationLeafName,
   formatRunStamp,
   installRunLogDir,
   newInstallRunId,
@@ -44,6 +46,29 @@ describe('projectPaths', () => {
     expect(sanitizeProjectFolderName('a<b>:"/\\|?*c')).toBe('a_b________c')
     expect(sanitizeProjectFolderName('  ...  ')).toBe('project')
     expect(sanitizeProjectFolderName('con')).toBe('_con')
+  })
+
+  it('builds destination leaf names for browse append', () => {
+    expect(destinationLeafName('My Saga', 'bg2', 'eet')).toBe('My Saga')
+    expect(destinationLeafName('My Saga', 'bg1', 'eet')).toBe('My Saga (BG1)')
+    expect(destinationLeafName('My Saga', 'bg1', 'bg1')).toBe('My Saga')
+    expect(destinationLeafName('My Saga', 'bg2', 'bg2')).toBe('My Saga')
+    expect(destinationLeafName('a/b', 'iwd', 'iwd')).toBe('a_b')
+  })
+
+  it('appends destination leaf preserving path separator style', () => {
+    expect(appendDestinationLeaf('D:\\games\\bg', 'My Saga')).toBe(
+      'D:\\games\\bg\\My Saga',
+    )
+    expect(appendDestinationLeaf('D:\\games\\bg\\', 'My Saga (BG1)')).toBe(
+      'D:\\games\\bg\\My Saga (BG1)',
+    )
+    expect(appendDestinationLeaf('/home/games/bg', 'My Saga')).toBe(
+      '/home/games/bg/My Saga',
+    )
+    expect(appendDestinationLeaf('/home/games/bg/', 'My Saga')).toBe(
+      '/home/games/bg/My Saga',
+    )
   })
 
   it('allocates unique folder names on collision', () => {

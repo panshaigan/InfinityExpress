@@ -1,3 +1,6 @@
+import type { GameFolderKey } from '../ui/gameFolderPrefs'
+import type { SelectedGame } from '../xml/schema'
+
 function normalizeDataRoot(dataRoot: string): string {
   return dataRoot.replace(/\\/g, '/').replace(/\/$/, '')
 }
@@ -25,6 +28,28 @@ export function sanitizeProjectFolderName(name: string): string {
   if (!s) s = 'project'
   if (WIN_RESERVED.test(s)) s = `_${s}`
   return s
+}
+
+/**
+ * Leaf folder name appended under a browsed modding destination parent.
+ * EET BG1 gets `" (BG1)"` so it stays distinct from the BG2 install.
+ */
+export function destinationLeafName(
+  projectName: string,
+  key: GameFolderKey,
+  engine: SelectedGame,
+): string {
+  const base = sanitizeProjectFolderName(projectName)
+  if (engine === 'eet' && key === 'bg1') return `${base} (BG1)`
+  return base
+}
+
+/** Join a picked parent directory with a destination leaf (browse-only). */
+export function appendDestinationLeaf(picked: string, leaf: string): string {
+  const parent = picked.replace(/[/\\]+$/, '')
+  const segment = assertSafeSegment(leaf, 'destination leaf')
+  const sep = picked.includes('\\') ? '\\' : '/'
+  return `${parent}${sep}${segment}`
 }
 
 /**

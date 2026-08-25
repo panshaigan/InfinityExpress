@@ -1649,6 +1649,7 @@ function AppShell() {
         open={settingsOpen}
         projectId={projectId}
         projectEngine={game}
+        projectName={projectMeta?.name ?? ''}
         destinations={gameFolders}
         initialTab={defaultSettingsTabForContext(
           shellView === 'wizard' ? 'wizard' : appPhase,

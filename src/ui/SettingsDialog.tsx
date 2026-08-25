@@ -40,7 +40,9 @@ import { HubCardMenu } from './HubCardMenu'
 import { IconTip } from './IconTip'
 import { OutlinedTextField } from './OutlinedTextField'
 import {
+  appendDestinationLeaf,
   copyVanillaToFolder,
+  destinationLeafName,
   readVanillaRegistry,
   registerExternalVanilla,
   syncManagedVanillasFromDisk,
@@ -62,6 +64,8 @@ interface Props {
   onClose: () => void
   projectId?: ProjectId | null
   projectEngine?: SelectedGame | null
+  /** Display name of the open project (browse destination leaf). */
+  projectName?: string
   /** Active project destinations (for missing-path highlight of dest:*). */
   destinations?: GameFolderPaths
   onDestinationsChange?: (paths: GameFolderPaths) => void
@@ -83,7 +87,7 @@ const MAIN_DATA_FOLDER_TIP =
   'Stores vanilla backups, downloaded mods, install logs, and project data for iNfinity eXpress.'
 
 const GITHUB_TOKEN_TIP =
-  'Optional personal access token raises API rate limits for checking for updates on large catalogs. Without a token the app still works via public API and HTML scrape fallback. Create a classic token with public_repo (or a fine-grained token with read access to public repositories).'
+  'Folder where mods will be installed and the game will be modified. An existing install with WeiDU.log is allowed; installed components are imported. Please keep it out of your Program Files/steamapps folder as problems with saving files can occur there.'
 
 function formatVanillaCopyProgress(
   progress: BackupProgress | null,
@@ -114,6 +118,7 @@ export function SettingsDialog({
   onClose,
   projectId = null,
   projectEngine = null,
+  projectName = '',
   destinations = emptyDestinations(),
   onDestinationsChange,
   onDestinationsCommitted,
@@ -538,6 +543,19 @@ export function SettingsDialog({
                         onValidate={(value) => void validateDestDir(key, value)}
                         placeholder="Select or type the path…"
                         browseTitle={`Select ${GAME_LABELS[key]} destination`}
+                        mapPickedPath={
+                          projectEngine
+                            ? (picked) =>
+                                appendDestinationLeaf(
+                                  picked,
+                                  destinationLeafName(
+                                    projectName,
+                                    key,
+                                    projectEngine,
+                                  ),
+                                )
+                            : undefined
+                        }
                         error={destErrors[key] ?? destMissing}
                         required={destMissing != null}
                       />

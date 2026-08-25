@@ -4,8 +4,10 @@ import { gameFolderKeysForEngine } from '../../lib/ui/installPathValidation'
 import type { GameFolderKey, GameFolderPaths } from '../../lib/ui/gameFolderPrefs'
 import { GAME_LABELS, type SelectedGame } from '../../lib/xml/schema'
 import {
+  appendDestinationLeaf,
   createManagedVanillaFromFolder,
   defaultProjectName,
+  destinationLeafName,
   destinationsForEngine,
   emptyDestinations,
   ensureMainDataFolder,
@@ -52,7 +54,7 @@ const VANILLA_FOLDER_TIP =
   'Point at an untouched fresh installation — no mods installed yet.'
 
 const DESTINATION_FOLDER_TIP =
-  'Folder where mods will be installed and the game will be modified. An existing install with WeiDU.log is allowed; installed components are imported.'
+  'Folder where mods will be installed and the game will be modified. An existing install with WeiDU.log is allowed; installed components are imported. Please keep it out of your Program Files/steamapps folder as problems with saving files can occur there.'
 
 type WizardStep = 'engine' | 'vanilla' | 'destination'
 type VanillaErrorKey = GameFolderKey | 'backupDir'
@@ -648,6 +650,12 @@ export function ProjectWizard({
               onValidate={(value) => void validateDestDir(key, value)}
               placeholder="Select or type the path…"
               browseTitle={`Select ${GAME_LABELS[key]} destination`}
+              mapPickedPath={(picked) =>
+                appendDestinationLeaf(
+                  picked,
+                  destinationLeafName(name, key, engine),
+                )
+              }
               error={destErrors[key] ?? null}
               required
             />

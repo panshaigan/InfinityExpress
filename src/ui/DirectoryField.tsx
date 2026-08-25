@@ -20,6 +20,8 @@ interface Props {
   /** Help tip shown via a trailing ? control. */
   tip?: ReactNode
   tipAriaLabel?: string
+  /** Transform a path from Browse only (typing is unchanged). */
+  mapPickedPath?: (picked: string) => string
 }
 
 export function DirectoryField({
@@ -35,14 +37,16 @@ export function DirectoryField({
   required = false,
   tip,
   tipAriaLabel = 'About this field',
+  mapPickedPath,
 }: Props) {
   const canBrowse = isDesktopApp()
   const labelWithHint = hint?.trim() ? `${label} (${hint.trim()})` : label
 
   async function browse() {
     if (!canBrowse) return
-    const path = await pickDirectory(browseTitle)
-    if (path) {
+    const picked = await pickDirectory(browseTitle)
+    if (picked) {
+      const path = mapPickedPath ? mapPickedPath(picked) : picked
       onChange(path)
       onValidate?.(path)
     }
