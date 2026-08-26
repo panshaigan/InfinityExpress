@@ -1452,135 +1452,6 @@
 		</alternatives>
 	</npcChoices>
 
-	<combat recommended="higherDifficulty">
-		<alternatives label="Remove Backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod" recommended="lowerDifficulty">
-			<component id="ZS_CanIStabYou:99" name="Everything can be backstabbed" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd" complexity="moderate" />
-			<component id="ZS_CanIStabYou:106" name="All humanoids can be backstabbed, except humanoid ToB bosses" label="Keep reasonable Backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" default="1" engine="bg,eet,iwd" recommended="combat" complexity="moderate" cost="11" />
-		</alternatives>
-		<mod id="ZS_CanIStabYou-Mod" label="ZS_CanIStabYou" engine="bg,eet">
-			<component id="ZS_CanIStabYou:102" name="Humanoid ToB bosses can be backstabbed" label="Humanoid ToB bosses can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
-			<component id="ZS_CanIStabYou:103" name="Yaga-Shura can be backstabbed" label="Yaga-Shura can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
-			<component id="ZS_CanIStabYou:113" name="Abazigal can be backstabbed (human form)" label="Abazigal can be backstabbed (human form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
-			<component id="ZS_CanIStabYou:114" name="Abazigal can be backstabbed (dragon form)" label="Abazigal can be backstabbed (dragon form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
-			<component id="ZS_CanIStabYou:100" name="Beholders can be backstabbed" label="Beholders can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="5" />
-			<component id="ZS_CanIStabYou:104" name="Minotaurs can be backstabbed" label="Minotaurs can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="5" />
-			<component id="ZS_CanIStabYou:201" name="All spectral creatures are immune to backstab" label="All spectral creatures are immune to Backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="7" />
-			<component id="ZS_CanIStabYou:205" name="All golems are immune to backstab" label="All golems are immune to Backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="6" />
-			<component id="ZS_CanIStabYou:300" name="Every creature marked as able to see through invisibility is automatically immune to backstabs (version 2.6+)" label="Every creature marked as able to see through Invisibility is automatically immune to Backstabs (version 2.6+)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="102" />
-			<component id="ZS_CanIStabYou:302" name="Dragons cannot see through invisibility, except Abazigal" label="Dragons cannot see through Invisibility, except Abazigal" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="5" />
-			<component id="ZS_CanIStabYou:308" name="Sendai cannot see through invisibility" label="Sendai cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
-			<component id="ZS_CanIStabYou:309" name="Balthazar cannot see through invisibility" label="Balthazar cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
-			<component id="ZS_CanIStabYou:310" name="Yaga-Shura cannot see through invisibility" label="Yaga-Shura cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
-			<component id="ZS_CanIStabYou:311" name="Amelyssan cannot see through invisibility" label="Amelyssan cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
-		</mod>
-		<component id="ForgottenArmament-CritImmunity2" name="Allow Difficult Enemies to Remain Immune to Critical Hits" label="Allow difficult enemies to remain immune to critical hits" modId="forgotten-armament" complexity="minor" cost="5" />
-		<tweaks label="Creature Tweaks" noBranches="1">
-			<component id="HouseTweaks:20" name="House Tweaks: Faster Troll Unconsciousness" label="Faster troll unconsciousness" modId="House-Rule-Tweaks" recommended="combat" engine="bg,iwd,eet" complexity="minor" cost="2" />
-			<component id="METweaks:3150" name="Give Belhifet more reasonable immunities" label="Give belhifet more reasonable immunities" recommended="combat" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" cost="2" />
-			<mod id="ZSTweaks" engine="bg,eet">
-				<component id="ZSTweaks:3030" name="Make celestial summons more powerful or balanced" label="Make celestial summons more powerful or balanced" recommended="combat" engine="bg2,eet" complexity="minor" cost="11" />
-				<component id="ZSTweaks:3050" name="Make the Balor's vorpal attack not guaranteed to succeed but affected by a saving throw" label="Make the Balor's Vorpal Attack not guaranteed to succeed but affected by a Saving Throw" recommended="combat" engine="bg2,eet" complexity="minor" cost="11" />
-				<component id="ZSTweaks:3070" name="Make lions and other cat creatures not slow as molasses" label="Make lions and other cat creatures not slow as molasses" recommended="combat" complexity="minor" cost="13" />
-				<component id="ZSTweaks:3080" name="Make creature on-hit effects that should be natural not behave as magical attacks" label="Make creature on-hit effects that should be natural not behave as magical attacks" recommended="combat" complexity="minor" cost="10" />
-				<component id="ZSTweaks:3090" name="Make Shadow creatures slightly more dangerous" label="Make shadow creatures slightly more dangerous" recommended="combat" engine="bg,iwd,eet" complexity="minor" cost="15" />
-				<component id="ZSTweaks:3130" name="Make minotaurs tougher and more dangerous" label="Make minotaurs tougher and more dangerous" recommended="higherDifficulty" engine="bg,iwd,eet" complexity="minor" cost="13" />
-				<component id="ZSTweaks:3140" name="Make ogre / oni mages regenerating fiends, as per PnP" label="Make ogre / oni mages regenerating fiends, as per PnP" recommended="higherDifficulty" engine="bg,iwd,eet" complexity="minor" cost="13" />
-			</mod>
-			<component id="METweaks:2200" name="Make creatures take up less space" label="Make creatures take up less space" modId="Olvyn-Tweaks" complexity="minor" cost="4" />
-		</tweaks>
-		<ai label="AI enhancements / Sword Coast Stratagems (SCS)" recommended="combat">
-			<component id="METweaks:2400" name="Make enemies change their attack targets more quickly" label="Make enemies change their attack targets more quickly" recommended="higherDifficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" cost="12" />
-			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="iwd">
-				<component id="stratagems:6020" name="Smarter general AI and better calls for help" label="Smarter general AI and better calls for help" complexity="major" />
-				<component id="stratagems:6700" name="Revised Icewind Dale Undead" label="Revised Icewind Dale undead" complexity="moderate" />
-			</mod>
-			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="bg,eet">
-				<component id="stratagems:5900" name="Initialise AI components (required for all tactical and AI components)" label="Initialise AI components (required for all tactical and AI components)" complexity="major" cost="239" />
-				<component id="stratagems:6000" name="Smarter general AI" label="Smarter general AI" complexity="major" cost="518" />
-				<component id="DaxTweaks:50" name="Add Cowled Menace spellcasters to the list of SCS spellcasters that receive HLA's (unlock their HLA's)" label="Unlock Cowled Menace spellcasters' HLA's for SCS" modId="Dax-Tweaks" alwaysIf="cowledmenace:1000,stratagems:6000" noDisplay="1" complexity="minor" />
-				<component id="stratagems:6010" name="Better calls for help" label="Better calls for help" complexity="major" cost="47" />
-			</mod>
-			<mod id="SwordCoastStratagems" label="Creatures AI Enhancements" engine="bg,eet,iwd">
-				<component id="stratagems:6030" name="Smarter Mages" label="Smarter mages" complexity="major" cost="1663" />
-				<component id="stratagems:6040" name="Smarter Priests" label="Smarter priests" complexity="major" cost="917" />
-				<component id="stratagems:6100" name="Potions for NPCs" label="Potions for NPCs" complexity="moderate" cost="349" />
-				<component id="stratagems:6200" name="Improved Spiders" label="Improved spiders" engine="bg,eet" complexity="minor" cost="16" />
-				<component id="stratagems:6510" name="Improved fiends and celestials" label="Improved fiends and celestials" complexity="minor" cost="124" />
-				<component id="stratagems:6540" name="Smarter dragons" label="Smarter dragons" complexity="minor" cost="62" />
-				<component id="stratagems:6550" name="Smarter beholders" label="Smarter beholders" complexity="minor" cost="115" />
-			</mod>
-			<mod id="SwordCoastStratagems" label="BG1 Encounters" engine="bg1,eet" recommended="higherDifficulty" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
-				<component id="stratagems:6300" name="Smarter sirines and dryads" label="Smarter sirines and dryads" complexity="minor" cost="8" />
-				<component id="stratagems:6310" name="Slightly smarter carrion crawlers" label="Slightly smarter carrion crawlers" complexity="minor" cost="7" />
-				<component id="stratagems:6320" name="Smarter basilisks" label="Smarter basilisks" complexity="minor" cost="7" />
-				<component id="stratagems:7000" name="Improved doppelgangers" label="Improved doppelgangers" complexity="minor" cost="19" />
-				<component id="stratagems:7010" name="Tougher Black Talons and Iron Throne guards" label="Tougher Black Talons and Iron Throne guards" complexity="minor" cost="8" />
-				<component id="stratagems:7020" name="Improved deployment for parties of assassins" label="Improved deployment for parties of assassins" complexity="minor" cost="10" />
-				<component id="stratagems:7030" name="Improved kobolds" label="Improved kobolds" complexity="minor" cost="19" />
-				<component id="stratagems:7040" name="Relocated bounty hunters" label="Relocated Bounty Hunters" complexity="minor" cost="8" />
-				<component id="stratagems:7050" name="Improved Ulcaster" label="Improved Ulcaster" complexity="minor" cost="8" />
-				<component id="stratagems:7060" name="Improved Balduran's Isle" label="Improved Balduran's Isle" complexity="minor" cost="16" />
-				<component id="stratagems:7070" name="Improved Durlag's Tower" label="Improved Durlag's Tower" complexity="minor" cost="32" />
-				<component id="stratagems:7080" name="Improved Demon Cultists" label="Improved Demon Cultists" complexity="minor" cost="18" />
-				<component id="stratagems:7090" name="Improved Cloakwood Druids" label="Improved Cloakwood Druids" complexity="minor" cost="24" />
-				<component id="stratagems:7100" name="Improved Bassilus" label="Improved Bassilus" complexity="minor" cost="12" />
-				<component id="stratagems:7110" name="Improved Drasus party" label="Improved Drasus party" complexity="minor" cost="16" />
-				<component id="stratagems:7130" name="Improved Red Wizards" label="Improved Red Wizards" complexity="minor" cost="22" />
-				<component id="stratagems:7140" name="Improved Undercity assassins" label="Improved Undercity Assassins" complexity="minor" cost="17" />
-				<component id="stratagems:7150" name="Improved Carsa/Kahrk interaction" label="Improved Carsa/Kahrk interaction" complexity="minor" cost="8" />
-				<component id="stratagems:7200" name="Tougher chapter-two end battle" label="Tougher chapter-two end battle" complexity="minor" cost="12" />
-				<component id="stratagems:7210" name="Tougher chapter-three end battle" label="Tougher chapter-three end battle" complexity="minor" cost="12" />
-				<component id="stratagems:7220" name="Tougher chapter-four end battle" label="Tougher chapter-four end battle" complexity="minor" cost="9" />
-				<component id="stratagems:7230" name="Tougher chapter-five end battle" label="Tougher chapter-five end battle" complexity="minor" cost="9" />
-				<component id="stratagems:7250" name="Improved final battle" label="Improved final battle" complexity="minor" cost="13" />
-				<component id="stratagems:7900" name="Improved minor encounters" label="Improved minor encounters" complexity="minor" cost="18" />
-			</mod>
-			<mod id="SwordCoastStratagems" label="BG2 Encounters" engine="bg2,eet" recommended="higherDifficulty" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
-				<component id="stratagems:6500" name="Improved golems" label="Improved golems" complexity="minor" cost="78" />
-				<component id="stratagems:4150" name="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" label="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" complexity="minor" cost="9" />
-				<component id="stratagems:6520" name="Smarter genies" label="Smarter genies" complexity="minor" cost="13" />
-				<component id="stratagems:6560" name="Smarter mind flayers" label="Smarter mind flayers" complexity="minor" cost="47" />
-				<component id="stratagems:6570" name="Smarter githyanki" label="Smarter githyanki" complexity="minor" cost="13" />
-				<component id="stratagems:6580" name="Improved Vampires" label="Improved vampires" complexity="minor" cost="30" />
-				<component id="stratagems:6590" name="Smarter Throne of Bhaal final villain" label="Smarter Throne of Bhaal final villain" complexity="minor" cost="8" />
-				<component id="stratagems:6800" name="Smarter Illasera" label="Smarter Illasera" complexity="minor" cost="7" />
-				<component id="stratagems:6810" name="Smarter Gromnir" label="Smarter Gromnir" complexity="minor" cost="8" />
-				<component id="stratagems:6820" name="Smarter Yaga-Shura" label="Smarter Yaga-Shura" complexity="minor" cost="8" />
-				<component id="stratagems:6830" name="Smarter Abazigal" label="Smarter Abazigal" complexity="minor" cost="14" />
-				<component id="stratagems:6840" name="Ascension versions of Irenicus and Sendai use SCS abilities and AI" label="Ascension versions of Irenicus and Sendai use SCS abilities and AI" complexity="minor" cost="21" />
-				<component id="stratagems:6850" name="Ascension demons use SCS abilities and AI" label="Ascension demons use SCS abilities and AI" complexity="minor" cost="15" />
-				<component id="stratagems:8000" name="Make the starting dungeon slightly harder" label="Make the starting dungeon slightly harder" complexity="minor" cost="9" />
-				<component id="stratagems:8010" name="Improved Shade Lord" label="Improved Shade lord" complexity="minor" cost="10" />
-				<component id="stratagems:8020" name="Spellcasting Demiliches" label="Spellcasting demiliches" complexity="minor" cost="24" />
-				<component id="stratagems:8040" name="Tie difficulty of level-dependent monster groupings to the difficulty slider" label="Tie difficulty of level-dependent monster groupings to the difficulty slider" complexity="minor" cost="13" />
-				<component id="stratagems:8050" name="Improved Random Encounters" label="Improved random encounters" complexity="minor" cost="11" />
-				<component id="stratagems:8060" name="Improved de'Arnise Keep (&quot;Tactics Remix&quot;)" label="Improved De'Arnise Keep (&quot;tactics remix&quot;)" complexity="minor" cost="27" />
-				<component id="stratagems:8070" name="Improved Unseeing Eye" label="Improved Unseeing Eye" complexity="minor" cost="14" />
-				<component id="stratagems:8080" name="Improved Bodhi" label="Improved Bodhi" complexity="minor" cost="36" />
-				<component id="stratagems:8085" name="Ascension version of Bodhi uses Improved-Bodhi abilities" label="Ascension version of Bodhi uses improved-Bodhi abilities" complexity="minor" cost="8" />
-				<component id="stratagems:8090" name="Party's items are taken from them in Spellhold" label="Party's Items are taken from them in Spellhold" complexity="minor" cost="24" />
-				<component id="stratagems:8100" name="Improved battle with Irenicus in Spellhold" label="Improved battle with Irenicus in Spellhold" complexity="minor" cost="8" />
-				<component id="stratagems:8110" name="Detect Good" label="Improved Sahuagin" complexity="minor" cost="28" />
-				<component id="stratagems:8120" name="Improved Beholder hive" label="Improved Beholder Hive" complexity="minor" cost="8" />
-				<component id="stratagems:8140" name="Protection From Good 10' Radius (Abjuration) Level: 4 Sphere: Protection Range: Touch Duration: 1 turn/level Casting Time: 7 Area of Effect: 10-ft. radius Saving Throw: None When this spell is cast, all creatures within a 10' radius are affected individually by 'protection from good'. It creates a magical barrier around the recipients at a distance of one foot. The barrier moves with the recipient and has two major effects: First, all attacks made by good or good-enchanted creatures against the protected creature receive a penalty of - 2 to each attack roll, and second, any saving throws caused by such attacks are made by the protected creature with a +2 bonus." label="Improved drow" complexity="minor" cost="27" />
-				<component id="stratagems:8150" name="Improved Watcher's Keep" label="Improved Watcher's Keep" complexity="minor" cost="8" />
-				<component id="stratagems:8160" name="Improved Fire Giant temple" label="Improved Fire Giant Temple" complexity="minor" cost="17" />
-				<component id="stratagems:8170" name="Improved Sendai's Enclave" label="Improved Sendai's Enclave" complexity="minor" cost="27" />
-				<component id="stratagems:8180" name="Resist Acid and Corrosion" label="Improved Abazigal's Lair" complexity="minor" cost="52" />
-				<component id="stratagems:8190" name="Improved Minor Encounters" label="Improved minor encounters" complexity="minor" cost="24" />
-			</mod>
-		</ai>
-	</combat>
-
-	<content>
-		<bg2>
-			<tweaks>
-				<component id="DaxTweaks:220" name="Replace with a vanilla Ancient Vampire (Install after SCS/Tactics if present)" label="Replace the generic Lich in the Spawn Undead script with a vanilla Ancient Vampire" modId="Dax-Tweaks" recommended="blendWell" complexity="minor" />
-				<component id="DaxTweaks:320" name="replace with a vanilla Greater Mummy" label="Replace the Lich in the City Gates Inn with a vanilla Greater Mummy" modId="Dax-Tweaks" recommended="blendWell" complexity="minor" />
-			</tweaks>
-		</bg2>
-	</content>
-
 	<sounds recommended="sounds">
 		<group label="Additional voicesets available for the player character" unfolded="1">
 			<component id="ZG-VOICE-BG" name="Baldur's Gate Voice Pack for EE 2.6+" label="Baldur's Gate Voice Pack" modId="Baldurs-Gate-Voice-Pack-for-EE-2.6" engine="bg2,eet,iwd" complexity="minor" cost="7" />
@@ -1835,7 +1706,7 @@
 			<component id="IWD_EET_integration:160" name="Add IWD1 Easter Egg Content to BG2" label="Add IWD1 easter egg content to BG2" complexity="minor" />
 			<component id="IWD_EET_integration:180" name="Play NWN after the IWD1 Campaign" label="Play NWN after the IWD1 campaign" displayIf="NWN_MainComponent" complexity="minor" />
 		</mod>
-		<component id="NWN_WorldmapDedicatedCampaign" name="Install NWN as a dedicated campaign" label="Install NWN as a dedicated campaign" modId="NWNForBG" displayIf="NWN_MainComponent" recommended="dedicated" engine="eet" complexity="minor" />
+		<component id="NWN_WorldmapDedicatedCampaign" name="Install NWN as a dedicated campaign" label="Install NWN as a dedicated campaign" modId="NWNForBG" displayIf="NWN_MainComponent" recommended="dedicated" engine="eet,bg2" complexity="minor" />
 		<component
 			id="IE_focus_dedicated_campaigns"
 			label="Focus on dedicated campaigns"
@@ -1845,6 +1716,139 @@
 			noExport="1" complexity="minor"
 		/>
 	</campaigns>
+
+	<base engine="eet">
+		<component id="EET_end:0" name="EET core (resource importation)" label="Baldur's Gate: Enhanced Edition Trilogy (EET) - end" modId="EET" required="1" noDisplay="1" complexity="minor" />
+	</base>
+
+	<combat recommended="higherDifficulty">
+		<alternatives label="Remove Backstabbing limits" desc="Makes thiefs more useful at late-game" modId="ZS_CanIStabYou-Mod" recommended="lowerDifficulty">
+			<component id="ZS_CanIStabYou:99" name="Everything can be backstabbed" label="Everything can be backstabbed" modId="ZS_CanIStabYou-Mod" engine="bg,eet,iwd" complexity="moderate" />
+			<component id="ZS_CanIStabYou:106" name="All humanoids can be backstabbed, except humanoid ToB bosses" label="Keep reasonable Backstabbing limits" desc="Humanoids, beholders, minotaurs, dragons and most of the ToB bosses can be backstabbed" modId="ZS_CanIStabYou-Mod" default="1" engine="bg,eet,iwd" recommended="combat" complexity="moderate" cost="11" />
+		</alternatives>
+		<mod id="ZS_CanIStabYou-Mod" label="ZS_CanIStabYou" engine="bg,eet">
+			<component id="ZS_CanIStabYou:102" name="Humanoid ToB bosses can be backstabbed" label="Humanoid ToB bosses can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
+			<component id="ZS_CanIStabYou:103" name="Yaga-Shura can be backstabbed" label="Yaga-Shura can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
+			<component id="ZS_CanIStabYou:113" name="Abazigal can be backstabbed (human form)" label="Abazigal can be backstabbed (human form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
+			<component id="ZS_CanIStabYou:114" name="Abazigal can be backstabbed (dragon form)" label="Abazigal can be backstabbed (dragon form)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
+			<component id="ZS_CanIStabYou:100" name="Beholders can be backstabbed" label="Beholders can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="5" />
+			<component id="ZS_CanIStabYou:104" name="Minotaurs can be backstabbed" label="Minotaurs can be backstabbed" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="5" />
+			<component id="ZS_CanIStabYou:201" name="All spectral creatures are immune to backstab" label="All spectral creatures are immune to Backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="7" />
+			<component id="ZS_CanIStabYou:205" name="All golems are immune to backstab" label="All golems are immune to Backstab" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="6" />
+			<component id="ZS_CanIStabYou:300" name="Every creature marked as able to see through invisibility is automatically immune to backstabs (version 2.6+)" label="Every creature marked as able to see through Invisibility is automatically immune to Backstabs (version 2.6+)" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="102" />
+			<component id="ZS_CanIStabYou:302" name="Dragons cannot see through invisibility, except Abazigal" label="Dragons cannot see through Invisibility, except Abazigal" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" engine="bg,eet,iwd" complexity="minor" cost="5" />
+			<component id="ZS_CanIStabYou:308" name="Sendai cannot see through invisibility" label="Sendai cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
+			<component id="ZS_CanIStabYou:309" name="Balthazar cannot see through invisibility" label="Balthazar cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
+			<component id="ZS_CanIStabYou:310" name="Yaga-Shura cannot see through invisibility" label="Yaga-Shura cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
+			<component id="ZS_CanIStabYou:311" name="Amelyssan cannot see through invisibility" label="Amelyssan cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
+		</mod>
+		<component id="ForgottenArmament-CritImmunity2" name="Allow Difficult Enemies to Remain Immune to Critical Hits" label="Allow difficult enemies to remain immune to critical hits" modId="forgotten-armament" complexity="minor" cost="5" />
+		<tweaks label="Creature Tweaks" noBranches="1">
+			<component id="HouseTweaks:20" name="House Tweaks: Faster Troll Unconsciousness" label="Faster troll unconsciousness" modId="House-Rule-Tweaks" recommended="combat" engine="bg,iwd,eet" complexity="minor" cost="2" />
+			<component id="METweaks:3150" name="Give Belhifet more reasonable immunities" label="Give belhifet more reasonable immunities" recommended="combat" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" cost="2" />
+			<mod id="ZSTweaks" engine="bg,eet">
+				<component id="ZSTweaks:3030" name="Make celestial summons more powerful or balanced" label="Make celestial summons more powerful or balanced" recommended="combat" engine="bg2,eet" complexity="minor" cost="11" />
+				<component id="ZSTweaks:3050" name="Make the Balor's vorpal attack not guaranteed to succeed but affected by a saving throw" label="Make the Balor's Vorpal Attack not guaranteed to succeed but affected by a Saving Throw" recommended="combat" engine="bg2,eet" complexity="minor" cost="11" />
+				<component id="ZSTweaks:3070" name="Make lions and other cat creatures not slow as molasses" label="Make lions and other cat creatures not slow as molasses" recommended="combat" complexity="minor" cost="13" />
+				<component id="ZSTweaks:3080" name="Make creature on-hit effects that should be natural not behave as magical attacks" label="Make creature on-hit effects that should be natural not behave as magical attacks" recommended="combat" complexity="minor" cost="10" />
+				<component id="ZSTweaks:3090" name="Make Shadow creatures slightly more dangerous" label="Make shadow creatures slightly more dangerous" recommended="combat" engine="bg,iwd,eet" complexity="minor" cost="15" />
+				<component id="ZSTweaks:3130" name="Make minotaurs tougher and more dangerous" label="Make minotaurs tougher and more dangerous" recommended="higherDifficulty" engine="bg,iwd,eet" complexity="minor" cost="13" />
+				<component id="ZSTweaks:3140" name="Make ogre / oni mages regenerating fiends, as per PnP" label="Make ogre / oni mages regenerating fiends, as per PnP" recommended="higherDifficulty" engine="bg,iwd,eet" complexity="minor" cost="13" />
+			</mod>
+			<component id="METweaks:2200" name="Make creatures take up less space" label="Make creatures take up less space" modId="Olvyn-Tweaks" complexity="minor" cost="4" />
+		</tweaks>
+		<ai label="AI enhancements / Sword Coast Stratagems (SCS)" recommended="combat">
+			<component id="METweaks:2400" name="Make enemies change their attack targets more quickly" label="Make enemies change their attack targets more quickly" recommended="higherDifficulty" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" cost="12" />
+			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="iwd">
+				<component id="stratagems:6020" name="Smarter general AI and better calls for help" label="Smarter general AI and better calls for help" complexity="major" />
+				<component id="stratagems:6700" name="Revised Icewind Dale Undead" label="Revised Icewind Dale undead" complexity="moderate" />
+			</mod>
+			<mod id="SwordCoastStratagems" label="AI Enhancements Initialization" engine="bg,eet">
+				<component id="stratagems:5900" name="Initialise AI components (required for all tactical and AI components)" label="Initialise AI components (required for all tactical and AI components)" complexity="major" cost="239" />
+				<component id="stratagems:6000" name="Smarter general AI" label="Smarter general AI" complexity="major" cost="518" />
+				<component id="DaxTweaks:50" name="Add Cowled Menace spellcasters to the list of SCS spellcasters that receive HLA's (unlock their HLA's)" label="Unlock Cowled Menace spellcasters' HLA's for SCS" modId="Dax-Tweaks" alwaysIf="cowledmenace:1000,stratagems:6000" noDisplay="1" complexity="minor" />
+				<component id="stratagems:6010" name="Better calls for help" label="Better calls for help" complexity="major" cost="47" />
+			</mod>
+			<mod id="SwordCoastStratagems" label="Creatures AI Enhancements" engine="bg,eet,iwd">
+				<component id="stratagems:6030" name="Smarter Mages" label="Smarter mages" complexity="major" cost="1663" />
+				<component id="stratagems:6040" name="Smarter Priests" label="Smarter priests" complexity="major" cost="917" />
+				<component id="stratagems:6100" name="Potions for NPCs" label="Potions for NPCs" complexity="moderate" cost="349" />
+				<component id="stratagems:6200" name="Improved Spiders" label="Improved spiders" engine="bg,eet" complexity="minor" cost="16" />
+				<component id="stratagems:6510" name="Improved fiends and celestials" label="Improved fiends and celestials" complexity="minor" cost="124" />
+				<component id="stratagems:6540" name="Smarter dragons" label="Smarter dragons" complexity="minor" cost="62" />
+				<component id="stratagems:6550" name="Smarter beholders" label="Smarter beholders" complexity="minor" cost="115" />
+			</mod>
+			<mod id="SwordCoastStratagems" label="BG1 Encounters" engine="bg1,eet" recommended="higherDifficulty" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
+				<component id="stratagems:6300" name="Smarter sirines and dryads" label="Smarter sirines and dryads" complexity="minor" cost="8" />
+				<component id="stratagems:6310" name="Slightly smarter carrion crawlers" label="Slightly smarter carrion crawlers" complexity="minor" cost="7" />
+				<component id="stratagems:6320" name="Smarter basilisks" label="Smarter basilisks" complexity="minor" cost="7" />
+				<component id="stratagems:7000" name="Improved doppelgangers" label="Improved doppelgangers" complexity="minor" cost="19" />
+				<component id="stratagems:7010" name="Tougher Black Talons and Iron Throne guards" label="Tougher Black Talons and Iron Throne guards" complexity="minor" cost="8" />
+				<component id="stratagems:7020" name="Improved deployment for parties of assassins" label="Improved deployment for parties of assassins" complexity="minor" cost="10" />
+				<component id="stratagems:7030" name="Improved kobolds" label="Improved kobolds" complexity="minor" cost="19" />
+				<component id="stratagems:7040" name="Relocated bounty hunters" label="Relocated Bounty Hunters" complexity="minor" cost="8" />
+				<component id="stratagems:7050" name="Improved Ulcaster" label="Improved Ulcaster" complexity="minor" cost="8" />
+				<component id="stratagems:7060" name="Improved Balduran's Isle" label="Improved Balduran's Isle" complexity="minor" cost="16" />
+				<component id="stratagems:7070" name="Improved Durlag's Tower" label="Improved Durlag's Tower" complexity="minor" cost="32" />
+				<component id="stratagems:7080" name="Improved Demon Cultists" label="Improved Demon Cultists" complexity="minor" cost="18" />
+				<component id="stratagems:7090" name="Improved Cloakwood Druids" label="Improved Cloakwood Druids" complexity="minor" cost="24" />
+				<component id="stratagems:7100" name="Improved Bassilus" label="Improved Bassilus" complexity="minor" cost="12" />
+				<component id="stratagems:7110" name="Improved Drasus party" label="Improved Drasus party" complexity="minor" cost="16" />
+				<component id="stratagems:7130" name="Improved Red Wizards" label="Improved Red Wizards" complexity="minor" cost="22" />
+				<component id="stratagems:7140" name="Improved Undercity assassins" label="Improved Undercity Assassins" complexity="minor" cost="17" />
+				<component id="stratagems:7150" name="Improved Carsa/Kahrk interaction" label="Improved Carsa/Kahrk interaction" complexity="minor" cost="8" />
+				<component id="stratagems:7200" name="Tougher chapter-two end battle" label="Tougher chapter-two end battle" complexity="minor" cost="12" />
+				<component id="stratagems:7210" name="Tougher chapter-three end battle" label="Tougher chapter-three end battle" complexity="minor" cost="12" />
+				<component id="stratagems:7220" name="Tougher chapter-four end battle" label="Tougher chapter-four end battle" complexity="minor" cost="9" />
+				<component id="stratagems:7230" name="Tougher chapter-five end battle" label="Tougher chapter-five end battle" complexity="minor" cost="9" />
+				<component id="stratagems:7250" name="Improved final battle" label="Improved final battle" complexity="minor" cost="13" />
+				<component id="stratagems:7900" name="Improved minor encounters" label="Improved minor encounters" complexity="minor" cost="18" />
+			</mod>
+			<mod id="SwordCoastStratagems" label="BG2 Encounters" engine="bg2,eet" recommended="higherDifficulty" package="encounters" displayIfNot="IE_focus_dedicated_campaigns">
+				<component id="stratagems:6500" name="Improved golems" label="Improved golems" complexity="minor" cost="78" />
+				<component id="stratagems:4150" name="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" label="Allow the Cowled Wizards to detect spellcasting in most indoor, above-ground areas in Athkatla" complexity="minor" cost="9" />
+				<component id="stratagems:6520" name="Smarter genies" label="Smarter genies" complexity="minor" cost="13" />
+				<component id="stratagems:6560" name="Smarter mind flayers" label="Smarter mind flayers" complexity="minor" cost="47" />
+				<component id="stratagems:6570" name="Smarter githyanki" label="Smarter githyanki" complexity="minor" cost="13" />
+				<component id="stratagems:6580" name="Improved Vampires" label="Improved vampires" complexity="minor" cost="30" />
+				<component id="stratagems:6590" name="Smarter Throne of Bhaal final villain" label="Smarter Throne of Bhaal final villain" complexity="minor" cost="8" />
+				<component id="stratagems:6800" name="Smarter Illasera" label="Smarter Illasera" complexity="minor" cost="7" />
+				<component id="stratagems:6810" name="Smarter Gromnir" label="Smarter Gromnir" complexity="minor" cost="8" />
+				<component id="stratagems:6820" name="Smarter Yaga-Shura" label="Smarter Yaga-Shura" complexity="minor" cost="8" />
+				<component id="stratagems:6830" name="Smarter Abazigal" label="Smarter Abazigal" complexity="minor" cost="14" />
+				<component id="stratagems:6840" name="Ascension versions of Irenicus and Sendai use SCS abilities and AI" label="Ascension versions of Irenicus and Sendai use SCS abilities and AI" complexity="minor" cost="21" />
+				<component id="stratagems:6850" name="Ascension demons use SCS abilities and AI" label="Ascension demons use SCS abilities and AI" complexity="minor" cost="15" />
+				<component id="stratagems:8000" name="Make the starting dungeon slightly harder" label="Make the starting dungeon slightly harder" complexity="minor" cost="9" />
+				<component id="stratagems:8010" name="Improved Shade Lord" label="Improved Shade lord" complexity="minor" cost="10" />
+				<component id="stratagems:8020" name="Spellcasting Demiliches" label="Spellcasting demiliches" complexity="minor" cost="24" />
+				<component id="stratagems:8040" name="Tie difficulty of level-dependent monster groupings to the difficulty slider" label="Tie difficulty of level-dependent monster groupings to the difficulty slider" complexity="minor" cost="13" />
+				<component id="stratagems:8050" name="Improved Random Encounters" label="Improved random encounters" complexity="minor" cost="11" />
+				<component id="stratagems:8060" name="Improved de'Arnise Keep (&quot;Tactics Remix&quot;)" label="Improved De'Arnise Keep (&quot;tactics remix&quot;)" complexity="minor" cost="27" />
+				<component id="stratagems:8070" name="Improved Unseeing Eye" label="Improved Unseeing Eye" complexity="minor" cost="14" />
+				<component id="stratagems:8080" name="Improved Bodhi" label="Improved Bodhi" complexity="minor" cost="36" />
+				<component id="stratagems:8085" name="Ascension version of Bodhi uses Improved-Bodhi abilities" label="Ascension version of Bodhi uses improved-Bodhi abilities" complexity="minor" cost="8" />
+				<component id="stratagems:8090" name="Party's items are taken from them in Spellhold" label="Party's Items are taken from them in Spellhold" complexity="minor" cost="24" />
+				<component id="stratagems:8100" name="Improved battle with Irenicus in Spellhold" label="Improved battle with Irenicus in Spellhold" complexity="minor" cost="8" />
+				<component id="stratagems:8110" name="Detect Good" label="Improved Sahuagin" complexity="minor" cost="28" />
+				<component id="stratagems:8120" name="Improved Beholder hive" label="Improved Beholder Hive" complexity="minor" cost="8" />
+				<component id="stratagems:8140" name="Protection From Good 10' Radius (Abjuration) Level: 4 Sphere: Protection Range: Touch Duration: 1 turn/level Casting Time: 7 Area of Effect: 10-ft. radius Saving Throw: None When this spell is cast, all creatures within a 10' radius are affected individually by 'protection from good'. It creates a magical barrier around the recipients at a distance of one foot. The barrier moves with the recipient and has two major effects: First, all attacks made by good or good-enchanted creatures against the protected creature receive a penalty of - 2 to each attack roll, and second, any saving throws caused by such attacks are made by the protected creature with a +2 bonus." label="Improved drow" complexity="minor" cost="27" />
+				<component id="stratagems:8150" name="Improved Watcher's Keep" label="Improved Watcher's Keep" complexity="minor" cost="8" />
+				<component id="stratagems:8160" name="Improved Fire Giant temple" label="Improved Fire Giant Temple" complexity="minor" cost="17" />
+				<component id="stratagems:8170" name="Improved Sendai's Enclave" label="Improved Sendai's Enclave" complexity="minor" cost="27" />
+				<component id="stratagems:8180" name="Resist Acid and Corrosion" label="Improved Abazigal's Lair" complexity="minor" cost="52" />
+				<component id="stratagems:8190" name="Improved Minor Encounters" label="Improved minor encounters" complexity="minor" cost="24" />
+			</mod>
+		</ai>
+	</combat>
+
+	<content>
+		<bg2>
+			<tweaks>
+				<component id="DaxTweaks:220" name="Replace with a vanilla Ancient Vampire (Install after SCS/Tactics if present)" label="Replace the generic Lich in the Spawn Undead script with a vanilla Ancient Vampire" modId="Dax-Tweaks" recommended="blendWell" complexity="minor" />
+				<component id="DaxTweaks:320" name="replace with a vanilla Greater Mummy" label="Replace the Lich in the City Gates Inn with a vanilla Greater Mummy" modId="Dax-Tweaks" recommended="blendWell" complexity="minor" />
+			</tweaks>
+		</bg2>
+	</content>
 
 	<ui engine="bg,eet,iwd" recommended="ui">
 		<component id="AutoLoot:0" name="Bubb's Auto Loot, for Baldur's Gate Enhanced Edition Games" label="Bubb's Auto Loot" modId="AutoLoot" complexity="minor" cost="112" />
@@ -1877,10 +1881,6 @@
 		<component id="cd_tweaks_colorize_npc_names_brightness_normal" name="Normal brightness" label="Colorize NPC names and tooltips" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_250" complexity="minor" />
 		<component id="cd_tweaks_colorblind_overlays" name="Enhanced Overlays for Colorblind Players [Fouinto]" label="Enhanced overlays for colorblind players" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_220" complexity="minor" />
 	</ui>
-
-	<base engine="eet">
-		<component id="EET_end:0" name="EET core (resource importation)" label="Baldur's Gate: Enhanced Edition Trilogy (EET) - end" modId="EET" required="1" noDisplay="1" complexity="minor" />
-	</base>
 
 	<mechanics engine="bg,eet,iwd">
 		<warriors label="Warriors" desc="Fighter/ranger/paladin/monk">
