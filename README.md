@@ -1,7 +1,7 @@
 ﻿[![GitHub release (latest by date)](https://img.shields.io/github/v/release/panshaigan/InfinityExpress?color=darkred&include_prereleases&label=latest%20release)](https://github.com/panshaigan/InfinityExpress/releases/latest)
 [![Github downloads (all releases)](https://img.shields.io/github/downloads/panshaigan/InfinityExpress/total.svg?color=gold)](https://github.com/panshaigan/InfinityExpress/releases)
 [![Platform](https://img.shields.io/static/v1?label=platform&message=Windows&color=informational)](https://github.com/panshaigan/InfinityExpress/releases/latest)
-[![Supported games](https://img.shields.io/static/v1?label=supported%20games&message=BG%3AEE%20%7C%20BG2%3AEE%20%7C%20EET&color=indigo)](https://github.com/panshaigan/InfinityExpress)
+[![Supported games](https://img.shields.io/static/v1?label=supported%20games&message=BG%3AEE%20%7C%20BG2%3AEE%20%7C%20EET%20%7C%20IWD%3AEE%20%7C%20PST%3AEE&color=indigo)](https://github.com/panshaigan/InfinityExpress)
 [![Language](https://img.shields.io/static/v1?label=language&message=English&color=limegreen)](https://github.com/panshaigan/InfinityExpress)
 
 # iNfinity eXpress
