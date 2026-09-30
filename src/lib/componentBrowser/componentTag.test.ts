@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  applySelectedAlternativeDefault,
   componentXmlId,
   createComponentTagDraft,
   componentIdentityCandidates,
@@ -91,6 +92,29 @@ describe('component tag generation', () => {
         '  <component id="FIRST" name="First" label="First" />\n' +
         '  <component id="SECOND" name="Second" label="Second" />\n' +
         '</alternatives>',
+    )
+  })
+
+  it('makes the selected radio the only default alternative', () => {
+    const drafts = [
+      createComponentTagDraft(
+        { index: 0, number: 1, name: 'First', label: ['FIRST'] },
+        'example',
+        'Example',
+      ),
+      createComponentTagDraft(
+        { index: 1, number: 2, name: 'Second', label: ['SECOND'] },
+        'example',
+        'Example',
+      ),
+    ]
+    drafts[0].default = true
+
+    const selected = applySelectedAlternativeDefault(drafts, 1)
+
+    expect(selected.map((draft) => draft.default)).toEqual([false, true])
+    expect(serializeAlternativesBlock('Mode', selected)).toContain(
+      '<component id="SECOND" name="Second" label="Second" default="1" />',
     )
   })
 })

@@ -21,7 +21,7 @@ WeiDU output is authoritative for designated numbers, translated names, LABEL ar
 
 Components already present in `InstallSequence.xml` are marked by matching every WeiDU LABEL and the numbered fallback case-insensitively. Ordinary rows can be selected with checkboxes; components sharing a non-empty WeiDU subgroup are mutually exclusive and use radio buttons. **Copy selected** emits one `<mod id="download-id">` wrapper containing the selected `<component />` tags in WeiDU order. Values edited in the single-component copy form are cached by download, TP2, and component number for the lifetime of the running app and are reused by both single and batch copy.
 
-The subgroup label shown below an alternative component name is clickable. Clicking it copies every component in that WeiDU subgroup, in source order, inside an `<alternatives label="subgroup">` wrapper. Cached component-form edits are applied to this output as well.
+The subgroup label shown below an alternative component name is clickable. Clicking it copies every component in that WeiDU subgroup, in source order, inside an `<alternatives label="subgroup">` wrapper. Cached component-form edits are applied to this output as well. If one of the subgroup's radio buttons is selected, that component is emitted as the sole `default="1"` alternative.
 
 The browser can be targeted from the Mods table or Components tree right-click menus. A mod target immediately selects the matching downloaded folder. A component target additionally matches the XML component id against every WeiDU LABEL plus `weidu-id:designated-number`, scrolls the match into view, and marks it as **Opened here**.
 

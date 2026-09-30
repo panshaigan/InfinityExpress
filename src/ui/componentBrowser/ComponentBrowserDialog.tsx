@@ -11,6 +11,7 @@ import { PRESET_TILE_COPY } from '../../data/presetCatalog'
 import {
   COMPONENT_COMPLEXITIES,
   COMPONENT_ENGINE_TOKENS,
+  applySelectedAlternativeDefault,
   createComponentTagDraft,
   serializeAlternativesBlock,
   serializeModComponentBlock,
@@ -482,9 +483,16 @@ export function ComponentBrowserDialog({
     const group = components.filter(
       (component) => normalized(component.subgroup ?? '') === normalized(label),
     )
+    const selectedIndex = group.findIndex((component) =>
+      selectedComponentKeys.has(componentBrowserKey(component)),
+    )
+    const drafts = applySelectedAlternativeDefault(
+      group.map(draftFor),
+      selectedIndex,
+    )
     try {
       await navigator.clipboard.writeText(
-        serializeAlternativesBlock(label, group.map(draftFor)),
+        serializeAlternativesBlock(label, drafts),
       )
       pushToast({
         tone: 'success',

@@ -147,3 +147,14 @@ export function serializeAlternativesBlock(
     '</alternatives>',
   ].join('\n')
 }
+
+export function applySelectedAlternativeDefault(
+  drafts: readonly ComponentTagDraft[],
+  selectedIndex: number,
+): ComponentTagDraft[] {
+  if (selectedIndex < 0 || selectedIndex >= drafts.length) return [...drafts]
+  return drafts.map((draft, index) => ({
+    ...draft,
+    default: index === selectedIndex,
+  }))
+}
