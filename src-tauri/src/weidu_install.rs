@@ -64,6 +64,19 @@ pub struct WeiduComponentInfo {
     /// WeiDU may emit `"label": null` when a component has no LABEL flags.
     #[serde(default, deserialize_with = "deserialize_null_default")]
     pub label: Vec<String>,
+    #[serde(default)]
+    pub group: Vec<String>,
+    #[serde(default)]
+    pub subgroup: Option<String>,
+    #[serde(default)]
+    pub forced: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModTp2Candidate {
+    pub relative_path: String,
+    pub weidu_id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -318,6 +331,10 @@ fn run_weidu_capture(
     args: &[String],
 ) -> Result<String, String> {
     emit_command_logged(app, weidu, cwd, args);
+    run_weidu_capture_quiet(weidu, cwd, args)
+}
+
+fn run_weidu_capture_quiet(weidu: &Path, cwd: &Path, args: &[String]) -> Result<String, String> {
     let mut cmd = Command::new(weidu);
     configure_headless(&mut cmd);
     let output = cmd
@@ -472,6 +489,11 @@ fn parse_languages_output(text: &str) -> Result<Vec<WeiduLanguageInfo>, String> 
     for line in text.lines() {
         let line = line.trim();
         if line.is_empty() {
+            continue;
+        }
+        if line.starts_with('[')
+            && (line.contains("] WeiDU version") || line.contains(" translation strings"))
+        {
             continue;
         }
         if let Some((idx, name)) = line.split_once(':') {
@@ -1082,6 +1104,187 @@ fn collect_tp2_candidates(dir: &Path) -> Result<Vec<PathBuf>, String> {
     Ok(out)
 }
 
+fn source_tp2_context(
+    mods_download_dir: &str,
+    codename: &str,
+    relative_path: &str,
+) -> Result<(PathBuf, PathBuf, String), String> {
+    let codename = codename.trim();
+    validate_folder_name(codename)?;
+    let download = PathBuf::from(mods_download_dir.trim());
+    if !download.is_dir() {
+        return Err("Mods download directory does not exist".into());
+    }
+    let source_name = find_subdir_ci(&download, codename)?
+        .ok_or_else(|| format!("Mod folder \"{codename}\" not found in download directory"))?;
+    let source = download.join(source_name);
+    let rel = Path::new(relative_path.trim());
+    if rel.as_os_str().is_empty()
+        || rel.is_absolute()
+        || rel
+            .components()
+            .any(|c| !matches!(c, std::path::Component::Normal(_)))
+    {
+        return Err("TP2 path must be a relative path inside the mod folder".into());
+    }
+    let tp2 = source.join(rel);
+    if !tp2.is_file()
+        || !tp2
+            .extension()
+            .map(|x| x.to_string_lossy().eq_ignore_ascii_case("tp2"))
+            .unwrap_or(false)
+    {
+        return Err(format!("TP2 not found: {}", tp2.display()));
+    }
+
+    let download_canon = strip_verbatim_prefix(
+        &fs::canonicalize(&download).map_err(|e| format!("Cannot resolve mods directory: {e}"))?,
+    );
+    let source_canon = strip_verbatim_prefix(
+        &fs::canonicalize(&source).map_err(|e| format!("Cannot resolve mod folder: {e}"))?,
+    );
+    let tp2_canon = strip_verbatim_prefix(
+        &fs::canonicalize(&tp2).map_err(|e| format!("Cannot resolve TP2 path: {e}"))?,
+    );
+    if !source_canon.starts_with(&download_canon) || !tp2_canon.starts_with(&source_canon) {
+        return Err("TP2 path escapes the selected mod folder".into());
+    }
+
+    let mod_folder = tp2_canon
+        .parent()
+        .ok_or_else(|| format!("TP2 has no parent directory: {}", tp2.display()))?;
+    let cwd = mod_folder
+        .parent()
+        .filter(|p| p.starts_with(&download_canon))
+        .unwrap_or(source_canon.as_path())
+        .to_path_buf();
+    let tp2_arg = tp2_canon
+        .strip_prefix(&cwd)
+        .map_err(|_| "TP2 is not under the resolved WeiDU working directory".to_string())?
+        .to_string_lossy()
+        .replace('\\', "/");
+    if tp2_arg.is_empty() || tp2_arg.split('/').any(|p| p == "..") {
+        return Err("Invalid relative TP2 path".into());
+    }
+    Ok((tp2_canon, cwd, tp2_arg))
+}
+
+#[tauri::command]
+pub fn discover_mod_tp2_candidates(
+    mods_download_dir: String,
+    codename: String,
+) -> Result<Vec<ModTp2Candidate>, String> {
+    let codename = codename.trim();
+    validate_folder_name(codename)?;
+    let download = PathBuf::from(mods_download_dir.trim());
+    if !download.is_dir() {
+        return Err("Mods download directory does not exist".into());
+    }
+    let source_name = find_subdir_ci(&download, codename)?
+        .ok_or_else(|| format!("Mod folder \"{codename}\" not found in download directory"))?;
+    let source = download.join(source_name);
+    let download_canon = strip_verbatim_prefix(
+        &fs::canonicalize(&download).map_err(|e| format!("Cannot resolve mods directory: {e}"))?,
+    );
+    let source_canon = strip_verbatim_prefix(
+        &fs::canonicalize(&source).map_err(|e| format!("Cannot resolve mod folder: {e}"))?,
+    );
+    if !source_canon.starts_with(&download_canon) {
+        return Err("Selected mod folder escapes the mods download directory".into());
+    }
+    let mut paths = collect_tp2_candidates(&source)?;
+    paths.sort_by(|a, b| {
+        let suspicious = |p: &Path| {
+            path_has_segment(p, "test")
+                || path_has_segment(p, "tests")
+                || path_has_segment(p, "fixture")
+                || path_has_segment(p, "fixtures")
+        };
+        let setup = |p: &Path| {
+            p.file_name()
+                .map(|n| {
+                    n.to_string_lossy()
+                        .to_ascii_lowercase()
+                        .starts_with("setup-")
+                })
+                .unwrap_or(false)
+        };
+        suspicious(a)
+            .cmp(&suspicious(b))
+            .then_with(|| setup(b).cmp(&setup(a)))
+            .then_with(|| a.components().count().cmp(&b.components().count()))
+            .then_with(|| {
+                a.to_string_lossy()
+                    .to_ascii_lowercase()
+                    .cmp(&b.to_string_lossy().to_ascii_lowercase())
+            })
+    });
+    paths
+        .into_iter()
+        .map(|path| {
+            let canon = strip_verbatim_prefix(
+                &fs::canonicalize(&path).map_err(|e| format!("Cannot resolve TP2 path: {e}"))?,
+            );
+            if !canon.starts_with(&source_canon) {
+                return Err("Discovered TP2 path escapes the selected mod folder".into());
+            }
+            let relative_path = canon
+                .strip_prefix(&source_canon)
+                .map_err(|_| "Cannot make TP2 path relative to mod folder".to_string())?
+                .to_string_lossy()
+                .trim_start_matches(['/', '\\'])
+                .replace('\\', "/");
+            let weidu_id = canon
+                .parent()
+                .and_then(Path::file_name)
+                .map(|x| x.to_string_lossy().into_owned())
+                .ok_or_else(|| "Cannot derive WeiDU id from TP2 path".to_string())?;
+            Ok(ModTp2Candidate {
+                relative_path,
+                weidu_id,
+            })
+        })
+        .collect()
+}
+
+#[tauri::command]
+pub fn list_mod_weidu_languages(
+    weidu_path: String,
+    mods_download_dir: String,
+    codename: String,
+    tp2_relative_path: String,
+) -> Result<Vec<WeiduLanguageInfo>, String> {
+    let weidu = validate_weidu_path(&weidu_path)?;
+    let (_, cwd, tp2_arg) = source_tp2_context(&mods_download_dir, &codename, &tp2_relative_path)?;
+    let args = vec![
+        "--nogame".into(),
+        "--noautoupdate".into(),
+        "--list-languages".into(),
+        tp2_arg,
+    ];
+    parse_languages_output(&run_weidu_capture_quiet(&weidu, &cwd, &args)?)
+}
+
+#[tauri::command]
+pub fn list_mod_weidu_components(
+    weidu_path: String,
+    mods_download_dir: String,
+    codename: String,
+    tp2_relative_path: String,
+    lang: i32,
+) -> Result<Vec<WeiduComponentInfo>, String> {
+    let weidu = validate_weidu_path(&weidu_path)?;
+    let (_, cwd, tp2_arg) = source_tp2_context(&mods_download_dir, &codename, &tp2_relative_path)?;
+    let args = vec![
+        "--nogame".into(),
+        "--noautoupdate".into(),
+        "--list-components-json".into(),
+        tp2_arg,
+        lang.to_string(),
+    ];
+    parse_json_array(&run_weidu_capture_quiet(&weidu, &cwd, &args)?)
+}
+
 fn path_has_segment(path: &Path, segment: &str) -> bool {
     let target = segment.to_ascii_lowercase();
     path.components()
@@ -1471,10 +1674,61 @@ mod tests {
           "index": 0,
           "number": 4000,
           "name": "Adjust Evil Joinable NPC Reaction Rolls",
-          "label": ["cd_tweaks_adjust_evil_npc_reactions"]
+          "label": ["cd_tweaks_adjust_evil_npc_reactions"],
+          "group": ["NPC Tweaks"],
+          "subgroup": "Reaction rolls",
+          "forced": true
         });
         let info: WeiduComponentInfo = serde_json::from_value(v).expect("parse");
         assert_eq!(info.label, vec!["cd_tweaks_adjust_evil_npc_reactions"]);
+        assert_eq!(info.group, vec!["NPC Tweaks"]);
+        assert_eq!(info.subgroup.as_deref(), Some("Reaction rolls"));
+        assert!(info.forced);
+    }
+
+    #[test]
+    fn language_parser_ignores_weidu_banner() {
+        let output = "[C:\\tools\\weidu.exe] WeiDU version 24900\n0:English\n1:Polski\n";
+        let languages = parse_languages_output(output).expect("languages");
+        assert_eq!(languages.len(), 2);
+        assert_eq!(languages[0].name, "English");
+        assert_eq!(languages[1].index, 1);
+    }
+
+    #[test]
+    fn discovers_tp2_candidates_with_primary_first() {
+        let root = tempfile::tempdir().unwrap();
+        let source = root.path().join("Example-Download");
+        fs::create_dir_all(source.join("example")).unwrap();
+        fs::create_dir_all(source.join("tests").join("fixtures")).unwrap();
+        fs::write(source.join("example").join("setup-example.tp2"), b"").unwrap();
+        fs::write(
+            source.join("tests").join("fixtures").join("fixture.tp2"),
+            b"",
+        )
+        .unwrap();
+
+        let result = discover_mod_tp2_candidates(
+            root.path().to_string_lossy().into_owned(),
+            "example-download".into(),
+        )
+        .expect("candidates");
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].relative_path, "example/setup-example.tp2");
+        assert_eq!(result[0].weidu_id, "example");
+        assert!(result[1].relative_path.contains("fixtures"));
+    }
+
+    #[test]
+    fn source_tp2_context_rejects_parent_traversal() {
+        let root = tempfile::tempdir().unwrap();
+        let source = root.path().join("Example");
+        fs::create_dir_all(&source).unwrap();
+        fs::write(root.path().join("outside.tp2"), b"").unwrap();
+
+        let error = source_tp2_context(&root.path().to_string_lossy(), "Example", "../outside.tp2")
+            .expect_err("traversal must fail");
+        assert!(error.contains("relative path"));
     }
 
     #[test]

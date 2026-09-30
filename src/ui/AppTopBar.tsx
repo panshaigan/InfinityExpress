@@ -37,6 +37,8 @@ interface Props {
   onOpenKeyboardHelp: () => void
   aboutOpen: boolean
   onOpenAbout: () => void
+  componentBrowserOpen: boolean
+  onOpenComponentBrowser: () => void
   onExport: () => void
   exportDisabled?: boolean
   exportTip?: string
@@ -91,6 +93,20 @@ function ProjectsIcon() {
   )
 }
 
+function ComponentsBrowserIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      fill="currentColor"
+    >
+      <path d="M2 2.25h12v2.5H2v-2.5Zm0 4.5h12v2.5H2v-2.5Zm0 4.5h12v2.5H2v-2.5ZM3 3.1v.8h2v-.8H3Zm0 4.5v.8h4v-.8H3Zm0 4.5v.8h3v-.8H3Z" />
+    </svg>
+  )
+}
+
 export function AppTopBar({
   phase,
   onPhaseChange,
@@ -117,6 +133,8 @@ export function AppTopBar({
   onOpenKeyboardHelp,
   aboutOpen,
   onOpenAbout,
+  componentBrowserOpen,
+  onOpenComponentBrowser,
   onExport,
   exportDisabled = false,
   exportTip = 'Preview and save install order',
@@ -180,6 +198,17 @@ export function AppTopBar({
           onRename={onRename}
           onDelete={onDelete}
         />
+        <button
+          type="button"
+          className="btn secondary top-bar-help top-bar-settings has-icon-tip"
+          aria-haspopup="dialog"
+          aria-expanded={componentBrowserOpen}
+          aria-label="Mod component browser"
+          onClick={onOpenComponentBrowser}
+        >
+          <ComponentsBrowserIcon />
+          <IconTip>Mod component browser</IconTip>
+        </button>
         <button
           type="button"
           className="btn secondary top-bar-help top-bar-settings has-icon-tip"

@@ -95,6 +95,9 @@ export interface WeiduComponentInfo {
   number: number
   name: string
   label: string[]
+  group?: string[]
+  subgroup?: string | null
+  forced?: boolean
 }
 
 export interface WeiduLanguageInfo {

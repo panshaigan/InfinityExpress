@@ -37,6 +37,8 @@ A **Project** is one install universe: locked engine, component selection / pres
 
 Settings (top bar): **Project** (per-project modded destination folders), **Vanilla backups** + **App** (main data folder for backups/logs/projects/mods, WeiDU, GitHub token). Opening Settings defaults to **Project** on Components, **App** on Mods, and **Vanilla backups** on Install. The new-project wizard opens on Vanilla backups and hides the Project tab.
 
+The top-bar **Mod component browser** is a read-only developer aid for downloaded mods. It scans `{mainData}/mods` for download folders and TP2 candidates, asks the configured WeiDU executable for translated component metadata, and can copy a ready-to-paste `<component />` tag. Browsing never stages files into a game directory.
+
 **Session restore:** Selection, station done marks, active preset id/baseline, and install table/cursor live on the active project. The **user preset library** (named snapshots) is engine-scoped in localStorage (`infinity-express.selection-presets-v1`) and shared across projects of the same engine. On project open, install state is loaded from `run-state.json` (legacy inlined localStorage `install` blobs migrate once). Install console tails are **not** in localStorage — on project open they are reloaded from `{backupDir}/projects/{folderName}/{runId}/run-*.log` (last ~800 lines / 512 KiB per tab).
 
 ### Fresh install (clear projects + Settings)

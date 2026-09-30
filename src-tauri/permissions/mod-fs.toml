@@ -79,6 +79,9 @@ description = "List WeiDU components, run install steps, stage mods, cleanup"
 commands.allow = [
   "list_weidu_components",
   "list_weidu_languages",
+  "discover_mod_tp2_candidates",
+  "list_mod_weidu_languages",
+  "list_mod_weidu_components",
   "run_weidu_step",
   "run_weidu_force_uninstall",
   "send_weidu_stdin",

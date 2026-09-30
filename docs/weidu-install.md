@@ -13,6 +13,12 @@ Identity rule also auto-attaches via `.cursor/rules/weidu-mod-ids.mdc`. Architec
 
 Never treat XML `modId` as WeiDU id, `setup-*.exe` stem, or tp2 path segment.
 
+## Component browser
+
+The top-bar component browser inspects already-downloaded sources in `{mainData}/mods` without staging them into a game folder. It recursively discovers TP2 candidates under the selected download ID, then runs WeiDU with `--nogame --noautoupdate --list-languages` and `--list-components-json` from a bounded source working directory. Canonical path checks require the TP2 to remain inside the selected download folder.
+
+WeiDU output is authoritative for designated numbers, translated names, LABEL arrays, groups, subgroups, and forced status. The generated XML id uses the first non-empty WeiDU LABEL, falling back to `tp2-parent-folder:designated-number`; XML `modId` remains the download folder ID. The browser does not silently fall back to static TP2 parsing because includes, macros, conditions, and TRA resolution can make partial results misleading.
+
 ## Plan
 
 `buildInstallPlan(model, selectedIds, game)` in `install/planBuilder.ts`:

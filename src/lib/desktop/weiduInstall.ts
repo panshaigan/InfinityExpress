@@ -119,6 +119,54 @@ export async function listWeiduLanguages(
   })
 }
 
+export interface ModTp2Candidate {
+  relativePath: string
+  weiduId: string
+}
+
+export async function discoverModTp2Candidates(
+  modsDownloadDir: string,
+  codename: string,
+): Promise<ModTp2Candidate[]> {
+  requireDesktop()
+  return invoke<ModTp2Candidate[]>('discover_mod_tp2_candidates', {
+    modsDownloadDir,
+    codename,
+  })
+}
+
+export async function listModWeiduLanguages(
+  weiduPath: string,
+  modsDownloadDir: string,
+  codename: string,
+  tp2RelativePath: string,
+): Promise<WeiduLanguageInfo[]> {
+  requireDesktop()
+  return invoke<WeiduLanguageInfo[]>('list_mod_weidu_languages', {
+    weiduPath,
+    modsDownloadDir,
+    codename,
+    tp2RelativePath,
+  })
+}
+
+export async function listModWeiduComponents(
+  weiduPath: string,
+  modsDownloadDir: string,
+  codename: string,
+  tp2RelativePath: string,
+  lang: number,
+): Promise<WeiduComponentInfo[]> {
+  requireDesktop()
+  return invoke<WeiduComponentInfo[]>('list_mod_weidu_components', {
+    weiduPath,
+    modsDownloadDir,
+    codename,
+    tp2RelativePath,
+    lang,
+  })
+}
+
 export async function runWeiduStep(input: RunStepInput): Promise<StepResult> {
   requireDesktop()
   return invoke<StepResult>('run_weidu_step', {

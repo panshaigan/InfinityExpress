@@ -1620,8 +1620,8 @@
 			<component id="candlekeep_revisited:3" name="Candlekeep Revisited: New Portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" label="Candlekeep Revisited - new portraits for Arkanis, Canderous, Deder, Mordaine, Osprey" modId="Candlekeep-Revisited" engine="bg1,eet" complexity="minor" recommended="blendWell" cost="3" />
 		</group>
 		<group label="PC Portraits" unfolded="1">
-			<!--component id="sha-tweaks:0" name="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" recommended="gfx" complexity="minor" />
-			<component id="sha-tweaks:1" name="Add Extended Isandir's Portrait Pack" label="Add Extended Isandir's Portrait Pack" modId="shatweaks" engine="bg,eet" recommended="gfx" complexity="minor" /-->
+			<component id="B1StylePortraits_Clear_PC_Portraits" name="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" label="Make the portraits assigned to NPC unavailable for the player to choose as &lt;CHARNAME&gt; portrait" modId="shatweaks" engine="bg,eet" recommended="portraits" complexity="minor" />
+			<component id="B1StylePortraits_Isandir" name="Add Extended Isandir's Portrait Pack" label="Add Extended Isandir's Portrait Pack" modId="B1StylePortraits" engine="bg,eet" recommended="portraits" complexity="minor" />
 			<component id="cd_icpp_iwd2" name="Icewind Dale AND Icewind Dale II Portraits" label="Install IWD1 and IWD2 portraits" modId="Infinity_Collection_Portrait_Pack" engine="bg,eet,iwd" alwaysIf="IWD_EET_integration:100" complexity="minor" />
 		</group>
 		<group label="Special" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns">

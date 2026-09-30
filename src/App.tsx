@@ -80,6 +80,7 @@ import {
 import { ConfirmDialog } from './ui/ConfirmDialog'
 import { PresetLoadNotice } from './ui/PresetLoadNotice'
 import { AppTopBar } from './ui/AppTopBar'
+import { ComponentBrowserDialog } from './ui/componentBrowser/ComponentBrowserDialog'
 import { PresetDetail } from './ui/PresetDetail'
 import { DetailPane } from './ui/DetailPane'
 import { listSelectedModCodenames } from './lib/mods/loadMods'
@@ -262,6 +263,7 @@ function AppShell() {
   )
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
+  const [componentBrowserOpen, setComponentBrowserOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [settingsFocusField, setSettingsFocusField] = useState<
     SettingsFocusField | null
@@ -1265,6 +1267,8 @@ function AppShell() {
         onOpenKeyboardHelp={openKeyboardHelp}
         aboutOpen={aboutOpen}
         onOpenAbout={openAbout}
+        componentBrowserOpen={componentBrowserOpen}
+        onOpenComponentBrowser={() => setComponentBrowserOpen(true)}
         settingsOpen={settingsOpen}
         onOpenSettings={openSettings}
         onExport={handleExport}
@@ -1589,6 +1593,11 @@ function AppShell() {
       ) : null}
 
       <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
+      <ComponentBrowserDialog
+        open={componentBrowserOpen}
+        mods={userCatalog.mods}
+        onClose={() => setComponentBrowserOpen(false)}
+      />
       <KeyboardHelp
         open={keyboardHelpOpen}
         phase={appPhase}
