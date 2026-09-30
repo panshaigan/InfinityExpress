@@ -5,7 +5,9 @@ import {
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
 } from 'react'
+import { createPortal } from 'react-dom'
 import type { TreeNode } from '../lib/xml/schema'
 import type { DisplayNode } from '../lib/selection/visibility'
 import { findDisplayNode } from '../lib/selection/displayTreeQuery'
@@ -25,6 +27,7 @@ import {
 } from '../lib/ui/treeKeyboard'
 import { EmptyPanel } from './EmptyPanel'
 import { CheckboxRow } from './ComponentTreeRow'
+import { BrowseComponentsIcon } from './mods/ModsActionIcons'
 
 function componentIdsInDisplay(display: DisplayNode): string[] {
   if (display.collapsedComponent) return [display.collapsedComponent.componentId]
@@ -63,6 +66,15 @@ interface Props {
   readonly?: boolean
   selectionLockedIds?: ReadonlySet<string> | null
   installedComponentIds?: ReadonlySet<string>
+  onOpenComponentBrowser?: (modId: string, componentId: string) => void
+}
+
+interface ComponentMenuState {
+  modId: string
+  componentId: string
+  label: string
+  x: number
+  y: number
 }
 /** Session-scoped expand/collapse per tree; survives remount, resets on page reload. */
 const expandedKeysCache = new Map<string, Set<string>>()
@@ -130,6 +142,7 @@ function collectExpandableKeys(nodes: DisplayNode[], into: Set<string>) {
 export function ComponentTree(props: Props) {
   const rowRefs = useRef(new Map<string, HTMLDivElement>())
   const [randomizeMenuKey, setRandomizeMenuKey] = useState<string | null>(null)
+  const [componentMenu, setComponentMenu] = useState<ComponentMenuState | null>(null)
   const [expandedKeys, setExpandedKeysState] = useState<Set<string>>(() => {
     const cached = expandedKeysCache.get(props.treeKey)
     if (cached) return new Set(cached)
@@ -149,6 +162,40 @@ export function ComponentTree(props: Props) {
     },
     [props.treeKey],
   )
+
+  const openComponentMenu = useCallback(
+    (
+      event: ReactMouseEvent,
+      target: { modId: string; componentId: string; label: string },
+    ) => {
+      event.stopPropagation()
+      setComponentMenu({
+        ...target,
+        x: Math.max(8, Math.min(event.clientX, window.innerWidth - 230)),
+        y: Math.max(8, Math.min(event.clientY, window.innerHeight - 70)),
+      })
+    },
+    [],
+  )
+
+  useEffect(() => {
+    if (!componentMenu) return
+    function closeMenu() {
+      setComponentMenu(null)
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        closeMenu()
+      }
+    }
+    window.addEventListener('click', closeMenu)
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      window.removeEventListener('click', closeMenu)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [componentMenu])
 
   // When the display tree changes (station / engine / displayIf), expand newly visible
   // non-default-folded containers without collapsing user-toggled ones.
@@ -340,40 +387,73 @@ export function ComponentTree(props: Props) {
   const tabbableKey = props.focusedKey ?? keyboardCtx.visibleRows[0]?.key ?? null
 
   return (
-    <div
-      className="component-tree"
-      role="tree"
-      aria-label="Components"
-      onKeyDown={handleTreeKeyDown}
-      onMouseLeave={() => props.onHover(null)}
-    >
-      {props.nodes.map((n) => (
-        <CheckboxRow
-          key={n.node.key}
-          display={n}
-          selectedIds={props.selectedIds}
-          game={props.game}
-          model={props.model}
-          modsByCodename={props.modsByCodename}
-          focusedKey={props.focusedKey}
-          tabbableKey={tabbableKey}
-          onFocus={props.onFocus}
-          onHover={props.onHover}
-          onToggle={props.onToggle}
-          onRandomize={props.onRandomize}
-          randomizeMenuKey={randomizeMenuKey}
-          onRandomizeMenuKeyChange={setRandomizeMenuKey}
-          depth={0}
-          expandedKeys={expandedKeys}
-          onToggleExpand={onToggleExpand}
-          onExpandSubtree={expandSubtree}
-          onCollapseSubtree={collapseSubtree}
-          rowRefs={rowRefs}
-          readonly={props.readonly}
-          selectionLockedIds={props.selectionLockedIds}
-          installedComponentIds={props.installedComponentIds}
-        />
-      ))}
-    </div>
+    <>
+      <div
+        className="component-tree"
+        role="tree"
+        aria-label="Components"
+        onKeyDown={handleTreeKeyDown}
+        onMouseLeave={() => props.onHover(null)}
+      >
+        {props.nodes.map((n) => (
+          <CheckboxRow
+            key={n.node.key}
+            display={n}
+            selectedIds={props.selectedIds}
+            game={props.game}
+            model={props.model}
+            modsByCodename={props.modsByCodename}
+            focusedKey={props.focusedKey}
+            tabbableKey={tabbableKey}
+            onFocus={props.onFocus}
+            onHover={props.onHover}
+            onToggle={props.onToggle}
+            onRandomize={props.onRandomize}
+            onRequestComponentMenu={
+              props.onOpenComponentBrowser ? openComponentMenu : undefined
+            }
+            randomizeMenuKey={randomizeMenuKey}
+            onRandomizeMenuKeyChange={setRandomizeMenuKey}
+            depth={0}
+            expandedKeys={expandedKeys}
+            onToggleExpand={onToggleExpand}
+            onExpandSubtree={expandSubtree}
+            onCollapseSubtree={collapseSubtree}
+            rowRefs={rowRefs}
+            readonly={props.readonly}
+            selectionLockedIds={props.selectionLockedIds}
+            installedComponentIds={props.installedComponentIds}
+          />
+        ))}
+      </div>
+      {componentMenu && props.onOpenComponentBrowser
+        ? createPortal(
+            <div
+              className="mods-row-context-menu"
+              role="menu"
+              aria-label={`${componentMenu.label} actions`}
+              style={{ left: componentMenu.x, top: componentMenu.y }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                role="menuitem"
+                className="mods-row-context-item"
+                onClick={() => {
+                  props.onOpenComponentBrowser?.(
+                    componentMenu.modId,
+                    componentMenu.componentId,
+                  )
+                  setComponentMenu(null)
+                }}
+              >
+                <BrowseComponentsIcon />
+                <span>Open in component browser</span>
+              </button>
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   )
 }

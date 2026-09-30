@@ -3,6 +3,7 @@ import type { WeiduComponentInfo } from '../install/types'
 import {
   componentBrowserKey,
   componentExistsInSequence,
+  findComponentByIdentity,
   normalizeComponentIdentitySet,
   toggleComponentSelection,
 } from './componentSelection'
@@ -46,5 +47,12 @@ describe('component browser selection', () => {
         'example',
       ),
     ).toBe(true)
+  })
+
+  it('finds a requested component by label or designated-number fallback', () => {
+    expect(findComponentByIdentity(components, 'example', 'alt_a')).toBe(components[1])
+    expect(findComponentByIdentity(components, 'example', 'EXAMPLE:30')).toBe(
+      components[3],
+    )
   })
 })

@@ -25,6 +25,7 @@ import { effectiveModFields, type ModComponentCatalogStats, type WorkingMod } fr
 import { isHttpUrl } from '../../lib/url'
 import { IconTip } from '../IconTip'
 import {
+  BrowseComponentsIcon,
   CheckUpdatesIcon,
   DeleteFromCatalogIcon,
   DownloadIcon,
@@ -43,6 +44,7 @@ export interface ModsRowActions {
   isModProtected?: (codename: string) => boolean
   onAcquire: (codename: string) => void
   onCheckUpdates: (codename: string) => void
+  onBrowseComponents: (codename: string) => void
   onEdit: (codename: string) => void
   onRemoveFromDisk: (codename: string) => void
   onDeleteFromCatalog: (codename: string) => void
@@ -333,6 +335,8 @@ function ModsRowContextMenu({
   const acquireLabel = actions.acquireLabel(mod)
   const acquireDisabled = actions.acquireDisabled(mod) || actions.jobRunning
   const removeDisabled = mod.diskStatus === 'not_present'
+  const browseDisabled =
+    mod.diskStatus === 'not_present' || mod.diskStatus === 'busy'
   const checkDisabled =
     mod.diskStatus === 'not_present' || actions.jobRunning
 
@@ -401,6 +405,16 @@ function ModsRowContextMenu({
       >
         <CheckUpdatesIcon />
         <span>Check for updates</span>
+      </button>
+      <button
+        type="button"
+        role="menuitem"
+        className="mods-row-context-item"
+        disabled={browseDisabled}
+        onClick={() => run(() => actions.onBrowseComponents(mod.codename))}
+      >
+        <BrowseComponentsIcon />
+        <span>Browse components</span>
       </button>
       <button
         type="button"

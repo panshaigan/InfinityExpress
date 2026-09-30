@@ -20,6 +20,7 @@ import {
 import {
   componentBrowserKey,
   componentExistsInSequence,
+  findComponentByIdentity,
   normalizeComponentIdentitySet,
   toggleComponentSelection,
 } from '../../lib/componentBrowser/componentSelection'
@@ -44,6 +45,7 @@ interface Props {
   open: boolean
   mods: readonly WorkingMod[]
   existingComponentIds: ReadonlySet<string>
+  initialTarget?: { modId: string; componentId?: string } | null
   onClose: () => void
 }
 
@@ -276,6 +278,7 @@ export function ComponentBrowserDialog({
   open,
   mods,
   existingComponentIds,
+  initialTarget,
   onClose,
 }: Props) {
   const titleId = useId()
@@ -294,6 +297,9 @@ export function ComponentBrowserDialog({
   const [error, setError] = useState<string | null>(null)
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
   const [editing, setEditing] = useState<WeiduComponentInfo | null>(null)
+  const [indicatedComponentKey, setIndicatedComponentKey] = useState<string | null>(
+    null,
+  )
   const [selectedComponentKeys, setSelectedComponentKeys] = useState<Set<string>>(
     () => new Set(),
   )
@@ -301,6 +307,7 @@ export function ComponentBrowserDialog({
     () => new Map(),
   )
   const requestId = useRef(0)
+  const componentRowRefs = useRef(new Map<string, HTMLTableRowElement>())
   const backdrop = useBackdropDismiss(onClose)
 
   const catalog = useMemo(() => {
@@ -325,6 +332,7 @@ export function ComponentBrowserDialog({
     setModQuery('')
     setComponentQuery('')
     setSelectedComponentKeys(new Set())
+    setIndicatedComponentKey(null)
     setOpenSelect(null)
     setError(null)
     const { modsDownloadDir } = readAppDirPaths()
@@ -336,19 +344,38 @@ export function ComponentBrowserDialog({
     void listSubdirNames(modsDownloadDir)
       .then((folders) => {
         if (requestId.current !== current) return
-        setDownloadedMods(
-          folders
-            .filter((folder) => !folder.startsWith('.'))
-            .map((downloadId) => ({
-              downloadId,
-              name: catalog.get(normalized(downloadId))?.name || downloadId,
-            })),
-        )
+        const downloaded = folders
+          .filter((folder) => !folder.startsWith('.'))
+          .map((downloadId) => ({
+            downloadId,
+            name: catalog.get(normalized(downloadId))?.name || downloadId,
+          }))
+        setDownloadedMods(downloaded)
+        if (initialTarget) {
+          const requested = downloaded.find(
+            (mod) => normalized(mod.downloadId) === normalized(initialTarget.modId),
+          )
+          if (requested) void chooseMod(requested)
+          else {
+            setModQuery(initialTarget.modId)
+            setError(`Downloaded mod “${initialTarget.modId}” was not found.`)
+          }
+        }
       })
       .catch((reason) => {
         if (requestId.current === current) setError(String(reason))
       })
-  }, [catalog, open])
+  }, [catalog, initialTarget, open])
+
+  useEffect(() => {
+    if (!open || !indicatedComponentKey) return
+    const frame = requestAnimationFrame(() => {
+      componentRowRefs.current
+        .get(indicatedComponentKey)
+        ?.scrollIntoView({ block: 'center' })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [indicatedComponentKey, open])
 
   useEffect(() => {
     if (!open) requestId.current++
@@ -466,6 +493,7 @@ export function ComponentBrowserDialog({
     setError(null)
     setComponents([])
     setSelectedComponentKeys(new Set())
+    setIndicatedComponentKey(null)
     try {
       const result = await listModWeiduComponents(
         weiduPath,
@@ -476,6 +504,22 @@ export function ComponentBrowserDialog({
       )
       if (requestId.current !== current) return
       setComponents(result)
+      if (
+        initialTarget?.componentId &&
+        normalized(initialTarget.modId) === normalized(mod.downloadId)
+      ) {
+        const match = findComponentByIdentity(
+          result,
+          candidate.weiduId,
+          initialTarget.componentId,
+        )
+        if (match) setIndicatedComponentKey(componentBrowserKey(match))
+        else {
+          setError(
+            `Component “${initialTarget.componentId}” was not found in ${candidate.relativePath}.`,
+          )
+        }
+      }
     } catch (reason) {
       if (requestId.current === current) setError(String(reason))
     } finally {
@@ -492,6 +536,7 @@ export function ComponentBrowserDialog({
     setLanguageIndex('')
     setComponents([])
     setSelectedComponentKeys(new Set())
+    setIndicatedComponentKey(null)
     setLoading(true)
     setError(null)
     if (!weiduPath) {
@@ -531,6 +576,7 @@ export function ComponentBrowserDialog({
     setComponents([])
     setComponentQuery('')
     setSelectedComponentKeys(new Set())
+    setIndicatedComponentKey(null)
     setLoading(true)
     setError(null)
     try {
@@ -540,7 +586,16 @@ export function ComponentBrowserDialog({
       )
       if (requestId.current !== current) return
       setCandidates(result)
-      const first = result[0]
+      const numberedTargetWeiduId = initialTarget?.componentId?.match(
+        /^(.*):\d+$/,
+      )?.[1]
+      const first =
+        (numberedTargetWeiduId
+          ? result.find(
+              (candidate) =>
+                normalized(candidate.weiduId) === normalized(numberedTargetWeiduId),
+            )
+          : undefined) ?? result[0]
       if (!first) throw new Error('No TP2 files found in this download.')
       await chooseCandidate(mod, first)
     } catch (reason) {
@@ -598,6 +653,7 @@ export function ComponentBrowserDialog({
                 setLanguageIndex('')
                 setComponents([])
                 setSelectedComponentKeys(new Set())
+                setIndicatedComponentKey(null)
               }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' && modSuggestions[0]) {
@@ -715,6 +771,15 @@ export function ComponentBrowserDialog({
                   return (
                     <tr
                       key={key}
+                      ref={(element) => {
+                        if (element) componentRowRefs.current.set(key, element)
+                        else componentRowRefs.current.delete(key)
+                      }}
+                      className={
+                        indicatedComponentKey === key
+                          ? 'component-browser-indicated'
+                          : undefined
+                      }
                       onContextMenu={(event) => openContextMenu(event, component)}
                     >
                       <td className="component-browser-select">
@@ -741,6 +806,11 @@ export function ComponentBrowserDialog({
                           {exists ? (
                             <span className="component-browser-existing-badge">
                               In sequence
+                            </span>
+                          ) : null}
+                          {indicatedComponentKey === key ? (
+                            <span className="component-browser-opened-badge">
+                              Opened here
                             </span>
                           ) : null}
                         </span>

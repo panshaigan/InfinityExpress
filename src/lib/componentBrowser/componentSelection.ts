@@ -50,3 +50,16 @@ export function normalizeComponentIdentitySet(
 ): Set<string> {
   return new Set([...componentIds].map(normalized))
 }
+
+export function findComponentByIdentity(
+  components: readonly WeiduComponentInfo[],
+  weiduId: string,
+  requestedId: string,
+): WeiduComponentInfo | undefined {
+  const requested = normalized(requestedId)
+  return components.find((component) =>
+    componentIdentityCandidates(component, weiduId).some(
+      (identity) => normalized(identity) === requested,
+    ),
+  )
+}

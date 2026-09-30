@@ -268,6 +268,10 @@ function AppShell() {
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
   const [componentBrowserOpen, setComponentBrowserOpen] = useState(false)
+  const [componentBrowserTarget, setComponentBrowserTarget] = useState<{
+    modId: string
+    componentId?: string
+  } | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [settingsFocusField, setSettingsFocusField] = useState<
     SettingsFocusField | null
@@ -293,6 +297,19 @@ function AppShell() {
   const destImportKeyRef = useRef('')
   const weiduImportGenRef = useRef(0)
   const foldApiRef = useRef<TreeFoldApi | null>(null)
+
+  const openComponentBrowser = useCallback(() => {
+    setComponentBrowserTarget(null)
+    setComponentBrowserOpen(true)
+  }, [])
+
+  const openTargetedComponentBrowser = useCallback(
+    (modId: string, componentId?: string) => {
+      setComponentBrowserTarget({ modId, componentId })
+      setComponentBrowserOpen(true)
+    },
+    [],
+  )
   const onFoldApiReady = useCallback((api: TreeFoldApi | null) => {
     foldApiRef.current = api
   }, [])
@@ -1272,7 +1289,7 @@ function AppShell() {
         aboutOpen={aboutOpen}
         onOpenAbout={openAbout}
         componentBrowserOpen={componentBrowserOpen}
-        onOpenComponentBrowser={() => setComponentBrowserOpen(true)}
+        onOpenComponentBrowser={openComponentBrowser}
         settingsOpen={settingsOpen}
         onOpenSettings={openSettings}
         onExport={handleExport}
@@ -1309,6 +1326,7 @@ function AppShell() {
               onRefreshDiskStatus={userCatalog.refreshDiskStatus}
               onRemoveFromDisk={userCatalog.removeFromDisk}
               onOpenSettings={openSettingsMainData}
+              onOpenComponentBrowser={openTargetedComponentBrowser}
               onProceedToInstall={() => onPhaseChange('install')}
               onBusyChange={onModsBusyChange}
               onExitBlockingChange={setModsBlocking}
@@ -1535,6 +1553,7 @@ function AppShell() {
                         readonly={route.currentFinished || installWorking}
                         selectionLockedIds={selectionLockedIds}
                         installedComponentIds={installLock.installedComponentIds}
+                        onOpenComponentBrowser={openTargetedComponentBrowser}
                       />
                     </div>
                   </>
@@ -1601,6 +1620,7 @@ function AppShell() {
         open={componentBrowserOpen}
         mods={userCatalog.mods}
         existingComponentIds={existingComponentIds}
+        initialTarget={componentBrowserTarget}
         onClose={() => setComponentBrowserOpen(false)}
       />
       <KeyboardHelp

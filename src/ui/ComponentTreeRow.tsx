@@ -78,6 +78,10 @@ export type CheckboxRowProps = {
   onHover: (key: string | null) => void
   onToggle: (display: DisplayNode, wantSelected: boolean) => void
   onRandomize: (display: DisplayNode, options: RandomizeOptions) => void
+  onRequestComponentMenu?: (
+    event: MouseEvent,
+    target: { modId: string; componentId: string; label: string },
+  ) => void
   randomizeMenuKey: string | null
   onRandomizeMenuKeyChange: (key: string | null) => void
   depth: number
@@ -175,6 +179,7 @@ function checkboxRowPropsAreEqual(
   if (prev.onHover !== next.onHover) return false
   if (prev.onToggle !== next.onToggle) return false
   if (prev.onRandomize !== next.onRandomize) return false
+  if (prev.onRequestComponentMenu !== next.onRequestComponentMenu) return false
   if (prev.onToggleExpand !== next.onToggleExpand) return false
   if (prev.onExpandSubtree !== next.onExpandSubtree) return false
   if (prev.onCollapseSubtree !== next.onCollapseSubtree) return false
@@ -216,6 +221,7 @@ export const CheckboxRow = memo(function CheckboxRow({
   onHover,
   onToggle,
   onRandomize,
+  onRequestComponentMenu,
   randomizeMenuKey,
   onRandomizeMenuKeyChange,
   depth,
@@ -309,6 +315,20 @@ export const CheckboxRow = memo(function CheckboxRow({
     : presetRecommended
       ? resolvePresetTileLabel(presetRecommended, model, 'recommended')
       : null
+  const browserModId = isComponentRow
+    ? resolveModLookupKey(model, source)
+    : undefined
+
+  function handleContextMenu(e: MouseEvent) {
+    if (!componentIdForBadge || !browserModId || !onRequestComponentMenu) return
+    e.preventDefault()
+    onFocus(node.key)
+    onRequestComponentMenu(e, {
+      modId: browserModId,
+      componentId: componentIdForBadge,
+      label,
+    })
+  }
 
   function handleFoldClick(e: MouseEvent) {
     e.preventDefault()
@@ -385,6 +405,7 @@ export const CheckboxRow = memo(function CheckboxRow({
         aria-label={label}
         onClick={handleRowClick}
         onDoubleClick={handleRowDoubleClick}
+        onContextMenu={handleContextMenu}
         onFocus={handleRowFocus}
         onMouseEnter={() => onHover(node.key)}
         ref={(el) => {
@@ -562,6 +583,7 @@ export const CheckboxRow = memo(function CheckboxRow({
               onHover={onHover}
               onToggle={onToggle}
               onRandomize={onRandomize}
+              onRequestComponentMenu={onRequestComponentMenu}
               randomizeMenuKey={randomizeMenuKey}
               onRandomizeMenuKeyChange={onRandomizeMenuKeyChange}
               depth={node.attrs.horizontal ? depth : depth + 1}

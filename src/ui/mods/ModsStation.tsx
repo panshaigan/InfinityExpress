@@ -73,6 +73,7 @@ interface Props {
     codenames: string[],
   ) => Promise<{ removed: string[]; errors: string[] }>
   onOpenSettings: () => void
+  onOpenComponentBrowser: (modId: string) => void
   onProceedToInstall?: () => void
   onBusyChange?: (busy: boolean) => void
   onExitBlockingChange?: (busy: boolean) => void
@@ -100,6 +101,7 @@ export function ModsStation({
   onRefreshDiskStatus,
   onRemoveFromDisk,
   onOpenSettings,
+  onOpenComponentBrowser,
   onProceedToInstall,
   onBusyChange,
   onExitBlockingChange,
@@ -601,6 +603,7 @@ export function ModsStation({
                   if (!mod || mod.diskStatus === 'not_present') return
                   void acquire.runCheck([codename])
                 },
+                onBrowseComponents: onOpenComponentBrowser,
                 editDisabled: (!developerMode && journeyLocked) || installFrozen,
                 catalogDeleteDisabled:
                   installFrozen || (!developerMode && journeyLocked),

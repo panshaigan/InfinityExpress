@@ -22,6 +22,17 @@ export function CheckUpdatesIcon({ size = 16 }: { size?: number }) {
   )
 }
 
+export function BrowseComponentsIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M2.5 2h4A1.5 1.5 0 0 1 8 3.5v9A1.5 1.5 0 0 1 6.5 14h-4A1.5 1.5 0 0 1 1 12.5v-9A1.5 1.5 0 0 1 2.5 2Zm0 1a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-4Zm8 0h3A1.5 1.5 0 0 1 15 4.5v7a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 11.5v-7A1.5 1.5 0 0 1 10.5 3Zm0 1a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.5-.5h-3ZM3 5h3v1H3V5Zm0 2h3v1H3V7Zm7.5-.5H13v1h-2.5v-1Z"
+      />
+    </svg>
+  )
+}
+
 export function RemoveFromDiskIcon({ size = 16 }: { size?: number }) {
   return (
     <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">
