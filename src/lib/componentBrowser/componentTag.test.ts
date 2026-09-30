@@ -3,6 +3,7 @@ import {
   componentXmlId,
   createComponentTagDraft,
   componentIdentityCandidates,
+  serializeAlternativesBlock,
   serializeModComponentBlock,
   serializeComponentTag,
 } from './componentTag'
@@ -69,6 +70,27 @@ describe('component tag generation', () => {
         '  <component id="FIRST" name="First" label="First" />\n' +
         '  <component id="example:2" name="Second" label="Second" />\n' +
         '</mod>',
+    )
+  })
+
+  it('serializes a complete alternatives group with an escaped label', () => {
+    const first = createComponentTagDraft(
+      { index: 0, number: 1, name: 'First', label: ['FIRST'] },
+      'example',
+      'Example',
+    )
+    const second = createComponentTagDraft(
+      { index: 1, number: 2, name: 'Second', label: ['SECOND'] },
+      'example',
+      'Example',
+    )
+    second.modId = ''
+
+    expect(serializeAlternativesBlock('Mode "A & B"', [first, second])).toBe(
+      '<alternatives label="Mode &quot;A &amp; B&quot;">\n' +
+        '  <component id="FIRST" name="First" label="First" />\n' +
+        '  <component id="SECOND" name="Second" label="Second" />\n' +
+        '</alternatives>',
     )
   })
 })

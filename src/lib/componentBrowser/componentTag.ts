@@ -68,11 +68,14 @@ function escapeXmlAttribute(value: string): string {
     .replace(/>/g, '&gt;')
 }
 
-export function validateComponentTagDraft(draft: ComponentTagDraft): string | null {
+export function validateComponentTagDraft(
+  draft: ComponentTagDraft,
+  options: { omitModId?: boolean } = {},
+): string | null {
   if (!draft.id.trim()) return 'ID is required'
   if (!draft.name.trim()) return 'Name is required'
   if (!draft.label.trim()) return 'Label is required'
-  if (!draft.modId.trim()) return 'Mod download ID is required'
+  if (!options.omitModId && !draft.modId.trim()) return 'Mod download ID is required'
   return null
 }
 
@@ -80,7 +83,7 @@ export function serializeComponentTag(
   draft: ComponentTagDraft,
   options: { omitModId?: boolean } = {},
 ): string {
-  const error = validateComponentTagDraft(draft)
+  const error = validateComponentTagDraft(draft, options)
   if (error) throw new Error(error)
 
   const attrs: Array<[string, string]> = [
@@ -125,4 +128,22 @@ export function serializeModComponentBlock(
   return [`<mod id="${escapeXmlAttribute(cleanModId)}">`, ...components, '</mod>'].join(
     '\n',
   )
+}
+
+export function serializeAlternativesBlock(
+  label: string,
+  drafts: readonly ComponentTagDraft[],
+): string {
+  const cleanLabel = label.trim()
+  if (!cleanLabel) throw new Error('Alternatives label is required')
+  if (drafts.length === 0) throw new Error('No alternative components found')
+
+  const components = drafts.map(
+    (draft) => `  ${serializeComponentTag(draft, { omitModId: true })}`,
+  )
+  return [
+    `<alternatives label="${escapeXmlAttribute(cleanLabel)}">`,
+    ...components,
+    '</alternatives>',
+  ].join('\n')
 }

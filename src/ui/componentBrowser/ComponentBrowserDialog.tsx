@@ -12,6 +12,7 @@ import {
   COMPONENT_COMPLEXITIES,
   COMPONENT_ENGINE_TOKENS,
   createComponentTagDraft,
+  serializeAlternativesBlock,
   serializeModComponentBlock,
   serializeComponentTag,
   validateComponentTagDraft,
@@ -477,6 +478,23 @@ export function ComponentBrowserDialog({
     }
   }
 
+  async function copyAlternativesGroup(label: string) {
+    const group = components.filter(
+      (component) => normalized(component.subgroup ?? '') === normalized(label),
+    )
+    try {
+      await navigator.clipboard.writeText(
+        serializeAlternativesBlock(label, group.map(draftFor)),
+      )
+      pushToast({
+        tone: 'success',
+        message: `Copied ${group.length} alternatives`,
+      })
+    } catch (reason) {
+      setError(`Could not copy alternatives XML: ${String(reason)}`)
+    }
+  }
+
   async function loadComponents(
     mod: DownloadedMod,
     candidate: ModTp2Candidate,
@@ -814,7 +832,21 @@ export function ComponentBrowserDialog({
                             </span>
                           ) : null}
                         </span>
-                        {component.subgroup ? <small>{component.subgroup}</small> : null}
+                        {subgroup ? (
+                          <button
+                            type="button"
+                            className="component-browser-subgroup has-icon-tip"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              void copyAlternativesGroup(subgroup)
+                            }}
+                          >
+                            {subgroup}
+                            <span className="icon-tip" role="tooltip">
+                              Copy this alternatives group
+                            </span>
+                          </button>
+                        ) : null}
                       </td>
                       <td>
                         {component.label.length > 0 ? (
