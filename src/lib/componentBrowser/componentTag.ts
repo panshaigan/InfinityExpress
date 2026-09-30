@@ -33,6 +33,15 @@ export function componentXmlId(
   return label || `${weiduId.trim()}:${component.number}`
 }
 
+export function componentIdentityCandidates(
+  component: Pick<WeiduComponentInfo, 'label' | 'number'>,
+  weiduId: string,
+): string[] {
+  const identities = component.label.map((value) => value.trim()).filter(Boolean)
+  identities.push(`${weiduId.trim()}:${component.number}`)
+  return [...new Set(identities)]
+}
+
 export function createComponentTagDraft(
   component: WeiduComponentInfo,
   weiduId: string,
@@ -67,7 +76,10 @@ export function validateComponentTagDraft(draft: ComponentTagDraft): string | nu
   return null
 }
 
-export function serializeComponentTag(draft: ComponentTagDraft): string {
+export function serializeComponentTag(
+  draft: ComponentTagDraft,
+  options: { omitModId?: boolean } = {},
+): string {
   const error = validateComponentTagDraft(draft)
   if (error) throw new Error(error)
 
@@ -77,7 +89,7 @@ export function serializeComponentTag(draft: ComponentTagDraft): string {
     ['label', draft.label.trim()],
   ]
   if (draft.core) attrs.push(['core', '1'])
-  attrs.push(['modId', draft.modId.trim()])
+  if (!options.omitModId) attrs.push(['modId', draft.modId.trim()])
   if (draft.engine.length > 0) {
     const selected = new Set(draft.engine)
     attrs.push([
@@ -96,4 +108,21 @@ export function serializeComponentTag(draft: ComponentTagDraft): string {
   return `<component ${attrs
     .map(([key, value]) => `${key}="${escapeXmlAttribute(value)}"`)
     .join(' ')} />`
+}
+
+export function serializeModComponentBlock(
+  modId: string,
+  drafts: readonly ComponentTagDraft[],
+): string {
+  const cleanModId = modId.trim()
+  if (!cleanModId) throw new Error('Mod download ID is required')
+  if (drafts.length === 0) throw new Error('Select at least one component')
+
+  const components = drafts.map(
+    (draft) =>
+      `  ${serializeComponentTag({ ...draft, modId: cleanModId }, { omitModId: true })}`,
+  )
+  return [`<mod id="${escapeXmlAttribute(cleanModId)}">`, ...components, '</mod>'].join(
+    '\n',
+  )
 }

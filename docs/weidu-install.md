@@ -19,6 +19,8 @@ The top-bar component browser inspects already-downloaded sources in `{mainData}
 
 WeiDU output is authoritative for designated numbers, translated names, LABEL arrays, groups, subgroups, and forced status. The generated XML id uses the first non-empty WeiDU LABEL, falling back to `tp2-parent-folder:designated-number`; XML `modId` remains the download folder ID. The browser does not silently fall back to static TP2 parsing because includes, macros, conditions, and TRA resolution can make partial results misleading.
 
+Components already present in `InstallSequence.xml` are marked by matching every WeiDU LABEL and the numbered fallback case-insensitively. Ordinary rows can be selected with checkboxes; components sharing a non-empty WeiDU subgroup are mutually exclusive and use radio buttons. **Copy selected** emits one `<mod id="download-id">` wrapper containing the selected `<component />` tags in WeiDU order. Values edited in the single-component copy form are cached by download, TP2, and component number for the lifetime of the running app and are reused by both single and batch copy.
+
 ## Plan
 
 `buildInstallPlan(model, selectedIds, game)` in `install/planBuilder.ts`:

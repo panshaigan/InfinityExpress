@@ -12,10 +12,17 @@ import {
   COMPONENT_COMPLEXITIES,
   COMPONENT_ENGINE_TOKENS,
   createComponentTagDraft,
+  serializeModComponentBlock,
   serializeComponentTag,
   validateComponentTagDraft,
   type ComponentTagDraft,
 } from '../../lib/componentBrowser/componentTag'
+import {
+  componentBrowserKey,
+  componentExistsInSequence,
+  normalizeComponentIdentitySet,
+  toggleComponentSelection,
+} from '../../lib/componentBrowser/componentSelection'
 import {
   discoverModTp2Candidates,
   listModWeiduComponents,
@@ -36,6 +43,7 @@ import { useToast } from '../toasts/toastContext'
 interface Props {
   open: boolean
   mods: readonly WorkingMod[]
+  existingComponentIds: ReadonlySet<string>
   onClose: () => void
 }
 
@@ -77,18 +85,17 @@ function selectEnglish(languages: readonly WeiduLanguageInfo[]): WeiduLanguageIn
 function ComponentTagDialog({
   component,
   weiduId,
-  modId,
+  draft,
+  onDraftChange,
   onClose,
 }: {
   component: WeiduComponentInfo
   weiduId: string
-  modId: string
+  draft: ComponentTagDraft
+  onDraftChange: (draft: ComponentTagDraft) => void
   onClose: () => void
 }) {
   const titleId = useId()
-  const [draft, setDraft] = useState<ComponentTagDraft>(() =>
-    createComponentTagDraft(component, weiduId, modId),
-  )
   const [openSelect, setOpenSelect] = useState<'recommended' | 'complexity' | null>(
     null,
   )
@@ -111,7 +118,7 @@ function ComponentTagDialog({
     key: K,
     value: ComponentTagDraft[K],
   ) {
-    setDraft((previous) => ({ ...previous, [key]: value }))
+    onDraftChange({ ...draft, [key]: value })
   }
 
   function toggleEngine(token: EngineToken, checked: boolean) {
@@ -265,8 +272,14 @@ function ComponentTagDialog({
   )
 }
 
-export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
+export function ComponentBrowserDialog({
+  open,
+  mods,
+  existingComponentIds,
+  onClose,
+}: Props) {
   const titleId = useId()
+  const { pushToast } = useToast()
   const [downloadedMods, setDownloadedMods] = useState<DownloadedMod[]>([])
   const [modQuery, setModQuery] = useState('')
   const [selectedMod, setSelectedMod] = useState<DownloadedMod | null>(null)
@@ -281,6 +294,12 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
   const [editing, setEditing] = useState<WeiduComponentInfo | null>(null)
+  const [selectedComponentKeys, setSelectedComponentKeys] = useState<Set<string>>(
+    () => new Set(),
+  )
+  const [sessionDrafts, setSessionDrafts] = useState<Map<string, ComponentTagDraft>>(
+    () => new Map(),
+  )
   const requestId = useRef(0)
   const backdrop = useBackdropDismiss(onClose)
 
@@ -289,6 +308,10 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
     for (const mod of mods) map.set(normalized(mod.codename), mod)
     return map
   }, [mods])
+  const normalizedExistingComponentIds = useMemo(
+    () => normalizeComponentIdentitySet(existingComponentIds),
+    [existingComponentIds],
+  )
 
   useEffect(() => {
     if (!open) return
@@ -301,6 +324,7 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
     setComponents([])
     setModQuery('')
     setComponentQuery('')
+    setSelectedComponentKeys(new Set())
     setOpenSelect(null)
     setError(null)
     const { modsDownloadDir } = readAppDirPaths()
@@ -381,6 +405,51 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
     (candidate) => candidate.relativePath === selectedTp2,
   )
 
+  function sessionDraftKey(component: WeiduComponentInfo): string {
+    return `${normalized(selectedMod?.downloadId ?? '')}\u0000${normalized(
+      selectedTp2,
+    )}\u0000${component.number}`
+  }
+
+  function draftFor(component: WeiduComponentInfo): ComponentTagDraft {
+    const saved = sessionDrafts.get(sessionDraftKey(component))
+    if (saved) return saved
+    return createComponentTagDraft(
+      component,
+      activeCandidate?.weiduId ?? '',
+      selectedMod?.downloadId ?? '',
+    )
+  }
+
+  function saveDraft(component: WeiduComponentInfo, draft: ComponentTagDraft) {
+    const key = sessionDraftKey(component)
+    setSessionDrafts((previous) => {
+      const next = new Map(previous)
+      next.set(key, draft)
+      return next
+    })
+  }
+
+  async function copySelectedComponents() {
+    if (!selectedMod) return
+    const selected = components.filter((component) =>
+      selectedComponentKeys.has(componentBrowserKey(component)),
+    )
+    try {
+      const xml = serializeModComponentBlock(
+        selectedMod.downloadId,
+        selected.map(draftFor),
+      )
+      await navigator.clipboard.writeText(xml)
+      pushToast({
+        tone: 'success',
+        message: `Copied ${selected.length} component${selected.length === 1 ? '' : 's'}`,
+      })
+    } catch (reason) {
+      setError(`Could not copy XML: ${String(reason)}`)
+    }
+  }
+
   async function loadComponents(
     mod: DownloadedMod,
     candidate: ModTp2Candidate,
@@ -396,6 +465,7 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
     setLoading(true)
     setError(null)
     setComponents([])
+    setSelectedComponentKeys(new Set())
     try {
       const result = await listModWeiduComponents(
         weiduPath,
@@ -421,6 +491,7 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
     setLanguages([])
     setLanguageIndex('')
     setComponents([])
+    setSelectedComponentKeys(new Set())
     setLoading(true)
     setError(null)
     if (!weiduPath) {
@@ -459,6 +530,7 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
     setLanguageIndex('')
     setComponents([])
     setComponentQuery('')
+    setSelectedComponentKeys(new Set())
     setLoading(true)
     setError(null)
     try {
@@ -525,6 +597,7 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
                 setLanguages([])
                 setLanguageIndex('')
                 setComponents([])
+                setSelectedComponentKeys(new Set())
               }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' && modSuggestions[0]) {
@@ -598,6 +671,14 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
           <span>
             {filteredComponents.length} of {components.length} components
           </span>
+          <button
+            type="button"
+            className="btn secondary component-browser-copy-selected"
+            disabled={selectedComponentKeys.size === 0}
+            onClick={() => void copySelectedComponents()}
+          >
+            Copy selected ({selectedComponentKeys.size})
+          </button>
         </div>
 
         {error ? <div className="component-browser-error">{error}</div> : null}
@@ -612,6 +693,7 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
             <table className="component-browser-table">
               <thead>
                 <tr>
+                  <th aria-label="Select" />
                   <th>#</th>
                   <th>Name</th>
                   <th>WeiDU LABEL</th>
@@ -620,43 +702,78 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {filteredComponents.map((component) => (
-                  <tr
-                    key={`${component.index}:${component.number}`}
-                    onContextMenu={(event) => openContextMenu(event, component)}
-                  >
-                    <td className="component-browser-number">{component.number}</td>
-                    <td>
-                      <span className="component-browser-name">{component.name}</span>
-                      {component.subgroup ? <small>{component.subgroup}</small> : null}
-                    </td>
-                    <td>
-                      {component.label.length > 0 ? (
-                        component.label.map((label, index) => (
-                          <code key={`${index}:${label}`}>{label}</code>
-                        ))
-                      ) : (
-                        <span className="component-browser-muted">No LABEL</span>
-                      )}
-                    </td>
-                    <td>
-                      {(component.group ?? []).join(' · ') || (
-                        <span className="component-browser-muted">—</span>
-                      )}
-                      {component.forced ? <small>Forced</small> : null}
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn secondary component-browser-xml-btn"
-                        onClick={() => setEditing(component)}
-                        aria-label={`Copy component ${component.number} as XML`}
-                      >
-                        XML
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {filteredComponents.map((component) => {
+                  const key = componentBrowserKey(component)
+                  const subgroup = component.subgroup?.trim() ?? ''
+                  const exists = activeCandidate
+                    ? componentExistsInSequence(
+                        normalizedExistingComponentIds,
+                        component,
+                        activeCandidate.weiduId,
+                      )
+                    : false
+                  return (
+                    <tr
+                      key={key}
+                      onContextMenu={(event) => openContextMenu(event, component)}
+                    >
+                      <td className="component-browser-select">
+                        <input
+                          type={subgroup ? 'radio' : 'checkbox'}
+                          name={
+                            subgroup
+                              ? `component-alternative-${normalized(subgroup)}`
+                              : undefined
+                          }
+                          checked={selectedComponentKeys.has(key)}
+                          onChange={() =>
+                            setSelectedComponentKeys((previous) =>
+                              toggleComponentSelection(previous, component, components),
+                            )
+                          }
+                          aria-label={`${subgroup ? 'Choose alternative' : 'Select component'} ${component.number}: ${component.name}`}
+                        />
+                      </td>
+                      <td className="component-browser-number">{component.number}</td>
+                      <td>
+                        <span className="component-browser-name">
+                          {component.name}
+                          {exists ? (
+                            <span className="component-browser-existing-badge">
+                              In sequence
+                            </span>
+                          ) : null}
+                        </span>
+                        {component.subgroup ? <small>{component.subgroup}</small> : null}
+                      </td>
+                      <td>
+                        {component.label.length > 0 ? (
+                          component.label.map((label, index) => (
+                            <code key={`${index}:${label}`}>{label}</code>
+                          ))
+                        ) : (
+                          <span className="component-browser-muted">No LABEL</span>
+                        )}
+                      </td>
+                      <td>
+                        {(component.group ?? []).join(' · ') || (
+                          <span className="component-browser-muted">—</span>
+                        )}
+                        {component.forced ? <small>Forced</small> : null}
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn secondary component-browser-xml-btn"
+                          onClick={() => setEditing(component)}
+                          aria-label={`Copy component ${component.number} as XML`}
+                        >
+                          XML
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           )}
@@ -686,7 +803,8 @@ export function ComponentBrowserDialog({ open, mods, onClose }: Props) {
         <ComponentTagDialog
           component={editing}
           weiduId={activeCandidate.weiduId}
-          modId={selectedMod.downloadId}
+          draft={draftFor(editing)}
+          onDraftChange={(draft) => saveDraft(editing, draft)}
           onClose={() => setEditing(null)}
         />
       ) : null}

@@ -203,6 +203,10 @@ export default function App() {
 function AppShell() {
   const { pushToast } = useToast()
   const { model, warnings } = parsed
+  const existingComponentIds = useMemo(
+    () => new Set(model.componentsInOrder.map((component) => component.componentId)),
+    [model],
+  )
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
   const installSnapshotRef = useRef<PersistedInstallSession | null | undefined>(
     undefined,
@@ -1596,6 +1600,7 @@ function AppShell() {
       <ComponentBrowserDialog
         open={componentBrowserOpen}
         mods={userCatalog.mods}
+        existingComponentIds={existingComponentIds}
         onClose={() => setComponentBrowserOpen(false)}
       />
       <KeyboardHelp

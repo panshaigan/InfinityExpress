@@ -6570,6 +6570,11 @@ body.is-resizing-detail * {
   white-space: nowrap;
 }
 
+.component-browser-copy-selected {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .component-browser-error {
   flex-shrink: 0;
   margin: 0 1rem 0.7rem;
@@ -6620,10 +6625,11 @@ body.is-resizing-detail * {
   text-transform: uppercase;
 }
 
-.component-browser-table th:nth-child(1) { width: 5.5rem; }
-.component-browser-table th:nth-child(2) { width: 35%; }
-.component-browser-table th:nth-child(3) { width: 29%; }
-.component-browser-table th:nth-child(5) { width: 4.5rem; }
+.component-browser-table th:nth-child(1) { width: 2.6rem; }
+.component-browser-table th:nth-child(2) { width: 5.5rem; }
+.component-browser-table th:nth-child(3) { width: 33%; }
+.component-browser-table th:nth-child(4) { width: 27%; }
+.component-browser-table th:nth-child(6) { width: 4.5rem; }
 
 .component-browser-table td {
   padding: 0.5rem 0.6rem;
@@ -6652,8 +6658,33 @@ body.is-resizing-detail * {
   font-variant-numeric: tabular-nums;
 }
 
+.component-browser-select {
+  text-align: center;
+}
+
+.component-browser-select input {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
 .component-browser-name {
   color: var(--ink);
+}
+
+.component-browser-existing-badge {
+  display: inline-flex;
+  margin-left: 0.45rem;
+  padding: 0.08rem 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--ok) 48%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ok) 12%, transparent);
+  color: color-mix(in srgb, var(--ok) 75%, var(--ink));
+  font-size: 0.62rem;
+  font-weight: 650;
+  line-height: 1.3;
+  text-transform: uppercase;
+  vertical-align: 0.08rem;
+  white-space: nowrap;
 }
 
 .component-browser-muted,
@@ -6770,6 +6801,14 @@ body.is-resizing-detail * {
 @media (max-width: 760px) {
   .component-browser-controls {
     grid-template-columns: 1fr;
+  }
+
+  .component-browser-list-header {
+    flex-wrap: wrap;
+  }
+
+  .component-browser-list-header .outlined-field {
+    flex-basis: 100%;
   }
 
   .component-tag-form {
