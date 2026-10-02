@@ -18,6 +18,18 @@ export interface ConditionAnalysis {
   selfReference: boolean
 }
 
+export function mergeConditionComponentOptions(
+  primary: readonly ConditionComponentOption[],
+  additional: readonly ConditionComponentOption[],
+): ConditionComponentOption[] {
+  const merged = new Map<string, ConditionComponentOption>()
+  for (const option of [...primary, ...additional]) {
+    const key = option.id.trim().toLocaleLowerCase()
+    if (key && !merged.has(key)) merged.set(key, option)
+  }
+  return [...merged.values()]
+}
+
 const IDENTIFIER_CHAR = /[A-Za-z0-9_:\-@#\.]/
 
 export function conditionIdentifierRange(

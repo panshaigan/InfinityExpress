@@ -4,6 +4,7 @@ import {
   conditionIdentifierRange,
   filterConditionOptions,
   insertConditionOperator,
+  mergeConditionComponentOptions,
   replaceConditionIdentifier,
   type ConditionComponentOption,
 } from './conditionEditor'
@@ -39,6 +40,18 @@ describe('condition expression editor', () => {
     ])
     expect(filterConditionOptions(options, 'gate').map((option) => option.id)).toEqual([
       'gate:1',
+    ])
+  })
+
+  it('merges browsed components into XML options while keeping XML metadata', () => {
+    expect(
+      mergeConditionComponentOptions(options, [
+        { id: 'GATE:1', label: 'Browsed gate', name: 'Gate', modId: 'gate' },
+        { id: 'new:2', label: 'New component', name: 'New', modId: 'new' },
+      ]),
+    ).toEqual([
+      ...options,
+      { id: 'new:2', label: 'New component', name: 'New', modId: 'new' },
     ])
   })
 

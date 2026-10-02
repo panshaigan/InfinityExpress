@@ -8,11 +8,15 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from 'react'
 import { PRESET_TILE_COPY } from '../../data/presetCatalog'
-import type { ConditionComponentOption } from '../../lib/componentBrowser/conditionEditor'
+import {
+  mergeConditionComponentOptions,
+  type ConditionComponentOption,
+} from '../../lib/componentBrowser/conditionEditor'
 import {
   COMPONENT_COMPLEXITIES,
   COMPONENT_ENGINE_TOKENS,
   applySelectedAlternativeDefault,
+  componentXmlId,
   createComponentTagDraft,
   serializeAlternativesBlock,
   serializeModComponentBlock,
@@ -27,6 +31,8 @@ import {
   componentExistsInSequence,
   findComponentByIdentity,
   normalizeComponentIdentitySet,
+  setVisibleComponentsSelected,
+  summarizeComponentSelection,
   toggleComponentSelection,
 } from '../../lib/componentBrowser/componentSelection'
 import {
@@ -399,6 +405,7 @@ export function ComponentBrowserDialog({
   const requestId = useRef(0)
   const componentRowRefs = useRef(new Map<string, HTMLTableRowElement>())
   const modSuggestionRefs = useRef(new Map<string, HTMLButtonElement>())
+  const selectAllRef = useRef<HTMLInputElement>(null)
   const backdrop = useBackdropDismiss(onClose)
 
   const catalog = useMemo(() => {
@@ -543,6 +550,30 @@ export function ComponentBrowserDialog({
   const activeCandidate = candidates.find(
     (candidate) => candidate.relativePath === selectedTp2,
   )
+  const currentModConditionOptions = useMemo<ConditionComponentOption[]>(() => {
+    if (!activeCandidate || !selectedMod) return []
+    return components.map((component) => ({
+      id: componentXmlId(component, activeCandidate.weiduId),
+      label: component.name,
+      name: component.name,
+      modId: selectedMod.downloadId,
+    }))
+  }, [activeCandidate, components, selectedMod])
+  const availableConditionOptions = useMemo(
+    () => mergeConditionComponentOptions(conditionOptions, currentModConditionOptions),
+    [conditionOptions, currentModConditionOptions],
+  )
+  const visibleSelection = useMemo(
+    () => summarizeComponentSelection(selectedComponentKeys, filteredComponents),
+    [filteredComponents, selectedComponentKeys],
+  )
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate =
+        visibleSelection.some && !visibleSelection.all
+    }
+  }, [visibleSelection])
 
   function sessionDraftKey(component: WeiduComponentInfo): string {
     return `${normalized(selectedMod?.downloadId ?? '')}\u0000${normalized(
@@ -974,7 +1005,25 @@ export function ComponentBrowserDialog({
             <table className="component-browser-table">
               <thead>
                 <tr>
-                  <th aria-label="Select" />
+                  <th className="component-browser-select">
+                    <input
+                      ref={selectAllRef}
+                      type="checkbox"
+                      checked={visibleSelection.all}
+                      disabled={filteredComponents.length === 0}
+                      onChange={(event) =>
+                        setSelectedComponentKeys((previous) =>
+                          setVisibleComponentsSelected(
+                            previous,
+                            filteredComponents,
+                            components,
+                            event.target.checked,
+                          ),
+                        )
+                      }
+                      aria-label="Select all visible components"
+                    />
+                  </th>
                   <th>#</th>
                   <th>Name</th>
                   <th>WeiDU LABEL</th>
@@ -1112,7 +1161,7 @@ export function ComponentBrowserDialog({
           weiduId={activeCandidate.weiduId}
           draft={draftFor(editing)}
           packageValues={packageValues}
-          conditionOptions={conditionOptions}
+          conditionOptions={availableConditionOptions}
           onDraftChange={(draft) => saveDraft(editing, draft)}
           onClose={() => setEditing(null)}
         />

@@ -312,6 +312,7 @@
 				<custom label="Custom NPCs" recommended="npc" package="customNpcs">
 					<component id="valerie:0" name="Valerie NPC Mod for BG1 Tutu, BGT BG:EE and EET" label="Valerie - human LG sorcerer" modId="Valerie-NPC" complexity="minor" cost="2" />
 					<component id="Drake:0" name="Default Portrait (The Artisan)" label="Drake - human NG Priest of Tyr" modId="Drake" complexity="minor" cost="5" />
+                    <component id="FinchNPC-main" name="Finch NPC" label="Finch - gnomish NG cleric" modId="Finch_NPC" complexity="minor" />
 				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<mod id="Tweaks-Anthology" label="The Tweaks Anthology" recommended="vanillaPlus" >
@@ -1031,6 +1032,15 @@
 		<universalBg label="Common BG1/BG2" engine="bg,eet">
 			<npc label="Joinable NPCs">
                 <custom recommended="npc" package="customNpcs">
+                    <mod id="Brages_Redemption">
+                        <component id="BragesRedemption-main" name="Brage's Redemption - Brage Joinable NPC for Baldur's Gate" label="Brage - human LN fighter" engine="bg,eet" package="customNpcs" complexity="minor" />
+                        <component id="BragesRedemption-UniqueSword" name="Give Brage unique Two-Handed Sword +1" label="Give Brage unique Two-Handed Sword +1" modId="Brages_Redemption" noDisplay="1" alwaysIf="BragesRedemption-main" />
+                        <component id="BragesRedemption-Crossmod" name="Brage's Redemption: Crossmod Content" label="Brage's Redemption: Crossmod Content" noDisplay="1" alwaysIf="BragesRedemption-main" />
+                    </mod>
+                    <mod id="Brandock_the_Mage">
+                        <component id="BrandockTheMage-Main" name="Brandock the Mage" label="Brandock - human CG mage" core="1" package="customNpcs" complexity="minor" />
+                        <component id="BrandockTheMage-Crossmod" name="Brandock the Mage: Crossmod Content" label="Crossmod Content" alwaysIf="BrandockTheMage-Main" noDisplay="1" />
+                    </mod>
                     <mod id="Ascalons_Breagar">
                         <component id="Ascalons_Breagar-main" name="Breagar: Contents" label="Breagar - dwarven LG Smith (fighter)" core="1" complexity="minor" packages="" />
                         <component id="Ascalons_Breagar-crossmod" name="Breagar: Crossmods and PID" label="Breagar: Crossmods and PID" complexity="minor" onlyIf="Ascalons_Breagar-main" noDisplay="1" />
@@ -1469,6 +1479,7 @@
 			<component id="cd_tweaks_nalia_avatar_change" name="Change Nalia's Avatar to Thief" label="Change Nalia's avatar to thief" modId="Tweaks-Anthology" engine="bg2,eet" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_30" complexity="minor" cost="11" />
 			<component id="cd_tweaks_imoen_avatar_change" name="Change Imoen's Avatar to Mage" label="Change Imoen's avatar to mage" modId="Tweaks-Anthology" engine="bg2,eet" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_20" complexity="minor" />
 			<component id="cd_tweaks_viconia_skin_color" name="Change Viconia's Skin Color to Dark Blue" label="Change Viconia's skin color to dark blue" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_40" complexity="minor" />
+            <component id="BragesRedemption-portrait_sound_original_Brage" name="Assign the mod's portrait and soundset to the original Brage in game." label="Assign the mod's portrait and soundset to the original Brage in game."  noDisplay="1" alwaysIf="BragesRedemption-main" modId="Brages_Redemption" />
 		</group>
 		<group label="Alignment">
 			<component id="cd_tweaks_ng_jaheira" name="Change Jaheira to Neutral Good Alignment" label="Change Jaheira to NG alignment" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4050" complexity="minor" />

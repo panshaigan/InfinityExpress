@@ -5,6 +5,8 @@ import {
   componentExistsInSequence,
   findComponentByIdentity,
   normalizeComponentIdentitySet,
+  setVisibleComponentsSelected,
+  summarizeComponentSelection,
   toggleComponentSelection,
 } from './componentSelection'
 
@@ -30,6 +32,43 @@ describe('component browser selection', () => {
       componentBrowserKey(components[3]),
       componentBrowserKey(components[2]),
     ])
+  })
+
+  it('selects all visible ordinary components and one item per alternatives group', () => {
+    const selected = setVisibleComponentsSelected(
+      new Set(),
+      components,
+      components,
+      true,
+    )
+    expect([...selected]).toEqual([
+      componentBrowserKey(components[0]),
+      componentBrowserKey(components[1]),
+      componentBrowserKey(components[3]),
+    ])
+    expect(summarizeComponentSelection(selected, components)).toEqual({
+      all: true,
+      some: true,
+    })
+  })
+
+  it('preserves a selected visible alternative and only clears visible rows', () => {
+    const initiallySelected = new Set([
+      componentBrowserKey(components[0]),
+      componentBrowserKey(components[2]),
+      componentBrowserKey(components[3]),
+    ])
+    const visible = [components[0], components[1], components[2]]
+    const selected = setVisibleComponentsSelected(
+      initiallySelected,
+      visible,
+      components,
+      true,
+    )
+    expect(selected.has(componentBrowserKey(components[2]))).toBe(true)
+    expect(
+      setVisibleComponentsSelected(selected, visible, components, false),
+    ).toEqual(new Set([componentBrowserKey(components[3])]))
   })
 
   it('matches existing XML ids by label or numbered fallback without case sensitivity', () => {
