@@ -6,9 +6,11 @@ export interface ModPageMeta {
   name: string
   readme: string
   author: string
+  release: string
+  sizeBytes: number | null
 }
 
-/** Fetch display name (first page heading) from a mod URL. Desktop only. */
+/** Fetch editable catalog metadata from a supported mod page. Desktop only. */
 export async function scrapeModPageMeta(url: string): Promise<ModPageMeta | null> {
   if (!isDesktopApp()) return null
   const trimmed = url.trim()

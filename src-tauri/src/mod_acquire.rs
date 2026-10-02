@@ -99,6 +99,8 @@ pub struct ModPageMeta {
     pub name: String,
     pub readme: String,
     pub author: String,
+    pub release: String,
+    pub size_bytes: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -150,6 +152,48 @@ fn ext_from_name(name: &str) -> Option<String> {
         .extension()
         .and_then(|e| e.to_str())
         .map(|e| e.to_ascii_lowercase())
+}
+
+fn same_site_referer(url: &str) -> Option<String> {
+    let parsed = reqwest::Url::parse(url).ok()?;
+    let host = parsed.host_str()?;
+    let port = parsed.port().map(|p| format!(":{p}")).unwrap_or_default();
+    Some(format!("{}://{host}{port}/", parsed.scheme()))
+}
+
+fn archive_ext_from_response(
+    final_url: &reqwest::Url,
+    content_disposition: Option<&str>,
+    content_type: Option<&str>,
+) -> Option<String> {
+    let disposition_name = content_disposition.and_then(|value| {
+        Regex::new(r#"(?i)filename\*?=(?:UTF-8''|\")?([^\";]+)"#)
+            .ok()?
+            .captures(value)?
+            .get(1)
+            .map(|m| m.as_str().trim())
+    });
+    disposition_name
+        .and_then(ext_from_name)
+        .or_else(|| {
+            final_url
+                .path_segments()
+                .and_then(|mut parts| parts.next_back())
+                .and_then(ext_from_name)
+        })
+        .filter(|ext| is_archive_ext(ext))
+        .or_else(|| {
+            match content_type
+                .unwrap_or_default()
+                .to_ascii_lowercase()
+                .as_str()
+            {
+                value if value.contains("zip") => Some("zip".into()),
+                value if value.contains("7z") => Some("7z".into()),
+                value if value.contains("rar") => Some("rar".into()),
+                _ => None,
+            }
+        })
 }
 
 fn is_archive_ext(ext: &str) -> bool {
@@ -930,6 +974,190 @@ async fn probe_baldurs_gate_de(url: &str) -> Result<RemoteProbeResult, String> {
     })
 }
 
+fn html_text(raw: &str) -> String {
+    let without_tags = Regex::new(r"(?is)<[^>]+>")
+        .ok()
+        .map(|re| re.replace_all(raw, " ").to_string())
+        .unwrap_or_else(|| raw.to_string());
+    decode_basic_entities(&without_tags)
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn parse_size_bytes(value: &str, unit: &str) -> Option<u64> {
+    let amount: f64 = value.trim().parse().ok()?;
+    let multiplier = match unit.trim().to_ascii_lowercase().as_str() {
+        "b" => 1_f64,
+        "kb" => 1024_f64,
+        "mb" => 1024_f64 * 1024_f64,
+        "gb" => 1024_f64 * 1024_f64 * 1024_f64,
+        _ => return None,
+    };
+    Some((amount * multiplier).round() as u64)
+}
+
+fn g3_page_meta_from_html(html: &str) -> ModPageMeta {
+    let text = html_text(html);
+    let author = Regex::new(r#"(?is)\bBy\s*<a\b[^>]*>(.*?)</a>"#)
+        .ok()
+        .and_then(|re| re.captures(html))
+        .and_then(|caps| caps.get(1))
+        .map(|m| html_text(m.as_str()))
+        .unwrap_or_default();
+    let readme = Regex::new(r#"(?is)<a\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>"#)
+        .ok()
+        .and_then(|re| {
+            re.captures_iter(html).find_map(|caps| {
+                let label = html_text(caps.get(2)?.as_str());
+                label
+                    .to_ascii_lowercase()
+                    .contains("view the readme")
+                    .then(|| decode_basic_entities(caps.get(1).unwrap().as_str()))
+            })
+        })
+        .unwrap_or_default();
+    let release = Regex::new(r"(?i)\bUpdated\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})")
+        .ok()
+        .and_then(|re| re.captures(&text))
+        .and_then(|caps| caps.get(1))
+        .and_then(|m| parse_flexible_date(m.as_str()))
+        .unwrap_or_default();
+
+    ModPageMeta {
+        name: first_html_heading(html).unwrap_or_default(),
+        readme,
+        author,
+        release,
+        size_bytes: None,
+    }
+}
+
+fn g3_linux_asset_from_html(html: &str, page_url: &str) -> Option<(String, u64)> {
+    let anchor_re = Regex::new(r#"(?is)<a\b[^>]*href=[\"']([^\"']+)[\"'][^>]*>.*?</a>"#).ok()?;
+    let linux_name_re = Regex::new(r#"(?i)lin-[^<>"']+\.(?:zip|7z|rar)"#).ok()?;
+    let size_re = Regex::new(r"(?i)(\d+(?:\.\d+)?)\s*(B|KB|MB|GB)\b").ok()?;
+
+    for linux_name in linux_name_re.find_iter(html) {
+        let mut end = (linux_name.end() + 1600).min(html.len());
+        while end > linux_name.end() && !html.is_char_boundary(end) {
+            end -= 1;
+        }
+        let nearby = &html[linux_name.end()..end];
+        let caps = anchor_re.captures(nearby)?;
+        let href = decode_basic_entities(caps.get(1)?.as_str());
+        if !href.contains("do=download") && !href.contains("confirm=1") {
+            continue;
+        }
+        let url = reqwest::Url::parse(page_url)
+            .ok()?
+            .join(&href)
+            .ok()?
+            .to_string();
+        let size = size_re
+            .captures(nearby)
+            .and_then(|size_caps| {
+                parse_size_bytes(size_caps.get(1)?.as_str(), size_caps.get(2)?.as_str())
+            })
+            .unwrap_or(0);
+        return Some((url, size));
+    }
+    None
+}
+
+async fn probe_gibberlings3(url: &str) -> Result<RemoteProbeResult, String> {
+    let (page_html, _) = fetch_text(url, None).await?;
+    let meta = g3_page_meta_from_html(&page_html);
+    let download_page = format!("{}/?do=download", url.trim_end_matches('/'));
+    let (download_html, _) = fetch_text(&download_page, None).await?;
+    let (download_url, size_bytes) = g3_linux_asset_from_html(&download_html, &download_page)
+        .ok_or_else(|| "Gibberlings3: Linux archive not found".to_string())?;
+    let version = Regex::new(r"(?i)\b(v\d+(?:\.\d+)*)\b")
+        .ok()
+        .and_then(|re| re.captures(&meta.name))
+        .and_then(|caps| caps.get(1))
+        .map(|m| m.as_str().to_string())
+        .unwrap_or_else(|| meta.release.clone());
+
+    Ok(RemoteProbeResult {
+        version,
+        release: meta.release,
+        download_url: Some(download_url),
+        extension: Some("zip".into()),
+        strategy: "gibberlings3_linux".into(),
+        size_bytes: (size_bytes > 0).then_some(size_bytes),
+        size_is_estimate: false,
+        used_scrape_fallback: false,
+        rate_limited: false,
+        zipball_ref: None,
+        owner: (!meta.author.is_empty()).then_some(meta.author),
+        repo: None,
+    })
+}
+
+async fn probe_direct(url: &str) -> Result<RemoteProbeResult, String> {
+    let mut request = http_client()?.get(url);
+    if let Some(referer) = same_site_referer(url) {
+        request = request.header(reqwest::header::REFERER, referer);
+    }
+    let response = request.send().await.map_err(|e| e.to_string())?;
+    let status = response.status();
+    if !status.is_success() {
+        return Err(format!("HTTP {status} for {url}"));
+    }
+    let final_url = response.url().clone();
+    let content_disposition = response
+        .headers()
+        .get(reqwest::header::CONTENT_DISPOSITION)
+        .and_then(|v| v.to_str().ok());
+    let content_type = response
+        .headers()
+        .get(reqwest::header::CONTENT_TYPE)
+        .and_then(|v| v.to_str().ok());
+    let extension = archive_ext_from_response(&final_url, content_disposition, content_type)
+        .ok_or_else(|| {
+            format!(
+                "Direct link did not resolve to a supported .zip, .7z, or .rar archive: {final_url}"
+            )
+        })?;
+    let size_bytes = response.content_length();
+    let version = response
+        .headers()
+        .get(reqwest::header::ETAG)
+        .and_then(|v| v.to_str().ok())
+        .or_else(|| {
+            response
+                .headers()
+                .get(reqwest::header::LAST_MODIFIED)
+                .and_then(|v| v.to_str().ok())
+        })
+        .map(|s| s.trim_matches(['"', ' ']).to_string())
+        .filter(|s| !s.is_empty())
+        .or_else(|| {
+            final_url
+                .path_segments()
+                .and_then(|mut parts| parts.next_back())
+                .map(|s| s.to_string())
+                .filter(|s| !s.is_empty())
+        })
+        .unwrap_or_else(|| size_bytes.map(|s| s.to_string()).unwrap_or_default());
+
+    Ok(RemoteProbeResult {
+        version,
+        release: String::new(),
+        download_url: Some(final_url.to_string()),
+        extension: Some(extension),
+        strategy: "direct".into(),
+        size_bytes,
+        size_is_estimate: false,
+        used_scrape_fallback: false,
+        rate_limited: false,
+        zipball_ref: None,
+        owner: None,
+        repo: None,
+    })
+}
+
 fn parse_flexible_date(raw: &str) -> Option<String> {
     let s = raw.trim();
     if s.len() >= 10 && s.as_bytes()[4] == b'-' {
@@ -989,6 +1217,9 @@ async fn probe_mod_inner(
     if lower.contains("github.com") {
         return probe_github(url, &input.track, &input.download, github_token).await;
     }
+    if lower.contains("gibberlings3.net/files/file/") {
+        return probe_gibberlings3(url).await;
+    }
     if lower.contains("downloads.weaselmods.net") {
         return probe_weasel(url).await;
     }
@@ -1001,7 +1232,7 @@ async fn probe_mod_inner(
     if lower.contains("baldurs-gate.de") {
         return probe_baldurs_gate_de(url).await;
     }
-    Err(format!("Unsupported mod host for URL: {url}"))
+    probe_direct(url).await
 }
 
 #[tauri::command]
@@ -1051,16 +1282,53 @@ fn first_html_heading(html: &str) -> Option<String> {
 }
 
 async fn scrape_page_meta_from_html(url: &str) -> Result<ModPageMeta, String> {
-    let (html, _) = fetch_text(url, None).await?;
-    let html = if html.len() > META_HTML_CAP {
-        &html[..META_HTML_CAP]
-    } else {
-        &html
-    };
+    let mut request = http_client()?.get(url);
+    if let Some(referer) = same_site_referer(url) {
+        request = request.header(reqwest::header::REFERER, referer);
+    }
+    let response = request.send().await.map_err(|e| e.to_string())?;
+    let status = response.status();
+    if !status.is_success() {
+        return Err(format!("HTTP {status} for {url}"));
+    }
+    let content_type = response
+        .headers()
+        .get(reqwest::header::CONTENT_TYPE)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    if !content_type.is_empty()
+        && !content_type.contains("html")
+        && !content_type.starts_with("text/")
+    {
+        return Ok(ModPageMeta {
+            name: String::new(),
+            readme: String::new(),
+            author: String::new(),
+            release: String::new(),
+            size_bytes: response.content_length(),
+        });
+    }
+    let mut stream = response.bytes_stream();
+    let mut bytes = Vec::new();
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk.map_err(|e| e.to_string())?;
+        let remaining = META_HTML_CAP.saturating_sub(bytes.len());
+        if remaining == 0 {
+            break;
+        }
+        bytes.extend_from_slice(&chunk[..chunk.len().min(remaining)]);
+        if bytes.len() >= META_HTML_CAP {
+            break;
+        }
+    }
+    let html = String::from_utf8_lossy(&bytes);
     Ok(ModPageMeta {
-        name: first_html_heading(html).unwrap_or_default(),
+        name: first_html_heading(&html).unwrap_or_default(),
         readme: String::new(),
         author: String::new(),
+        release: String::new(),
+        size_bytes: None,
     })
 }
 
@@ -1071,6 +1339,21 @@ async fn scrape_mod_page_meta_inner(
     let trimmed = url.trim();
     if trimmed.is_empty() {
         return Err("URL is required".into());
+    }
+    if trimmed
+        .to_ascii_lowercase()
+        .contains("gibberlings3.net/files/file/")
+    {
+        let page = trimmed.trim_end_matches('/');
+        let (html, _) = fetch_text(page, None).await?;
+        let mut meta = g3_page_meta_from_html(&html);
+        let download_page = format!("{page}/?do=download");
+        if let Ok((download_html, _)) = fetch_text(&download_page, None).await {
+            if let Some((_, size)) = g3_linux_asset_from_html(&download_html, &download_page) {
+                meta.size_bytes = (size > 0).then_some(size);
+            }
+        }
+        return Ok(meta);
     }
     // Prefer the public HTML page (first heading), including GitHub — do not
     // use API description / repo slug / readme-link heuristics.
@@ -1101,6 +1384,9 @@ async fn download_to_file(
 ) -> Result<u64, String> {
     let client = http_client()?;
     let mut req = client.get(url);
+    if let Some(referer) = same_site_referer(url) {
+        req = req.header(reqwest::header::REFERER, referer);
+    }
     if let Some(t) = token.filter(|s| !s.is_empty()) {
         if url.contains("api.github.com") || url.contains("codeload.github.com") {
             req = req.header("Authorization", format!("Bearer {t}"));
@@ -1546,5 +1832,61 @@ mod tests {
       <a href="/o/r/archive/refs/tags/v1.zip">Source code (zip)</a>
     "#;
         assert!(pick_release_download_asset(html).is_none());
+    }
+
+    #[test]
+    fn parses_g3_metadata_and_linux_asset() {
+        let page = r#"
+          <h1>Amber v10</h1>
+          <p>By <a href="/profile/1-meira/">Meira</a></p>
+          <a href="https://gibberlings3.github.io/readme-amber.html">View the Readme</a>
+          <dl><dt>Updated</dt><dd>May 7, 2025</dd><dt>File Size</dt><dd>116.18 MB</dd></dl>
+        "#;
+        let meta = g3_page_meta_from_html(page);
+        assert_eq!(meta.name, "Amber v10");
+        assert_eq!(meta.author, "Meira");
+        assert_eq!(meta.release, "2025-05-07");
+        assert_eq!(
+            meta.readme,
+            "https://gibberlings3.github.io/readme-amber.html"
+        );
+
+        let downloads = r#"
+          <h4>amber-v10.exe</h4><p>39.49 MB</p>
+          <a href="?confirm=1&amp;do=download&amp;r=7026&amp;t=1">Download</a>
+          <h4>mac-amber-v10.zip</h4><p>39.23 MB</p>
+          <a href="?confirm=1&amp;do=download&amp;r=7027&amp;t=1">Download</a>
+          <h4>lin-amber-v10.zip</h4><p>37.46 MB</p>
+          <a href="?confirm=1&amp;do=download&amp;r=7028&amp;t=1">Download</a>
+        "#;
+        let (url, size) = g3_linux_asset_from_html(
+            downloads,
+            "https://www.gibberlings3.net/files/file/685-amber/?do=download",
+        )
+        .expect("linux asset");
+        assert!(url.contains("r=7028"), "{url}");
+        assert_eq!(size, 39_279_657);
+    }
+
+    #[test]
+    fn recognizes_direct_archive_from_headers_or_final_url() {
+        let url = reqwest::Url::parse("https://example.com/files/mod.zip").unwrap();
+        assert_eq!(
+            archive_ext_from_response(&url, None, Some("application/octet-stream")),
+            Some("zip".into())
+        );
+        let opaque = reqwest::Url::parse("https://example.com/downloaditm5").unwrap();
+        assert_eq!(
+            archive_ext_from_response(
+                &opaque,
+                Some("attachment; filename=SomeMod-v2.7z"),
+                Some("application/octet-stream")
+            ),
+            Some("7z".into())
+        );
+        assert_eq!(
+            same_site_referer("https://www.sentrizeal.com/downloaditm5").as_deref(),
+            Some("https://www.sentrizeal.com/")
+        );
     }
 }

@@ -1,5 +1,8 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
-import { scrapeModPageMeta } from '../../lib/desktop/modPageMeta'
+import {
+  scrapeModPageMeta,
+  type ModPageMeta,
+} from '../../lib/desktop/modPageMeta'
 import {
   isGithubModUrl,
   normalizeDownload,
@@ -166,8 +169,8 @@ export function ModEditorDialog({
     trackModeFromTrack(initial?.track ?? ''),
   )
   const [scraping, setScraping] = useState(false)
-  const scrapeCacheRef = useRef<{ url: string; name: string } | null>(null)
-  const scrapePromiseRef = useRef<Map<string, Promise<{ name: string } | null>>>(
+  const scrapeCacheRef = useRef<(ModPageMeta & { url: string }) | null>(null)
+  const scrapePromiseRef = useRef<Map<string, Promise<ModPageMeta | null>>>(
     new Map(),
   )
   const formRef = useRef(form)
@@ -260,12 +263,8 @@ export function ModEditorDialog({
       if (fromHost) next = { ...next, author: fromHost }
     }
 
-    const needName = !next.name.trim()
-    if (!needName) return next
-
     const cached = scrapeCacheRef.current
-    let meta =
-      cached && cached.url === url ? { name: cached.name } : null
+    let meta: ModPageMeta | null = cached && cached.url === url ? cached : null
 
     if (!meta) {
       let pending = scrapePromiseRef.current.get(url)
@@ -274,7 +273,13 @@ export function ModEditorDialog({
         pending = scrapeModPageMeta(url)
           .then((scraped) => {
             if (!scraped) return null
-            const result = { name: scraped.name.trim() }
+            const result = {
+              ...scraped,
+              name: scraped.name.trim(),
+              readme: scraped.readme.trim(),
+              author: scraped.author.trim(),
+              release: scraped.release.trim(),
+            }
             scrapeCacheRef.current = { url, ...result }
             return result
           })
@@ -287,8 +292,14 @@ export function ModEditorDialog({
       meta = await pending
     }
 
-    const fromScrape = meta?.name?.trim() ?? ''
-    if (fromScrape) next = { ...next, name: fromScrape }
+    if (!meta) return next
+    if (!next.name.trim() && meta.name) next = { ...next, name: meta.name }
+    if (!next.author.trim() && meta.author) next = { ...next, author: meta.author }
+    if (!next.readme.trim() && meta.readme) next = { ...next, readme: meta.readme }
+    if (!next.release.trim() && meta.release) next = { ...next, release: meta.release }
+    if (next.sizeBytes == null && meta.sizeBytes != null) {
+      next = { ...next, sizeBytes: meta.sizeBytes }
+    }
     return next
   }
 
@@ -296,7 +307,6 @@ export function ModEditorDialog({
     const url = formRef.current.url.trim()
     if (!isHttpUrl(url)) return
     const current = formRef.current
-    if (current.name.trim() && current.author.trim()) return
     const next = await fillEmptyFromUrl(url, current)
     setForm(next)
   }

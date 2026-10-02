@@ -238,7 +238,7 @@
 				<mod id="Ascalons_Questpack" label="Ascalon's Quest Pack" recommended="blendWell">
 					<component id="AscalonsQuestpack-FeastforGnolls" name="A Feast for the Gnolls" label="A Feast for the Gnolls" complexity="minor" cost="4" />
 					<component id="AscalonsQuestpack-LostSon" name="The Lost Son" label="The Lost Son" complexity="minor" cost="1" />
-					<component id="AscalonsQuestpack-WolvesMen_Highhedge" name="[Of Wolves and Men] Quest uses hut near Thalantyr in High Hedge." label="Of Wolves and Men" desc="Quest uses hut near Thalantyr in High Hedge" complexity="moderate" cost="1" />
+					<component id="AscalonsQuestpack-WolvesMen_Beregost" name="Of Wolves and Men Quest uses hut near Thalantyr in High Hedge." label="Of Wolves and Men" desc="Uses house in Beregost" complexity="moderate" cost="1" />
 					<component id="AscalonsQuestpack-GreatKarlini" name="The Great Carlini" label="The Great Karlini" complexity="minor" cost="1" />
 					<component id="AscalonsQuestpack-Fans" name="Fangirls" label="Fangirls" complexity="minor" cost="2" />
 					<component id="AscalonsQuestpack-HalflingEyeless" name="A Halfling among the Eyeless" label="A Halfling Among the Eyeless" complexity="minor" cost="1" />
@@ -310,9 +310,40 @@
 					</mod>
 				</romances>
 				<custom label="Custom NPCs" recommended="npc" package="customNpcs">
-					<component id="valerie:0" name="Valerie NPC Mod for BG1 Tutu, BGT BG:EE and EET" label="Valerie - human LG sorcerer" modId="Valerie-NPC" complexity="minor" cost="2" />
-					<component id="Drake:0" name="Default Portrait (The Artisan)" label="Drake - human NG Priest of Tyr" modId="Drake" complexity="minor" cost="5" />
                     <component id="FinchNPC-main" name="Finch NPC" label="Finch - gnomish NG cleric" modId="Finch_NPC" complexity="minor" />
+                    <mod id="Gavin_BG">
+                        <component id="b!gavin_main" name="Gavin NPC for Tutu, BGT, and BG:EE" label="Gavin - human NG cleric" core="1" package="customNpcs" complexity="minor" />
+                        <component id="b!gavin_pid" name="Gavin: Player Initiated Dialogue" label="Gavin: Player Initiated Dialogue" complexity="minor" noDisplay="1" alwaysIf="b!gavin_main" />
+                    </mod>
+                    <component id="valerie:0" name="Valerie NPC Mod for BG1 Tutu, BGT BG:EE and EET" label="Valerie - human LG sorcerer" modId="Valerie-NPC" complexity="minor" cost="2" />
+                    <component id="Helga:0" name="Helga NPC Mod" label="Helga - dwarven CN cleric" core="1" modId="Helga-BG1" package="customNpcs" complexity="minor" />
+                    <component id="Drake:0" name="Default Portrait (The Artisan)" label="Drake - human NG Priest of Tyr" modId="Drake" complexity="minor" cost="5" />
+                    <mod id="Indira_NPC">
+                        <component id="IndiraNPC-main" name="Indira NPC" label="Indira - half-elven LG fighter/mage" core="1" package="customNpcs" complexity="minor" />
+                        <component id="IndiraNPC-interjections" name="Install Interjections for Indira (BETA)" label="Install Interjections for Indira (BETA)" noDisplay="1" alwaysIf="IndiraNPC-main" />
+                    </mod>
+                    <component id="isra_npc_for_bg" name="Isra NPC Mod for BG:EE, EET, BGT and TuTu" label="Isra - human LG paladin" core="1" modId="Isra-NPC" package="customNpcs" complexity="minor" />
+                    <mod id="Emily-BG1">
+                        <component id="Emily:0" name="Emily NPC for BG1EE" label="Emily - half-elven NG Archer" core="1" package="customNpcs" complexity="minor" />
+                        <component id="Emily:1" name="Emily's Music" label="Emily's Music" noDisplay="1" alwaysIf="Emily:0" />
+                    </mod>
+                    <mod id="Kale-BG1">
+                        <component id="Kale:0" name="Kale NPC for BG1EE and SoD" label="Kale - halfling CN Warden (fighter)" core="1" package="customNpcs" complexity="minor" />
+                        <component id="Kale:1" name="Warden(Fighter Kit)" label="Warden(Fighter Kit)" complexity="minor" noDisplay="1" alwaysIf="Kale:0" />
+                    </mod>
+                    <component id="Kvel_BG1:0" name="Kvel NPC for Baldur's Gate: Enhanced Edition" label="Kvel - drow LE fighter/mage/thief" modId="Kvel-BG1" package="customNpcs" complexity="minor" />
+                    <mod id="OphysiaBG1">
+                        <component id="OphysiaBG1:0" name="Ophysia, a Skald companion for BG:EE and SoD" label="Ophysia - half-elven CG Skald" core="1" package="customNpcs" complexity="minor" />
+                        <component id="OphysiaBG1:10" name="Optional: Give Ophysia interjections throughout BG1 content?" label="Give Ophysia interjections" complexity="minor" noDisplay="1" alwaysIf="OphysiaBG1:0" />
+                    </mod>
+                    <mod id="Recorder-BG1">
+                        <component id="Recorder:0" name="Recorder NPC MoD" label="Recorder - gnomish NG Lorekeeper (bard)" package="customNpcs" complexity="minor" />
+                        <component id="Recorder:1" name="Recorder's Music" label="Recorder's Music" complexity="minor" noDisplay="1" alwaysIf="Recorder:0" />
+                    </mod>
+                    <component id="Sirene:0" name="Sirene NPC for Baldur's Gate: Enhanced Edition" label="Sirene - tiefling LG Martyr (paladin)" core="1" modId="Sirene-BG1" package="customNpcs" complexity="minor" />
+                    <component id="L#-VERRBGEE" name="Verr'Sza - the rakshasa NPC for BG1EE" label="Verr'Sza - rakshasa CE Naztharune Ranger" modId="verrsza-bg1ee" package="customNpcs" complexity="minor" />
+                    <component id="Vienxay:0" name="Vienxay NPC for BG1EE" label="Vienxay - elven NE Shadowmage (mage)" modId="Vienxay-BG1" package="customNpcs" complexity="minor" />
+                    <component id="gv#_glams_npc_pack" name="Glam's NPC Pack for BG:EE, BGT and BG TUTU" label="Glam's NPC Pack" modId="Glam-NPC-Pack" description="5 NPCs" package="customNpcs" complexity="minor" />
 				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
 					<mod id="Tweaks-Anthology" label="The Tweaks Anthology" recommended="vanillaPlus" >
@@ -433,6 +464,7 @@
 						<component id="KivanTimedQuest" name="[Kivan] Removed Kivan's timed quest" label="Removed Kivan's Timed Quest" modId="continuous-npcs" complexity="minor" />
 						<component id="KivanAbilityScores" name="[Kivan] Slightly Boost Kivan's Ability Scores" label="Slightly boost Kivan's Ability Scores" modId="continuous-npcs" complexity="minor" />
 					</group>
+                    <component id="L#-ARKANIS-SOD" name="Sir Arkanis for Siege of Dragonspear" label="Arkanis - dwarven LG paladin" modId="sir-arkanis-for-sod" package="customNpcs" complexity="minor" />
 				</bioware>
 				<banters>
 					<component id="C#Ajantis_SoD_NPC-crossmod_content" name="Ajantis SoD NPC: Crossmod Content" label="Ajantis crossmod" modId="Ajantis_BG1_Expansion" recommended="npc" package="npcExpansions" complexity="minor" cost="1" />
@@ -549,6 +581,7 @@
 				<component id="cowledmenace:1000" name="Main Component" label="Cowled Menace" modId="CowledMenace" recommended="extended" complexity="major" cost="5" />
 				<component id="AWizardDidIt-Blackhearts_BG2" name="Install Blackhearts for &quot;BG2EE only&quot;" label="Blackhearts" modId="Black-Hearts" recommended="extended" displayIfNot="AWizardDidIt-Blackhearts_BG1" complexity="moderate" />
 				<component id="Autumns_Twilight:0" name="Autumn's Twilight MOD" label="Autumn's Twilight" modId="bg2-autumns-twilight-mod" complexity="major" />
+                <component id="BG1NPCSoA:0" name="Water Gardens. New Athkatla's district &amp; new quests" label="Water Gardens. New Athkatla's district &amp; new quests" modId="BG1-NPCs-for-SoA-ToB" recommended="extended" complexity="moderate" />
 			</quest>
 			<npc label="Joinable NPCs">
 				<expansions label="Original Cast Expansions" recommended="npc" package="npcExpansions">
@@ -673,6 +706,25 @@
 							<component id="FaldornBG2:1" name="Faldorn NPC for BG2EE: Player-Initiated Dialogues (PIDs)" label="Player-initiated dialogues (PIDs)" complexity="minor" cost="2" />
 						</mod>
 					</group>
+                    <component id="Branwen:0" name="Branwen BG2 NPC mod for players and modders" label="Branwen - human TN fighter/cleric" modId="Branwen_for_BGII" package="customNpcs" complexity="minor" />
+                    <component id="Tiax:0" name="Tiax NPC MOD for Baldur's Gate II" label="Tiax - gnomish CE cleric/thief" modId="Tiax_for_BGII" package="customNpcs" complexity="minor" />
+                    <component id="BG1NPCSoA:2" name="Shar-Teel NPC in BG2. &quot;Nightbringer of Shar&quot; (SoA)" label="Shar-Teel" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:4" name="Yeslick Orothiar NPC in BG2 (SoA)" label="Yeslick" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:6" name="Brave Sir Garrick NPC in BG2 (SoA)" label="Garrick" modId="BG1-NPCs-for-SoA-ToB" package="customNpcs" complexity="minor" />
+                    <component id="BG1NPCSoA:8" name="Skie &amp; Eldoth NPCs in BG2 (SoA)" label="Skie &amp; Eldoth" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:10" name="Branwen NPC in BG2 (SoA)" label="Branwen" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:11" name="ToB-part for Shar-Teel or/and Yeslick, Garrick, Branwen, Skie, Eldoth" label="ToB-part for Shar-Teel or/and Yeslick, Garrick, Branwen, Skie, Eldoth" modId="BG1-NPCs-for-SoA-ToB" package="customNpcs" complexity="minor" noDisplay="1" alwaysIf="BG1NPCSoA:2|BG1NPCSoA:4|BG1NPCSoA:6|BG1NPCSoA:10|BG1NPCSoA:8" />
+                    <component id="BG1NPCSoA:20" name="Coran &amp; Safana Chronicles (SoA &amp; ToB)" label="Coran &amp; Safana" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:25" name="Alora (SoA &amp; ToB)" label="Alora" modId="BG1-NPCs-for-SoA-ToB" package="customNpcs" complexity="minor" />
+                    <component id="BG1NPCSoA:35" name="Store with Vanilla Items Only" label="Kagain's Corner" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:40" name="Faldorn's New Leaf (SoA &amp; ToB)" label="Faldorn" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:45" name="Xzar and Monty Murder Mysteries (SoA &amp; ToB) (R, 18+!)" label="Xzar and Monty (R, 18+!)" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:50" name="Gnomes in the City: Quayle &amp; Tiax (SoA &amp; ToB)" label="Quayle &amp; Tiax" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:55" name="Expanded cirqus quest (Standard difficulty)" label="Expanded cirqus quest (Standard difficulty)" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:60" name="Ajantis (SoA &amp; ToB)" label="Ajantis (SoA &amp; ToB)" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:65" name="Dynaheir (SoA)" label="Dynaheir (SoA)" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:70" name="Kivan (SoA &amp; ToB)" label="Kivan (SoA &amp; ToB)" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="BG1NPCSoA:75" name="Xan (SoA &amp; ToB)" label="Xan (SoA &amp; ToB)" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
 				</bioware>
 				<custom label="Custom NPCs" recommended="npc" package="customNpcs">
 					<component id="SisterVigilantes_Angelo-main" name="Angelo NPC MOD for Baldur's Gate II" label="Angelo - human CN fighter/mage" modId="Angelo" complexity="minor" cost="9" />
@@ -693,12 +745,51 @@
 						<component id="Fade:1" name="Fade NPC: reactions to Romantic Encounters (RE may be installed before or after this component)" label="Reactions to romantic encounters" complexity="minor" cost="2" />
 						<component id="Fade:2" name="Fade EE: give Fade Shadowdancer kit" label="Give Fade Shadowdancer kit" alwaysIf="Fade:0" noDisplay="1" complexity="minor" cost="1" />
 					</mod>
+                    <mod id="dvaradime">
+                        <component id="L#-DVARADIME" name="Dvaradime - Baldur's Gate 2: EE NPC" label="Dvaradime - dwarven NG fighter/mage/thief" core="1" package="customNpcs" complexity="minor" />
+                        <component id="L#-DVARADIME-PID" name="Dvaradime - Player-Initiated Dialogue" label="Dvaradime - Player-Initiated Dialogue" complexity="minor" noDisplay="1" alwaysIf="L#-DVARADIME" />
+                    </mod>
+                    <mod id="fhaugy">
+                        <component id="L#-Fhaugy" name="Fhaugy - Baldur's Gate 2: EE NPC" label="Fhaugy - half-orc TN monk" core="1" package="customNpcs" complexity="minor" />
+                        <component id="L#-Fhaugy-PID" name="Fhaugy: Player-Initiated Dialogues (PIDs)" label="Fhaugy: Player-Initiated Dialogues (PIDs)" complexity="minor" noDisplay="1" alwaysIf="L#-Fhaugy" />
+                    </mod>
+                    <mod id="fyalvara">
+                        <component id="L#-fyalvara-BC" name="Make Fyalvara a kitless fighter." label="Fyalvara - human TN fighter" core="1" package="customNpcs" complexity="minor" />
+                        <component id="fyalvara:3" name="Fyalvara - install Player-Initiated Dialogues?" label="Fyalvara - install Player-Initiated Dialogues?" noDisplay="1" alwaysIf="L#-fyalvara-BC|L#-fyalvara-WS" />
+                    </mod>
+                    <component id="Gahesh:0" name="Gahesh NPC" label="Gahesh - half-orc LG sorcerer" modId="gahesh" package="customNpcs" complexity="minor" />
+                    <component id="b!gavin_bg2_2700" name="Speed: 45 minutes real time minimum between dialogues" label="Gavin - human NG cleric" core="1" modId="Gavin_BG2" package="customNpcs" complexity="minor" />
+                    <component id="isra_npc_for_bg2" name="Isra for BGII" label="Isra - human LG Cavalier" core="1" modId="Isra-NPC-BG2" package="customNpcs" complexity="minor" />
+                    <component id="kelsey:0" name="Kelsey" label="Kelsey - human NG sorcerer" core="1" modId="Kelsey" package="customNpcs" complexity="minor" />
+                    <component id="keto:0" name="Keto-SOA NPC" label="Keto - human NG bard" core="1" modId="Keto" package="customNpcs" complexity="minor" />
+                    <component id="ninde_npc_for_bg2" name="Ninde NPC Mod for BGII" label="Ninde - elven NE necromancer" modId="Ninde-NPC" package="customNpcs" complexity="minor" />
+                    <component id="paina:0" name="Pai'Na NPC for BG2:EE" label="Pai'Na - half-drow TN Hivemaster (druid)" modId="Pai-Na-NPC-mod-for-BG2-EE" package="customNpcs" complexity="minor" />
+                    <component id="saradas_magic_npc_for_bg2_monk" name="Saradas has a monk sprite (original)" label="Saradas - human LN priest/mage" modId="Saradas-Magic-BG2" package="customNpcs" complexity="minor" />
+                    <mod id="Sirene-NPC-for-BG2-EE">
+                        <component id="Sirene_BG2:0" name="Sirene NPC for BG2:EE" label="Sirene - tiefling LG Martyr" core="1" package="customNpcs" complexity="minor" />
+                        <component id="Sirene_BG2:1" name="BG1 Default (sporeboy)" label="BG1 Default (sporeboy)" complexity="minor" noDisplay="1" alwaysIf="Sirene_BG2:0" />
+                    </mod>
+                    <component id="L#-VERRSZABG2" name="Verr'Sza – the rakshasa NPC for BG2EE" label="Verr'Sza - rakshasa CE Naztharune Ranger" modId="verrsza-bg2ee" package="customNpcs" complexity="minor" />
+                    <mod id="SkitiaNPCs">
+                        <component id="SkitiaNPCs:0" name="Skitia NPCs for Baldur's Gate 2" label="Skitia NPCs" core="1" package="customNpcs" complexity="minor" />
+                        <component id="SkitiaNPCs:2" name="Romance Theme Music" label="Romance Theme Music" />
+                    </mod>
+                    <component id="AurenAseph-main" name="Auren Aseph for BG2:ToB" label="Auren Aseph - human NG fighter" core="1" modId="AurenAseph" package="customNpcs" complexity="minor" />
+                    <mod id="will-of-the-wisps">
+                        <component id="L#-WILLOFTHEWISP-MAIN" name="Will NPC, shaman stronghold and new shaman kit for BG2EE" label="Will - undead TN Witchlight Shaman" core="1" package="customNpcs" complexity="moderate" />
+                        <component id="L#-WILLOFTHEWISP-CLASSDESC" name="Change shaman .tlk string to remove &quot;Ineligible for any stronghold&quot; line" label="Change shaman .tlk string to remove &quot;Ineligible for any stronghold&quot; line" />
+                        <component id="L#-WILLOFTHEWISP-ENEMIES" name="Optional: Drider, Dark Treant, Will-o'-wisp Enemies" label="Optional: Drider, Dark Treant, Will-o'-wisp Enemies" />
+                    </mod>
 				</custom>
 				<banters label="Banters and Crossmods" recommended="npc" package="npcExpansions">
-					<component id="mkhiinbg2:20" name="Crossmod with Baeloth for BG2" label="M'Khiin crossmod with baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" tags="Beamdog" complexity="minor" />
+                    <component id="BG1NPCSoA:87" name="Inter Component Banter Pack" label="Inter Component Banter Pack" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
+                    <component id="mkhiinbg2:20" name="Crossmod with Baeloth for BG2" label="M'Khiin crossmod with baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" tags="Beamdog" complexity="minor" />
 					<component id="adrian_crossmod_content" name="Crossmod content" label="Adrian crossmod" modId="Adrian-NPC" alwaysIf="adrian_sorcerer" noDisplay="1" complexity="minor" cost="2" />
-					<component id="c#husam-crossmod" label="Husam Crossmod Content" modId="Husam_NP" />
+                    <component id="isra_npc_for_bg2_crossmod_content" name="Isra Crossmod Content" label="Isra Crossmod Content" modId="Isra-NPC-BG2" noDisplay="1" alwaysIf="isra_npc_for_bg2" />
 					<component id="Wings:1" name="Restore missing banters?" label="Restore missing banters for Aerie" modId="Wings" complexity="minor" cost="1" />
+                    <component id="kelsey:1" name="Kelsey/Solaufein Content: Banter and Romance ConflictOPTIONAL, RECOMMENDED ONLY for use with Solaufein V60 AND ABOVE" label="Kelsey/Solaufein Content: Banter and Romance Conflict" modId="Kelsey" package="customNpcs" complexity="minor" noDisplay="1" alwaysIf="kelsey:0,JasteysSolaufeinRescue-Main" />
+                    <component id="kelsey:4" name="Ascension-specific dialogue (Requires WeiDU Ascension, v1.4.12 or greater recommended)" label="Ascension-specific dialogue" modId="Kelsey" complexity="minor" noDisplay="1" alwaysIf="kelsey:0,Ascension-RewrittenFinalChapterOfToB" />
+                    <component id="keto:1" name="Keto/Kelsey Interaction (Requires Kelsey-SOA)" label="Keto/Kelsey Interaction" modId="Keto" complexity="minor" noDisplay="1" alwaysIf="kelsey:0" />
 					<mod id="NeeraBanters" label="Neera Banters" tags="Beamdog">
 						<component id="AY-NEERABANTERS-DIALOGUE" name="Neera Banters: Dialogue Banters and Interjections" label="Dialogue banters and interjections" complexity="minor" cost="3" />
 						<component id="AY-NEERABANTERS-INTERACTION" name="Neera Banters: Interaction Banters" label="Interaction banters" complexity="minor" cost="2" />
@@ -748,6 +839,7 @@
 					<component id="Jarnip:1" name="Jarnip in ToB: A New Merchant in Saradush" label="Jarnip in ToB: A New Merchant in Saradush" modId="Jarnip" recommended="extended" complexity="minor" />
 					<component id="PlanarItems:0" name="Revised Items" label="Planaritems" modId="PlanarItems" complexity="minor" />
 					<component id="cd_spc_creslyn_item_pack" name="Creslyn's BG2 Item Pack" label="Creslyn's Item Pack" modId="SP_Collection" complexity="minor" />
+                    <component id="L#-WILLOFTHEWISP-ITEMS" name="New items for shamans and undead NPCs" label="New items for shamans and undead NPCs" modId="will-of-the-wisps" complexity="minor" />
 					<mod id="forgotten-armament" label="Forgotten Armament">
 						<component id="ForgottenArmament-RubyRay" name="Add Ruby Ray Scrolls to Trademeet Store" label="Ruby Ray Scrolls in Trademeet Store" complexity="minor" cost="1" />
 						<component id="ForgottenArmament-FreedomScroll" name="Add Freedom Scrolls to Ribald's Store (Pre-Underdark)" label="Freedom Scrolls in Ribald's Store (pre-Underdark)" complexity="minor" cost="1" />
@@ -1044,6 +1136,10 @@
                     <mod id="Ascalons_Breagar">
                         <component id="Ascalons_Breagar-main" name="Breagar: Contents" label="Breagar - dwarven LG Smith (fighter)" core="1" complexity="minor" packages="" />
                         <component id="Ascalons_Breagar-crossmod" name="Breagar: Crossmods and PID" label="Breagar: Crossmods and PID" complexity="minor" onlyIf="Ascalons_Breagar-main" noDisplay="1" />
+                    </mod>
+                    <mod id="Husam_NPC">
+                        <component id="c#husam-main" name="Husam NPC for SoD, BGT, BGII:EE, BGII:ToB, and EET" label="Husam - human NE thief" core="1" complexity="minor" />
+                        <component id="c#husam-crossmod" name="Husam NPC: Crossmod Content" label="Husam NPC: Crossmod Content" alwaysIf="c#husam-main" noDisplay="1" />
                     </mod>
                 </custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
@@ -1480,6 +1576,7 @@
 			<component id="cd_tweaks_imoen_avatar_change" name="Change Imoen's Avatar to Mage" label="Change Imoen's avatar to mage" modId="Tweaks-Anthology" engine="bg2,eet" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_20" complexity="minor" />
 			<component id="cd_tweaks_viconia_skin_color" name="Change Viconia's Skin Color to Dark Blue" label="Change Viconia's skin color to dark blue" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_40" complexity="minor" />
             <component id="BragesRedemption-portrait_sound_original_Brage" name="Assign the mod's portrait and soundset to the original Brage in game." label="Assign the mod's portrait and soundset to the original Brage in game."  noDisplay="1" alwaysIf="BragesRedemption-main" modId="Brages_Redemption" />
+            <component id="c#husam-portrait_sound_original_Husam" name="Assign the mod's portrait and soundset to the original Husam in game" label="Assign the mod's portrait and soundset to the original Husam in game" modId="Husam_NPC" complexity="minor" noDisplay="1" alwaysIf="c#husam-main" />
 		</group>
 		<group label="Alignment">
 			<component id="cd_tweaks_ng_jaheira" name="Change Jaheira to Neutral Good Alignment" label="Change Jaheira to NG alignment" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4050" complexity="minor" />

@@ -243,6 +243,18 @@ describe('provisionalCodenameFromUrl', () => {
     ).toBe('gahesh')
     expect(
       provisionalCodenameFromUrl(
+        'https://www.gibberlings3.net/files/file/685-amber/',
+        new Set(),
+      ),
+    ).toBe('685-amber')
+    expect(
+      provisionalCodenameFromUrl(
+        'https://www.sentrizeal.com/downloaditm5',
+        new Set(),
+      ),
+    ).toBe('downloaditm5')
+    expect(
+      provisionalCodenameFromUrl(
         'https://github.com/org/MyMod/releases',
         new Set(),
       ),
