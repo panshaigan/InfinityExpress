@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   analyzeConditionExpression,
   conditionIdentifierRange,
@@ -29,6 +29,7 @@ export function ConditionExpressionField({
   onChange,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const suggestionRefs = useRef(new Map<number, HTMLButtonElement>())
   const [caret, setCaret] = useState(value.length)
   const [suggestionsOpen, setSuggestionsOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
@@ -42,6 +43,13 @@ export function ConditionExpressionField({
     () => filterConditionOptions(options, query),
     [options, query],
   )
+
+  useEffect(() => {
+    if (!suggestionsOpen) return
+    suggestionRefs.current
+      .get(highlightedIndex)
+      ?.scrollIntoView({ block: 'nearest' })
+  }, [highlightedIndex, suggestions, suggestionsOpen])
 
   function restoreCaret(nextCaret: number) {
     requestAnimationFrame(() => {
@@ -123,6 +131,10 @@ export function ConditionExpressionField({
           {suggestions.map((option, index) => (
             <button
               key={option.id}
+              ref={(element) => {
+                if (element) suggestionRefs.current.set(index, element)
+                else suggestionRefs.current.delete(index)
+              }}
               type="button"
               role="option"
               aria-selected={index === highlightedIndex}

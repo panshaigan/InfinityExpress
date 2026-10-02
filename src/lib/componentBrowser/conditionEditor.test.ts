@@ -12,6 +12,12 @@ import {
 const options: ConditionComponentOption[] = [
   { id: 'gate:1', label: 'Main gate', name: 'Install gate', modId: 'gate' },
   { id: 'other', label: 'Other feature', name: 'Other', modId: 'example' },
+  {
+    id: 'tweaks!spell:2',
+    label: 'Arcane spell fixes',
+    name: 'Spell tweaks',
+    modId: 'tweaks',
+  },
 ]
 
 describe('condition expression editor', () => {
@@ -24,6 +30,15 @@ describe('condition expression editor', () => {
     expect(replaceConditionIdentifier('gate:1|oth', 10, 'other')).toEqual({
       value: 'gate:1|other',
       caret: 12,
+    })
+    expect(conditionIdentifierRange('gate:1|arcane spell', 19)).toEqual({
+      start: 7,
+      end: 19,
+      query: 'arcane spell',
+    })
+    expect(replaceConditionIdentifier('gate:1|arcane spell', 19, 'tweaks!spell:2')).toEqual({
+      value: 'gate:1|tweaks!spell:2',
+      caret: 21,
     })
   })
 
@@ -41,6 +56,10 @@ describe('condition expression editor', () => {
     expect(filterConditionOptions(options, 'gate').map((option) => option.id)).toEqual([
       'gate:1',
     ])
+    expect(
+      filterConditionOptions(options, 'spell arcane').map((option) => option.id),
+    ).toEqual(['tweaks!spell:2'])
+    expect(filterConditionOptions(options, 'spell missing')).toEqual([])
   })
 
   it('merges browsed components into XML options while keeping XML metadata', () => {
@@ -71,5 +90,12 @@ describe('condition expression editor', () => {
     expect(analyzeConditionExpression('gate:1,(', new Set(), 'self').error).toMatch(
       /Expected/,
     )
+    expect(
+      analyzeConditionExpression(
+        'tweaks!spell:2',
+        new Set(['tweaks!spell:2']),
+        'other',
+      ).error,
+    ).toBeNull()
   })
 })

@@ -87,6 +87,6 @@ Any token may cover; empty engine → all games.
 
 ### Conditions (`alwaysIf` / `displayIf` / `displayIfNot`)
 
-Component ids; `,` = AND; `|` = OR; `()` group. Example: `ArtisansKitpack:20000,(xan:1|xan:3)`.
+Component ids may contain letters, digits, `_`, `:`, `-`, `@`, `#`, `!`, and `.`; `,` = AND; `|` = OR; `()` group. Example: `ArtisansKitpack:20000,(xan:1|xan:3)`.
 
 `displayIfNot`: show only when expression is **false**.

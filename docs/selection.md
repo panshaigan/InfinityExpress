@@ -26,7 +26,7 @@ Station omitted from nav when display tree empty / station roots fail display ga
 
 ## Conditions
 
-Operands = component ids. `,` = AND, `|` = OR, `()` group. Unparsable → false. Re-evaluated on every selection change.
+Operands = component ids (including WeiDU LABEL punctuation such as `!`). `,` = AND, `|` = OR, `()` group. Unparsable → false. Re-evaluated on every selection change.
 
 ## Selection rules
 

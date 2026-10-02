@@ -12,6 +12,13 @@ describe('conditions', () => {
     expect(ast.type).toBe('and')
   })
 
+  it('accepts exclamation marks in component ids', () => {
+    expect(parseCondition('tweaks!spell:2')).toEqual({
+      type: 'id',
+      id: 'tweaks!spell:2',
+    })
+  })
+
   it('evaluates AND/OR', () => {
     const selected = new Set(['ArtisansKitpack:20000', 'xan:3'])
     expect(evalConditionExpr('ArtisansKitpack:20000,(xan:1|xan:3)', selected)).toBe(true)

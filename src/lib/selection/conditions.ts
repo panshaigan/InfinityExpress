@@ -12,7 +12,7 @@ class ParseError extends Error {
 
 /**
  * Parse alwaysIf / displayIf / displayIfNot expressions.
- * Identifiers: component ids (letters, digits, _ : - @ #)
+ * Identifiers: component ids (letters, digits, _ : - @ # ! .)
  * `,` = AND (higher precedence than `|` when ungrouped — use `()` explicitly)
  * `|` = OR
  * `()` for grouping
@@ -41,7 +41,7 @@ export function parseCondition(input: string): ConditionAst {
       return inner
     }
     const start = i
-    while (/[A-Za-z0-9_:\-@#.]/.test(peek())) i++
+    while (/[A-Za-z0-9_:\-@#!.]/.test(peek())) i++
     if (i === start) throw new ParseError(`Expected identifier at ${i}`)
     return { type: 'id', id: src.slice(start, i) }
   }

@@ -30,7 +30,7 @@ export function mergeConditionComponentOptions(
   return [...merged.values()]
 }
 
-const IDENTIFIER_CHAR = /[A-Za-z0-9_:\-@#\.]/
+const SUGGESTION_QUERY_CHAR = /[A-Za-z0-9_:\-@#!\.\s]/
 
 export function conditionIdentifierRange(
   expression: string,
@@ -38,8 +38,8 @@ export function conditionIdentifierRange(
 ): { start: number; end: number; query: string } {
   let start = Math.max(0, Math.min(caret, expression.length))
   let end = start
-  while (start > 0 && IDENTIFIER_CHAR.test(expression[start - 1])) start--
-  while (end < expression.length && IDENTIFIER_CHAR.test(expression[end])) end++
+  while (start > 0 && SUGGESTION_QUERY_CHAR.test(expression[start - 1])) start--
+  while (end < expression.length && SUGGESTION_QUERY_CHAR.test(expression[end])) end++
   return { start, end, query: expression.slice(start, end) }
 }
 
@@ -75,13 +75,15 @@ export function filterConditionOptions(
   limit = 30,
 ): ConditionComponentOption[] {
   const needle = query.trim().toLocaleLowerCase()
-  if (!needle) return []
+  const terms = needle.split(/\s+/).filter(Boolean)
+  if (terms.length === 0) return []
   return options
-    .filter((option) =>
-      [option.id, option.label, option.name, option.modId].some((value) =>
-        value.toLocaleLowerCase().includes(needle),
-      ),
-    )
+    .filter((option) => {
+      const searchable = [option.id, option.label, option.name, option.modId]
+        .join(' ')
+        .toLocaleLowerCase()
+      return terms.every((term) => searchable.includes(term))
+    })
     .sort((left, right) => {
       const leftId = left.id.toLocaleLowerCase()
       const rightId = right.id.toLocaleLowerCase()
