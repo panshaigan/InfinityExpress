@@ -83,7 +83,11 @@ import { AppTopBar } from './ui/AppTopBar'
 import { ComponentBrowserDialog } from './ui/componentBrowser/ComponentBrowserDialog'
 import { PresetDetail } from './ui/PresetDetail'
 import { DetailPane } from './ui/DetailPane'
-import { listSelectedModCodenames } from './lib/mods/loadMods'
+import {
+  listSelectedModCodenames,
+  resolveModLookupKey,
+} from './lib/mods/loadMods'
+import type { ConditionComponentOption } from './lib/componentBrowser/conditionEditor'
 import { useStationTrees } from './hooks/useStationTrees'
 import { useBranchNav } from './hooks/useBranchNav'
 import { useSelectionPresetsState } from './hooks/useSelectionPresetsState'
@@ -214,6 +218,19 @@ function AppShell() {
       if (value) values.add(value)
     }
     return [...values].sort((left, right) => left.localeCompare(right))
+  }, [model])
+  const conditionComponentOptions = useMemo<ConditionComponentOption[]>(() => {
+    const options = new Map<string, ConditionComponentOption>()
+    for (const component of model.componentsInOrder) {
+      if (options.has(component.componentId)) continue
+      options.set(component.componentId, {
+        id: component.componentId,
+        label: component.attrs.label?.trim() ?? '',
+        name: component.attrs.name?.trim() ?? '',
+        modId: resolveModLookupKey(model, component) ?? '',
+      })
+    }
+    return [...options.values()]
   }, [model])
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
   const installSnapshotRef = useRef<PersistedInstallSession | null | undefined>(
@@ -1629,6 +1646,7 @@ function AppShell() {
         mods={userCatalog.mods}
         existingComponentIds={existingComponentIds}
         packageValues={componentPackageValues}
+        conditionOptions={conditionComponentOptions}
         initialTarget={componentBrowserTarget}
         onClose={() => setComponentBrowserOpen(false)}
       />

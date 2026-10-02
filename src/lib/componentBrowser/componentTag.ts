@@ -1,5 +1,6 @@
 import type { EngineToken } from '../xml/schema'
 import type { WeiduComponentInfo } from '../install/types'
+import { parseCondition } from '../selection/conditions'
 
 export const COMPONENT_ENGINE_TOKENS: readonly EngineToken[] = [
   'bg',
@@ -24,6 +25,10 @@ export interface ComponentTagDraft {
   package: string
   complexity: string
   required: boolean
+  noDisplay: boolean
+  alwaysIf: string
+  displayIf: string
+  displayIfNot: string
   default: boolean
 }
 
@@ -60,7 +65,23 @@ export function createComponentTagDraft(
     package: '',
     complexity: '',
     required: false,
+    noDisplay: false,
+    alwaysIf: '',
+    displayIf: '',
+    displayIfNot: '',
     default: false,
+  }
+}
+
+export function updateComponentCondition(
+  draft: ComponentTagDraft,
+  key: 'alwaysIf' | 'displayIf' | 'displayIfNot',
+  value: string,
+): ComponentTagDraft {
+  return {
+    ...draft,
+    [key]: value,
+    ...(key === 'alwaysIf' && value.trim() ? { noDisplay: true } : {}),
   }
 }
 
@@ -80,6 +101,19 @@ export function validateComponentTagDraft(
   if (!draft.name.trim()) return 'Name is required'
   if (!draft.label.trim()) return 'Label is required'
   if (!options.omitModId && !draft.modId.trim()) return 'Mod download ID is required'
+  for (const [attribute, expression] of [
+    ['alwaysIf', draft.alwaysIf],
+    ['displayIf', draft.displayIf],
+    ['displayIfNot', draft.displayIfNot],
+  ] as const) {
+    if (!expression.trim()) continue
+    try {
+      parseCondition(expression)
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : String(reason)
+      return `${attribute}: ${message}`
+    }
+  }
   return null
 }
 
@@ -114,6 +148,12 @@ export function serializeComponentTag(
     attrs.push(['complexity', draft.complexity.trim()])
   }
   if (draft.required) attrs.push(['required', '1'])
+  if (draft.noDisplay) attrs.push(['noDisplay', '1'])
+  if (draft.alwaysIf.trim()) attrs.push(['alwaysIf', draft.alwaysIf.trim()])
+  if (draft.displayIf.trim()) attrs.push(['displayIf', draft.displayIf.trim()])
+  if (draft.displayIfNot.trim()) {
+    attrs.push(['displayIfNot', draft.displayIfNot.trim()])
+  }
   if (draft.default) attrs.push(['default', '1'])
 
   return `<component ${attrs

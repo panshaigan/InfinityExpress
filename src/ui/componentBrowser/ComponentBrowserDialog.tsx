@@ -8,6 +8,7 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from 'react'
 import { PRESET_TILE_COPY } from '../../data/presetCatalog'
+import type { ConditionComponentOption } from '../../lib/componentBrowser/conditionEditor'
 import {
   COMPONENT_COMPLEXITIES,
   COMPONENT_ENGINE_TOKENS,
@@ -17,6 +18,7 @@ import {
   serializeModComponentBlock,
   serializeSeparateComponentTags,
   serializeComponentTag,
+  updateComponentCondition,
   validateComponentTagDraft,
   type ComponentTagDraft,
 } from '../../lib/componentBrowser/componentTag'
@@ -46,12 +48,14 @@ import { IconTip } from '../IconTip'
 import { OutlinedSelect, type OutlinedSelectOption } from '../OutlinedSelect'
 import { OutlinedTextField } from '../OutlinedTextField'
 import { useToast } from '../toasts/toastContext'
+import { ConditionExpressionField } from './ConditionExpressionField'
 
 interface Props {
   open: boolean
   mods: readonly WorkingMod[]
   existingComponentIds: ReadonlySet<string>
   packageValues: readonly string[]
+  conditionOptions: readonly ConditionComponentOption[]
   initialTarget?: { modId: string; componentId?: string } | null
   onClose: () => void
 }
@@ -98,6 +102,7 @@ function ComponentTagDialog({
   weiduId,
   draft,
   packageValues,
+  conditionOptions,
   onDraftChange,
   onClose,
 }: {
@@ -105,6 +110,7 @@ function ComponentTagDialog({
   weiduId: string
   draft: ComponentTagDraft
   packageValues: readonly string[]
+  conditionOptions: readonly ConditionComponentOption[]
   onDraftChange: (draft: ComponentTagDraft) => void
   onClose: () => void
 }) {
@@ -139,6 +145,13 @@ function ComponentTagDialog({
     if (checked) selected.add(token)
     else selected.delete(token)
     setField('engine', COMPONENT_ENGINE_TOKENS.filter((value) => selected.has(value)))
+  }
+
+  function setCondition(
+    key: 'alwaysIf' | 'displayIf' | 'displayIfNot',
+    value: string,
+  ) {
+    onDraftChange(updateComponentCondition(draft, key, value))
   }
 
   async function submit(event: FormEvent) {
@@ -263,6 +276,36 @@ function ComponentTagDialog({
             onOpenChange={(value) => setOpenSelect(value ? 'complexity' : null)}
             onChange={(value) => setField('complexity', value)}
           />
+          <fieldset className="component-tag-fieldset component-tag-conditions component-tag-span-2">
+            <legend>Conditions</legend>
+            <ConditionExpressionField
+              attribute="alwaysIf"
+              label="Always selected when"
+              help="Automatically selects this component when the expression is true."
+              value={draft.alwaysIf}
+              currentComponentId={draft.id}
+              options={conditionOptions}
+              onChange={(value) => setCondition('alwaysIf', value)}
+            />
+            <ConditionExpressionField
+              attribute="displayIf"
+              label="Shown when"
+              help="Shows this component only when the expression is true."
+              value={draft.displayIf}
+              currentComponentId={draft.id}
+              options={conditionOptions}
+              onChange={(value) => setCondition('displayIf', value)}
+            />
+            <ConditionExpressionField
+              attribute="displayIfNot"
+              label="Hidden when"
+              help="Hides this component when the expression is true."
+              value={draft.displayIfNot}
+              currentComponentId={draft.id}
+              options={conditionOptions}
+              onChange={(value) => setCondition('displayIfNot', value)}
+            />
+          </fieldset>
           <div className="component-tag-boolean-row component-tag-span-2">
             <label>
               <input
@@ -271,6 +314,14 @@ function ComponentTagDialog({
                 onChange={(event) => setField('required', event.target.checked)}
               />
               Required component
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={draft.noDisplay}
+                onChange={(event) => setField('noDisplay', event.target.checked)}
+              />
+              Hidden by default
             </label>
             <label>
               <input
@@ -314,6 +365,7 @@ export function ComponentBrowserDialog({
   mods,
   existingComponentIds,
   packageValues,
+  conditionOptions,
   initialTarget,
   onClose,
 }: Props) {
@@ -1060,6 +1112,7 @@ export function ComponentBrowserDialog({
           weiduId={activeCandidate.weiduId}
           draft={draftFor(editing)}
           packageValues={packageValues}
+          conditionOptions={conditionOptions}
           onDraftChange={(draft) => saveDraft(editing, draft)}
           onClose={() => setEditing(null)}
         />

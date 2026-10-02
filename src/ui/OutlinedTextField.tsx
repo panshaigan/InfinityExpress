@@ -19,6 +19,7 @@ interface Props {
   spellCheck?: boolean
   autoComplete?: string
   onBlur?: () => void
+  onFocus?: () => void
   onKeyDown?: KeyboardEventHandler<HTMLInputElement>
   /** Extra class on the root (e.g. layout spans). */
   className?: string
@@ -42,6 +43,7 @@ export function OutlinedTextField({
   spellCheck = false,
   autoComplete = 'off',
   onBlur,
+  onFocus,
   onKeyDown,
   className = '',
   trailing,
@@ -89,6 +91,7 @@ export function OutlinedTextField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
+          onFocus={onFocus}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
           required={required}

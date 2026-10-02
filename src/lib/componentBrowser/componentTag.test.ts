@@ -8,6 +8,8 @@ import {
   serializeModComponentBlock,
   serializeSeparateComponentTags,
   serializeComponentTag,
+  updateComponentCondition,
+  validateComponentTagDraft,
 } from './componentTag'
 
 describe('component tag generation', () => {
@@ -93,6 +95,25 @@ describe('component tag generation', () => {
       '<component id="FIRST" name="First" label="First" modId="Example" package="encounters" required="1" />\n' +
         '<component id="SECOND" name="Second" label="Second" modId="Example" />',
     )
+  })
+
+  it('serializes conditions and automatically enables noDisplay for alwaysIf', () => {
+    let draft = createComponentTagDraft(
+      { index: 0, number: 1, name: 'Conditional', label: ['CONDITIONAL'] },
+      'example',
+      'Example',
+    )
+    draft = updateComponentCondition(draft, 'alwaysIf', 'gate:1|gate:2')
+    draft.displayIf = 'campaign,(feature-a|feature-b)'
+    draft.displayIfNot = 'incompatible'
+
+    expect(draft.noDisplay).toBe(true)
+    expect(serializeComponentTag(draft)).toContain(
+      'noDisplay="1" alwaysIf="gate:1|gate:2" displayIf="campaign,(feature-a|feature-b)" displayIfNot="incompatible"',
+    )
+
+    draft.displayIf = 'gate:1,('
+    expect(validateComponentTagDraft(draft)).toMatch(/^displayIf:/)
   })
 
   it('serializes a complete alternatives group with an escaped label', () => {

@@ -27,6 +27,8 @@ The browser can be targeted from the Mods table or Components tree right-click m
 
 When a downloaded mod is selected, its catalog mod-page and readme links are shown when available. The mod search suggestions support Up/Down cursor navigation and Enter selection. In the component copy form, WeiDU-derived identity fields (`id`, download id, and WeiDU name) are read-only; display label, engine, recommended category, package, complexity, `core`, `required`, and `default` remain editable for the session. Package options are collected from the live `InstallSequence.xml` model.
 
+The copy form also edits `alwaysIf`, `displayIf`, and `displayIfNot` with component suggestions from the live XML catalog. Suggestions search IDs, labels, WeiDU names, and mod IDs; Up/Down and Enter insert the exact component ID at the caret. AND (`,`), OR (`|`), and parenthesis buttons supplement direct typing. Syntax errors block copying, while unknown IDs and self-references are warnings because a snippet may intentionally reference a component not pasted yet. Entering a non-empty `alwaysIf` automatically checks `noDisplay`; the checkbox remains manually editable afterward.
+
 For checked rows, **Copy grouped** emits one `<mod id="download-id">` wrapper whose child components omit `modId` and inherit it structurally. **Copy separate** emits unwrapped `<component />` lines and includes `modId="download-id"` on every component.
 
 ## Plan

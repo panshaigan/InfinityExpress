@@ -6835,6 +6835,122 @@ body.is-resizing-detail * {
   text-transform: uppercase;
 }
 
+.component-tag-conditions {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.condition-expression-field {
+  position: relative;
+}
+
+.condition-expression-suggestions {
+  position: absolute;
+  z-index: 30;
+  top: 3.15rem;
+  right: 0;
+  left: 0;
+  max-height: 13rem;
+  overflow: auto;
+  padding: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
+}
+
+.condition-expression-suggestions button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.12rem 0.65rem;
+  width: 100%;
+  padding: 0.38rem 0.45rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.condition-expression-suggestions button:hover,
+.condition-expression-suggestions button:focus-visible,
+.condition-expression-suggestions button.active {
+  background: var(--accent-soft);
+  outline: none;
+}
+
+.condition-expression-suggestions button > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.condition-expression-suggestions code {
+  color: color-mix(in srgb, var(--accent) 78%, var(--ink));
+  font-size: 0.72rem;
+}
+
+.condition-expression-suggestions small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.condition-expression-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+
+.condition-expression-tools button {
+  min-width: 2rem;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.condition-expression-tools button:hover:not(:disabled),
+.condition-expression-tools button:focus-visible {
+  border-color: var(--accent);
+  color: var(--ink);
+  outline: none;
+}
+
+.condition-expression-tools button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.condition-expression-help,
+.condition-expression-preview,
+.condition-expression-warning {
+  margin: 0.28rem 0 0;
+  font-size: 0.7rem;
+  overflow-wrap: anywhere;
+}
+
+.condition-expression-help {
+  color: var(--muted);
+}
+
+.condition-expression-preview {
+  color: color-mix(in srgb, var(--ok) 75%, var(--ink));
+}
+
+.condition-expression-warning {
+  color: color-mix(in srgb, var(--install-cursor) 78%, var(--ink));
+}
+
 .component-tag-checks,
 .component-tag-boolean-row {
   display: flex;
