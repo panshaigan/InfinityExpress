@@ -6,6 +6,7 @@ import {
   componentIdentityCandidates,
   serializeAlternativesBlock,
   serializeModComponentBlock,
+  serializeSeparateComponentTags,
   serializeComponentTag,
 } from './componentTag'
 
@@ -71,6 +72,26 @@ describe('component tag generation', () => {
         '  <component id="FIRST" name="First" label="First" />\n' +
         '  <component id="example:2" name="Second" label="Second" />\n' +
         '</mod>',
+    )
+  })
+
+  it('serializes separate components with package, required, and repeated modId', () => {
+    const first = createComponentTagDraft(
+      { index: 0, number: 1, name: 'First', label: ['FIRST'] },
+      'example',
+      'Example',
+    )
+    const second = createComponentTagDraft(
+      { index: 1, number: 2, name: 'Second', label: ['SECOND'] },
+      'example',
+      'Example',
+    )
+    first.package = 'encounters'
+    first.required = true
+
+    expect(serializeSeparateComponentTags([first, second])).toBe(
+      '<component id="FIRST" name="First" label="First" modId="Example" package="encounters" required="1" />\n' +
+        '<component id="SECOND" name="Second" label="Second" modId="Example" />',
     )
   })
 

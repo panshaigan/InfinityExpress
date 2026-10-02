@@ -25,6 +25,10 @@ The subgroup label shown below an alternative component name is clickable. Click
 
 The browser can be targeted from the Mods table or Components tree right-click menus. A mod target immediately selects the matching downloaded folder. A component target additionally matches the XML component id against every WeiDU LABEL plus `weidu-id:designated-number`, scrolls the match into view, and marks it as **Opened here**.
 
+When a downloaded mod is selected, its catalog mod-page and readme links are shown when available. The mod search suggestions support Up/Down cursor navigation and Enter selection. In the component copy form, WeiDU-derived identity fields (`id`, download id, and WeiDU name) are read-only; display label, engine, recommended category, package, complexity, `core`, `required`, and `default` remain editable for the session. Package options are collected from the live `InstallSequence.xml` model.
+
+For checked rows, **Copy grouped** emits one `<mod id="download-id">` wrapper whose child components omit `modId` and inherit it structurally. **Copy separate** emits unwrapped `<component />` lines and includes `modId="download-id"` on every component.
+
 ## Plan
 
 `buildInstallPlan(model, selectedIds, game)` in `install/planBuilder.ts`:

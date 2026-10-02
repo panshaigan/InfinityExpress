@@ -21,7 +21,9 @@ export interface ComponentTagDraft {
   modId: string
   engine: EngineToken[]
   recommended: string
+  package: string
   complexity: string
+  required: boolean
   default: boolean
 }
 
@@ -55,7 +57,9 @@ export function createComponentTagDraft(
     modId: modId.trim(),
     engine: [],
     recommended: '',
+    package: '',
     complexity: '',
+    required: false,
     default: false,
   }
 }
@@ -103,9 +107,13 @@ export function serializeComponentTag(
   if (draft.recommended.trim()) {
     attrs.push(['recommended', draft.recommended.trim()])
   }
+  if (draft.package.trim()) {
+    attrs.push(['package', draft.package.trim()])
+  }
   if (draft.complexity.trim()) {
     attrs.push(['complexity', draft.complexity.trim()])
   }
+  if (draft.required) attrs.push(['required', '1'])
   if (draft.default) attrs.push(['default', '1'])
 
   return `<component ${attrs
@@ -128,6 +136,13 @@ export function serializeModComponentBlock(
   return [`<mod id="${escapeXmlAttribute(cleanModId)}">`, ...components, '</mod>'].join(
     '\n',
   )
+}
+
+export function serializeSeparateComponentTags(
+  drafts: readonly ComponentTagDraft[],
+): string {
+  if (drafts.length === 0) throw new Error('Select at least one component')
+  return drafts.map((draft) => serializeComponentTag(draft)).join('\n')
 }
 
 export function serializeAlternativesBlock(

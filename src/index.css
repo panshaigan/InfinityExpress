@@ -6535,7 +6535,8 @@ body.is-resizing-detail * {
 }
 
 .component-browser-suggestions button:hover,
-.component-browser-suggestions button:focus-visible {
+.component-browser-suggestions button:focus-visible,
+.component-browser-suggestions button.active {
   background: var(--accent-soft);
   outline: none;
 }
@@ -6558,6 +6559,25 @@ body.is-resizing-detail * {
   gap: 0.75rem;
   flex-shrink: 0;
   padding: 0.15rem 1rem 0.7rem;
+}
+
+.component-browser-links {
+  display: flex;
+  gap: 0.85rem;
+  flex-shrink: 0;
+  padding: 0 1rem 0.7rem;
+  font-size: 0.78rem;
+}
+
+.component-browser-links a {
+  color: color-mix(in srgb, var(--accent) 78%, var(--ink));
+  text-decoration: none;
+}
+
+.component-browser-links a:hover,
+.component-browser-links a:focus-visible {
+  text-decoration: underline;
+  outline: none;
 }
 
 .component-browser-list-header .outlined-field {

@@ -15,6 +15,7 @@ import {
   createComponentTagDraft,
   serializeAlternativesBlock,
   serializeModComponentBlock,
+  serializeSeparateComponentTags,
   serializeComponentTag,
   validateComponentTagDraft,
   type ComponentTagDraft,
@@ -33,12 +34,15 @@ import {
   type ModTp2Candidate,
 } from '../../lib/desktop/weiduInstall'
 import { listSubdirNames } from '../../lib/desktop/modFs'
+import { openExternalUrl } from '../../lib/desktop/openExternalUrl'
 import type { WeiduComponentInfo, WeiduLanguageInfo } from '../../lib/install/types'
-import type { WorkingMod } from '../../lib/mods/loadMods'
+import { effectiveModFields, type WorkingMod } from '../../lib/mods/loadMods'
 import { readAppDirPaths } from '../../lib/ui/appDirPrefs'
 import { readWeiduPath } from '../../lib/ui/weiduPrefs'
+import { isHttpUrl } from '../../lib/url'
 import type { EngineToken } from '../../lib/xml/schema'
 import { useBackdropDismiss } from '../backdropDismiss'
+import { IconTip } from '../IconTip'
 import { OutlinedSelect, type OutlinedSelectOption } from '../OutlinedSelect'
 import { OutlinedTextField } from '../OutlinedTextField'
 import { useToast } from '../toasts/toastContext'
@@ -47,6 +51,7 @@ interface Props {
   open: boolean
   mods: readonly WorkingMod[]
   existingComponentIds: ReadonlySet<string>
+  packageValues: readonly string[]
   initialTarget?: { modId: string; componentId?: string } | null
   onClose: () => void
 }
@@ -54,6 +59,8 @@ interface Props {
 interface DownloadedMod {
   downloadId: string
   name: string
+  url: string
+  readme: string
 }
 
 interface ContextMenuState {
@@ -90,19 +97,21 @@ function ComponentTagDialog({
   component,
   weiduId,
   draft,
+  packageValues,
   onDraftChange,
   onClose,
 }: {
   component: WeiduComponentInfo
   weiduId: string
   draft: ComponentTagDraft
+  packageValues: readonly string[]
   onDraftChange: (draft: ComponentTagDraft) => void
   onClose: () => void
 }) {
   const titleId = useId()
-  const [openSelect, setOpenSelect] = useState<'recommended' | 'complexity' | null>(
-    null,
-  )
+  const [openSelect, setOpenSelect] = useState<
+    'recommended' | 'package' | 'complexity' | null
+  >(null)
   const [error, setError] = useState<string | null>(null)
   const { pushToast } = useToast()
   const backdrop = useBackdropDismiss(onClose)
@@ -159,6 +168,10 @@ function ComponentTagDialog({
     { value: '', label: '—' },
     ...COMPONENT_COMPLEXITIES.map((value) => ({ value, label: value })),
   ]
+  const packageOptions: OutlinedSelectOption[] = [
+    { value: '', label: '—' },
+    ...packageValues.map((value) => ({ value, label: value })),
+  ]
 
   return (
     <div className="confirm-dialog-backdrop component-tag-backdrop" role="presentation" {...backdrop}>
@@ -183,13 +196,14 @@ function ComponentTagDialog({
             value={draft.id}
             onChange={(value) => setField('id', value)}
             required
-            autoFocus
+            disabled
           />
           <OutlinedTextField
             label="Mod download ID"
             value={draft.modId}
             onChange={(value) => setField('modId', value)}
             required
+            disabled
           />
           <OutlinedTextField
             className="component-tag-span-2"
@@ -197,6 +211,7 @@ function ComponentTagDialog({
             value={draft.name}
             onChange={(value) => setField('name', value)}
             required
+            disabled
           />
           <OutlinedTextField
             className="component-tag-span-2"
@@ -204,6 +219,7 @@ function ComponentTagDialog({
             value={draft.label}
             onChange={(value) => setField('label', value)}
             required
+            autoFocus
           />
           <fieldset className="component-tag-fieldset component-tag-span-2">
             <legend>Engine</legend>
@@ -230,6 +246,15 @@ function ComponentTagDialog({
             onChange={(value) => setField('recommended', value)}
           />
           <OutlinedSelect
+            label="Package"
+            value={draft.package}
+            options={packageOptions}
+            emptyLabel="—"
+            open={openSelect === 'package'}
+            onOpenChange={(value) => setOpenSelect(value ? 'package' : null)}
+            onChange={(value) => setField('package', value)}
+          />
+          <OutlinedSelect
             label="Complexity"
             value={draft.complexity}
             options={complexityOptions}
@@ -239,6 +264,14 @@ function ComponentTagDialog({
             onChange={(value) => setField('complexity', value)}
           />
           <div className="component-tag-boolean-row component-tag-span-2">
+            <label>
+              <input
+                type="checkbox"
+                checked={draft.required}
+                onChange={(event) => setField('required', event.target.checked)}
+              />
+              Required component
+            </label>
             <label>
               <input
                 type="checkbox"
@@ -280,13 +313,16 @@ export function ComponentBrowserDialog({
   open,
   mods,
   existingComponentIds,
+  packageValues,
   initialTarget,
   onClose,
 }: Props) {
   const titleId = useId()
+  const modSuggestionsId = useId()
   const { pushToast } = useToast()
   const [downloadedMods, setDownloadedMods] = useState<DownloadedMod[]>([])
   const [modQuery, setModQuery] = useState('')
+  const [modSuggestionIndex, setModSuggestionIndex] = useState(-1)
   const [selectedMod, setSelectedMod] = useState<DownloadedMod | null>(null)
   const [candidates, setCandidates] = useState<ModTp2Candidate[]>([])
   const [selectedTp2, setSelectedTp2] = useState('')
@@ -310,6 +346,7 @@ export function ComponentBrowserDialog({
   )
   const requestId = useRef(0)
   const componentRowRefs = useRef(new Map<string, HTMLTableRowElement>())
+  const modSuggestionRefs = useRef(new Map<string, HTMLButtonElement>())
   const backdrop = useBackdropDismiss(onClose)
 
   const catalog = useMemo(() => {
@@ -332,6 +369,7 @@ export function ComponentBrowserDialog({
     setLanguageIndex('')
     setComponents([])
     setModQuery('')
+    setModSuggestionIndex(-1)
     setComponentQuery('')
     setSelectedComponentKeys(new Set())
     setIndicatedComponentKey(null)
@@ -348,10 +386,16 @@ export function ComponentBrowserDialog({
         if (requestId.current !== current) return
         const downloaded = folders
           .filter((folder) => !folder.startsWith('.'))
-          .map((downloadId) => ({
-            downloadId,
-            name: catalog.get(normalized(downloadId))?.name || downloadId,
-          }))
+          .map((downloadId) => {
+            const catalogMod = catalog.get(normalized(downloadId))
+            const fields = catalogMod ? effectiveModFields(catalogMod) : null
+            return {
+              downloadId,
+              name: fields?.name || downloadId,
+              url: fields?.url ?? '',
+              readme: fields?.readme ?? '',
+            }
+          })
         setDownloadedMods(downloaded)
         if (initialTarget) {
           const requested = downloaded.find(
@@ -416,6 +460,20 @@ export function ComponentBrowserDialog({
       .slice(0, 30)
   }, [downloadedMods, modQuery])
 
+  useEffect(() => {
+    setModSuggestionIndex((previous) =>
+      previous >= modSuggestions.length ? modSuggestions.length - 1 : previous,
+    )
+  }, [modSuggestions.length])
+
+  useEffect(() => {
+    const suggestion = modSuggestions[modSuggestionIndex]
+    if (!suggestion) return
+    modSuggestionRefs.current
+      .get(suggestion.downloadId)
+      ?.scrollIntoView({ block: 'nearest' })
+  }, [modSuggestionIndex, modSuggestions])
+
   const filteredComponents = useMemo(() => {
     const query = normalized(componentQuery)
     if (!query) return components
@@ -459,20 +517,39 @@ export function ComponentBrowserDialog({
     })
   }
 
-  async function copySelectedComponents() {
+  function selectedDrafts(): ComponentTagDraft[] {
+    return components
+      .filter((component) =>
+        selectedComponentKeys.has(componentBrowserKey(component)),
+      )
+      .map(draftFor)
+  }
+
+  async function copySelectedGrouped() {
     if (!selectedMod) return
-    const selected = components.filter((component) =>
-      selectedComponentKeys.has(componentBrowserKey(component)),
-    )
+    const drafts = selectedDrafts()
     try {
       const xml = serializeModComponentBlock(
         selectedMod.downloadId,
-        selected.map(draftFor),
+        drafts,
       )
       await navigator.clipboard.writeText(xml)
       pushToast({
         tone: 'success',
-        message: `Copied ${selected.length} component${selected.length === 1 ? '' : 's'}`,
+        message: `Copied ${drafts.length} grouped component${drafts.length === 1 ? '' : 's'}`,
+      })
+    } catch (reason) {
+      setError(`Could not copy XML: ${String(reason)}`)
+    }
+  }
+
+  async function copySelectedSeparate() {
+    const drafts = selectedDrafts()
+    try {
+      await navigator.clipboard.writeText(serializeSeparateComponentTags(drafts))
+      pushToast({
+        tone: 'success',
+        message: `Copied ${drafts.length} separate component${drafts.length === 1 ? '' : 's'}`,
       })
     } catch (reason) {
       setError(`Could not copy XML: ${String(reason)}`)
@@ -672,6 +749,7 @@ export function ComponentBrowserDialog({
               value={modQuery}
               onChange={(value) => {
                 setModQuery(value)
+                setModSuggestionIndex(-1)
                 setSelectedMod(null)
                 setCandidates([])
                 setSelectedTp2('')
@@ -682,23 +760,52 @@ export function ComponentBrowserDialog({
                 setIndicatedComponentKey(null)
               }}
               onKeyDown={(event) => {
-                if (event.key === 'Enter' && modSuggestions[0]) {
+                if (event.key === 'ArrowDown' && modSuggestions.length > 0) {
                   event.preventDefault()
-                  void chooseMod(modSuggestions[0])
+                  setModSuggestionIndex((previous) =>
+                    Math.min(previous + 1, modSuggestions.length - 1),
+                  )
+                  return
+                }
+                if (event.key === 'ArrowUp' && modSuggestions.length > 0) {
+                  event.preventDefault()
+                  setModSuggestionIndex((previous) =>
+                    previous < 0 ? modSuggestions.length - 1 : Math.max(previous - 1, 0),
+                  )
+                  return
+                }
+                const suggestion =
+                  modSuggestions[modSuggestionIndex] ?? modSuggestions[0]
+                if (event.key === 'Enter' && suggestion) {
+                  event.preventDefault()
+                  void chooseMod(suggestion)
                 }
               }}
               autoFocus
               placeholder="Search by name or download ID…"
             />
             {!selectedMod && modQuery.trim() ? (
-              <div className="component-browser-suggestions" role="listbox">
+              <div
+                id={modSuggestionsId}
+                className="component-browser-suggestions"
+                role="listbox"
+              >
                 {modSuggestions.length > 0 ? (
-                  modSuggestions.map((mod) => (
+                  modSuggestions.map((mod, index) => (
                     <button
                       key={mod.downloadId}
+                      ref={(element) => {
+                        if (element) {
+                          modSuggestionRefs.current.set(mod.downloadId, element)
+                        } else {
+                          modSuggestionRefs.current.delete(mod.downloadId)
+                        }
+                      }}
                       type="button"
                       role="option"
-                      aria-selected="false"
+                      className={index === modSuggestionIndex ? 'active' : undefined}
+                      aria-selected={index === modSuggestionIndex}
+                      onMouseEnter={() => setModSuggestionIndex(index)}
                       onClick={() => void chooseMod(mod)}
                     >
                       <span>{mod.name}</span>
@@ -742,6 +849,38 @@ export function ComponentBrowserDialog({
           />
         </div>
 
+        {selectedMod &&
+        (isHttpUrl(selectedMod.url) || isHttpUrl(selectedMod.readme)) ? (
+          <div className="component-browser-links" aria-label="Mod links">
+            {isHttpUrl(selectedMod.url) ? (
+              <a
+                href={selectedMod.url}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(event) => {
+                  event.preventDefault()
+                  void openExternalUrl(selectedMod.url)
+                }}
+              >
+                Mod page ↗
+              </a>
+            ) : null}
+            {isHttpUrl(selectedMod.readme) ? (
+              <a
+                href={selectedMod.readme}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(event) => {
+                  event.preventDefault()
+                  void openExternalUrl(selectedMod.readme)
+                }}
+              >
+                Readme ↗
+              </a>
+            ) : null}
+          </div>
+        ) : null}
+
         <div className="component-browser-list-header">
           <OutlinedTextField
             label="Filter components"
@@ -757,9 +896,17 @@ export function ComponentBrowserDialog({
             type="button"
             className="btn secondary component-browser-copy-selected"
             disabled={selectedComponentKeys.size === 0}
-            onClick={() => void copySelectedComponents()}
+            onClick={() => void copySelectedSeparate()}
           >
-            Copy selected ({selectedComponentKeys.size})
+            Copy separate ({selectedComponentKeys.size})
+          </button>
+          <button
+            type="button"
+            className="btn secondary component-browser-copy-selected"
+            disabled={selectedComponentKeys.size === 0}
+            onClick={() => void copySelectedGrouped()}
+          >
+            Copy grouped ({selectedComponentKeys.size})
           </button>
         </div>
 
@@ -850,9 +997,7 @@ export function ComponentBrowserDialog({
                             }}
                           >
                             {subgroup}
-                            <span className="icon-tip" role="tooltip">
-                              Copy this alternatives group
-                            </span>
+                            <IconTip>Copy this alternatives group</IconTip>
                           </button>
                         ) : null}
                       </td>
@@ -914,6 +1059,7 @@ export function ComponentBrowserDialog({
           component={editing}
           weiduId={activeCandidate.weiduId}
           draft={draftFor(editing)}
+          packageValues={packageValues}
           onDraftChange={(draft) => saveDraft(editing, draft)}
           onClose={() => setEditing(null)}
         />

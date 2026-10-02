@@ -207,6 +207,14 @@ function AppShell() {
     () => new Set(model.componentsInOrder.map((component) => component.componentId)),
     [model],
   )
+  const componentPackageValues = useMemo(() => {
+    const values = new Set<string>()
+    for (const node of model.nodesByKey.values()) {
+      const value = node.attrs.package?.trim()
+      if (value) values.add(value)
+    }
+    return [...values].sort((left, right) => left.localeCompare(right))
+  }, [model])
   const relationIndex = useMemo(() => buildRelationIndex(model), [model])
   const installSnapshotRef = useRef<PersistedInstallSession | null | undefined>(
     undefined,
@@ -1620,6 +1628,7 @@ function AppShell() {
         open={componentBrowserOpen}
         mods={userCatalog.mods}
         existingComponentIds={existingComponentIds}
+        packageValues={componentPackageValues}
         initialTarget={componentBrowserTarget}
         onClose={() => setComponentBrowserOpen(false)}
       />
