@@ -1642,6 +1642,7 @@
 		<component id="HouseTweaks:21" name="House Tweaks: Restore Reputation Increase Sound Effect for BG2" label="Restore reputation increase sound effect for BG2" modId="House-Rule-Tweaks" recommended="restoration" engine="bg2" complexity="minor" />
 		<component id="HouseTweaks:26" name="House Tweaks: Soundset Tweaks for Anomen and Sarevok (BG2:EE)" label="Soundset tweaks for Anomen and Sarevok" desc="Change Anomen's Soundset in SoA after his Trial" modId="House-Rule-Tweaks" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" complexity="minor" cost="2" />
 		<component id="cd_tweaks_fix_boo_squeak" name="Fix Boo's Squeak" label="Fix Boo's Squeak" modId="Tweaks-Anthology" recommended="fixes" engine="bg2,eet" displayIfNot="IE_focus_dedicated_campaigns" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_140" complexity="minor" cost="4" />
+        <component id="bg1npcmusic:0" name="Install All Audio" label="BG1 NPC Project Music Pack" modId="bg1npcmusic" engine="bg1" complexity="minor" displayIf="bg1npc_project-main" />
 	</sounds>
 
 	<sounds>

@@ -97,14 +97,25 @@ describe('withHtmlPreviewIfNeeded', () => {
     expect(withHtmlPreviewIfNeeded(rawHtml)).toBe(previewed)
   })
 
+  it('prefixes github blob html readmes', () => {
+    const blobHtml =
+      'https://github.com/Spellhold-Studios/Darian-NPC/blob/main/darian/darian_readme.html'
+    expect(withHtmlPreviewIfNeeded(blobHtml)).toBe(
+      `https://htmlpreview.github.io/?${blobHtml}`,
+    )
+  })
+
   it('is idempotent for already-previewed urls', () => {
     expect(withHtmlPreviewIfNeeded(previewed)).toBe(previewed)
   })
 
-  it('leaves non-html raw urls and other hosts alone', () => {
+  it('leaves non-html, non-blob, and other-host urls alone', () => {
     const rawTxt =
       'https://raw.githubusercontent.com/owner/repo/main/readme.txt'
     expect(withHtmlPreviewIfNeeded(rawTxt)).toBe(rawTxt)
+    expect(
+      withHtmlPreviewIfNeeded('https://github.com/owner/repo/readme.html'),
+    ).toBe('https://github.com/owner/repo/readme.html')
     expect(
       withHtmlPreviewIfNeeded('https://spellhold-studios.github.io/readme.html'),
     ).toBe('https://spellhold-studios.github.io/readme.html')

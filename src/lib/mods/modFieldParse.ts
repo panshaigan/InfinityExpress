@@ -99,7 +99,7 @@ export function authorFromModUrl(url: string): string | null {
 }
 
 /**
- * Wrap raw GitHub HTML readmes with htmlpreview so they open as HTML in-browser.
+ * Wrap GitHub-hosted HTML readmes with htmlpreview so they open as HTML in-browser.
  * Idempotent for URLs already under htmlpreview.github.io.
  */
 export function withHtmlPreviewIfNeeded(url: string): string {
@@ -111,8 +111,12 @@ export function withHtmlPreviewIfNeeded(url: string): string {
   try {
     const parsed = new URL(trimmed)
     const host = parsed.hostname.toLowerCase()
-    if (host !== 'raw.githubusercontent.com') return trimmed
     if (!parsed.pathname.toLowerCase().endsWith('.html')) return trimmed
+    const isRawGithub = host === 'raw.githubusercontent.com'
+    const isGithubBlob =
+      (host === 'github.com' || host === 'www.github.com') &&
+      parsed.pathname.toLowerCase().includes('/blob/')
+    if (!isRawGithub && !isGithubBlob) return trimmed
     return `${HTML_PREVIEW_PREFIX}${trimmed}`
   } catch {
     return trimmed
