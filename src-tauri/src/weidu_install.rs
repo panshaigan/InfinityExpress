@@ -516,6 +516,14 @@ fn parse_languages_output(text: &str) -> Result<Vec<WeiduLanguageInfo>, String> 
     Ok(out)
 }
 
+fn parse_optional_languages_output(text: &str) -> Result<Vec<WeiduLanguageInfo>, String> {
+    match parse_languages_output(text) {
+        Ok(languages) => Ok(languages),
+        Err(error) if error == "No languages found in WeiDU output" => Ok(Vec::new()),
+        Err(error) => Err(error),
+    }
+}
+
 #[tauri::command]
 pub fn list_weidu_languages(
     app: AppHandle,
@@ -1262,7 +1270,7 @@ pub fn list_mod_weidu_languages(
         "--list-languages".into(),
         tp2_arg,
     ];
-    parse_languages_output(&run_weidu_capture_quiet(&weidu, &cwd, &args)?)
+    parse_optional_languages_output(&run_weidu_capture_quiet(&weidu, &cwd, &args)?)
 }
 
 #[tauri::command]
@@ -1693,6 +1701,13 @@ mod tests {
         assert_eq!(languages.len(), 2);
         assert_eq!(languages[0].name, "English");
         assert_eq!(languages[1].index, 1);
+    }
+
+    #[test]
+    fn optional_language_parser_accepts_a_literal_only_tp2() {
+        let output = "[C:\\tools\\weidu.exe] WeiDU version 24900\n";
+        let languages = parse_optional_languages_output(output).expect("optional languages");
+        assert!(languages.is_empty());
     }
 
     #[test]

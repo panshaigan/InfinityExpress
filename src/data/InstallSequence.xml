@@ -548,7 +548,8 @@
 					<component id="hidden_adventures-masktemple_docks" name="Temple of Mask in Docks District" label="Temple of Mask in Docks District" complexity="minor" cost="2" />
 				</mod>
 				<component id="CorthalaRomantique-SphereGuard" name="Install Leonora Content: A Guard for the Sphere" label="A Guard for the Sphere" desc="Corthala Romantique's Leonora Content" modId="Corthala_Romantique" complexity="minor" cost="3" />
-				<component id="Assassinations:0" name="Assassinations mod for Baldur's Gate II" label="Assassinations" modId="Assassinations" recommended="extended" complexity="moderate" cost="4" />
+                <component id="alternatives:0" name="Alternatives" label="Alternatives" modId="Alternatives" recommended="extended" complexity="moderate" />
+                <component id="Assassinations:0" name="Assassinations mod for Baldur's Gate II" label="Assassinations" modId="Assassinations" recommended="extended" complexity="moderate" cost="4" />
 				<mod id="Romantic_Encounters_BG2" label="Romantic Encounters" recommended="extended">
 				    <component id="RE:0" name="Aerie, Anomen, Jaheira and Viconia React to Romantic Encounters" label="Aerie, Anomen, Jaheira and Viconia React to Romantic Encounters" complexity="minor" />
 				    <component id="RE:4" name="An Evening with Aran, by Kulyok" label="An Evening with Aran" complexity="minor" />
@@ -780,6 +781,8 @@
                         <component id="L#-WILLOFTHEWISP-CLASSDESC" name="Change shaman .tlk string to remove &quot;Ineligible for any stronghold&quot; line" label="Change shaman .tlk string to remove &quot;Ineligible for any stronghold&quot; line" />
                         <component id="L#-WILLOFTHEWISP-ENEMIES" name="Optional: Drider, Dark Treant, Will-o'-wisp Enemies" label="Optional: Drider, Dark Treant, Will-o'-wisp Enemies" />
                     </mod>
+                    <component id="haldamir:0" name="Haldamir" label="Haldamir - elven TN fighter" modId="Haldamir" package="customNpcs" complexity="minor" />
+                    <component id="c#_sarah_revised_audio" name="Use revised audio from HalmyLyseas" label="Sarah - human CG ranger" modId="Sarah" package="customNpcs" complexity="minor" />
 				</custom>
 				<banters label="Banters and Crossmods" recommended="npc" package="npcExpansions">
                     <component id="BG1NPCSoA:87" name="Inter Component Banter Pack" label="Inter Component Banter Pack" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
@@ -1238,6 +1241,7 @@
 				<add noBranches="1">
 					<component id="ForgottenArmament-AcidResist" name="Create Potions of Acid Resistance" label="Create Potions of Acid Resistance" modId="forgotten-armament" complexity="minor" cost="2" />
 					<component id="cd_tweaks_add_bags_of_holding" name="Add Bags of Holding" label="Add Bags of Holding" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1080" complexity="minor" cost="4" />
+                    <component id="a!_sns_items" name="Add new bardic store and thief items" label="Add new bardic store and thief items" modId="SongAndSilence" engine="bg2" complexity="minor" noDisplay="1" alwaysIf="a!_sns_base_component" />
 				</add>
 				<update label="Item Changes">
 					<component id="cd_tweaks_protection_items_pnp" name="PnP restrictions" label="PnP restrictions for protection items" modId="Tweaks-Anthology" recommended="blendWell" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2150" complexity="minor" cost="22" />
@@ -1290,6 +1294,7 @@
 					<component id="ArtisansKitpack:1006" name="Artisan's Kitpack: Wizard Slayer Overhaul" label="Overhaul" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" cost="12" />
 					<component id="METweaks:1600" name="Increase Wizard Slayer Magic Resistance" label="Increase Magic Resistance" modId="Olvyn-Tweaks" recommended="lowerDifficulty" desc="Gain 5% Magic Resistance per level rather than 1%" complexity="minor" cost="2" />
 				</wizardSlayer>
+                <component id="cd_spc_death_knight" name="Death Knight Kit, by Drizzt1180" label="Add kit: Death Knight Kit" modId="SP_Collection" engine="bg,eet,iwd" recommended="mechanics" complexity="minor" />
 				<component id="Morpheus562sKitpackShieldBreaker" name="Install Shield Breaker Kit" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" complexity="minor" cost="7" />
 			</fighter>
 			<ranger label="Ranger">
@@ -1299,6 +1304,7 @@
 				</beastMaster>
 				<archer label="Archer">
 				</archer>
+                <component id="cd_spc_sylvan_mystic" name="Sylvan Mystic Kit, by Polar Bear" label="Add kit: Sylvan Mystic Kit" modId="SP_Collection" engine="bg,eet,iwd" recommended="mechanics" complexity="minor" />
 				<component id="iwdification:110" name="Change Tracking for all rangers and ranger kits" label="Make Tracking an innate ability since level 1" modId="iwdification" engine="bg,eet" recommended="mechanics" complexity="minor" cost="8" />
 				<component id="cd_tweaks_nwn_trackless_step" name="Trackless Step Class Feat for Rangers [Luke]" label="Add Trackless Step class feat for rangers" modId="Tweaks-Anthology" displayIf="EEex:1" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_6240" complexity="minor" cost="5" />
 				<component id="METweaks:1400" name="Power Up Ranger Charm Animal" label="Power up ranger Charm Animal" modId="Olvyn-Tweaks" recommended="mechanics" complexity="minor" cost="2" />
@@ -1334,11 +1340,12 @@
                 </alternatives>
 			</thief>
 			<bard label="Bard">
-				<mod id="rogue_rebalancing" label="Update class and kits: Blade, Jester, Skald" recommended="mechanics">
+				<group id="rogue_rebalancing" label="Update class and kits: Blade, Jester, Skald" recommended="mechanics">
 					<component id="rr:4" name="Bard kit revisions" label="Bard kit revisions" modId="rogue_rebalancing" complexity="moderate" cost="2" />
 					<component id="rr:5" name="Bard High Level Ability revisions" label="Bard High Level Ability revisions" alwaysIf="rr:4" noDisplay="1" modId="rogue_rebalancing" complexity="minor" cost="7" />
 					<component id="rr:6" name="Proper spell progression for Bards" label="Proper spell progression for bards" modId="rogue_rebalancing" alwaysIf="rr:4" noDisplay="1" complexity="minor" cost="2" />
-				</mod>
+				</group>
+                <component id="a!_sns_base_component" name="Changes to trueclass bards and thieves, and unmodded game kits (required for other components)" label="Song and Silence bard enhancements" core="1" modId="SongAndSilence" complexity="moderate" />
 				<blade label="Blade kit enhancements">
 				</blade>
 				<skald label="Skald kit enhancements">
@@ -1373,6 +1380,7 @@
 			</cleric>
 			<druid label="Druid">
 				<component id="ArtisansKitpack:5100" name="Artisan's Kitpack: Shapeshifter Overhaul" label="Update kit: Shapeshifter overhaul" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" cost="4" />
+                <component id="cd_spc_archer_of_sylvanus" name="Archer of Sylvanus, by Drizzt1180" label="Add kit: Archer of Sylvanus" modId="SP_Collection" engine="bg,eet,iwd" recommended="mechanics" complexity="minor" />
 				<component id="ArtisansKitpack:5110" name="Shapeshifter Form Only" label="Change Shapeshifter werewolf sprite" modId="The-Artisan-s-Kitpack" alwaysIf="ArtisansKitpack:5100" noDisplay="1" complexity="minor" cost="7" />
 				<component id="cd_tweaks_shapeshifter_armor" name="Allow Shapeshifters to Wear Armor But Prevent Shapeshifting While Worn" label="Allow Shapeshifters to wear armor but prevent shapeshifting while worn" modId="Tweaks-Anthology" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2740" complexity="minor" cost="8" />
 			</druid>
@@ -1509,6 +1517,7 @@
 					<component id="BardicWonders:2001" name="Bardic Wonders: Items" label="Add items for bards" modId="Bardic-Wonders" recommended="extended" complexity="minor" cost="3" />
 				</add>
 				<update>
+                    <component id="cd_project_javelin" name="Project Javelin" label="Project Javelin" modId="Project_Javelin" recommended="extended" complexity="moderate" />
 					<component id="cd_tweaks_2h_bastard_swords" name="Two-Handed Bastard Swords" label="Two-handed bastard swords" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2020" complexity="minor" cost="37" />
 					<component id="cd_tweaks_2h_katanas" name="Two-Handed Katanas" label="Two-handed katanas" modId="Tweaks-Anthology" recommended="extended" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2030" complexity="minor" cost="29" />
 				</update>
@@ -1800,6 +1809,18 @@
 			<component id="ac-miscellaneous-random" name="Random Stuff No-one Wants" label="Random stuff no-one wants" alwaysIf="ac-miscellaneous-misctweaks" noDisplay="1" complexity="minor" cost="2" />
 		</mod>
         <component id="AMWI_Avatars" name="Improved EE Thief Avatars" label="Improved EE Thief Avatars" modId="AMWI" complexity="minor" />
+        <mod id="downloaditm5" label="Sentrizel's Avatars">
+            <component id="Sentrizeal_AA_Pack:0" name="Sentrizeal's Wizard 4 Missing Animation Fix" label=" Wizard 4 Missing Animation Fix" />
+            <component id="Sentrizeal_AA_Pack:1" name="Sentrizeal's Elven Ranger Avatar (Female)" label="Elven Ranger Avatar (Female)" />
+            <component id="Sentrizeal_AA_Pack:2" name="Sentrizeal's Elven Ranger Avatar (Male)" label="Elven Ranger Avatar (Male)" />
+            <component id="Sentrizeal_AA_Pack:3" name="Sentrizeal's Elven Ranger Weapon Fix" label="Elven Ranger Weapon Fix" />
+            <component id="Sentrizeal_AA_Pack:4" name="Sentrizeal's Human Gladiator Avatar (Female)" label="Human Gladiator Avatar (Female)" />
+            <component id="Sentrizeal_AA_Pack:5" name="Sentrizeal's Human Gladiator Avatar (Male)" label="Human Gladiator Avatar (Male)" />
+            <component id="Sentrizeal_AA_Pack:6" name="Sentrizeal's Human Mercenary Avatar (Female)" label="Human Mercenary Avatar (Female)" />
+            <component id="Sentrizeal_AA_Pack:7" name="Sentrizeal's Human Mercenary Avatar (Male)" label="Human Mercenary Avatar (Male)" />
+            <component id="Sentrizeal_AA_Pack:8" name="Sentrizeal's Elegant Elven Archmagi Avatar (Female)" label="Elegant Elven Archmagi Avatar (Female)" />
+            <component id="Sentrizeal_AA_Pack:9" name="Sentrizeal's Elegant Elven Archmagi Avatar (Male)" label="Elegant Elven Archmagi Avatar (Male)" />
+        </mod>
 	</gfx>
 
 	<gfx engine="bg,iwd,eet">
@@ -2020,6 +2041,7 @@
 			<component id="A7_MISCTWEAKS_DUALCLASS_BACK_BUTTON" name="Reactivate &quot;Back&quot; button in the Dual-Class menu" label="Reactivate 'back' button in the dual-class menu" modId="A7-MiscTweaks" recommended="fixes" complexity="minor" cost="2" />
 			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" name="Disable creature tooltips" label="Disable creature tooltips" modId="A7-MiscTweaks" recommended="higherDifficulty" engine="bg,eet,iwd,pst" complexity="minor" cost="45" />
 		</mod>
+        <component id="db-diablofication-camera_lock" name="Camera Lock (Beta)" label="Camera Lock" modId="bg-diablofication" engine="bg,eet,iwd" complexity="minor" />
 	</ui>
 
 	<ui engine="bg,eet,iwd">

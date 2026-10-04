@@ -35,6 +35,7 @@ import {
   summarizeComponentSelection,
   toggleComponentSelection,
 } from '../../lib/componentBrowser/componentSelection'
+import { withTp2LiteralLanguageFallback } from '../../lib/componentBrowser/languages'
 import {
   discoverModTp2Candidates,
   listModWeiduComponents,
@@ -738,9 +739,10 @@ export function ComponentBrowserDialog({
         candidate.relativePath,
       )
       if (requestId.current !== current) return
-      setLanguages(result)
-      const language = selectEnglish(result)
-      if (!language) throw new Error('WeiDU did not list any languages for this TP2.')
+      const availableLanguages = withTp2LiteralLanguageFallback(result)
+      setLanguages(availableLanguages)
+      const language = selectEnglish(availableLanguages)
+      if (!language) throw new Error('Could not determine a language for this TP2.')
       setLanguageIndex(String(language.index))
       await loadComponents(mod, candidate, language)
     } catch (reason) {
