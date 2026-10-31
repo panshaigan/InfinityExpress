@@ -262,6 +262,10 @@ export function AboutDialog({ open, onClose }: Props) {
         </section>
         <section className="about-section">
           <h3 className="about-section-title">Community</h3>
+          <p className="about-meta">
+            Big thanks to all the modders and reviewers for their work and for
+            keeping these games alive.
+          </p>
           <ul className="about-link-list">
             {COMMUNITY_LINKS.map((link) => (
               <li key={link.href}>
