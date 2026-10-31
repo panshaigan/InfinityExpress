@@ -11,6 +11,11 @@ import {
 } from '../lib/install/weiduLogMap'
 import type { ComponentNode, InstallSequenceModel } from '../lib/xml/schema'
 import type { ComponentRunStatus, InstallRun } from '../lib/install/types'
+import {
+  buildPersistedInstallSession,
+  parsePersistedInstallSession,
+  type PersistedInstallSession,
+} from '../lib/ui/appSessionPrefs'
 
 vi.mock('../lib/desktop/weiduInstall', async (importOriginal) => ({
   ...await importOriginal<typeof import('../lib/desktop/weiduInstall')>(),
@@ -76,7 +81,7 @@ describe('backup restore installation state', () => {
 
   afterEach(() => act(() => root.unmount()))
 
-  function mount(game: 'bg2' | 'eet' = 'bg2') {
+  function mount(game: 'bg2' | 'eet' = 'bg2', session?: PersistedInstallSession) {
     function Harness() {
       const [logImport, setLogImport] = useState<WeiduLogImportResult | null>(imported('mod:4'))
       identified = logImport
@@ -87,6 +92,7 @@ describe('backup restore installation state', () => {
         selectedIds: selection,
         weiduLogImport: logImport,
         onWeiduLogImportChange: setLogImport,
+        initialInstallState: session ? { installSession: session } : undefined,
       })
       return null
     }
@@ -153,6 +159,43 @@ describe('backup restore installation state', () => {
     expect(current.cursorStepId).toBe(current.planSteps[0]?.stepId)
     expect(identified?.hasLog).toBe(false)
     expect(identified?.componentIds.size).toBe(0)
+  })
+
+  it('preserves pre-snapshot history and can reopen the reconciled idle run', async () => {
+    mount()
+    setOldRun()
+    const old = current.run!
+    act(() => current.setRun({
+      ...old,
+      steps: old.steps.map((s, n) => ({
+        ...s,
+        tp2Path: `${folders.bg2}/MOD/MOD.TP2`, weiduNumber: n, languageIndex: 0,
+        stdoutLogPath: `D:/logs/${n}-mod.log`, stderrLogPath: `D:/logs/${n}-component.log`,
+        ...(n === 3 ? { finishedAt: '2026-11-01T00:00:00Z' } : {}),
+      })),
+    }))
+    vi.mocked(readGameWeiduLog).mockResolvedValue('~MOD/MOD.TP2~ #0 #0\n~MOD/MOD.TP2~ #0 #3\n')
+    await act(async () => {
+      await current.restartFromBackup({ createdAt: '2026-10-31T12:00:00Z', phases: ['single'] })
+    })
+    expect(current.run?.steps.map((s) => s.status)).toEqual([
+      'succeeded', 'failed', 'skipped', 'alreadyInstalled', 'queued',
+    ])
+    expect(current.run?.steps[0]).toMatchObject({ warnings: ['old warning'], stdoutLogPath: 'D:/logs/0-mod.log' })
+    expect(current.run?.steps[1]).toMatchObject({ errors: ['old error'], stderrLogPath: 'D:/logs/1-component.log' })
+    expect(current.run?.steps[3]?.stdoutLogPath).toBeUndefined()
+
+    const persisted = buildPersistedInstallSession({
+      game: 'bg2', selectedIds: selection, run: current.run!, paused: false,
+      selectedStepId: null, selectedComponentId: null, hideInstalled: false,
+      pauseOnWarnings: false, autoSkipOnErrors: false, followCursor: false, runElapsedMs: 0,
+    })
+    const reopened = parsePersistedInstallSession(JSON.parse(JSON.stringify(persisted)))!
+    act(() => root.render(null))
+    mount('bg2', reopened)
+    expect(current.run?.runState).toBe('idle')
+    expect(current.run?.steps[0]).toMatchObject({ status: 'succeeded', stdoutLogPath: 'D:/logs/0-mod.log' })
+    expect(current.run?.steps[1]).toMatchObject({ status: 'failed', errors: ['old error'] })
   })
 
   it('clears all previous run outcomes when the restored backup has no log', async () => {

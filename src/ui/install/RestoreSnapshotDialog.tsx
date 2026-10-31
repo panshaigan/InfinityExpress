@@ -27,7 +27,7 @@ interface Props {
   dirsByKey: Record<string, string>
   targetDir: string
   onClose: () => void
-  onRestoreDone: (snapshotPath: string, restoredGameKey: string) => void | Promise<void>
+  onRestoreDone: (snapshot: BackupEntry, restoredGameKey: string) => void | Promise<void>
   onBusyChange?: (busy: boolean) => void
   /** Optional install Commands-tab log (timestamped by caller). */
   onLog?: (message: string) => void
@@ -185,6 +185,8 @@ export function RestoreSnapshotDialog({
 
   async function runRestore() {
     if (!selectedPath || !selectedGameKey) return
+    const snapshot = entries.find((entry) => entry.path === selectedPath && entry.gameKey === selectedGameKey)
+    if (!snapshot) return
     const dest = dirsByKey[selectedGameKey]?.trim() || targetDir
     if (!dest) {
       setError(`Set ${gameKeyLabel(selectedGameKey)} game folder in Settings.`)
@@ -196,7 +198,7 @@ export function RestoreSnapshotDialog({
     try {
       await restoreGameDir(selectedPath, dest)
       setProgress(emptyProgress('Updating installation state from WeiDU.log…'))
-      await onRestoreDone(selectedPath, selectedGameKey)
+      await onRestoreDone(snapshot, selectedGameKey)
       onLog?.(`Snapshot restored from ${selectedPath} → ${selectedGameKey}`)
       pushToast({ sound: true, tone: 'success', message: 'Snapshot restored.' })
       onClose()

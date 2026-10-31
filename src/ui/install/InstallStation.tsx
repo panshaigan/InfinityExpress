@@ -311,7 +311,7 @@ export function InstallStation({
   }, [durationLive])
 
   useEffect(() => {
-    if (!onInstallSessionChange || !game || !run || run.runState === 'idle') {
+    if (!onInstallSessionChange || !game || !run) {
       lastPersistedSessionKeyRef.current = null
       onInstallSessionChange?.(null)
       return
@@ -728,9 +728,12 @@ export function InstallStation({
   }, [pause])
 
   const onRestoreDone = useCallback(
-    async () => {
+    async (snapshot: { createdAt: string }, restoredGameKey: string) => {
       if (!game) return
-      await restartFromBackup()
+      await restartFromBackup({
+        createdAt: snapshot.createdAt,
+        phases: [game === 'eet' ? restoredGameKey === 'bg1' ? 'eet1' : 'eet' : 'single'],
+      })
       setNotice('Snapshot restored.')
     },
     [game, restartFromBackup],
@@ -901,7 +904,11 @@ export function InstallStation({
           await restoreGameDir(vanillaPath, dest)
         }
 
-        await restartFromBackup()
+        await restartFromBackup({
+          phases: game === 'eet'
+            ? keys.map((key) => key === 'bg1' ? 'eet1' as const : 'eet' as const)
+            : ['single'],
+        })
 
         setNotice('Game restored from vanilla backup.')
         pushToast({ sound: true, tone: 'success', message: 'Game restored from vanilla backup.' })

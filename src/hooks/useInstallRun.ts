@@ -85,6 +85,7 @@ import {
   INSTALL_FAILURE_STDERR_TAIL_BYTES,
 } from '../lib/install/consoleLimits'
 import { buildStepFailureErrors } from '../lib/install/stepFailureErrors'
+import { reconcileRestoredSteps, type BackupRestoreContext } from '../lib/install/restoreSteps'
 import {
   weiduOutputIndicatesSkipped,
   weiduOutputIndicatesSuccessfullyInstalled,
@@ -1555,7 +1556,9 @@ export function useInstallRun(options: {
     try {
       const label = `${step.modId} (${step.componentId})`
       const steps = current.steps.map((s, idx) =>
-        idx === i ? { ...s, status: 'skipped' as const, progress: null } : s,
+        idx === i
+          ? { ...s, status: 'skipped' as const, progress: null, finishedAt: new Date().toISOString() }
+          : s,
       )
       const nextCursor = nextActionableCursor(steps, i + 1)
       const keepState: InstallRunState =
@@ -1749,7 +1752,7 @@ export function useInstallRun(options: {
   }, [])
 
   const restartFromBackup = useCallback(
-    async () => {
+    async (context: BackupRestoreContext = {}) => {
       if (!game) return
       await stopRunningInstall()
 
@@ -1764,23 +1767,7 @@ export function useInstallRun(options: {
       onWeiduLogImportChange?.(result)
       const base = runRef.current
       if (base) {
-        const resetSteps: InstallStep[] = base.steps.map(
-          (s): InstallStep => ({
-            ...s,
-            tp2Path: '',
-            stagedFolderName: '',
-            weiduNumber: null,
-            languageIndex: null,
-            status: 'queued',
-            progress: null,
-            warnings: [],
-            errors: [],
-            resultLines: [],
-            finishedAt: undefined,
-            startedAt: undefined,
-          }),
-        )
-        const steps = applyWeiduLogToSteps(resetSteps, result)
+        const steps = reconcileRestoredSteps(base.steps, result, context)
         const nextCursor = nextActionableCursor(steps, 0)
         const next: InstallRun = {
           ...base,
@@ -1795,9 +1782,11 @@ export function useInstallRun(options: {
         runRef.current = next
         setActiveStepId(steps[nextCursor]?.stepId ?? null)
       }
-      setConsoleLines([])
-      setCommandLines([])
-      setResultLines([])
+      if (!context.createdAt) {
+        setConsoleLines([])
+        setCommandLines([])
+        setResultLines([])
+      }
       setInputPrompt(null)
       activeResultsPathRef.current = null
       setPaused(false)
@@ -1806,7 +1795,7 @@ export function useInstallRun(options: {
       pausePendingRef.current = false
       stopRequestedRef.current = false
       setStopping(false)
-      appendCommandLine('Plan reset after restore — press Play to continue')
+      appendCommandLine('Installation state updated after restore — press Play to continue')
       for (const error of result.listingErrors) appendCommandLine(`Warning: ${error}`)
       if (result.listingErrors.length > 0) {
         pushToast({ tone: 'error', message: result.listingErrors[0]! })

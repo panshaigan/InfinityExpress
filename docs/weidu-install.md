@@ -253,11 +253,11 @@ Vanilla folders still reject `WeiDU.log`. Mapping lives in [`weiduLogMap.ts`](..
 ### Restore → install plan
 
 1. Wipe target game dir, then copy snapshot or vanilla tree.
-2. `restartFromBackup` re-reads each phase game dir `weidu.log` and its mod component listings, replacing the project's cached identified installs. This also refreshes the live plan before the first Play. If a run exists, it clears prior statuses, diagnostics, timings, and resolved mod identities, marks matching steps `alreadyInstalled` using the restored log's identity/language, and places the **cursor** on the first unfinished step.
+2. `restartFromBackup` re-reads each phase game dir `weidu.log` and its mod component listings, replacing the project's cached identified installs. This also refreshes the live plan before the first Play. For a named snapshot, completed outcomes dated at or before its creation are preserved with diagnostics, timings, and log paths. Successful outcomes must still match the restored log's TP2, component number, and language. Earlier failed/skipped outcomes are preserved when the component is absent from the log. Later or undated outcomes are cleared; matching log rows become `alreadyInstalled`, and absent rows become `queued`. Historical log files remain on disk. EET outcomes in a game folder that was not restored are preserved.
 3. Leaves `runState: 'idle'` — **does not** start or resume WeiDU. User presses Play.
-4. Vanilla restore (no log) → none marked installed. Does **not** change Components-phase selection checkboxes.
+4. Vanilla restore clears all outcomes in the restored game folder(s); no log → none marked installed there. Does **not** change Components-phase selection checkboxes.
 
-The snapshot dialog stays busy until the installation state refresh completes. The refreshed identified installs are persisted with the project so later plan edits and reopening the project use the restored state.
+The snapshot dialog stays busy until the installation state refresh completes. Named snapshot restores retain the console history and append a restore marker. The refreshed identified installs and idle install run are persisted with the project so later plan edits and reopening the project preserve the reconciled history. Snapshots store game files and a creation time; they cannot recover an earlier attempt's details if those have already been overwritten by a later retry.
 
 Install toolbar **Restart** restores the vanilla backup (with EET scope choice) then runs the same plan reset. **Restore snapshot** restores a named snapshot only (vanilla is not listed there).
 
