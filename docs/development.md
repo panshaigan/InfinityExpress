@@ -155,8 +155,10 @@ AppHandle-driven backup/restore commands.
 
 ### CI and remaining coverage
 
-Pull requests and pushes to `main` run Vitest coverage, the production web build
-(including TypeScript checking), and Rust tests on Windows and Linux. Coverage
+Pushing a version tag matching `v*` (for example, `v0.10.1`) runs Vitest coverage,
+the production web build (including TypeScript checking), and Rust tests on Windows
+and Linux. Branch pushes and pull requests do not trigger these checks; run the
+local test commands before tagging. Coverage
 reports are retained as CI artifacts; Linux also collects Rust coverage. The Linux workflow
 also builds packages and exercises native install/reinstall/uninstall, backups,
 restore, and real Tauri IPC on disposable game fixtures; see [Linux checks](linux.md).
@@ -242,6 +244,8 @@ Run `npm run dev:demo` and open `http://localhost:5173/InfinityExpress/`.
 Build with `npm run build:demo`; preview with `npm run preview -- --base /InfinityExpress/` and open the same path on the preview port.
 The demo starts in the project hub, creates projects with name and engine only, and saves projects/presets in browser localStorage. Components share the desktop selection/export logic. Desktop phases and setup controls are disabled; completion opens export. Demo exports use `.csv` filenames with the existing semicolon-separated `componentId;label` format and EET phase tabs.
 
-One-time deployment setup: in the GitHub repository, open Settings → Pages and select **GitHub Actions** as the source. The `Browser demo` workflow tests, builds, and deploys on pushes to `main`, or via **Run workflow**. The site is served at `https://panshaigan.github.io/InfinityExpress/`; no custom domain or backend is required. A public repository supports Pages on GitHub Free.
+One-time deployment setup: in the GitHub repository, open Settings → Pages and select **GitHub Actions** as the source. In Settings → Environments → `github-pages`, allow tags matching `v*` under **Deployment branches and tags** (select **Selected branches and tags** and add a **Tag** rule). Replace any branch-only restriction that would block tags.
+
+The `Browser demo` workflow tests, builds, and deploys the tagged commit only when a version tag matching `v*` is pushed. Branch pushes, pull requests, and manual runs do not trigger this workflow. Deployment waits for its frontend tests and demo build to pass; the separate Windows and Linux check workflows run in parallel and do not gate Pages deployment. The site is served at `https://panshaigan.github.io/InfinityExpress/`; no custom domain or backend is required. A public repository supports Pages on GitHub Free.
 
 Normal `dev`, `build`, and Tauri commands keep desktop behavior. Demo restrictions are selected explicitly by Vite mode `demo` (`src/lib/runtime.ts`). Screen navigation stays within the single page so reloads work on Pages without route rewrites.
