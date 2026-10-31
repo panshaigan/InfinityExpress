@@ -175,25 +175,21 @@ Release signing and GitHub artifact uploads remain CI operations.
 For the quicker frontend/build/Rust suite without packaging or desktop smoke
 tests, use the existing `npm run test:all`.
 
-Pushing a version tag matching `v*` (for example, `v0.10.1`) runs Vitest coverage,
-the production web build (including TypeScript checking), and Rust tests on Windows
-and Linux. Branch pushes and pull requests do not trigger these checks; run the
-local test commands before tagging. Coverage
+Pushing to `main` runs Vitest coverage, the production web build (including
+TypeScript checking), and Rust tests on Windows and Linux. Other branch pushes,
+pull requests, and version tags do not trigger these checks. Let the checks on
+the intended commit finish successfully before tagging it. Coverage
 reports are retained as CI artifacts; Linux also collects Rust coverage. The Linux workflow
 also builds packages and exercises native install/reinstall/uninstall, backups,
 restore, and real Tauri IPC on disposable game fixtures; see [Linux checks](linux.md).
 
-Native compilation dominates these checks. `Warm Rust caches` runs on `main`
-when Cargo dependencies, Rust configuration, or CI files change (and can be run
-manually on `main`). It compiles production dependencies on both platforms,
-Windows test dependencies without executing tests, and runs instrumented Linux
-Rust tests to warm the coverage build. It does not package or publish anything.
-Let it finish before pushing a release tag. GitHub isolates caches between
-different tags, but every tag can restore the default branch's cache. Check and
-release jobs share an OS-specific Rust cache, including the separate Linux
-coverage target, and preserve compiled dependencies even after a later failure.
-After a Rust stable update or cache eviction, manually run the warmer on `main`
-before tagging to avoid a cold native build.
+Native compilation dominates these checks. The checks on `main` populate the
+Rust caches used by subsequent checks and release tags, so no separate cache
+warmer is needed. Check and release jobs share an OS-specific Rust cache,
+including the separate Linux coverage target, and preserve compiled dependencies
+even after a later failure. Tags matching `v*` build release packages and deploy
+the browser demo without repeating the test suites. These tag workflows do not
+automatically gate on the earlier `main` checks.
 
 Desktop checks use Tauri's existing frontend build hook instead of building the
 same web assets immediately before it. Frontend suites and coverage floors are
@@ -283,6 +279,6 @@ The demo starts in the project hub, creates projects with name and engine only, 
 
 One-time deployment setup: in the GitHub repository, open Settings → Pages and select **GitHub Actions** as the source. In Settings → Environments → `github-pages`, allow tags matching `v*` under **Deployment branches and tags** (select **Selected branches and tags** and add a **Tag** rule). Replace any branch-only restriction that would block tags.
 
-The `Browser demo` workflow tests, builds, and deploys the tagged commit only when a version tag matching `v*` is pushed. Branch pushes, pull requests, and manual runs do not trigger this workflow. Deployment waits for its frontend tests and demo build to pass; the separate Windows and Linux check workflows run in parallel and do not gate Pages deployment. The site is served at `https://panshaigan.github.io/InfinityExpress/`; no custom domain or backend is required. A public repository supports Pages on GitHub Free.
+The `Browser demo` workflow builds and deploys the tagged commit only when a version tag matching `v*` is pushed. Branch pushes, pull requests, and manual runs do not trigger this workflow. Frontend tests run in the Windows and Linux checks on `main`; deployment waits for the demo build without rerunning those tests. The checks on `main` do not automatically gate Pages deployment. The site is served at `https://panshaigan.github.io/InfinityExpress/`; no custom domain or backend is required. A public repository supports Pages on GitHub Free.
 
 Normal `dev`, `build`, and Tauri commands keep desktop behavior. Demo restrictions are selected explicitly by Vite mode `demo` (`src/lib/runtime.ts`). Screen navigation stays within the single page so reloads work on Pages without route rewrites.
