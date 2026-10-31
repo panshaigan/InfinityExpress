@@ -2,6 +2,17 @@ import { isTauri, invoke } from '@tauri-apps/api/core'
 import { open, save } from '@tauri-apps/plugin-dialog'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 
+// Background appends may finish out of order unless serialized per file.
+const textAppends = new Map<string, Promise<void>>()
+
+function textAppendKey(path: string): string {
+  return normalizeFolderPath(path.trim())
+}
+
+async function waitForTextAppends(path: string): Promise<void> {
+  await textAppends.get(textAppendKey(path))?.catch(() => {})
+}
+
 export function isDesktopApp(): boolean {
   return isTauri()
 }
@@ -52,6 +63,7 @@ export async function pickDirectory(title?: string): Promise<string | null> {
 export async function readTextFile(path: string): Promise<string | null> {
   if (!isDesktopApp() || !path.trim()) return null
   try {
+    await waitForTextAppends(path)
     return await invoke<string>('read_text_file', { path: path.trim() })
   } catch {
     return null
@@ -75,6 +87,7 @@ export async function readTextFileTail(
 ): Promise<string | null> {
   if (!isDesktopApp() || !path.trim()) return null
   try {
+    await waitForTextAppends(path)
     return await invoke<string>('read_text_file_tail', {
       path: path.trim(),
       maxBytes: Math.max(1, Math.floor(maxBytes)),
@@ -99,7 +112,16 @@ export async function appendTextFileAt(
   contents: string,
 ): Promise<void> {
   if (!isDesktopApp()) return
-  await invoke('append_text_file', { path: path.trim(), contents })
+  const key = textAppendKey(path)
+  const next = (textAppends.get(key) ?? Promise.resolve())
+    .catch(() => {})
+    .then(() => invoke<void>('append_text_file', { path: path.trim(), contents }))
+  textAppends.set(key, next)
+  const cleanup = () => {
+    if (textAppends.get(key) === next) textAppends.delete(key)
+  }
+  void next.then(cleanup, cleanup)
+  await next
 }
 
 /** Create directory and parents if missing. */

@@ -10,10 +10,11 @@ use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::mpsc::{self, RecvTimeoutError};
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{Duration, Instant};
-use tauri::{AppHandle, Emitter, State};
+use tauri::{AppHandle, Emitter, Manager, State};
 
 const INSTALL_EVENT: &str = "weidu-install-event";
 const STAGE_PROGRESS_EVENT: &str = "weidu-stage-progress";
@@ -134,6 +135,7 @@ fn copy_recursive_with_progress(
     to: &Path,
     files: &Arc<AtomicU64>,
     bytes: &Arc<AtomicU64>,
+    last_progress: &mut Instant,
 ) -> Result<(), String> {
     if from.is_dir() {
         fs::create_dir_all(to).map_err(|e| e.to_string())?;
@@ -145,6 +147,7 @@ fn copy_recursive_with_progress(
                 &to.join(entry.file_name()),
                 files,
                 bytes,
+                last_progress,
             )?;
         }
     } else {
@@ -159,15 +162,18 @@ fn copy_recursive_with_progress(
             .unwrap_or_default();
         let fd = files.fetch_add(1, Ordering::SeqCst) + 1;
         let bd = bytes.fetch_add(meta.len(), Ordering::SeqCst) + meta.len();
-        emit_stage_progress(
-            app,
-            StageProgress {
-                phase: "copy".into(),
-                message: name,
-                files_done: fd,
-                bytes_done: bd,
-            },
-        );
+        if last_progress.elapsed() >= Duration::from_millis(100) {
+            *last_progress = Instant::now();
+            emit_stage_progress(
+                app,
+                StageProgress {
+                    phase: "copy".into(),
+                    message: name,
+                    files_done: fd,
+                    bytes_done: bd,
+                },
+            );
+        }
     }
     Ok(())
 }
@@ -175,9 +181,9 @@ fn copy_recursive_with_progress(
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase", tag = "kind")]
 enum InstallEventPayload {
-    Output {
+    OutputBatch {
         stream: String,
-        text: String,
+        lines: Vec<String>,
     },
     Classified {
         level: String,
@@ -426,7 +432,21 @@ fn parse_json_array<T: for<'de> Deserialize<'de>>(text: &str) -> Result<Vec<T>, 
 }
 
 #[tauri::command]
-pub fn list_weidu_components(
+pub async fn list_weidu_components(
+    app: AppHandle,
+    weidu_path: String,
+    tp2_path: String,
+    game_dir: String,
+    lang: i32,
+) -> Result<Vec<WeiduComponentInfo>, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        list_weidu_components_blocking(app, weidu_path, tp2_path, game_dir, lang)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+fn list_weidu_components_blocking(
     app: AppHandle,
     weidu_path: String,
     tp2_path: String,
@@ -525,7 +545,20 @@ fn parse_optional_languages_output(text: &str) -> Result<Vec<WeiduLanguageInfo>,
 }
 
 #[tauri::command]
-pub fn list_weidu_languages(
+pub async fn list_weidu_languages(
+    app: AppHandle,
+    weidu_path: String,
+    tp2_path: String,
+    game_dir: String,
+) -> Result<Vec<WeiduLanguageInfo>, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        list_weidu_languages_blocking(app, weidu_path, tp2_path, game_dir)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+fn list_weidu_languages_blocking(
     app: AppHandle,
     weidu_path: String,
     tp2_path: String,
@@ -608,18 +641,6 @@ fn classify_line(line: &str) -> Option<&'static str> {
         }
     }
     None
-}
-
-fn append_file(path: &Path, text: &str) -> Result<(), String> {
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
-    }
-    let mut file = OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(path)
-        .map_err(|e| e.to_string())?;
-    file.write_all(text.as_bytes()).map_err(|e| e.to_string())
 }
 
 /// `{NNN}-{safeMod}-{safeComponent}` → `{safeMod}-{safeComponent}` for stream filenames.
@@ -708,6 +729,28 @@ fn verify_weidu_log(game_dir: &Path, tp2: &Path, lang: i32, number: i32) -> bool
     false
 }
 
+// Bound both the queue and each IPC payload. Idle pipes flush within 50 ms,
+// while prompts flush immediately; no timer depends on another output line arriving.
+fn dispatch_output(receiver: mpsc::Receiver<String>, mut emit: impl FnMut(Vec<String>)) {
+    while let Ok(first) = receiver.recv() {
+        let deadline = Instant::now() + Duration::from_millis(50);
+        let mut bytes = first.len();
+        let mut prompt = classify_line(&first) == Some("inputRequired");
+        let mut lines = vec![first];
+        while !prompt && lines.len() < 128 && bytes < 64 * 1024 {
+            match receiver.recv_timeout(deadline.saturating_duration_since(Instant::now())) {
+                Ok(line) => {
+                    bytes += line.len();
+                    prompt = classify_line(&line) == Some("inputRequired");
+                    lines.push(line);
+                }
+                Err(RecvTimeoutError::Timeout | RecvTimeoutError::Disconnected) => break,
+            }
+        }
+        emit(lines);
+    }
+}
+
 fn stream_pipe(
     reader: impl BufRead + Send + 'static,
     stream: &'static str,
@@ -715,34 +758,63 @@ fn stream_pipe(
     run_log: PathBuf,
     cancel: Arc<AtomicBool>,
     app: AppHandle,
-) {
+) -> thread::JoinHandle<()> {
     thread::spawn(move || {
-        for line in reader.lines().flatten() {
+        let (sender, receiver) = mpsc::sync_channel(256);
+        let dispatcher = thread::spawn(move || {
+            dispatch_output(receiver, |lines| {
+                let prompts: Vec<_> = lines
+                    .iter()
+                    .filter(|line| classify_line(line) == Some("inputRequired"))
+                    .cloned()
+                    .collect();
+                emit_event(
+                    &app,
+                    InstallEventPayload::OutputBatch {
+                        stream: stream.into(),
+                        lines,
+                    },
+                );
+                for prompt in prompts {
+                    emit_event(&app, InstallEventPayload::InputRequired { prompt });
+                }
+            });
+        });
+        // Keep the files open for the entire pipe instead of opening both for every line.
+        // Writes are unbuffered so tails remain readable when the step completes.
+        let open_log = |path: &Path| {
+            if let Some(parent) = path.parent() {
+                let _ = fs::create_dir_all(parent);
+            }
+            OpenOptions::new().create(true).append(true).open(path).ok()
+        };
+        let mut step_file = open_log(&step_log);
+        let mut run_file = open_log(&run_log);
+        for line in reader.lines() {
+            let line = match line {
+                Ok(line) => line,
+                // Match the existing handling of non-UTF-8 WeiDU lines while
+                // continuing to drain the pipe. Other I/O errors end the reader.
+                Err(error) if error.kind() == std::io::ErrorKind::InvalidData => continue,
+                Err(_) => break,
+            };
             if cancel.load(Ordering::SeqCst) {
                 break;
             }
             let nl = format!("{line}\n");
-            let _ = append_file(&step_log, &nl);
-            let _ = append_file(&run_log, &nl);
-            emit_event(
-                &app,
-                InstallEventPayload::Output {
-                    stream: stream.into(),
-                    text: line.clone(),
-                },
-            );
-            // Only surface interactive prompts here. Error/warning highlighting comes from
-            // raw Output in the UI (WeiDU + Results tabs); do not emit Classified for those.
-            if classify_line(&line) == Some("inputRequired") {
-                emit_event(
-                    &app,
-                    InstallEventPayload::InputRequired {
-                        prompt: line.clone(),
-                    },
-                );
+            if let Some(file) = step_file.as_mut() {
+                let _ = file.write_all(nl.as_bytes());
+            }
+            if let Some(file) = run_file.as_mut() {
+                let _ = file.write_all(nl.as_bytes());
+            }
+            if sender.send(line).is_err() {
+                break;
             }
         }
-    });
+        drop(sender);
+        let _ = dispatcher.join();
+    })
 }
 
 /// WeiDU mod id = folder that contains the tp2 → `setup-{weiduId}.exe` in the game dir.
@@ -779,9 +851,19 @@ fn weidu_install_exception_args(input: &RunStepInput, game_dir: &Path) -> Option
 }
 
 #[tauri::command]
-pub async fn run_weidu_step(
+pub async fn run_weidu_step(app: AppHandle, input: RunStepInput) -> Result<StepResult, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state_app = app.clone();
+        let state = state_app.state::<RunningWeidu>();
+        run_weidu_step_blocking(app, &state, input)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+fn run_weidu_step_blocking(
     app: AppHandle,
-    state: State<'_, RunningWeidu>,
+    state: &RunningWeidu,
     input: RunStepInput,
 ) -> Result<StepResult, String> {
     state.clear_cancel();
@@ -859,25 +941,26 @@ pub async fn run_weidu_step(
         .spawn()
         .map_err(|e| e.to_string())?;
 
+    let mut pipes = Vec::new();
     if let Some(out) = child.stdout.take() {
-        stream_pipe(
+        pipes.push(stream_pipe(
             BufReader::new(out),
             "stdout",
             stdout_path.clone(),
             run_stdout.clone(),
             Arc::clone(&cancel),
             app.clone(),
-        );
+        ));
     }
     if let Some(err) = child.stderr.take() {
-        stream_pipe(
+        pipes.push(stream_pipe(
             BufReader::new(err),
             "stderr",
             stderr_path.clone(),
             run_stderr.clone(),
             Arc::clone(&cancel),
             app.clone(),
-        );
+        ));
     }
 
     {
@@ -926,6 +1009,12 @@ pub async fn run_weidu_step(
         }
     };
     let duration_ms = start.elapsed().as_millis() as u64;
+
+    if !cancelled && !timed_out {
+        for pipe in pipes {
+            let _ = pipe.join();
+        }
+    }
 
     let debug_src = find_debug_file(&tp2);
     let debug_path = debug_src.as_ref().map(|src| {
@@ -1004,6 +1093,15 @@ pub async fn run_weidu_force_uninstall(
     app: AppHandle,
     input: ForceUninstallInput,
 ) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || run_weidu_force_uninstall_blocking(app, input))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn run_weidu_force_uninstall_blocking(
+    app: AppHandle,
+    input: ForceUninstallInput,
+) -> Result<(), String> {
     let weidu = validate_weidu_path(&input.weidu_path)?;
     let tp2 = PathBuf::from(input.tp2_path.trim());
     let game_dir = PathBuf::from(input.game_dir.trim());
@@ -1051,28 +1149,32 @@ pub async fn run_weidu_force_uninstall(
         .spawn()
         .map_err(|e| e.to_string())?;
 
+    let mut pipes = Vec::new();
     if let Some(out) = child.stdout.take() {
-        stream_pipe(
+        pipes.push(stream_pipe(
             BufReader::new(out),
             "stdout",
             stdout_path.clone(),
             run_stdout.clone(),
             Arc::clone(&cancel),
             app.clone(),
-        );
+        ));
     }
     if let Some(err) = child.stderr.take() {
-        stream_pipe(
+        pipes.push(stream_pipe(
             BufReader::new(err),
             "stderr",
             stderr_path.clone(),
             run_stderr.clone(),
             Arc::clone(&cancel),
             app.clone(),
-        );
+        ));
     }
 
     let status = child.wait().map_err(|e| e.to_string())?;
+    for pipe in pipes {
+        let _ = pipe.join();
+    }
 
     if !status.success() {
         return Err(format!(
@@ -1185,7 +1287,18 @@ fn source_tp2_context(
 }
 
 #[tauri::command]
-pub fn discover_mod_tp2_candidates(
+pub async fn discover_mod_tp2_candidates(
+    mods_download_dir: String,
+    codename: String,
+) -> Result<Vec<ModTp2Candidate>, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        discover_mod_tp2_candidates_blocking(mods_download_dir, codename)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+fn discover_mod_tp2_candidates_blocking(
     mods_download_dir: String,
     codename: String,
 ) -> Result<Vec<ModTp2Candidate>, String> {
@@ -1263,7 +1376,25 @@ pub fn discover_mod_tp2_candidates(
 }
 
 #[tauri::command]
-pub fn list_mod_weidu_languages(
+pub async fn list_mod_weidu_languages(
+    weidu_path: String,
+    mods_download_dir: String,
+    codename: String,
+    tp2_relative_path: String,
+) -> Result<Vec<WeiduLanguageInfo>, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        list_mod_weidu_languages_blocking(
+            weidu_path,
+            mods_download_dir,
+            codename,
+            tp2_relative_path,
+        )
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+fn list_mod_weidu_languages_blocking(
     weidu_path: String,
     mods_download_dir: String,
     codename: String,
@@ -1281,7 +1412,27 @@ pub fn list_mod_weidu_languages(
 }
 
 #[tauri::command]
-pub fn list_mod_weidu_components(
+pub async fn list_mod_weidu_components(
+    weidu_path: String,
+    mods_download_dir: String,
+    codename: String,
+    tp2_relative_path: String,
+    lang: i32,
+) -> Result<Vec<WeiduComponentInfo>, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        list_mod_weidu_components_blocking(
+            weidu_path,
+            mods_download_dir,
+            codename,
+            tp2_relative_path,
+            lang,
+        )
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+fn list_mod_weidu_components_blocking(
     weidu_path: String,
     mods_download_dir: String,
     codename: String,
@@ -1434,7 +1585,29 @@ fn pick_tp2_candidate(
 }
 
 #[tauri::command]
-pub fn stage_mod_into_game_dir(
+pub async fn stage_mod_into_game_dir(
+    app: AppHandle,
+    mods_download_dir: String,
+    codename: String,
+    game_dir: String,
+    tp2_hint: Option<String>,
+    game_version: Option<String>,
+) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        stage_mod_into_game_dir_blocking(
+            app,
+            mods_download_dir,
+            codename,
+            game_dir,
+            tp2_hint,
+            game_version,
+        )
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+fn stage_mod_into_game_dir_blocking(
     app: AppHandle,
     mods_download_dir: String,
     codename: String,
@@ -1491,7 +1664,14 @@ pub fn stage_mod_into_game_dir(
     }
     let files = Arc::new(AtomicU64::new(0));
     let bytes = Arc::new(AtomicU64::new(0));
-    copy_recursive_with_progress(&app, mod_folder, &target, &files, &bytes)?;
+    copy_recursive_with_progress(
+        &app,
+        mod_folder,
+        &target,
+        &files,
+        &bytes,
+        &mut Instant::now(),
+    )?;
     let tp2 = find_tp2_in_dir(&target)?;
     emit_stage_progress(
         &app,
@@ -1551,7 +1731,13 @@ pub(crate) fn find_named_game_exe(game: &Path, exe_name: &str) -> Option<PathBuf
 }
 
 #[tauri::command]
-pub fn read_game_exe_version(game_dir: String, exe_name: String) -> Result<String, String> {
+pub async fn read_game_exe_version(game_dir: String, exe_name: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || read_game_exe_version_blocking(game_dir, exe_name))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn read_game_exe_version_blocking(game_dir: String, exe_name: String) -> Result<String, String> {
     let game = PathBuf::from(game_dir.trim());
     if !game.is_dir() {
         return Err("Game directory does not exist".into());
@@ -1617,7 +1803,13 @@ fn remove_named_subdir(game: &Path, name: &str) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn cleanup_install_artifacts(input: CleanupInput) -> Result<(), String> {
+pub async fn cleanup_install_artifacts(input: CleanupInput) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || cleanup_install_artifacts_blocking(input))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn cleanup_install_artifacts_blocking(input: CleanupInput) -> Result<(), String> {
     let game = PathBuf::from(input.game_dir.trim());
     if !game.is_dir() {
         return Err(format!("Game folder not found: {}", game.display()));
@@ -1672,7 +1864,13 @@ pub fn cleanup_install_artifacts(input: CleanupInput) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn read_game_weidu_log(game_dir: String) -> Result<String, String> {
+pub async fn read_game_weidu_log(game_dir: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || read_game_weidu_log_blocking(game_dir))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn read_game_weidu_log_blocking(game_dir: String) -> Result<String, String> {
     let Some(path) = find_named_file_ci(Path::new(game_dir.trim()), "weidu.log") else {
         return Ok(String::new());
     };
@@ -1682,6 +1880,44 @@ pub fn read_game_weidu_log(game_dir: String) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn output_bursts_are_batched_without_losing_or_reordering_lines() {
+        let (sender, receiver) = mpsc::channel();
+        for i in 0..10_000 {
+            sender.send(format!("line {i}")).unwrap();
+        }
+        drop(sender);
+        let mut batches = Vec::new();
+        dispatch_output(receiver, |lines| batches.push(lines));
+        assert!(batches.len() < 100);
+        assert!(batches.iter().all(|batch| batch.len() <= 128));
+        let lines: Vec<_> = batches.into_iter().flatten().collect();
+        assert_eq!(
+            lines,
+            (0..10_000).map(|i| format!("line {i}")).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn output_and_prompts_flush_while_the_process_keeps_its_pipe_open() {
+        for line in ["one line then silence", "Please enter your choice"] {
+            let (sender, receiver) = mpsc::channel();
+            let (batches, flushed) = mpsc::channel();
+            let worker = thread::spawn(move || {
+                dispatch_output(receiver, |lines| {
+                    batches.send(lines).unwrap();
+                })
+            });
+            sender.send(line.to_string()).unwrap();
+            assert_eq!(
+                flushed.recv_timeout(Duration::from_secs(1)).unwrap(),
+                vec![line.to_string()]
+            );
+            drop(sender);
+            worker.join().unwrap();
+        }
+    }
     use serde_json::json;
 
     #[test]
@@ -1692,9 +1928,11 @@ mod tests {
             "~CDTWEAKS/SETUP-CDTWEAKS.TP2~ #0 #4000\n",
         )
         .unwrap();
-        assert!(read_game_weidu_log(game.path().display().to_string())
-            .unwrap()
-            .contains("#4000"));
+        assert!(
+            read_game_weidu_log_blocking(game.path().display().to_string())
+                .unwrap()
+                .contains("#4000")
+        );
         assert!(verify_weidu_log(
             game.path(),
             &game.path().join("cdtweaks/setup-cdtweaks.tp2"),
@@ -1809,7 +2047,7 @@ mod tests {
         )
         .unwrap();
 
-        let result = discover_mod_tp2_candidates(
+        let result = discover_mod_tp2_candidates_blocking(
             root.path().to_string_lossy().into_owned(),
             "example-download".into(),
         )
@@ -1872,7 +2110,7 @@ mod tests {
         fs::write(game.join("weidu.log"), b"keep").unwrap();
         fs::write(game.join("other.txt"), b"keep").unwrap();
 
-        cleanup_install_artifacts(CleanupInput {
+        cleanup_install_artifacts_blocking(CleanupInput {
             game_dir: game.to_string_lossy().into_owned(),
             staged_folders: vec!["cdtweaks".into()],
             remove_mod_folders: true,
@@ -1904,7 +2142,7 @@ mod tests {
         fs::write(game.join("weidu.conf"), b"lang").unwrap();
         fs::write(game.join("weidu.log"), b"keep").unwrap();
 
-        cleanup_install_artifacts(CleanupInput {
+        cleanup_install_artifacts_blocking(CleanupInput {
             game_dir: game.to_string_lossy().into_owned(),
             staged_folders: vec!["cdtweaks".into()],
             remove_mod_folders: false,
@@ -1933,7 +2171,7 @@ mod tests {
         fs::create_dir_all(game.join("data")).unwrap();
         fs::write(game.join("chitin.key"), b"x").unwrap();
 
-        cleanup_install_artifacts(CleanupInput {
+        cleanup_install_artifacts_blocking(CleanupInput {
             game_dir: game.to_string_lossy().into_owned(),
             staged_folders: vec![],
             remove_mod_folders: false,
@@ -1952,7 +2190,7 @@ mod tests {
 
     #[test]
     fn cleanup_refuses_drive_root_wipe() {
-        let err = cleanup_install_artifacts(CleanupInput {
+        let err = cleanup_install_artifacts_blocking(CleanupInput {
             game_dir: if cfg!(windows) {
                 "C:\\".into()
             } else {

@@ -139,6 +139,7 @@ export interface BackupManifest {
 
 export type WeiduInstallEvent =
   | { kind: 'output'; stream: 'stdout' | 'stderr'; text: string }
+  | { kind: 'outputBatch'; stream: 'stdout' | 'stderr'; lines: string[] }
   | { kind: 'classified'; level: string; message: string }
   | { kind: 'inputRequired'; prompt: string }
   | { kind: 'stepStarted'; stepId: string }

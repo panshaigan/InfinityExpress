@@ -5,7 +5,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter};
 
 const BACKUP_PROGRESS_EVENT: &str = "weidu-backup-progress";
@@ -269,6 +269,7 @@ fn copy_filtered(
     bytes: &Arc<AtomicU64>,
     files_total: u64,
     bytes_total: u64,
+    last_progress: &mut Instant,
 ) -> Result<(), String> {
     fs::create_dir_all(to).map_err(|e| e.to_string())?;
     for entry in fs::read_dir(from).map_err(|e| e.to_string())? {
@@ -289,16 +290,20 @@ fn copy_filtered(
                 bytes,
                 files_total,
                 bytes_total,
+                last_progress,
             )?;
         } else {
             let meta = src.metadata().map_err(|e| e.to_string())?;
             fs::copy(&src, &dst).map_err(|e| e.to_string())?;
             let fd = files.fetch_add(1, Ordering::SeqCst) + 1;
             let bd = bytes.fetch_add(meta.len(), Ordering::SeqCst) + meta.len();
-            emit_progress(
-                app,
-                progress("copy", name_str, fd, bd, files_total, bytes_total),
-            );
+            if last_progress.elapsed() >= Duration::from_millis(100) {
+                *last_progress = Instant::now();
+                emit_progress(
+                    app,
+                    progress("copy", name_str, fd, bd, files_total, bytes_total),
+                );
+            }
         }
     }
     Ok(())
@@ -499,6 +504,7 @@ pub async fn backup_game_dir(
             &bytes_c,
             files_total,
             bytes_total,
+            &mut Instant::now(),
         )
     })
     .await
@@ -611,6 +617,7 @@ pub async fn restore_game_dir(
             &bytes_c,
             files_total,
             bytes_total,
+            &mut Instant::now(),
         )
     })
     .await
@@ -772,6 +779,7 @@ pub async fn prepare_project_destination(
                 &bytes_c,
                 files_total,
                 bytes_total,
+                &mut Instant::now(),
             )
         })
         .await

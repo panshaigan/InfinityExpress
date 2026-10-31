@@ -1,3 +1,4 @@
+import { useBufferedConsoleLines } from './useBufferedConsoleLines'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { InstallSequenceModel, SelectedGame } from '../lib/xml/schema'
 import type { GameFolderPaths } from '../lib/ui/gameFolderPrefs'
@@ -82,7 +83,6 @@ import {
 import { loadInstallConsoleFromRunLog } from '../lib/install/loadRunConsole'
 import {
   INSTALL_FAILURE_STDERR_TAIL_BYTES,
-  trimConsoleLines,
 } from '../lib/install/consoleLimits'
 import { buildStepFailureErrors } from '../lib/install/stepFailureErrors'
 import {
@@ -205,9 +205,9 @@ export function useInstallRun(options: {
     const session = initialInstallState?.installSession
     return session?.run ?? null
   })
-  const [consoleLines, setConsoleLines] = useState<string[]>([])
-  const [commandLines, setCommandLines] = useState<string[]>([])
-  const [resultLines, setResultLines] = useState<string[]>([])
+  const [consoleLines, setConsoleLines, appendConsoleLines] = useBufferedConsoleLines()
+  const [commandLines, setCommandLines, appendCommandLines] = useBufferedConsoleLines()
+  const [resultLines, setResultLines, appendResultLines] = useBufferedConsoleLines()
   const [inputPrompt, setInputPrompt] = useState<string | null>(null)
   const [paused, setPaused] = useState(
     () => initialInstallState?.installSession.transport.paused ?? false,
@@ -354,15 +354,15 @@ export function useInstallRun(options: {
   const pushConsoleLine = useCallback(
     (text: string): string => {
       const stamped = stampLine(text)
-      setCommandLines((prev) => trimConsoleLines([...prev, stamped]))
+      appendCommandLines([stamped])
       persistCommandLine(stamped)
       if (consoleLineTone(text) != null) {
-        setResultLines((prev) => trimConsoleLines([...prev, stamped]))
+        appendResultLines([stamped])
         persistResultLine(stamped)
       }
       return stamped
     },
-    [persistCommandLine, persistResultLine],
+    [appendCommandLines, appendResultLines, persistCommandLine, persistResultLine],
   )
 
   const pushConsoleLines = useCallback(
@@ -375,10 +375,10 @@ export function useInstallRun(options: {
   const appendCommandLine = useCallback(
     (message: string) => {
       const stamped = stampLine(message)
-      setCommandLines((prev) => trimConsoleLines([...prev, stamped]))
+      appendCommandLines([stamped])
       persistCommandLine(stamped)
     },
-    [persistCommandLine],
+    [appendCommandLines, persistCommandLine],
   )
 
   const initRun = useCallback(() => {
@@ -457,16 +457,18 @@ export function useInstallRun(options: {
     let cancelled = false
     let unlisten: { current?: () => void } = {}
     void listenWeiduInstallEvents((ev: WeiduInstallEvent) => {
-      if (ev.kind === 'output') {
-        const stamped = stampLine(ev.text)
-        setConsoleLines((prev) => trimConsoleLines([...prev, stamped]))
-        if (consoleLineTone(ev.text) != null) {
-          setResultLines((prev) => trimConsoleLines([...prev, stamped]))
-          persistResultLine(stamped)
+      if (ev.kind === 'output' || ev.kind === 'outputBatch') {
+        const texts = ev.kind === 'outputBatch' ? ev.lines : [ev.text]
+        const stamped = texts.map(stampLine)
+        appendConsoleLines(stamped)
+        const highlights = stamped.filter((_, i) => consoleLineTone(texts[i]) != null)
+        if (highlights.length > 0) {
+          appendResultLines(highlights)
+          persistResultLine(highlights.join('\n'))
         }
       } else if (ev.kind === 'commandLogged') {
         const stamped = stampLine(ev.command)
-        setCommandLines((prev) => trimConsoleLines([...prev, stamped]))
+        appendCommandLines([stamped])
         persistCommandLine(stamped)
       } else if (ev.kind === 'inputRequired') {
         setInputPrompt(ev.prompt)
@@ -475,10 +477,10 @@ export function useInstallRun(options: {
         // App-synthesized lines → Commands only (never WeiDU tab).
         const text = `[${ev.level}] ${ev.message}`
         const stamped = stampLine(text)
-        setCommandLines((prev) => trimConsoleLines([...prev, stamped]))
+        appendCommandLines([stamped])
         persistCommandLine(stamped)
         if (consoleLineTone(text) != null) {
-          setResultLines((prev) => trimConsoleLines([...prev, stamped]))
+          appendResultLines([stamped])
           persistResultLine(stamped)
         }
       } else if (ev.kind === 'stepStarted') {
@@ -537,7 +539,7 @@ export function useInstallRun(options: {
       cancelled = true
       unlisten.current?.()
     }
-  }, [persistCommandLine, persistResultLine])
+  }, [appendConsoleLines, appendCommandLines, appendResultLines, persistCommandLine, persistResultLine])
 
   useEffect(() => {
     let cancelled = false

@@ -47,7 +47,13 @@ pub fn file_is_nonempty(path: String) -> Result<bool, String> {
 
 /// Read up to the last `max_bytes` of a UTF-8 text file (install log tails, etc.).
 #[tauri::command]
-pub fn read_text_file_tail(path: String, max_bytes: u64) -> Result<String, String> {
+pub async fn read_text_file_tail(path: String, max_bytes: u64) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || read_text_file_tail_blocking(path, max_bytes))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn read_text_file_tail_blocking(path: String, max_bytes: u64) -> Result<String, String> {
     let trimmed = path.trim();
     if trimmed.is_empty() {
         return Err("Path is required".into());
@@ -80,7 +86,13 @@ pub fn read_text_file_tail(path: String, max_bytes: u64) -> Result<String, Strin
 
 /// Read a UTF-8 text file from an absolute path (install logs, etc.).
 #[tauri::command]
-pub fn read_text_file(path: String) -> Result<String, String> {
+pub async fn read_text_file(path: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || read_text_file_blocking(path))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn read_text_file_blocking(path: String) -> Result<String, String> {
     let trimmed = path.trim();
     if trimmed.is_empty() {
         return Err("Path is required".into());
@@ -94,7 +106,13 @@ pub fn read_text_file(path: String) -> Result<String, String> {
 
 /// Write a UTF-8 text file, creating parent directories as needed.
 #[tauri::command]
-pub fn write_text_file(path: String, contents: String) -> Result<(), String> {
+pub async fn write_text_file(path: String, contents: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || write_text_file_blocking(path, contents))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn write_text_file_blocking(path: String, contents: String) -> Result<(), String> {
     let trimmed = path.trim();
     if trimmed.is_empty() {
         return Err("Path is required".into());
@@ -110,7 +128,13 @@ pub fn write_text_file(path: String, contents: String) -> Result<(), String> {
 
 /// Append UTF-8 text to a file, creating parent directories and the file as needed.
 #[tauri::command]
-pub fn append_text_file(path: String, contents: String) -> Result<(), String> {
+pub async fn append_text_file(path: String, contents: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || append_text_file_blocking(path, contents))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn append_text_file_blocking(path: String, contents: String) -> Result<(), String> {
     let trimmed = path.trim();
     if trimmed.is_empty() {
         return Err("Path is required".into());
@@ -356,7 +380,7 @@ pub(crate) fn ensure_under_parent(parent: &Path, child: &Path) -> Result<(), Str
 
 #[cfg(test)]
 mod tests {
-    use super::{read_text_file_tail, validate_folder_name};
+    use super::{read_text_file_tail_blocking, validate_folder_name};
     use std::io::Write;
     use tempfile::NamedTempFile;
 
@@ -365,7 +389,7 @@ mod tests {
         let mut file = NamedTempFile::new().unwrap();
         write!(file, "line one\nline two\nline three\n").unwrap();
         let path = file.path().to_string_lossy().into_owned();
-        let tail = read_text_file_tail(path, 20).unwrap();
+        let tail = read_text_file_tail_blocking(path, 20).unwrap();
         assert!(tail.contains("line three"));
         assert!(!tail.contains("line one"));
     }

@@ -173,6 +173,8 @@ On Windows, WeiDU and 7-Zip are spawned with `CREATE_NO_WINDOW` so no console wi
 
 **Install run persistence:** Full install session (`InstallRun` statuses/cursor/durations/breakpoints/log paths + UI toggles) is stored as `{runDir}/run-state.json`. Project localStorage keeps only `installRef: { runId, logDir }`. Legacy inlined `session.install` blobs migrate to disk on project open.
 
+**Responsiveness:** Staging, WeiDU listing probes, install/uninstall process waits, cleanup, and text log I/O run on background blocking workers. File-copy progress is limited to ten updates per second, with start/end events always sent. Process output travels in bounded batches (up to 128 lines or roughly 64 KiB, flushed within 50 ms while idle); prompts flush immediately. Each console tab publishes its capped tail at most ten times per second. Full raw output is still written to disk, and normal step completion waits for the output readers to drain. Frontend log appends are ordered per file, and tail reads wait for queued appends.
+
 **Stop cleanup:** same `setup-{weiduId}.exe` path with `--noautoupdate --force-uninstall` (`run_weidu_force_uninstall`). Do not invoke the configured `weidu.exe` directly for install or uninstall.
 
 Orchestration: `hooks/useInstallRun.ts` + `lib/desktop/weiduInstall.ts` → Rust `src-tauri/src/weidu_install.rs`. Console/log helpers under `src/lib/install/`.
