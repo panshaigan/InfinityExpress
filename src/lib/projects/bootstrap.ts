@@ -1,3 +1,4 @@
+import { isBrowserDemo } from '../runtime'
 import {
   adaptSessionForProjects,
   getProject,
@@ -41,14 +42,16 @@ export interface ProjectBootstrap {
 export function bootstrapProjects(_model: InstallSequenceModel): ProjectBootstrap {
   migrateLegacySessionsToProjects()
   migrateSelectionPresetsToEngineStore()
-  suggestVanillaFromLegacyFolders()
-  void syncManagedVanillasFromDisk()
+  if (!isBrowserDemo) {
+    suggestVanillaFromLegacyFolders()
+    void syncManagedVanillasFromDisk()
+  }
 
   const index = readProjectIndex()
   const hasProjects = Object.keys(index.projects).length > 0
   // No projects yet → new-project wizard. Otherwise hub so the user can pick.
   return {
-    view: hasProjects ? 'hub' : 'wizard',
+    view: isBrowserDemo || hasProjects ? 'hub' : 'wizard',
     projectId: null,
     meta: null,
     session: null,

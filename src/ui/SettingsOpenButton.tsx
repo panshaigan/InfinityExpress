@@ -1,3 +1,4 @@
+import { isBrowserDemo, DESKTOP_ONLY_TIP } from '../lib/runtime'
 import { IconTip } from './IconTip'
 
 function SettingsGearIcon() {
@@ -30,10 +31,11 @@ export function SettingsOpenButton({
       aria-haspopup="dialog"
       aria-expanded={settingsOpen}
       aria-label="Settings"
+      disabled={isBrowserDemo}
       onClick={onOpenSettings}
     >
       <SettingsGearIcon />
-      <IconTip align={tipAlign}>Settings</IconTip>
+      <IconTip align={tipAlign}>{isBrowserDemo ? DESKTOP_ONLY_TIP : 'Settings'}</IconTip>
     </button>
   )
 }

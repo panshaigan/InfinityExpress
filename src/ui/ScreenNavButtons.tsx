@@ -11,6 +11,7 @@ interface Props {
   onOk: () => void
   onCancel: () => void
   reopenDisabled?: boolean
+  okLabel?: string
 }
 
 /** Previous / Done|Reopen / Next cluster for station headers. */
@@ -23,6 +24,7 @@ export function ScreenNavButtons({
   onOk,
   onCancel,
   reopenDisabled = false,
+  okLabel = 'Done',
 }: Props) {
   return (
     <div className="screen-nav-buttons" role="group" aria-label="Station progress">
@@ -62,7 +64,7 @@ export function ScreenNavButtons({
             disabled={!canOk}
             onClick={onOk}
           >
-            Done
+            {okLabel}
           </button>
           <IconTip>Mark this stop finished and continue</IconTip>
         </span>

@@ -81,3 +81,7 @@ Selection is a `Set` of **component ids** (XML `id`), not tree keys. Detail pane
 | Shell | `App.tsx`, `ui/*` |
 
 Further behaviour: [selection.md](selection.md), [install-sequence-schema.md](install-sequence-schema.md), [weidu-install.md](weidu-install.md).
+
+## Browser demo
+
+Vite mode `demo` builds the Components-only browser demo for GitHub Pages under `/InfinityExpress/`. It shares project and preset persistence and selection logic. Boot opens the hub even with no projects; the wizard asks only for engine and name. Desktop phase transitions and setup/component-browser actions are guarded, and route completion opens the existing export dialog with CSV filenames. The persistent banner explains browser-local saving and links to desktop releases. See [development.md](development.md#browser-demo-github-pages) for preview and deployment.

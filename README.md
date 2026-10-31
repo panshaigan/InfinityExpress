@@ -4,6 +4,8 @@ Desktop **mod route planner** for Infinity Engine Enhanced Edition games (Baldur
 
 Use recommended presets or pick components station by station, acquire mods, then run an automatic WeiDU install — with vanilla backups and named snapshots built in. Public beta **0.10.0**.
 
+[Try the browser demo](https://panshaigan.github.io/InfinityExpress/) — explore presets and components and export an install-order CSV. Projects stay in your browser; downloading mods and installing require the desktop app.
+
 ## Screenshots
 
 *Click a thumbnail to open the full-size image.*

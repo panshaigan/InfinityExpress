@@ -7966,3 +7966,19 @@ body.is-resizing-detail * {
   text-align: right;
 }
 
+
+.demo-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem 1rem;
+  padding: .55rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--accent-soft);
+  font-size: .85rem;
+  flex-shrink: 0;
+}
+
+.demo-banner a {
+  margin-left: auto;
+}

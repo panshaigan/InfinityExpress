@@ -7,7 +7,8 @@ const pkg = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
 ) as { version: string }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  base: mode === 'demo' ? '/InfinityExpress/' : '/',
   plugins: [react()],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
@@ -52,4 +53,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

@@ -1,3 +1,4 @@
+import { isBrowserDemo } from '../lib/runtime'
 import {
   useEffect,
   useRef,
@@ -242,7 +243,7 @@ export function AboutDialog({ open, onClose }: Props) {
             <button
               type="button"
               className="btn secondary"
-              disabled={checkingUpdates || installingUpdate}
+              disabled={isBrowserDemo || checkingUpdates || installingUpdate}
               onClick={() => {
                 void onCheckUpdates()
               }}

@@ -1,3 +1,4 @@
+import { isBrowserDemo, DESKTOP_ONLY_TIP } from '../lib/runtime'
 import { IconTip } from './IconTip'
 import type { AppPhase } from './PhaseNav.types'
 
@@ -34,8 +35,8 @@ export function PhaseNav({
           const processing = !!processingPhases?.[item.id]
           const completed = !processing && !!completedPhases?.[item.id]
           const disabled =
-            item.id === 'install' ? installDisabled && !processing : false
-          const title = item.id === 'install' && !processing ? installTitle : undefined
+            (isBrowserDemo && item.id !== 'components') || (item.id === 'install' && installDisabled && !processing)
+          const title = isBrowserDemo && item.id !== 'components' ? DESKTOP_ONLY_TIP : item.id === 'install' && !processing ? installTitle : undefined
           const button = (
             <button
               type="button"

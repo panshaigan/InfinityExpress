@@ -1,3 +1,4 @@
+import { isBrowserDemo, DESKTOP_ONLY_TIP } from '../lib/runtime'
 import { type SelectedGame } from '../lib/xml/schema'
 import { useDeveloperMode } from './developerModeContext'
 import { IconTip } from './IconTip'
@@ -204,10 +205,11 @@ export function AppTopBar({
           aria-haspopup="dialog"
           aria-expanded={componentBrowserOpen}
           aria-label="Mod component browser"
+          disabled={isBrowserDemo}
           onClick={onOpenComponentBrowser}
         >
           <ComponentsBrowserIcon />
-          <IconTip>Mod component browser</IconTip>
+          <IconTip>{isBrowserDemo ? DESKTOP_ONLY_TIP : 'Mod component browser'}</IconTip>
         </button>
         <button
           type="button"

@@ -1,3 +1,5 @@
+import { isBrowserDemo } from './lib/runtime'
+import { DemoBanner } from './ui/DemoBanner'
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import installSequenceXml from './data/InstallSequence.xml?raw'
 import { parseInstallSequence } from './lib/xml/parseInstallSequence'
@@ -329,12 +331,14 @@ function AppShell() {
   const foldApiRef = useRef<TreeFoldApi | null>(null)
 
   const openComponentBrowser = useCallback(() => {
+    if (isBrowserDemo) return
     setComponentBrowserTarget(null)
     setComponentBrowserOpen(true)
   }, [])
 
   const openTargetedComponentBrowser = useCallback(
     (modId: string, componentId?: string) => {
+      if (isBrowserDemo) return
       setComponentBrowserTarget({ modId, componentId })
       setComponentBrowserOpen(true)
     },
@@ -530,6 +534,7 @@ function AppShell() {
   }
 
   const goToPhase = useCallback((phase: AppPhase) => {
+    if (isBrowserDemo && phase !== 'components') return
     setMountedPhases((prev) => (prev[phase] ? prev : { ...prev, [phase]: true }))
     setAppPhase(phase)
   }, [])
@@ -585,6 +590,10 @@ function AppShell() {
     showRouteTip,
     dismissRouteTip,
     onRouteJustCompleted: () => {
+      if (isBrowserDemo) {
+        setExportOpen(true)
+        return
+      }
       const required = listSelectedModCodenames(model, selectedIds)
       setModsJourney({ locked: true, requiredCodenames: required })
       setDetailCollapsed(true)
@@ -593,6 +602,10 @@ function AppShell() {
   })
 
   function openModsJourneyFromBanner() {
+    if (isBrowserDemo) {
+      setExportOpen(true)
+      return
+    }
     const required = listSelectedModCodenames(model, selectedIds)
     setModsJourney({ locked: true, requiredCodenames: required })
     setDetailCollapsed(true)
@@ -601,6 +614,7 @@ function AppShell() {
   }
 
   function onPhaseChange(phase: AppPhase) {
+    if (isBrowserDemo && phase !== 'components') return
     if (phase === 'install' && !installPhaseReady && !phaseBusy.install) return
     if (phase === appPhase) return
     if (phase === 'mods') {
@@ -881,7 +895,7 @@ function AppShell() {
   }
 
   function goToProjectEntry() {
-    setShellView(listProjects().length === 0 ? 'wizard' : 'hub')
+    setShellView(!isBrowserDemo && listProjects().length === 0 ? 'wizard' : 'hub')
   }
 
   function returnToHub() {
@@ -1223,6 +1237,7 @@ function AppShell() {
   const openKeyboardHelp = useCallback(() => setKeyboardHelpOpen(true), [])
   const openAbout = useCallback(() => setAboutOpen(true), [])
   const openSettings = useCallback(() => {
+    if (isBrowserDemo) return
     setSettingsFocusField(null)
     setSettingsHighlightMissing([])
     setSettingsOpen(true)
@@ -1265,17 +1280,18 @@ function AppShell() {
 
   return (
     <div className="app">
+      {isBrowserDemo && <DemoBanner />}
       {shellView === 'hub' ? (
         <ProjectHub
           onOpen={openProject}
           onCreateNew={() => setShellView('wizard')}
           onProjectsChanged={() => {
-            if (listProjects().length === 0) setShellView('wizard')
+            if (!isBrowserDemo && listProjects().length === 0) setShellView('wizard')
           }}
         />
       ) : shellView === 'wizard' ? (
         <ProjectWizard
-          canCancel={listProjects().length > 0}
+          canCancel={isBrowserDemo || listProjects().length > 0}
           onCancel={goToProjectEntry}
           onCreated={openProject}
           settingsOpen={settingsOpen}
@@ -1528,6 +1544,7 @@ function AppShell() {
                           <ScreenNavButtons
                             canCycle={route.canCycleScreens}
                             canOk={route.canMarkFinished}
+                            okLabel={isBrowserDemo && route.routeProgress.finishedCount === route.routeProgress.totalCount - 1 ? 'Export install order' : undefined}
                             finished={route.currentFinished}
                             onPrevious={route.goPrevScreen}
                             onNext={route.goNextScreen}
@@ -1584,7 +1601,7 @@ function AppShell() {
                         readonly={route.currentFinished || installWorking}
                         selectionLockedIds={selectionLockedIds}
                         installedComponentIds={installLock.installedComponentIds}
-                        onOpenComponentBrowser={openTargetedComponentBrowser}
+                        onOpenComponentBrowser={isBrowserDemo ? undefined : openTargetedComponentBrowser}
                       />
                     </div>
                   </>

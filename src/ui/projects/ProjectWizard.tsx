@@ -1,3 +1,5 @@
+import { isBrowserDemo } from '../../lib/runtime'
+import { createProjectFromWizard } from './createProject'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { readAppDirPaths, writeAppDirPaths } from '../../lib/ui/appDirPrefs'
 import { gameFolderKeysForEngine } from '../../lib/ui/installPathValidation'
@@ -355,7 +357,11 @@ export function ProjectWizard({
   }
 
   function goAfterEngine() {
-    if (!engine) return
+    if (!engine || !name.trim()) return
+    if (isBrowserDemo) {
+      onCreated(createProjectFromWizard({ name: name.trim(), engine, destinations: emptyDestinations() }))
+      return
+    }
     const missing = missingVanillaKeys(engine)
     if (missing.length > 0) {
       setVanillaKeysForStep(missing)
@@ -513,7 +519,6 @@ export function ProjectWizard({
         }
       }
 
-      const { createProjectFromWizard } = await import('./createProject')
       const id = createProjectFromWizard({
         name: name.trim(),
         engine,
@@ -718,7 +723,7 @@ export function ProjectWizard({
               disabled={!engine || !name.trim()}
               onClick={goAfterEngine}
             >
-              Continue
+              {isBrowserDemo ? 'Create project' : 'Continue'}
             </button>
           ) : null}
           {step === 'vanilla' ? (

@@ -235,3 +235,13 @@ Release builds use GitHub Actions (`.github/workflows/release.yml`). Maintainers
 | [keyboard.md](keyboard.md) | Tree and chrome keyboard bindings |
 | [ui.md](ui.md) | Tooltips, inputs, scrollbars, collapsible chrome |
 | [dev-fresh-install.md](dev-fresh-install.md) | Clear projects / Settings for a fresh local install |
+
+## Browser demo (GitHub Pages)
+
+Run `npm run dev:demo` and open `http://localhost:5173/InfinityExpress/`.
+Build with `npm run build:demo`; preview with `npm run preview -- --base /InfinityExpress/` and open the same path on the preview port.
+The demo starts in the project hub, creates projects with name and engine only, and saves projects/presets in browser localStorage. Components share the desktop selection/export logic. Desktop phases and setup controls are disabled; completion opens export. Demo exports use `.csv` filenames with the existing semicolon-separated `componentId;label` format and EET phase tabs.
+
+One-time deployment setup: in the GitHub repository, open Settings → Pages and select **GitHub Actions** as the source. The `Browser demo` workflow tests, builds, and deploys on pushes to `main`, or via **Run workflow**. The site is served at `https://panshaigan.github.io/InfinityExpress/`; no custom domain or backend is required. A public repository supports Pages on GitHub Free.
+
+Normal `dev`, `build`, and Tauri commands keep desktop behavior. Demo restrictions are selected explicitly by Vite mode `demo` (`src/lib/runtime.ts`). Screen navigation stays within the single page so reloads work on Pages without route rewrites.

@@ -1,3 +1,4 @@
+import { isBrowserDemo } from '../lib/runtime'
 import { useEffect, useMemo, useState } from 'react'
 import {
   buildInstallOrderLines,
@@ -18,9 +19,9 @@ interface Props {
   game: SelectedGame | null
 }
 
-const DEFAULT_FILENAME = 'install-order.txt'
-const DEFAULT_PRE_EET_FILENAME = 'install-order-pre-eet.txt'
-const DEFAULT_EET_FILENAME = 'install-order-eet.txt'
+const DEFAULT_FILENAME = isBrowserDemo ? 'install-order.csv' : 'install-order.txt'
+const DEFAULT_PRE_EET_FILENAME = isBrowserDemo ? 'install-order-pre-eet.csv' : 'install-order-pre-eet.txt'
+const DEFAULT_EET_FILENAME = isBrowserDemo ? 'install-order-eet.csv' : 'install-order-eet.txt'
 
 const EET_TABS = [
   { id: 'eet1', label: 'BG1 (Pre-EET)' },

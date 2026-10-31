@@ -1,3 +1,4 @@
+import { isBrowserDemo } from '../lib/runtime'
 interface Props {
   visible: boolean
   selectedCount: number
@@ -14,7 +15,6 @@ export function RouteCaughtUp({
   onExport: _onExport,
   onDismiss: _onDismiss,
 }: Props) {
-  void _onExport
   void _onDismiss
   if (!visible) return null
 
@@ -27,12 +27,12 @@ export function RouteCaughtUp({
           {selectedCount > 0
             ? ` · ${selectedCount} component${selectedCount === 1 ? '' : 's'} selected`
             : ''}
-          . Next, review the mods your route needs.
+          . {isBrowserDemo ? 'Export your install order.' : 'Next, review the mods your route needs.'}
         </p>
       </div>
       <div className="route-caught-up-actions">
-        <button type="button" className="btn" onClick={onOpenMods}>
-          Checkout the mods
+        <button type="button" className="btn" onClick={isBrowserDemo ? _onExport : onOpenMods}>
+          {isBrowserDemo ? 'Export install order' : 'Checkout the mods'}
         </button>
       </div>
     </aside>
