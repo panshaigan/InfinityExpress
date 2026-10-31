@@ -193,8 +193,11 @@ automatically gate on the earlier `main` checks.
 
 Desktop checks use Tauri's existing frontend build hook instead of building the
 same web assets immediately before it. Frontend suites and coverage floors are
-unchanged. Linux dependency setup uses only Ubuntu repositories, skips optional
-recommended packages, and bounds network retries, lock waits, and command time.
+unchanged. Linux dependency setup uses only Ubuntu repositories for system
+packages, skips optional recommended packages, and bounds network retries, lock
+waits, and command time. Smoke setup also installs the official Minisign 0.12
+static binary with a pinned SHA-256 checksum because Ubuntu 22.04 does not
+provide the executable package.
 
 The Windows workflow builds an unsigned NSIS package with a separate
 `InfinityExpress Smoke Test` product name and `com.infinityexpress.smoketest`

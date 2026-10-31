@@ -72,6 +72,11 @@ Run `bash scripts/linux/appimage-smoke.sh` afterward to verify AppImage runtime
 layout and native commands without FUSE. These artifacts are test builds;
 production releases must use the repository's real signing keys.
 
+On Ubuntu 22.04, run `bash scripts/linux/install-ci-deps.sh --smoke` to install
+the smoke dependencies, including the upstream Minisign 0.12 static binary
+verified with a pinned SHA-256 checksum. That Ubuntu release does not provide
+a `minisign` executable package; Debian 12's container uses its distro package.
+
 ## Target-game compatibility preflight
 
 Every start/resume checks the remaining unfinished plan before staging or running
