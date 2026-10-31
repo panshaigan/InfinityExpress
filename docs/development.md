@@ -48,7 +48,8 @@ npm run tauri:dev
 | `npm run preview` | Serve the production build locally |
 | `npm test` | Run the frontend (Vitest) suite once |
 | `npm run test:watch` | Run Vitest in watch mode |
-| `cd src-tauri; cargo test` | Run Rust unit tests for the Tauri backend (PowerShell) |
+| `npm run test:rust` | Run Rust tests for the Tauri backend using the committed lockfile |
+| `npm run test:all` | Run Vitest, typecheck/production web build, and Rust tests |
 
 ### WSL / cross-OS installs
 
@@ -69,33 +70,62 @@ npm test
 npm run test:watch
 ```
 
-Tests live next to the code as `src/**/*.test.ts` and cover:
+Tests live next to the code as `src/**/*.test.ts` / `src/**/*.test.tsx` and cover:
 
 - Engine token matching (`matchEngine`)
 - `alwaysIf` / `displayIf` condition parsing and evaluation
 - Selection, station merge, alternatives, visibility, and install-order export
 - Parsing the curated `InstallSequence.xml`
-- Install plan builder / WeiDU resolution helpers where present
+- Install plans, WeiDU log import, restore reconciliation, run-state persistence,
+  logs, timings, and install status helpers
+- Project storage/migration, presets, mod catalog and component-browser helpers
+- React hook integration for navigation, buffered console output, and backup restore
+- Rendered confirmation-dialog interactions: initial Cancel focus, explicit
+  confirmation, Escape, backdrop clicks, drag-selection dismissal protection,
+  and listener cleanup
+
+Install persistence scheduler tests use fake timers and controlled disk-write
+promises to check debounce, cancellation, flush, serialization, and recovery
+after a write error. React tests use React DOM and jsdom; they do not launch a
+browser or native webview.
 
 ### Desktop / Rust (`src-tauri`)
 
-Unit tests for Tauri backend logic live as `#[cfg(test)]` modules next to the Rust sources (not a separate `tests/` crate). From the repo root on Windows/PowerShell:
+Tests for Tauri backend logic live as `#[cfg(test)]` modules next to the Rust sources (not a separate `tests/` crate). From the repo root:
 
-```powershell
-cd src-tauri; cargo test
+```bash
+npm run test:rust
 ```
 
-On bash/WSL: `cd src-tauri && cargo test`.
+This runs `cargo test --manifest-path src-tauri/Cargo.toml --locked`.
 
 Covered modules today:
 
 | File | Focus |
 | --- | --- |
-| `src-tauri/src/mod_fs.rs` | Safe folder-name validation for mod dirs |
-| `src-tauri/src/mod_acquire.rs` | GitHub release asset URL picking / href absolutizing |
-| `src-tauri/src/weidu_install.rs` | Setup exe path from tp2, component JSON labels, WeiDU command formatting |
+| `src-tauri/src/mod_fs.rs` | Folder-name validation and log-tail reads |
+| `src-tauri/src/mod_acquire.rs` | Release asset selection, archive recognition, and page metadata |
+| `src-tauri/src/weidu_install.rs` | TP2 discovery/containment, WeiDU metadata/log parsing, cleanup, and process-output batching |
+| `src-tauri/src/weidu_backup.rs` | Manifest discovery/migration, corrupt manifests, canonical path guards, media exclusions, and directory cleanup using temporary fixtures; symlink escape test on Unix |
+| `src-tauri/src/install_compatibility.rs` | Executable-platform compatibility checks |
+| `src-tauri/src/dev_reset.rs` | Fresh-install environment flag parsing |
 
-There is no npm script for these; run `cargo test` directly under `src-tauri/`.
+The backup tests exercise filesystem helpers; they do not run the complete
+AppHandle-driven backup/restore commands.
+
+### CI and remaining coverage
+
+Pull requests and pushes to `main` run Vitest, the production web build (including
+TypeScript checking), and Rust tests on Windows and Linux. The Linux workflow
+also builds packages and exercises native install/reinstall/uninstall, backups,
+restore, and real Tauri IPC on disposable game fixtures; see [Linux checks](linux.md).
+
+Coverage remains strongest in domain logic. Rendered project-wizard, component
+selection, and install-control flows still need broader integration tests,
+especially pause/stop/retry and project switching. Windows checks do not yet
+launch the packaged app or exercise native dialogs/IPC. The suite currently has
+no code-coverage report or enforced coverage threshold. A passing unit suite
+does not establish compatibility with every real game/mod list.
 
 ## Releases
 

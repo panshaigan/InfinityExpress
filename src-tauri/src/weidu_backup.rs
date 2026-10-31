@@ -818,3 +818,153 @@ pub async fn prepare_project_destination(
         path: target.to_string_lossy().into_owned(),
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    #[test]
+    fn discovers_backups_without_duplicating_them_on_reload() {
+        let root = tempdir().unwrap();
+        let game = game_backups_dir(root.path(), "bg2");
+        for name in [
+            "vanilla",
+            "before-scs",
+            "after-scs",
+            "baseline",
+            "snapshots",
+        ] {
+            fs::create_dir_all(game.join(name)).unwrap();
+        }
+        fs::write(game.join("notes.txt"), "not a snapshot").unwrap();
+
+        for _ in 0..2 {
+            let manifest =
+                list_backups(root.path().to_string_lossy().into_owned(), "bg2".into()).unwrap();
+            let vanilla = manifest.vanilla.unwrap();
+            assert_eq!(vanilla.kind, "vanilla");
+            assert_eq!(Path::new(&vanilla.path), game.join("vanilla"));
+            let mut names: Vec<_> = manifest.snapshots.iter().map(|s| s.name.as_str()).collect();
+            names.sort();
+            assert_eq!(names, ["after-scs", "before-scs"]);
+            for snapshot in &manifest.snapshots {
+                assert_eq!(snapshot.kind, "snapshot");
+                assert_eq!(Path::new(&snapshot.path), game.join(&snapshot.name));
+            }
+        }
+    }
+
+    #[test]
+    fn reloads_legacy_manifest_at_new_root_preserving_snapshot_metadata() {
+        let root = tempdir().unwrap();
+        fs::create_dir_all(backups_dir(root.path())).unwrap();
+        fs::write(
+            manifest_path(root.path(), "bg2"),
+            serde_json::json!({
+                "gameKey": "old-key",
+                "baseline": {
+                    "kind": "baseline", "name": "baseline", "path": "/old/vanilla",
+                    "createdAt": "2026-01-01T00:00:00Z", "excludeSafeDirs": false
+                },
+                "snapshots": [{
+                    "kind": "snapshot", "name": "before-scs", "path": "/old/snapshot",
+                    "createdAt": "2026-01-02T00:00:00Z", "excludeSafeDirs": true
+                }]
+            })
+            .to_string(),
+        )
+        .unwrap();
+
+        let manifest = read_manifest(root.path(), "bg2").unwrap();
+        assert_eq!(manifest.game_key, "bg2");
+        let vanilla = manifest.vanilla.unwrap();
+        assert_eq!(vanilla.kind, "vanilla");
+        assert_eq!(vanilla.name, "vanilla");
+        assert_eq!(
+            Path::new(&vanilla.path),
+            managed_vanilla_dir(root.path(), "bg2")
+        );
+        let snapshot = &manifest.snapshots[0];
+        assert_eq!(
+            Path::new(&snapshot.path),
+            snapshot_dir(root.path(), "bg2", "before-scs")
+        );
+        assert_eq!(snapshot.created_at, "2026-01-02T00:00:00Z");
+        assert!(snapshot.exclude_safe_dirs);
+    }
+
+    #[test]
+    fn corrupt_manifest_is_reported_without_overwriting_it() {
+        let root = tempdir().unwrap();
+        fs::create_dir_all(backups_dir(root.path())).unwrap();
+        let path = manifest_path(root.path(), "bg2");
+        fs::write(&path, "{broken").unwrap();
+        assert!(read_manifest(root.path(), "bg2").is_err());
+        assert_eq!(fs::read_to_string(path).unwrap(), "{broken");
+    }
+
+    #[test]
+    fn backup_path_guard_accepts_descendants_and_rejects_root_and_siblings() {
+        let fixture = tempdir().unwrap();
+        let root = fixture.path().join("backups");
+        let child = root.join("bg2/snapshot");
+        let sibling = fixture.path().join("backups-other");
+        fs::create_dir_all(&child).unwrap();
+        fs::create_dir_all(&sibling).unwrap();
+
+        assert_eq!(
+            resolve_under(&root, &child).unwrap(),
+            fs::canonicalize(&child).unwrap()
+        );
+        assert!(resolve_under(&root, &root).is_err());
+        assert!(resolve_under(&root, &sibling).is_err());
+        assert!(resolve_under(&root, &root.join("../backups-other")).is_err());
+        assert!(resolve_under(&root, &root.join("missing")).is_err());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn backup_path_guard_rejects_symlink_escape() {
+        let fixture = tempdir().unwrap();
+        let root = fixture.path().join("backups");
+        let outside = fixture.path().join("outside");
+        fs::create_dir_all(&root).unwrap();
+        fs::create_dir_all(&outside).unwrap();
+        let link = root.join("snapshot");
+        std::os::unix::fs::symlink(&outside, &link).unwrap();
+        assert!(resolve_under(&root, &link).is_err());
+    }
+
+    #[test]
+    fn measures_nested_files_and_excludes_safe_media_case_insensitively() {
+        let source = tempdir().unwrap();
+        for folder in ["override", "Music", "MOVIES"] {
+            fs::create_dir_all(source.path().join(folder)).unwrap();
+        }
+        fs::write(source.path().join("chitin.key"), b"key").unwrap();
+        fs::write(source.path().join("override/mod.dat"), b"modded").unwrap();
+        fs::write(source.path().join("Music/song.wav"), b"music").unwrap();
+        fs::write(source.path().join("MOVIES/intro.wbm"), b"movie").unwrap();
+
+        assert_eq!(measure_filtered(source.path(), false).unwrap(), (4, 19));
+        assert_eq!(measure_filtered(source.path(), true).unwrap(), (2, 9));
+    }
+
+    #[test]
+    fn wipe_removes_stale_game_contents_but_preserves_directory_and_siblings() {
+        let fixture = tempdir().unwrap();
+        let target = fixture.path().join("game");
+        let sentinel = fixture.path().join("keep.txt");
+        fs::create_dir_all(target.join("override/nested")).unwrap();
+        fs::write(target.join("override/nested/mod.dat"), "modded").unwrap();
+        fs::write(target.join("WeiDU.log"), "installed").unwrap();
+        fs::write(&sentinel, "keep").unwrap();
+
+        wipe_dir_contents(&target).unwrap();
+        assert!(target.is_dir());
+        assert!(dir_is_empty(&target).unwrap());
+        assert_eq!(fs::read_to_string(sentinel).unwrap(), "keep");
+        wipe_dir_contents(&target).unwrap();
+    }
+}

@@ -10,6 +10,8 @@
     "preview": "node ./node_modules/vite/bin/vite.js preview",
     "test": "node ./node_modules/vitest/vitest.mjs run",
     "test:watch": "node ./node_modules/vitest/vitest.mjs",
+    "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml --locked",
+    "test:all": "npm test && npm run build && npm run test:rust",
     "cost:from-metrics": "node scripts/cost-from-metrics.mjs",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",

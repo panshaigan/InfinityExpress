@@ -26,7 +26,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-      - run: cargo test --manifest-path src-tauri/Cargo.toml
+      - run: npm run test:rust
       - name: Verify bundled native WeiDU
         run: |
           test -x src-tauri/resources/weidu/linux-amd64/weidu
