@@ -196,14 +196,14 @@ export function RestoreSnapshotDialog({
     try {
       await restoreGameDir(selectedPath, dest)
       onLog?.(`Snapshot restored from ${selectedPath} → ${selectedGameKey}`)
-      pushToast({ tone: 'success', message: 'Snapshot restored.' })
+      pushToast({ sound: true, tone: 'success', message: 'Snapshot restored.' })
       onRestoreDone(selectedPath, selectedGameKey)
       onClose()
     } catch (e) {
       const message = String(e)
       setError(message)
       onLog?.(`Snapshot restore failed: ${message}`)
-      pushToast({ tone: 'error', message })
+      pushToast({ sound: true, tone: 'error', message })
     } finally {
       setBusy(false)
       setProgress(null)
@@ -226,12 +226,12 @@ export function RestoreSnapshotDialog({
       await loadManifests()
       onSnapshotsChange?.()
       onLog?.(`Snapshot deleted: ${entry.name} (${entry.gameKey})`)
-      pushToast({ tone: 'success', message: 'Snapshot deleted.' })
+      pushToast({ sound: true, tone: 'success', message: 'Snapshot deleted.' })
     } catch (e) {
       const message = String(e)
       setError(message)
       onLog?.(`Snapshot delete failed: ${message}`)
-      pushToast({ tone: 'error', message })
+      pushToast({ sound: true, tone: 'error', message })
     } finally {
       setBusy(false)
       setProgress(null)

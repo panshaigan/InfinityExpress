@@ -27,6 +27,7 @@ import { DirectoryField } from '../DirectoryField'
 import { OutlinedSelect, type OutlinedSelectOption } from '../OutlinedSelect'
 import { OutlinedTextField } from '../OutlinedTextField'
 import { SettingsOpenButton } from '../SettingsOpenButton'
+import { useToast } from '../toasts/toastContext'
 import {
   listenBackupProgress,
   type BackupProgress,
@@ -129,6 +130,7 @@ export function ProjectWizard({
   onOpenSettings,
   onBusyChange,
 }: Props) {
+  const { pushToast } = useToast()
   const [step, setStep] = useState<WizardStep>('engine')
   const [engine, setEngine] = useState<SelectedGame | null>(null)
   const [name, setName] = useState('')
@@ -440,11 +442,15 @@ export function ProjectWizard({
         try {
           if (methodFor(key) === 'create') {
             await createManagedVanillaFromFolder(key, source)
+            pushToast({ sound: true, tone: 'success', message: `${GAME_LABELS[key]} vanilla backup created.` })
           } else {
             await registerExternalVanilla(key, source)
           }
         } catch (err) {
           setVanillaFieldError(key, String(err))
+          if (methodFor(key) === 'create') {
+            pushToast({ sound: true, tone: 'error', message: `Vanilla backup failed: ${String(err)}` })
+          }
           return
         }
       }
@@ -501,6 +507,7 @@ export function ProjectWizard({
           await prepareDestinationForKey(key, path)
         } catch (err) {
           setDestFieldError(key, String(err))
+          pushToast({ sound: true, tone: 'error', message: `Game folder preparation failed: ${String(err)}` })
           setSubmitting(false)
           return
         }
@@ -514,6 +521,7 @@ export function ProjectWizard({
       })
       const folderName = getProject(id)?.meta.folderName
       if (folderName) await ensureProjectDir(folderName)
+      pushToast({ sound: true, tone: 'success', message: 'Project game folders ready.' })
       onCreated(id)
     } finally {
       setSubmitting(false)

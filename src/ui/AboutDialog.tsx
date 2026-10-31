@@ -151,10 +151,11 @@ export function AboutDialog({ open, onClose }: Props) {
       setUpdateCheck(result)
       if (result.status === 'available') {
         setPendingUpdate(result)
+        pushToast({ sound: true, tone: 'success', message: `Update available: v${result.version}` })
       } else if (result.status === 'current') {
-        pushToast({ tone: 'success', message: 'You are on the latest version.' })
+        pushToast({ sound: true, tone: 'success', message: 'You are on the latest version.' })
       } else if (result.status === 'error') {
-        pushToast({ tone: 'error', message: result.message })
+        pushToast({ sound: true, tone: 'error', message: result.message })
       }
     } finally {
       setCheckingUpdates(false)
@@ -167,7 +168,7 @@ export function AboutDialog({ open, onClose }: Props) {
     try {
       await installAppUpdate(pendingUpdate.update)
     } catch (err) {
-      pushToast({ tone: 'error', message: String(err) })
+      pushToast({ sound: true, tone: 'error', message: String(err) })
       setInstallingUpdate(false)
       setPendingUpdate(null)
     }

@@ -928,6 +928,7 @@ export function useInstallRun(options: {
         runRef.current = next
         appendCommandLine(`Snapshot saved: ${planned.name} (${gameKey})`)
         pushToast({
+          sound: true,
           tone: 'success',
           message: `Snapshot saved: ${planned.name}`,
         })
@@ -953,7 +954,7 @@ export function useInstallRun(options: {
         setRun(halted)
         runRef.current = halted
         appendCommandLine(`Snapshot failed: ${message}`)
-        pushToast({ tone: 'error', message })
+        pushToast({ sound: true, tone: 'error', message })
         return { current: halted, failed: true }
       } finally {
         unlisten?.()
@@ -996,7 +997,7 @@ export function useInstallRun(options: {
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err)
           appendCommandLine(`[compatibility] ${message}`)
-          pushToast({ tone: 'error', message })
+          pushToast({ sound: true, tone: 'error', message })
           setRun({ ...current, runState: 'failed' })
           return
         }
@@ -1062,6 +1063,7 @@ export function useInstallRun(options: {
             runRef.current = halted
             appendCommandLine(`Breakpoint hit: ${step.modId}`)
             pushToast({
+              sound: true,
               tone: 'success',
               message: `Breakpoint hit: ${step.modId}`,
             })

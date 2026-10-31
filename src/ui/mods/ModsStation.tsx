@@ -152,7 +152,7 @@ export function ModsStation({
     refreshDiskStatus: onRefreshDiskStatus,
     clearSelection,
     onMissingDownloadDir: onOpenSettings,
-    onJobFinished: pushToast,
+    onJobFinished: (result) => pushToast({ ...result, sound: true }),
   })
 
   useEffect(() => {

@@ -4,63 +4,35 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from 'react'
-import { getCurrentWindow } from '@tauri-apps/api/window'
-import { isDesktopApp } from '../../lib/desktop/fsDialogs'
-import { playSystemSound } from '../../lib/desktop/systemSound'
+import { cancelPendingNotificationSound, requestNotificationSound, unlockNotificationAudio } from '../../lib/ui/notificationSound'
 import { ToastHost, type ToastItem, type ToastTone } from './ToastHost'
 
 interface ToastContextValue {
-  pushToast: (toast: { tone: ToastTone; message: string }) => void
+  pushToast: (toast: { tone: ToastTone; message: string; sound?: boolean }) => void
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null)
 
-function documentLooksFocused(): boolean {
-  return typeof document !== 'undefined' && !document.hidden
-}
-
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([])
-  const focusedRef = useRef(documentLooksFocused())
 
   useEffect(() => {
-    function syncVisibility() {
-      if (document.hidden) focusedRef.current = false
-      else if (!isDesktopApp()) focusedRef.current = true
-    }
-    syncVisibility()
-    document.addEventListener('visibilitychange', syncVisibility)
-
-    let unlisten: (() => void) | undefined
-    if (isDesktopApp()) {
-      void getCurrentWindow()
-        .onFocusChanged(({ payload: focused }) => {
-          focusedRef.current = focused
-        })
-        .then((fn) => {
-          unlisten = fn
-        })
-        .catch(() => {
-          // Focus events optional — visibilitychange still applies.
-        })
-    }
-
+    window.addEventListener('pointerdown', unlockNotificationAudio, true)
+    window.addEventListener('keydown', unlockNotificationAudio, true)
     return () => {
-      document.removeEventListener('visibilitychange', syncVisibility)
-      unlisten?.()
+      window.removeEventListener('pointerdown', unlockNotificationAudio, true)
+      window.removeEventListener('keydown', unlockNotificationAudio, true)
+      cancelPendingNotificationSound()
     }
   }, [])
 
-  const pushToast = useCallback((toast: { tone: ToastTone; message: string }) => {
+  const pushToast = useCallback((toast: { tone: ToastTone; message: string; sound?: boolean }) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
     setToasts((prev) => [...prev, { id, tone: toast.tone, message: toast.message }])
-    if (!focusedRef.current) {
-      void playSystemSound(toast.tone)
-    }
+    if (toast.sound) requestNotificationSound(toast.tone)
   }, [])
 
   const dismissToast = useCallback((id: string) => {

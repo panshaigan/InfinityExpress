@@ -5,7 +5,6 @@ mod install_compatibility;
 mod mod_acquire;
 mod mod_fs;
 mod process_util;
-mod system_sound;
 mod weidu_backup;
 mod weidu_install;
 
@@ -60,7 +59,6 @@ pub fn run() {
             weidu_backup::create_named_backup,
             weidu_backup::delete_backup,
             weidu_backup::prepare_project_destination,
-            system_sound::play_system_sound,
         ])
         .setup(|app| {
             let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/32x32.png"))

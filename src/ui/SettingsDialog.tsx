@@ -54,6 +54,9 @@ import {
 } from '../lib/projects'
 import type { GameFolderPaths } from '../lib/ui/gameFolderPrefs'
 import { emptyDestinations } from '../lib/projects'
+import { readNotificationSounds, writeNotificationSounds } from '../lib/ui/notificationPrefs'
+import { previewNotificationSound, type NotificationSoundKind } from '../lib/ui/notificationSound'
+import { useToast } from './toasts/toastContext'
 
 const GAME_FOLDER_KEYS: GameFolderKey[] = ['bg1', 'bg2', 'iwd', 'pst']
 
@@ -143,6 +146,18 @@ export function SettingsDialog({
   const [appDirs, setAppDirs] = useState(readAppDirPaths)
   const [githubToken, setGithubToken] = useState(readGithubToken)
   const [weiduPath, setWeiduPath] = useState(readWeiduPath)
+  const { pushToast } = useToast()
+  const [notificationSounds, setNotificationSounds] = useState(readNotificationSounds)
+  const [soundError, setSoundError] = useState<string | null>(null)
+
+  async function previewSound(kind: NotificationSoundKind) {
+    setSoundError(null)
+    try {
+      await previewNotificationSound(kind)
+    } catch {
+      setSoundError('Could not play the preview. Check your audio output and try again.')
+    }
+  }
 
   menuOpenKeyRef.current = menuOpenKey
   pendingCopyKeyRef.current = pendingCopyKey
@@ -177,6 +192,8 @@ export function SettingsDialog({
     setAppDirs(readAppDirPaths())
     setGithubToken(readGithubToken())
     setWeiduPath(readWeiduPath())
+    setNotificationSounds(readNotificationSounds())
+    setSoundError(null)
     setVanillaErrors({})
     setDestErrors({})
     setMenuOpenKey(null)
@@ -410,8 +427,10 @@ export function SettingsDialog({
       await copyVanillaToFolder(key, picked)
       setVanillaFieldError(key, null)
       refreshRegistry()
+      pushToast({ sound: true, tone: 'success', message: `${GAME_LABELS[key]} vanilla backup copied.` })
     } catch (err) {
       setVanillaFieldError(key, String(err))
+      pushToast({ sound: true, tone: 'error', message: `Vanilla backup copy failed: ${String(err)}` })
     } finally {
       setVanillaBusy(null)
       setVanillaProgress(null)
@@ -679,6 +698,32 @@ export function SettingsDialog({
             aria-hidden={tab !== 'app'}
           >
             <div className="settings-fields">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={notificationSounds}
+                  onChange={(event) => {
+                    const enabled = event.target.checked
+                    setNotificationSounds(enabled)
+                    writeNotificationSounds(enabled)
+                  }}
+                />{' '}
+                Notification sounds
+              </label>
+              <p className="settings-help">
+                Play a short sound when downloads, update checks, installations,
+                or backup operations finish or need attention, even in the background.
+                Notifications arriving together play one sound.
+              </p>
+              <div>
+                <button type="button" className="btn secondary" onClick={() => void previewSound('success')}>
+                  Preview success
+                </button>{' '}
+                <button type="button" className="btn secondary" onClick={() => void previewSound('error')}>
+                  Preview error
+                </button>
+              </div>
+              {soundError ? <p className="settings-help" role="alert">{soundError}</p> : null}
               <DirectoryField
                 id="settings-backup-dir"
                 label="Main data folder"

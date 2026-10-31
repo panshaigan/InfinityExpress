@@ -383,10 +383,14 @@ export function InstallStation({
     const prev = prevRunStateRef.current
     if (next === prev) return
     prevRunStateRef.current = next
+    if (prev == null) return
     if (next === 'failed') {
-      pushToast({ tone: 'error', message: 'Install failed.' })
+      pushToast({ sound: true, tone: 'error', message: 'Install failed.' })
     } else if (next === 'waitingForInput') {
-      pushToast({ tone: 'success', message: 'Install needs your input.' })
+      pushToast({ sound: true, tone: 'success', message: 'Install needs your input.' })
+    } else if (next === 'completed') {
+      const hasErrors = run?.steps.some((step) => step.status === 'failed')
+      pushToast({ sound: true, tone: hasErrors ? 'error' : 'success', message: hasErrors ? 'Installation finished with errors.' : 'Installation finished.' })
     }
   }, [run?.runState, pushToast])
 
@@ -843,7 +847,7 @@ export function InstallStation({
         appendCommandLine(
           `Snapshot saved: ${name} (${takeSnapshotDialog.gameKey})`,
         )
-        pushToast({ tone: 'success', message: `Snapshot saved: ${name}` })
+        pushToast({ sound: true, tone: 'success', message: `Snapshot saved: ${name}` })
         setTakeSnapshotDialog(null)
         setTakeProgress(null)
         refreshSnapshotCount()
@@ -851,7 +855,7 @@ export function InstallStation({
         const message = String(e)
         setTakeError(message)
         appendCommandLine(`Snapshot failed: ${message}`)
-        pushToast({ tone: 'error', message })
+        pushToast({ sound: true, tone: 'error', message })
       } finally {
         unlisten?.()
         setSnapshotBusy(false)
@@ -917,13 +921,13 @@ export function InstallStation({
         }
 
         setNotice('Game restored from vanilla backup.')
-        pushToast({ tone: 'success', message: 'Game restored from vanilla backup.' })
+        pushToast({ sound: true, tone: 'success', message: 'Game restored from vanilla backup.' })
         appendCommandLine('Restart complete — vanilla backup restored.')
         return true
       } catch (e) {
         const message = String(e)
         setNotice(message)
-        pushToast({ tone: 'error', message })
+        pushToast({ sound: true, tone: 'error', message })
         appendCommandLine(`Restart failed: ${message}`)
         return false
       } finally {
@@ -1009,12 +1013,12 @@ export function InstallStation({
         skipAutoFinishedRef.current = true
         setFinishedDialogOpen(false)
         setNotice('Cleanup finished.')
-        pushToast({ tone: 'success', message: 'Cleanup finished.' })
+        pushToast({ sound: true, tone: 'success', message: 'Cleanup finished.' })
       } catch (e) {
         const message = String(e)
         setCleanupError(message)
         setNotice(message)
-        pushToast({ tone: 'error', message })
+        pushToast({ sound: true, tone: 'error', message })
       } finally {
         setCleanupBusy(false)
       }

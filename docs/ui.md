@@ -46,6 +46,22 @@ Detail pane, station rail, and install console collapse via **clickable chrome a
 
 CSS classes: `.detail-pane-chrome-interactive`, `.station-nav-rail-hit`, `.install-console-header-hit`.
 
+## Notification sounds
+
+Toasts are silent by default. Pass `sound: true` to `pushToast` for completion,
+failure, or attention needed after a potentially long operation: mod downloads
+and remote checks, app update checks, installation, backup creation/restoration,
+game folder preparation, and cleanup. Clipboard actions and other immediate
+feedback remain silent. Installation announces its final result, failures,
+input prompts, and breakpoints; individual successful components stay silent.
+
+Settings → App → Notification sounds persists a global toggle (enabled by
+default). Success/error preview buttons work even when muted and report playback
+errors inline. Bundled WAV chimes play through Web Audio regardless of window
+focus; user interaction primes playback for later background completion.
+Notifications within 150 ms share one sound (error takes priority), followed by
+a 1.5-second quiet period. Playback failure never blocks the operation or toast.
+
 ## References
 
 - CSS: `src/index.css` — “Immediate hover tips (engine-style; no native title delay).” Global `*` scrollbar block; hide exceptions on `.list-pane-header` / `.station-list-toolbar`.
