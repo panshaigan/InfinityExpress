@@ -8,6 +8,7 @@ on:
 jobs:
   linux:
     runs-on: ubuntu-22.04
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,14 +23,16 @@ jobs:
           tool: cargo-llvm-cov@0.9.1
       - uses: swatinem/rust-cache@v2
         with:
-          workspaces: src-tauri
+          shared-key: desktop-${{ runner.os }}
+          workspaces: |
+            src-tauri -> target
+            src-tauri -> target/llvm-cov-target
+          cache-on-failure: true
       - name: Install Tauri dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev librsvg2-dev libayatana-appindicator3-dev xvfb xauth dbus-x11 imagemagick xdotool webkit2gtk-driver minisign patchelf xdg-utils
+        timeout-minutes: 16
+        run: bash scripts/linux/install-ci-deps.sh --smoke
       - run: npm ci
       - run: npm run test:coverage
-      - run: npm run build
       - run: npm run test:coverage:rust
       - name: Upload available coverage reports
         uses: actions/upload-artifact@v4
@@ -46,6 +49,7 @@ jobs:
           src-tauri/resources/weidu/linux-amd64/weidu --version
           python3 scripts/linux/weidu-smoke.py
       - name: Build unsigned Linux Debian package
+        # tauri:build also typechecks/builds the frontend; do it once.
         run: npm run tauri:build -- --bundles deb --config '{"bundle":{"createUpdaterArtifacts":false}}'
       - name: Check package contents and desktop startup
         run: bash scripts/linux/package-smoke.sh

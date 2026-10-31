@@ -164,7 +164,7 @@ npm run check:ci
 Run `npm ci` first and install the desktop prerequisites described above. On
 Windows, this includes the isolated NSIS installer lifecycle test and requires
 an interactive desktop with WebView2. On Linux, install the packages listed in
-`.github/workflows/linux-check.yml`, plus `cargo-llvm-cov` and the Rust
+`scripts/linux/install-ci-deps.sh --smoke`, plus `cargo-llvm-cov` and the Rust
 `llvm-tools-preview` component. The Linux command includes package, signing,
 and AppImage smoke checks. Run on both operating systems to cover both CI jobs.
 The command stops at the first failure and does not publish or deploy anything.
@@ -182,6 +182,23 @@ local test commands before tagging. Coverage
 reports are retained as CI artifacts; Linux also collects Rust coverage. The Linux workflow
 also builds packages and exercises native install/reinstall/uninstall, backups,
 restore, and real Tauri IPC on disposable game fixtures; see [Linux checks](linux.md).
+
+Native compilation dominates these checks. `Warm Rust caches` runs on `main`
+when Cargo dependencies, Rust configuration, or CI files change (and can be run
+manually on `main`). It compiles production dependencies on both platforms,
+Windows test dependencies without executing tests, and runs instrumented Linux
+Rust tests to warm the coverage build. It does not package or publish anything.
+Let it finish before pushing a release tag. GitHub isolates caches between
+different tags, but every tag can restore the default branch's cache. Check and
+release jobs share an OS-specific Rust cache, including the separate Linux
+coverage target, and preserve compiled dependencies even after a later failure.
+After a Rust stable update or cache eviction, manually run the warmer on `main`
+before tagging to avoid a cold native build.
+
+Desktop checks use Tauri's existing frontend build hook instead of building the
+same web assets immediately before it. Frontend suites and coverage floors are
+unchanged. Linux dependency setup uses only Ubuntu repositories, skips optional
+recommended packages, and bounds network retries, lock waits, and command time.
 
 The Windows workflow builds an unsigned NSIS package with a separate
 `InfinityExpress Smoke Test` product name and `com.infinityexpress.smoketest`

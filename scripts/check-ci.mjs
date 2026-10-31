@@ -2,9 +2,10 @@ import { spawnSync } from 'node:child_process'
 
 const steps = [
   ['npm', ['run', 'test:coverage']],
-  ['npm', ['run', 'build']],
   ['npm', ['run', 'build:demo']],
 ]
+// Each platform's tauri:build runs the desktop typecheck/build once, after
+// build:demo has finished using dist. Keep the default Tauri build hook enabled.
 if (process.platform === 'win32') {
   steps.push(
     ['npm', ['run', 'test:rust']],

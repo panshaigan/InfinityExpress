@@ -8,6 +8,7 @@ on:
 jobs:
   windows:
     runs-on: windows-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,11 +18,15 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: swatinem/rust-cache@v2
         with:
-          workspaces: src-tauri
+          shared-key: desktop-${{ runner.os }}
+          workspaces: |
+            src-tauri -> target
+            src-tauri -> target/llvm-cov-target
+          cache-on-failure: true
       - run: npm ci
       - run: npm run test:coverage
-      - run: npm run build
       - run: npm run test:rust
+      # tauri:build also typechecks/builds the frontend; do it once.
       - name: Build isolated per-user NSIS test installer
         run: npm run tauri:build -- --bundles nsis --config scripts/windows/tauri.smoke.conf.json
       - name: Install, exercise WebView2/native dialogs/IPC, and uninstall
