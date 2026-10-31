@@ -31,3 +31,10 @@ jobs:
         run: |
           test -x src-tauri/resources/weidu/linux-amd64/weidu
           src-tauri/resources/weidu/linux-amd64/weidu --version
+      - name: Build unsigned Linux Debian package
+        run: npm run tauri:build -- --bundles deb --config '{"bundle":{"createUpdaterArtifacts":false}}'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-debian-test-build
+          path: src-tauri/target/release/bundle/deb/*.deb
+          if-no-files-found: error

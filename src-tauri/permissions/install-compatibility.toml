@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-check-install-compatibility"
+description = "Check known executable patches against the target game platform before installing."
+commands.allow = ["check_install_compatibility"]

@@ -12,6 +12,8 @@ import {
 } from '../lib/ui/gameFolderPrefs'
 import { readWeiduPath } from '../lib/ui/weiduPrefs'
 import { buildInstallPlan } from '../lib/install/planBuilder'
+import { checkInstallCompatibility } from '../lib/desktop/weiduInstall'
+import { applyInstallCompatibility, pendingCompatibilitySteps } from '../lib/install/compatibility'
 import { syncRunWithPlan } from '../lib/install/installLock'
 import { planStepsMatchRun } from '../lib/ui/appSessionPrefs'
 import {
@@ -973,6 +975,29 @@ export function useInstallRun(options: {
       setRun({ ...current, runState: 'running' })
 
       try {
+        // Check the whole remaining plan before staging any component. In
+        // particular, auto-skip-on-errors must not bypass an EEex blocker.
+        try {
+          const issues = await checkInstallCompatibility(
+            pendingCompatibilitySteps(current).map((step) => ({
+              stepId: step.stepId,
+              componentId: step.componentId,
+              modId: step.modId,
+              gameDir: gameDirForPhase(current.game, step.phase, gameFolders),
+            })),
+          )
+          current = applyInstallCompatibility(mergeLiveMarkers(current, runRef.current), issues)
+          for (const issue of issues) {
+            if (issue.action === 'skip') appendCommandLine(`[compatibility] ${issue.reason}`)
+          }
+          setRun({ ...current, runState: 'running' })
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          appendCommandLine(`[compatibility] ${message}`)
+          pushToast({ tone: 'error', message })
+          setRun({ ...current, runState: 'failed' })
+          return
+        }
         for (let i = current.cursor; i < current.steps.length; i++) {
           current = mergeLiveMarkers(current, runRef.current)
 

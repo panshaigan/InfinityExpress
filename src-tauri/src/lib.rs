@@ -1,6 +1,7 @@
 mod bundled_tools;
 mod dev_reset;
 mod file_version;
+mod install_compatibility;
 mod mod_acquire;
 mod mod_fs;
 mod process_util;
@@ -21,6 +22,7 @@ pub fn run() {
         .manage(mod_acquire::AcquireCancelFlag::new())
         .manage(weidu_install::RunningWeidu::new())
         .invoke_handler(tauri::generate_handler![
+            install_compatibility::check_install_compatibility,
             dev_reset::take_fresh_install_env_flag,
             bundled_tools::bundled_weidu_path,
             mod_fs::list_subdir_names,

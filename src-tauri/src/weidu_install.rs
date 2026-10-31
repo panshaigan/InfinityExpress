@@ -804,6 +804,7 @@ pub async fn run_weidu_step(
 
     let (cwd, _tp2_arg) = weidu_game_cwd_and_tp2_arg(&game_dir, &tp2)?;
     let (weidu_id, setup_exe) = setup_exe_for_tp2(&game_dir, &tp2)?;
+    crate::install_compatibility::require_compatible(&game_dir, &weidu_id)?;
     fs::copy(&weidu, &setup_exe)
         .map_err(|e| format!("Failed to copy WeiDU to setup-{weidu_id}.exe: {e}"))?;
 
@@ -1470,6 +1471,7 @@ pub fn stage_mod_into_game_dir(
     validate_folder_name(&staged_name)?;
 
     let target = game.join(&staged_name);
+    crate::install_compatibility::require_compatible(&game, &staged_name)?;
     emit_stage_progress(
         &app,
         StageProgress {

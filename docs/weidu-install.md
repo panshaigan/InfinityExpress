@@ -139,6 +139,13 @@ See [Linux support](linux.md) for remaining native mod compatibility limitations
 
 ## Resolve & run
 
+Before start/resume stages any mod, target-game compatibility checks inspect the
+remaining unfinished plan. Native Linux games skip Bubb's Windows-only pathfinding
+revert with an explanatory warning and block EEex; Windows game folders (including
+Proton/Wine installs) keep both options. Unknown/mixed executable platforms block
+these patches. Auto skip on errors cannot bypass this preflight. Direct staging
+and installation enforce the same boundary. See [Linux support](linux.md).
+
 1. Stage by XML `modId` (download folder) → discover tp2 → WeiDU id = tp2 parent folder.
 2. List: `weidu.exe --nogame --noautoupdate --list-components-json <tp2> <lang>` (stdout is parsed only — not mirrored to the WeiDU/Results console).
 3. Resolve: prefer `:N` → number; else match WeiDU `label[]` to **component id** (not XML UI `label`/`name`).

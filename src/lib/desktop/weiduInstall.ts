@@ -1,12 +1,23 @@
 import { invoke } from '@tauri-apps/api/core'
 import { listen, type UnlistenFn } from '@tauri-apps/api/event'
 import { isDesktopApp } from './fsDialogs'
+import type { InstallCompatibilityIssue } from '../install/compatibility'
 import type {
   BackupManifest,
   WeiduComponentInfo,
   WeiduInstallEvent,
   WeiduLanguageInfo,
 } from '../install/types'
+
+export async function checkInstallCompatibility(requests: {
+  stepId: string
+  gameDir: string
+  componentId: string
+  modId: string
+}[]): Promise<InstallCompatibilityIssue[]> {
+  if (!isDesktopApp()) return []
+  return invoke<InstallCompatibilityIssue[]>('check_install_compatibility', { requests })
+}
 
 export interface RunStepInput {
   weiduPath: string
