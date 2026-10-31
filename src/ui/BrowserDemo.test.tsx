@@ -24,6 +24,8 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
+// This full-app journey uses the real catalog and mounts the app twice. Allow
+// coverage instrumentation and parallel CI workers more time than unit tests.
 it('opens the hub, creates a folder-free project, exports, and restores the project', async () => {
   ui.render(<App />)
   expect(ui.container.querySelector('.project-hub')).not.toBeNull()
@@ -70,4 +72,4 @@ it('opens the hub, creates a folder-free project, exports, and restores the proj
   ui.render(<App />)
   expect(ui.container.querySelector('.project-hub')?.textContent).toContain('Demo saga')
   expect(getProject(project.id)?.session?.selectedIds.length).toBeGreaterThan(0)
-})
+}, 30_000)
