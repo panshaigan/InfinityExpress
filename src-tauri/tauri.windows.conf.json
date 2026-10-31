@@ -1,0 +1,8 @@
+{
+  "bundle": {
+    "resources": {
+      "resources/weidu/weidu.exe": "weidu/weidu.exe",
+      "resources/7zip/": "7zip/"
+    }
+  }
+}

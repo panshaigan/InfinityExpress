@@ -226,7 +226,7 @@
 					<component id="bg1re_camryn_and_tamah" name="Camryn and Tamah, by tibicina" label="Camryn and Tamah, by Tibicina" complexity="minor" cost="2" />
 					<component id="bg1re_cloakwood_lovers" name="Cloakwood Lovers, by tibicina" label="Cloakwood Lovers, by Tibicina" complexity="minor" cost="1" />
 				</mod>
-				<mod id="BS_Baldurans_Seatower">
+				<mod id="BS_Baldurans_Seatower" label="Balduran's Seatower">
 					<component id="BS_BalduransSeatower-main" name="The BS Company presents Balduran's Seatower" label="Balduran's Seatower" modId="BS_Baldurans_Seatower" recommended="blendWell" complexity="major" cost="27" core="1"/>
 					<component id="BS_BalduransSeatower-reveal_map" name="Reveal Seatower Map When Entering Area" label="Reveal Seatower Map When Entering Area" modId="BS_Baldurans_Seatower" engine="bg1" complexity="minor" alwaysIf="BS_BalduransSeatower-main" noDisplay="1" />
 					<alternatives label="Adapt Palace Fight with Regard to Doppelganger Invasion">
@@ -250,7 +250,7 @@
 					<component id="OL-EEEE-CLOAKWOOD-BRIDGE" name="EEEE: Daenni's Bridge Bandits" label="Daenni's Bridge Bandits" complexity="minor" cost="1" />
 				</mod>
 				<component id="AWizardDidIt-Blackhearts_BG1" name="Install Blackhearts for &quot;BGEE&quot; or &quot;EET including BGEE and BG2EE&quot;" label="Blackhearts" modId="Black-Hearts" recommended="blendWell" complexity="major" cost="13" />
-				<component id="SotSC:0" name="Shades of the Sword Coast – Expansion Pack for BGEE" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" recommended="extended" complexity="major" cost="58" />
+				<component id="SotSC:0" name="Shades of the Sword Coast – Expansion Pack for BGEE" label="Shades of the Sword Coast" desc="Adds many smaller quests and encounters" modId="shades-of-the-sword-coast" complexity="major" cost="58" />
 				<mod id="The_Calling" label="The Calling" recommended="extended">
 					<component id="cd_the_calling_mage" name="The Calling: Mage - The Cursed Bracers" label="Mage - the Cursed Bracers" complexity="moderate" cost="6" />
 					<component id="cd_the_calling_fighter" name="The Calling: Fighter - Expanded Gnoll Fortress" label="Fighter - Expanded Gnoll Fortress" complexity="moderate" cost="18" />
@@ -325,7 +325,7 @@
                     <component id="isra_npc_for_bg" name="Isra NPC Mod for BG:EE, EET, BGT and TuTu" label="Isra - human LG paladin" core="1" modId="Isra-NPC" package="customNpcs" complexity="minor" />
                     <mod id="Emily-BG1">
                         <component id="Emily:0" name="Emily NPC for BG1EE" label="Emily - half-elven NG Archer" core="1" package="customNpcs" complexity="minor" />
-                        <component id="Emily:1" name="Emily's Music" label="Emily's Music" noDisplay="1" alwaysIf="Emily:0" />
+                        <component id="Emily:2" name="Artisan's Kitpack: Invisible Blade" label="Artisan's Kitpack: Invisible Blade" modId="Emily-BG1" complexity="minor" noDisplay="1" alwaysIf="Emily:0" />
                     </mod>
                     <mod id="Kale-BG1">
                         <component id="Kale:0" name="Kale NPC for BG1EE and SoD" label="Kale - halfling CN Warden (fighter)" core="1" package="customNpcs" complexity="minor" />
@@ -341,7 +341,7 @@
                         <component id="Recorder:1" name="Recorder's Music" label="Recorder's Music" complexity="minor" noDisplay="1" alwaysIf="Recorder:0" />
                     </mod>
                     <component id="Sirene:0" name="Sirene NPC for Baldur's Gate: Enhanced Edition" label="Sirene - tiefling LG Martyr (paladin)" core="1" modId="Sirene-BG1" package="customNpcs" complexity="minor" />
-                    <component id="L#-VERRBGEE" name="Verr'Sza - the rakshasa NPC for BG1EE" label="Verr'Sza - rakshasa CE Naztharune Ranger" modId="verrsza-bg1ee" package="customNpcs" complexity="minor" />
+                    <component id="L#-VERRBGEE" name="Verr'Sza - the rakshasa NPC for BG1EE" label="Verr'Sza - rakshasa CE Naztharune Ranger" modId="verrsza-bg1ee" complexity="minor" />
                     <component id="Vienxay:0" name="Vienxay NPC for BG1EE" label="Vienxay - elven NE Shadowmage (mage)" modId="Vienxay-BG1" package="customNpcs" complexity="minor" />
                     <component id="gv#_glams_npc_pack" name="Glam's NPC Pack for BG:EE, BGT and BG TUTU" label="Glam's NPC Pack" modId="Glam-NPC-Pack" description="5 NPCs" package="customNpcs" complexity="minor" />
 				</custom>
@@ -367,7 +367,7 @@
 			<items label="Items" unfolded="1">
 				<add label="New Items">
 					<component id="cd_tweaks_taerom_makes_multiple_ankheg_armor" name="Taerom Makes Additional Ankheg Armor [Icendoan/grogerson]" label="Taerom makes additional Ankheg Armor" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3230" complexity="minor" cost="2" />
-					<component id="ForgottenArmament-Breach" name="Add Breach Scrolls to Sorcerous Sundries" label="Add Breach scrolls to Sorcerous Sundries" modId="forgotten-armament" complexity="minor" cost="2" />
+					<component id="ForgottenArmament-Breach" name="Add Breach Scrolls to Sorcerous Sundries" label="Add Breach scrolls to Sorcerous Sundries" modId="forgotten-armament" complexity="minor" cost="2" recommended="blendWell" />
 				</add>
 				<update label="Item Changes" unfolded="1">
 					<component id="ZSTweaks:1663" name="Make Sandthief Ring consistently grant one use of invisibility per day" label="Make Sandthief Ring consistently grant one use of Invisibility per day" modId="ZSTweaks" recommended="blendWell" complexity="minor" cost="15" />
@@ -464,7 +464,7 @@
 						<component id="KivanTimedQuest" name="[Kivan] Removed Kivan's timed quest" label="Removed Kivan's Timed Quest" modId="continuous-npcs" complexity="minor" />
 						<component id="KivanAbilityScores" name="[Kivan] Slightly Boost Kivan's Ability Scores" label="Slightly boost Kivan's Ability Scores" modId="continuous-npcs" complexity="minor" />
 					</group>
-                    <component id="L#-ARKANIS-SOD" name="Sir Arkanis for Siege of Dragonspear" label="Arkanis - dwarven LG paladin" modId="sir-arkanis-for-sod" package="customNpcs" complexity="minor" />
+                    <component id="L#-ARKANIS-SOD" name="Sir Arkanis for Siege of Dragonspear" label="Arkanis - dwarven LG paladin" modId="sir-arkanis-for-sod" complexity="minor" />
 				</bioware>
 				<banters>
 					<component id="C#Ajantis_SoD_NPC-crossmod_content" name="Ajantis SoD NPC: Crossmod Content" label="Ajantis crossmod" modId="Ajantis_BG1_Expansion" recommended="npc" package="npcExpansions" complexity="minor" cost="1" />
@@ -501,9 +501,9 @@
 					<component id="Ascension-SlightlyImprovedCutscenes" name="Slightly improved cutscenes, by DavidW" label="Slightly improved cutscenes, by DavidW" alwaysIf="Ascension-RewrittenFinalChapterOfToB" noDisplay="1" complexity="minor" cost="1" />
 				</mod>
 				<component id="SoAExtended:1" name="Shadows of Amn Extended: Book 1 - Quiet Before the Storm" label="Shadows of Amn extended: Book 1 - Quiet Before The Storm" desc="Allows to staying in SoA after resolving the plot" modId="SoAExtended" recommended="blendWell" complexity="moderate" cost="3" />
-				<component id="FightHeaven-Main" name="Main Component" label="Fight the Heavens" modId="fight-the-heavens" complexity="minor" cost="2" />
+				<component id="FightHeaven-Main" name="Main Component" label="Fight the Heavens" modId="fight-the-heavens" complexity="minor" cost="2" recommended="blendWell" />
 				<component id="cd_tweaks_reveal_ch6_wilderness" name="Reveal Wilderness Areas Before Chapter Six" label="Reveal wilderness areas before chapter six" recommended="extended" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1030" complexity="minor" cost="3" />
-				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" name="Non-silly version" label="Faster chapter one and two cutscenes and dreams" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3141" complexity="minor" cost="3" />
+				<component id="cd_tweaks_faster_ch1_cutscenes_nonsilly" name="Non-silly version" label="Faster chapter one and two cutscenes and dreams" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_3141" complexity="minor" cost="3" package="chateau" />
                 <component id="lfgp:0" name="Lunia for Good Parties" label="Lunia for Good Parties" modId="Lunia-For-Good-Parties" recommended="blendWell" complexity="minor" />
 				<component id="TPoJ:0" name="The Pursuit of Justice" label="The Pursuit of Justice" modId="the-pursuit-of-justice" recommended="blendWell" complexity="minor" cost="3" />
 			</restructure>
@@ -573,8 +573,8 @@
 				</mod>
 				<component id="ThroneoftheMadGod:0" name="Throne of the Mad God" label="Throne of the Mad God" modId="Throne-of-the-Mad-God" recommended="extended" complexity="major" cost="46" />
 				<component id="Poisoned_pathways:0" name="Poisoned pathways" label="Poisoned Pathways" modId="Poisoned-Pathways" recommended="extended" complexity="major" cost="35" />
-				<component id="TangledIsle:0" name="Yes, but don't patch existing save games" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" recommended="extended" complexity="major" cost="16" />
-				<component id="L#-OOZESLOUNGE" name="Athkatlan Grounds: The Ooze's Lounge - a new area under Athkatlan Slums" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" recommended="extended" complexity="major" cost="8" />
+				<component id="TangledIsle:0" name="Yes, but don't patch existing save games" label="Athkatlan Grounds: The Tangled Oak Isle" modId="tangled-oak-isle" complexity="major" cost="16" />
+				<component id="L#-OOZESLOUNGE" name="Athkatlan Grounds: The Ooze's Lounge - a new area under Athkatlan Slums" label="Athkatlan Grounds: The Ooze's Lounge" modId="oozes-lounge" complexity="major" cost="8" />
 				<alternatives label="SoD's Skie plot closure">
 					<component id="L#-SKIECOST-MAINQUEST" name="Skie: The Cost of One Girl's Soul - New quest for Baldur's Gate 2 EE" label="Skie: The Cost of One Girl's Soul" modId="skie-the-cost-of-one-girls-soul" recommended="extended" complexity="minor" cost="6" />
 					<component id="sod2bg2_skie_closure:0" name="SoD to BG2: Skie Closure" label="Skie Closure" modId="sod2bg2_skie_closure" complexity="minor" />
@@ -604,7 +604,7 @@
 					<component id="Wings:0" name="Wings for BG2:EE" label="Wings - Aerie expansion" modId="Wings" complexity="minor" cost="7" />
 				</expansions>
 				<romances label="Romances" recommended="npc" package="romances">
-					<alternatives>
+					<alternatives label="Imoen">
                         <mod id="Imoen-Romance-Mod" label="Imoen Romance">
                             <component id="ImoenRomance:0" name="Imoen NPC Romance Mod for BG2:SoA TOB (4.1.3 Version!)" label="Imoen Romance" complexity="minor" cost="28" />
                             <component id="ImoenRomance:2" name="Don't Allow multiple Romance (Only valid for Vanilla romances)" label="Don't allow multiple Romance (only valid for vanilla romances)" alwaysIf="ImoenRomance:0" noDisplay="1" complexity="minor" cost="2" />
@@ -747,18 +747,18 @@
 						<component id="Fade:2" name="Fade EE: give Fade Shadowdancer kit" label="Give Fade Shadowdancer kit" alwaysIf="Fade:0" noDisplay="1" complexity="minor" cost="1" />
 					</mod>
                     <mod id="dvaradime">
-                        <component id="L#-DVARADIME" name="Dvaradime - Baldur's Gate 2: EE NPC" label="Dvaradime - dwarven NG fighter/mage/thief" core="1" package="customNpcs" complexity="minor" />
+                        <component id="L#-DVARADIME" name="Dvaradime - Baldur's Gate 2: EE NPC" label="Dvaradime - dwarven NG fighter/mage/thief" core="1" complexity="minor" />
                         <component id="L#-DVARADIME-PID" name="Dvaradime - Player-Initiated Dialogue" label="Dvaradime - Player-Initiated Dialogue" complexity="minor" noDisplay="1" alwaysIf="L#-DVARADIME" />
                     </mod>
                     <mod id="fhaugy">
-                        <component id="L#-Fhaugy" name="Fhaugy - Baldur's Gate 2: EE NPC" label="Fhaugy - half-orc TN monk" core="1" package="customNpcs" complexity="minor" />
+                        <component id="L#-Fhaugy" name="Fhaugy - Baldur's Gate 2: EE NPC" label="Fhaugy - half-orc TN monk" core="1" complexity="minor" />
                         <component id="L#-Fhaugy-PID" name="Fhaugy: Player-Initiated Dialogues (PIDs)" label="Fhaugy: Player-Initiated Dialogues (PIDs)" complexity="minor" noDisplay="1" alwaysIf="L#-Fhaugy" />
                     </mod>
                     <mod id="fyalvara">
-                        <component id="L#-fyalvara-BC" name="Make Fyalvara a kitless fighter." label="Fyalvara - human TN fighter" core="1" package="customNpcs" complexity="minor" />
+                        <component id="L#-fyalvara-BC" name="Make Fyalvara a kitless fighter." label="Fyalvara - human TN fighter" core="1" complexity="minor" />
                         <component id="fyalvara:3" name="Fyalvara - install Player-Initiated Dialogues?" label="Fyalvara - install Player-Initiated Dialogues?" noDisplay="1" alwaysIf="L#-fyalvara-BC|L#-fyalvara-WS" />
                     </mod>
-                    <component id="Gahesh:0" name="Gahesh NPC" label="Gahesh - half-orc LG sorcerer" modId="gahesh" package="customNpcs" complexity="minor" />
+                    <component id="Gahesh:0" name="Gahesh NPC" label="Gahesh - half-orc LG sorcerer" modId="gahesh" complexity="minor" />
                     <component id="b!gavin_bg2_2700" name="Speed: 45 minutes real time minimum between dialogues" label="Gavin - human NG cleric" core="1" modId="Gavin_BG2" package="customNpcs" complexity="minor" />
                     <component id="isra_npc_for_bg2" name="Isra for BGII" label="Isra - human LG Cavalier" core="1" modId="Isra-NPC-BG2" package="customNpcs" complexity="minor" />
                     <component id="kelsey:0" name="Kelsey" label="Kelsey - human NG sorcerer" core="1" modId="Kelsey" package="customNpcs" complexity="minor" />
@@ -770,19 +770,12 @@
                         <component id="Sirene_BG2:0" name="Sirene NPC for BG2:EE" label="Sirene - tiefling LG Martyr" core="1" package="customNpcs" complexity="minor" />
                         <component id="Sirene_BG2:1" name="BG1 Default (sporeboy)" label="BG1 Default (sporeboy)" complexity="minor" noDisplay="1" alwaysIf="Sirene_BG2:0" />
                     </mod>
-                    <component id="L#-VERRSZABG2" name="Verr'Sza – the rakshasa NPC for BG2EE" label="Verr'Sza - rakshasa CE Naztharune Ranger" modId="verrsza-bg2ee" package="customNpcs" complexity="minor" />
-                    <mod id="SkitiaNPCs">
+                    <component id="L#-VERRSZABG2" name="Verr'Sza – the rakshasa NPC for BG2EE" label="Verr'Sza - rakshasa CE Naztharune Ranger" modId="verrsza-bg2ee" complexity="minor" />
+                    <mod id="SkitiaNPCs" label="Skitia NPCs">
                         <component id="SkitiaNPCs:0" name="Skitia NPCs for Baldur's Gate 2" label="Skitia NPCs" core="1" package="customNpcs" complexity="minor" />
                         <component id="SkitiaNPCs:2" name="Romance Theme Music" label="Romance Theme Music" />
                     </mod>
                     <component id="AurenAseph-main" name="Auren Aseph for BG2:ToB" label="Auren Aseph - human NG fighter" core="1" modId="AurenAseph" package="customNpcs" complexity="minor" />
-                    <mod id="will-of-the-wisps">
-                        <component id="L#-WILLOFTHEWISP-MAIN" name="Will NPC, shaman stronghold and new shaman kit for BG2EE" label="Will - undead TN Witchlight Shaman" core="1" package="customNpcs" complexity="moderate" />
-                        <component id="L#-WILLOFTHEWISP-CLASSDESC" name="Change shaman .tlk string to remove &quot;Ineligible for any stronghold&quot; line" label="Change shaman .tlk string to remove &quot;Ineligible for any stronghold&quot; line" />
-                        <component id="L#-WILLOFTHEWISP-ENEMIES" name="Optional: Drider, Dark Treant, Will-o'-wisp Enemies" label="Optional: Drider, Dark Treant, Will-o'-wisp Enemies" />
-                    </mod>
-                    <component id="haldamir:0" name="Haldamir" label="Haldamir - elven TN fighter" modId="Haldamir" package="customNpcs" complexity="minor" />
-                    <component id="c#_sarah_revised_audio" name="Use revised audio from HalmyLyseas" label="Sarah - human CG ranger" modId="Sarah" package="customNpcs" complexity="minor" />
 				</custom>
 				<banters label="Banters and Crossmods" recommended="npc" package="npcExpansions">
                     <component id="BG1NPCSoA:87" name="Inter Component Banter Pack" label="Inter Component Banter Pack" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
@@ -842,8 +835,7 @@
 					<component id="Jarnip:1" name="Jarnip in ToB: A New Merchant in Saradush" label="Jarnip in ToB: A New Merchant in Saradush" modId="Jarnip" recommended="extended" complexity="minor" />
 					<component id="PlanarItems:0" name="Revised Items" label="Planaritems" modId="PlanarItems" complexity="minor" />
 					<component id="cd_spc_creslyn_item_pack" name="Creslyn's BG2 Item Pack" label="Creslyn's Item Pack" modId="SP_Collection" complexity="minor" />
-                    <component id="L#-WILLOFTHEWISP-ITEMS" name="New items for shamans and undead NPCs" label="New items for shamans and undead NPCs" modId="will-of-the-wisps" complexity="minor" />
-					<mod id="forgotten-armament" label="Forgotten Armament">
+					<mod id="forgotten-armament" label="Forgotten Armament" recommended="blendWell">
 						<component id="ForgottenArmament-RubyRay" name="Add Ruby Ray Scrolls to Trademeet Store" label="Ruby Ray Scrolls in Trademeet Store" complexity="minor" cost="1" />
 						<component id="ForgottenArmament-FreedomScroll" name="Add Freedom Scrolls to Ribald's Store (Pre-Underdark)" label="Freedom Scrolls in Ribald's Store (pre-Underdark)" complexity="minor" cost="1" />
 					</mod>
@@ -919,7 +911,7 @@
 							<component id="ZSTweaks:2250" name="Make Edwin's amulet nuanced in the privileges it grants to that snake" label="Make Edwin's Amulet nuanced in the privileges it grants to that snake" complexity="minor" cost="9" />
 							<component id="ZSTweaks:1556" name="Make minor improvements to Jaheira-specific items" label="Make minor improvements to Jaheira-specific items" complexity="minor" cost="12" />
 						</mod>
-						<component id="ForgottenArmament-NerfAPR" name="Nerf APR Increasing One-Handed Melee Weapons" label="Nerf APR increasing one-handed melee weapons" modId="forgotten-armament" complexity="minor" cost="2" />
+						<component id="ForgottenArmament-NerfAPR" name="Nerf APR Increasing One-Handed Melee Weapons" label="Nerf APR increasing one-handed melee weapons" modId="forgotten-armament" complexity="minor" cost="2" recommended="extended" />
 					</group>
 				</update>
 				<upgrade label="Item Upgrades" noBranches="1">
@@ -1079,7 +1071,7 @@
 					<component id="L#-FINDIT-IWD" name="FindIt IWD:EE" label="Findit item pack" modId="findit-iwd" complexity="minor" />
 					<component id="stratagems:3510" name="Wider availability of wizard spell scrolls in Icewind Dale" label="Wider availability of wizard spell scrolls in Icewind Dale" modId="SwordCoastStratagems" complexity="minor" />
 					<component id="ee_cosmetic_enhancements:2" name="Add Bhaal's Fire and Benorg's Truth into loot tables - IWD:EE" label="Add Bhaal's Fire and Benorg's Truth into loot tables" modId="EE_Cosmetic_Item_Enhancement" complexity="minor" />
-					<mod id="forgotten-armament">
+					<mod id="forgotten-armament" recommended="blendWell">
 						<component id="ForgottenArmament-Orrick" name="Add more Items and Scrolls to Orrick's Store" label="Add more items and scrolls to Orrick's Store" complexity="minor" />
 						<component id="ForgottenArmament-Conlan" name="Add more Items to Conlan's Smithy" label="Add more items to Conlan's Smithy" complexity="minor" />
 					</mod>
@@ -1165,7 +1157,7 @@
 					<component id="stratagems:3015" name="Re-introduce potions of extra-healing" label="Re-introduce Potions of Extra-Healing" modId="SwordCoastStratagems" recommended="vanillaPlus" complexity="minor" cost="11" />
 					<component id="stratagems:3505" name="Wider selection of random scrolls" label="Wider selection of random scrolls" modId="SwordCoastStratagems" recommended="vanillaPlus" complexity="minor" cost="30" />
 					<component id="cd_iwdification_2h_axes" name="Two-Handed Axe Item Pack" label="Two-Handed Axe Item Pack" modId="iwdification" recommended="blendWell" complexity="minor" cost="11" />
-					<component id="ForgottenArmament-AddItems" name="Add New Items to the Game" label="Forgotten Armament's New Items" modId="forgotten-armament" complexity="minor" cost="5" />
+					<component id="ForgottenArmament-AddItems" name="Add New Items to the Game" label="Forgotten Armament's New Items" modId="forgotten-armament" complexity="minor" cost="5" recommended="blendWell" />
 				</add>
 				<update label="Item Changes">
 					<group label="Corrections" noBranches="1">
@@ -1174,8 +1166,8 @@
 							<component id="cd_tweaks_dorns_sword" name="Make Rancor +1 a Bit More Reliable" label="Make Rancor +1 a bit more reliable" displayIf="EEex:1" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4200" complexity="minor" cost="6" />
 							<component id="cdtweaks:150" name="Remove &quot;+x&quot; From Unique Item Names" label="Remove &quot;+x&quot; from unique item names" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_150" complexity="minor" cost="13" />
 						</mod>
-						<component id="ForgottenArmament-SetBonus" name="Add Set Bonuses to Items" label="Add set bonuses to Planar Items" modId="forgotten-armament" complexity="minor" cost="2" />
-						<component id="ForgottenArmament-UpdateItems" name="Update Existing In-Game Items" label="Forgotten Armament: Update existing in-game items" modId="forgotten-armament" complexity="minor" cost="5" />
+						<component id="ForgottenArmament-SetBonus" name="Add Set Bonuses to Items" label="Add set bonuses to Planar Items" modId="forgotten-armament" complexity="minor" cost="2" recommended="extended" />
+						<component id="ForgottenArmament-UpdateItems" name="Update Existing In-Game Items" label="Forgotten Armament: Update existing in-game items" modId="forgotten-armament" complexity="minor" cost="5" recommended="extended" />
 						<mod id="ZSTweaks" recommended="blendWell">
 							<component id="ZSTweaks:1548" name="Make Void-weapons slightly more effective and logical" label="Make Void-Weapons slightly more effective and logical" complexity="minor" cost="11" />
 							<component id="ZSTweaks:1532" name="Make bracers, belts and boots grant +1 HP, so even unenchanted variants have an actual use" label="Make bracers, belts and boots grant +1 HP, so even unenchanted variants have an actual use" complexity="minor" cost="11" />
@@ -1239,7 +1231,7 @@
 			</npc>
 			<items label="Items">
 				<add noBranches="1">
-					<component id="ForgottenArmament-AcidResist" name="Create Potions of Acid Resistance" label="Create Potions of Acid Resistance" modId="forgotten-armament" complexity="minor" cost="2" />
+					<component id="ForgottenArmament-AcidResist" name="Create Potions of Acid Resistance" label="Create Potions of Acid Resistance" modId="forgotten-armament" complexity="minor" cost="2" recommended="blendWell" />
 					<component id="cd_tweaks_add_bags_of_holding" name="Add Bags of Holding" label="Add Bags of Holding" modId="Tweaks-Anthology" recommended="vanillaPlus" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_1080" complexity="minor" cost="4" />
                     <component id="a!_sns_items" name="Add new bardic store and thief items" label="Add new bardic store and thief items" modId="SongAndSilence" engine="bg2" complexity="minor" noDisplay="1" alwaysIf="a!_sns_base_component" />
 				</add>
@@ -1252,8 +1244,8 @@
 					<component id="HouseTweaks:39" name="House Tweaks: Ankheg and Dragonscale Armor Count as Medium Armor" label="Ankheg and dragonscale armor count as medium armor" modId="House-Rule-Tweaks" recommended="blendWell" complexity="minor" cost="2" />
 					<group label="Updates" noBranches="1">
 						<mod id="ZSTweaks">
-							<component id="ForgottenArmament-ReplaceSpeedBoots" name="Replace Boots of Speed (Paws of the Cheetah)" label="Replace Boots of Speed (Paws of the Cheetah)" modId="forgotten-armament" complexity="minor" cost="2" />
-							<component id="ForgottenArmament-StatIncreaseItems" name="Update Items Setting an Ability Score to Increment the Increase" label="Update items setting an ability score to increment the increase" modId="forgotten-armament" complexity="minor" cost="5" />
+							<component id="ForgottenArmament-ReplaceSpeedBoots" name="Replace Boots of Speed (Paws of the Cheetah)" label="Replace Boots of Speed (Paws of the Cheetah)" modId="forgotten-armament" complexity="minor" cost="2" recommended="blendWell" />
+							<component id="ForgottenArmament-StatIncreaseItems" name="Update Items Setting an Ability Score to Increment the Increase" label="Update items setting an ability score to increment the increase" modId="forgotten-armament" complexity="minor" cost="5" recommended="blendWell" />
 							<component id="ZSTweaks:1547" name="Make Protection from Undead more balanced" label="Make Protection from Undead more balanced" recommended="higherDifficulty" complexity="minor" cost="9" />
 							<component id="ZSTweaks:1203" name="Make Girdle of Fortitude set Constitution to 18 on equip" label="Make Girdle of Fortitude set CON to 18 on equip" recommended="blendWell" complexity="minor" cost="10" />
 							<component id="ZSTweaks:1216" name="Make Ankheg's Plate grant 20% acid resistance" label="Make Ankheg's Plate grant 20% acid resistance" recommended="blendWell" complexity="minor" cost="9" />
@@ -1295,7 +1287,7 @@
 					<component id="METweaks:1600" name="Increase Wizard Slayer Magic Resistance" label="Increase Magic Resistance" modId="Olvyn-Tweaks" recommended="lowerDifficulty" desc="Gain 5% Magic Resistance per level rather than 1%" complexity="minor" cost="2" />
 				</wizardSlayer>
                 <component id="cd_spc_death_knight" name="Death Knight Kit, by Drizzt1180" label="Add kit: Death Knight Kit" modId="SP_Collection" engine="bg,eet,iwd" recommended="mechanics" complexity="minor" />
-				<component id="Morpheus562sKitpackShieldBreaker" name="Install Shield Breaker Kit" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" complexity="minor" cost="7" />
+				<component id="Morpheus562sKitpackShieldBreaker" name="Install Shield Breaker Kit" label="Add kit: Shield Breaker" modId="morpheus562s-kitpack" complexity="minor" cost="7" recommended="mechanics" />
 			</fighter>
 			<ranger label="Ranger">
 				<beastMaster label="Beast Master" recommended="mechanics">
@@ -1338,6 +1330,7 @@
                         <component id="zs_sd_rr_compat" name="Allow vanilla shadowdancers to use Rogue Rebalancing's HLA overhaul" label="Allow vanilla shadowdancers to use Rogue Rebalancing's HLA overhaul" alwaysIf="zs_shadowdancer_overhaul,rr:2" noDisplay="1" />
                     </mod>
                 </alternatives>
+                <component id="ArtisansKitpack:7005" name="Add kit: Invisible Blade Thief Kit" label="Artisan's Kitpack: Invisible Blade Thief Kit" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" />
 			</thief>
 			<bard label="Bard">
 				<group id="rogue_rebalancing" label="Update class and kits: Blade, Jester, Skald" recommended="mechanics">
@@ -1394,7 +1387,7 @@
 			</mage>
 			<sorcerer label="Sorcerer">
 				<component id="A7-CHAOSSORCERER-MAIN" name="&quot;Chaos Sorcerer&quot; kit" label="Add kit: Chaos Sorcerer - Wild Magic sorcerer" modId="A7-ChaosSorcerer" recommended="mechanics" complexity="minor" cost="165" />
-				<component id="Morpheus562sKitpackEldritchScionNoXan" name="[Install Eldritch Scion Kit] Do NOT assign kit to an existing NPC" label="Add kit: Eldritch Scion - Warrior sorcerer" modId="morpheus562s-kitpack" complexity="minor" cost="6" />
+				<component id="Morpheus562sKitpackEldritchScionNoXan" name="[Install Eldritch Scion Kit] Do NOT assign kit to an existing NPC" label="Add kit: Eldritch Scion - Warrior sorcerer" modId="morpheus562s-kitpack" complexity="minor" cost="6" recommended="mechanics" />
 				<component id="cd_tweaks_sorc_spell_progression" name="Un-Nerfed Sorcerer Spell Progression Table" label="Un-nerfed sorcerer spell progression table" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2250" complexity="minor" cost="5" />
 			</sorcerer>
 			<shaman label="Shaman">
@@ -1502,7 +1495,7 @@
 	<content displayIfNot="IE_focus_dedicated_campaigns">
 		<bg2 label="BG2" engine="bg2,eet">
 			<restructure>
-				<alternatives label="Crucible">
+				<alternatives label="Crucible" recommended="blendWell">
 					<component id="Crucible-FinalAssault" name="[Install Crucible] Mute NPCs" label="Mute NPCs" modId="crucible" complexity="major" />
 					<component id="Crucible-FinalAssaultAI" name="[Install Crucible] Fully Voiced NPCs using AI" label="Fully voiced NPCs using AI" modId="crucible" default="1" complexity="minor" cost="32" />
 				</alternatives>
@@ -1908,7 +1901,7 @@
 			<component id="ZS_CanIStabYou:310" name="Yaga-Shura cannot see through invisibility" label="Yaga-Shura cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
 			<component id="ZS_CanIStabYou:311" name="Amelyssan cannot see through invisibility" label="Amelyssan cannot see through Invisibility" alwaysIf="ZS_CanIStabYou:106" noDisplay="1" complexity="minor" cost="2" />
 		</mod>
-		<component id="ForgottenArmament-CritImmunity2" name="Allow Difficult Enemies to Remain Immune to Critical Hits" label="Allow difficult enemies to remain immune to critical hits" modId="forgotten-armament" complexity="minor" cost="5" />
+		<component id="ForgottenArmament-CritImmunity2" name="Allow Difficult Enemies to Remain Immune to Critical Hits" label="Allow difficult enemies to remain immune to critical hits" modId="forgotten-armament" complexity="minor" cost="5" recommended="blendWell" />
 		<tweaks label="Creature Tweaks" noBranches="1">
 			<component id="HouseTweaks:20" name="House Tweaks: Faster Troll Unconsciousness" label="Faster troll unconsciousness" modId="House-Rule-Tweaks" recommended="combat" engine="bg,iwd,eet" complexity="minor" cost="2" />
 			<component id="METweaks:3150" name="Give Belhifet more reasonable immunities" label="Give belhifet more reasonable immunities" recommended="combat" modId="Olvyn-Tweaks" engine="bg,iwd,eet" complexity="minor" cost="2" />
@@ -2040,12 +2033,12 @@
 		</mod>
 		<mod id="A7-MiscTweaks" label="Tweaks" unfolded="1">
 			<component id="A7_MISCTWEAKS_DUALCLASS_BACK_BUTTON" name="Reactivate &quot;Back&quot; button in the Dual-Class menu" label="Reactivate 'back' button in the dual-class menu" modId="A7-MiscTweaks" recommended="fixes" complexity="minor" cost="2" />
-			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" name="Disable creature tooltips" label="Disable creature tooltips" modId="A7-MiscTweaks" recommended="higherDifficulty" engine="bg,eet,iwd,pst" complexity="minor" cost="45" />
+			<component id="A7_MISCTWEAKS_TOOLTIPS_DISABLE_CRE" name="Disable creature tooltips" label="Disable creature tooltips" modId="A7-MiscTweaks" engine="bg,eet,iwd,pst" complexity="minor" cost="45" />
 		</mod>
-        <component id="db-diablofication-camera_lock" name="Camera Lock (Beta)" label="Camera Lock" modId="bg-diablofication" engine="bg,eet,iwd" complexity="minor" />
 	</ui>
 
 	<ui engine="bg,eet,iwd">
+        <component id="db-diablofication-camera_lock" name="Camera Lock (Beta)" label="Camera Lock" modId="bg-diablofication" engine="bg,eet,iwd" complexity="minor" />
 		<component id="cd_tweaks_colorize_npc_names_brightness_normal" name="Normal brightness" label="Colorize NPC names and tooltips" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_250" complexity="minor" />
 		<component id="cd_tweaks_colorblind_overlays" name="Enhanced Overlays for Colorblind Players [Fouinto]" label="Enhanced overlays for colorblind players" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_220" complexity="minor" />
 	</ui>
@@ -2054,26 +2047,26 @@
 		<warriors label="Warriors" desc="Fighter/ranger/paladin/monk">
 			<fighter label="Fighter">
 				<wizardSlayer label="Wizard Slayer">
-					<component id="SkillsAndAbilitiesDI1" name="Wizard Slayer Kit Enhancements" label="Add Detect Illusions, Spell Failure and Dispel on Hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." recommended="lowerDifficulty" complexity="minor" cost="6" />
+					<component id="SkillsAndAbilitiesDI1" name="Wizard Slayer Kit Enhancements" label="Add Detect Illusions, Spell Failure and Dispel on Hit" displayIf="EEex:1" modId="skills-and-abilities" desc="Adds Detect Illusions (Set at 100) to the Wizard Slayer. Additionally, each successful hit the Wizard Slayer inflicts on an enemy will bestow a 10% cumulative chance of spell failure on the target and has a 25% chance of casting dispel magic at level 30 on the target. These strikes will bypass protections such as Protection from Normal Weapons, Protection from Magical Weapons, Mantle, Improved Mantle, and Absolute Immunity." recommended="extended" complexity="minor" cost="6" />
 				</wizardSlayer>
-				<component id="SkillsAndAbilitiesFighter" name="Add New Fighter Abilities" label="Add new abilities" modId="skills-and-abilities" desc="1st level - Second Wind (Once per day, heal 1d10 + fighter level); 9th level - Indomitable (increase saving throws). HLA: increase thac0 and damage" complexity="minor" cost="2" />
+				<component id="SkillsAndAbilitiesFighter" name="Add New Fighter Abilities" label="Add new abilities" modId="skills-and-abilities" desc="1st level - Second Wind (Once per day, heal 1d10 + fighter level); 9th level - Indomitable (increase saving throws). HLA: increase thac0 and damage" complexity="minor" cost="2" recommended="extended" />
 				<component id="atweaks:201" name="Instant casting for warrior innates" label="Instant casting for warrior innates" recommended="vanillaPlus" modId="aTweaks" complexity="minor" />
 			</fighter>
 			<ranger label="Ranger">
 				<archer label="Archer">
-					<component id="SkillsAndAbilitiesUpdateArcher" name="Update Archer to provide to hit and damage bonuses per the kit description" label="Provide to-hit and damage bonuses per the kit description" modId="skills-and-abilities" complexity="minor" cost="2" />
+					<component id="SkillsAndAbilitiesUpdateArcher" name="Update Archer to provide to hit and damage bonuses per the kit description" label="Provide to-hit and damage bonuses per the kit description" modId="skills-and-abilities" complexity="minor" cost="2" recommended="extended" />
 				</archer>
 			</ranger>
 			<paladin label="Paladin">
-				<component id="SkillsAndAbilitiesPaladin1" name="Add New Paladin Abilities" label="Add new abilities" modId="skills-and-abilities" desc="Smite, auras and Sanctify Strikes (+2 magic damage)" complexity="minor" cost="3" />
+				<component id="SkillsAndAbilitiesPaladin1" name="Add New Paladin Abilities" label="Add new abilities" modId="skills-and-abilities" desc="Smite, auras and Sanctify Strikes (+2 magic damage)" complexity="minor" cost="3" recommended="extended" />
 				<inquisitor label="Inquisitor">
-					<component id="SkillsAndAbilitiesDI2" name="Replace Inquisitor True Seeing for Detect Illusion Skill" label="Replace Inquisitor True Seeing with Detect Illusion skill" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" cost="2" />
-					<component id="SkillsAndAbilitiesInquisitor1" name="Allow Inquisitor Kit to Cast Divine Spells" label="Allow Inquisitor kit to cast divine spells" modId="skills-and-abilities" complexity="minor" cost="2" />
+					<component id="SkillsAndAbilitiesDI2" name="Replace Inquisitor True Seeing for Detect Illusion Skill" label="Replace Inquisitor True Seeing with Detect Illusion skill" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" cost="2" recommended="extended" />
+					<component id="SkillsAndAbilitiesInquisitor1" name="Allow Inquisitor Kit to Cast Divine Spells" label="Allow Inquisitor kit to cast divine spells" modId="skills-and-abilities" complexity="minor" cost="2" recommended="extended" />
 				</inquisitor>
 				<component id="METweaks:1500" name="Turn Paladin Detect Evil into a passive ability that can be toggled on and off" label="Turn paladin Detect Evil into a passive ability that can be toggled on and off" modId="Olvyn-Tweaks" recommended="lowerDifficulty" complexity="minor" cost="7" />
 			</paladin>
 			<monk label="Monk">
-				<component id="SkillsAndAbilitiesMonk" name="Update Skills for Monks" label="Add Open Locks, Find/Disarm Traps and Detect Illusion" modId="skills-and-abilities" displayIf="EEex:1" desc="1 level - Flurry of Blows (extra APR). New HLA - become immune to Time Stop" complexity="minor" cost="2" />
+				<component id="SkillsAndAbilitiesMonk" name="Update Skills for Monks" label="Add Open Locks, Find/Disarm Traps and Detect Illusion" modId="skills-and-abilities" displayIf="EEex:1" desc="1 level - Flurry of Blows (extra APR). New HLA - become immune to Time Stop" complexity="minor" cost="2" recommended="extended" />
 			</monk>
 		</warriors>
 		<rogues label="Rogues" desc="Thief/bard">
@@ -2081,15 +2074,15 @@
 			</thief>
 			<bard label="Bard">
 				<blade label="Blade kit enhancements">
-					<component id="SkillsAndAbilitiesBlade" name="Blade Kit Enhancements" label="Blade kit enhancements" modId="skills-and-abilities" desc="This allows the bard Blade kit to master (3 slots) in all bladed weapons and receive a 0.5 APR boost at level 10 and again at level 20. This will also update all non-recruitable Blades within the game to have specialization in the melee weapon(s) of their choice." complexity="minor" cost="7" />
+					<component id="SkillsAndAbilitiesBlade" name="Blade Kit Enhancements" label="Blade kit enhancements" modId="skills-and-abilities" desc="This allows the bard Blade kit to master (3 slots) in all bladed weapons and receive a 0.5 APR boost at level 10 and again at level 20. This will also update all non-recruitable Blades within the game to have specialization in the melee weapon(s) of their choice." complexity="minor" cost="7" recommended="extended" />
 				</blade>
 				<skald label="Skald kit enhancements">
-					<component id="SkillsAndAbilitiesSkald" name="Skald Kit Enhancements" label="Skald kit enhancements" modId="skills-and-abilities" complexity="minor" cost="2" />
+					<component id="SkillsAndAbilitiesSkald" name="Skald Kit Enhancements" label="Skald kit enhancements" modId="skills-and-abilities" complexity="minor" cost="2" recommended="extended" />
 				</skald>
-				<component id="SkillsAndAbilitiesSongDuration" name="Bard Songs Last 1 Turn" label="Bard Songs last 1 turn" modId="skills-and-abilities" complexity="minor" cost="2" />
-				<alternatives label="Add skills" displayIf="EEex:1">
-					<component id="SkillsAndAbilitiesBard1" name="[Add skills] Add Lockpicking" label="Open Locks" displayIf="EEex:1" modId="skills-and-abilities" default="1" complexity="minor" cost="2" />
-					<component id="SkillsAndAbilitiesBard2" name="[Add skills] Add Lockpicking and Find/Disarm Traps" label="Open Locks and Find/Disarm Traps" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" />
+				<component id="SkillsAndAbilitiesSongDuration" name="Bard Songs Last 1 Turn" label="Bard Songs last 1 turn" modId="skills-and-abilities" complexity="minor" cost="2" recommended="extended" />
+				<alternatives label="Add skills" displayIf="EEex:1" >
+					<component id="SkillsAndAbilitiesBard1" name="[Add skills] Add Lockpicking" label="Open Locks" displayIf="EEex:1" modId="skills-and-abilities" default="1" complexity="minor" cost="2" recommended="blendWell" />
+					<component id="SkillsAndAbilitiesBard2" name="[Add skills] Add Lockpicking and Find/Disarm Traps" label="Open Locks and Find/Disarm Traps" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" recommended="extended" />
 				</alternatives>
 			</bard>
 		</rogues>
@@ -2104,16 +2097,16 @@
 			</sorcerer>
 			<shaman label="Shaman">
 			</shaman>
-			<component id="SkillsAndAbilitiesConcentration" name="Add Concentration Check to Resist Spell Disruption" label="Add Concentration Check to resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" complexity="minor" cost="2" />
+			<component id="SkillsAndAbilitiesConcentration" name="Add Concentration Check to Resist Spell Disruption" label="Add Concentration Check to resist Spell Disruption" modId="skills-and-abilities" displayIf="EEex:1" complexity="minor" cost="2" recommended="extended" />
 		</spellcasters>
 		<multi label="Multi-class / dual-class">
 			<alternatives label="Allow fighter multiclasses to achieve higher Weapon Proficiency" recommended="lowerDifficulty">
-				<component id="SkillsAndAbilitiesWeaponProf1" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve Master (3 pips) in Weapon Proficiencies" label="Master (3 pips)" modId="skills-and-abilities" complexity="minor" cost="14" />
+				<component id="SkillsAndAbilitiesWeaponProf1" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve Master (3 pips) in Weapon Proficiencies" label="Master (3 pips)" modId="skills-and-abilities" complexity="minor" cost="14" recommended="extended" />
 				<component id="SkillsAndAbilitiesWeaponProf2" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve High Master (4 pips) in Weapon Proficiencies" label="High master (4 pips)" modId="skills-and-abilities" complexity="minor" />
 				<component id="SkillsAndAbilitiesWeaponProf3" name="[Allow fighter multiclasses to achieve higher Weapon Proficiency] Allow Fighter Multiclasses to Achieve Grand Master (5 pips) in Weapon Proficiencies" label="Grand master (5 pips)" modId="skills-and-abilities" complexity="minor" />
 			</alternatives>
 			<component id="cd_tweaks_casting_in_armor" name="Allow Arcane Spellcasting in Heavy Armor" label="Allow arcane spellcasting in heavy armor (with penalties)" modId="Tweaks-Anthology" engine="bg,eet,iwd,pst" recommended="mechanics" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2120" complexity="minor" cost="20" />
-			<component id="SkillsAndAbilitiesClericThief" name="Adjust Cleric/Thief Actionbar" label="Adjust cleric/thief action bar" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" cost="2" />
+			<component id="SkillsAndAbilitiesClericThief" name="Adjust Cleric/Thief Actionbar" label="Adjust cleric/thief action bar" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" cost="2" recommended="extended" />
 			<component id="D5_REVISED_DUAL_CLASS_REQS" name="Lower Dual-Class Requirements" label="Lower dual-class requirements" modId="SubtleD_Stat_Overhauls" recommended="lowerDifficulty" complexity="minor" />
 		</multi>
 		<universal label="Universal">
@@ -2122,10 +2115,10 @@
 				<component id="SkillsAndAbilitiesSTR" name="2H Weapon Additional Strength Bonus" label="2H weapon additional STR bonus" modId="skills-and-abilities" recommended="lowerDifficulty" complexity="minor" cost="5" />
 			</weapons>
 			<group label="HLAs">
-				<component id="SkillsAndAbilitiesNewHLA" name="Add New HLAs for ALL Classes and Kits" label="Add new HLAs for all classes and kits" modId="skills-and-abilities" complexity="minor" cost="31" />
-				<component id="SkillsAndAbilitiesUpdateHLA" name="Update Existing HLAs" label="Update existing HLAs" modId="skills-and-abilities" complexity="minor" cost="3" />
+				<component id="SkillsAndAbilitiesNewHLA" name="Add New HLAs for ALL Classes and Kits" label="Add new HLAs for all classes and kits" modId="skills-and-abilities" complexity="minor" cost="31" recommended="extended" />
+				<component id="SkillsAndAbilitiesUpdateHLA" name="Update Existing HLAs" label="Update existing HLAs" modId="skills-and-abilities" complexity="minor" cost="3" recommended="extended" />
 			</group>
-			<component id="SkillsAndAbilitiesTurnUndead" name="Turn Undead Overhaul" label="Turn Undead overhaul" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" cost="3" />
+			<component id="SkillsAndAbilitiesTurnUndead" name="Turn Undead Overhaul" label="Turn Undead overhaul" displayIf="EEex:1" modId="skills-and-abilities" complexity="minor" cost="3" recommended="extended" />
 		</universal>
 		<stats label="Stats">
 			<hp>

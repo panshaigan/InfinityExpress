@@ -129,7 +129,13 @@ Dangerous rollback actions use [`ConfirmDialog.tsx`](../src/ui/ConfirmDialog.tsx
 
 ## Bundled WeiDU (desktop)
 
-The installed app ships `weidu.exe` under Tauri resources (`src-tauri/resources/weidu/`). On first launch the desktop shell seeds Settings → App **WeiDU executable** from the bundled path. Users can override via Browse; install still copies the configured exe to `{gameDir}/setup-{weiduId}.exe` as before.
+The installed app ships `weidu.exe` on Windows and native `weidu` on Linux
+x86_64 under Tauri resources. Platform configs select the matching binary;
+the Linux build sets its execute bit before packaging. On first launch the
+desktop shell seeds Settings → App **WeiDU executable** from the bundled path.
+Users can override via Browse. Install copies it to
+`{gameDir}/setup-{weiduId}.exe` on Windows or `{gameDir}/setup-{weiduId}` on Linux.
+See [Linux support](linux.md) for remaining native mod compatibility limitations.
 
 ## Resolve & run
 

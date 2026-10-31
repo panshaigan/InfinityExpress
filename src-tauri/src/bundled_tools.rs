@@ -29,11 +29,25 @@ fn validate_executable(path: &Path, label: &str) -> Result<String, String> {
 
 #[tauri::command]
 pub fn bundled_weidu_path(app: AppHandle) -> Result<String, String> {
-    let path = strip_verbatim_prefix(&resolve_resource(&app, "weidu/weidu.exe")?);
+    #[cfg(all(target_os = "linux", not(target_arch = "x86_64")))]
+    return Err(
+        "Bundled Linux WeiDU requires x86_64; configure a native WeiDU executable in Settings"
+            .into(),
+    );
+    let relative = if cfg!(windows) {
+        "weidu/weidu.exe"
+    } else {
+        "weidu/weidu"
+    };
+    let path = strip_verbatim_prefix(&resolve_resource(&app, relative)?);
     validate_executable(&path, "WeiDU executable")
 }
 
 pub fn bundled_7z_path(app: &AppHandle) -> Option<PathBuf> {
+    // Never select a Windows PE binary on Linux, even in a development tree.
+    if !cfg!(windows) {
+        return None;
+    }
     let path = resolve_resource(app, "7zip/7z.exe").ok()?;
     if path.is_file() {
         Some(path)

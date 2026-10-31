@@ -159,7 +159,7 @@ Korgan-Redemption,Korgan's Redemption,,minor,NPC-Expansion,https://github.com/Sp
 Kvel-BG1,Kvel NPC,,minor,NPC,https://github.com/ArtemiusI/Kvel-BG1,BG1,main,,2026-05-30,ea55144,,5803117,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/kvel-bg1
 lanna,Lanna NPC,,minor,NPC,https://downloads.weaselmods.net/download/lanna,IWD,,,2024-04-30,1.8,,17531568,Lava,-
 A7-LevelUpTweaks,Level-Up Tweaks,,minor,Tweaks,https://github.com/Argent77/A7-LevelUpTweaks,PST,,,2023-09-08,v2.7,,14575,Argent77,-
-LivingClara,Living Clara,,minor,NPC,https://github.com/trow/LivingClara,BG2,,,2026-10-02,v1.5.1,,6348939,MephistoSatanDevil,-
+LivingClara,Living Clara,,minor,NPC,https://github.com/trow/LivingClara,BG2,,,2026-10-03,v1.5.2,,6348935,MephistoSatanDevil,-
 Lore_From_Learning,Lore From Learning,,medium,Mechanics,https://github.com/Gibberlings3/Lore_From_Learning,BG,,,2026-03-16,v10,,1568600,CamDawg,https://gibberlings3.github.io/Documentation/readmes/readme-cdlore.html
 Loretakers,Loretakers,,major,Quest/Content,https://github.com/AciferBG/Loretakers,BG1,,,2026-02-25,v2.8,,24625008,Acifer,-
 Lunia-For-Good-Parties,Lunia for Good Parties,,minor,Restructure,https://github.com/bucketfulofsunshine/Lunia-For-Good-Parties,BG2,,,2026-04-22,V1.9.1,,7760929,bucketfulofsunshine,-
@@ -281,7 +281,7 @@ Ascalons_Breagar,Ascalon's Breagar,,minor,NPC,https://github.com/Gitjas/Ascalons
 AurenAseph,Auren Aseph NPC Mod,,minor,NPC,https://github.com/Gibberlings3/AurenAseph,BG2,,,2026-03-17,v13,,18941181,theacefes,https://gibberlings3.github.io/Documentation/readmes/readme-auren.html
 bfs-reactivity-pack,Reactivity Pack (for BGEE or BG2EE),,minor,Quest/Content,https://github.com/bucketfulofsunshine/bfs-reactivity-pack,BG,,asset,2025-07-23,Nightly,WIP,2605355,bucketfulofsunshine,https://github.com/bucketfulofsunshine/bfs-reactivity-pack
 Brandock_the_Mage,Brandock the Mage,,minor,NPC,https://github.com/Gitjas/Brandock_the_Mage,BG,,,2026-07-14,v1.9,,24202319,jastey,https://htmlpreview.github.io/?https://github.com/Gitjas/Brandock_the_Mage/blob/master/c%23brandock/readme.brandock.english.html
-Emily-BG1,Emily BG1,,minor,NPC,https://github.com/Skitia/Emily-BG1,BG1,main,,2025-09-05,bcd0ecc,,5637712,Skitia,
+Emily-BG1,Emily BG1,,minor,NPC,https://github.com/Skitia/Emily-BG1,BG1,main,,2026-10-03,cd71f17,,7340000,Skitia,
 fhaugy,Fhaugy,,minor,NPC,https://downloads.weaselmods.net/download/fhaugy/,BG2,,,2023-12-25,1.03,,29097100,Lava,
 fyalvara,Fyalvara,,minor,NPC,https://downloads.weaselmods.net/download/fyalvara/,BG2,,,2026-07-05,1.4,,4014788,Lava,
 Gavin_BG,Gavin NPC  BGEE,,minor,NPC,https://github.com/Gibberlings3/Gavin_BG,BG1,,,2025-01-21,v15,,10054509,berelinde,https://gibberlings3.github.io/Documentation/readmes/readme-gavin.html
@@ -303,3 +303,11 @@ downloaditm5,Sentrizeal's Alternate Avatar Pack,,minor,Graphics,https://www.sent
 Haldamir,Haldamir,,minor,NPC,https://github.com/Gibberlings3/Haldamir,BG2,,,2019-02-22,v4,,4187944,berelinde,https://gibberlings3.github.io/Documentation/readmes/readme-haldamir.html
 Project_Javelin,Project Javelin,,minor,Items,https://github.com/Gibberlings3/Project_Javelin,BG-IWD,,,2025-07-01,Beta1,Prerelease,2208599,CamDawg,https://gibberlings3.github.io/Documentation/readmes/readme-cd_project_javelin.html
 SongAndSilence,Song and Silence: A Mod for Bards and Thieves,,minor,Mechanics,https://github.com/Gibberlings3/SongAndSilence,BG-IWD,,,2025-01-21,v19,,2805673,"Andyr, Grim Squeaker, NiGHTMARE",https://gibberlings3.github.io/Documentation/readmes/readme-song_and_silence.html
+bg1npcmusic,BG1 NPC Project Music Pack,,minor,NPC-Expansion,https://github.com/Gibberlings3/bg1npcmusic,BG1,,,2015-02-01,v6-rc1,,22320956,Multiple,https://htmlpreview.github.io/?https://github.com/Gibberlings3/bg1npcmusic/blob/master/bg1npcmusic/readme-bg1npc_music.html
+Dace-NPC,Dace,,minor,NPC,https://github.com/Spellhold-Studios/Dace-NPC,BG2,,,,,,,Tess Grey,https://mods.shsforums.net/readmes/dace-npc/dace_readme.html
+Darian-NPC,Darian,,minor,NPC,https://github.com/Spellhold-Studios/Darian-NPC/,BG2,,,,,,,skellytz,https://htmlpreview.github.io/?https://github.com/Spellhold-Studios/Darian-NPC/blob/main/darian/darian_readme.html
+Ishlilka_The-Wizard-Slayer,Ishlilka the Wizard Slayer,,minor,NPC,https://github.com/The-Gate-Project/Ishlilka_The-Wizard-Slayer,BG1,,,,,,,WarChiefZeke,https://github.com/The-Gate-Project/Ishlilka_The-Wizard-Slayer/blob/main/Ishlilkamod/readme/README.English.txt
+Iylos-NPC,Iylos NPC,,minor,NPC,https://github.com/Spellhold-Studios/Iylos-NPC/,BG2,,,,,,,Kaeloree,https://spellholdstudios.github.io/readmes/iylos_readme.html
+Kim_NPC,Kim NPC,,minor,NPC,https://github.com/11jo/Kim_NPC,BG2,,,,,,,Grenouillebleue,https://htmlpreview.github.io/?https://github.com/The-Gate-Project/Kim_NPC/blob/main/KimNPC/ReadMe/KimEn.html
+Kitanya-NPC,Kitanya NPC for BGII (WIP),,minor,NPC,https://github.com/Spellhold-Studios/Kitanya-NPC/,BG2,,,,,,,Rastor,
+Sarah,Sarah NPC,,minor,NPC,https://github.com/Gibberlings3/Sarah,BG2,,,2025-02-16,v8,,58546321,theacefes,https://gibberlings3.github.io/Documentation/readmes/readme-sarahtob.html

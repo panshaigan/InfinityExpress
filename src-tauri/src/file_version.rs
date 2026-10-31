@@ -2,7 +2,7 @@
 
 use std::path::Path;
 
-/// Return the executable's FileVersion string (e.g. `"2.6.6.0"`), or an error.
+/// Return PE FileVersion on Windows. Other platforms have no PE version probe.
 pub fn read_exe_file_version(path: &Path) -> Result<String, String> {
     #[cfg(windows)]
     {
@@ -11,7 +11,7 @@ pub fn read_exe_file_version(path: &Path) -> Result<String, String> {
     #[cfg(not(windows))]
     {
         let _ = path;
-        Err("Exe version probe is only supported on Windows".into())
+        Ok(String::new())
     }
 }
 

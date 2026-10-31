@@ -1,0 +1,4 @@
+WeiDU 249 for Linux x86_64, from WeiDU-Linux-249-amd64.zip supplied for this project.
+The bundled runtime consists of weidu; COPYING contains its GPL v2 license.
+Upstream project and source releases: https://github.com/WeiDUorg/weidu
+No examples, documentation, weinstall, tolower, or media utilities are bundled.

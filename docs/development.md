@@ -16,10 +16,15 @@ Curated data:
 
 ## Requirements
 
+Linux integration status, native tools, and remaining limitations:
+[Linux desktop support](linux.md).
+
 - Node.js 18+
 - For the desktop shell: Rust (rustup), MSVC C++ Build Tools, WebView2 (usually already on Windows 10/11)
 
-The **installed desktop app** ships with WeiDU and 7-Zip — users do not need to install those separately. Settings → App still allows a custom WeiDU path override.
+The **Windows desktop app** ships with WeiDU and 7-Zip. Linux bundles native
+x86_64 WeiDU; RAR extraction needs a system 7-Zip executable (see [Linux support](linux.md)).
+Settings → App allows a custom WeiDU path override.
 
 ## Setup
 

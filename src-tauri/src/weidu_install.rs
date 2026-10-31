@@ -662,7 +662,9 @@ fn find_debug_file(tp2: &Path) -> Option<PathBuf> {
 }
 
 fn verify_weidu_log(game_dir: &Path, tp2: &Path, lang: i32, number: i32) -> bool {
-    let log_path = game_dir.join("weidu.log");
+    let Some(log_path) = find_named_file_ci(game_dir, "weidu.log") else {
+        return false;
+    };
     let Ok(text) = fs::read_to_string(&log_path) else {
         return false;
     };
@@ -752,7 +754,11 @@ fn setup_exe_for_tp2(game_dir: &Path, tp2: &Path) -> Result<(String, PathBuf), S
         .filter(|s| !s.is_empty())
         .ok_or_else(|| format!("Cannot derive WeiDU id from tp2: {}", tp2.display()))?;
     validate_folder_name(&weidu_id)?;
-    let setup_name = format!("setup-{weidu_id}.exe");
+    let setup_name = if cfg!(windows) {
+        format!("setup-{weidu_id}.exe")
+    } else {
+        format!("setup-{weidu_id}")
+    };
     Ok((weidu_id, game_dir.join(&setup_name)))
 }
 
@@ -1497,7 +1503,7 @@ pub fn stage_mod_into_game_dir(
     Ok(tp2.to_string_lossy().into_owned())
 }
 
-pub(crate) fn find_named_game_exe(game: &Path, exe_name: &str) -> Option<PathBuf> {
+fn find_named_file_ci(game: &Path, exe_name: &str) -> Option<PathBuf> {
     let trimmed = exe_name.trim();
     if trimmed.is_empty() {
         return None;
@@ -1506,15 +1512,37 @@ pub(crate) fn find_named_game_exe(game: &Path, exe_name: &str) -> Option<PathBuf
     if p.is_file() {
         return Some(p);
     }
-    // Case-insensitive fallback on Windows.
+    // Also handle differently cased filenames on case-sensitive filesystems.
     let want = trimmed.to_ascii_lowercase();
     let Ok(entries) = fs::read_dir(game) else {
         return None;
     };
     for entry in entries.flatten() {
         let name = entry.file_name().to_string_lossy().to_ascii_lowercase();
-        if name == want {
+        if name == want && entry.path().is_file() {
             return Some(entry.path());
+        }
+    }
+    None
+}
+
+pub(crate) fn find_named_game_exe(game: &Path, exe_name: &str) -> Option<PathBuf> {
+    if let Some(path) = find_named_file_ci(game, exe_name) {
+        return Some(path);
+    }
+    // Native Linux names supplement Windows installs used through Proton.
+    #[cfg(target_os = "linux")]
+    {
+        let names: &[&str] = match exe_name.trim().to_ascii_lowercase().as_str() {
+            "baldur.exe" => &["BaldursGate", "BaldursGateII"],
+            "icewind.exe" => &["IcewindDale"],
+            "torment.exe" => &["Torment"],
+            _ => &[],
+        };
+        for name in names {
+            if let Some(path) = find_named_file_ci(game, name) {
+                return Some(path);
+            }
         }
     }
     None
@@ -1556,7 +1584,8 @@ pub struct CleanupInput {
 
 pub(crate) fn is_setup_exe_name(name: &str) -> bool {
     let n = name.to_ascii_lowercase();
-    n.starts_with("setup-") && n.ends_with(".exe")
+    n.starts_with("setup-")
+        && (n.ends_with(".exe") || (!cfg!(windows) && Path::new(name).extension().is_none()))
 }
 
 pub(crate) fn is_debug_file_name(name: &str) -> bool {
@@ -1642,10 +1671,9 @@ pub fn cleanup_install_artifacts(input: CleanupInput) -> Result<(), String> {
 
 #[tauri::command]
 pub fn read_game_weidu_log(game_dir: String) -> Result<String, String> {
-    let path = PathBuf::from(game_dir.trim()).join("weidu.log");
-    if !path.is_file() {
+    let Some(path) = find_named_file_ci(Path::new(game_dir.trim()), "weidu.log") else {
         return Ok(String::new());
-    }
+    };
     fs::read_to_string(&path).map_err(|e| e.to_string())
 }
 
@@ -1655,12 +1683,68 @@ mod tests {
     use serde_json::json;
 
     #[test]
+    fn imports_and_verifies_mixed_case_weidu_log() {
+        let game = tempfile::tempdir().unwrap();
+        fs::write(
+            game.path().join("WeiDU.LOG"),
+            "~CDTWEAKS/SETUP-CDTWEAKS.TP2~ #0 #4000\n",
+        )
+        .unwrap();
+        assert!(read_game_weidu_log(game.path().display().to_string())
+            .unwrap()
+            .contains("#4000"));
+        assert!(verify_weidu_log(
+            game.path(),
+            &game.path().join("cdtweaks/setup-cdtweaks.tp2"),
+            0,
+            4000
+        ));
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn accepts_native_and_windows_game_folders_without_pe_versions() {
+        for (expected, actual) in [
+            ("Baldur.exe", "BaldursGate"),
+            ("Baldur.exe", "BaldursGateII"),
+            ("Icewind.exe", "IcewindDale"),
+            ("Torment.exe", "Torment"),
+            ("Baldur.exe", "Baldur.exe"),
+        ] {
+            let game = tempfile::tempdir().unwrap();
+            fs::write(game.path().join(actual), b"game").unwrap();
+            assert_eq!(
+                read_game_exe_version(game.path().display().to_string(), expected.into()).unwrap(),
+                ""
+            );
+            fs::remove_file(game.path().join(actual)).unwrap();
+            assert!(
+                read_game_exe_version(game.path().display().to_string(), expected.into()).is_err()
+            );
+        }
+    }
+
+    #[test]
+    fn cleanup_recognizes_native_launchers_without_removing_tp2() {
+        assert_eq!(is_setup_exe_name("setup-cdtweaks"), !cfg!(windows));
+        assert!(!is_setup_exe_name("setup-cdtweaks.tp2"));
+        assert!(!is_setup_exe_name("setup-cdtweaks.sh"));
+    }
+
+    #[test]
     fn setup_exe_name_from_tp2_parent() {
         let game = PathBuf::from(r"D:\games\bg\eet");
         let tp2 = game.join("cdtweaks").join("setup-cdtweaks.tp2");
         let (weidu_id, setup) = setup_exe_for_tp2(&game, &tp2).expect("setup path");
         assert_eq!(weidu_id, "cdtweaks");
-        assert_eq!(setup, game.join("setup-cdtweaks.exe"));
+        assert_eq!(
+            setup,
+            game.join(if cfg!(windows) {
+                "setup-cdtweaks.exe"
+            } else {
+                "setup-cdtweaks"
+            })
+        );
     }
 
     #[test]

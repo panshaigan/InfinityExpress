@@ -148,8 +148,11 @@ export async function dirIsEmpty(path: string): Promise<boolean> {
   return invoke<boolean>('dir_is_empty', { path: trimmed })
 }
 
-/** Normalize a folder path for equality checks (trim, strip trailing separators, case-fold). */
+/** Normalize folder comparisons; only Windows drive/UNC paths are case-folded. */
 export function normalizeFolderPath(path: string): string {
-  const trimmed = path.trim().replace(/[/\\]+$/, '')
-  return trimmed.toLowerCase()
+  const trimmed = path.trim()
+  const windowsPath = /^[a-z]:[/\\]/i.test(trimmed) || trimmed.startsWith('\\\\')
+  const normalized = trimmed.replace(/[/\\]+$/, '')
+  if (windowsPath) return normalized.replace(/\\/g, '/').toLowerCase()
+  return normalized || (trimmed.startsWith('/') ? '/' : '')
 }

@@ -59,7 +59,7 @@ const EMPTY: UserModInput = {
   version: '',
   sizeBytes: null,
   author: '',
-  type: '',
+  type: 'minor',
   stability: '',
 }
 

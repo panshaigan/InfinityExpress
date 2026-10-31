@@ -1453,6 +1453,13 @@ fn extract_zip(archive: &Path, dest: &Path) -> Result<(), String> {
             }
             let mut outfile = File::create(&out).map_err(|e| e.to_string())?;
             io::copy(&mut entry, &mut outfile).map_err(|e| e.to_string())?;
+            #[cfg(unix)]
+            if let Some(mode) = entry.unix_mode() {
+                use std::os::unix::fs::PermissionsExt;
+                // Preserve ordinary permissions, never archive setuid/setgid bits.
+                fs::set_permissions(&out, fs::Permissions::from_mode(mode & 0o777))
+                    .map_err(|e| e.to_string())?;
+            }
         }
     }
     Ok(())
@@ -1466,7 +1473,12 @@ fn find_7z_binary(app: &AppHandle) -> Option<PathBuf> {
     if let Some(path) = bundled_7z_path(app) {
         return Some(path);
     }
-    for name in ["7z", "7za", "7z.exe", "7za.exe"] {
+    let names: &[&str] = if cfg!(windows) {
+        &["7zz", "7z", "7za", "7z.exe", "7za.exe"]
+    } else {
+        &["7zz", "7z", "7za"]
+    };
+    for name in names {
         if let Ok(path) = which_in_path(name) {
             return Some(path);
         }
@@ -1477,7 +1489,7 @@ fn find_7z_binary(app: &AppHandle) -> Option<PathBuf> {
     ];
     for c in candidates {
         let p = PathBuf::from(c);
-        if p.is_file() {
+        if cfg!(windows) && p.is_file() {
             return Some(p);
         }
     }
@@ -1791,6 +1803,34 @@ pub async fn acquire_mod(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(unix)]
+    #[test]
+    fn zip_extraction_preserves_execute_bits_without_setuid() {
+        use std::io::Write;
+        use std::os::unix::fs::PermissionsExt;
+        let root = tempfile::tempdir().unwrap();
+        let archive = root.path().join("mod.zip");
+        let mut writer = zip::ZipWriter::new(File::create(&archive).unwrap());
+        writer
+            .start_file(
+                "helper",
+                zip::write::SimpleFileOptions::default().unix_permissions(0o755),
+            )
+            .unwrap();
+        writer.write_all(b"#!/bin/sh\nexit 0\n").unwrap();
+        writer.finish().unwrap();
+        let dest = root.path().join("out");
+        extract_zip(&archive, &dest).unwrap();
+        assert_eq!(
+            fs::metadata(dest.join("helper"))
+                .unwrap()
+                .permissions()
+                .mode()
+                & 0o7777,
+            0o755
+        );
+    }
 
     #[test]
     fn absolutize_github_href_relative_and_absolute() {

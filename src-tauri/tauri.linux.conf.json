@@ -1,0 +1,7 @@
+{
+  "bundle": {
+    "resources": {
+      "resources/weidu/linux-amd64/": "weidu/"
+    }
+  }
+}
