@@ -155,6 +155,26 @@ AppHandle-driven backup/restore commands.
 
 ### CI and remaining coverage
 
+Run all CI checks for the current operating system with:
+
+```sh
+npm run check:ci
+```
+
+Run `npm ci` first and install the desktop prerequisites described above. On
+Windows, this includes the isolated NSIS installer lifecycle test and requires
+an interactive desktop with WebView2. On Linux, install the packages listed in
+`.github/workflows/linux-check.yml`, plus `cargo-llvm-cov` and the Rust
+`llvm-tools-preview` component. The Linux command includes package, signing,
+and AppImage smoke checks. Run on both operating systems to cover both CI jobs.
+The command stops at the first failure and does not publish or deploy anything.
+Use `npm run check:ci -- --dry-run` to list the steps without executing them.
+Frontend tests run once with coverage; both desktop and demo builds are checked.
+Release signing and GitHub artifact uploads remain CI operations.
+
+For the quicker frontend/build/Rust suite without packaging or desktop smoke
+tests, use the existing `npm run test:all`.
+
 Pushing a version tag matching `v*` (for example, `v0.10.1`) runs Vitest coverage,
 the production web build (including TypeScript checking), and Rust tests on Windows
 and Linux. Branch pushes and pull requests do not trigger these checks; run the
