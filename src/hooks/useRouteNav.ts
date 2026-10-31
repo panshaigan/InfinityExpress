@@ -88,6 +88,7 @@ export function useRouteNav(args: {
   }, [activeStation, contentMainKey, contentSubKey, contentSubTag, game])
 
   const prevNavigableScreensRef = useRef<NavScreen[]>(navigableScreens)
+  const prevNavScreenRef = useRef(currentNavScreen)
 
   const canCycleScreens =
     !!game && navigableScreens.some((s) => !finishedStations.has(s.stationId))
@@ -113,9 +114,15 @@ export function useRouteNav(args: {
 
   useLayoutEffect(() => {
     const previous = prevNavigableScreensRef.current
+    const previousScreen = prevNavScreenRef.current
     prevNavigableScreensRef.current = navigableScreens
+    prevNavScreenRef.current = currentNavScreen
     if (!currentNavScreen) return
     if (navigableScreens.some((s) => navScreensEqual(s, currentNavScreen))) return
+    // Only advance a screen that just disappeared while being viewed. A manual
+    // station switch can briefly carry the previous station's branch keys.
+    if (!previousScreen || !navScreensEqual(previousScreen, currentNavScreen)) return
+    if (!previous.some((s) => navScreensEqual(s, currentNavScreen))) return
     const next = advancePastMissingScreen(
       previous,
       currentNavScreen,

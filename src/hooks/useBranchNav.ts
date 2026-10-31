@@ -74,10 +74,9 @@ export function useBranchNav(args: {
   const prevStationRef = useRef(activeStation)
 
   useEffect(() => {
-    if (!branched) return
-
     const stationChanged = prevStationRef.current !== activeStation
     prevStationRef.current = activeStation
+    if (!branched) return
 
     if (mainBranches.length === 0) {
       if (mainKey != null) setMainKey(null)
