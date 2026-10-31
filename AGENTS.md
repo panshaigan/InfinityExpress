@@ -33,4 +33,4 @@ Do **not** re-derive behaviour from a full codebase scan when the doc above cove
 
 ## Always-on UI rules
 
-Tooltips → `has-icon-tip` / `.icon-tip` (never native `title=`). Text inputs → `OutlinedTextField`. Scrollbars → global thin chrome (never per-widget). End file-changing tasks with a suggested commit message.
+Tooltips → `has-icon-tip` / `.icon-tip` (never native `title=`). Text inputs → `OutlinedTextField`. Scrollbars → global thin chrome (never per-widget). After any file-changing task, end the final response with a suggested commit message. Keep the concise overall title, then add a short descriptive body or bullets when they help explain the completed work. Present the complete message in one fenced code block under a `📋 Commit message` label so it can be copied easily.
