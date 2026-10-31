@@ -8,6 +8,7 @@ import { access, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promise
 import { createServer } from 'node:net'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
+import { fileURLToPath } from 'node:url'
 
 assert.equal(process.platform, 'win32', 'This smoke test requires Windows and WebView2')
 const binary = path.resolve(process.env.IE_SMOKE_BINARY ?? 'src-tauri/target/release/app.exe')
@@ -43,6 +44,7 @@ let socket
 let sequence = 0
 const pending = new Map()
 const checks = []
+let dialogSequence = 0
 
 function call(method, params = {}) {
   return new Promise((resolve, reject) => {
@@ -62,7 +64,8 @@ function call(method, params = {}) {
 async function evaluate(expression) {
   const response = await call('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true })
   if (response.exceptionDetails) {
-    throw new Error(response.exceptionDetails.exception?.description ?? response.exceptionDetails.text)
+    const exception = response.exceptionDetails.exception
+    throw new Error(exception?.description ?? String(exception?.value ?? response.exceptionDetails.text))
   }
   return response.result.value
 }
@@ -70,6 +73,25 @@ async function evaluate(expression) {
 async function invoke(command, args = {}) {
   console.log(`Checking native command: ${command}`)
   return evaluate(`window.__TAURI_INTERNALS__.invoke(${JSON.stringify(command)}, ${JSON.stringify(args)})`)
+}
+
+async function nativeDialog(command, options, action, targetPath = '') {
+  const index = ++dialogSequence
+  const title = `InfinityExpress native dialog smoke ${app.pid}-${index}`
+  const resultPath = path.join(output, `dialog-${index}.json`)
+  const dialog = invoke(command, { options: { ...options, title } })
+  const helper = spawn('powershell', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+    '-File', fileURLToPath(new URL('./native-dialog.ps1', import.meta.url)),
+    '-AppProcessId', String(app.pid), '-DialogTitle', title, '-Action', action,
+    '-TargetPath', targetPath, '-ResultPath', resultPath], { windowsHide: true, timeout: 35_000 })
+  const helperLog = []
+  helper.stdout.on('data', (data) => helperLog.push(data.toString()))
+  helper.stderr.on('data', (data) => helperLog.push(data.toString()))
+  const completed = once(helper, 'exit').then(([code]) => {
+    assert.equal(code, 0, `Native dialog automation failed; see ${resultPath}\n${helperLog.join('')}`)
+  })
+  const [result] = await Promise.all([dialog, completed])
+  return result
 }
 
 function passed(message) {
@@ -150,6 +172,33 @@ try {
   assert.equal(path.resolve(weidu), path.join(path.dirname(binary), 'weidu', 'weidu.exe'))
   await access(path.join(path.dirname(binary), '7zip', '7z.exe'))
   passed('Bundled Windows tools resolve from the production resource layout')
+
+  assert.equal(await nativeDialog('plugin:dialog|open', { directory: true, multiple: false }, 'Cancel'), null)
+  const pickedFolder = path.join(fixture, 'Dialog folder Zażółć')
+  await mkdir(pickedFolder)
+  const folderResult = await nativeDialog('plugin:dialog|open',
+    { directory: true, multiple: false, defaultPath: fixture }, 'Choose', pickedFolder)
+  assert.equal(path.resolve(folderResult), pickedFolder)
+  const pickedFile = path.join(pickedFolder, 'selected file.txt')
+  await writeFile(pickedFile, 'selected')
+  const fileResult = await nativeDialog('plugin:dialog|open',
+    { directory: false, multiple: false, defaultPath: pickedFolder }, 'Choose', pickedFile)
+  assert.equal(path.resolve(fileResult), pickedFile)
+  assert.equal(await nativeDialog('plugin:dialog|save', { defaultPath: 'cancelled.txt' }, 'Cancel'), null)
+  const exportPath = path.join(fixture, 'Export Zażółć.txt')
+  const savedPath = await nativeDialog('plugin:dialog|save',
+    { defaultPath: exportPath, filters: [{ name: 'Text', extensions: ['txt'] }] }, 'Choose', exportPath)
+  assert.equal(path.resolve(savedPath), exportPath)
+  const text = 'Zażółć gęślą — native save\n'
+  const writeChosen = (destination) => evaluate(`window.__TAURI_INTERNALS__.invoke('plugin:fs|write_text_file',
+    new TextEncoder().encode(${JSON.stringify(text)}), {headers:{
+      path:encodeURIComponent(${JSON.stringify(destination)}), options:JSON.stringify({})}})`)
+  await writeChosen(savedPath)
+  assert.equal(await readFile(exportPath, 'utf8'), text)
+  const unselectedPath = path.join(fixture, 'unselected.txt')
+  await assert.rejects(writeChosen(unselectedPath), /not allowed|forbidden|scope/i)
+  await assert.rejects(access(unselectedPath), { code: 'ENOENT' })
+  passed('Real native folder/file/save dialogs, cancellation, Unicode paths, and save-scoped filesystem access')
 
   const game = path.join(fixture, 'game')
   const data = path.join(fixture, 'data')

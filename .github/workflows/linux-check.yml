@@ -16,6 +16,11 @@ jobs:
           node-version: lts/*
           cache: npm
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov@0.9.1
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
@@ -24,9 +29,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev librsvg2-dev libayatana-appindicator3-dev xvfb xauth dbus-x11 imagemagick xdotool webkit2gtk-driver minisign patchelf xdg-utils
       - run: npm ci
-      - run: npm test
+      - run: npm run test:coverage
       - run: npm run build
-      - run: npm run test:rust
+      - run: npm run test:coverage:rust
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-linux
+          path: coverage/
+          if-no-files-found: error
       - name: Verify bundled native WeiDU
         run: |
           test -x src-tauri/resources/weidu/linux-amd64/weidu

@@ -1,0 +1,14 @@
+{
+  "productName": "InfinityExpress Smoke Test",
+  "identifier": "com.infinityexpress.smoketest",
+  "bundle": {
+    "createUpdaterArtifacts": false,
+    "windows": {
+      "webviewInstallMode": { "type": "skip" },
+      "nsis": {
+        "installMode": "currentUser",
+        "startMenuFolder": "InfinityExpress Smoke Test"
+      }
+    }
+  }
+}
