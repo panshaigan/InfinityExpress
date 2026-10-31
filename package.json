@@ -12,6 +12,7 @@
     "test:watch": "node ./node_modules/vitest/vitest.mjs",
     "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml --locked",
     "test:all": "npm test && npm run build && npm run test:rust",
+    "test:desktop:windows": "node scripts/windows/desktop-smoke.mjs",
     "cost:from-metrics": "node scripts/cost-from-metrics.mjs",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",

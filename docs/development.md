@@ -50,6 +50,7 @@ npm run tauri:dev
 | `npm run test:watch` | Run Vitest in watch mode |
 | `npm run test:rust` | Run Rust tests for the Tauri backend using the committed lockfile |
 | `npm run test:all` | Run Vitest, typecheck/production web build, and Rust tests |
+| `npm run test:desktop:windows` | Smoke-test the built production Windows executable and native IPC on temporary fixtures |
 
 ### WSL / cross-OS installs
 
@@ -80,6 +81,13 @@ Tests live next to the code as `src/**/*.test.ts` / `src/**/*.test.tsx` and cove
   logs, timings, and install status helpers
 - Project storage/migration, presets, mod catalog and component-browser helpers
 - React hook integration for navigation, buffered console output, and backup restore
+- Project wizard validation/preparation/retry, session isolation across project
+  switches, pending-save cancellation, and unload persistence
+- Rendered component-tree selection with cores, conditional visibility, mixed
+  parent checkboxes, alternative radios, and finished/installed selection locks
+- Install-controller pause/resume, pending-pause cancellation, Stop/rollback/retry,
+  failure retry, auto-skip, warning pauses, compatibility preflight, duplicate
+  Play protection, and interactive input using deferred native responses
 - Rendered confirmation-dialog interactions: initial Cancel focus, explicit
   confirmation, Escape, backdrop clicks, drag-selection dismissal protection,
   and listener cleanup
@@ -120,12 +128,34 @@ TypeScript checking), and Rust tests on Windows and Linux. The Linux workflow
 also builds packages and exercises native install/reinstall/uninstall, backups,
 restore, and real Tauri IPC on disposable game fixtures; see [Linux checks](linux.md).
 
-Coverage remains strongest in domain logic. Rendered project-wizard, component
-selection, and install-control flows still need broader integration tests,
-especially pause/stop/retry and project switching. Windows checks do not yet
-launch the packaged app or exercise native dialogs/IPC. The suite currently has
-no code-coverage report or enforced coverage threshold. A passing unit suite
-does not establish compatibility with every real game/mod list.
+The Windows workflow also builds the production executable/resources and runs
+`npm run test:desktop:windows`. This starts the actual React/WebView2 app with a
+temporary profile, verifies bundled tools, and exercises compatibility checks,
+destination preparation, mod staging, real WeiDU install/reinstall/uninstall,
+snapshots, and vanilla restore through Tauri IPC. It also creates two projects
+through the actual wizard and switches between them through the App shell,
+checking that their preset selections stay independent. It saves a screenshot, native
+log, and result JSON under `.cache/windows-check/`, then removes its temporary
+game/profile fixtures. No real game folders or existing app profile are used.
+
+To reproduce on Windows with WebView2 installed:
+
+```powershell
+npm run tauri:build -- --no-bundle
+npm run test:desktop:windows
+```
+
+`IE_SMOKE_BINARY` can select another production executable, and
+`IE_SMOKE_RESULT_DIR` changes the artifact directory. The smoke test uses
+WebView2's [documented remote-debugging and profile-isolation environment variables](https://playwright.dev/docs/webview2),
+passed only to the child process. It needs no downloaded browser driver.
+
+Remaining gaps include native file-dialog automation, Windows installer
+install/uninstall, acquisition cancellation/network
+failures, and real-game mod lists. The Windows smoke test exercises the release
+executable and resource layout, rather than installing an NSIS/MSI package.
+The suite currently has no code-coverage report or enforced coverage threshold.
+A passing fixture suite does not establish compatibility with every game/mod.
 
 ## Releases
 

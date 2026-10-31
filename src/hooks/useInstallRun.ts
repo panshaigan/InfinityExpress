@@ -788,7 +788,7 @@ export function useInstallRun(options: {
       let next: InstallRun = {
         ...mergeLiveMarkers(current, runRef.current),
         steps: current.steps.map((s, idx) => (idx === index ? step : s)),
-        cursor: index + 1,
+        cursor: failed ? index : index + 1,
       }
       next = withNormalizedCursor(next)
 

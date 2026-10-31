@@ -23,3 +23,13 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run test:rust
+      - name: Build production Windows executable and resources
+        run: npm run tauri:build -- --no-bundle
+      - name: Exercise production WebView2 and native commands
+        run: npm run test:desktop:windows
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-desktop-smoke
+          path: .cache/windows-check/
+          if-no-files-found: warn
