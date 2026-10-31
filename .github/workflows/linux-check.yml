@@ -31,12 +31,15 @@ jobs:
       - run: npm run test:coverage
       - run: npm run build
       - run: npm run test:coverage:rust
-      - uses: actions/upload-artifact@v4
+      - name: Upload available coverage reports
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-linux
           path: coverage/
-          if-no-files-found: error
+          # Setup/test failures may leave no reports. Preserve that first error,
+          # but still require coverage when all preceding steps succeeded.
+          if-no-files-found: ${{ job.status == 'success' && 'error' || 'warn' }}
       - name: Verify bundled native WeiDU
         run: |
           test -x src-tauri/resources/weidu/linux-amd64/weidu
