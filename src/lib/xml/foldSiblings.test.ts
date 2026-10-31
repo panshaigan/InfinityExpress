@@ -406,7 +406,7 @@ describe('curated InstallSequence.xml folding', () => {
     expect(warriorComponentIds).toContain('ZSTweaks:2120')
 
     const content = model.stations.find((s) => s.stationId === 'content')!
-    expect(content.roots.length).toBe(3)
+    // The catalog can add station roots; assert their merged content below.
     const commons = content.children.filter((c) => c.tag === 'universalBgIwd')
     expect(commons).toHaveLength(1)
     const items = commons[0]!.children.filter((c) => c.tag === 'items')

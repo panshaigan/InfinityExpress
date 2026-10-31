@@ -19,7 +19,7 @@ Curated data:
 Linux integration status, native tools, and remaining limitations:
 [Linux desktop support](linux.md).
 
-- Node.js 18+
+- Node.js 22.12+ (Vite 8 requires a current Node runtime)
 - For the desktop shell: Rust (rustup), MSVC C++ Build Tools, WebView2 (usually already on Windows 10/11)
 
 The **Windows desktop app** ships with WeiDU and 7-Zip. Linux bundles native

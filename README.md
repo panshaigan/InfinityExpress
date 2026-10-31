@@ -75,18 +75,23 @@ Three phases:
 2. **Mods** — see which packages are on disk under the app data `mods` folder. Download the lacking ones, update the existing.
 3. **Install** — build a WeiDU plan from your selection, run it with an in-app console, and keep **vanilla** backups plus named snapshots. For EET, Pre-EET (BG1) and EET steps stay split where needed.
 
-The desktop app **bundles WeiDU 2.49 and 7-Zip** — you do not need to install them separately. Settings → App can still point at a custom WeiDU executable.
+The desktop app **bundles WeiDU 2.49** for Windows and Linux x86_64. Windows also
+bundles 7-Zip; Linux uses a system `7zz`, `7z`, or `7za` for RAR extraction.
+Settings → App can still point at a custom WeiDU executable.
 
 ## Requirements
 
 - **Windows 10/11** with WebView2 (usually already installed)
+- Or **Linux x86_64** with WebKitGTK 4.1 (Debian 12 / Ubuntu 22.04 or newer);
+  see [Linux support](docs/linux.md) for native-game and Proton limitations
 - Infinity Engine **Enhanced Edition** games you want to mod (BG1EE, BG2EE, EET, IWDEE, PSTEE as supported by the curated sequence)
 - Clean **vanilla** game folders for backups (EET needs both BG1 and BG2 vanillas)
 
 ## Install
 
 1. Open [Releases](https://github.com/panshaigan/InfinityExpress/releases).
-2. Download the latest Windows build from the release assets.
+2. Download the Windows installer, or a Linux `.deb` / `.AppImage` when available
+   in the release assets. AppImages need execute permission before running.
 3. Install and run **iNfinity eXpress**.
 
 The app can check for updates on startup (About → **Check for updates**).

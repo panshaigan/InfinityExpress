@@ -4,6 +4,7 @@ import {
   stageModIntoGameDir,
 } from '../desktop/weiduInstall'
 import type { ComponentNode } from '../xml/schema'
+import { normalizeFolderPath } from '../desktop/fsDialogs'
 import type { ModListingCache, ModListingCacheEntry, WeiduComponentInfo } from './types'
 import {
   pickEnglishLanguage,
@@ -23,7 +24,7 @@ export interface ModResolutionResult {
 }
 
 function cacheKey(gameDir: string, modId: string, tp2Hint: string, gameVersion: string): string {
-  return `${gameDir.replace(/\\/g, '/').toLowerCase()}::${modId.toLowerCase()}::${tp2Hint.toLowerCase()}::${gameVersion}`
+  return `${normalizeFolderPath(gameDir)}::${modId.toLowerCase()}::${tp2Hint.toLowerCase()}::${gameVersion}`
 }
 
 /** `bubb_revert_pathfinding:0` → `bubb_revert_pathfinding`; bare ids → null. */

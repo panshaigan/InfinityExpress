@@ -25,4 +25,10 @@ Add GitHub repository secrets:
 
 The release workflow runs `scripts/inject-updater-pubkey.mjs` to paste the public key into `tauri.conf.json` before `tauri build`.
 
+The same secrets sign Windows and Linux x86_64 builds. The Linux release job
+builds Debian and AppImage packages; Tauri signs both updater artifacts,
+and `tauri-action` adds its Linux platform entry to the shared `latest.json`.
+Unsigned Debian packages from the Linux checks workflow are testing artifacts,
+not updater releases. No production signing keys are needed for those checks.
+
 For local release builds, run the inject script with the same env var, then `npm run tauri:build`.

@@ -16,6 +16,8 @@ jobs:
         include:
           - platform: windows-latest
             args: ''
+          - platform: ubuntu-22.04
+            args: '--bundles deb,appimage'
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +38,12 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm ci
+
+      - name: Install Linux desktop dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev librsvg2-dev libayatana-appindicator3-dev patchelf xdg-utils
 
       - name: Inject updater public key
         shell: bash
@@ -58,4 +66,5 @@ jobs:
           releaseBody: See the assets to download and install this version.
           releaseDraft: true
           prerelease: false
+          includeUpdaterJson: true
           args: ${{ matrix.args }}
