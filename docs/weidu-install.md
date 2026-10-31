@@ -80,6 +80,8 @@ When the last install-order component is processed, `runState` becomes `complete
 
 The last icon in the Install toolbar opens **Game shortcuts**. It opens each project's modified game folder (both BG1 and BG2 for EET), the app's main data folder, or the game's Documents/savegame folder. The savegame directory name comes from that game's `engine.lua` `engine_name`, including custom EET names; a missing directory is reported without creating it. **Run game** starts `InfinityLoader.exe` when present, otherwise the game's normal executable, with the game folder as its working directory. Launch is disabled during active installation and file operations. These actions require the desktop app.
 
+BG2 executable discovery accepts `Baldur.exe` first, then `BaldurII.exe` (case-insensitive). This covers folder validation, executable-version reads, accepting existing project destinations, and game launch (including EET's BG2 folder). Executable-platform compatibility checks also recognize `BaldurII.exe`. `InfinityLoader.exe` keeps priority when launching.
+
 The **Installation finished** dialog lets you choose what to remove (checkboxes). Defaults check leftover artifacts; whole BG1 is opt-in (EET only).
 
 `cleanup_install_artifacts` (Rust) runs per unique game folder used by the plan (EET: BG1 and BG2), for the selected items:

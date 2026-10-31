@@ -40,7 +40,7 @@ export async function probeGameFolder(
   } catch {
     return {
       ok: false,
-      error: `Not a valid game folder (missing ${exeName})`,
+      error: `Not a valid game folder (missing ${key === 'bg2' ? `${exeName} or BaldurII.exe` : exeName})`,
     }
   }
 }

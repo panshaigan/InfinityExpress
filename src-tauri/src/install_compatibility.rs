@@ -22,6 +22,7 @@ fn game_binary(game: &Path) -> GameBinary {
         if !matches!(
             name.as_str(),
             "baldur.exe"
+                | "baldurii.exe"
                 | "icewind.exe"
                 | "torment.exe"
                 | "baldursgate"
@@ -151,6 +152,15 @@ mod tests {
             "block"
         );
     }
+    #[test]
+    fn alternate_bg2_windows_executable_allows_executable_patches() {
+        let game = tempfile::tempdir().unwrap();
+        std::fs::write(game.path().join("BALDURII.EXE"), b"MZtest").unwrap();
+        assert!(check(request(game.path(), "EEex:1")).is_none());
+        assert!(check(request(game.path(), "bubb_revert_pathfinding:0")).is_none());
+        assert!(require_compatible(game.path(), "EEex").is_ok());
+    }
+
     #[test]
     fn missing_or_unrecognized_binaries_do_not_allow_executable_patches() {
         let game = tempfile::tempdir().unwrap();

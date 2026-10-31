@@ -1712,6 +1712,12 @@ pub(crate) fn find_named_game_exe(game: &Path, exe_name: &str) -> Option<PathBuf
     if let Some(path) = find_named_file_ci(game, exe_name) {
         return Some(path);
     }
+    // Some BG2 Windows distributions use BaldurII.exe instead of Baldur.exe.
+    if exe_name.trim().eq_ignore_ascii_case("Baldur.exe") {
+        if let Some(path) = find_named_file_ci(game, "BaldurII.exe") {
+            return Some(path);
+        }
+    }
     // Native Linux names supplement Windows installs used through Proton.
     #[cfg(target_os = "linux")]
     {
@@ -1939,6 +1945,28 @@ mod tests {
             0,
             4000
         ));
+    }
+
+    #[test]
+    fn finds_bg2_alternate_exe_case_insensitively_and_prefers_original() {
+        let game = tempfile::tempdir().unwrap();
+        assert!(find_named_game_exe(game.path(), "Baldur.exe").is_none());
+        let alternate = game.path().join("BALDURII.EXE");
+        fs::write(&alternate, b"MZtest").unwrap();
+        assert_eq!(
+            find_named_game_exe(game.path(), "Baldur.exe")
+                .unwrap()
+                .canonicalize()
+                .unwrap(),
+            alternate.canonicalize().unwrap()
+        );
+        assert!(find_named_game_exe(game.path(), "Icewind.exe").is_none());
+        let original = game.path().join("Baldur.exe");
+        fs::write(&original, b"MZtest").unwrap();
+        assert_eq!(
+            find_named_game_exe(game.path(), "Baldur.exe"),
+            Some(original)
+        );
     }
 
     #[cfg(target_os = "linux")]

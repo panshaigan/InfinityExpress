@@ -56,6 +56,9 @@ fn launch_exe(dir: &Path, game_key: &str) -> Result<PathBuf, String> {
     let loader = dir.join("InfinityLoader.exe");
     let exe = if loader.is_file() {
         loader
+    } else if game_key == "bg2" {
+        crate::weidu_install::find_named_game_exe(dir, normal)
+            .ok_or("Game executable not found: Baldur.exe or BaldurII.exe")?
     } else {
         dir.join(normal)
     };
@@ -113,12 +116,23 @@ mod tests {
     fn selects_loader_before_normal_exe_and_requires_known_game() {
         let dir = tempfile::tempdir().unwrap();
         assert!(launch_exe(dir.path(), "bg2").is_err());
+        std::fs::write(dir.path().join("BaldurII.exe"), "").unwrap();
+        assert_eq!(
+            launch_exe(dir.path(), "bg2").unwrap(),
+            dir.path().join("BaldurII.exe")
+        );
+        assert!(launch_exe(dir.path(), "bg1").is_err());
         std::fs::write(dir.path().join("Baldur.exe"), "").unwrap();
         assert_eq!(
             launch_exe(dir.path(), "bg2").unwrap(),
             dir.path().join("Baldur.exe")
         );
         std::fs::write(dir.path().join("InfinityLoader.exe"), "").unwrap();
+        assert_eq!(
+            launch_exe(dir.path(), "bg2").unwrap(),
+            dir.path().join("InfinityLoader.exe")
+        );
+        std::fs::remove_file(dir.path().join("Baldur.exe")).unwrap();
         assert_eq!(
             launch_exe(dir.path(), "bg2").unwrap(),
             dir.path().join("InfinityLoader.exe")
