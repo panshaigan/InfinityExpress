@@ -1,6 +1,7 @@
 mod bundled_tools;
 mod dev_reset;
 mod file_version;
+mod game_shortcuts;
 mod install_compatibility;
 mod mod_acquire;
 mod mod_fs;
@@ -24,6 +25,8 @@ pub fn run() {
             install_compatibility::check_install_compatibility,
             dev_reset::take_fresh_install_env_flag,
             bundled_tools::bundled_weidu_path,
+            game_shortcuts::game_documents_path,
+            game_shortcuts::launch_project_game,
             mod_fs::list_subdir_names,
             mod_fs::read_text_file,
             mod_fs::file_is_nonempty,

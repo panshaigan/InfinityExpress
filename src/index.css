@@ -4734,6 +4734,35 @@ body.is-resizing-detail * {
   color: var(--muted);
 }
 
+.game-shortcuts-section {
+  margin-bottom: 16px;
+}
+
+.game-shortcuts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.game-shortcuts-section h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.game-shortcuts-path {
+  margin: 0 0 10px;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.game-shortcuts-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .confirm-dialog-actions {
   display: flex;
   justify-content: flex-end;

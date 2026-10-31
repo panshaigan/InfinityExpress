@@ -468,7 +468,7 @@ function CostCell({
         />
       </div>
       <IconTip>
-        Relative install weight vs heaviest step in this plan
+        Relative install time vs heaviest step in this plan
       </IconTip>
     </div>
   )

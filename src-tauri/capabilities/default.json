@@ -13,6 +13,10 @@
     "dialog:default",
     "fs:allow-write-text-file",
     "opener:default",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [{ "path": "**" }]
+    },
     "allow-list-subdir-names",
     "allow-read-text-file",
     "allow-file-is-nonempty",
@@ -31,6 +35,7 @@
     "allow-weidu-install",
     "allow-weidu-backup",
     "allow-take-fresh-install-env-flag",
-    "allow-bundled-tools"
+    "allow-bundled-tools",
+    "allow-game-shortcuts"
   ]
 }

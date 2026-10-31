@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-game-shortcuts"
+description = "Resolve game save folders and launch a project's game executable."
+commands.allow = ["game_documents_path", "launch_project_game"]

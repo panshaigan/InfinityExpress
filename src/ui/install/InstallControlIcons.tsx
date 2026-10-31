@@ -1,5 +1,14 @@
 const size = 16
 
+export function GameShortcutsIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" aria-hidden="true">
+      <path d="M1.5 12.5v-9h5l1.5 2h6.5v7h-13Z" />
+      <path d="m7 7 4 2-4 2V7Z" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
 export function PlayIcon() {
   return (
     <svg viewBox="0 0 16 16" width={size} height={size} aria-hidden="true">

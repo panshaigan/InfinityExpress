@@ -42,12 +42,14 @@ import { RestoreSnapshotDialog } from './RestoreSnapshotDialog'
 import { PlanSnapshotDialog } from './PlanSnapshotDialog'
 import { RestartConfirmDialog, type RestartScope } from './RestartConfirmDialog'
 import { InstallFinishedDialog } from './InstallFinishedDialog'
+import { GameShortcutsDialog } from './GameShortcutsDialog'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { InstallConsoleDock } from './InstallConsoleDock'
 import { InstallDetailPane } from './InstallDetailPane'
 import { InstallTable } from './InstallTable'
 import {
   AutoSkipOnErrorsIcon,
+  GameShortcutsIcon,
   HideInstalledIcon,
   JumpToCursorIcon,
   PauseOnWarningsIcon,
@@ -266,6 +268,7 @@ export function InstallStation({
   } | null>(null)
   const [restartDialogOpen, setRestartDialogOpen] = useState(false)
   const [finishedDialogOpen, setFinishedDialogOpen] = useState(false)
+  const [gameShortcutsOpen, setGameShortcutsOpen] = useState(false)
   const [cleanupBusy, setCleanupBusy] = useState(false)
   const [cleanupError, setCleanupError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -1241,6 +1244,12 @@ export function InstallStation({
                 </button>
                 <IconTip>{cleanTip}</IconTip>
               </span>
+              <span className="install-action-icon-wrap has-icon-tip">
+                <button type="button" className="install-action-icon-btn" aria-label="Game shortcuts" aria-haspopup="dialog" onClick={() => setGameShortcutsOpen(true)}>
+                  <GameShortcutsIcon />
+                </button>
+                <IconTip>Game folders and launch</IconTip>
+              </span>
             </div>
           </div>
 
@@ -1301,6 +1310,16 @@ export function InstallStation({
         onSendInput={(text) => void sendInput(text)}
         onResizeActiveChange={setConsoleResizing}
       />
+
+      {gameShortcutsOpen && (
+        <GameShortcutsDialog
+          game={game}
+          gameFolders={gameFolders}
+          dataPath={appDirs.backupDir}
+          launchBlocked={installLive || snapshotActionBusy || cleanupBusy}
+          onClose={() => setGameShortcutsOpen(false)}
+        />
+      )}
 
       <RestoreSnapshotDialog
         open={restoreDialogOpen}
