@@ -53,6 +53,8 @@ export interface PersistedWeiduLogInstalls {
 }
 
 export interface WeiduLogMapDeps {
+  /** Restores can replace mod versions at the same path. Re-read their listings. */
+  refreshListings?: boolean
   readLog?: (gameDir: string) => Promise<string>
   listComponents?: (
     weiduPath: string,
@@ -234,7 +236,8 @@ async function listForTp2(
 ): Promise<{ listing: WeiduComponentInfo[] | null; error: string | null }> {
   const abs = resolveGameTp2Path(gameDir, tp2Path)
   const cacheKey = listingCacheKey(gameDir, tp2Path, lang)
-  const cached = listingCache.get(cacheKey)
+  const cached = deps.refreshListings ? undefined : listingCache.get(cacheKey)
+  if (deps.refreshListings) listingCache.delete(cacheKey)
   if (cached) return { listing: cached, error: null }
   const list = deps.listComponents ?? listWeiduComponents
   try {

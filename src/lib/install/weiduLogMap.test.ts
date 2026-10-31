@@ -326,6 +326,35 @@ describe('importInstalledFromDestinations', () => {
   })
 })
 
+describe('restored mod listings', () => {
+  it('refreshes LABEL mappings when a restore replaces a mod at the same path', async () => {
+    const model = modelWith([comp('old_label'), comp('restored_label')])
+    const destinations = { bg1: '', bg2: 'D:/restored-listing-test', iwd: '', pst: '' }
+    const deps = {
+      weiduPath: 'C:/weidu.exe',
+      readLog: async () => '~MOD/MOD.TP2~ #0 #1\n',
+      listComponents: async () => [
+        { index: 0, number: 1, name: 'Old version', label: ['old_label'] },
+      ],
+    }
+    const before = await importInstalledFromDestinations(model, 'bg2', destinations, deps)
+    expect([...before.componentIds]).toEqual(['old_label'])
+
+    const restoredDeps = {
+      ...deps,
+      refreshListings: true,
+      listComponents: async () => [
+        { index: 0, number: 1, name: 'Restored version', label: ['restored_label'] },
+      ],
+    }
+    const after = await importInstalledFromDestinations(model, 'bg2', destinations, restoredDeps)
+    expect([...after.componentIds]).toEqual(['restored_label'])
+
+    const reopened = await importInstalledFromDestinations(model, 'bg2', destinations, deps)
+    expect([...reopened.componentIds]).toEqual(['restored_label'])
+  })
+})
+
 describe('applyWeiduLogToSteps', () => {
   it('marks queued steps alreadyInstalled and fills tp2 fields', () => {
     const step: InstallStep = {

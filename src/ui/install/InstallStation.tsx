@@ -119,6 +119,7 @@ interface Props {
   installLock?: InstallLock
   onInstallActionsReady?: (actions: InstallActions | null) => void
   weiduLogImport?: WeiduLogImportResult | null
+  onWeiduLogImportChange?: (result: WeiduLogImportResult) => void
   /** True when the Install phase is the visible app phase. */
   active?: boolean
 }
@@ -154,6 +155,7 @@ export function InstallStation({
   installLock: installLockProp,
   onInstallActionsReady,
   weiduLogImport = null,
+  onWeiduLogImportChange,
   active = true,
 }: Props) {
   const profileInstallTable =
@@ -218,6 +220,7 @@ export function InstallStation({
       ? { installSession: initialInstallSession }
       : null,
     weiduLogImport,
+    onWeiduLogImportChange,
     active,
     pauseOnWarnings,
     autoSkipOnErrors,
@@ -725,28 +728,12 @@ export function InstallStation({
   }, [pause])
 
   const onRestoreDone = useCallback(
-    async (_backupPath: string, restoredGameKey: string) => {
+    async () => {
       if (!game) return
+      await restartFromBackup()
       setNotice('Snapshot restored.')
-      if (!run) return
-      const targetDir =
-        restoredGameKey === 'bg1'
-          ? gameFolders.bg1
-          : restoredGameKey === 'bg2'
-            ? gameFolders.bg2
-            : restoredGameKey === 'iwd'
-              ? gameFolders.iwd
-              : restoredGameKey === 'pst'
-                ? gameFolders.pst
-                : gameDirForPhase(
-                    game,
-                    run.steps[run.cursor]?.phase ?? run.steps[0]?.phase ?? 'single',
-                    gameFolders,
-                  )
-      if (!targetDir) return
-      await restartFromBackup(targetDir)
     },
-    [game, run, gameFolders, restartFromBackup],
+    [game, restartFromBackup],
   )
 
   const refreshSnapshotCount = useCallback(() => {
@@ -914,11 +901,7 @@ export function InstallStation({
           await restoreGameDir(vanillaPath, dest)
         }
 
-        if (run) {
-          const primaryDir =
-            keys.includes('bg2') ? gameFolders.bg2 : gameDirForKey(keys[0] ?? game)
-          if (primaryDir) await restartFromBackup(primaryDir)
-        }
+        await restartFromBackup()
 
         setNotice('Game restored from vanilla backup.')
         pushToast({ sound: true, tone: 'success', message: 'Game restored from vanilla backup.' })
@@ -938,10 +921,8 @@ export function InstallStation({
     [
       game,
       appDirs.backupDir,
-      gameFolders.bg2,
       gameDirForKey,
       stopRunningInstall,
-      run,
       restartFromBackup,
       appendCommandLine,
       pushToast,
@@ -1321,7 +1302,7 @@ export function InstallStation({
         dirsByKey={snapshotDirsByKey}
         targetDir={snapshotTarget?.sourceDir ?? ''}
         onClose={() => setRestoreDialogOpen(false)}
-        onRestoreDone={(path, key) => void onRestoreDone(path, key)}
+        onRestoreDone={onRestoreDone}
         onBusyChange={setSnapshotBusy}
         onLog={appendCommandLine}
         onSnapshotsChange={refreshSnapshotCount}

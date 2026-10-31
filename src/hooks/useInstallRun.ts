@@ -178,6 +178,8 @@ export function useInstallRun(options: {
   initialInstallState?: InstallRunInitialState | null
   /** Reverse-mapped WeiDU.log hits for alreadyInstalled marks. */
   weiduLogImport?: WeiduLogImportResult | null
+  /** Replace the project's identified installs after a backup restore. */
+  onWeiduLogImportChange?: (result: WeiduLogImportResult) => void
   /** @deprecated Unused — console tails load whenever the run is hydrated (project open). */
   active?: boolean
   /** When true, pause after a step with WeiDU exit code 3 (installed with warnings). */
@@ -194,6 +196,7 @@ export function useInstallRun(options: {
     projectFolderName,
     initialInstallState,
     weiduLogImport = null,
+    onWeiduLogImportChange,
     pauseOnWarnings = false,
     autoSkipOnErrors = false,
   } = options
@@ -588,18 +591,6 @@ export function useInstallRun(options: {
       unlisten?.()
     }
   }, [pushConsoleLine])
-
-  const markAlreadyInstalledFromLog = useCallback(
-    async (steps: InstallStep[], game: SelectedGame): Promise<InstallStep[]> => {
-      const result = await importInstalledFromDestinations(
-        model,
-        game,
-        gameFolders,
-      )
-      return applyWeiduLogToSteps(steps, result)
-    },
-    [gameFolders, model],
-  )
 
   const withNormalizedCursor = useCallback((current: InstallRun): InstallRun => {
     const cursor = nextActionableCursor(current.steps, current.cursor)
@@ -1758,53 +1749,78 @@ export function useInstallRun(options: {
   }, [])
 
   const restartFromBackup = useCallback(
-    async (_phaseGameDir: string) => {
-      if (!runRef.current) return
-
+    async () => {
+      if (!game) return
       await stopRunningInstall()
 
-      const base = runRef.current
-      if (!base) return
-
-      let steps: InstallStep[] = base.steps.map(
-        (s): InstallStep => ({
-          ...s,
-          status: 'queued',
-          progress: null,
-          warnings: [],
-          errors: [],
-          resultLines: [],
-          finishedAt: undefined,
-          startedAt: undefined,
-        }),
+      cacheRef.current = new Map()
+      const result = await importInstalledFromDestinations(
+        model,
+        game,
+        gameFolders,
+        { refreshListings: true },
       )
-      steps = await markAlreadyInstalledFromLog(steps, base.game)
-      const nextCursor = nextActionableCursor(steps, 0)
-      const next: InstallRun = {
-        ...base,
-        steps,
-        cursor: nextCursor,
-        runState: 'idle',
-        breakpointStepIds: base.breakpointStepIds ?? [],
-        plannedSnapshots: base.plannedSnapshots ?? [],
-        artifactsCleaned: false,
+      // This scan replaces pre-restore hits, including when no run exists yet.
+      onWeiduLogImportChange?.(result)
+      const base = runRef.current
+      if (base) {
+        const resetSteps: InstallStep[] = base.steps.map(
+          (s): InstallStep => ({
+            ...s,
+            tp2Path: '',
+            stagedFolderName: '',
+            weiduNumber: null,
+            languageIndex: null,
+            status: 'queued',
+            progress: null,
+            warnings: [],
+            errors: [],
+            resultLines: [],
+            finishedAt: undefined,
+            startedAt: undefined,
+          }),
+        )
+        const steps = applyWeiduLogToSteps(resetSteps, result)
+        const nextCursor = nextActionableCursor(steps, 0)
+        const next: InstallRun = {
+          ...base,
+          steps,
+          cursor: nextCursor,
+          runState: 'idle',
+          breakpointStepIds: base.breakpointStepIds ?? [],
+          plannedSnapshots: base.plannedSnapshots ?? [],
+          artifactsCleaned: false,
+        }
+        setRun(next)
+        runRef.current = next
+        setActiveStepId(steps[nextCursor]?.stepId ?? null)
       }
-      setRun(next)
       setConsoleLines([])
       setCommandLines([])
       setResultLines([])
       setInputPrompt(null)
-      setActiveStepId(steps[nextCursor]?.stepId ?? null)
+      activeResultsPathRef.current = null
       setPaused(false)
       pausedRef.current = false
       setPausePending(false)
       pausePendingRef.current = false
       stopRequestedRef.current = false
       setStopping(false)
-      cacheRef.current = new Map()
       appendCommandLine('Plan reset after restore — press Play to continue')
+      for (const error of result.listingErrors) appendCommandLine(`Warning: ${error}`)
+      if (result.listingErrors.length > 0) {
+        pushToast({ tone: 'error', message: result.listingErrors[0]! })
+      }
     },
-    [markAlreadyInstalledFromLog, appendCommandLine, stopRunningInstall],
+    [
+      game,
+      model,
+      gameFolders,
+      onWeiduLogImportChange,
+      appendCommandLine,
+      stopRunningInstall,
+      pushToast,
+    ],
   )
 
   const sendInput = useCallback(async (text: string) => {

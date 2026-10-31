@@ -253,9 +253,11 @@ Vanilla folders still reject `WeiDU.log`. Mapping lives in [`weiduLogMap.ts`](..
 ### Restore → install plan
 
 1. Wipe target game dir, then copy snapshot or vanilla tree.
-2. If an install run exists, `restartFromBackup` resets steps to `queued`, reverse-maps each phase game dir `weidu.log` onto component ids, marks those steps `alreadyInstalled`, and places the **cursor** on the first unfinished step.
+2. `restartFromBackup` re-reads each phase game dir `weidu.log` and its mod component listings, replacing the project's cached identified installs. This also refreshes the live plan before the first Play. If a run exists, it clears prior statuses, diagnostics, timings, and resolved mod identities, marks matching steps `alreadyInstalled` using the restored log's identity/language, and places the **cursor** on the first unfinished step.
 3. Leaves `runState: 'idle'` — **does not** start or resume WeiDU. User presses Play.
 4. Vanilla restore (no log) → none marked installed. Does **not** change Components-phase selection checkboxes.
+
+The snapshot dialog stays busy until the installation state refresh completes. The refreshed identified installs are persisted with the project so later plan edits and reopening the project use the restored state.
 
 Install toolbar **Restart** restores the vanilla backup (with EET scope choice) then runs the same plan reset. **Restore snapshot** restores a named snapshot only (vanilla is not listed there).
 

@@ -321,6 +321,11 @@ function AppShell() {
   )
   const destImportKeyRef = useRef('')
   const weiduImportGenRef = useRef(0)
+  const onRestoredWeiduLogImport = useCallback((result: WeiduLogImportResult) => {
+    // Invalidate older destination scans; restored files are authoritative.
+    weiduImportGenRef.current++
+    setWeiduLogImport(result)
+  }, [])
   const foldApiRef = useRef<TreeFoldApi | null>(null)
 
   const openComponentBrowser = useCallback(() => {
@@ -1392,6 +1397,7 @@ function AppShell() {
               installLock={installLock}
               onInstallActionsReady={setInstallActions}
               weiduLogImport={weiduLogImport}
+              onWeiduLogImportChange={onRestoredWeiduLogImport}
               active={appPhase === 'install'}
             />
           </div>

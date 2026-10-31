@@ -27,7 +27,7 @@ interface Props {
   dirsByKey: Record<string, string>
   targetDir: string
   onClose: () => void
-  onRestoreDone: (snapshotPath: string, restoredGameKey: string) => void
+  onRestoreDone: (snapshotPath: string, restoredGameKey: string) => void | Promise<void>
   onBusyChange?: (busy: boolean) => void
   /** Optional install Commands-tab log (timestamped by caller). */
   onLog?: (message: string) => void
@@ -195,9 +195,10 @@ export function RestoreSnapshotDialog({
     setProgress(emptyProgress('Cleaning game folder…'))
     try {
       await restoreGameDir(selectedPath, dest)
+      setProgress(emptyProgress('Updating installation state from WeiDU.log…'))
+      await onRestoreDone(selectedPath, selectedGameKey)
       onLog?.(`Snapshot restored from ${selectedPath} → ${selectedGameKey}`)
       pushToast({ sound: true, tone: 'success', message: 'Snapshot restored.' })
-      onRestoreDone(selectedPath, selectedGameKey)
       onClose()
     } catch (e) {
       const message = String(e)
