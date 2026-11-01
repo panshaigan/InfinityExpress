@@ -1969,6 +1969,16 @@ mod tests {
         );
     }
 
+    #[test]
+    fn game_version_command_reports_missing_directory() {
+        let root = tempfile::tempdir().unwrap();
+        let result = tauri::async_runtime::block_on(read_game_exe_version(
+            root.path().join("missing").display().to_string(),
+            "Baldur.exe".into(),
+        ));
+        assert_eq!(result.unwrap_err(), "Game directory does not exist");
+    }
+
     #[cfg(target_os = "linux")]
     #[test]
     fn accepts_native_and_windows_game_folders_without_pe_versions() {
@@ -1982,12 +1992,16 @@ mod tests {
             let game = tempfile::tempdir().unwrap();
             fs::write(game.path().join(actual), b"game").unwrap();
             assert_eq!(
-                read_game_exe_version(game.path().display().to_string(), expected.into()).unwrap(),
+                tauri::async_runtime::block_on(read_game_exe_version(
+                    game.path().display().to_string(), expected.into(),
+                )).unwrap(),
                 ""
             );
             fs::remove_file(game.path().join(actual)).unwrap();
             assert!(
-                read_game_exe_version(game.path().display().to_string(), expected.into()).is_err()
+                tauri::async_runtime::block_on(read_game_exe_version(
+                    game.path().display().to_string(), expected.into(),
+                )).is_err()
             );
         }
     }

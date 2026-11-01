@@ -13,6 +13,27 @@ use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let context = tauri::generate_context!();
+    // Elevated WebView2 hosts ignore WEBVIEW2_* environment overrides. Pass
+    // fixture-only settings through the API; normal release builds omit this.
+    #[cfg(all(windows, feature = "desktop-smoke"))]
+    let context = {
+        let mut context = context;
+        if let Ok(port) = std::env::var("IE_SMOKE_DEBUG_PORT") {
+            let port: std::num::NonZeroU16 = port.parse().expect("invalid smoke debug port");
+            let profile = std::path::PathBuf::from(
+                std::env::var_os("IE_SMOKE_PROFILE").expect("missing smoke profile"),
+            );
+            assert!(profile.is_absolute(), "smoke profile must be absolute");
+            for window in &mut context.config_mut().app.windows {
+                window.additional_browser_args = Some(format!(
+                    "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --remote-debugging-port={port} --remote-debugging-address=127.0.0.1"
+                ));
+                window.data_directory = Some(profile.clone());
+            }
+        }
+        context
+    };
     tauri::Builder::default()
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -79,6 +100,6 @@ pub fn run() {
             }
             Ok(())
         })
-        .run(tauri::generate_context!())
+        .run(context)
         .expect("error while running tauri application");
 }

@@ -48,3 +48,5 @@ if (-not $version) {
     throw 'WebView2 Evergreen Runtime is missing for this user. Run powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/ensure-webview2.ps1 -Install before desktop smoke tests.'
 }
 Write-Output "WebView2 Evergreen Runtime: $version"
+$principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+Write-Output "Smoke host elevated: $($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))"

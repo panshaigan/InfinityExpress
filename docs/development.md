@@ -228,14 +228,19 @@ An interactive Windows desktop is required for these checks.
 To reproduce on Windows with WebView2 installed:
 
 ```powershell
-npm run tauri:build -- --no-bundle
+npm run tauri:build -- --no-bundle --features desktop-smoke
 npm run test:desktop:windows
 ```
 
 `IE_SMOKE_BINARY` can select another production executable, and
-`IE_SMOKE_RESULT_DIR` changes the artifact directory. The smoke test uses
-WebView2's [documented remote-debugging and profile-isolation environment variables](https://playwright.dev/docs/webview2),
-passed only to the child process. It needs no downloaded browser driver.
+`IE_SMOKE_RESULT_DIR` changes the artifact directory. Elevated WebView2 hosts
+[ignore environment overrides](https://learn.microsoft.com/microsoft-edge/webview2/concepts/security#for-an-elevated-host-app-use-appropriate-override-flags),
+so Windows smoke builds enable the `desktop-smoke` Cargo feature and pass the
+fixture's port/profile through Tauri's WebView2 API using `IE_SMOKE_DEBUG_PORT`
+and `IE_SMOKE_PROFILE`. The isolated NSIS config enables this feature too.
+Normal release builds omit that code. The test removes inherited `WEBVIEW2_*`
+overrides so local and CI runs exercise the same API configuration path. It
+needs no downloaded browser driver.
 
 To reproduce the installer lifecycle check (WebView2 must already be installed):
 

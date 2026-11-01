@@ -1,6 +1,7 @@
 {
   "productName": "InfinityExpress Smoke Test",
   "identifier": "com.infinityexpress.smoketest",
+  "build": { "features": ["desktop-smoke"] },
   "bundle": {
     "createUpdaterArtifacts": false,
     "windows": {

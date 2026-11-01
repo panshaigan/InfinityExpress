@@ -7,6 +7,8 @@ use std::os::windows::process::CommandExt;
 
 /// Hide the child console on Windows. Stdio pipes still work.
 pub fn configure_headless(cmd: &mut Command) {
+    #[cfg(not(windows))]
+    let _ = cmd;
     #[cfg(windows)]
     {
         const CREATE_NO_WINDOW: u32 = 0x0800_0000;

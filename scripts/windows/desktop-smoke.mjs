@@ -1,5 +1,5 @@
 // Exercise the production React/WebView2 app and real Tauri IPC on disposable games.
-// WebView2 debugging/profile isolation: https://playwright.dev/docs/webview2
+// WebView2 debugging/profile isolation uses the desktop-smoke Cargo feature.
 // No browser/driver download is needed; Node 22.12+ supplies fetch and WebSocket.
 import assert from 'node:assert/strict'
 import { spawn, spawnSync } from 'node:child_process'
@@ -36,10 +36,11 @@ await new Promise((resolve, reject) => server.close((error) => error ? reject(er
 const app = spawn(binary, [], {
   windowsHide: true,
   env: {
-    ...process.env,
-    // Only this child receives these overrides; the user's app profile is untouched.
-    WEBVIEW2_USER_DATA_FOLDER: path.join(fixture, 'webview-profile'),
-    WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: `--remote-debugging-port=${port} --remote-debugging-address=127.0.0.1`,
+    // Use the API path locally too, and discard inherited WebView2 overrides.
+    ...Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.toUpperCase().startsWith('WEBVIEW2_'))),
+    // Smoke builds pass these through the API even on elevated CI runners.
+    IE_SMOKE_DEBUG_PORT: String(port),
+    IE_SMOKE_PROFILE: path.join(fixture, 'webview-profile'),
   },
   stdio: ['ignore', 'pipe', 'pipe'],
 })
@@ -149,7 +150,8 @@ try {
     } catch (error) { startupDetails = inspect(error, { depth: 4 }) }
     await delay(200)
   }
-  assert.ok(target?.webSocketDebuggerUrl, `Production WebView2 target did not start: ${startupDetails}`)
+  assert.ok(target?.webSocketDebuggerUrl,
+    `Production WebView2 target did not start (build with --features desktop-smoke): ${startupDetails}`)
   socket = new WebSocket(target.webSocketDebuggerUrl)
   socket.addEventListener('message', (event) => {
     const message = JSON.parse(event.data)
