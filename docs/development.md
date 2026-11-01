@@ -175,21 +175,22 @@ Release signing and GitHub artifact uploads remain CI operations.
 For the quicker frontend/build/Rust suite without packaging or desktop smoke
 tests, use the existing `npm run test:all`.
 
-Pushing to `main` runs Vitest coverage, the production web build (including
-TypeScript checking), and Rust tests on Windows and Linux. Other branch pushes,
-pull requests, and version tags do not trigger these checks. Let the checks on
-the intended commit finish successfully before tagging it. Coverage
+All GitHub workflows run only when a version tag matching `v*` is pushed.
+Pushing to `main` or any other branch does not trigger CI, builds, or deployment;
+pull requests and manual dispatch do not trigger workflows either. Version tags
+run Vitest coverage, the production web build (including TypeScript checking),
+and Rust tests on Windows and Linux. Run local checks before tagging. Coverage
 reports are retained as CI artifacts; Linux also collects Rust coverage. The Linux workflow
 also builds packages and exercises native install/reinstall/uninstall, backups,
 restore, and real Tauri IPC on disposable game fixtures; see [Linux checks](linux.md).
 
-Native compilation dominates these checks. The checks on `main` populate the
-Rust caches used by subsequent checks and release tags, so no separate cache
-warmer is needed. Check and release jobs share an OS-specific Rust cache,
-including the separate Linux coverage target, and preserve compiled dependencies
-even after a later failure. Tags matching `v*` build release packages and deploy
-the browser demo without repeating the test suites. These tag workflows do not
-automatically gate on the earlier `main` checks.
+Native compilation dominates these checks. Check and release jobs share an
+OS-specific Rust cache, including the separate Linux coverage target, and
+preserve compiled dependencies even after a later failure. There is no cache
+warmer on `main`. GitHub isolates caches between different tags, so a new tag
+may require a cold native build. The same tag also builds release packages and
+deploys the browser demo; those workflows do not rerun the test suites or
+automatically gate on the separate Windows and Linux check workflows.
 
 Desktop checks use Tauri's existing frontend build hook instead of building the
 same web assets immediately before it. Frontend suites and coverage floors are
@@ -294,6 +295,6 @@ The demo starts in the project hub, creates projects with name and engine only, 
 
 One-time deployment setup: in the GitHub repository, open Settings → Pages and select **GitHub Actions** as the source. In Settings → Environments → `github-pages`, allow tags matching `v*` under **Deployment branches and tags** (select **Selected branches and tags** and add a **Tag** rule). Replace any branch-only restriction that would block tags.
 
-The `Browser demo` workflow builds and deploys the tagged commit only when a version tag matching `v*` is pushed. Branch pushes, pull requests, and manual runs do not trigger this workflow. Frontend tests run in the Windows and Linux checks on `main`; deployment waits for the demo build without rerunning those tests. The checks on `main` do not automatically gate Pages deployment. The site is served at `https://panshaigan.github.io/InfinityExpress/`; no custom domain or backend is required. A public repository supports Pages on GitHub Free.
+The `Browser demo` workflow builds and deploys the tagged commit only when a version tag matching `v*` is pushed. Branch pushes, pull requests, and manual runs do not trigger this workflow. Frontend tests run in the separate Windows and Linux checks for the same tag; deployment waits for the demo build without rerunning those tests. The check workflows do not automatically gate Pages deployment. The site is served at `https://panshaigan.github.io/InfinityExpress/`; no custom domain or backend is required. A public repository supports Pages on GitHub Free.
 
 Normal `dev`, `build`, and Tauri commands keep desktop behavior. Demo restrictions are selected explicitly by Vite mode `demo` (`src/lib/runtime.ts`). Screen navigation stays within the single page so reloads work on Pages without route rewrites.
