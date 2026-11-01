@@ -250,6 +250,13 @@ not use production signing keys or alter release configuration. NSIS intentional
 patches its bundle-type marker into the packaged executable, so payload hashing
 normalizes that single marker while comparing the rest of the binary exactly.
 
+CI checks/installs the Evergreen WebView2 Runtime before building the test
+installer. Locally, `powershell -NoProfile -ExecutionPolicy Bypass -File
+scripts/windows/ensure-webview2.ps1 -Install` installs it only if missing. The
+desktop smoke test checks the runtime before launching the app, so a missing
+prerequisite fails immediately instead of timing out on the debugging endpoint.
+Microsoft Edge Stable by itself does not satisfy this prerequisite.
+
 Remaining gaps include MSI lifecycle checks, native dialogs on Linux,
 acquisition cancellation/network failures, broader rendered UI coverage, and
 real-game mod lists. A passing fixture suite does not establish compatibility

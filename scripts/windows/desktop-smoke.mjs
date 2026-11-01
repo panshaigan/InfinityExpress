@@ -9,8 +9,16 @@ import { createServer } from 'node:net'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
+import { inspect } from 'node:util'
 
 assert.equal(process.platform, 'win32', 'This smoke test requires Windows and WebView2')
+const runtimeCheck = spawnSync('powershell', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+  '-File', fileURLToPath(new URL('./ensure-webview2.ps1', import.meta.url))],
+{ encoding: 'utf8', windowsHide: true, timeout: 30_000 })
+if (runtimeCheck.error) throw runtimeCheck.error
+assert.equal(runtimeCheck.status, 0,
+  `WebView2 prerequisite check failed:\n${runtimeCheck.stdout}\n${runtimeCheck.stderr}`)
+console.log(runtimeCheck.stdout.trim())
 const binary = path.resolve(process.env.IE_SMOKE_BINARY ?? 'src-tauri/target/release/app.exe')
 const output = path.resolve(process.env.IE_SMOKE_RESULT_DIR ?? '.cache/windows-check')
 await access(binary)
@@ -138,7 +146,7 @@ try {
       target = targets.find((entry) => entry.type === 'page' &&
         /^https?:\/\/tauri\.localhost(?:\/|$)/.test(entry.url))
       if (target) break
-    } catch (error) { startupDetails = String(error) }
+    } catch (error) { startupDetails = inspect(error, { depth: 4 }) }
     await delay(200)
   }
   assert.ok(target?.webSocketDebuggerUrl, `Production WebView2 target did not start: ${startupDetails}`)
