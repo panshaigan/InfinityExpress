@@ -26,7 +26,7 @@ describe('install run persistence scheduling', () => {
 
   afterEach(async () => {
     scheduleInstallRunStateWrite(null)
-    await flushInstallRunStateWrite()
+    await flushInstallRunStateWrite({ throwOnError: true })
     vi.useRealTimers()
   })
 
@@ -93,5 +93,27 @@ describe('install run persistence scheduling', () => {
     scheduleInstallRunStateWrite(recovered)
     await flushInstallRunStateWrite()
     expect(writeInstallRunState).toHaveBeenNthCalledWith(2, recovered.run.logDir, recovered)
+  })
+
+  it('reports failed disk saves to the updater while allowing a later successful retry', async () => {
+    vi.mocked(writeInstallRunState).mockRejectedValueOnce(new Error('disk full'))
+    scheduleInstallRunStateWrite(session('failed'))
+    await expect(flushInstallRunStateWrite({ throwOnError: true })).rejects.toThrow('disk full')
+    scheduleInstallRunStateWrite(session('retry'))
+    await expect(flushInstallRunStateWrite({ throwOnError: true })).resolves.toBeUndefined()
+  })
+
+  it('keeps failures from an earlier project visible after another project saves successfully', async () => {
+    let diskFull = true
+    vi.mocked(writeInstallRunState).mockImplementation(async (logDir) => {
+      if (diskFull && logDir.endsWith('/first-project')) throw new Error('first project disk full')
+    })
+    scheduleInstallRunStateWrite(session('first-project'))
+    await flushInstallRunStateWrite()
+    scheduleInstallRunStateWrite(session('second-project'))
+    await flushInstallRunStateWrite()
+    await expect(flushInstallRunStateWrite({ throwOnError: true })).rejects.toThrow('first project disk full')
+    diskFull = false
+    await expect(flushInstallRunStateWrite({ throwOnError: true })).resolves.toBeUndefined()
   })
 })

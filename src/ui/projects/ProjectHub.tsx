@@ -93,7 +93,7 @@ export function ProjectHub({ onOpen, onCreateNew, onProjectsChanged }: Props) {
           <div className="project-hub-section-intro">
             <h2 className="project-hub-title">Your projects</h2>
             <p className="project-hub-lede">
-              Select an existing project or create a new one
+              Projects keep their saved component catalog. Create a new project to use the latest catalog.
             </p>
           </div>
           {projects.length > 0 ? (

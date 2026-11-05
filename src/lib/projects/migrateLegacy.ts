@@ -1,5 +1,4 @@
 import {
-  emptyAppSession,
   readAppSession,
   type AppSessionStore,
 } from '../ui/appSessionPrefs'
@@ -14,7 +13,6 @@ import {
   defaultProjectName,
   newProjectId,
   readProjectIndex,
-  upsertProject,
   writeProjectIndex,
 } from './projectStore'
 import { emptyDestinations, type ProjectIndex } from './types'
@@ -73,25 +71,27 @@ export function migrateLegacySessionsToProjects(
     const id = newProjectId()
     const iso = now.toISOString()
     const session = adaptSessionForProjects(raw)
-    index = upsertProject(
-      {
-        meta: {
-          id,
-          name: `${defaultProjectName(engine, now)} (migrated)`,
-          folderName: allocateProjectFolderName(
-            `${defaultProjectName(engine, now)} (migrated)`,
-            undefined,
-            index,
-          ),
-          engine,
-          createdAt: iso,
-          lastOpenedAt: iso,
-          destinations: destinationsFromLegacy(engine, folders),
-        },
-        session,
+    const record = {
+      meta: {
+        id,
+        name: `${defaultProjectName(engine, now)} (migrated)`,
+        folderName: allocateProjectFolderName(
+          `${defaultProjectName(engine, now)} (migrated)`,
+          undefined,
+          index,
+        ),
+        engine,
+        createdAt: iso,
+        lastOpenedAt: iso,
+        destinations: destinationsFromLegacy(engine, folders),
       },
-      { setLast: engine === legacy.lastGame },
-    )
+      session,
+    }
+    index = {
+      ...index,
+      lastProjectId: engine === legacy.lastGame ? id : index.lastProjectId,
+      projects: { ...index.projects, [id]: record },
+    }
   }
 
   if (legacy.lastGame && index.lastProjectId == null) {
@@ -100,19 +100,15 @@ export function migrateLegacySessionsToProjects(
     )
     if (match) {
       index = { ...index, lastProjectId: match.meta.id }
-      writeProjectIndex(index)
     }
   }
 
-  try {
-    window.localStorage.setItem(
-      'infinity-express.app-session',
-      JSON.stringify(emptyAppSession()),
-    )
-    window.localStorage.setItem(MIGRATION_FLAG, '1')
-  } catch {
-    /* ignore */
-  }
+  // Commit the whole migration once. A quota failure cannot leave a partial
+  // index that a subsequent launch would mistake for a completed migration.
+  if (games.length > 0) writeProjectIndex(index)
+
+  // Keep the legacy source for recovery; mark success only after every project write.
+  window.localStorage.setItem(MIGRATION_FLAG, '1')
 
   return index
 }

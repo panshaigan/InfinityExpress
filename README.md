@@ -97,6 +97,11 @@ Settings → App can still point at a custom WeiDU executable.
 
 ## Install
 
+Updates preserve project component catalogs; new projects use the latest
+catalog. Settings, presets, and catalog edits remain local. The desktop app
+saves recovery checkpoints before release migrations and in-app updates.
+See [Updates and saved data](docs/update-safety.md) for details and recovery.
+
 1. Open [Releases](https://github.com/panshaigan/InfinityExpress/releases).
 2. Download the Windows installer, or a Linux `.deb` / `.AppImage` when available
    in the release assets. AppImages need execute permission before running.

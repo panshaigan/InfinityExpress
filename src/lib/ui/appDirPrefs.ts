@@ -1,5 +1,6 @@
 import { modsRoot } from '../projects/projectPaths'
 import { notifyPathsChanged } from './pathPrefsEvents'
+import { readSavedStore } from '../persistence/savedStore'
 
 export type AppDirPaths = {
   backupDir: string
@@ -31,26 +32,14 @@ function parseBackupDir(value: unknown): string | null {
 }
 
 export function readAppDirPaths(): AppDirPaths {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return { ...EMPTY }
-    const backupDir = parseBackupDir(JSON.parse(raw))
-    if (backupDir === null) return { ...EMPTY }
-    return withDerived(backupDir)
-  } catch {
-    return { ...EMPTY }
-  }
+  return readSavedStore(STORAGE_KEY, (value) => {
+    const backupDir = parseBackupDir(value)
+    return backupDir === null ? null : withDerived(backupDir)
+  }, () => ({ ...EMPTY }))
 }
 
 /** Persist only the main data folder; mods path is always derived. */
 export function writeAppDirPaths(paths: Pick<AppDirPaths, 'backupDir'>): void {
-  try {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ backupDir: paths.backupDir }),
-    )
-    notifyPathsChanged()
-  } catch {
-    /* private mode / blocked storage */
-  }
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ backupDir: paths.backupDir }))
+  notifyPathsChanged()
 }

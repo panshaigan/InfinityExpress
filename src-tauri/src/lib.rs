@@ -6,6 +6,7 @@ mod install_compatibility;
 mod mod_acquire;
 mod mod_fs;
 mod process_util;
+mod profile_safety;
 mod weidu_backup;
 mod weidu_install;
 
@@ -43,6 +44,10 @@ pub fn run() {
         .manage(mod_acquire::AcquireCancelFlag::new())
         .manage(weidu_install::RunningWeidu::new())
         .invoke_handler(tauri::generate_handler![
+            profile_safety::save_catalog_snapshot,
+            profile_safety::read_catalog_snapshot,
+            profile_safety::restore_catalog_snapshot,
+            profile_safety::create_profile_checkpoint,
             install_compatibility::check_install_compatibility,
             dev_reset::take_fresh_install_env_flag,
             bundled_tools::bundled_weidu_path,
@@ -50,6 +55,7 @@ pub fn run() {
             game_shortcuts::launch_project_game,
             mod_fs::list_subdir_names,
             mod_fs::read_text_file,
+            mod_fs::read_optional_text_file,
             mod_fs::file_is_nonempty,
             mod_fs::read_text_file_tail,
             mod_fs::write_text_file,

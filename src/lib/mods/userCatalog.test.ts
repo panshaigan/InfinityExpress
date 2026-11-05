@@ -4,6 +4,7 @@ import {
   addUserMod,
   mergeBaseIntoWorkingCopy,
   migrateStoredModEntry,
+  loadOrCreateUserCatalog,
   provisionalCodenameFromUrl,
   removeUserMod,
   removeUserMods,
@@ -65,6 +66,27 @@ describe('migrateStoredModEntry', () => {
 })
 
 describe('mergeBaseIntoWorkingCopy', () => {
+  it('preserves user decisions across a persisted catalog upgrade and a second launch', () => {
+    localStorage.removeItem('infinity-express.mods-catalog')
+    const oldBase = new Map(['edit', 'hide', 'removed', 'refresh'].map(codename => [codename, baseMod({ codename })]))
+    let store = loadOrCreateUserCatalog(oldBase)
+    store = updateUserMod(store, 'edit', baseMod({ codename: 'edit', name: 'My edited name' }))
+    store = addUserMod(store, baseMod({ codename: 'custom', name: 'My own mod' }))
+    store = removeUserMod(store, 'hide')
+    store.mods.find(row => row.codename === 'refresh')!.overlays = { version: 'downloaded-v1', sizeBytes: 777 }
+    store.mods.find(row => row.codename === 'refresh')!.diskStatus = 'present'
+    localStorage.setItem('infinity-express.mods-catalog', JSON.stringify(store))
+    const newBase = new Map(['edit', 'hide', 'refresh', 'new', 'custom'].map(codename => [codename, baseMod({ codename, name: 'New catalog name', version: 'v2' })]))
+    loadOrCreateUserCatalog(newBase)
+    const upgraded = loadOrCreateUserCatalog(newBase)
+    expect(upgraded.mods.find(row => row.codename === 'edit')!.name).toBe('My edited name')
+    expect(upgraded.mods.find(row => row.codename === 'custom')!.name).toBe('My own mod')
+    expect(upgraded.mods.some(row => row.codename === 'hide')).toBe(false)
+    expect(upgraded.mods.some(row => row.codename === 'removed')).toBe(true)
+    expect(upgraded.mods.some(row => row.codename === 'new')).toBe(true)
+    expect(upgraded.mods.find(row => row.codename === 'refresh')).toMatchObject({ version: 'v2', diskStatus: 'present', overlays: { version: 'downloaded-v1', sizeBytes: 777 } })
+    localStorage.removeItem('infinity-express.mods-catalog')
+  })
   it('clones base on first run', () => {
     const base = new Map([
       ['A', baseMod({ codename: 'A', version: 'v1' })],

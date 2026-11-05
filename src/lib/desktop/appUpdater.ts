@@ -1,6 +1,7 @@
 import { check, type Update } from '@tauri-apps/plugin-updater'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { isDesktopApp } from './fsDialogs'
+import { createProfileCheckpoint } from '../persistence/profileCheckpoint'
 
 export type AppUpdateCheckResult =
   | { status: 'unavailable' }
@@ -23,7 +24,10 @@ export async function probeAppUpdate(): Promise<AppUpdateCheckResult> {
   }
 }
 
-export async function installAppUpdate(update: Update): Promise<void> {
+export async function installAppUpdate(update: Update, beforeInstall: () => Promise<void>): Promise<void> {
+  // Windows may exit inside downloadAndInstall, so beforeunload is too late.
+  await beforeInstall()
+  await createProfileCheckpoint('update')
   await update.downloadAndInstall()
   await relaunch()
 }

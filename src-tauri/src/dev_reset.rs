@@ -13,6 +13,10 @@ fn env_flag_truthy(raw: &str) -> bool {
 /// Subsequent calls return false so a post-clear reload does not loop.
 #[tauri::command]
 pub fn take_fresh_install_env_flag() -> bool {
+    // An inherited development environment variable must never wipe release data.
+    if !cfg!(debug_assertions) {
+        return false;
+    }
     if FRESH_INSTALL_CONSUMED.swap(true, Ordering::SeqCst) {
         return false;
     }

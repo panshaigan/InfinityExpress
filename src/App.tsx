@@ -31,11 +31,6 @@ import {
   isFilterActive,
   type FilterCriteria,
 } from './lib/selection/filterDisplayTree'
-import {
-  catalogAuthorOptions,
-  filterSeed,
-  modsByCodename,
-} from './lib/mods/catalog'
 import { buildRelationIndex } from './lib/selection/relations'
 import {
   deriveInstallLock,
@@ -88,6 +83,8 @@ import { DetailPane } from './ui/DetailPane'
 import {
   listSelectedModCodenames,
   resolveModLookupKey,
+  collectAuthorOptions,
+  modSizeBounds,
 } from './lib/mods/loadMods'
 import type { ConditionComponentOption } from './lib/componentBrowser/conditionEditor'
 import { useStationTrees } from './hooks/useStationTrees'
@@ -140,7 +137,7 @@ import {
   bootstrapProjects,
   emptyDestinations,
   listProjects,
-  loadProjectRecord,
+  loadProjectWithCatalog,
   resolveProjectInstallSession,
   updateProjectMeta,
   type AppShellView,
@@ -208,7 +205,9 @@ export default function App() {
 
 function AppShell() {
   const { pushToast } = useToast()
-  const { model, warnings } = parsed
+  const [activeCatalog, setActiveCatalog] = useState(parsed)
+  const { model, warnings } = activeCatalog
+  const projectOpenGenRef = useRef(0)
   const existingComponentIds = useMemo(
     () => new Set(model.componentsInOrder.map((component) => component.componentId)),
     [model],
@@ -284,6 +283,12 @@ function AppShell() {
   const [modsJourney, setModsJourney] = useState<ModsJourneyState | null>(null)
   const [searchScope, setSearchScope] = useState<'section' | 'all'>('section')
   const userCatalog = useUserCatalog()
+  const modsByCodename = userCatalog.modsByCode
+  const catalogAuthorOptions = useMemo(() => collectAuthorOptions(modsByCodename, 5), [modsByCodename])
+  const filterSeed = useMemo(() => ({
+    authorOptions: catalogAuthorOptions.map(option => option.name),
+    sizeBounds: modSizeBounds(modsByCodename),
+  }), [catalogAuthorOptions, modsByCodename])
 
   const filterOptions = useMemo(() => collectFilterOptions(model), [model])
   const [filters, setFilters] = useState<FilterCriteria>(() =>
@@ -376,11 +381,13 @@ function AppShell() {
         seedFixesIfNoLog: boolean
         toast: boolean
         mergeIdentified?: boolean
+        catalogModel?: typeof model
       },
     ) => {
+      const importModel = opts.catalogModel ?? model
       const gen = ++weiduImportGenRef.current
       const result = await importInstalledFromDestinations(
-        model,
+        importModel,
         engine,
         destinations,
       )
@@ -393,7 +400,7 @@ function AppShell() {
       destImportKeyRef.current = destinationsImportKey(destinations)
       if (opts.replaceSelection && result.hasLog) {
         setSelectedIds(
-          selectionFromInstalledIds(model, engine, result.componentIds),
+          selectionFromInstalledIds(importModel, engine, result.componentIds),
         )
         recommended.resetRecommendedPresets()
         installSnapshotRef.current = undefined
@@ -406,7 +413,7 @@ function AppShell() {
       } else if (opts.mergeIdentified && result.componentIds.size > 0) {
         setSelectedIds((prev) =>
           mergeInstalledIdsIntoSelection(
-            model,
+            importModel,
             engine,
             prev,
             result.componentIds,
@@ -417,7 +424,7 @@ function AppShell() {
           if (msg) pushToast({ tone: 'success', message: msg })
         }
       } else if (opts.seedFixesIfNoLog && !result.hasLog) {
-        recommended.seedFixesBaseline(engine)
+        recommended.seedFixesBaseline(engine, importModel)
       }
       if (opts.toast && result.listingErrors.length > 0 && !result.hasLog) {
         pushToast({ tone: 'error', message: result.listingErrors[0]! })
@@ -704,6 +711,7 @@ function AppShell() {
     selectedIds,
     recommended.checkedRecommended,
     recommended.checkedPackages,
+    modsByCodename,
   ])
 
   const installPhaseReady = useMemo(() => {
@@ -814,84 +822,94 @@ function AppShell() {
   }, [])
 
   async function openProject(id: ProjectId) {
-    flushPresets()
-    flushSession()
-    await flushInstallRunStateWrite()
-    const loaded = loadProjectRecord(model, id)
-    if (!loaded) return
-    const { record, session } = loaded
-    const engine = record.meta.engine
-    const enginePresets = presetsForEngine(engine)
-    const install = await resolveProjectInstallSession(model, session, engine)
+    const gen = ++projectOpenGenRef.current
+    weiduImportGenRef.current++
+    try {
+      flushPresets()
+      await flushSession()
+      const loaded = await loadProjectWithCatalog(id, installSequenceXml)
+      if (!loaded || gen !== projectOpenGenRef.current) return
+      const { record, session, model: projectModel } = loaded
+      const engine = record.meta.engine
+      const enginePresets = presetsForEngine(engine)
+      const install = await resolveProjectInstallSession(projectModel, session, engine)
+      if (gen !== projectOpenGenRef.current) return
 
-    setProjectId(record.meta.id)
-    setProjectMeta(record.meta)
-    setGameFolders(record.meta.destinations)
-    setGame(engine)
-    setAppPhase('components')
-    setMountedPhases({
-      components: true,
-      mods: false,
-      install: !!install,
-    })
-    setSearchScope('section')
-    clearFocus()
-    const restoredImport = session
-      ? persistedWeiduLogToImport(session.installedFromWeiduLog)
-      : null
-    setWeiduLogImport(restoredImport)
+      setActiveCatalog({ model: projectModel, warnings: loaded.warnings })
+      setFilters(createDefaultFilterCriteria(collectFilterOptions(projectModel).tags, filterSeed))
+      setProjectId(record.meta.id)
+      setProjectMeta(record.meta)
+      setGameFolders(record.meta.destinations)
+      setGame(engine)
+      setAppPhase('components')
+      setMountedPhases({
+        components: true,
+        mods: false,
+        install: !!install,
+      })
+      setSearchScope('section')
+      clearFocus()
+      const restoredImport = session
+        ? persistedWeiduLogToImport(session.installedFromWeiduLog)
+        : null
+      setWeiduLogImport(restoredImport)
 
-    if (!session) {
-      setRouteUnlocked(true)
-      recommended.resetRecommendedPresets()
-      setSelectedIds(createInitialSelection(model, engine))
-      presets.restoreSelectionPresetsState({
-        presets: enginePresets,
-        activePresetId: null,
-        presetBaseline: null,
-      })
-      route.replaceFinishedStations([])
-      setActiveStation('presets')
-      setContentMainKey(null)
-      setContentSubKey(null)
-      setContentSubTag(null)
-      setModsJourney(null)
-      installSnapshotRef.current = undefined
-      setRestoredInstallSession(undefined)
-      setInstallSession(null)
-      scheduleInstallRunStateWrite(null)
-      void refreshWeiduLogImport(engine, record.meta.destinations, {
-        replaceSelection: true,
-        seedFixesIfNoLog: true,
-        toast: true,
-      })
-    } else {
-      setRouteUnlocked(session.routeUnlocked)
-      setSelectedIds(new Set(session.selectedIds))
-      recommended.restoreRecommendedState(recommendedPresetsInitialFromSession(session))
-      presets.restoreSelectionPresetsState({
-        presets: enginePresets,
-        activePresetId: session.activePresetId,
-        presetBaseline: session.presetBaseline,
-      })
-      route.replaceFinishedStations(session.finishedStations)
-      setActiveStation(normalizeStation(session.activeStation))
-      setContentMainKey(session.contentMainKey)
-      setContentSubKey(session.contentSubKey)
-      setContentSubTag(session.contentSubTag)
-      setModsJourney(session.modsJourney)
-      installSnapshotRef.current = install
-      setRestoredInstallSession(install)
-      setInstallSession(install ?? null)
-      installSessionKeyRef.current = install ? JSON.stringify(install) : null
-      void refreshWeiduLogImport(engine, record.meta.destinations, {
-        replaceSelection: false,
-        seedFixesIfNoLog: false,
-        toast: false,
-      })
+      if (!session) {
+        setRouteUnlocked(true)
+        recommended.resetRecommendedPresets()
+        setSelectedIds(createInitialSelection(projectModel, engine))
+        presets.restoreSelectionPresetsState({
+          presets: enginePresets,
+          activePresetId: null,
+          presetBaseline: null,
+        })
+        route.replaceFinishedStations([])
+        setActiveStation('presets')
+        setContentMainKey(null)
+        setContentSubKey(null)
+        setContentSubTag(null)
+        setModsJourney(null)
+        installSnapshotRef.current = undefined
+        setRestoredInstallSession(undefined)
+        setInstallSession(null)
+        scheduleInstallRunStateWrite(null)
+        void refreshWeiduLogImport(engine, record.meta.destinations, {
+          replaceSelection: true,
+          seedFixesIfNoLog: true,
+          toast: true,
+          catalogModel: projectModel,
+        })
+      } else {
+        setRouteUnlocked(session.routeUnlocked)
+        setSelectedIds(new Set(session.selectedIds))
+        recommended.restoreRecommendedState(recommendedPresetsInitialFromSession(session))
+        presets.restoreSelectionPresetsState({
+          presets: enginePresets,
+          activePresetId: session.activePresetId,
+          presetBaseline: session.presetBaseline,
+        })
+        route.replaceFinishedStations(session.finishedStations)
+        setActiveStation(normalizeStation(session.activeStation))
+        setContentMainKey(session.contentMainKey)
+        setContentSubKey(session.contentSubKey)
+        setContentSubTag(session.contentSubTag)
+        setModsJourney(session.modsJourney)
+        installSnapshotRef.current = install
+        setRestoredInstallSession(install)
+        setInstallSession(install ?? null)
+        installSessionKeyRef.current = install ? JSON.stringify(install) : null
+        void refreshWeiduLogImport(engine, record.meta.destinations, {
+          replaceSelection: false,
+          seedFixesIfNoLog: false,
+          toast: false,
+          catalogModel: projectModel,
+        })
+      }
+
+      setShellView('workspace')
+    } catch (error) {
+      if (gen === projectOpenGenRef.current) pushToast({ tone: 'error', message: `Could not open project: ${String(error)}` })
     }
-
-    setShellView('workspace')
   }
 
   function goToProjectEntry() {
@@ -1663,7 +1681,17 @@ function AppShell() {
       </div>
       ) : null}
 
-      <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
+      <AboutDialog
+        open={aboutOpen}
+        onClose={() => setAboutOpen(false)}
+        updatesBlocked={appBlocking}
+        onBeforeInstallUpdate={async () => {
+          if (appBlocking) throw new Error('Wait for the current operation to finish before updating the app.')
+          flushPresets()
+          await flushSession()
+          await flushInstallRunStateWrite({ throwOnError: true })
+        }}
+      />
       <ComponentBrowserDialog
         open={componentBrowserOpen}
         mods={userCatalog.mods}

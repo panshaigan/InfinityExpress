@@ -1,6 +1,7 @@
 import type { GameFolderKey } from '../ui/gameFolderPrefs'
 import type { SelectedGame } from '../xml/schema'
 import type { VanillaBinding, VanillaRegistry } from './types'
+import { readSavedStore } from '../persistence/savedStore'
 
 const STORAGE_KEY = 'infinity-express.vanilla-registry'
 
@@ -26,23 +27,11 @@ function isRegistry(value: unknown): value is VanillaRegistry {
 }
 
 export function readVanillaRegistry(): VanillaRegistry {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return { ...EMPTY }
-    const parsed: unknown = JSON.parse(raw)
-    if (!isRegistry(parsed)) return { ...EMPTY }
-    return { ...parsed }
-  } catch {
-    return { ...EMPTY }
-  }
+  return readSavedStore(STORAGE_KEY, (value) => isRegistry(value) ? { ...value } : null, () => ({ ...EMPTY }))
 }
 
 export function writeVanillaRegistry(registry: VanillaRegistry): void {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(registry))
-  } catch {
-    /* private mode / blocked storage */
-  }
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(registry))
 }
 
 export function setVanillaBinding(

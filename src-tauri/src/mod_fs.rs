@@ -104,6 +104,21 @@ fn read_text_file_blocking(path: String) -> Result<String, String> {
     fs::read_to_string(&p).map_err(|e| e.to_string())
 }
 
+/// Missing state is distinct from unreadable state: callers must not overwrite the latter.
+#[tauri::command]
+pub async fn read_optional_text_file(path: String) -> Result<Option<String>, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        if path.trim().is_empty() {
+            return Err("Path is required".into());
+        }
+        match fs::read_to_string(path.trim()) {
+            Ok(contents) => Ok(Some(contents)),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+            Err(error) => Err(error.to_string()),
+        }
+    }).await.map_err(|e| e.to_string())?
+}
+
 /// Write a UTF-8 text file, creating parent directories as needed.
 #[tauri::command]
 pub async fn write_text_file(path: String, contents: String) -> Result<(), String> {
@@ -123,7 +138,13 @@ fn write_text_file_blocking(path: String, contents: String) -> Result<(), String
             fs::create_dir_all(parent).map_err(|e| e.to_string())?;
         }
     }
-    fs::write(&p, contents).map_err(|e| e.to_string())
+    // Replace only after a complete, synced write. A full disk must not truncate run-state.json.
+    let parent = p.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or(Path::new("."));
+    let mut file = tempfile::NamedTempFile::new_in(parent).map_err(|e| e.to_string())?;
+    file.write_all(contents.as_bytes()).map_err(|e| e.to_string())?;
+    file.as_file().sync_all().map_err(|e| e.to_string())?;
+    file.persist(&p).map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 /// Append UTF-8 text to a file, creating parent directories and the file as needed.

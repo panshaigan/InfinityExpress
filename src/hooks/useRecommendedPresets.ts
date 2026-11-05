@@ -107,11 +107,11 @@ export function useRecommendedPresets(args: {
     setCheckedPackages(new Set(state.packagesChecked))
   }
 
-  function seedFixesBaseline(game: SelectedGame) {
+  function seedFixesBaseline(game: SelectedGame, catalogModel = model) {
     const fixes = new Set<string>(['fixes'])
     setCheckedRecommended(fixes)
     setCheckedPackages(new Set())
-    setSelectedIds((prev) => setRecommendedSelection(model, prev, game, 'fixes', true))
+    setSelectedIds((prev) => setRecommendedSelection(catalogModel, prev, game, 'fixes', true))
   }
 
   return {

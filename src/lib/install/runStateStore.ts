@@ -1,7 +1,7 @@
 import {
   ensureDir,
   isDesktopApp,
-  readTextFile,
+  readOptionalTextFile,
   writeTextFileAt,
 } from '../desktop/fsDialogs'
 import {
@@ -36,22 +36,24 @@ export async function writeInstallRunState(
   await ensureDir(dir)
   await writeTextFileAt(
     installRunStatePath(dir),
-    `${JSON.stringify(session, null, 2)}\n`,
+    `${JSON.stringify({ ...session, schemaVersion: 1 }, null, 2)}\n`,
   )
 }
 
-/** Read `run-state.json` from a run folder. Returns null if missing/invalid. */
+/** Missing state returns null; invalid/future state stops project opening without overwriting it. */
 export async function readInstallRunState(
   logDir: string,
 ): Promise<PersistedInstallSession | null> {
   if (!isDesktopApp() || !logDir.trim()) return null
-  const text = await readTextFile(installRunStatePath(logDir.trim()))
-  if (!text?.trim()) return null
+  const text = await readOptionalTextFile(installRunStatePath(logDir.trim()))
+  if (text === null) return null
   try {
-    return parsePersistedInstallSession(JSON.parse(text) as unknown)
+    const session = parsePersistedInstallSession(JSON.parse(text) as unknown)
+    if (session) return session
   } catch {
-    return null
+    // Report an actionable error below, keeping the original file untouched.
   }
+  throw new Error(`Cannot read saved install state at ${installRunStatePath(logDir)}. Use a compatible app version or restore a backup.`)
 }
 
 function rewritePath(

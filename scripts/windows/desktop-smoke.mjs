@@ -303,6 +303,52 @@ try {
   }
   passed('Real project wizard creation and App-shell switching preserve independent selections')
 
+  const savedProfile = await evaluate(`Object.fromEntries(Object.keys(localStorage)
+    .filter(key => key.startsWith('infinity-express.')).map(key => [key, localStorage.getItem(key)]))`)
+  const savedProjects = JSON.parse(savedProfile['infinity-express.projects-v1'])
+  const revisions = [...new Set(Object.values(savedProjects.projects).map(project => project.catalogRevision))]
+  assert.ok(revisions.every(revision => /^[a-f0-9]{64}$/.test(revision)), 'Project catalogs were not pinned')
+  for (const revision of revisions) {
+    assert.match(await invoke('read_catalog_snapshot', { revision }), /<installSequence>/)
+    await assert.rejects(invoke('save_catalog_snapshot', { revision, xml: 'replacement' }), /refusing to replace/i)
+  }
+  const checkpoint = await invoke('create_profile_checkpoint', { snapshot: JSON.stringify({
+    version: 1, appVersion: 'smoke', createdAt: new Date().toISOString(), reason: 'update', entries: savedProfile,
+  }) })
+  assert.ok(checkpoint.startsWith(path.join(fixture, 'webview-profile', 'profile-data', 'profile-backups')),
+    'Profile safety writes must stay inside the isolated smoke profile')
+  const recovery = JSON.parse(await readFile(checkpoint, 'utf8'))
+  assert.deepEqual(recovery.entries, savedProfile)
+  assert.ok(revisions.every(revision => recovery.catalogs[revision]?.includes('<installSequence>')))
+  assert.equal(await evaluate(`typeof window.__ieClearFreshInstall`), 'undefined')
+  const futureProjects = JSON.stringify({ version: 999, projects: {} })
+  await evaluate(`localStorage.setItem('infinity-express.projects-v1', ${JSON.stringify(futureProjects)});
+    window.__ieSmokeBeforeReload = true`)
+  await call('Page.reload')
+  await waitUntil(`!window.__ieSmokeBeforeReload && document.body.textContent.includes('Saved data needs attention')`,
+    'Unsupported saved data did not stop production startup')
+  assert.equal(await evaluate(`localStorage.getItem('infinity-express.projects-v1')`), futureProjects)
+  // App is not mounted on the recovery screen, so restoring storage cannot be
+  // overwritten by live workspace unload handlers. UI recovery is unit-tested.
+  for (const [revision, xml] of Object.entries(recovery.catalogs)) {
+    await invoke('restore_catalog_snapshot', { revision, xml })
+  }
+  await evaluate(`(() => {
+    for (const key of Object.keys(localStorage).filter(key => key.startsWith('infinity-express.'))) localStorage.removeItem(key);
+    for (const [key, value] of Object.entries(${JSON.stringify(recovery.entries)})) localStorage.setItem(key, value);
+    window.__ieSmokeBeforeReload = true;
+  })()`)
+  await call('Page.reload')
+  await waitUntil(`!window.__ieSmokeBeforeReload && Boolean(document.querySelector('.project-hub'))`, 'Recovered project hub did not render')
+  assert.deepEqual(JSON.parse(await evaluate(`localStorage.getItem('infinity-express.projects-v1')`)).projects, savedProjects.projects)
+  const statePath = path.join(fixture, 'atomic-state.json')
+  assert.equal(await invoke('read_optional_text_file', { path: statePath }), null)
+  await invoke('write_text_file', { path: statePath, contents: 'first state' })
+  await invoke('write_text_file', { path: statePath, contents: 'replacement state' })
+  assert.equal(await invoke('read_optional_text_file', { path: statePath }), 'replacement state')
+  await assert.rejects(invoke('read_optional_text_file', { path: fixture }))
+  passed('Pinned catalogs, private recovery checkpoints, production schema guards, and atomic state writes survive reload')
+
   await mkdir(source, { recursive: true })
   await writeFile(path.join(source, 'payload.txt'), 'Windows IPC installation\n')
   await writeFile(path.join(source, 'setup-fixture.tp2'),

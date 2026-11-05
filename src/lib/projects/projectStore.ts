@@ -8,6 +8,8 @@ import {
 } from './projectPaths'
 import type { ProjectId, ProjectIndex, ProjectMeta, ProjectRecord } from './types'
 import { emptyDestinations, emptyProjectIndex } from './types'
+import { currentCatalogRevision } from '../persistence/catalogSnapshots'
+import { readSavedStore } from '../persistence/savedStore'
 
 export { emptyDestinations, emptyProjectIndex } from './types'
 export type { ProjectId, ProjectIndex, ProjectMeta, ProjectRecord } from './types'
@@ -69,7 +71,13 @@ function coerceProjectRecord(value: unknown): ProjectRecord | null {
   const meta = coerceProjectMeta(o.meta)
   if (!meta) return null
   if (o.session != null && typeof o.session !== 'object') return null
-  return { meta, session: (o.session as GameSession | null) ?? null }
+  if (o.catalogRevision !== undefined &&
+      (typeof o.catalogRevision !== 'string' || !/^[a-f0-9]{64}$/.test(o.catalogRevision))) return null
+  return {
+    meta,
+    session: (o.session as GameSession | null) ?? null,
+    ...(typeof o.catalogRevision === 'string' ? { catalogRevision: o.catalogRevision } : {}),
+  }
 }
 
 function coerceProjectIndex(value: unknown): ProjectIndex | null {
@@ -110,24 +118,25 @@ export function allocateProjectFolderName(
 }
 
 export function readProjectIndex(): ProjectIndex {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return emptyProjectIndex()
-    const parsed: unknown = JSON.parse(raw)
-    const coerced = coerceProjectIndex(parsed)
-    if (!coerced) return emptyProjectIndex()
-    return coerced
-  } catch {
-    return emptyProjectIndex()
-  }
+  return readSavedStore(STORAGE_KEY, coerceProjectIndex, emptyProjectIndex)
 }
 
 export function writeProjectIndex(index: ProjectIndex): void {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(index))
-  } catch {
-    /* private mode / blocked */
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(index))
+}
+
+/** Pin legacy projects before a later release can change the bundled XML. */
+export function pinProjectCatalogs(): void {
+  const revision = currentCatalogRevision()
+  if (!revision) return
+  const index = readProjectIndex()
+  let changed = false
+  for (const record of Object.values(index.projects)) {
+    if (record.catalogRevision) continue
+    record.catalogRevision = revision
+    changed = true
   }
+  if (changed) writeProjectIndex(index)
 }
 
 export function listProjects(index: ProjectIndex = readProjectIndex()): ProjectMeta[] {
@@ -148,10 +157,14 @@ export function upsertProject(
   options?: { setLast?: boolean },
 ): ProjectIndex {
   const index = readProjectIndex()
+  const catalogRevision = record.catalogRevision ?? index.projects[record.meta.id]?.catalogRevision ?? currentCatalogRevision()
   const next: ProjectIndex = {
     version: 1,
     lastProjectId: options?.setLast === false ? index.lastProjectId : record.meta.id,
-    projects: { ...index.projects, [record.meta.id]: record },
+    projects: {
+      ...index.projects,
+      [record.meta.id]: { ...record, ...(catalogRevision ? { catalogRevision } : {}) },
+    },
   }
   writeProjectIndex(next)
   return next
@@ -179,6 +192,7 @@ export function saveProjectSession(
   if (!existing) return index
   return upsertProject(
     {
+      ...existing,
       meta: { ...existing.meta, lastOpenedAt: new Date().toISOString() },
       session,
     },

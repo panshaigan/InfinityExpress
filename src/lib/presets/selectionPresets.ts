@@ -128,6 +128,7 @@ export function parseSelectionPreset(value: unknown): SelectionPreset | null {
   if (typeof o.id !== 'string' || typeof o.name !== 'string' || !isSelectedGame(o.game)) {
     return null
   }
+  if (!Array.isArray(o.selectedIds) || o.selectedIds.some(id => typeof id !== 'string')) return null
   return {
     id: o.id,
     name: o.name,

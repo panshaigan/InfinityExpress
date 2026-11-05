@@ -27,6 +27,7 @@ export const FRESH_INSTALL_SETTINGS_KEYS = [
   'infinity-express.app-dirs',
   'infinity-express.vanilla-registry',
   'infinity-express.weidu-path',
+  'infinity-express.bundled-weidu-path',
   'infinity-express.github-token',
   'infinity-express.game-folders',
   'infinity-express.game-folder-versions',
@@ -91,6 +92,7 @@ declare global {
 
 /** Expose `window.__ieClearFreshInstall` for the webview / browser console. */
 export function installFreshInstallConsoleApi(): void {
+  if (!import.meta.env.DEV) return
   window.__ieClearFreshInstall = (options) => clearFreshInstallLocalStorage(options)
 }
 
@@ -99,7 +101,7 @@ export function installFreshInstallConsoleApi(): void {
  * Returns true when a wipe+reload was triggered (caller should not mount the app).
  */
 export async function applyFreshInstallEnvFlagIfRequested(): Promise<boolean> {
-  if (!isDesktopApp()) return false
+  if (!import.meta.env.DEV || !isDesktopApp()) return false
   try {
     const wipe = await invoke<boolean>('take_fresh_install_env_flag')
     if (!wipe) return false

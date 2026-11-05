@@ -7,6 +7,7 @@ import {
 } from '../projects/projectStore'
 import type { SelectionPreset } from './selectionPresets'
 import { parseSelectionPreset } from './selectionPresets'
+import { readSavedStore } from '../persistence/savedStore'
 
 export const SELECTION_PRESETS_STORAGE_KEY = 'infinity-express.selection-presets-v1'
 const MIGRATION_FLAG = 'infinity-express.selection-presets-migrated-v1'
@@ -22,14 +23,17 @@ function selectionPresetsIndexFrom(value: unknown): SelectionPresetsIndex | null
   if (!value || typeof value !== 'object') return null
   const o = value as Record<string, unknown>
   if (o.version !== 1) return null
+  if (!o.byGame || typeof o.byGame !== 'object' || Array.isArray(o.byGame)) return null
   const byGame: Partial<Record<SelectedGame, SelectionPreset[]>> = {}
   if (o.byGame && typeof o.byGame === 'object') {
     for (const game of SELECTED_GAMES) {
       const raw = (o.byGame as Record<string, unknown>)[game]
-      if (!Array.isArray(raw)) continue
+      if (raw === undefined) continue
+      if (!Array.isArray(raw)) return null
       const presets = raw
         .map(parseSelectionPreset)
         .filter((p): p is SelectionPreset => p != null)
+      if (presets.length !== raw.length) return null
       if (presets.length > 0) byGame[game] = presets
     }
   }
@@ -41,22 +45,11 @@ export function emptySelectionPresetsIndex(): SelectionPresetsIndex {
 }
 
 export function readSelectionPresetsStore(): SelectionPresetsIndex {
-  try {
-    const raw = window.localStorage.getItem(SELECTION_PRESETS_STORAGE_KEY)
-    if (!raw) return emptySelectionPresetsIndex()
-    const parsed: unknown = JSON.parse(raw)
-    return selectionPresetsIndexFrom(parsed) ?? emptySelectionPresetsIndex()
-  } catch {
-    return emptySelectionPresetsIndex()
-  }
+  return readSavedStore(SELECTION_PRESETS_STORAGE_KEY, selectionPresetsIndexFrom, emptySelectionPresetsIndex)
 }
 
 export function writeSelectionPresetsStore(store: SelectionPresetsIndex): void {
-  try {
-    window.localStorage.setItem(SELECTION_PRESETS_STORAGE_KEY, JSON.stringify(store))
-  } catch {
-    /* private mode / blocked storage / quota */
-  }
+  window.localStorage.setItem(SELECTION_PRESETS_STORAGE_KEY, JSON.stringify(store))
 }
 
 export function presetsForEngine(
@@ -85,8 +78,11 @@ export function savePresetsForEngine(
 function presetsFromRawSession(raw: unknown): SelectionPreset[] {
   if (!raw || typeof raw !== 'object') return []
   const list = (raw as Record<string, unknown>).selectionPresets
-  if (!Array.isArray(list)) return []
-  return list.map(parseSelectionPreset).filter((p): p is SelectionPreset => p != null)
+  if (list === undefined) return []
+  if (!Array.isArray(list)) throw new Error('Cannot migrate saved presets. The original project data has been kept.')
+  const parsed = list.map(parseSelectionPreset)
+  if (parsed.some(preset => preset === null)) throw new Error('Cannot migrate saved presets. The original project data has been kept.')
+  return parsed as SelectionPreset[]
 }
 
 function mergePresetLists(

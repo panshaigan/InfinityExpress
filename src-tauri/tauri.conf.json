@@ -12,6 +12,8 @@
   "app": {
     "windows": [
       {
+        "label": "main",
+        "useHttpsScheme": false,
         "title": "iNfinity eXpress",
         "width": 1280,
         "height": 800,

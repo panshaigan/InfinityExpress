@@ -6,12 +6,16 @@ const SAVE_DEBOUNCE_MS = 400
 let timer: ReturnType<typeof setTimeout> | null = null
 let pending: PersistedInstallSession | null = null
 let writeChain: Promise<void> = Promise.resolve()
+const failedWrites = new Map<string, { session: PersistedInstallSession; error: unknown }>()
 
 function enqueueWrite(session: PersistedInstallSession): Promise<void> {
   writeChain = writeChain
-    .then(() => writeInstallRunState(session.run.logDir, session))
-    .catch(() => {
-      /* disk errors are non-fatal for UI */
+    .then(async () => {
+      await writeInstallRunState(session.run.logDir, session)
+      failedWrites.delete(session.run.logDir)
+    })
+    .catch((error: unknown) => {
+      failedWrites.set(session.run.logDir, { session, error })
     })
   return writeChain
 }
@@ -39,7 +43,7 @@ export function scheduleInstallRunStateWrite(
 }
 
 /** Flush any pending debounced write immediately (awaits the disk write). */
-export async function flushInstallRunStateWrite(): Promise<void> {
+export async function flushInstallRunStateWrite(options?: { throwOnError?: boolean }): Promise<void> {
   if (timer != null) {
     clearTimeout(timer)
     timer = null
@@ -48,4 +52,13 @@ export async function flushInstallRunStateWrite(): Promise<void> {
   pending = null
   if (next) await enqueueWrite(next)
   else await writeChain
+  if (options?.throwOnError) {
+    // A successful save for another project must not conceal an earlier failure.
+    // Retry old failures once; a newly failed write is reported to the caller.
+    for (const { session } of [...failedWrites.values()]) {
+      if (session !== next) await enqueueWrite(session)
+    }
+    const failed = failedWrites.values().next().value
+    if (failed) throw failed.error
+  }
 }

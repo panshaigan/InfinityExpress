@@ -13,6 +13,7 @@ afterEach(() => {
   delete window.__ieClearFreshInstall
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
+  vi.unstubAllEnvs()
 })
 
 describe('clearFreshInstallLocalStorage', () => {
@@ -54,6 +55,11 @@ describe('clearFreshInstallLocalStorage', () => {
 })
 
 describe('installFreshInstallConsoleApi', () => {
+  it('does not expose the destructive development helper in release builds', () => {
+    vi.stubEnv('DEV', false)
+    installFreshInstallConsoleApi()
+    expect(window.__ieClearFreshInstall).toBeUndefined()
+  })
   it('exposes window.__ieClearFreshInstall', () => {
     installFreshInstallConsoleApi()
     expect(typeof window.__ieClearFreshInstall).toBe('function')

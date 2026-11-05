@@ -1,4 +1,5 @@
 import { buildInstallPlan } from '../install/planBuilder'
+import { readSavedStore } from '../persistence/savedStore'
 import type {
   ComponentRunStatus,
   InstallRun,
@@ -301,6 +302,7 @@ export function parsePersistedInstallSession(
 ): PersistedInstallSession | null {
   if (!value || typeof value !== 'object') return null
   const o = value as Record<string, unknown>
+  if (o.schemaVersion !== undefined && o.schemaVersion !== 1) return null
   const run = installRunFrom(o.run)
   if (!run || typeof o.planFingerprint !== 'string') return null
   const uiRaw = o.ui
@@ -355,22 +357,11 @@ function appSessionStoreFrom(value: unknown): AppSessionStore | null {
 }
 
 export function readAppSession(): AppSessionStore {
-  try {
-    const raw = window.localStorage.getItem(APP_SESSION_STORAGE_KEY)
-    if (!raw) return emptyAppSession()
-    const parsed: unknown = JSON.parse(raw)
-    return appSessionStoreFrom(parsed) ?? emptyAppSession()
-  } catch {
-    return emptyAppSession()
-  }
+  return readSavedStore(APP_SESSION_STORAGE_KEY, appSessionStoreFrom, emptyAppSession)
 }
 
 export function writeAppSession(store: AppSessionStore): void {
-  try {
-    window.localStorage.setItem(APP_SESSION_STORAGE_KEY, JSON.stringify(store))
-  } catch {
-    /* private mode / blocked storage / quota */
-  }
+  window.localStorage.setItem(APP_SESSION_STORAGE_KEY, JSON.stringify(store))
 }
 
 export function emptyAppSession(): AppSessionStore {

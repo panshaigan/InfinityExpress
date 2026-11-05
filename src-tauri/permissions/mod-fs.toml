@@ -9,6 +9,11 @@ description = "Read a UTF-8 text file from an absolute path"
 commands.allow = ["read_text_file"]
 
 [[permission]]
+identifier = "allow-read-optional-text-file"
+description = "Read saved text state, returning null only for missing files and preserving read errors"
+commands.allow = ["read_optional_text_file"]
+
+[[permission]]
 identifier = "allow-file-is-nonempty"
 description = "Check whether a file exists and has length greater than zero"
 commands.allow = ["file_is_nonempty"]

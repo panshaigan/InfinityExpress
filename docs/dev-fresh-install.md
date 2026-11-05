@@ -2,6 +2,11 @@
 
 Wipe **projects** and **Settings** stored in the app’s localStorage so the next run feels like a first launch. Does **not** delete game folders, vanilla copies, backups, or downloaded mods on disk.
 
+These helpers work only in development builds. Production builds ignore
+`IE_FRESH_INSTALL` and do not expose `__ieClearFreshInstall`. Immutable catalog
+snapshots and profile recovery checkpoints remain on disk. See
+[update-safety.md](update-safety.md).
+
 ## PowerShell (recommended)
 
 From the repo root, with the desktop app **not** already running:

@@ -1,13 +1,22 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { invoke } from '@tauri-apps/api/core'
-import App from './App'
 import { isDesktopApp } from './lib/desktop/fsDialogs'
+import { prepareSavedProfile } from './lib/persistence/profileCheckpoint'
+import { readCatalogSnapshot } from './lib/persistence/catalogSnapshots'
+import { readProjectIndex } from './lib/projects/projectStore'
+import { readSelectionPresetsStore } from './lib/presets/selectionPresetsStore'
+import { readUserCatalogStore } from './lib/mods/userCatalog'
+import { readAppSession } from './lib/ui/appSessionPrefs'
+import { readAppDirPaths } from './lib/ui/appDirPrefs'
+import { readVanillaRegistry } from './lib/projects/vanillaRegistry'
+import { ProfileRecoveryScreen } from './ui/ProfileRecoveryScreen'
+import './index.css'
 import {
   applyFreshInstallEnvFlagIfRequested,
   installFreshInstallConsoleApi,
 } from './lib/ui/freshInstallReset'
-import { readWeiduPath, writeWeiduPath } from './lib/ui/weiduPrefs'
+import { usesBundledWeiduPath, writeBundledWeiduPath } from './lib/ui/weiduPrefs'
 
 installFreshInstallConsoleApi()
 
@@ -16,10 +25,10 @@ if (import.meta.env.PROD) {
 }
 
 async function seedBundledWeiduPath(): Promise<void> {
-  if (!isDesktopApp() || readWeiduPath().trim()) return
+  if (!isDesktopApp() || !usesBundledWeiduPath()) return
   try {
     const path = await invoke<string>('bundled_weidu_path')
-    if (path.trim()) writeWeiduPath(path)
+    if (path.trim()) writeBundledWeiduPath(path)
   } catch {
     /* bundled WeiDU missing in dev build without resources */
   }
@@ -27,10 +36,23 @@ async function seedBundledWeiduPath(): Promise<void> {
 
 void applyFreshInstallEnvFlagIfRequested().then(async (wiped) => {
   if (wiped) return
+  await prepareSavedProfile()
+  // Validate before App's bootstrap migrations or catalog merge can write anything.
+  const projects = readProjectIndex()
+  readSelectionPresetsStore()
+  readUserCatalogStore()
+  readAppSession()
+  readAppDirPaths()
+  readVanillaRegistry()
+  const revisions = new Set(Object.values(projects.projects).map(record => record.catalogRevision).filter((revision): revision is string => !!revision))
+  await Promise.all([...revisions].map(readCatalogSnapshot))
   await seedBundledWeiduPath()
+  const { default: App } = await import('./App')
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <App />
     </StrictMode>,
   )
+}).catch((error: unknown) => {
+  createRoot(document.getElementById('root')!).render(<ProfileRecoveryScreen error={error} />)
 })

@@ -278,6 +278,10 @@ with every game/mod.
 
 ## Releases
 
+Saved-data compatibility and the required previous-version upgrade check:
+[Updates and saved data](update-safety.md). Keep the desktop identity and WebView
+origin stable; project XML snapshots and profile checkpoints must survive upgrades.
+
 Production builds (public beta **0.10.0**) bundle WeiDU and 7-Zip, check for app updates on startup (About → **Check for updates**), and block the native WebView right-click menu.
 
 Release builds use GitHub Actions (`.github/workflows/release.yml`). Maintainers: see [src-tauri/keys/README.md](../src-tauri/keys/README.md) for updater signing key setup before tagging a version.

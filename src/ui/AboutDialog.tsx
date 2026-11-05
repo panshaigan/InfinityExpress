@@ -20,6 +20,8 @@ import { useToast } from './toasts/toastContext'
 interface Props {
   open: boolean
   onClose: () => void
+  updatesBlocked?: boolean
+  onBeforeInstallUpdate: () => Promise<void>
 }
 
 const REPO_URL = 'https://github.com/panshaigan/InfinityExpress'
@@ -73,10 +75,9 @@ function isSecretModifier(e: { ctrlKey: boolean; metaKey: boolean }): boolean {
   return e.ctrlKey || e.metaKey
 }
 
-export function AboutDialog({ open, onClose }: Props) {
+export function AboutDialog({ open, onClose, updatesBlocked = false, onBeforeInstallUpdate }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
   const closeTimerRef = useRef<number | null>(null)
-  const backdrop = useBackdropDismiss(onClose)
   const { toggleDeveloperMode } = useDeveloperMode()
   const { pushToast } = useToast()
   const [blooming, setBlooming] = useState(false)
@@ -88,6 +89,8 @@ export function AboutDialog({ open, onClose }: Props) {
     Extract<AppUpdateCheckResult, { status: 'available' }> | null
   >(null)
   const [installingUpdate, setInstallingUpdate] = useState(false)
+  const dismiss = () => { if (!installingUpdate) onClose() }
+  const backdrop = useBackdropDismiss(dismiss)
 
   useEffect(() => {
     if (!open) {
@@ -102,12 +105,12 @@ export function AboutDialog({ open, onClose }: Props) {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault()
-        onClose()
+        if (!installingUpdate) onClose()
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open, onClose])
+  }, [open, onClose, installingUpdate])
 
   useEffect(() => {
     return () => {
@@ -122,6 +125,7 @@ export function AboutDialog({ open, onClose }: Props) {
   }
 
   function onAuthorClick(e: ReactMouseEvent<HTMLSpanElement>) {
+    if (installingUpdate) return
     if (!isSecretModifier(e)) return
     e.preventDefault()
     e.stopPropagation()
@@ -164,10 +168,15 @@ export function AboutDialog({ open, onClose }: Props) {
   }
 
   async function onConfirmInstallUpdate() {
-    if (!pendingUpdate) return
+    if (!pendingUpdate || installingUpdate) return
+    if (updatesBlocked) {
+      pushToast({ tone: 'error', message: 'Wait for the current operation to finish before updating the app.' })
+      setPendingUpdate(null)
+      return
+    }
     setInstallingUpdate(true)
     try {
-      await installAppUpdate(pendingUpdate.update)
+      await installAppUpdate(pendingUpdate.update, onBeforeInstallUpdate)
     } catch (err) {
       pushToast({ sound: true, tone: 'error', message: String(err) })
       setInstallingUpdate(false)
@@ -243,7 +252,7 @@ export function AboutDialog({ open, onClose }: Props) {
             <button
               type="button"
               className="btn secondary"
-              disabled={isBrowserDemo || checkingUpdates || installingUpdate}
+              disabled={isBrowserDemo || checkingUpdates || installingUpdate || updatesBlocked}
               onClick={() => {
                 void onCheckUpdates()
               }}

@@ -1,4 +1,7 @@
 import { isBrowserDemo } from '../runtime'
+import { pinProjectCatalogs } from './projectStore'
+import { readCatalogSnapshot } from '../persistence/catalogSnapshots'
+import { parseInstallSequence } from '../xml/parseInstallSequence'
 import {
   adaptSessionForProjects,
   getProject,
@@ -42,6 +45,7 @@ export interface ProjectBootstrap {
 export function bootstrapProjects(_model: InstallSequenceModel): ProjectBootstrap {
   migrateLegacySessionsToProjects()
   migrateSelectionPresetsToEngineStore()
+  pinProjectCatalogs()
   if (!isBrowserDemo) {
     suggestVanillaFromLegacyFolders()
     void syncManagedVanillasFromDisk()
@@ -85,6 +89,18 @@ export function loadProjectRecord(
   return { record, session }
 }
 
+/** Resolve the project's own XML before sanitizing selections or restoring its run. */
+export async function loadProjectWithCatalog(projectId: ProjectId, bundledXml: string) {
+  const record = getProject(projectId)
+  if (!record) return null
+  const xml = record.catalogRevision
+    ? await readCatalogSnapshot(record.catalogRevision)
+    : bundledXml
+  const parsed = parseInstallSequence(xml)
+  const loaded = loadProjectRecord(parsed.model, projectId)
+  return loaded ? { ...loaded, ...parsed } : null
+}
+
 /**
  * Resolve the full install session for a project: prefer on-disk `run-state.json`,
  * fall back to a one-shot legacy localStorage blob (and migrate it to disk).
@@ -104,8 +120,9 @@ export async function resolveProjectInstallSession(
       selectedIds,
       session.legacyInstall,
     )
+    if (!sanitized) throw new Error('The saved install plan is incompatible with this project catalog. Its original state has been kept.')
     if (sanitized?.run.logDir) {
-      void writeInstallRunState(sanitized.run.logDir, sanitized)
+      await writeInstallRunState(sanitized.run.logDir, sanitized)
     }
     return sanitized
   }
@@ -113,7 +130,10 @@ export async function resolveProjectInstallSession(
   const logDir = session.installRef?.logDir?.trim()
   if (!logDir) return undefined
   const fromDisk = await readInstallRunState(logDir)
-  return sanitizeInstallSession(model, engine, selectedIds, fromDisk ?? undefined)
+  if (!fromDisk) throw new Error(`The saved install state is missing at ${logDir}. Restore the run folder before opening this project.`)
+  const sanitized = sanitizeInstallSession(model, engine, selectedIds, fromDisk)
+  if (!sanitized) throw new Error('The saved install plan is incompatible with this project catalog. Its original state has been kept.')
+  return sanitized
 }
 
 export function emptyWorkspaceSession(): GameSession {

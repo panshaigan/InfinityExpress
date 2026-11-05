@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-profile-safety"
+description = "Archive immutable component catalogs and create local profile recovery checkpoints in the app data directory."
+commands.allow = ["save_catalog_snapshot", "read_catalog_snapshot", "restore_catalog_snapshot", "create_profile_checkpoint"]

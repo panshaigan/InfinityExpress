@@ -5,6 +5,7 @@ import type {
   WorkingMod,
 } from './loadMods'
 import { normalizeDownload, normalizeTrack } from './loadMods'
+import { readSavedStore } from '../persistence/savedStore'
 
 export const USER_CATALOG_STORAGE_KEY = 'infinity-express.mods-catalog'
 
@@ -200,21 +201,21 @@ export function createInitialCatalogStore(
 }
 
 export function readUserCatalogStore(): UserCatalogStore | null {
-  try {
-    const raw = localStorage.getItem(USER_CATALOG_STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw) as UserCatalogStore & {
+  return readSavedStore<UserCatalogStore | null>(USER_CATALOG_STORAGE_KEY, (value) => {
+    const parsed = value as UserCatalogStore & {
       mods: LegacyStoredModEntry[]
     }
     if (parsed?.version !== 1 || !Array.isArray(parsed.mods)) return null
+    if (parsed.mods.some((row) => !row || typeof row !== 'object' || typeof row.codename !== 'string' || !row.codename.trim())) return null
+    if (new Set(parsed.mods.map((row) => row.codename)).size !== parsed.mods.length) return null
+    if (parsed.hiddenBaseCodenames !== undefined &&
+      (!Array.isArray(parsed.hiddenBaseCodenames) || parsed.hiddenBaseCodenames.some((code) => typeof code !== 'string'))) return null
     return {
       version: 1,
       mods: parsed.mods.map(migrateStoredModEntry),
       hiddenBaseCodenames: parsed.hiddenBaseCodenames,
     }
-  } catch {
-    return null
-  }
+  }, () => null)
 }
 
 export function writeUserCatalogStore(store: UserCatalogStore): void {

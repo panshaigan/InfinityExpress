@@ -70,6 +70,13 @@ export async function readTextFile(path: string): Promise<string | null> {
   }
 }
 
+/** Saved state: return null only when missing; report read failures to prevent data loss. */
+export async function readOptionalTextFile(path: string): Promise<string | null> {
+  if (!isDesktopApp() || !path.trim()) return null
+  await waitForTextAppends(path)
+  return invoke<string | null>('read_optional_text_file', { path: path.trim() })
+}
+
 /** True when the path is a file with length greater than zero. */
 export async function fileIsNonempty(path: string): Promise<boolean> {
   if (!isDesktopApp() || !path.trim()) return false

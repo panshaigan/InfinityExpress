@@ -6,6 +6,7 @@
     "main"
   ],
   "permissions": [
+    "allow-profile-safety",
     "allow-check-install-compatibility",
     "core:default",
     "core:window:allow-set-title",
@@ -19,6 +20,7 @@
     },
     "allow-list-subdir-names",
     "allow-read-text-file",
+    "allow-read-optional-text-file",
     "allow-file-is-nonempty",
     "allow-read-text-file-tail",
     "allow-write-text-file-path",
