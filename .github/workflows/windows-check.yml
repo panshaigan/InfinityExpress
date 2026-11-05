@@ -10,11 +10,11 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Ensure WebView2 Evergreen Runtime is installed
         timeout-minutes: 8
         run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/ensure-webview2.ps1 -Install
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: lts/*
           cache: npm
@@ -34,13 +34,13 @@ jobs:
         run: npm run tauri:build -- --bundles nsis --config scripts/windows/tauri.smoke.conf.json
       - name: Install, exercise WebView2/native dialogs/IPC, and uninstall
         run: npm run test:installer:windows
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: windows-desktop-smoke
           path: .cache/windows-installer/
           if-no-files-found: warn
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: frontend-coverage-windows

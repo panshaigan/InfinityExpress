@@ -155,6 +155,14 @@ AppHandle-driven backup/restore commands.
 
 ### CI and remaining coverage
 
+GitHub workflows use the current stable action majors with Node 24 runtimes
+(checkout/setup-node/upload-artifact v7, configure-pages v6, and Pages
+upload/deploy v5). These action runtimes are separate from the project Node
+version selected by `node-version: lts/*`. Pages runs on explicit Ubuntu 24.04
+LTS to avoid automatic `ubuntu-latest` migrations; native Linux builds retain
+Ubuntu 22.04 as their compatibility baseline. The release workflow uses Tauri
+action v1.0.0 with its `uploadUpdaterJson` input.
+
 Run all CI checks for the current operating system with:
 
 ```sh
