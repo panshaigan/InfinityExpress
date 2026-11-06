@@ -31,7 +31,7 @@ A7-BanterAccelerator,Banter Accelerator,,minor,NPC-Expansion,https://github.com/
 Bardic-Wonders,Bardic Wonders,,minor,Mechanics,https://github.com/TheArtisanBG/Bardic-Wonders,BG-IWD,main,,2026-05-31,4e72d97,,32833478,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/bardic-wonders
 below-below-inn,Below Below Inn,,major,Quest/Content,https://downloads.weaselmods.net/download/below-below-inn,IWD,,,2026-04-26,3.1,,14564620,Lava,-
 bethany,Bethany NPC,,minor,NPC,https://downloads.weaselmods.net/download/bethany,IWD,,,2025-11-15,1.03,,3603101,Lava,-
-Better-IWD-Pregen,Better IWD Pregen,,minor,Script,https://github.com/D2-mods/Better-IWD-Pregen,BG-IWD,,,2026-10-02,v9.0,,1391611,Dan_P,-
+Better-IWD-Pregen,Better IWD Pregen,,minor,Script,https://github.com/D2-mods/Better-IWD-Pregen,BG-IWD,,,2026-10-13,v9.2,,1395543,Dan_P,-
 bg_enemy_randomizer,BG Enemy Randomizer,,medium,Randomisation,https://github.com/GuardianAnubite/bg_enemy_randomizer,BG,,,2024-08-26,v1.1.3,,597787,GuardianAnubite,https://gibberlings3.github.io/Documentation/readmes/readme-gaenemyrando.html
 bg1_icons_pack_mod,BG1 Icons Pack,,minor,Graphics,https://github.com/Alexander12-creator/bg1_icons_pack_mod,BG1,,,2024-12-02,1.0,,5638690,Alexander12,https://github.com/Alexander12-creator/bg1_icons_pack_mod/blob/main/Readme.eng.pdf
 BG1_Romantic_Encounters,BG1 Romantic Encounters,,compilation,Quest/Content,https://github.com/Gibberlings3/BG1_Romantic_Encounters,BG1,,,2026-07-24,v16,,7105299,Multiple,https://gibberlings3.github.io/Documentation/readmes/bg1re.readme.english.txt
@@ -41,12 +41,12 @@ BG2-Romance-Expanded,BG2 Romance Expanded,,minor,NPC-Expansion,https://github.co
 BG2EE-Slayer-Portrait-Change,BG2EE Slayer Portrait Change,,minor,Portraits,https://github.com/LCA-EET/BG2EE-Slayer-Portrait-Change,BG2,,,2026-06-26,v1.0.1,,219293,LCAMod,-
 BGEE-Graphics-Enhanced,BGEE Graphics Enhanced,,major,Graphics,https://github.com/TheForgotten69/BGEE-Graphics-Enhanced,BG1,,,2025-09-29,v0.2.0,WIP,1871378741,TheForgotten69,-
 BGSpawn,BGSpawn,,major,Randomisation,https://github.com/Spellhold-Studios/BGSpawn,BG1,,,2025-05-19,1.3.4,,144700643,melkor_morgoth75,https://spellhold-studios.github.io/readmes/bgspawn/BGSpawnReadme.doc
-Black-Hearts,Black Hearts,,major,Quest/Content,https://github.com/A-Wizard-Did-It/Black-Hearts,BG1,,,2025-05-27,v2.03,,61788974,A-Wizard-Did-It,-
+Black-Hearts,Black Hearts,,major,Quest/Content,https://github.com/A-Wizard-Did-It/Black-Hearts,BG1,,,2026-10-13,v2.05,,39928807,A-Wizard-Did-It,-
 blizzard-in-baator,Blizzard in Baator,,major,Quest/Content,https://github.com/BallDamage312/blizzard-in-baator,PST,,,2026-06-20,1.0.2,,864941205,CANIA BELIEVE IT,https://grimuar.pl/en/blizzardinbaator/blizzard-in-baator-launch-act-i-is-now-available/
 Brages_Redemption,Brage's Redemption,,minor,NPC,https://github.com/Gitjas/Brages_Redemption,BG,,,2026-01-15,v10.1,,9582751,jastey,-
 Branwen_for_BGII,Branwen for BGII,,minor,NPC,https://github.com/Pocket-Plane-Group/Branwen_for_BGII,BG2,,,2022-06-01,v8,,11422220,Kulyok,https://mods.pocketplane.net/kulyok/Readme-Branwen.txt
 Bubbs-Spell-Menu-Extended,Bubb's Spell Menu Extended,,medium,UI,https://github.com/Bubb13/Bubbs-Spell-Menu-Extended,BG-IWD,,,2026-05-11,v5.2,,1432756,Bubb,-
-Call-of-the-Lost-Goddess,Call of the Lost Goddess,,major,Quest/Content,https://github.com/AciferBG/Call-of-the-Lost-Goddess,BG2,,,2026-09-23,v3.2,,337836952,Acifer,-
+Call-of-the-Lost-Goddess,Call of the Lost Goddess,,major,Quest/Content,https://github.com/AciferBG/Call-of-the-Lost-Goddess,BG2,,,2026-10-17,v3.3,,338106508,Acifer,-
 ZS_CanIStabYou-Mod,Can I Stab You?,,minor,Mechanics,https://github.com/szaumoor/ZS_CanIStabYou-Mod,BG-IWD,,,2026-03-20,1.0.8,,1257741,Kaelyn,-
 Candlekeep-Revisited,Candlekeep Revisited,,medium,Restructure,https://github.com/TheArtisanBG/Candlekeep-Revisited,BG1,,,2026-04-07,97bb6d3,,6641736,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/candlere
 CassiaNPC,Cassia NPC,,minor,NPC,https://github.com/Arvendor/CassiaNPC,IWD,,,2024-01-20,8f9af4c,,4827405,Arvendor,https://forums.beamdog.com/discussion/87511/mod-cassia-npc-for-iwd-ee
@@ -61,7 +61,7 @@ Coran_for_BGII,Coran for BG2,,minor,NPC,https://github.com/Pocket-Plane-Group/Co
 Corthala_Romantique,Corthala Romantique,,minor,NPC-Expansion,https://github.com/Gibberlings3/Corthala_Romantique,BG2,,,2022-04-02,v5,,3435184,"Domi, Beyshaliban, Caetlyn, Meira, jastey",https://gibberlings3.github.io/Documentation/readmes/readme_cr.english.txt
 EE_Cosmetic_Item_Enhancement,"Cosmetic Enhancement Mod for BGEE, BG2EE, IWDEE, EET",,minor,Graphics,https://github.com/DaerosTrollkiller/EE_Cosmetic_Item_Enhancement,BG,,,2023-06-09,v1.0.2,,109911344,DaerosTrollkiller,https://github.com/DaerosTrollkiller/EE_Cosmetic_Item_Enhancement/blob/master/ee_cosmetic_enhancements/readme.md
 Crossmod_Banter_Pack_for_Baldurs_Gate_II,Crossmod Banter Pack for Baldur's Gate II,,medium,NPC-Expansion,https://github.com/Gibberlings3/Crossmod_Banter_Pack_for_Baldurs_Gate_II,BG2,,,2025-08-19,v30,,6836504,Grim Squeaker,https://gibberlings3.github.io/Documentation/readmes/readme-crossmodbg2.html
-crucible,Crucible,,major,Restructure,https://www.morpheus-mart.com/crucible,BG2,,,2026-09-07,5.1,,221331474,Morpheus562,-
+crucible,Crucible,,major,Restructure,https://www.morpheus-mart.com/crucible,BG2,,,2026-10-25,6.0,,251866361,Morpheus562,-
 XGTCumulativeCasterLevels,Cumulative Caster Levels,,minor,Mechanics,https://github.com/Xgatt/XGTCumulativeCasterLevels,BG-IWD,,,2026-05-08,0.6b,Prerelease,1284811,Xgatt,-
 Dark-Tidings,Dark Tidings,,major,Quest/Content,https://github.com/AciferBG/Dark-Tidings,BG2,,,2026-03-14,v3.2,,119222705,Acifer,-
 Dax-Tweaks,Dax Tweaks,DT,compilation,Tweaks,https://github.com/Maltodaxtrin/Dax-Tweaks,BG-IWD,,,2026-07-27,1.0.2,,9660534,Daxtreme,-
@@ -76,9 +76,9 @@ dusky-iwdee-npc,Dusky,,minor,NPC,https://downloads.weaselmods.net/download/dusky
 dvaradime,Dvaradime NPC,,minor,NPC,https://downloads.weaselmods.net/download/dvaradime,BG2,,,2024-09-30,1.6,,13700621,Lava,-
 dynaheir-bg2ee,Dynaheir for BG2EE,,minor,NPC,https://downloads.weaselmods.net/download/dynaheir-bg2ee,BG2,,,2026-08-15,1.4,,13528369,Lava,-
 Edwin-Romance,Edwin Romance,,minor,NPC-Expansion,https://github.com/Spellhold-Studios/Edwin-Romance,BG2,,,2023-12-04,v4.0,,19413830,laufeygreen,https://spellhold-studios.github.io/readmes/edwin-romance/edwinromance-readme.html
-EE_Fixpack,EE Fixpack,,major,Fixes,https://github.com/Gibberlings3/EE_Fixpack,BG-IWD-PST,main,,2026-09-30,9349f5d,Prerelease,132228680,Multiple,https://gibberlings3.github.io/Documentation/readmes/readme-eefixpack.html
-EEex,EEex,,major,Base,https://github.com/Bubb13/EEex,BG-IWD,,,2026-08-12,v1.3.0,,7878790,Bubb,-
-bg-eeex-buffbot,EEex Buffbot,,medium,UI,https://github.com/Chrizhermann/bg-eeex-buffbot,BG-IWD,,,2026-08-21,v1.9.0,,10868701,Chrizhermann,-
+EE_Fixpack,EE Fixpack,,major,Fixes,https://github.com/Gibberlings3/EE_Fixpack,BG-IWD-PST,main,,2026-11-04,a6d206f,Prerelease,132235346,Multiple,https://gibberlings3.github.io/Documentation/readmes/readme-eefixpack.html
+EEex,EEex,,major,Base,https://github.com/Bubb13/EEex,BG-IWD,,,2026-10-07,v1.3.1,,7884555,Bubb,-
+bg-eeex-buffbot,EEex Buffbot,,medium,UI,https://github.com/Chrizhermann/bg-eeex-buffbot,BG-IWD,,,2026-11-03,v1.16.0,,12749845,Chrizhermann,-
 EET_Tweaks,EET Tweaks,EETT,compilation,Tweaks,https://github.com/K4thos/EET_Tweaks,BG,,,2019-08-01,v1.12,,17068287,K4thos,https://htmlpreview.github.io/?https://github.com/K4thos/EET_Tweaks/blob/master/EET_Tweaks/readme-EET_Tweaks.html
 eldoth-for-sod,Eldoth for SoD,,minor,NPC,https://downloads.weaselmods.net/download/eldoth-for-sod,BG1,,,2026-05-13,1.1,,136144,Lava,-
 EndlessBG1,Endless BG1,,major,Restructure,https://github.com/Gibberlings3/EndlessBG1,BG1,,,2026-01-27,v20.2,,3481367,jastey,https://gibberlings3.github.io/Documentation/readmes/readme.c%23endlessbg1.english.txt
@@ -95,7 +95,7 @@ Finch_NPC,Finch NPC,,minor,NPC,https://github.com/Pocket-Plane-Group/Finch_NPC,B
 findit-iwd,Find It! (IWD),,minor,Items,https://downloads.weaselmods.net/download/findit-iwd,IWD,,,2023-03-03,2.6,,248820,Lava,-
 ForcedSlayerTransform,Forced Slayer Transform,,minor,Tweaks,https://github.com/LCA-EET/ForcedSlayerTransform,BG2,,,2026-06-27,v1.0,,33279,LCAMod,-
 forgeit-iwd,Forge It! (IWD),,minor,Items,https://downloads.weaselmods.net/download/forgeit-iwd,IWD,,,2024-09-06,1.9,,477675,Lava,-
-forgotten-armament,Forgotten Armament,FA,compilation,Items,https://www.morpheus-mart.com/forgotten-armament,BG-IWD,,,2026-09-17,7.1,,1697250,Morpheus562,-
+forgotten-armament,Forgotten Armament,FA,compilation,Items,https://www.morpheus-mart.com/forgotten-armament,BG-IWD,,,2026-10-30,7.3,,1700079,Morpheus562,-
 IWDEE-Frostforged,Frostforged,,minor,Items,https://github.com/TheArtisanBG/IWDEE-Frostforged,IWD,main,,2025-09-25,1652f9d,WIP,1988522,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/frostforged
 gahesh,Gahesh,,minor,NPC,https://downloads.weaselmods.net/download/gahesh/,BG2,,,2025-12-30,2.3,,9054989,Lava,
 Garrick_Tales-of-a-Troubadour,Garrick: Tales of a Troubadour,,minor,NPC-Expansion,https://github.com/The-Gate-Project/Garrick_Tales-of-a-Troubadour,BG1,,,2025-12-24,v1.28,,7017447,mirandir,-
@@ -109,7 +109,7 @@ HoWMod,Heart of Winter Mod,,minor,Tweaks,https://github.com/TheArtisanBG/HoWMod,
 HTaM,"Heroes, Thieves and Moneylenders",,major,Quest/Content,https://github.com/Austin-BG/HTaM,BG2,,,2026-02-23,v.4.6.4,,110312387,Austin,-
 Hexxat-Friendship,Hexxat Friendship,,minor,NPC-Expansion,https://github.com/Spellhold-Studios/Hexxat-Friendship,BG2,,,2024-07-15,v1.2,,165581,Lava,https://spellhold-studios.github.io/readmes/hexxat-friendship/HexxatFriendship-readme-english.html
 hiddenadventure,Hidden Adventures,,compilation,Quest/Content,https://github.com/Gitjas/hiddenadventure,BG2,,,2025-01-29,vBeta_9,,3131245,"Lumorus, jastey",-
-A7-HiddenGameplayOptions,Hidden Gameplay Options,,minor,UI,https://github.com/Argent77/A7-HiddenGameplayOptions,BG-IWD-PST,,,2026-06-25,v5.2,,1471808,Argent77,-
+A7-HiddenGameplayOptions,Hidden Gameplay Options,,minor,UI,https://github.com/Argent77/A7-HiddenGameplayOptions,BG-IWD-PST,,,2026-06-25,v5.3,,1473270,Argent77,-
 hommet,Hommet NPC,,minor,NPC,https://downloads.weaselmods.net/download/hommet,IWD,,,2026-02-01,1.2,,4723117,Lava,-
 House-Rule-Tweaks,House Rule Tweaks,HRT,compilation,Tweaks,https://github.com/TheArtisanBG/House-Rule-Tweaks,BG-IWD,main,,2026-05-29,2a9bdef,,57977779,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/housetweaks
 HQ-SoundClips-BG2EE,HQ Sound Clips for BG2EE,,minor,Sounds,https://github.com/Argent77/HQ-SoundClips-BG2EE,BG2,,,2023-09-16,v1.3,,205336959,Argent77,-
@@ -133,7 +133,7 @@ ina,Ina,,minor,NPC,https://downloads.weaselmods.net/download/ina/,IWD,,,2025-12-
 Indira_NPC,Indira NPC,,minor,NPC,https://github.com/Pocket-Plane-Group/Indira_NPC,BG1,,,2024-01-22,v15.1,,6096041,Ghreyfain,https://htmlpreview.github.io/?https://github.com/Pocket-Plane-Group/Indira_NPC/blob/main/IndiNPC/Docs/indi_readme.html
 Infinity_Collection_Portrait_Pack,Infinity Collection Portrait Pack,,minor,Portraits,https://github.com/Gibberlings3/Infinity_Collection_Portrait_Pack,BG-IWD,,,2022-03-07,v2,,44496778,CamDawg,https://gibberlings3.github.io/Documentation/readmes/readme-cd_icpp.html
 Infinity-Sounds,Infinity Sounds,,minor,Sounds,https://github.com/Spellhold-Studios/Infinity-Sounds,BG-IWD,,,2025-07-09,v2.2,,35133232,"skellytz, Tash",https://spellhold-studios.github.io/readmes/infinity-sounds/readme-infinitysounds.html
-InfinityUI,Infinity UI++,,major,UI,https://github.com/Renegade0/InfinityUI,BG-IWD,,,2026-07-06,v1.27,,256660982,Pecca,https://forums.beamdog.com/discussion/87209/mod-infinity-ui-v1-27/p1
+InfinityUI,Infinity UI++,,major,UI,https://github.com/Renegade0/InfinityUI,BG-IWD,,,2026-11-05,v1.41,,274262319,Pecca,https://forums.beamdog.com/discussion/87209/mod-infinity-ui-v1-27/p1
 Isra-NPC-BG2,Isra for BG2,,minor,NPC,https://github.com/Spellhold-Studios/Isra-NPC-BG2,BG2,,,2024-12-15,v3.1,,15741202,Rhaella,https://spellhold-studios.github.io/readmes/isra-npc-bg2/isra_bg2-readme-english.html
 Isra-NPC,Isra NPC,,minor,NPC,https://github.com/Spellhold-Studios/Isra-NPC,BG1,,,2024-12-15,v3.5,,10116626,Rhaella,https://spellhold-studios.github.io/readmes/isra-npc/isra-readme-english.html
 randomiser,Item Randomiser,,major,Randomisation,https://github.com/FredrikLindgren/randomiser,BG,,,2018-09-23,v7,,3063966,FredrikLindgren,https://gibberlings3.github.io/Documentation/readmes/readme-randomiser.html
@@ -159,10 +159,10 @@ Korgan-Redemption,Korgan's Redemption,,minor,NPC-Expansion,https://github.com/Sp
 Kvel-BG1,Kvel NPC,,minor,NPC,https://github.com/ArtemiusI/Kvel-BG1,BG1,main,,2026-05-30,ea55144,,5803117,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/kvel-bg1
 lanna,Lanna NPC,,minor,NPC,https://downloads.weaselmods.net/download/lanna,IWD,,,2024-04-30,1.8,,17531568,Lava,-
 A7-LevelUpTweaks,Level-Up Tweaks,,minor,Tweaks,https://github.com/Argent77/A7-LevelUpTweaks,PST,,,2023-09-08,v2.7,,14575,Argent77,-
-LivingClara,Living Clara,,minor,NPC,https://github.com/trow/LivingClara,BG2,,,2026-10-03,v1.5.2,,6348935,MephistoSatanDevil,-
+LivingClara,Living Clara,,minor,NPC,https://github.com/trow/LivingClara,BG2,,,2026-11-05,v1.6.0,,7039771,MephistoSatanDevil,-
 Lore_From_Learning,Lore From Learning,,medium,Mechanics,https://github.com/Gibberlings3/Lore_From_Learning,BG,,,2026-03-16,v10,,1568600,CamDawg,https://gibberlings3.github.io/Documentation/readmes/readme-cdlore.html
-Loretakers,Loretakers,,major,Quest/Content,https://github.com/AciferBG/Loretakers,BG1,,,2026-02-25,v2.8,,24625008,Acifer,-
-Lunia-For-Good-Parties,Lunia for Good Parties,,minor,Restructure,https://github.com/bucketfulofsunshine/Lunia-For-Good-Parties,BG2,,,2026-04-22,V1.9.1,,7760929,bucketfulofsunshine,-
+Loretakers,Loretakers,,major,Quest/Content,https://github.com/AciferBG/Loretakers,BG1,,,2026-10-17,v3.0,,24685302,Acifer,-
+Lunia-For-Good-Parties,Lunia for Good Parties,,minor,Restructure,https://github.com/bucketfulofsunshine/Lunia-For-Good-Parties,BG2,,,2026-10-14,V1.9.2,,5133769,bucketfulofsunshine,-
 mkhiinbg2,M'Khiin for BG2,,minor,NPC,https://github.com/szaumoor/mkhiinbg2,BG2,,,2025-08-05,9531db2,WIP,23401903,Kaelyn,-
 M-khiin-Friendship,M'Khiin Friendship,,minor,NPC-Expansion,https://github.com/dark0dave/M-khiin-Friendship,BG1,,,2026-01-25,V1.4,,1468179,dark0dave,-
 Mazzy-Friendship,Mazzy Friendship,,minor,NPC-Expansion,https://github.com/Spellhold-Studios/Mazzy-Friendship,BG2,,,2024-12-15,v3.5,,1505534,"Lava, Kaeloree, TheArtisan",https://spellhold-studios.github.io/readmes/mazzy-friendship/mazzyfriendship-readme-english.html
@@ -170,7 +170,7 @@ Mazzy-Romance-BG2EE,Mazzy Romance,,minor,NPC-Expansion,https://github.com/TheArt
 MinervaNPC,Minerva NPC,,minor,NPC,https://github.com/TheArtisanBG/MinervaNPC,IWD,main,,2026-04-26,d3d4e57,,26476932,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/iwdnpcs
 Minsc-Friendship,Minsc Friendship,,minor,NPC-Expansion,https://github.com/Spellhold-Studios/Minsc-Friendship,BG2,,,2024-12-15,v1.3,,2961151,"Kaeloree, Lava, TheArtisan",https://spellhold-studios.github.io/readmes/minsc-friendship/minscfriendship-readme-english.html
 msfm,More Style for Mages,,minor,Items,https://github.com/Endarire/More-Style-for-Mages-MSFM-,BG-IWD,,asset,2023-07-12,1.6-Prerelease-Take-2,Prerelease,5802543,Pecca,https://forums.beamdog.com/discussion/18108/mod-more-style-for-mages-v1-56/p1
-morpheus562s-kitpack,Morpheus562's Kitpack,,compilation,Mechanics,https://www.morpheus-mart.com/morpheus562s-kitpack,BG-IWD,,,2026-09-17,5.11,,1547488,Morpheus562,-
+morpheus562s-kitpack,Morpheus562's Kitpack,,compilation,Mechanics,https://www.morpheus-mart.com/morpheus562s-kitpack,BG-IWD,,,2026-11-03,6.0,,2555796,Morpheus562,-
 MortuaryBeGone,Mortuary Be Gone,,minor,Restructure,https://github.com/aquadrizzt/MortuaryBeGone,PST,,,2023-06-21,v0.11,,1375923,aquadrizzt,-
 Nalia_At_Last,Nalia At Last,,minor,NPC-Expansion,https://github.com/Skitia/Nalia_At_Last,BG2,,,2025-03-09,v1.14,,10936346,Skitia,-
 NecromancersQuestRestored,Necromancer's Quest Restored,,minor,Restoration,https://github.com/Dziadekkk/NecromancersQuestRestored,BG1,,,2026-07-27,v1.4,,1321086,Dziadekkk,-
@@ -187,7 +187,7 @@ Olvyn-Tweaks,OlvynTweaks,Olvyn,compilation,Tweaks,https://github.com/OlvynChuru/
 oozes-lounge,Ooze's Lounge,,major,Quest/Content,https://downloads.weaselmods.net/download/oozes-lounge,BG2,,,2026-05-23,3.1,,35968987,Lava,-
 OphysiaBG1,Ophysia NPC,,minor,NPC,https://github.com/Llewren/OphysiaBG1,BG1,,,2026-01-26,v1.4.1,,24307185,Llewren,-
 orra,Orra NPC,,minor,NPC,https://downloads.weaselmods.net/download/orra,IWD,,,2025-12-13,2.7,,2629421,Lava,-
-Poisoned-Pathways,Poisoned Pathways,,major,Quest/Content,https://github.com/AciferBG/Poisoned-Pathways,BG2,,,2026-07-22,v1.6,,145012218,Acifer,-
+Poisoned-Pathways,Poisoned Pathways,,major,Quest/Content,https://github.com/AciferBG/Poisoned-Pathways,BG2,,,2026-10-17,v1.8,,145249617,Acifer,-
 Portraits-Portraits-Everywhere,Portraits Portraits Everywhere,PPE,major,Portraits,https://github.com/smeagolheart/Portraits-Portraits-Everywhere,IWD,,,2018-04-16,PPE,,332441480,smeagolheart,https://forums.beamdog.com/discussion/61015/mod-portraits-portraits-everywhere-for-bg1ee-sod-bg2ee-iwdee-eet/p1
 PST-UB-reloaded,PS:T Unfinished Business - Reloaded,,compilation,Quest/Content,https://github.com/Argent77/PST-UB-reloaded,PST,,,2026-05-08,v2.5,,14911490,Argent77,-
 quayle-bg2,Quayle for BG2,,minor,NPC,https://downloads.weaselmods.net/download/quayle-bg2,BG2,,,2026-05-12,7.6,,7573364,Lava,-
@@ -204,14 +204,14 @@ Romantic_Encounters_BG2,Romantic Encounters for BG2,,compilation,Quest/Content,h
 Saradas-Magic-BG2,Saradas Magic for BG2,,minor,NPC,https://github.com/Spellhold-Studios/Saradas-Magic-BG2,BG2,,,2024-12-15,v2.0.0,,4468845,Saradas,https://spellhold-studios.github.io/readmes/saradas-magic-bg2/saradas_magic_2-readme-english.html
 Sarevok-Friendship,Sarevok Friendship,,minor,NPC-Expansion,https://github.com/Spellhold-Studios/Sarevok-Friendship,BG2,,,2024-12-15,v2.7,,1416144,Aeryn,https://spellhold-studios.github.io/readmes/sarevok-friendship/sarevokfriendship-readme-english.html
 Sarevok-Romance,Sarevok Romance,,minor,NPC-Expansion,https://github.com/Spellhold-Studios/Sarevok-Romance,BG2,,,2025-09-18,v1.4,,2093514,Aeryn,https://spellhold-studios.github.io/readmes/sarevok-romance/sarevokromance_readme.html
-shades-of-the-sword-coast,Shades of the Sword Coast,,compilation,Quest/Content,https://downloads.weaselmods.net/download/shades-of-the-sword-coast,BG1,,,2026-08-02,10.6,,57448782,Lava,-
-ZS_ShadowdancerOverhaul,Shadowdancer Overhaul,,minor,Mechanics,https://github.com/szaumoor/ZS_ShadowdancerOverhaul,BG-IWD,,,2026-07-26,1.3.0a,,10536228,Kaelyn,-
+shades-of-the-sword-coast,Shades of the Sword Coast,,compilation,Quest/Content,https://downloads.weaselmods.net/download/shades-of-the-sword-coast,BG1,,,2026-10-10,10.7,,57448799,Lava,-
+ZS_ShadowdancerOverhaul,Shadowdancer Overhaul,,minor,Mechanics,https://github.com/szaumoor/ZS_ShadowdancerOverhaul,BG-IWD,,,2026-10-27,1.3.0b,,9529657,Kaelyn,-
 SoAExtended,Shadows of Amn Extended,,medium,Restructure,https://github.com/TheArtisanBG/SoAExtended,BG2,main,,2026-06-07,6b98641,,1377781,TheArtisan,https://theartisanbg.github.io/The-Artisans-Corner/soaextended
 shar-teel-bg2ee,Shar-Teel for BG2EE,,minor,NPC,https://downloads.weaselmods.net/download/shar-teel-bg2ee,BG2,,,2026-07-31,1.01,,9052943,Lava,-
 Sharteel-NPC-SoD,Shar-Teel for SoD,,minor,NPC,https://github.com/11jo/Sharteel-NPC-SoD,BG1,,,2026-05-20,v1.5,,1347924,11jo,https://www.shsforums.net/topic/59065-mod-sharteel-npc-mod-for-sod/
 sir-arkanis-for-sod,Sir Arkanis for SoD,,minor,NPC,https://downloads.weaselmods.net/download/sir-arkanis-for-sod,BG1,,,2026-02-04,1.1,,461542,Lava,-
 skie-the-cost-of-one-girls-soul,Skie: The Cost of One Girl's Soul,,medium,Quest/Content,https://downloads.weaselmods.net/download/skie-the-cost-of-one-girls-soul,BG2,,,2026-08-28,7.1.2,,32673365,Lava,-
-skills-and-abilities,Skills and Abilities,SaA,compilation,Mechanics,https://www.morpheus-mart.com/skills-and-abilities,BG-IWD,,,2026-09-06,5.4,,2163143,Morpheus562,-
+skills-and-abilities,Skills and Abilities,SaA,compilation,Mechanics,https://www.morpheus-mart.com/skills-and-abilities,BG-IWD,,,2026-11-05,5.6.3,,2356064,Morpheus562,-
 A7-SkipChateauIrenicus,Skip Chateau Irenicus,,minor,Restructure,https://github.com/Argent77/A7-SkipChateauIrenicus,BG2,,,2024-12-07,v3.5,,2764856,Argent77,-
 SkitiaBG2RomanceTweaks,Skitia BG2 Romance Tweaks,,minor,NPC-Expansion,https://github.com/Skitia/SkitiaBG2RomanceTweaks,BG2,,,2023-03-24,2c103a6,,831706,Skitia,-
 SkitiaNPCs,SkitiaNPCs,,,NPC,https://github.com/Skitia/SkitiaNPCs,BG2,,,2025-12-30,v1.16,,21450286,Skitia,https://github.com/Skitia/SkitiaNPCs#readme
@@ -237,14 +237,14 @@ The_Calling,The Calling,,major,Quest/Content,https://github.com/Gibberlings3/The
 CowledMenace,The Cowled Menace,,major,Quest/Content,https://github.com/Gibberlings3/CowledMenace,BG2,,,2026-07-27,2.1.0,,1653276,Daxtreme,https://github.com/Gibberlings3/CowledMenace/blob/master/README.md
 gorgon,The Gorgon's Eye,,major,Quest/Content,https://github.com/TotalMilk90/gorgon,BG1,,,2024-09-28,v4.8,,29290545,TotalMilk90,https://github.com/TotalMilk90/gorgon/blob/main/gorgon/readme-gorgon.txt
 HPS-Portraits-Project-1.0,The HPS Portraits Project,HPS,major,Portraits,https://github.com/HoldenBG/HPS-Portraits-Project-1.0,BG,,asset,2026-06-01,v1.3.1,,668426758,Holden,https://www.gibberlings3.net/forums/topic/41267-the-hps-portraits-project-v10-updated-to-v12-on-may-31-2026/
-the-pursuit-of-justice,The Pursuit of Justice,,minor,Restructure,https://github.com/bucketfulofsunshine/the-pursuit-of-justice,BG2,,,2026-06-30,V1.2,,294586,bucketfulofsunshine,-
+the-pursuit-of-justice,The Pursuit of Justice,,minor,Restructure,https://github.com/bucketfulofsunshine/the-pursuit-of-justice,BG2,,,2026-10-14,V1.3,,167042,bucketfulofsunshine,-
 the-rediscovery-of-kuldahar,The Rediscovery of Kuldahar,,major,Quest/Content,https://downloads.weaselmods.net/download/the-rediscovery-of-kuldahar,IWD,,,2026-08-23,2.6.1,,39452216,Lava,-
 the-return-of-xzar-and-montaron,The Return of Xzar and Montaron,,minor,NPC,https://downloads.weaselmods.net/download/the-return-of-xzar-and-montaron,BG2,,,2026-08-05,1.7,,8153198,Lava,-
 Tweaks-Anthology,The Tweaks Anthology,TTA,compilation,Tweaks,https://github.com/Gibberlings3/Tweaks-Anthology,BG-IWD-PST,,,2025-08-22,v18,,22231649,Multiple,https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html
 the-vanishing-of-skie-silvershield,The Vanishing of Skie Silvershield,,minor,Quest/Content,https://downloads.weaselmods.net/download/the-vanishing-of-skie-silvershield,BG1,,,2024-12-09,2.5,,1651190,Lava,-
 the-war-of-bloom-and-rot,The War of Bloom and Rot,,major,Quest/Content,https://downloads.weaselmods.net/download/the-war-of-bloom-and-rot,IWD,,,2025-12-14,1.3,,51915387,Lava,-
 themed_tweaks,Themed Tweaks,TT,compilation,Tweaks,https://github.com/lzenner/themed_tweaks,BG,,,2026-01-19,v0.5,WIP,1301510,Lauriel,https://github.com/lzenner/themed_tweaks/blob/main/themed_tweaks/readme.themed_tweaks.english.txt
-Throne-of-the-Mad-God,Throne of the Mad God,,major,Quest/Content,https://github.com/AciferBG/Throne-of-the-Mad-God,BG2,,,2026-07-01,v2.3,,343069863,Acifer,-
+Throne-of-the-Mad-God,Throne of the Mad God,,major,Quest/Content,https://github.com/AciferBG/Throne-of-the-Mad-God,BG2,,,2026-10-17,v2.6,,215176210,Acifer,-
 Tiax_for_BGII,Tiax for BGII,,minor,NPC,https://github.com/Pocket-Plane-Group/Tiax_for_BGII,BG2,,,2020-01-12,v6,,6598968,Kulyok,https://mods.pocketplane.net/kulyok/Readme-Tiax.txt
 tipps,Tipps NPC,,minor,NPC,https://downloads.weaselmods.net/download/tipps,IWD,,,2025-12-09,2.4,,8907973,Lava,-
 TomeAndBlood,Tome and Blood,TnB,compilation,Mechanics,https://github.com/UnearthedArcana/TomeAndBlood,BG-IWD,,,2025-03-19,1.4.1,,1991837,aquadrizzt,-
@@ -281,7 +281,7 @@ Ascalons_Breagar,Ascalon's Breagar,,minor,NPC,https://github.com/Gitjas/Ascalons
 AurenAseph,Auren Aseph NPC Mod,,minor,NPC,https://github.com/Gibberlings3/AurenAseph,BG2,,,2026-03-17,v13,,18941181,theacefes,https://gibberlings3.github.io/Documentation/readmes/readme-auren.html
 bfs-reactivity-pack,Reactivity Pack (for BGEE or BG2EE),,minor,Quest/Content,https://github.com/bucketfulofsunshine/bfs-reactivity-pack,BG,,asset,2025-07-23,Nightly,WIP,2605355,bucketfulofsunshine,https://github.com/bucketfulofsunshine/bfs-reactivity-pack
 Brandock_the_Mage,Brandock the Mage,,minor,NPC,https://github.com/Gitjas/Brandock_the_Mage,BG,,,2026-07-14,v1.9,,24202319,jastey,https://htmlpreview.github.io/?https://github.com/Gitjas/Brandock_the_Mage/blob/master/c%23brandock/readme.brandock.english.html
-Emily-BG1,Emily BG1,,minor,NPC,https://github.com/Skitia/Emily-BG1,BG1,main,,2026-10-03,cd71f17,,7340000,Skitia,
+Emily-BG1,Emily BG1,,minor,NPC,https://github.com/Skitia/Emily-BG1,BG1,main,,2026-10-16,8c1174d,,7541564,Skitia,
 fhaugy,Fhaugy,,minor,NPC,https://downloads.weaselmods.net/download/fhaugy/,BG2,,,2023-12-25,1.03,,29097100,Lava,
 fyalvara,Fyalvara,,minor,NPC,https://downloads.weaselmods.net/download/fyalvara/,BG2,,,2026-07-05,1.4,,4014788,Lava,
 Gavin_BG,Gavin NPC  BGEE,,minor,NPC,https://github.com/Gibberlings3/Gavin_BG,BG1,,,2025-01-21,v15,,10054509,berelinde,https://gibberlings3.github.io/Documentation/readmes/readme-gavin.html
