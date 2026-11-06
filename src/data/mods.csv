@@ -9,7 +9,7 @@ Almateria-Restoration-Project,Almateria's Restoration Project,,compilation,Resto
 Alora-NPC-for-BG2,Alora for BG2,,minor,NPC,https://github.com/The-Gate-Project/Alora-NPC-for-BG2,BG2,,,2025-10-06,v2.1,,14141985,Raven,-
 Angelo,Angelo NPC,,minor,NPC,https://github.com/Gibberlings3/Angelo,BG2,,,2021-09-28,v9,,19416717,"Sister Vigilante, Kulyok",https://gibberlings3.github.io/Documentation/readmes/readme-angelo.html
 Another_Fine_Hell,Another Fine Hell,,medium,Restructure,https://github.com/Gibberlings3/Another_Fine_Hell,BG1,,,2023-09-19,vAlpha_230919,WIP,3014847,jastey,https://gibberlings3.github.io/Documentation/readmes/readme.anotherfinehell.english.txt
-A7-MiscTweaks,Argent's Miscellaneous Tweaks,A77MT,compilation,Tweaks,https://github.com/Argent77/A7-MiscTweaks,PST,,,2026-07-19,v1.2,,13507815,Argent77,-
+A7-MiscTweaks,Argent's Miscellaneous Tweaks,A77MT,compilation,Tweaks,https://github.com/Argent77/A7-MiscTweaks,PST,,,2026-10-13,v1.3,,15271790,Argent77,-
 Arnel-Nalia-Romance-Revision,Arnel's Nalia Romance Revision,,minor,NPC-Expansion,https://github.com/Spellhold-Studios/Arnel-Nalia-Romance-Revision,BG2,,,2024-12-15,v2.0.0,,3091834,Arnel,https://spellhold-studios.github.io/readmes/arnel-nalia-romance-revision/luvnalia-readme-english.html
 arszyk,Arszyk's Wonderful Decay,,medium,Quest/Content,https://downloads.weaselmods.net/download/arszyk,IWD,,,2025-10-25,BETA1.4,,6899795,Lava,-
 Ascalons_Questpack,Ascalon's Questpack,,compilation,Quest/Content,https://github.com/Gitjas/Ascalons_Questpack,BG1,,,2026-07-25,v7.0,,26963241,Ascalon,-
@@ -311,3 +311,11 @@ Iylos-NPC,Iylos NPC,,minor,NPC,https://github.com/Spellhold-Studios/Iylos-NPC/,B
 Kim_NPC,Kim NPC,,minor,NPC,https://github.com/11jo/Kim_NPC,BG2,,,,,,,Grenouillebleue,https://htmlpreview.github.io/?https://github.com/The-Gate-Project/Kim_NPC/blob/main/KimNPC/ReadMe/KimEn.html
 Kitanya-NPC,Kitanya NPC for BGII (WIP),,minor,NPC,https://github.com/Spellhold-Studios/Kitanya-NPC/,BG2,,,,,,,Rastor,
 Sarah,Sarah NPC,,minor,NPC,https://github.com/Gibberlings3/Sarah,BG2,,,2025-02-16,v8,,58546321,theacefes,https://gibberlings3.github.io/Documentation/readmes/readme-sarahtob.html
+AutoDescription,AutoDescription,,major,Items,https://github.com/Selphira/AutoDescription,BG,,,2025-03-30,0.9.37,,4896164,Alywenna,
+bg-pathfinding-redux,BG Pathfinding Redux,,minor,Base,https://github.com/zach-hopkins/bg-pathfinding-redux,BG,,,2026-10-26,35cc0a9,,488773,AvengerMods,
+bg2-wildmage,Wild Mage additions,,medium,Mechanics,https://github.com/BGforgeNet/bg2-wildmage?tab=readme-ov-file#ironman,BG-IWD,,,2026-03-07,v2.5,,1057286,"JOG, burner1024",
+Grey_The_Dog,Grey the Dog,,minor,NPC,https://github.com/Gibberlings3/Grey_The_Dog,BG,,,2024-11-03,v10,,3844852,"jastey, Rabain",https://gibberlings3.github.io/Documentation/readmes/readme.greythedog.english.txt
+LEUI-EET,LEUI-EET,,major,UI,https://github.com/The-Draiken/LEUI-EET,BG-IWD,,,2026-11-04,V1.5,,61634463,TheDraiken,
+main,Chronicles of the Sword Coast,,major,Quest/Content,https://github.com/HotaruPL/Chronicles-of-the-Sword-Coast/tree/main,BG1,,asset,2026-11-03,CotSCV1.4,,65908842,"Mapek, Hotaru",
+NPC-Bodies,NPC Bodies,,medium,Mechanics,https://github.com/The-Draiken/NPC-Bodies,BG-IWD,,,2026-11-04,V2.2,,2650151,"Gunman, Enigmajazz, TheDraiken",
+SadoEE,SadoEE,,medium,UI,https://github.com/sad0/SadoEE,BG-IWD,,,2026-11-03,v1.0.3,,26264171,johnsad0,

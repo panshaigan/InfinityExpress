@@ -251,6 +251,16 @@ export const PRESET_PACKAGE_COPY: Record<string, PresetTileCopy> = {
       'Players whose selected mods require EEex. It is primarily a technical dependency rather than a content choice.'
   },
 
+  standardizeDescs: {
+    label: 'Standardize Descriptions',
+    summary:
+      'Standardize effects descriptions for items and spells.',
+    typeAndDepth:
+      'Modifies all the descriptions, but does not mess with any mechanics',
+    recommendedFor:
+      'Players needing clear, consistent descriptions across the games and mods.'
+  },
+
   BGGO: {
     label: "Baldur's Gate Graphical Overhaul",
     summary:
