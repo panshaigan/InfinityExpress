@@ -1,4 +1,5 @@
 name: Linux checks
+# Rename to linux-check.yml to restore automatic Linux checks.
 
 on:
   push:

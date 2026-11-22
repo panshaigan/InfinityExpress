@@ -9,15 +9,7 @@ jobs:
   release:
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: windows-latest
-            args: ''
-          - platform: ubuntu-22.04
-            args: '--bundles deb,appimage'
-    runs-on: ${{ matrix.platform }}
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
 
@@ -39,11 +31,6 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm ci
-
-      - name: Install Linux desktop dependencies
-        if: runner.os == 'Linux'
-        timeout-minutes: 16
-        run: bash scripts/linux/install-ci-deps.sh
 
       - name: Inject updater public key
         shell: bash
@@ -67,4 +54,3 @@ jobs:
           releaseDraft: true
           prerelease: false
           uploadUpdaterJson: true
-          args: ${{ matrix.args }}

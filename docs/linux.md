@@ -27,7 +27,8 @@ Node.js, and Rust. Run `npm ci`, `npm run build`, and
 `npm run tauri:dev` for interactive testing. Reinstall `node_modules` when
 switching operating systems; native npm dependencies cannot be shared.
 
-`.github/workflows/linux-check.yml` compiles/tests the Linux backend and frontend,
+Linux desktop CI and release builds are paused. The inactive workflow at
+`.github/workflows/linux-check.yml.disabled` compiles/tests the Linux backend and frontend,
 checks native install/reinstall/uninstall on disposable fixtures, and builds an
 unsigned Debian package. Its package test verifies executable resources, rejects
 Windows binaries, renders the real WebKit UI, and exercises staging, installation,
@@ -37,10 +38,8 @@ artifacts with disposable keys, verifies both signatures with minisign, and runs
 the same native-command checks from the extracted AppImage. It does not publish
 releases or use production signing keys.
 
-The release workflow now includes Linux x86_64 Debian and AppImage builds on
-Ubuntu 22.04. Existing repository updater secrets sign Debian/AppImage updates and feed
-the shared `latest.json`, alongside Windows. Publishing still follows the existing
-tag/draft release process.
+The release workflow currently packages Windows only. Debian and AppImage builds
+can still be tested locally.
 
 ### Reproduce the checks in an isolated Linux container
 
