@@ -386,7 +386,7 @@ describe('curated InstallSequence.xml folding', () => {
     const wizardSlayer = fighter.children.find((c) => c.tag === 'wizardSlayer')!
     expect(
       wizardSlayer.children.some(
-        (c) => c.kind === 'component' && c.componentId === 'ArtisansKitpack:1006',
+        (c) => c.kind === 'component' && c.componentId === 'METweaks:1600',
       ),
     ).toBe(true)
     expect(
