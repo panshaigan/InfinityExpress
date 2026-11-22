@@ -10,6 +10,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { cycleTabIndex } from '../lib/ui/chromeHotkeys'
+import { OutlinedTextField } from './OutlinedTextField'
 
 export interface OutlinedSelectOption {
   value: string
@@ -22,6 +23,7 @@ interface Props {
   options: OutlinedSelectOption[]
   /** Shown when value is empty. Defaults to "All". */
   emptyLabel?: string
+  searchLabel?: string
   disabled?: boolean
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -38,6 +40,7 @@ export function OutlinedSelect({
   value,
   options,
   emptyLabel = 'All',
+  searchLabel,
   disabled = false,
   open,
   onOpenChange,
@@ -45,13 +48,23 @@ export function OutlinedSelect({
   className = '',
 }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
   const panelId = useId()
-  const values = options.map((o) => o.value)
-  const valuesSignature = values.join('\0')
   const selected = options.find((o) => o.value === value)
   const displayLabel = selected?.label ?? emptyLabel
+  const [query, setQuery] = useState('')
+  const search = query.trim().toLowerCase()
+  const visibleOptions = search
+    ? options.filter(
+        (option) => option.value !== '' && option.label.toLowerCase().includes(search),
+      )
+    : options
+  const values = visibleOptions.map((option) => option.value)
+  const valuesSignature = options.map((option) => option.value).join('\0')
   const [highlight, setHighlight] = useState(value)
+  const visibleHighlight = values.includes(highlight) ? highlight : values[0]
   const [popoverStyle, setPopoverStyle] = useState<CSSProperties>({
     top: 0,
     left: 0,
@@ -59,13 +72,11 @@ export function OutlinedSelect({
   })
 
   const positionPopover = useCallback(() => {
-    const root = rootRef.current
-    const list = listRef.current
-    if (!root || !list) return
-    const trigger =
-      root.querySelector<HTMLElement>('.outlined-select-trigger') ?? root
+    const trigger = triggerRef.current
+    const panel = panelRef.current
+    if (!trigger || !panel) return
     const rect = trigger.getBoundingClientRect()
-    const listHeight = list.offsetHeight
+    const listHeight = panel.offsetHeight
     const spaceBelow = window.innerHeight - rect.bottom - GAP_PX - EDGE_PAD
     const placeAbove =
       spaceBelow < Math.min(listHeight, 16 * 16) &&
@@ -92,7 +103,10 @@ export function OutlinedSelect({
   }, [])
 
   useEffect(() => {
-    if (!open) return
+    if (!open) {
+      setQuery('')
+      return
+    }
     setHighlight(value)
   }, [open, value, valuesSignature])
 
@@ -101,12 +115,15 @@ export function OutlinedSelect({
     function onPointerDown(e: PointerEvent) {
       const target = e.target as Node
       if (rootRef.current?.contains(target)) return
-      if (listRef.current?.contains(target)) return
+      if (panelRef.current?.contains(target)) return
       onOpenChange(false)
     }
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && !e.isComposing) {
         e.preventDefault()
+        if (searchLabel && panelRef.current?.contains(document.activeElement)) {
+          triggerRef.current?.focus()
+        }
         onOpenChange(false)
       }
     }
@@ -116,12 +133,12 @@ export function OutlinedSelect({
       document.removeEventListener('pointerdown', onPointerDown)
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, [open, onOpenChange])
+  }, [open, onOpenChange, searchLabel])
 
   useLayoutEffect(() => {
     if (!open) return
     positionPopover()
-  }, [open, options.length, positionPopover])
+  }, [open, visibleOptions.length, positionPopover])
 
   useEffect(() => {
     if (!open) return
@@ -136,24 +153,26 @@ export function OutlinedSelect({
     }
   }, [open, positionPopover])
 
+  const focusOption = useCallback((index: number) => {
+    panelRef.current?.querySelectorAll<HTMLElement>('[role="option"]')[index]?.focus()
+  }, [])
+
+  const highlightedIndex = values.indexOf(visibleHighlight)
   useEffect(() => {
-    if (!open) return
-    const btn = listRef.current?.querySelector<HTMLElement>(
-      `[data-option-value="${CSS.escape(highlight)}"]`,
-    )
-    btn?.focus()
-  }, [open, highlight])
+    if (open && !searchLabel) focusOption(highlightedIndex)
+  }, [open, searchLabel, highlightedIndex, focusOption])
 
   function pick(next: string) {
     onChange(next)
+    if (searchLabel) triggerRef.current?.focus()
     onOpenChange(false)
   }
 
   function handleListKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
-    if (options.length === 0) return
+    if (visibleHighlight === undefined) return
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      pick(highlight)
+      pick(visibleHighlight)
       return
     }
     let direction: -1 | 1 | null = null
@@ -161,11 +180,29 @@ export function OutlinedSelect({
     else if (e.key === 'ArrowUp') direction = -1
     if (direction == null) return
     e.preventDefault()
-    const currentIndex = Math.max(0, values.indexOf(highlight))
-    const next = cycleTabIndex(options.length, currentIndex, direction)
-    const nextValue = values[next]
-    if (nextValue != null) setHighlight(nextValue)
+    const next = cycleTabIndex(values.length, highlightedIndex, direction)
+    setHighlight(values[next])
+    if (searchLabel) focusOption(next)
   }
+
+  const optionButtons = visibleOptions.map((option) => {
+    const isActive = option.value === value
+    const isHighlighted = option.value === visibleHighlight
+    return (
+      <button
+        key={option.value}
+        type="button"
+        role="option"
+        aria-selected={isActive}
+        className={`outlined-select-option${isActive ? ' active' : ''}${isHighlighted ? ' highlighted' : ''}`}
+        tabIndex={isHighlighted ? 0 : -1}
+        onFocus={() => setHighlight(option.value)}
+        onClick={() => pick(option.value)}
+      >
+        {option.label}
+      </button>
+    )
+  })
 
   return (
     <div
@@ -183,13 +220,14 @@ export function OutlinedSelect({
     >
       <span className="outlined-field-label">{label}</span>
       <button
+        ref={triggerRef}
         type="button"
         className="outlined-select-trigger"
         disabled={disabled}
         aria-label={label}
         aria-expanded={open}
         aria-controls={panelId}
-        aria-haspopup="listbox"
+        aria-haspopup={searchLabel ? 'dialog' : 'listbox'}
         onClick={() => onOpenChange(!open)}
         onKeyDown={(e) => {
           if (open || disabled) return
@@ -207,32 +245,53 @@ export function OutlinedSelect({
       {open
         ? createPortal(
             <div
-              ref={listRef}
+              ref={panelRef}
               id={panelId}
               className="outlined-select-popover outlined-select-popover-portal"
-              role="listbox"
+              role={searchLabel ? 'dialog' : 'listbox'}
               aria-label={label}
               style={popoverStyle}
-              onKeyDown={handleListKeyDown}
+              onKeyDown={searchLabel ? undefined : handleListKeyDown}
             >
-              {options.map((option) => {
-                const isActive = option.value === value
-                const isHighlighted = option.value === highlight
-                return (
-                  <button
-                    key={option.value === '' ? '__all__' : option.value}
-                    type="button"
-                    role="option"
-                    data-option-value={option.value}
-                    aria-selected={isActive}
-                    className={`outlined-select-option${isActive ? ' active' : ''}${isHighlighted ? ' highlighted' : ''}`}
-                    tabIndex={isHighlighted ? 0 : -1}
-                    onClick={() => pick(option.value)}
+              {searchLabel ? (
+                <>
+                  <OutlinedTextField
+                    label={searchLabel}
+                    value={query}
+                    autoFocus
+                    className="outlined-select-search"
+                    onChange={(next) => {
+                      setQuery(next)
+                      setHighlight(value)
+                      if (resultsRef.current) resultsRef.current.scrollTop = 0
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.nativeEvent.isComposing) return
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        if (visibleHighlight !== undefined) pick(visibleHighlight)
+                      } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                        e.preventDefault()
+                        focusOption(e.key === 'ArrowDown' ? 0 : values.length - 1)
+                      }
+                    }}
+                  />
+                  <div
+                    ref={resultsRef}
+                    className="outlined-select-results"
+                    role="listbox"
+                    aria-label={label}
+                    onKeyDown={handleListKeyDown}
                   >
-                    {option.label}
-                  </button>
-                )
-              })}
+                    {optionButtons}
+                  </div>
+                  {visibleOptions.length === 0 && (
+                    <p className="outlined-select-empty" role="status">
+                      No matches
+                    </p>
+                  )}
+                </>
+              ) : optionButtons}
             </div>,
             document.body,
           )

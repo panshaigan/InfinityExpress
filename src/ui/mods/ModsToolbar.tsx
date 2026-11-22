@@ -377,6 +377,7 @@ export function ModsToolbar({
           />
           <OutlinedSelect
             label="Author"
+            searchLabel="Search authors"
             value={filters.authors[0] ?? ''}
             open={openFacet === 'author'}
             onOpenChange={(open) => facetOpenChange('author', open)}

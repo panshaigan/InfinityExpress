@@ -4151,6 +4151,25 @@ body.is-resizing-detail * {
   max-width: min(22rem, calc(100vw - 1rem));
 }
 
+.outlined-select-search.outlined-field-control {
+  flex: 0 0 auto;
+}
+
+.outlined-select-results {
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.outlined-select-empty {
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 .outlined-select-option {
   display: block;
   flex: 0 0 auto;
