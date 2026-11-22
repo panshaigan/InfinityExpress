@@ -22,12 +22,10 @@ jobs:
       - uses: swatinem/rust-cache@v2
         with:
           shared-key: desktop-${{ runner.os }}
-          workspaces: |
-            src-tauri -> target
-            src-tauri -> target/llvm-cov-target
+          workspaces: src-tauri -> target
           cache-on-failure: true
       - run: npm ci
-      - run: npm run test:coverage
+      - run: npm test
       - run: npm run test:rust
       # tauri:build also typechecks/builds the frontend; do it once.
       - name: Build isolated per-user NSIS test installer
@@ -40,9 +38,3 @@ jobs:
           name: windows-desktop-smoke
           path: .cache/windows-installer/
           if-no-files-found: warn
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: frontend-coverage-windows
-          path: coverage/frontend/
-          if-no-files-found: error

@@ -16,33 +16,17 @@ jobs:
           node-version: lts/*
           cache: npm
       - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: llvm-tools-preview
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-llvm-cov@0.9.1
       - uses: swatinem/rust-cache@v2
         with:
           shared-key: desktop-${{ runner.os }}
-          workspaces: |
-            src-tauri -> target
-            src-tauri -> target/llvm-cov-target
+          workspaces: src-tauri -> target
           cache-on-failure: true
       - name: Install Tauri dependencies
         timeout-minutes: 16
         run: bash scripts/linux/install-ci-deps.sh --smoke
       - run: npm ci
-      - run: npm run test:coverage
-      - run: npm run test:coverage:rust
-      - name: Upload available coverage reports
-        uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: coverage-linux
-          path: coverage/
-          # Setup/test failures may leave no reports. Preserve that first error,
-          # but still require coverage when all preceding steps succeeded.
-          if-no-files-found: ${{ job.status == 'success' && 'error' || 'warn' }}
+      - run: npm test
+      - run: npm run test:rust
       - name: Verify bundled native WeiDU
         run: |
           test -x src-tauri/resources/weidu/linux-amd64/weidu

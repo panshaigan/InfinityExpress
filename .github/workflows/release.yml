@@ -34,9 +34,7 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           shared-key: desktop-${{ runner.os }}
-          workspaces: |
-            src-tauri -> target
-            src-tauri -> target/llvm-cov-target
+          workspaces: src-tauri -> target
           cache-on-failure: true
 
       - name: Install frontend dependencies

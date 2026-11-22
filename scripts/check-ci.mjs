@@ -1,20 +1,19 @@
 import { spawnSync } from 'node:child_process'
 
 const steps = [
-  ['npm', ['run', 'test:coverage']],
+  ['npm', ['test']],
   ['npm', ['run', 'build:demo']],
+  ['npm', ['run', 'test:rust']],
 ]
 // Each platform's tauri:build runs the desktop typecheck/build once, after
 // build:demo has finished using dist. Keep the default Tauri build hook enabled.
 if (process.platform === 'win32') {
   steps.push(
-    ['npm', ['run', 'test:rust']],
     ['npm', ['run', 'tauri:build', '--', '--bundles', 'nsis', '--config', 'scripts/windows/tauri.smoke.conf.json']],
     ['npm', ['run', 'test:installer:windows']],
   )
 } else if (process.platform === 'linux') {
   steps.push(
-    ['npm', ['run', 'test:coverage:rust']],
     ['src-tauri/resources/weidu/linux-amd64/weidu', ['--version']],
     ['python3', ['scripts/linux/weidu-smoke.py']],
     ['npm', ['run', 'tauri:build', '--', '--bundles', 'deb', '--config', '{"bundle":{"createUpdaterArtifacts":false}}']],

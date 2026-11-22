@@ -3,6 +3,8 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 const host = process.env.TAURI_DEV_HOST
+const disableNodeWebStorage = ['--no-webstorage', '--no-experimental-webstorage']
+  .find((flag) => process.allowedNodeEnvironmentFlags.has(flag))
 const pkg = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
 ) as { version: string }
@@ -40,6 +42,8 @@ export default defineConfig(({ mode }) => ({
   },
   test: {
     environment: 'jsdom',
+    // Node's native storage globals prevent Vitest from installing jsdom's storage.
+    execArgv: disableNodeWebStorage ? [disableNodeWebStorage] : [],
     globals: true,
     coverage: {
       provider: 'v8',

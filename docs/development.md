@@ -104,8 +104,9 @@ browser or native webview.
 
 ### Coverage reports
 
-`npm run test:coverage` writes HTML (`coverage/frontend/index.html`), LCOV, and
-JSON summaries under `coverage/frontend/`. It includes unimported application
+Coverage reports are opt-in local checks. `npm run test:coverage` writes HTML
+(`coverage/frontend/index.html`), LCOV, and JSON summaries under
+`coverage/frontend/`. It includes unimported application
 source, so untested UI contributes zero coverage. Tests, test helpers, static
 curated data, declaration files, and the `main.tsx` mounting entry point are
 excluded. Initial measured line coverage on Windows is about 38% overall and
@@ -172,12 +173,11 @@ npm run check:ci
 Run `npm ci` first and install the desktop prerequisites described above. On
 Windows, this includes the isolated NSIS installer lifecycle test and requires
 an interactive desktop with WebView2. On Linux, install the packages listed in
-`scripts/linux/install-ci-deps.sh --smoke`, plus `cargo-llvm-cov` and the Rust
-`llvm-tools-preview` component. The Linux command includes package, signing,
-and AppImage smoke checks. Run on both operating systems to cover both CI jobs.
+`scripts/linux/install-ci-deps.sh --smoke`. The Linux command includes package,
+signing, and AppImage smoke checks. Run on both operating systems to cover both CI jobs.
 The command stops at the first failure and does not publish or deploy anything.
 Use `npm run check:ci -- --dry-run` to list the steps without executing them.
-Frontend tests run once with coverage; both desktop and demo builds are checked.
+Frontend and Rust tests each run once. The checks also build the desktop app and demo.
 Release signing and GitHub artifact uploads remain CI operations.
 
 For the quicker frontend/build/Rust suite without packaging or desktop smoke
@@ -186,24 +186,22 @@ tests, use the existing `npm run test:all`.
 All GitHub workflows run only when a version tag matching `v*` is pushed.
 Pushing to `main` or any other branch does not trigger CI, builds, or deployment;
 pull requests and manual dispatch do not trigger workflows either. Version tags
-run Vitest coverage, the production web build (including TypeScript checking),
-and Rust tests on Windows and Linux. Run local checks before tagging. Coverage
-reports are retained as CI artifacts; Linux also collects Rust coverage. The Linux workflow
-also builds packages and exercises native install/reinstall/uninstall, backups,
+run Vitest, the production web build (including TypeScript checking),
+and Rust tests on Windows and Linux. Run local checks before tagging. The Linux
+workflow also builds packages and exercises native install/reinstall/uninstall, backups,
 restore, and real Tauri IPC on disposable game fixtures; see [Linux checks](linux.md).
 
 Native compilation dominates these checks. Check and release jobs share an
-OS-specific Rust cache, including the separate Linux coverage target, and
-preserve compiled dependencies even after a later failure. There is no cache
+OS-specific Rust cache and preserve compiled dependencies even after a later
+failure. There is no cache
 warmer on `main`. GitHub isolates caches between different tags, so a new tag
 may require a cold native build. The same tag also builds release packages and
 deploys the browser demo; those workflows do not rerun the test suites or
 automatically gate on the separate Windows and Linux check workflows.
 
 Desktop checks use Tauri's existing frontend build hook instead of building the
-same web assets immediately before it. Frontend suites and coverage floors are
-unchanged. Linux dependency setup uses only Ubuntu repositories for system
-packages, skips optional recommended packages, and bounds network retries, lock
+same web assets immediately before it. Linux dependency setup uses only Ubuntu
+repositories for system packages, skips optional recommended packages, and bounds network retries, lock
 waits, and command time. Smoke setup also installs the official Minisign 0.12
 static binary with a pinned SHA-256 checksum because Ubuntu 22.04 does not
 provide the executable package.
