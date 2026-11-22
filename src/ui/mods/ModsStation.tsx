@@ -62,7 +62,11 @@ interface Props {
   onAddMod: (input: UserModInput) => void
   onEditMod: (codename: string, input: UserModInput) => void
   onDeleteMods: (codenames: string[]) => void
-  onSetDiskStatus: (codename: string, status: WorkingMod['diskStatus']) => void
+  onSetDiskStatus: (
+    codename: string,
+    status: WorkingMod['diskStatus'],
+    remote?: { version: string; release: string },
+  ) => void
   onApplyAcquireSuccess: (
     codename: string,
     overlays: { version: string; release: string; sizeBytes: number | null },

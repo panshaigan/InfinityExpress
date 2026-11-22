@@ -100,6 +100,7 @@ export function useModAcquireJob(args: {
   patchDiskStatus: (
     codename: string,
     diskStatus: WorkingMod['diskStatus'],
+    remote?: { version: string; release: string },
   ) => void
   applyAcquireSuccess: (
     codename: string,
@@ -351,7 +352,7 @@ export function useModAcquireJob(args: {
             )
             updated += 1
           } else {
-            patchDiskStatus(mod.codename, 'present')
+            patchDiskStatus(mod.codename, 'present', remote)
             setEntry(mod.codename, 'up_to_date', `Up to date (${remote.version})`)
             upToDate += 1
           }
@@ -558,7 +559,7 @@ export function useModAcquireJob(args: {
           mod.codename,
           {
             version: pending.version,
-            release: pending.release || effectiveModFields(mod).release,
+            release: result.release,
             sizeBytes: sizeBytes ?? null,
           },
           { author: pending.owner },

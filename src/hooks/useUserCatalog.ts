@@ -125,9 +125,20 @@ export function useUserCatalog() {
   }, [])
 
   const setDiskStatus = useCallback(
-    (codename: string, diskStatus: DiskStatus) => {
+    (
+      codename: string,
+      diskStatus: DiskStatus,
+      remote?: { version: string; release: string },
+    ) => {
       setStore((prev) => {
-        const next = patchWorkingMod(prev, codename, { diskStatus })
+        const mod = prev.mods.find((m) => m.codename === codename)
+        const release = remote?.release.trim()
+        const next = patchWorkingMod(prev, codename, {
+          diskStatus,
+          ...(mod && release && remote?.version === (mod.overlays.version ?? mod.version)
+            ? { overlays: { release } }
+            : {}),
+        })
         writeUserCatalogStore(next)
         return next
       })

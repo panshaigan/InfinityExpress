@@ -38,6 +38,7 @@ export interface AcquireModInput {
 
 export interface AcquireModResult {
   sizeBytes: number | null
+  release: string
 }
 
 export interface ModAcquireProgress {

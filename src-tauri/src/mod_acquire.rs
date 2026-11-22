@@ -3,6 +3,7 @@
 use crate::bundled_tools::bundled_7z_path;
 use crate::mod_fs::{ensure_under_parent, find_subdir_ci, validate_folder_name};
 use crate::process_util::configure_headless;
+use chrono::{DateTime, NaiveDate, Utc};
 use futures_util::StreamExt;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -69,7 +70,7 @@ pub struct RemoteProbeResult {
     pub size_is_estimate: bool,
     pub used_scrape_fallback: bool,
     pub rate_limited: bool,
-    /// Tag or branch name for GitHub zipball downloads.
+    /// Tag or commit SHA for GitHub zipball downloads.
     pub zipball_ref: Option<String>,
     pub owner: Option<String>,
     pub repo: Option<String>,
@@ -91,6 +92,7 @@ pub struct AcquireModInput {
 #[serde(rename_all = "camelCase")]
 pub struct AcquireModResult {
     pub size_bytes: Option<u64>,
+    pub release: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -270,17 +272,16 @@ fn parse_nearby_asset_size(window: &str) -> Option<u64> {
 fn branch_tip_result(
     owner: &str,
     repo: &str,
-    branch: &str,
-    version: String,
+    sha: &str,
     release: String,
     used_scrape_fallback: bool,
     rate_limited: bool,
 ) -> RemoteProbeResult {
     RemoteProbeResult {
-        version,
+        version: sha.chars().take(7).collect(),
         release,
         download_url: Some(format!(
-            "https://codeload.github.com/{owner}/{repo}/zip/refs/heads/{branch}"
+            "https://codeload.github.com/{owner}/{repo}/zip/{sha}"
         )),
         extension: Some("zip".into()),
         strategy: "github_zipball_branch".into(),
@@ -288,7 +289,7 @@ fn branch_tip_result(
         size_is_estimate: false,
         used_scrape_fallback,
         rate_limited,
-        zipball_ref: Some(branch.to_string()),
+        zipball_ref: Some(sha.to_string()),
         owner: Some(owner.to_string()),
         repo: Some(repo.to_string()),
     }
@@ -297,13 +298,18 @@ fn branch_tip_result(
 async fn github_probe_branch_tip_api(
     owner: &str,
     repo: &str,
+    branch: Option<&str>,
     token: Option<&str>,
-    rate_limited: bool,
 ) -> Result<RemoteProbeResult, String> {
-    let api = format!("https://api.github.com/repos/{owner}/{repo}");
-    let mut rl = rate_limited;
-    let (json, commits_rl) = fetch_json(&format!("{api}/commits?per_page=1"), token).await?;
-    rl |= commits_rl;
+    let mut url = reqwest::Url::parse(&format!(
+        "https://api.github.com/repos/{owner}/{repo}/commits"
+    ))
+    .map_err(|e| e.to_string())?;
+    url.query_pairs_mut().append_pair("per_page", "1");
+    if let Some(branch) = branch {
+        url.query_pairs_mut().append_pair("sha", branch);
+    }
+    let (json, rate_limited) = fetch_json(url.as_str(), token).await?;
     let commit = json
         .as_array()
         .and_then(|a| a.first())
@@ -312,52 +318,63 @@ async fn github_probe_branch_tip_api(
         .get("sha")
         .and_then(|v| v.as_str())
         .ok_or_else(|| "Missing commit sha".to_string())?;
-    let short = sha[..sha.len().min(7)].to_string();
-    let date = commit
-        .pointer("/commit/author/date")
-        .and_then(|v| v.as_str())
-        .unwrap_or("");
-    // Prefer main, then master for the zipball URL; version stays tip SHA.
-    let branch = match resolve_github_branch_zipball(owner, repo, "main", token).await {
-        Ok(u) if u.contains("/heads/master") => "master",
-        Ok(_) => "main",
-        Err(_) => "main",
-    };
+    let release = ["/commit/author/date", "/commit/committer/date"]
+        .into_iter()
+        .find_map(|path| parse_iso_date(commit.pointer(path)?.as_str()?))
+        .unwrap_or_default();
     Ok(branch_tip_result(
         owner,
         repo,
-        branch,
-        short,
-        date_prefix(date),
+        sha,
+        release,
         false,
-        rl,
+        rate_limited,
     ))
+}
+
+fn github_commit_from_html(html: &str) -> Option<(String, String)> {
+    let embedded = Regex::new(
+        r#"(?s)<script\b[^>]*\bdata-target="react-app\.embeddedData"[^>]*>(.*?)</script>"#,
+    )
+    .ok()?;
+    for capture in embedded.captures_iter(html) {
+        let Ok(json) = serde_json::from_str::<serde_json::Value>(&capture[1]) else {
+            continue;
+        };
+        let Some(commit) = json
+            .pointer("/payload/commitsRefRoute/commitGroups/0/commits/0")
+            .or_else(|| json.pointer("/payload/commitGroups/0/commits/0"))
+        else {
+            continue;
+        };
+        if let Some(sha) = commit
+            .get("oid")
+            .and_then(|oid| oid.as_str())
+            .filter(|sha| sha.len() == 40 && sha.bytes().all(|byte| byte.is_ascii_hexdigit()))
+        {
+            let release = ["authoredDate", "committedDate"]
+                .into_iter()
+                .find_map(|field| parse_iso_date(commit.get(field)?.as_str()?))
+                .unwrap_or_default();
+            return Some((sha.to_string(), release));
+        }
+    }
+    let link = Regex::new(r#"/commit/([0-9a-f]{40})"#).ok()?;
+    let sha = link.captures(html)?.get(1)?.as_str();
+    Some((sha.to_string(), String::new()))
 }
 
 async fn github_probe_branch_tip_scrape(
     owner: &str,
     repo: &str,
+    branch: Option<&str>,
 ) -> Result<RemoteProbeResult, String> {
-    for branch in ["main", "master"] {
-        let url = format!("https://github.com/{owner}/{repo}/commits/{branch}");
-        if let Ok((html, _)) = fetch_text(&url, None).await {
-            let re = Regex::new(r#"/commit/([0-9a-f]{40})"#).map_err(|e| e.to_string())?;
-            if let Some(caps) = re.captures(&html) {
-                let sha = caps.get(1).unwrap().as_str();
-                let short = sha[..7].to_string();
-                return Ok(branch_tip_result(
-                    owner,
-                    repo,
-                    branch,
-                    short,
-                    String::new(),
-                    true,
-                    true,
-                ));
-            }
-        }
-    }
-    Err("Could not scrape default branch tip from GitHub".into())
+    let branch = branch.unwrap_or("HEAD");
+    let url = format!("https://github.com/{owner}/{repo}/commits/{branch}");
+    let (html, _) = fetch_text(&url, None).await?;
+    let (sha, release) = github_commit_from_html(&html)
+        .ok_or_else(|| format!("Could not scrape tip for branch {branch}"))?;
+    Ok(branch_tip_result(owner, repo, &sha, release, true, true))
 }
 
 async fn fetch_text(url: &str, token: Option<&str>) -> Result<(String, bool), String> {
@@ -398,12 +415,27 @@ async fn fetch_json(url: &str, token: Option<&str>) -> Result<(serde_json::Value
     Ok((value, rate_limited))
 }
 
-fn date_prefix(s: &str) -> String {
-    if s.len() >= 10 {
-        s[..10].to_string()
-    } else {
-        s.to_string()
-    }
+fn parse_iso_date(raw: &str) -> Option<String> {
+    DateTime::parse_from_rfc3339(raw)
+        .map(|date| date.with_timezone(&Utc).date_naive())
+        .or_else(|_| NaiveDate::parse_from_str(raw, "%Y-%m-%d"))
+        .ok()
+        .map(|date| date.to_string())
+}
+
+fn github_release_date_from_html(html: &str) -> Option<String> {
+    let timestamp = Regex::new(r#"<relative-time\b[^>]*\bdatetime="([^"]+)""#).ok()?;
+    let release = timestamp
+        .captures_iter(html)
+        .find_map(|capture| parse_iso_date(&capture[1]));
+    release
+}
+
+fn archive_modified_date(headers: &reqwest::header::HeaderMap) -> Option<String> {
+    let value = headers.get(reqwest::header::LAST_MODIFIED)?.to_str().ok()?;
+    DateTime::parse_from_rfc2822(value)
+        .ok()
+        .map(|date| date.with_timezone(&Utc).date_naive().to_string())
 }
 
 fn normalize_track(raw: &str) -> String {
@@ -420,78 +452,6 @@ fn wants_asset_download(download: &str, track: &str) -> bool {
     is_release && download.trim().eq_ignore_ascii_case("asset")
 }
 
-async fn github_probe_named_branch_api(
-    owner: &str,
-    repo: &str,
-    branch: &str,
-    token: Option<&str>,
-    rate_limited: bool,
-) -> Result<RemoteProbeResult, String> {
-    let api = format!("https://api.github.com/repos/{owner}/{repo}");
-    let mut rl = rate_limited;
-    let mut commits_url =
-        reqwest::Url::parse(&format!("{api}/commits")).map_err(|e| e.to_string())?;
-    {
-        let mut qp = commits_url.query_pairs_mut();
-        qp.append_pair("sha", branch);
-        qp.append_pair("per_page", "1");
-    }
-    let (json, commits_rl) = fetch_json(commits_url.as_str(), token).await?;
-    rl |= commits_rl;
-    let commit = json
-        .as_array()
-        .and_then(|a| a.first())
-        .ok_or_else(|| format!("No commits returned for branch {branch}"))?;
-    let sha = commit
-        .get("sha")
-        .and_then(|v| v.as_str())
-        .ok_or_else(|| "Missing commit sha".to_string())?;
-    let short = sha[..sha.len().min(7)].to_string();
-    let date = commit
-        .pointer("/commit/author/date")
-        .and_then(|v| v.as_str())
-        .unwrap_or("");
-    let zip_url = resolve_github_branch_zipball(owner, repo, branch, token).await?;
-    let resolved = zip_url
-        .rsplit("/heads/")
-        .next()
-        .unwrap_or(branch)
-        .to_string();
-    Ok(branch_tip_result(
-        owner,
-        repo,
-        &resolved,
-        short,
-        date_prefix(date),
-        false,
-        rl,
-    ))
-}
-
-async fn github_probe_named_branch_scrape(
-    owner: &str,
-    repo: &str,
-    branch: &str,
-) -> Result<RemoteProbeResult, String> {
-    let url = format!("https://github.com/{owner}/{repo}/commits/{branch}");
-    let (html, _) = fetch_text(&url, None).await?;
-    let re = Regex::new(r#"/commit/([0-9a-f]{40})"#).map_err(|e| e.to_string())?;
-    let caps = re
-        .captures(&html)
-        .ok_or_else(|| format!("Could not scrape tip for branch {branch}"))?;
-    let sha = caps.get(1).unwrap().as_str();
-    let short = sha[..7].to_string();
-    Ok(branch_tip_result(
-        owner,
-        repo,
-        branch,
-        short,
-        String::new(),
-        true,
-        true,
-    ))
-}
-
 async fn github_probe_api(
     owner: &str,
     repo: &str,
@@ -500,20 +460,16 @@ async fn github_probe_api(
     token: Option<&str>,
 ) -> Result<RemoteProbeResult, String> {
     let api = format!("https://api.github.com/repos/{owner}/{repo}");
-    let mut rate_limited = false;
     let track_norm = normalize_track(track);
     let use_assets = wants_asset_download(download, track);
 
-    if track_norm == "main" {
-        return github_probe_branch_tip_api(owner, repo, token, rate_limited).await;
-    }
     if !track_norm.is_empty() {
-        return github_probe_named_branch_api(owner, repo, &track_norm, token, rate_limited).await;
+        let branch = (track_norm != "main").then_some(track_norm.as_str());
+        return github_probe_branch_tip_api(owner, repo, branch, token).await;
     }
 
     match fetch_json(&format!("{api}/releases/latest"), token).await {
-        Ok((json, rl)) => {
-            rate_limited |= rl;
+        Ok((json, rate_limited)) => {
             let tag = json
                 .get("tag_name")
                 .and_then(|v| v.as_str())
@@ -522,7 +478,7 @@ async fn github_probe_api(
             let release = json
                 .get("published_at")
                 .and_then(|v| v.as_str())
-                .map(date_prefix)
+                .and_then(parse_iso_date)
                 .unwrap_or_default();
 
             if use_assets {
@@ -606,11 +562,10 @@ async fn github_probe_api(
                 repo: Some(repo.to_string()),
             })
         }
-        Err(e) if use_assets => Err(e),
-        Err(_) => {
-            // No releases: fall back to main/master branch tip (release+zipball only).
-            github_probe_branch_tip_api(owner, repo, token, rate_limited).await
+        Err(e) if !use_assets && e.starts_with("HTTP 404 ") => {
+            github_probe_branch_tip_api(owner, repo, None, token).await
         }
+        Err(e) => Err(e),
     }
 }
 
@@ -623,11 +578,9 @@ async fn github_probe_scrape(
     let track_norm = normalize_track(track);
     let use_assets = wants_asset_download(download, track);
 
-    if track_norm == "main" {
-        return github_probe_branch_tip_scrape(owner, repo).await;
-    }
     if !track_norm.is_empty() {
-        return github_probe_named_branch_scrape(owner, repo, &track_norm).await;
+        let branch = (track_norm != "main").then_some(track_norm.as_str());
+        return github_probe_branch_tip_scrape(owner, repo, branch).await;
     }
 
     let latest = format!("https://github.com/{owner}/{repo}/releases/latest");
@@ -659,8 +612,9 @@ async fn github_probe_scrape(
                 "Download=asset but no releases found for {owner}/{repo} (HTTP {status})"
             ));
         }
-        return github_probe_branch_tip_scrape(owner, repo).await;
+        return github_probe_branch_tip_scrape(owner, repo, None).await;
     };
+    let release = github_release_date_from_html(&html).unwrap_or_default();
 
     if use_assets {
         // Assets are reliably listed on expanded_assets (often relative hrefs).
@@ -674,7 +628,7 @@ async fn github_probe_scrape(
         {
             return Ok(RemoteProbeResult {
                 version: tag,
-                release: String::new(),
+                release,
                 download_url: Some(url),
                 extension: Some(ext),
                 strategy: "github_asset".into(),
@@ -695,7 +649,7 @@ async fn github_probe_scrape(
                 let ext = ext_from_name(&url).unwrap_or_else(|| "zip".into());
                 return Ok(RemoteProbeResult {
                     version: tag,
-                    release: String::new(),
+                    release,
                     download_url: Some(url),
                     extension: Some(ext),
                     strategy: "github_body_url".into(),
@@ -714,7 +668,7 @@ async fn github_probe_scrape(
 
     Ok(RemoteProbeResult {
         version: tag.clone(),
-        release: String::new(),
+        release,
         download_url: Some(format!(
             "https://codeload.github.com/{owner}/{repo}/zip/refs/tags/{tag}"
         )),
@@ -730,44 +684,6 @@ async fn github_probe_scrape(
     })
 }
 
-async fn resolve_github_branch_zipball(
-    owner: &str,
-    repo: &str,
-    preferred: &str,
-    token: Option<&str>,
-) -> Result<String, String> {
-    // Default-branch tip (`main`): try main then master. Custom branch: exact only.
-    let alts: Vec<&str> = match preferred {
-        "main" | "master" => vec!["main", "master"],
-        other if !other.is_empty() => vec![other],
-        _ => vec!["main", "master"],
-    };
-    for branch in &alts {
-        let url = format!("https://codeload.github.com/{owner}/{repo}/zip/refs/heads/{branch}");
-        let client = http_client()?;
-        let mut req = client.head(&url);
-        if let Some(t) = token.filter(|s| !s.is_empty()) {
-            req = req.header("Authorization", format!("Bearer {t}"));
-        }
-        if let Ok(res) = req.send().await {
-            if res.status().is_success() {
-                return Ok(url);
-            }
-        }
-        // Some hosts reject HEAD; try a tiny ranged GET via GET status check on API
-        let api = format!("https://api.github.com/repos/{owner}/{repo}/branches/{branch}");
-        if fetch_json(&api, token).await.is_ok() {
-            return Ok(format!(
-                "https://codeload.github.com/{owner}/{repo}/zip/refs/heads/{branch}"
-            ));
-        }
-    }
-    Err(format!(
-        "Could not resolve branch zipball for {owner}/{repo} (tried {})",
-        alts.join(", ")
-    ))
-}
-
 async fn probe_github(
     url: &str,
     track: &str,
@@ -776,19 +692,7 @@ async fn probe_github(
 ) -> Result<RemoteProbeResult, String> {
     let (owner, repo) = parse_github_owner_repo(url)?;
     match github_probe_api(&owner, &repo, track, download, token).await {
-        Ok(mut remote) => {
-            if remote.strategy == "github_zipball_branch" {
-                let preferred = remote.zipball_ref.as_deref().unwrap_or("main");
-                if let Ok(u) = resolve_github_branch_zipball(&owner, &repo, preferred, token).await
-                {
-                    remote.download_url = Some(u.clone());
-                    if let Some(branch) = u.rsplit("/heads/").next() {
-                        remote.zipball_ref = Some(branch.to_string());
-                    }
-                }
-            }
-            Ok(remote)
-        }
+        Ok(remote) => Ok(remote),
         Err(e) => {
             let rate = e.contains("403") || e.contains("429") || e.contains("rate_limited");
             if rate || token.is_none() {
@@ -869,7 +773,7 @@ async fn probe_morpheus(url: &str, codename: &str) -> Result<RemoteProbeResult, 
         if version.is_empty() {
             version = "v1.2".into();
         }
-        if date_raw.is_empty() {
+        if version == "v1.2" && date_raw.is_empty() {
             date_raw = "2025-10-11".into();
         }
     }
@@ -1144,7 +1048,7 @@ async fn probe_direct(url: &str) -> Result<RemoteProbeResult, String> {
 
     Ok(RemoteProbeResult {
         version,
-        release: String::new(),
+        release: archive_modified_date(response.headers()).unwrap_or_default(),
         download_url: Some(final_url.to_string()),
         extension: Some(extension),
         strategy: "direct".into(),
@@ -1381,7 +1285,7 @@ async fn download_to_file(
     token: Option<&str>,
     cancel: &AcquireCancelFlag,
     expected_size: Option<u64>,
-) -> Result<u64, String> {
+) -> Result<(u64, Option<String>), String> {
     let client = http_client()?;
     let mut req = client.get(url);
     if let Some(referer) = same_site_referer(url) {
@@ -1410,6 +1314,7 @@ async fn download_to_file(
         return Err(format!("Download failed HTTP {} for {url}", res.status()));
     }
     let total = res.content_length().or(expected_size);
+    let modified = archive_modified_date(res.headers());
     let mut file = File::create(dest).map_err(|e| e.to_string())?;
     let mut stream = res.bytes_stream();
     let mut received: u64 = 0;
@@ -1432,7 +1337,7 @@ async fn download_to_file(
         );
     }
     file.flush().map_err(|e| e.to_string())?;
-    Ok(received)
+    Ok((received, modified))
 }
 
 fn extract_zip(archive: &Path, dest: &Path) -> Result<(), String> {
@@ -1663,28 +1568,15 @@ pub async fn acquire_mod(
     }
 
     let remote = &input.remote;
-    let mut download_url = remote
+    let download_url = remote
         .download_url
-        .clone()
+        .as_deref()
         .ok_or_else(|| "Remote probe has no download URL".to_string())?;
     let ext = remote
         .extension
         .clone()
         .unwrap_or_else(|| "zip".into())
         .to_ascii_lowercase();
-
-    // Fix main→master (or confirm custom branch) for branch zipballs at acquire time.
-    if remote.strategy == "github_zipball_branch" {
-        if let (Some(owner), Some(repo)) = (remote.owner.as_deref(), remote.repo.as_deref()) {
-            let preferred = remote.zipball_ref.as_deref().unwrap_or("main");
-            if let Ok(u) =
-                resolve_github_branch_zipball(owner, repo, preferred, input.github_token.as_deref())
-                    .await
-            {
-                download_url = u;
-            }
-        }
-    }
 
     emit_progress(
         &app,
@@ -1714,10 +1606,10 @@ pub async fn acquire_mod(
     fs::create_dir_all(&extract_dir).map_err(|e| e.to_string())?;
 
     let result = async {
-        let size = download_to_file(
+        let (size, modified) = download_to_file(
             &app,
             &codename,
-            &download_url,
+            download_url,
             &archive_path,
             input.github_token.as_deref(),
             &cancel,
@@ -1788,8 +1680,14 @@ pub async fn acquire_mod(
             },
         );
 
+        let release = if remote.strategy == "direct" || remote.release.trim().is_empty() {
+            modified.unwrap_or_default()
+        } else {
+            remote.release.clone()
+        };
         Ok(AcquireModResult {
             size_bytes: Some(size),
+            release,
         })
     }
     .await;
@@ -1803,6 +1701,62 @@ pub async fn acquire_mod(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn reads_github_release_date_from_machine_readable_timestamp() {
+        let html = r#"
+            <relative-time datetime="invalid">unknown</relative-time>
+            <relative-time class="no-wrap" datetime="2025-08-22T19:27:43Z">22 Aug</relative-time>
+        "#;
+        assert_eq!(
+            github_release_date_from_html(html).as_deref(),
+            Some("2025-08-22")
+        );
+        assert_eq!(github_release_date_from_html("<p>No date</p>"), None);
+    }
+
+    #[test]
+    fn pairs_github_branch_tip_date_with_the_downloaded_commit() {
+        let html = r#"
+            <a href="/owner/repo/commit/1111111111111111111111111111111111111111">Older link</a>
+            <script type="application/json" data-target="react-app.embeddedData">
+            {"payload":{"commitsRefRoute":{"commitGroups":[{"commits":[
+                {"oid":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                 "authoredDate":"2026-08-30T23:38:49.000-07:00"},
+                {"oid":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                 "authoredDate":"2026-08-20T18:30:42.000-07:00"}
+            ]}]}}}
+            </script>
+        "#;
+        let (sha, release) = github_commit_from_html(html).unwrap();
+        let remote = branch_tip_result("owner", "repo", &sha, release, true, true);
+        assert_eq!(remote.version, "aaaaaaa");
+        assert_eq!(remote.release, "2026-08-31");
+        assert_eq!(
+            remote.download_url.as_deref(),
+            Some("https://codeload.github.com/owner/repo/zip/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        );
+    }
+
+    #[test]
+    fn uses_last_modified_header_for_archive_date() {
+        use reqwest::header::{HeaderMap, HeaderValue, DATE, LAST_MODIFIED};
+
+        let mut headers = HeaderMap::new();
+        headers.insert(
+            DATE,
+            HeaderValue::from_static("Tue, 06 May 2025 10:00:00 GMT"),
+        );
+        assert_eq!(archive_modified_date(&headers), None);
+        headers.insert(
+            LAST_MODIFIED,
+            HeaderValue::from_static("Mon, 05 May 2025 20:15:00 GMT"),
+        );
+        assert_eq!(
+            archive_modified_date(&headers).as_deref(),
+            Some("2025-05-05")
+        );
+    }
 
     #[cfg(unix)]
     #[test]
