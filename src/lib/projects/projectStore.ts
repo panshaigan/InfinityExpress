@@ -125,20 +125,6 @@ export function writeProjectIndex(index: ProjectIndex): void {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(index))
 }
 
-/** Pin legacy projects before a later release can change the bundled XML. */
-export function pinProjectCatalogs(): void {
-  const revision = currentCatalogRevision()
-  if (!revision) return
-  const index = readProjectIndex()
-  let changed = false
-  for (const record of Object.values(index.projects)) {
-    if (record.catalogRevision) continue
-    record.catalogRevision = revision
-    changed = true
-  }
-  if (changed) writeProjectIndex(index)
-}
-
 export function listProjects(index: ProjectIndex = readProjectIndex()): ProjectMeta[] {
   return Object.values(index.projects)
     .map((p) => p.meta)
@@ -216,6 +202,7 @@ export function deleteProject(id: ProjectId): ProjectIndex {
 
 export function setLastProjectId(id: ProjectId | null): ProjectIndex {
   const index = readProjectIndex()
+  if (index.lastProjectId === id) return index
   const next: ProjectIndex = { ...index, lastProjectId: id }
   writeProjectIndex(next)
   return next

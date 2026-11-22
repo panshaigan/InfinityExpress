@@ -12,6 +12,7 @@ import type {
 } from '../presets/selectionPresets'
 import { presetsForEngine } from '../presets/selectionPresetsStore'
 import { finalizeSelection } from '../selection/selectionCore'
+import { engineMatches } from '../engine/matchEngine'
 import type { InstallSequenceModel, SelectedGame } from '../xml/schema'
 import { STATION_ORDER } from '../xml/schema'
 import type { StationSlot } from './chromeHotkeys'
@@ -439,8 +440,12 @@ export function sanitizeComponentsSession(
   enginePresets: readonly SelectionPreset[] = [],
 ): SanitizedGameSession {
   const knownIds = new Set(model.componentsInOrder.map((c) => c.componentId))
-  const filtered = session.selectedIds.filter((id) => knownIds.has(id))
+  const eligibleIds = new Set(model.componentsInOrder.filter(c => engineMatches(c.effectiveEngine, game)).map(c => c.componentId))
+  const filtered = session.selectedIds.filter((id) => eligibleIds.has(id))
   const finalized = new Set(filtered)
+  for (const component of model.componentsInOrder) {
+    if (component.attrs.required && eligibleIds.has(component.componentId)) finalized.add(component.componentId)
+  }
   finalizeSelection(model, finalized, game)
   let activePresetId = session.activePresetId
   let presetBaseline = session.presetBaseline

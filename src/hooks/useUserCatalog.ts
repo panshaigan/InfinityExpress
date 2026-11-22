@@ -15,6 +15,7 @@ import {
   removeUserMod,
   removeUserMods,
   replaceOverlays,
+  reconcileUserCatalog,
   updateUserMod,
   writeUserCatalogStore,
   type UserCatalogStore,
@@ -30,6 +31,15 @@ function initialStore(): UserCatalogStore {
 export function useUserCatalog() {
   const [store, setStore] = useState<UserCatalogStore>(initialStore)
 
+  useEffect(() => {
+    setStore(previous => {
+      const next = reconcileUserCatalog(modsByCodename, previous)
+      if (JSON.stringify(next) === JSON.stringify(previous)) return previous
+      writeUserCatalogStore(next)
+      return next
+    })
+  }, [modsByCodename])
+
   const persist = useCallback((next: UserCatalogStore) => {
     writeUserCatalogStore(next)
     setStore(next)
@@ -37,7 +47,7 @@ export function useUserCatalog() {
 
   const mods: WorkingMod[] = useMemo(
     () => workingModsFromStore(store, modsByCodename),
-    [store],
+    [store, modsByCodename],
   )
 
   const modsByCode = useMemo(() => {

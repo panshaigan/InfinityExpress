@@ -43,7 +43,7 @@ export function applyDiskPresence(
     return { ...mod, diskStatus: nextStatus }
   })
   if (!changed) return store
-  return { version: 1, mods }
+  return { ...store, mods }
 }
 
 /** Mark every row not present (no download path / browser). */
@@ -55,5 +55,5 @@ export function clearDiskPresence(store: UserCatalogStore): UserCatalogStore {
     return { ...mod, diskStatus: 'not_present' as const }
   })
   if (!changed) return store
-  return { version: 1, mods }
+  return { ...store, mods }
 }

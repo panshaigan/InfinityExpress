@@ -1,6 +1,9 @@
 import { isBrowserDemo } from '../runtime'
-import { pinProjectCatalogs } from './projectStore'
-import { readCatalogSnapshot } from '../persistence/catalogSnapshots'
+import { upsertProject } from './projectStore'
+import { prepareCatalogSnapshot } from '../persistence/catalogSnapshots'
+import { isDesktopApp, writeTextFileAt } from '../desktop/fsDialogs'
+import { joinLogPath } from '../install/stepLogs'
+import { refreshCatalogSession } from '../install/refreshCatalogSession'
 import { parseInstallSequence } from '../xml/parseInstallSequence'
 import {
   adaptSessionForProjects,
@@ -45,7 +48,6 @@ export interface ProjectBootstrap {
 export function bootstrapProjects(_model: InstallSequenceModel): ProjectBootstrap {
   migrateLegacySessionsToProjects()
   migrateSelectionPresetsToEngineStore()
-  pinProjectCatalogs()
   if (!isBrowserDemo) {
     suggestVanillaFromLegacyFolders()
     void syncManagedVanillasFromDisk()
@@ -89,16 +91,27 @@ export function loadProjectRecord(
   return { record, session }
 }
 
-/** Resolve the project's own XML before sanitizing selections or restoring its run. */
+/** Canonical XML defines every project's display; saved state is reconciled before committing it. */
 export async function loadProjectWithCatalog(projectId: ProjectId, bundledXml: string) {
   const record = getProject(projectId)
   if (!record) return null
-  const xml = record.catalogRevision
-    ? await readCatalogSnapshot(record.catalogRevision)
-    : bundledXml
-  const parsed = parseInstallSequence(xml)
-  const loaded = loadProjectRecord(parsed.model, projectId)
-  return loaded ? { ...loaded, ...parsed } : null
+  const parsed = parseInstallSequence(bundledXml)
+  const revision = await prepareCatalogSnapshot(bundledXml)
+  const changed = record.catalogRevision !== revision
+  const session = record.session ? sanitizeComponentsSession(
+    parsed.model, record.meta.engine, adaptSessionForProjects(record.session), presetsForEngine(record.meta.engine),
+  ) : null
+  if (changed && session) session.modsJourney = null
+  const install = await resolveProjectInstallSession(parsed.model, session, record.meta.engine, changed)
+  if (session?.legacyInstall && install?.run.logDir && isDesktopApp()) {
+    delete session.legacyInstall
+    session.installRef = { runId: install.run.runId, logDir: install.run.logDir }
+  }
+  const next = { ...record, catalogRevision: revision, session }
+  // Do not rewrite localStorage on an unchanged reopen, or before run-state migration succeeds.
+  if (JSON.stringify(next) !== JSON.stringify(record)) upsertProject(next, { setLast: false })
+  setLastProjectId(projectId)
+  return { record: next, session, install, ...parsed }
 }
 
 /**
@@ -109,30 +122,27 @@ export async function resolveProjectInstallSession(
   model: InstallSequenceModel,
   session: SanitizedGameSession | null,
   engine: SelectedGame,
+  refreshCatalog = false,
 ): Promise<PersistedInstallSession | undefined> {
   if (!session) return undefined
   const selectedIds = new Set(session.selectedIds)
 
-  if (session.legacyInstall) {
-    const sanitized = sanitizeInstallSession(
-      model,
-      engine,
-      selectedIds,
-      session.legacyInstall,
-    )
-    if (!sanitized) throw new Error('The saved install plan is incompatible with this project catalog. Its original state has been kept.')
-    if (sanitized?.run.logDir) {
-      await writeInstallRunState(sanitized.run.logDir, sanitized)
-    }
-    return sanitized
-  }
-
   const logDir = session.installRef?.logDir?.trim()
-  if (!logDir) return undefined
-  const fromDisk = await readInstallRunState(logDir)
+  if (!session.legacyInstall && !logDir) return undefined
+  const fromDisk = session.legacyInstall ?? await readInstallRunState(logDir!)
   if (!fromDisk) throw new Error(`The saved install state is missing at ${logDir}. Restore the run folder before opening this project.`)
-  const sanitized = sanitizeInstallSession(model, engine, selectedIds, fromDisk)
+  const sanitized = refreshCatalog
+    ? refreshCatalogSession(model, engine, selectedIds, fromDisk)
+    : sanitizeInstallSession(model, engine, selectedIds, fromDisk)
   if (!sanitized) throw new Error('The saved install plan is incompatible with this project catalog. Its original state has been kept.')
+  if (refreshCatalog && isDesktopApp() && sanitized.run.logDir) {
+    // Keep the exact previous history before updating the working plan. A failed archive aborts the refresh.
+    await writeTextFileAt(joinLogPath(sanitized.run.logDir, `run-state.before-catalog-${crypto.randomUUID()}.json`),
+      `${JSON.stringify({ ...fromDisk, schemaVersion: 1 }, null, 2)}\n`)
+  }
+  if ((refreshCatalog || session.legacyInstall) && sanitized.run.logDir) {
+    await writeInstallRunState(sanitized.run.logDir, sanitized)
+  }
   return sanitized
 }
 

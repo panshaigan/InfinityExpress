@@ -65,6 +65,8 @@ describe('applyDiskPresence', () => {
   it('updates statuses from folder list without changing identity when unchanged', () => {
     const store: UserCatalogStore = {
       version: 1,
+      baseRows: { EET: 'canonical row' },
+      hiddenBaseCodenames: ['hidden'],
       mods: [
         entry('EET', 'not_present'),
         entry('Other', 'present'),
@@ -72,6 +74,8 @@ describe('applyDiskPresence', () => {
       ],
     }
     const next = applyDiskPresence(store, ['eet', 'KeepBusy'])
+    expect(next.baseRows).toEqual(store.baseRows)
+    expect(next.hiddenBaseCodenames).toEqual(['hidden'])
     expect(next.mods.map((m) => [m.codename, m.diskStatus])).toEqual([
       ['EET', 'present'],
       ['Other', 'not_present'],
@@ -86,8 +90,12 @@ describe('clearDiskPresence', () => {
     const store: UserCatalogStore = {
       version: 1,
       mods: [entry('A', 'present'), entry('B', 'update_available')],
+      baseRows: { A: 'canonical row' },
+      hiddenBaseCodenames: ['hidden'],
     }
     const next = clearDiskPresence(store)
+    expect(next.baseRows).toEqual(store.baseRows)
+    expect(next.hiddenBaseCodenames).toEqual(['hidden'])
     expect(next.mods.every((m) => m.diskStatus === 'not_present')).toBe(true)
     expect(clearDiskPresence(next)).toBe(next)
   })

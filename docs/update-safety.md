@@ -4,40 +4,46 @@ App versions and storage schema versions are independent. Installing a newer
 release must preserve settings, projects, presets, downloaded mods, backups,
 and install history.
 
-## Component catalogs belong to projects
+## Canonical component catalogs take priority
 
-Every project records a `catalogRevision`: the SHA-256 of its exact
-`InstallSequence.xml`. The XML is saved once per distinct revision and shared
-by projects using that revision. Existing projects continue using that XML after
-updates, including its component IDs, conditions, required components, engine
-rules, mod IDs, and installation order. New projects use the latest bundled XML.
-Resetting or renaming a project keeps its catalog; create a new project to use
-a newer component catalog.
+The bundled `src/data/InstallSequence.xml` defines the display and installation
+order for every project. On project open, `catalogRevision` records the SHA-256
+of the current canonical XML. Saved selections keep eligible component IDs,
+drop removed or engine-ineligible IDs, add required components, and reapply
+conditions. The reconciled session and revision are written to localStorage.
+An old project snapshot never overrides the bundled definition. During Vite
+development, XML edits also refresh an open project once background work is idle.
 
-Desktop catalogs live under `{appLocalData}/catalogs/{revision}.xml`. The browser
-demo uses IndexedDB (`infinity-express.catalogs`, object store `xml`), keeping
-large XML files out of localStorage. Catalogs are hash-checked before use. A
-missing or damaged snapshot stops loading; the app never substitutes the latest
-XML and silently rewrites a saved selection or install plan.
+When the XML changes, a saved install plan refreshes to the canonical order and
+labels. Matching component/mod/phase entries retain their statuses and log paths;
+new or changed entries start queued. Breakpoints and planned snapshots follow
+their matching components. Changed plans stay halted for review before resuming.
+Before replacing desktop `run-state.json`, the app archives the previous session
+as `run-state.before-catalog-{uuid}.json` in the same run folder. Read or archive
+failures abort the refresh before changing project storage. Updating the catalog
+does not install or uninstall anything in a game folder.
 
-Existing beta projects without a revision adopt the XML bundled with the first
-snapshot-aware version they launch. Earlier XML cannot be reconstructed from
-saved component IDs alone. Ship this protection before 1.0; do not combine its
-first rollout with breaking catalog changes for existing beta users.
+XML snapshots remain available for recovery under
+`{appLocalData}/catalogs/{revision}.xml` on desktop, or IndexedDB
+(`infinity-express.catalogs`, object store `xml`) in the browser demo. They are
+hash-checked when explicitly read for recovery. A missing historical snapshot
+does not prevent a project from loading the canonical XML.
 
 ## Mod metadata merges on update
 
-`mods.csv` remains the live metadata source. Its merge uses the stable Codename
-(Download ID): new built-in rows appear and unedited built-in fields refresh.
-Custom rows, locally edited built-in rows, downloaded-version/size/release
-overlays, and hidden-row tombstones survive. Rows removed from the shipped CSV
-stay in the saved working catalog, so an older project's download IDs continue
-to resolve. A custom row wins if a later CSV adds the same Codename.
+`src/data/mods.csv` is the canonical metadata source, keyed by Codename (Download
+ID). The working catalog records the last canonical metadata per row in
+`baseRows`. Changed and newly added canonical rows replace saved metadata, local
+edits, same-ID custom rows, and hidden-row tombstones. Removed built-in rows
+disappear. Legacy stores without a canonical baseline refresh once from the CSV.
+The merged catalog and new baseline persist only when needed.
 
-An app update does not download or replace mod files. XML snapshots preserve the
-route definition; they do not freeze the contents of a mod downloaded separately.
-Do not reuse a Codename or component ID for a different mod/component. Keep the
-original download IDs available for old projects.
+Unrelated custom rows and edits or hide markers for unchanged canonical rows
+survive. Downloaded-version/size/release overlays and disk presence survive
+metadata refreshes. Disk scans and catalog edits retain the canonical baseline.
+
+An app update does not download or replace mod files. Do not reuse a Codename or
+component ID for a different mod/component.
 
 ## Recovery checkpoints
 

@@ -138,7 +138,6 @@ import {
   emptyDestinations,
   listProjects,
   loadProjectWithCatalog,
-  resolveProjectInstallSession,
   updateProjectMeta,
   type AppShellView,
   type ProjectId,
@@ -206,6 +205,8 @@ export default function App() {
 function AppShell() {
   const { pushToast } = useToast()
   const [activeCatalog, setActiveCatalog] = useState(parsed)
+  const appliedXmlRef = useRef(installSequenceXml)
+  const [workspaceGeneration, setWorkspaceGeneration] = useState(0)
   const { model, warnings } = activeCatalog
   const projectOpenGenRef = useRef(0)
   const existingComponentIds = useMemo(
@@ -832,7 +833,7 @@ function AppShell() {
       const { record, session, model: projectModel } = loaded
       const engine = record.meta.engine
       const enginePresets = presetsForEngine(engine)
-      const install = await resolveProjectInstallSession(projectModel, session, engine)
+      const install = loaded.install
       if (gen !== projectOpenGenRef.current) return
 
       setActiveCatalog({ model: projectModel, warnings: loaded.warnings })
@@ -907,10 +908,19 @@ function AppShell() {
       }
 
       setShellView('workspace')
+      setWorkspaceGeneration(value => value + 1)
     } catch (error) {
       if (gen === projectOpenGenRef.current) pushToast({ tone: 'error', message: `Could not open project: ${String(error)}` })
     }
   }
+
+  // Vite preserves React state across raw-data edits; apply the new XML once background work is idle.
+  useEffect(() => {
+    if (appliedXmlRef.current === installSequenceXml || appBlocking) return
+    appliedXmlRef.current = installSequenceXml
+    if (projectId) void openProject(projectId)
+    else setActiveCatalog(parsed)
+  }, [installSequenceXml, appBlocking, projectId])
 
   function goToProjectEntry() {
     setShellView(!isBrowserDemo && listProjects().length === 0 ? 'wizard' : 'hub')
@@ -1408,7 +1418,7 @@ function AppShell() {
         >
           <div className="app-main mods-app-main install-app-main">
             <InstallStation
-              key={projectId ?? game ?? 'no-game'}
+              key={`${projectId ?? game ?? 'no-game'}:${workspaceGeneration}`}
               model={model}
               selectedIds={selectedIds}
               game={game}

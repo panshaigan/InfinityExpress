@@ -29,7 +29,7 @@ export interface StoredModEntry {
   origin: 'base' | 'user'
   diskStatus: DiskStatus
   overlays: ModFieldOverlays
-  /** When true, merge keeps this base row's fields instead of refreshing from CSV. */
+  /** Keep local fields while the corresponding canonical row remains unchanged. */
   localEdit?: boolean
 }
 
@@ -42,7 +42,9 @@ type LegacyStoredModEntry = Partial<StoredModEntry> & {
 export interface UserCatalogStore {
   version: 1
   mods: StoredModEntry[]
-  /** Base codenames removed from the working catalog (not re-added on merge). */
+  /** Last canonical metadata per Download ID; detects CSV changes independently of local edits. */
+  baseRows?: Record<string, string>
+  /** Hidden base rows; a canonical change revives the corresponding row. */
   hiddenBaseCodenames?: string[]
 }
 
@@ -123,24 +125,25 @@ function storedToWorking(entry: StoredModEntry): WorkingMod {
 
 /**
  * Merge shipped base catalog into a user working copy.
- * - New base rows are added (unless hidden).
- * - Existing base-origin rows refresh non-overlay fields from base unless localEdit.
- * - Overlays, diskStatus, localEdit rows, and user-origin rows are preserved.
- * - Rows dropped from base stay in the working copy.
+ * Changed canonical rows win over local edits, custom collisions, and tombstones.
+ * Local edits to unchanged rows and download state survive. Removed base rows go away.
  */
 export function mergeBaseIntoWorkingCopy(
   base: ReadonlyMap<string, ModInfo>,
   existing: readonly StoredModEntry[] | null | undefined,
   hiddenBaseCodenames?: readonly string[] | null,
+  previousBase?: Readonly<Record<string, string>>,
 ): StoredModEntry[] {
   const hidden = new Set(hiddenBaseCodenames ?? [])
   const byCode = new Map<string, StoredModEntry>()
   for (const row of existing ?? []) {
+    if (row.origin === 'base' && !base.has(row.codename)) continue
     byCode.set(row.codename, migrateStoredModEntry(row))
   }
 
   for (const [codename, info] of base) {
-    if (hidden.has(codename)) {
+    const canonicalChanged = previousBase?.[codename] !== JSON.stringify(info)
+    if (!canonicalChanged && hidden.has(codename)) {
       byCode.delete(codename)
       continue
     }
@@ -149,11 +152,11 @@ export function mergeBaseIntoWorkingCopy(
       byCode.set(codename, modInfoToStored(info, 'base'))
       continue
     }
-    if (prev.origin === 'user') {
+    if (!canonicalChanged && prev.origin === 'user') {
       // User-added row with same codename wins; leave as-is.
       continue
     }
-    if (prev.localEdit) {
+    if (!canonicalChanged && prev.localEdit) {
       // User edited this base row; keep fields, preserve acquire state.
       byCode.set(codename, {
         ...prev,
@@ -169,8 +172,8 @@ export function mergeBaseIntoWorkingCopy(
         diskStatus: prev.diskStatus,
         overlays: prev.overlays ?? {},
       }),
-      // Keep acquire-filled author when CSV left it blank
-      author: info.author.trim() || prev.author,
+      // Scraped metadata may fill an unchanged blank; a canonical change can clear it.
+      author: canonicalChanged ? info.author : info.author.trim() || prev.author,
     })
   }
 
@@ -187,6 +190,7 @@ export function workingModsFromStore(
     base,
     store?.mods,
     store?.hiddenBaseCodenames,
+    store?.baseRows,
   )
   return merged.map(storedToWorking)
 }
@@ -197,6 +201,7 @@ export function createInitialCatalogStore(
   return {
     version: 1,
     mods: mergeBaseIntoWorkingCopy(base, null),
+    baseRows: canonicalBaseRows(base),
   }
 }
 
@@ -210,10 +215,13 @@ export function readUserCatalogStore(): UserCatalogStore | null {
     if (new Set(parsed.mods.map((row) => row.codename)).size !== parsed.mods.length) return null
     if (parsed.hiddenBaseCodenames !== undefined &&
       (!Array.isArray(parsed.hiddenBaseCodenames) || parsed.hiddenBaseCodenames.some((code) => typeof code !== 'string'))) return null
+    if (parsed.baseRows !== undefined && (!parsed.baseRows || typeof parsed.baseRows !== 'object' ||
+      Array.isArray(parsed.baseRows) || Object.values(parsed.baseRows).some(value => typeof value !== 'string'))) return null
     return {
       version: 1,
       mods: parsed.mods.map(migrateStoredModEntry),
       hiddenBaseCodenames: parsed.hiddenBaseCodenames,
+      baseRows: parsed.baseRows,
     }
   }, () => null)
 }
@@ -226,17 +234,31 @@ export function loadOrCreateUserCatalog(
   base: ReadonlyMap<string, ModInfo>,
 ): UserCatalogStore {
   const existing = readUserCatalogStore()
-  const store: UserCatalogStore = {
+  const store = reconcileUserCatalog(base, existing)
+  if (JSON.stringify(store) !== JSON.stringify(existing)) writeUserCatalogStore(store)
+  return store
+}
+
+function canonicalBaseRows(base: ReadonlyMap<string, ModInfo>): Record<string, string> {
+  return Object.fromEntries([...base].map(([code, info]) => [code, JSON.stringify(info)]))
+}
+
+export function reconcileUserCatalog(
+  base: ReadonlyMap<string, ModInfo>,
+  existing: UserCatalogStore | null,
+): UserCatalogStore {
+  return {
     version: 1,
     mods: mergeBaseIntoWorkingCopy(
       base,
       existing?.mods,
       existing?.hiddenBaseCodenames,
+      existing?.baseRows,
     ),
-    hiddenBaseCodenames: existing?.hiddenBaseCodenames ?? [],
+    hiddenBaseCodenames: (existing?.hiddenBaseCodenames ?? []).filter(code =>
+      base.has(code) && existing?.baseRows?.[code] === JSON.stringify(base.get(code))),
+    baseRows: canonicalBaseRows(base),
   }
-  writeUserCatalogStore(store)
-  return store
 }
 
 export type UserModInput = Omit<
@@ -317,7 +339,7 @@ export function addUserMod(
     { diskStatus: input.diskStatus ?? 'not_present' },
   )
   return {
-    version: 1,
+    ...store,
     mods: [...store.mods, entry].sort((a, b) =>
       a.codename.localeCompare(b.codename),
     ),
@@ -346,6 +368,7 @@ export function updateUserMod(
   const track = normalizeTrack(input.track)
   const entry: StoredModEntry = {
     ...prev,
+    origin: prev.origin === 'base' && nextCode !== codename ? 'user' : prev.origin,
     codename: nextCode,
     name: input.name.trim(),
     abbreviation: input.abbreviation.trim(),
@@ -361,7 +384,7 @@ export function updateUserMod(
     author: input.author.trim(),
     type: input.type.trim(),
     stability: input.stability.trim(),
-    localEdit: prev.origin === 'base' ? true : prev.localEdit,
+    localEdit: prev.origin === 'base' && nextCode === codename ? true : undefined,
   }
   let hidden = [...(store.hiddenBaseCodenames ?? [])]
   if (prev.origin === 'base' && nextCode !== codename) {
@@ -372,7 +395,7 @@ export function updateUserMod(
   const mods = [...store.mods]
   mods[idx] = entry
   mods.sort((a, b) => a.codename.localeCompare(b.codename))
-  return { version: 1, mods, hiddenBaseCodenames: hidden }
+  return { ...store, mods, hiddenBaseCodenames: hidden }
 }
 
 /** Remove a catalog entry. Base rows are tombstoned so merge does not revive them. */
@@ -387,7 +410,7 @@ export function removeUserMod(
     hidden.push(codename)
   }
   return {
-    version: 1,
+    ...store,
     mods: store.mods.filter((m) => m.codename !== codename),
     hiddenBaseCodenames: hidden,
   }
@@ -423,7 +446,7 @@ export function patchWorkingMod(
     author: patch.author !== undefined ? patch.author : prev.author,
   }
   return {
-    version: 1,
+    ...store,
     mods,
     hiddenBaseCodenames: store.hiddenBaseCodenames,
   }
@@ -445,7 +468,7 @@ export function replaceOverlays(
     diskStatus: diskStatus ?? prev.diskStatus,
   }
   return {
-    version: 1,
+    ...store,
     mods,
     hiddenBaseCodenames: store.hiddenBaseCodenames,
   }

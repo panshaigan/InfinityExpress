@@ -35,7 +35,7 @@ export interface ProjectMeta {
 export interface ProjectRecord {
   meta: ProjectMeta
   session: GameSession | null
-  /** Immutable InstallSequence snapshot; shared by projects created from the same XML. */
+  /** Last canonical InstallSequence revision applied to this project's saved state. */
   catalogRevision?: string
 }
 

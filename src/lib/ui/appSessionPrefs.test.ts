@@ -16,6 +16,7 @@ import {
 } from './appSessionPrefs'
 import type { InstallRun } from '../install/types'
 import type { SelectedGame } from '../xml/schema'
+import { parseInstallSequence } from '../xml/parseInstallSequence'
 
 function makeRun(game: SelectedGame = 'bg2'): InstallRun {
   return {
@@ -150,7 +151,7 @@ describe('appSessionPrefs', () => {
         {
           componentId: 'known',
           attrs: {},
-          effectiveEngine: ['bg2'],
+          effectiveEngine: 'bg2',
         },
       ],
     } as unknown as import('../xml/schema').InstallSequenceModel
@@ -158,6 +159,23 @@ describe('appSessionPrefs', () => {
     expect(out.selectedIds).toEqual(['known'])
     expect(out.activePresetId).toBeNull()
     expect(out.presetBaseline).toBeNull()
+  })
+
+  it('reconciles saved selections with canonical engine rules, requirements, and conditions', () => {
+    const model = parseInstallSequence(`<installSequence><base>
+      <component id="kept:0"/>
+      <component id="other-engine:0" engine="iwd"/>
+      <component id="required:0" required="1"/>
+      <component id="hidden:0" noDisplay="1" alwaysIf="required:0"/>
+      <component id="gated:0" displayIf="other-engine:0"/>
+    </base></installSequence>`).model
+    const session: GameSession = {
+      selectedIds: ['kept:0', 'removed:0', 'other-engine:0', 'gated:0'], finishedStations: [], routeUnlocked: true,
+      activePresetId: null, presetBaseline: null, activeStation: 'base', contentMainKey: null,
+      contentSubKey: null, contentSubTag: null, recommendedChecked: [], packagesChecked: [], modsJourney: null,
+    }
+    expect(sanitizeComponentsSession(model, 'bg2', session).selectedIds).toEqual(['kept:0', 'required:0', 'hidden:0'])
+    expect(session.selectedIds).toContain('removed:0')
   })
 
   it('round-trips installedFromWeiduLog on the project session', () => {
@@ -246,7 +264,7 @@ describe('appSessionPrefs', () => {
         {
           componentId: 'known',
           attrs: {},
-          effectiveEngine: ['bg2'],
+          effectiveEngine: 'bg2',
         },
       ],
     } as unknown as import('../xml/schema').InstallSequenceModel

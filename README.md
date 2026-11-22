@@ -97,9 +97,10 @@ Settings → App can still point at a custom WeiDU executable.
 
 ## Install
 
-Updates preserve project component catalogs; new projects use the latest
-catalog. Settings, presets, and catalog edits remain local. The desktop app
-saves recovery checkpoints before release migrations and in-app updates.
+All projects use the latest bundled component catalog. Saved choices and mod
+metadata reconcile with canonical updates while keeping settings, presets,
+custom mods, and download state. The desktop app saves recovery checkpoints
+before release migrations and in-app updates, and archives runs before catalog refreshes.
 See [Updates and saved data](docs/update-safety.md) for details and recovery.
 
 1. Open [Releases](https://github.com/panshaigan/InfinityExpress/releases).

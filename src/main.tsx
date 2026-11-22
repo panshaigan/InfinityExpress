@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client'
 import { invoke } from '@tauri-apps/api/core'
 import { isDesktopApp } from './lib/desktop/fsDialogs'
 import { prepareSavedProfile } from './lib/persistence/profileCheckpoint'
-import { readCatalogSnapshot } from './lib/persistence/catalogSnapshots'
 import { readProjectIndex } from './lib/projects/projectStore'
 import { readSelectionPresetsStore } from './lib/presets/selectionPresetsStore'
 import { readUserCatalogStore } from './lib/mods/userCatalog'
@@ -38,14 +37,12 @@ void applyFreshInstallEnvFlagIfRequested().then(async (wiped) => {
   if (wiped) return
   await prepareSavedProfile()
   // Validate before App's bootstrap migrations or catalog merge can write anything.
-  const projects = readProjectIndex()
+  readProjectIndex()
   readSelectionPresetsStore()
   readUserCatalogStore()
   readAppSession()
   readAppDirPaths()
   readVanillaRegistry()
-  const revisions = new Set(Object.values(projects.projects).map(record => record.catalogRevision).filter((revision): revision is string => !!revision))
-  await Promise.all([...revisions].map(readCatalogSnapshot))
   await seedBundledWeiduPath()
   const { default: App } = await import('./App')
   createRoot(document.getElementById('root')!).render(

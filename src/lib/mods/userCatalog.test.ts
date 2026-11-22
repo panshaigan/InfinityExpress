@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { ModInfo } from './loadMods'
 import {
   addUserMod,
+  createInitialCatalogStore,
   mergeBaseIntoWorkingCopy,
   migrateStoredModEntry,
   loadOrCreateUserCatalog,
@@ -66,7 +67,7 @@ describe('migrateStoredModEntry', () => {
 })
 
 describe('mergeBaseIntoWorkingCopy', () => {
-  it('preserves user decisions across a persisted catalog upgrade and a second launch', () => {
+  it('gives changed canonical rows priority across a persisted upgrade and a second launch', () => {
     localStorage.removeItem('infinity-express.mods-catalog')
     const oldBase = new Map(['edit', 'hide', 'removed', 'refresh'].map(codename => [codename, baseMod({ codename })]))
     let store = loadOrCreateUserCatalog(oldBase)
@@ -79,10 +80,13 @@ describe('mergeBaseIntoWorkingCopy', () => {
     const newBase = new Map(['edit', 'hide', 'refresh', 'new', 'custom'].map(codename => [codename, baseMod({ codename, name: 'New catalog name', version: 'v2' })]))
     loadOrCreateUserCatalog(newBase)
     const upgraded = loadOrCreateUserCatalog(newBase)
-    expect(upgraded.mods.find(row => row.codename === 'edit')!.name).toBe('My edited name')
-    expect(upgraded.mods.find(row => row.codename === 'custom')!.name).toBe('My own mod')
-    expect(upgraded.mods.some(row => row.codename === 'hide')).toBe(false)
-    expect(upgraded.mods.some(row => row.codename === 'removed')).toBe(true)
+    expect(upgraded.mods.find(row => row.codename === 'edit')!.name).toBe('New catalog name')
+    expect(upgraded.mods.find(row => row.codename === 'edit')!.localEdit).toBeUndefined()
+    expect(upgraded.mods.find(row => row.codename === 'custom')!.name).toBe('New catalog name')
+    expect(upgraded.mods.find(row => row.codename === 'custom')!.origin).toBe('base')
+    expect(upgraded.mods.some(row => row.codename === 'hide')).toBe(true)
+    expect(upgraded.hiddenBaseCodenames).toEqual([])
+    expect(upgraded.mods.some(row => row.codename === 'removed')).toBe(false)
     expect(upgraded.mods.some(row => row.codename === 'new')).toBe(true)
     expect(upgraded.mods.find(row => row.codename === 'refresh')).toMatchObject({ version: 'v2', diskStatus: 'present', overlays: { version: 'downloaded-v1', sizeBytes: 777 } })
     localStorage.removeItem('infinity-express.mods-catalog')
@@ -133,11 +137,11 @@ describe('mergeBaseIntoWorkingCopy', () => {
     const base = new Map([
       ['A', baseMod({ codename: 'A', author: '', version: 'v2' })],
     ])
-    const merged = mergeBaseIntoWorkingCopy(base, existing)
+    const merged = mergeBaseIntoWorkingCopy(base, existing, [], createInitialCatalogStore(base).baseRows)
     expect(merged.find((m) => m.codename === 'A')?.author).toBe('GitHubOwner')
   })
 
-  it('keeps rows removed from base and preserves user-origin rows', () => {
+  it('removes obsolete base rows and preserves unrelated user-origin rows', () => {
     const existing: StoredModEntry[] = [
       {
         ...baseMod({ codename: 'Gone' }),
@@ -154,8 +158,32 @@ describe('mergeBaseIntoWorkingCopy', () => {
     ]
     const base = new Map([['A', baseMod({ codename: 'A' })]])
     const merged = mergeBaseIntoWorkingCopy(base, existing)
-    expect(merged.some((m) => m.codename === 'Gone')).toBe(true)
+    expect(merged.some((m) => m.codename === 'Gone')).toBe(false)
     expect(merged.find((m) => m.codename === 'Mine')?.origin).toBe('user')
+  })
+
+  it('migrates legacy overrides and tombstones once, then preserves edits to unchanged canonical rows', () => {
+    localStorage.removeItem('infinity-express.mods-catalog')
+    const base = new Map(['edit', 'hide'].map(codename => [codename, baseMod({ codename })]))
+    localStorage.setItem('infinity-express.mods-catalog', JSON.stringify({ version: 1, mods: [{
+      ...baseMod({ codename: 'edit', name: 'Stale local override' }),
+      origin: 'base', localEdit: true, diskStatus: 'present', overlays: { version: 'downloaded' },
+    }], hiddenBaseCodenames: ['hide'] }))
+    let store = loadOrCreateUserCatalog(base)
+    expect(store.mods.find(row => row.codename === 'edit')!.name).toBe('edit')
+    expect(store.mods.some(row => row.codename === 'hide')).toBe(true)
+    store = updateUserMod(store, 'edit', baseMod({ codename: 'edit', name: 'New local edit' }))
+    store = removeUserMod(store, 'hide')
+    store = addUserMod(store, baseMod({ codename: 'personal' }))
+    localStorage.setItem('infinity-express.mods-catalog', JSON.stringify(store))
+    // An unrelated canonical addition must not discard intentional local edits.
+    const updatedBase = new Map([...base, ['another', baseMod({ codename: 'another' })]])
+    const refreshed = loadOrCreateUserCatalog(updatedBase)
+    expect(refreshed.mods.find(row => row.codename === 'edit')).toMatchObject({ name: 'New local edit', diskStatus: 'present', overlays: { version: 'downloaded' } })
+    expect(refreshed.mods.some(row => row.codename === 'hide')).toBe(false)
+    expect(refreshed.mods.some(row => row.codename === 'personal')).toBe(true)
+    expect(loadOrCreateUserCatalog(updatedBase)).toEqual(refreshed)
+    localStorage.removeItem('infinity-express.mods-catalog')
   })
 })
 
@@ -194,8 +222,9 @@ describe('user catalog CRUD', () => {
     const baseMap = new Map([
       ['Base', baseMod({ codename: 'Base', name: 'Shipped Base' })],
     ])
+    store.baseRows = createInitialCatalogStore(baseMap).baseRows
     expect(
-      mergeBaseIntoWorkingCopy(baseMap, store.mods, store.hiddenBaseCodenames).find(
+      mergeBaseIntoWorkingCopy(baseMap, store.mods, store.hiddenBaseCodenames, store.baseRows).find(
         (m) => m.codename === 'Base',
       )?.name,
     ).toBe('Edited Base')
@@ -204,7 +233,7 @@ describe('user catalog CRUD', () => {
     expect(store.mods.some((m) => m.codename === 'Base')).toBe(false)
     expect(store.hiddenBaseCodenames).toContain('Base')
     expect(
-      mergeBaseIntoWorkingCopy(baseMap, store.mods, store.hiddenBaseCodenames).some(
+      mergeBaseIntoWorkingCopy(baseMap, store.mods, store.hiddenBaseCodenames, store.baseRows).some(
         (m) => m.codename === 'Base',
       ),
     ).toBe(false)
@@ -237,6 +266,14 @@ describe('user catalog CRUD', () => {
     expect(store.hiddenBaseCodenames).toContain('Base')
     expect(store.mods.some((m) => m.codename === 'A')).toBe(false)
     expect(store.mods.some((m) => m.codename === 'B')).toBe(false)
+  })
+
+  it('keeps a renamed base row as a custom mod when reconciling against canonical IDs', () => {
+    const base = new Map([['Base', baseMod({ codename: 'Base' })]])
+    let store = createInitialCatalogStore(base)
+    store = updateUserMod(store, 'Base', baseMod({ codename: 'Personal' }))
+    const merged = mergeBaseIntoWorkingCopy(base, store.mods, store.hiddenBaseCodenames, store.baseRows)
+    expect(merged.map(row => [row.codename, row.origin])).toEqual([['Personal', 'user']])
   })
 
   it('replaceOverlays clears and sets disk status', () => {

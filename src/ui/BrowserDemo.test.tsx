@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { act } from 'react'
+import { webcrypto } from 'node:crypto'
+import { IDBFactory } from 'fake-indexeddb'
 import { mountReact } from '../test/react'
 import App from '../App'
 import * as exportOrder from '../lib/export/installOrder'
@@ -14,6 +16,8 @@ vi.mock('../lib/runtime', () => ({
 let ui: ReturnType<typeof mountReact>
 beforeEach(() => {
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true)
+  vi.stubGlobal('crypto', webcrypto)
+  vi.stubGlobal('indexedDB', new IDBFactory())
   localStorage.clear()
   ui = mountReact()
 })
@@ -41,7 +45,10 @@ it('opens the hub, creates a folder-free project, exports, and restores the proj
   const project = listProjects()[0]
   expect(project.engine).toBe('eet')
   expect(Object.values(project.destinations).every(path => path === '')).toBe(true)
-  expect(ui.container.querySelector('.presets-station')).not.toBeNull()
+  await vi.waitFor(async () => {
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 0)) })
+    expect(ui.container.querySelector('.presets-station')).not.toBeNull()
+  }, { timeout: 10_000 })
   expect(ui.container.querySelector('.directory-field')).toBeNull()
   for (const phase of ['Mods', 'Install']) {
     const button = [...ui.container.querySelectorAll<HTMLButtonElement>('.phase-nav-btn')]

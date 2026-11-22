@@ -10,6 +10,7 @@
     "allow-check-install-compatibility",
     "core:default",
     "core:window:allow-set-title",
+    "core:window:allow-set-overlay-icon",
     "core:window:allow-destroy",
     "dialog:default",
     "fs:allow-write-text-file",

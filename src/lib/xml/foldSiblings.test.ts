@@ -360,6 +360,7 @@ describe('curated InstallSequence.xml folding', () => {
       'universal',
       'stats',
       'proficiencies',
+      'miscellaneous',
     ])
 
     const warriors = mechanics.children.find((c) => c.tag === 'warriors')!

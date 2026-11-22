@@ -6,6 +6,7 @@ export interface ToastItem {
   id: string
   tone: ToastTone
   message: string
+  waitForFocus?: boolean
 }
 
 interface Props {
@@ -24,9 +25,10 @@ function ToastCard({
   dismissMs: number
 }) {
   useEffect(() => {
+    if (toast.waitForFocus) return
     const id = window.setTimeout(() => onDismiss(toast.id), dismissMs)
     return () => window.clearTimeout(id)
-  }, [toast.id, onDismiss, dismissMs])
+  }, [toast.id, toast.waitForFocus, onDismiss, dismissMs])
 
   return (
     <div
