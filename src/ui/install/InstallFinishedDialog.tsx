@@ -67,6 +67,16 @@ export function InstallFinishedDialog({
       >
         <div className="confirm-dialog-header">
           <h2 id="install-finished-title">Installation finished</h2>
+          <button
+            ref={closeRef}
+            type="button"
+            className="btn secondary dialog-close"
+            aria-label="Close"
+            disabled={busy}
+            onClick={onClose}
+          >
+            ×
+          </button>
         </div>
         <div className="confirm-dialog-message">
           <p>The last component in the install order has been processed.</p>
@@ -153,15 +163,6 @@ export function InstallFinishedDialog({
           {error ? <p className="install-dialog-error">{error}</p> : null}
         </div>
         <div className="confirm-dialog-actions">
-          <button
-            ref={closeRef}
-            type="button"
-            className="btn secondary"
-            disabled={busy}
-            onClick={onClose}
-          >
-            Close
-          </button>
           <button
             type="button"
             className="btn danger"

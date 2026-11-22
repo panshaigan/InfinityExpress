@@ -4381,6 +4381,17 @@ body.is-resizing-detail * {
   background: var(--accent-soft);
 }
 
+.btn.dialog-close {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
 .btn.danger {
   background: var(--err);
   color: #fff;
@@ -4790,6 +4801,13 @@ body.is-resizing-detail * {
 
 .install-finished-dialog {
   width: min(36rem, 100%);
+}
+
+.install-finished-dialog .confirm-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .install-finished-dialog .install-cleanup-fieldset {
@@ -6102,7 +6120,7 @@ body.is-resizing-detail * {
 }
 
 .mods-url-cell a {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -6111,6 +6129,7 @@ body.is-resizing-detail * {
 
 .mods-url-copy {
   flex: 0 0 auto;
+  margin-inline-start: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -6128,19 +6147,6 @@ body.is-resizing-detail * {
   color: var(--ink);
   border-color: var(--line);
   background: color-mix(in srgb, var(--panel) 70%, var(--accent));
-}
-
-.mods-col-url .mods-cell-clip,
-.mods-col-url .mods-cell-clip a {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-
-.mods-col-url .mods-cell-clip:has(.mods-url-cell) {
-  overflow: hidden;
 }
 
 .mods-col-url a {

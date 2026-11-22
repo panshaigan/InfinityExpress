@@ -194,6 +194,7 @@ const ModsTableRow = memo(function ModsTableRow({
 }: ModsTableRowProps) {
   const eff = effectiveModFields(mod)
   const author = primaryAuthorLabel(eff.author)
+  const urlTip = eff.url.trim() || undefined
 
   return (
     <tr
@@ -248,32 +249,34 @@ const ModsTableRow = memo(function ModsTableRow({
         display={eff.game ? formatGameDisplay(eff.game) : '—'}
         tip={eff.game ? formatGameDisplay(eff.game) : undefined}
       />
-      <TipCell
-        className="mods-col-url"
-        display={
-          isHttpUrl(eff.url) ? (
-            <span className="mods-url-cell">
-              <a
-                href={eff.url}
-                target="_blank"
-                rel="noreferrer"
-                tabIndex={-1}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  void openExternalUrl(eff.url)
-                }}
-              >
-                {formatUrlForTable(eff.url)}
-              </a>
-              <UrlCopyButton url={eff.url} />
-            </span>
-          ) : (
-            eff.url || '—'
-          )
-        }
-        tip={eff.url.trim() || undefined}
-      />
+      {isHttpUrl(eff.url) ? (
+        <td className="mods-col-url">
+          <span className="mods-url-cell">
+            <a
+              className="has-icon-tip"
+              href={eff.url}
+              target="_blank"
+              rel="noreferrer"
+              tabIndex={-1}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                void openExternalUrl(eff.url)
+              }}
+            >
+              {formatUrlForTable(eff.url)}
+              <IconTip>{urlTip}</IconTip>
+            </a>
+            <UrlCopyButton url={eff.url} />
+          </span>
+        </td>
+      ) : (
+        <TipCell
+          className="mods-col-url"
+          display={eff.url || '—'}
+          tip={urlTip}
+        />
+      )}
       <td className="mods-col-release">{eff.release || '—'}</td>
       <TipCell
         className="mods-col-version"

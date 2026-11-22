@@ -52,7 +52,16 @@ export function GameShortcutsDialog({ game, gameFolders, dataPath, launchBlocked
       <div className="confirm-dialog game-shortcuts-dialog" role="dialog" aria-modal="true" aria-labelledby="game-shortcuts-title" onClick={(e) => e.stopPropagation()}>
         <div className="confirm-dialog-header game-shortcuts-header">
           <h2 id="game-shortcuts-title">Game shortcuts</h2>
-          <button ref={closeRef} type="button" className="btn secondary" disabled={busy} onClick={onClose}>Close</button>
+          <button
+            ref={closeRef}
+            type="button"
+            className="btn secondary dialog-close"
+            aria-label="Close"
+            disabled={busy}
+            onClick={onClose}
+          >
+            ×
+          </button>
         </div>
         {!desktop && <p className="confirm-dialog-message">Available in the desktop app.</p>}
         {keys.map((key) => {

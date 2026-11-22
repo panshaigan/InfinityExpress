@@ -822,8 +822,13 @@ export function ComponentBrowserDialog({
               Inspect downloaded TP2 installers and copy InstallSequence XML.
             </p>
           </div>
-          <button type="button" className="btn secondary" onClick={onClose}>
-            Close
+          <button
+            type="button"
+            className="btn secondary dialog-close"
+            aria-label="Close"
+            onClick={onClose}
+          >
+            ×
           </button>
         </div>
 

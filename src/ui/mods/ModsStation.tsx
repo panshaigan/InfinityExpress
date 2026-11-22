@@ -812,12 +812,17 @@ export function ModsStation({
         }}
       />
 
-      <AcquireJobDialog
-        job={acquire.job}
-        onMinimize={acquire.minimizeJob}
-        onCancel={acquire.cancelJob}
-        onClose={acquire.dismissJob}
-      />
+      {!acquire.sizeConfirm ? (
+        <AcquireJobDialog
+          job={acquire.job}
+          onMinimize={acquire.minimizeJob}
+          onCancel={acquire.cancelJob}
+          onClose={acquire.dismissJob}
+          onDownloadUpdates={
+            installFrozen ? undefined : (codenames) => void acquire.requestAcquire(codenames)
+          }
+        />
+      ) : null}
     </div>
   )
 }

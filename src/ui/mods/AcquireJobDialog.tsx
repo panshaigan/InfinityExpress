@@ -9,6 +9,7 @@ interface Props {
   onMinimize: () => void
   onCancel: () => void
   onClose: () => void
+  onDownloadUpdates?: (codenames: string[]) => void
 }
 
 function acquireBarProgress(job: AcquireJobState): {
@@ -82,7 +83,13 @@ function statusLabel(status: string, kind: JobKind): string {
   }
 }
 
-export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) {
+export function AcquireJobDialog({
+  job,
+  onMinimize,
+  onCancel,
+  onClose,
+  onDownloadUpdates,
+}: Props) {
   const titleId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
   const cancelRef = useRef<HTMLButtonElement>(null)
@@ -121,6 +128,12 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
 
   const { pct, ariaText, indeterminate } = acquireBarProgress(job)
   const title = job.kind === 'check' ? 'Check for updates' : 'Download / Update'
+  const updateCodenames =
+    job.kind === 'check' && !job.running
+      ? job.entries
+          .filter((entry) => entry.status === 'updated')
+          .map((entry) => entry.codename)
+      : []
   const byteLine =
     job.progress?.bytesReceived != null
       ? job.progress.bytesTotal != null
@@ -146,6 +159,15 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
         <div className="keyboard-help-header">
           <h2 id={titleId}>{title}</h2>
           <div className="acquire-job-header-actions">
+            {updateCodenames.length > 0 && onDownloadUpdates ? (
+              <button
+                type="button"
+                className="btn"
+                onClick={() => onDownloadUpdates(updateCodenames)}
+              >
+                Download all updates
+              </button>
+            ) : null}
             {job.running ? (
               <button
                 ref={cancelRef}
@@ -160,10 +182,11 @@ export function AcquireJobDialog({ job, onMinimize, onCancel, onClose }: Props) 
               <button
                 ref={cancelRef}
                 type="button"
-                className="btn secondary"
+                className="btn secondary dialog-close"
+                aria-label="Close"
                 onClick={onClose}
               >
-                Close
+                ×
               </button>
             )}
           </div>
