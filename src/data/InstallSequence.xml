@@ -317,7 +317,8 @@
                         <component id="b!gavin_pid" name="Gavin: Player Initiated Dialogue" label="Gavin: Player Initiated Dialogue" complexity="minor" noDisplay="1" alwaysIf="b!gavin_main" />
                     </mod>
                     <component id="valerie:0" name="Valerie NPC Mod for BG1 Tutu, BGT BG:EE and EET" label="Valerie - human LG sorcerer" modId="Valerie-NPC" complexity="minor" package="customNpcs" cost="2" />
-                    <component id="Helga:0" name="Helga NPC Mod" label="Helga - dwarven CN cleric" core="1" modId="Helga-BG1" package="customNpcs" complexity="minor" />
+                    <component id="Helga:0" name="Helga NPC Mod" label="Helga - dwarven CN fighter/cleric" core="1" modId="Helga-BG1" package="customNpcs" complexity="minor" />
+					<component id="Helga:3" name="Fighter/Priest of Haela (Fighter Multi-class)" label="Fighter/Priest of Haela (Fighter Multi-class)" modId="Helga-BG1" engine="bg1,bg2" complexity="minor" alwaysIf="Helga:0" noDisplay="1" />
                     <component id="Drake:0" name="Default Portrait (The Artisan)" label="Drake - human NG Priest of Tyr" modId="Drake" package="customNpcs" complexity="minor" cost="5" />
                     <mod id="Indira_NPC">
                         <component id="IndiraNPC-main" name="Indira NPC" label="Indira - half-elven LG fighter/mage" core="1" complexity="minor" />
@@ -343,7 +344,7 @@
                     </mod>
                     <component id="Sirene:0" name="Sirene NPC for Baldur's Gate: Enhanced Edition" label="Sirene - tiefling LG Martyr (paladin)" core="1" modId="Sirene-BG1" package="customNpcs" complexity="minor" />
                     <component id="L#-VERRBGEE" name="Verr'Sza - the rakshasa NPC for BG1EE" label="Verr'Sza - rakshasa CE Naztharune Ranger" modId="verrsza-bg1ee" complexity="minor" />
-                    <component id="Vienxay:0" name="Vienxay NPC for BG1EE" label="Vienxay - elven NE Shadowmage (mage)" modId="Vienxay-BG1" package="customNpcs" complexity="minor" />
+                    <component id="Vienxay:0" name="Vienxay NPC for BG1EE" label="Vienxay - elven NE Shadowmage" modId="Vienxay-BG1" package="customNpcs" complexity="minor" />
                     <component id="gv#_glams_npc_pack" name="Glam's NPC Pack for BG:EE, BGT and BG TUTU" label="Glam's NPC Pack" modId="Glam-NPC-Pack" desc="5 NPCs" package="customNpcs" complexity="minor" />
 				</custom>
 				<tweaks label="Tweaks" noBranches="1" unfolded="1">
@@ -837,6 +838,18 @@
 					</mod>
                     <component id="L#-VERRSZABG2" name="Verr'Sza – the rakshasa NPC for BG2EE" label="Verr'Sza - rakshasa CE Naztharune Ranger" modId="verrsza-bg2ee" complexity="minor" />
 				</custom>
+				<mod id="Continuous_End">
+					<component id="Continuous_NPC_for_EET" name="Continuous NPC for EET (Install after NPC mods)" label="Continuous NPC for EET (Install after NPC mods)" modId="Continuous_End" complexity="moderate" noDisplay="1" alwaysIf="Continuous_Ajantis_for_EET,Continuous_Alora_for_EET,Continuous_Branwen_for_EET,Continuous_Coran_for_EET,Continuous_Isra_for_EET,Continuous_Kivan_for_EET,Continuous_Tiax_for_EET,Continuous_Xan_for_EET,Continuous_Yeslick_for_EET" />
+					<component id="Continuous_Ajantis_for_EET" name="Continuous Ajantis for EET (Install after Ajantis BG2 mod)" label="Continuous Ajantis for EET (Install after Ajantis BG2 mod)" modId="Continuous_End" complexity="minor" alwaysIf="ajantisbg2:0" noDisplay="1" />
+					<component id="Continuous_Alora_for_EET" name="Continuous Alora for EET (Install after Alora BG2 mod)" label="Continuous Alora for EET (Install after Alora BG2 mod)" modId="Continuous_End" complexity="minor" alwaysIf="Raven-alora_npc_for_bg2" noDisplay="1" />
+					<component id="Continuous_Branwen_for_EET" name="Continuos Branwen for EET (Install after Branwen BG2 mod)" label="Continuous Branwen for EET (Install after Branwen BG2 mod)" modId="Continuous_End" complexity="minor" alwaysIf="Branwen:0" noDisplay="1" />
+					<component id="Continuous_Coran_for_EET" name="Continuous Coran for EET (Install after Coran BG2 mod)" label="Continuous Coran for EET (Install after Coran BG2 mod)" modId="Continuous_End" complexity="minor" alwaysIf="O#CoranBGII-main" noDisplay="1" />
+					<component id="Continuous_Kivan_for_EET" name="Continuous Kivan for EET (Install after Kivan BG2 mod)" label="Continuous Kivan for EET (Install after Kivan BG2 mod)" modId="Continuous_End" complexity="minor" alwaysIf="p#_kivan" noDisplay="1" />
+					<component id="Continuous_Tiax_for_EET" name="Continuous Tiax for EET (Install after Tiax BG2 mod)" label="Continuous Tiax for EET (Install after Tiax BG2 mod)" modId="Continuous_End" complexity="minor" alwaysIf="Tiax:0" noDisplay="1" />
+					<component id="Continuous_Xan_for_EET" name="Continuous Xan for EET (Install after Xan BG2 mod)" label="Continuous Xan for EET (Install after Xan BG2 mod)" modId="Continuous_End" complexity="minor" alwaysIf="xan:0" noDisplay="1" />
+					<component id="Continuous_Yeslick_for_EET" name="Continuous Yeslick for EET (Install after Yeslick BG2 mod)" label="Continuous Yeslick for EET (Install after Yeslick BG2 mod)" modId="Continuous_End" complexity="minor" alwaysIf="yeslicknpc:0" noDisplay="1" />
+					<component id="Continuous_Isra_for_EET" name="Continuous Isra for EET (Install after Isra BG2 mod)" label="Continuous Isra for EET (Install after Isra BG2 mod)" modId="Continuous_End" complexity="minor" alwaysIf="isra_npc_for_bg2" noDisplay="1" />
+				</mod>
 				<banters label="Banters and Crossmods" recommended="npc" package="npcExpansions">
                     <component id="BG1NPCSoA:87" name="Inter Component Banter Pack" label="Inter Component Banter Pack" modId="BG1-NPCs-for-SoA-ToB" complexity="minor" />
                     <component id="mkhiinbg2:20" name="Crossmod with Baeloth for BG2" label="M'Khiin crossmod with baeloth" modId="mkhiinbg2" displayIf="mkhiinbg2:0" tags="Beamdog" complexity="minor" />
@@ -1460,7 +1473,6 @@
 			<component id="stratagems:4240" name="Treat mages' and priests' High-Level Abilities as innate abilities rather than memorisable spells (each may be taken only once)" label="Treat mages' and priests' HLAs as innate abilities" recommended="mechanics" modId="SwordCoastStratagems" complexity="minor" cost="11" />
 		</spellcasters>
 		<multi label="Multi-class / dual-class">
-			<component id="ArtisansKitpack:20000" name="Artisan's Kitpack: Eldritch Knight (Fighter / Mage Kit)" label="Add kit: Eldritch Knight - fighter/mage kit" modId="The-Artisan-s-Kitpack" recommended="mechanics" complexity="minor" cost="143" />
 			<!--component id="cd_tweaks_multiclass_gm" label="Multi-class Grandmastery" recommended="lowerDifficulty" modId="Tweaks-Anthology" /-->
 			<component id="cd_tweaks_druid_multis_tighten_equipment_restrictions" name="Tighten equipment restrictions [Angel]" label="Tighten equipment restrictions for  druid multi- and dual-classes" modId="Tweaks-Anthology" desc="Fighter-druids will be allowed amulets, belts, boots, bracers, cloaks, potions, rings, and wands available to fighters, but all other items (such as armor and weapons) will only be available to fighter-druids if single-class druids can use the item." recommended="higherDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2431" complexity="minor" cost="7" />
 			<component id="cd_tweaks_more_dual_classes" name="Expanded Dual-Class Options" label="Expanded dual-class options" modId="Tweaks-Anthology" recommended="lowerDifficulty" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2140" complexity="minor" />
@@ -1595,29 +1607,18 @@
 			<component id="ajantisbg2:5" name="Ajantis kit choice: make Ajantis Cavalier" label="Make Ajantis a Cavalier in BG2" modId="Ajantis_BG2" displayIf="ajantisbg2:0" complexity="minor" />
 			<component id="SkillsAndAbilitiesAerieSorcererOptimized" name="Optimize ability scores (INT 13, CHA 17; keep other scores)" label="Make Aerie Sorcerer/Cleric" modId="skills-and-abilities" package="npcChoices" complexity="minor" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-CLARA_BARD" name="Bard" label="Make Clara a bard" modId="A7-NoEENPCs" recommended="npc" package="npcChoices" complexity="minor" cost="7" />
-			<!--component id="sha-tweaks:3" name="Make Faldorn an Avenger" label="Make Dynaheir a sorcerer" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" />
-			<component id="sha-tweaks:4" name="Make Skie a Shadowdancer" label="Make Faldorn an Avenger" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" /-->
 			<alternatives label="Make Hexxat a...">
 				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_ASSASSIN" name="Assassin" label="Assassin" modId="A7-NoEENPCs" complexity="minor" />
-				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" name="Fighter / Assassin" label="Fighter/Assassin" modId="A7-NoEENPCs" default="1" complexity="minor" cost="11" />
-				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_SHADOWDANCER" name="Fighter / Shadowdancer" label="Fighter / Shadowdancer" recommended="npc" package="npcChoices" modId="A7-NoEENPCs" complexity="minor" />
-				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_NECROMANCER_THIEF" name="Necromancer / Thief" label="Necromancer / thief" modId="A7-NoEENPCs" complexity="minor" />
-				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_SHADOWDANCER" name="Shadowdancer" label="Shadowdancer" modId="A7-NoEENPCs" complexity="minor" />
+				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_ASSASSIN" name="Fighter / Assassin" label="Fighter/Assassin" modId="A7-NoEENPCs" recommended="npc" package="npcChoices" default="1" complexity="minor" cost="11" />
+				<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-HEXXAT_FIGHTER_SHADOWDANCER" name="Fighter / Shadowdancer" label="Fighter / Shadowdancer" modId="A7-NoEENPCs" complexity="minor" />
 			</alternatives>
-			<!-- Make Kagain a Dwarven Defender BGEENPC tweaks.-->
-			<component id="cd_tweaks_make_montaron_assassin" name="Make Montaron an Assassin [Andyr]" label="Make Montaron an Assassin" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4090" complexity="minor" />
 			<component id="A7-CONVENIENTEENPCS-CLASSCHANGE-NEERA_CHAOS_SORCERER" name="Chaos Sorcerer" label="Make Neera a Chaos Sorcerer" modId="A7-NoEENPCs" recommended="npc" package="npcChoices" complexity="minor" cost="21" />
-			<!--component id="sha-tweaks:5" name="Change dialog text color to orange" label="Make Skie a Shadowdancer" modId="shatweaks" recommended="npc" package="npcChoices" complexity="minor" /-->
 			<group label="Make Viconia...">
 				<component id="L#-VIC-REV-M-SH-C" name="Multi-class: Shadowdancer/Cleric" label="...A Shadowdancer/cleric" modId="viconia-revamped" complexity="minor" cost="8" />
 				<component id="L#-VIC-REV-ABI" name="Add special ability: Embrace of Shar" label="Add a special ability for Viconia: Embrace of Shar" modId="viconia-revamped" recommended="npc" package="npcChoices" complexity="minor" cost="3" />
 			</group>
 			<component id="p#_kivan_deheriana_wildmage" name="Wild Mage" label="Make Deheriana (f/m/c) a Wild Mage" modId="Kivan_and_Deheriana" displayIf="p#_kivan" complexity="minor" cost="4" />
-			<alternatives label="Make Xan a..." unfolded="1">
-				<component id="xan:1" name="[Install alternate class for XAN?] Change Xan's class to Fighter/Mage" label="Fighter/mage" modId="Xan_for_BGII" alwaysIf="ArtisansKitpack_npc:20002" displayIfNot="ArtisansKitpack_npc:20002" default="1" complexity="minor" cost="2" />
-				<component id="SkillsAndAbilitiesXanSorcererOptimized" name="Optimize ability scores (STR 17, DEX 19, CON 16, INT 11, WIS 10, CHA 17)" label="Make Xan Fighter/Sorcerer" recommended="npc" package="npcChoices" modId="skills-and-abilities" complexity="minor" />
-			</alternatives>
-			<component id="ArtisansKitpack_npc:20002" name="Artisan's Kitpack: Make Xan an Eldritch Knight" label="Make Xan an Eldritch Knight" modId="The-Artisan-s-Kitpack" displayIf="ArtisansKitpack:20000" recommended="npc" package="npcChoices" complexity="minor" cost="3" />
+			<component id="SkillsAndAbilitiesXanSorcererOptimized" name="Optimize ability scores (STR 17, DEX 19, CON 16, INT 11, WIS 10, CHA 17)" label="Make Xan a Fighter/Sorcerer" recommended="npc" package="npcChoices" modId="skills-and-abilities" complexity="minor" />
 			<alternatives label="Upgrade Nalia's thief Class to...">
 				<component id="cd_tweaks_nalia_thief_level_5" name="To Thief level 5" label="Level 5 (further increases Open Locks)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4210" complexity="minor" />
 				<component id="cd_tweaks_nalia_thief_level_6" name="To Thief level 6" label="Level 6 (further increases Find Traps, Pick Pockets)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4211" complexity="minor" />
@@ -1625,10 +1626,16 @@
 				<component id="cd_tweaks_nalia_thief_level_8" name="To Thief level 8" label="Level 8 (further increases Pick Pockets, adds Single Weapon Style)" modId="Tweaks-Anthology" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4213" complexity="minor" />
 			</alternatives>
 			<component id="YoshimosRemorse:2" name="Bounty Hunter 13 / Fighter" label="Make Yoshimo a Bounty Hunter 13 / fighter in ToB"  modId="Yoshimos_Remorse" displayIf="YoshimosRemorse:0" complexity="minor" cost="2" />
-
+			<component id="Morpheus562sKitpackDBSarevok" name="Assign kit to Sarevok" label="Make Sarevok a Deathbringer" modId="morpheus562s-kitpack" recommended="npc" package="npcChoices" engine="bg2,eet" complexity="minor"/>
+			<component id="Morpheus562sKitpackRashemaar1" name="Assign kit to Minsc" label="Assign kit to Minsc" modId="morpheus562s-kitpack" engine="bg,eet" recommended="npc" package="npcChoices" complexity="minor" />
+			<component id="S9BGEENPCTweaks:400" name="Make Dynaheir a Sorcerer" label="Make Dynaheir a Sorcerer" modId="S9BGEENPCTweaks" recommended="npc" package="npcChoices" />
+			<component id="S9BGEENPCTweaks:410" name="Make Faldorn an Avenger" label="Make Faldorn an Avenger" modId="S9BGEENPCTweaks" recommended="npc" package="npcChoices" />
+			<component id="S9BGEENPCTweaks:418" name="Make Kagain a Dwarven Defender" label="Make Kagain a Dwarven Defender" modId="S9BGEENPCTweaks" recommended="npc" package="npcChoices" />
+			<component id="S9BGEENPCTweaks:420" name="Make Kivan an Archer" label="Make Kivan an Archer" modId="S9BGEENPCTweaks" />
+			<component id="S9BGEENPCTweaks:430" name="Make Safana a Swashbuckler" label="Make Safana a Swashbuckler" modId="S9BGEENPCTweaks" recommended="npc" package="npcChoices" />
+			<component id="S9BGEENPCTweaks:450" name="Make Skie a Shadowdancer" label="Make Skie a Shadowdancer" modId="S9BGEENPCTweaks" recommended="npc" package="npcChoices" />
 		</group>
 		<group label="Skills/abilities">
-			<!-- Dual Class Friendly Stats -->
 			<group label="Use consistent (BG2) stats for..." noBranches="1" engine="bg1,eet">
 				<mod id="Tweaks-Anthology">
 					<component id="cd_tweaks_consistent_stats_edwin_bg2" name="Use BG2 values" label="Edwin" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_4031" recommended="npc" package="npcChoices" complexity="minor" cost="11" />
@@ -2110,11 +2117,14 @@
 			<weapons label="Weapon Tweaks">
 				<component id="ac-miscellaneous-bgarchery" name="BG-style archery for SoA/ToB" label="BG-style archery" modId="AC-Miscellaneous-Tweaks" engine="bg,eet" recommended="lowerDifficulty" complexity="minor" cost="2" />
 				<component id="SkillsAndAbilitiesSTR" name="2H Weapon Additional Strength Bonus" label="2H weapon additional STR bonus" modId="skills-and-abilities" recommended="lowerDifficulty" complexity="minor" cost="5" />
+				<component id="MorpheusTweaks-Katanas" name="Make all katanas two-handed (with two-handed animations; 1d10 becomes 1d12)" label="Make all katanas two-handed" modId="morpheus562s-tweaks" engine="bg,eet,iwd" recommended="extended" complexity="minor" />
 			</weapons>
 			<group label="HLAs">
 				<component id="SkillsAndAbilitiesNewHLA" name="Add New HLAs for ALL Classes and Kits" label="Add new HLAs for all classes and kits" modId="skills-and-abilities" complexity="minor" cost="31" recommended="extended" />
 				<component id="SkillsAndAbilitiesUpdateHLA" name="Update Existing HLAs" label="Update existing HLAs" modId="skills-and-abilities" complexity="minor" cost="3" recommended="extended" />
 			</group>
+			<component id="MorpheusTweaks-Subraces" name="Add Subraces to Character Creation (requires EEex)" label="Add subraces" modId="morpheus562s-tweaks" engine="bg,eet,iwd" recommended="extended" complexity="moderate" displayIf="EEex:1" />
+			<component id="MorpheusTweaks-SubracesNPCs" name="Recruitable NPCs get subraces" label="Recruitable NPCs get subraces" modId="morpheus562s-tweaks" engine="bg,eet,iwd" complexity="minor" noDisplay="1" alwaysIf="MorpheusTweaks-Subraces" />
 		</universal>
 		<stats label="Stats">
 			<hp>
@@ -2164,6 +2174,7 @@
 	<adjustments engine="bg,eet,iwd">
 		<group label="XP Economy" unfolded="1">
 			<component id="cd_tweaks_remove_xp_cap" name="Remove experience cap" label="Remove total experience cap" modId="Tweaks-Anthology" recommended="adjustments" readme="https://gibberlings3.github.io/Documentation/readmes/readme-cdtweaks.html#contents_2090" complexity="minor" cost="7" />
+			<component id="MorpheusTweaks-BG2Experience" name="Start BG2: EE with 500k Experience" label="Start BG2 with 500 000 XP (post-SoD XP Level)" modId="morpheus562s-tweaks" engine="bg2,eet" recommended="extended" complexity="minor" />
 			<alternatives label="XP for Traps, Spells, Open Locks">
 				<component id="EET_Tweaks:2040" name="BG1 values (default)" label="BG1" modId="EET_Tweaks" complexity="minor" />
 				<component id="EET_Tweaks:2041" name="BG2 values" label="BG2" modId="EET_Tweaks" complexity="minor" />
