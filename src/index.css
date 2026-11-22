@@ -6359,27 +6359,27 @@ body.is-resizing-detail * {
   flex-wrap: wrap;
 }
 
-.mod-editor-github-flags {
+.mod-editor-repository-flags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem 0.75rem;
   align-items: flex-start;
 }
 
-.mod-editor-github-flags .mod-editor-source-select {
+.mod-editor-repository-flags .mod-editor-source-select {
   min-width: 8.5rem;
 }
 
-.mod-editor-github-flags .mod-editor-branch-field {
+.mod-editor-repository-flags .mod-editor-branch-field {
   min-width: 9rem;
   max-width: 12rem;
 }
 
-.mod-editor-github-flags .outlined-field {
+.mod-editor-repository-flags .outlined-field {
   --outlined-field-bg: color-mix(in srgb, var(--panel) 72%, #000);
 }
 
-.mod-editor-github-flags .outlined-select-popover {
+.mod-editor-repository-flags .outlined-select-popover {
   z-index: 50;
 }
 

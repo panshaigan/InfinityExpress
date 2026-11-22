@@ -15,6 +15,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, OnceLock};
 use tauri::{AppHandle, Emitter, State};
 
+mod gitlab;
+
 const PROGRESS_EVENT: &str = "mod-acquire-progress";
 const USER_AGENT: &str = "InfinityExpress/0.9 (mod-acquire)";
 const CANCELLED: &str = "Cancelled";
@@ -50,9 +52,9 @@ pub fn cancel_mod_acquire(flag: State<'_, AcquireCancelFlag>) {
 pub struct ProbeModInput {
     pub codename: String,
     pub url: String,
-    /// GitHub track: empty/`release` = latest release; `main` = default branch tip; else branch name.
+    /// Empty/`release` = latest release; `main` = default branch tip; else branch name.
     pub track: String,
-    /// GitHub download: empty/`zipball` = ref zipball; `asset` = release archive asset.
+    /// Empty/`zipball` = source archive; `asset` = release archive asset.
     pub download: String,
     /// Catalog size used only as a hint when remote size is unknown (frontend).
     pub catalog_size_bytes: Option<u64>,
@@ -70,7 +72,7 @@ pub struct RemoteProbeResult {
     pub size_is_estimate: bool,
     pub used_scrape_fallback: bool,
     pub rate_limited: bool,
-    /// Tag or commit SHA for GitHub zipball downloads.
+    /// Tag or commit SHA for source archive downloads.
     pub zipball_ref: Option<String>,
     pub owner: Option<String>,
     pub repo: Option<String>,
@@ -1117,6 +1119,14 @@ async fn probe_mod_inner(
     if url.is_empty() {
         return Err("Mod has no download URL".into());
     }
+    if let Ok(parsed) = reqwest::Url::parse(url) {
+        if gitlab::is_host(&parsed) {
+            return match gitlab::Project::from_url(&parsed) {
+                Some(project) => project.probe(&input.track, &input.download).await,
+                None => probe_direct(url).await,
+            };
+        }
+    }
     let lower = url.to_ascii_lowercase();
     if lower.contains("github.com") {
         return probe_github(url, &input.track, &input.download, github_token).await;
@@ -1261,6 +1271,11 @@ async fn scrape_mod_page_meta_inner(
     }
     // Prefer the public HTML page (first heading), including GitHub — do not
     // use API description / repo slug / readme-link heuristics.
+    if let Ok(parsed) = reqwest::Url::parse(trimmed) {
+        if let Some(project) = gitlab::Project::from_url(&parsed) {
+            return project.page_meta().await;
+        }
+    }
     let page = if let Ok((owner, repo)) = parse_github_owner_repo(trimmed) {
         format!("https://github.com/{owner}/{repo}")
     } else {
@@ -1292,7 +1307,13 @@ async fn download_to_file(
         req = req.header(reqwest::header::REFERER, referer);
     }
     if let Some(t) = token.filter(|s| !s.is_empty()) {
-        if url.contains("api.github.com") || url.contains("codeload.github.com") {
+        if reqwest::Url::parse(url).is_ok_and(|url| {
+            url.scheme() == "https"
+                && matches!(
+                    url.host_str(),
+                    Some("api.github.com" | "codeload.github.com")
+                )
+        }) {
             req = req.header("Authorization", format!("Bearer {t}"));
         }
     }
@@ -1462,7 +1483,7 @@ fn unwrap_single_root(dir: &Path) -> Result<(), String> {
         .and_then(|n| n.to_str())
         .unwrap_or("")
         .to_string();
-    // GitHub zipballs are typically repo-ref folders.
+    // Repository source archives typically contain a single project folder.
     let staging = dir.join("__unwrap_tmp__");
     if staging.exists() {
         fs::remove_dir_all(&staging).map_err(|e| e.to_string())?;
@@ -1611,7 +1632,10 @@ pub async fn acquire_mod(
             &codename,
             download_url,
             &archive_path,
-            input.github_token.as_deref(),
+            input
+                .github_token
+                .as_deref()
+                .filter(|_| remote.strategy.starts_with("github_")),
             &cancel,
             remote.size_bytes,
         )

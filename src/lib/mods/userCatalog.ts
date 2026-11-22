@@ -4,7 +4,7 @@ import type {
   ModInfo,
   WorkingMod,
 } from './loadMods'
-import { normalizeDownload, normalizeTrack } from './loadMods'
+import { gitlabProjectSlug, normalizeDownload, normalizeTrack } from './loadMods'
 import { readSavedStore } from '../persistence/savedStore'
 
 export const USER_CATALOG_STORAGE_KEY = 'infinity-express.mods-catalog'
@@ -270,7 +270,7 @@ export type UserModInput = Omit<
 
 /**
  * Build a provisional catalog id from a download URL when the user leaves
- * Download ID blank. Uses the last path segment only (no hostname). Collisions
+ * Download ID blank. Uses the GitLab project slug or the last path segment. Collisions
  * get -2, -3, … suffixes.
  */
 export function provisionalCodenameFromUrl(
@@ -284,7 +284,7 @@ export function provisionalCodenameFromUrl(
       .split('/')
       .map((s) => s.trim())
       .filter(Boolean)
-    const last =
+    const last = gitlabProjectSlug(parsed) ??
       segments[segments.length - 1]?.replace(/\.[a-z0-9]+$/i, '') ?? ''
     const cleaned = last
       .replace(/[^a-zA-Z0-9._-]+/g, '-')

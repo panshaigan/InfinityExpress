@@ -11,11 +11,32 @@ import {
   parseModsCsv,
   resolveModLookupKey,
   resolveModStability,
+  supportsRepositoryTracking,
 } from './loadMods'
 import type { ComponentNode, InstallSequenceModel, TreeNode } from '../xml/schema'
 
 const HEADER =
   'Codename,Category,URL,Game,Track,Download,Release,Version,Size,Author,Readme,Type'
+
+describe('supportsRepositoryTracking', () => {
+  it.each([
+    'https://github.com/group/mod/releases',
+    'https://gitlab.com/group/mod',
+    'https://www.gitlab.com/group/subgroup/mod.git/',
+    'https://gitlab.com/group/subgroup/mod/-/releases/v2.0',
+  ])('enables repository controls for %s', (url) => {
+    expect(supportsRepositoryTracking(url)).toBe(true)
+  })
+
+  it.each([
+    'https://gitlab.com/group/mod/-/archive/v1/mod-v1.zip',
+    'https://gitlab.com/group/mod/-/jobs/artifacts/main/download?job=build',
+    'https://gitlab.com/group/mod/-/releases/v1/downloads/mod.zip',
+    'https://example.test/gitlab.com/group/mod',
+  ])('leaves direct downloads and unrelated hosts alone for %s', (url) => {
+    expect(supportsRepositoryTracking(url)).toBe(false)
+  })
+})
 
 describe('parseModsCsv', () => {
   it('parses header and quoted fields including Size, Author, and Readme', () => {

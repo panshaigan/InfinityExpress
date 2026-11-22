@@ -10,12 +10,12 @@ export interface ModInfo {
   readme: string
   game: string
   /**
-   * GitHub track target: empty/`release` (stored empty) = latest release;
+   * Repository track target: empty/`release` (stored empty) = latest release;
    * `main` = default-branch tip; any other non-empty value = that branch name.
    */
   track: string
   /**
-   * GitHub download mode: empty/`zipball` (stored empty) = ref zipball;
+   * Repository download mode: empty/`zipball` (stored empty) = source archive;
    * `asset` = release archive asset (only valid when tracking a release).
    */
   download: string
@@ -126,13 +126,35 @@ export function normalizeDownload(
   return ''
 }
 
-/** Whether a mod URL is a GitHub host (flags apply only then). */
-export function isGithubModUrl(url: string): boolean {
+/** Project slug for a GitLab.com project or one of its pages. */
+export function gitlabProjectSlug(url: URL): string | null {
+  if (!['http:', 'https:'].includes(url.protocol)) return null
+  if (url.hostname.replace(/^www\./, '') !== 'gitlab.com') return null
+  const path = url.pathname.replace(/^\/+|\/+$/g, '')
+  const [project, page = ''] = path.split('/-/', 2)
+  const route = page.split('/')[0]
+  if (
+    project.startsWith('api/') ||
+    ['archive', 'raw', 'uploads', 'package_files'].includes(route) ||
+    (route === 'jobs' && page.includes('/artifacts')) ||
+    (route === 'releases' && page.includes('/downloads/'))
+  ) return null
+
+  const segments = project.split('/')
+  const slug = segments.pop()?.replace(/\.git$/, '')
+  if (!slug || segments.length === 0) return null
+  return [...segments, slug].every((segment) => /^[a-z0-9._-]+$/i.test(segment))
+    ? slug
+    : null
+}
+
+/** Whether the URL can use repository Track and Download settings. */
+export function supportsRepositoryTracking(url: string): boolean {
   try {
-    const host = new URL(url.trim()).hostname.replace(/^www\./i, '').toLowerCase()
-    return host === 'github.com'
+    const parsed = new URL(url.trim())
+    return parsed.hostname.replace(/^www\./, '') === 'github.com' || gitlabProjectSlug(parsed) !== null
   } catch {
-    return /github\.com/i.test(url)
+    return false
   }
 }
 

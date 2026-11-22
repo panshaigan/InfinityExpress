@@ -4,7 +4,7 @@ import {
   type ModPageMeta,
 } from '../../lib/desktop/modPageMeta'
 import {
-  isGithubModUrl,
+  supportsRepositoryTracking,
   normalizeDownload,
   normalizeTrack,
   type ModInfo,
@@ -69,7 +69,7 @@ type TrackMode = 'release' | 'main' | 'custom'
 
 const TRACK_MODE_OPTIONS: OutlinedSelectOption[] = [
   { value: 'release', label: 'Release' },
-  { value: 'main', label: 'Main branch' },
+  { value: 'main', label: 'Default branch' },
   { value: 'custom', label: 'Custom branch' },
 ]
 
@@ -363,10 +363,9 @@ export function ModEditorDialog({
       return
     }
 
-    const github = isGithubModUrl(url)
     let track = ''
     let download = ''
-    if (github) {
+    if (supportsRepositoryTracking(url)) {
       if (trackMode === 'main') track = 'main'
       else if (trackMode === 'custom') {
         const branch = next.track.trim()
@@ -400,7 +399,7 @@ export function ModEditorDialog({
   const typeOptions = withEmptyOption(facetOptions.types, '—')
   const stabilityOptions = withEmptyOption(facetOptions.stabilities, 'Released')
   const games = selectedGameTokens(form.game)
-  const showGithubSource = isGithubModUrl(form.url)
+  const showRepositorySource = supportsRepositoryTracking(form.url)
   const customBranch = form.track
   const downloadValue =
     trackMode === 'release' ? normalizeDownload(form.download, '') : ''
@@ -492,8 +491,8 @@ export function ModEditorDialog({
             onOpenChange={(o) => setOpenSelect(o ? 'type' : null)}
             onChange={(v) => setField('type', v)}
           />
-          {showGithubSource ? (
-            <div className="mod-editor-github-flags mod-editor-span-2">
+          {showRepositorySource ? (
+            <div className="mod-editor-repository-flags mod-editor-span-2">
               <OutlinedSelect
                 className="mod-editor-source-select"
                 label="Track"

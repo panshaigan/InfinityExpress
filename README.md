@@ -126,6 +126,8 @@ Work through the station list (after Presets). Expand groups, check components, 
 
 Review the catalog against what is already under your main data `mods` folder. Acquire missing mods when download metadata is available. Remove from disk when you no longer need a package there.
 
+For GitHub and public GitLab.com project links, use **Track** in the mod editor to follow releases, the default branch, or a custom branch. For releases, **Download** selects the source ZIP or a published archive asset. A public GitLab project with no releases falls back to its default branch when using the source ZIP.
+
 ### 4. Install
 
 Open **Install**, review the plan table, then run. Watch the console for WeiDU output. Pause or stop if needed. Use vanilla restore and named snapshots from the backup tools when you want a known-good baseline again.

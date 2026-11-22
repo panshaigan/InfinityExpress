@@ -322,5 +322,11 @@ describe('provisionalCodenameFromUrl', () => {
     expect(
       provisionalCodenameFromUrl('https://github.com/org/MyMod', existing),
     ).toBe('MyMod-2')
+    expect(
+      provisionalCodenameFromUrl(
+        'https://gitlab.com/org/subgroup/MyMod/-/releases/v1.2.3',
+        existing,
+      ),
+    ).toBe('MyMod-2')
   })
 })
