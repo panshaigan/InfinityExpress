@@ -6,8 +6,15 @@ import path from 'node:path'
 const installDir = process.argv[2]
 assert.ok(installDir, 'Pass the isolated install directory')
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex')
-for (const relative of ['app.exe', 'weidu/weidu.exe', '7zip/7z.exe']) {
-  const expected = await readFile(path.join('src-tauri/target/release', relative))
+// Use the resource sources from tauri.windows.conf.json. Cargo's release
+// directory may not contain copies of them after a cached build.
+const payloadFiles = [
+  ['app.exe', 'src-tauri/target/release/app.exe'],
+  ['weidu/weidu.exe', 'src-tauri/resources/weidu/weidu.exe'],
+  ['7zip/7z.exe', 'src-tauri/resources/7zip/7z.exe'],
+]
+for (const [relative, source] of payloadFiles) {
+  const expected = await readFile(source)
   if (relative === 'app.exe') {
     // Tauri patches the package's marker, then restores the original build
     // output. Normalize only that documented marker before comparing hashes.
